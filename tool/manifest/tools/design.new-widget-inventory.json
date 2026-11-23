@@ -4,6 +4,7 @@
   "path": "tool/design/check_new_widget_inventory.mjs",
   "impactPaths": [
     "tool/design/check_new_widget_inventory.test.mjs",
+    "tool/design/check_new_widget_inventory_screen_moves.test.mjs",
     "tool/design/lib/new_widget_inventory_declarations.mjs",
     "tool/design/lib/production_widget_roots.mjs",
     "tool/design/component_concepts.mjs",
@@ -14,7 +15,8 @@
     "apps/host/lib/**",
     "widgetbook/lib/main.directories.g.dart",
     "design/components/catch.components.json",
-    "tool/design/lib/owned_composition_renderers.mjs"
+    "tool/design/lib/owned_composition_renderers.mjs",
+    "tool/architecture/screen_moves/**"
   ],
   "ciRequirements": {
     "repositoryView": "full",
@@ -25,11 +27,12 @@
   "command": "node tool/design/check_new_widget_inventory.mjs --check --no-write",
   "surface": "local-writes-scratch",
   "status": "active",
-  "description": "Fails closed against a reachable base and transitively discovers widget subclasses across production roots. New or moved public widgets require Widgetbook coverage; shared widgets also require a canonical Catch* name and exact registry source identity. The generated markdown inventory is not an input. Private widgets and Widget-returning helpers remain blocked; generated exclusions are file-specific or suffix-specific.",
+  "description": "Fails closed against a reachable base and transitively discovers widget subclasses across production roots. New or moved public widgets require Widgetbook coverage; shared widgets also require a canonical Catch* name and exact registry source identity. The generated markdown inventory is not an input. Private widgets and Widget-returning helpers remain blocked, except those a recorded Phase 4 screen move (tool/architecture/screen_moves/) carried unchanged in name; generated exclusions are file-specific or suffix-specific.",
   "checks": [
     "node --check tool/design/check_new_widget_inventory.mjs",
     "node --check tool/design/lib/new_widget_inventory_declarations.mjs",
     "node --test tool/design/check_new_widget_inventory.test.mjs",
+    "node --test tool/design/check_new_widget_inventory_screen_moves.test.mjs",
     "node --test tool/design/component_concepts.test.mjs",
     "node tool/design/check_new_widget_inventory.mjs --check --no-write"
   ],
