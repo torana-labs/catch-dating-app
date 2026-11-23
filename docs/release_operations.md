@@ -651,7 +651,15 @@ decision, 22 Nov 2026; evidence in
 - Every gate must stay under 10 s at p95.
 - `node tool/ci/semantic_gates.mjs budget --timings-dir <dir>` reads the newest nightly timings and lists any gate over budget, with the fix: speed it up, or drop its `queueGate` so affected-tools selects it only when its `impactPaths` change.
 - It is report-only: a slow check is not a broken `main`, so it posts a "Semantic gate over budget" issue instead of failing the nightly.
-- The CI job that runs the gate in the merge queue, and the nightly budget report, are wired separately and need the owner's confirmation before they gate.
+- The nightly budget report is the `semantic-budget` job of `Main CI alert`: it keeps that one issue in step (opened, its body updated, closed once every gate is back within budget).
+
+**Where it runs and gates.** The `Semantic checks` job in `ci.yml` runs the gates (with `--candidates`) on:
+- every `merge_group` run. Required CI needs it, so a failed gate fails Required CI. Its "Require every selected lane" step also demands `success` in a merge-queue run, the nightly and a `main` push with no queue proof, so a skipped job cannot pass there either;
+- every non-draft pull request. It continues on error there, so an author sees a red job before queueing, but Required CI is not blocked;
+- the nightly, which provides the budget timings;
+- a `main` push with no merge-queue proof (a bypass or a stale proof), where it feeds Main CI alert like any other lane.
+
+The job takes no plan selection, and uploads `semantic-timings-<run>-<attempt>` for the budget report.
 
 ### Selected Check Contracts
 

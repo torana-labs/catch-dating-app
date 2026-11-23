@@ -8,6 +8,12 @@
 //   node tool/ci/semantic_gates.mjs run [--candidates] [--timings <file>]
 //   node tool/ci/semantic_gates.mjs budget --timings-dir <dir> [--runs 7]
 //     [--limit-ms 10000] [--issue-body <file>]
+//   node tool/ci/semantic_gates.mjs budget --github [--runs 7] [--limit-ms 10000]
+//
+// `budget --github` runs in the Main CI alert workflow after each nightly: it
+// downloads the gate timings of the newest nightly CI runs on main and keeps
+// one "Semantic gate over budget" issue in step (opened, its body updated, or
+// closed once every gate is back within budget).
 //
 // `run` writes per-check timings as JSON and, in GitHub Actions, a step
 // summary. `budget` reads the timings of recent nightly runs and lists every
@@ -16,6 +22,7 @@
 // always exits 0, and the caller posts the list as an issue.
 import {spawnSync} from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {semanticGateIds} from "../lib/semantic_gates.mjs";
@@ -24,13 +31,14 @@ import {loadToolsManifest} from "../lib/tools_manifest.mjs";
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 export const DEFAULT_LIMIT_MS = 10000;
 export const DEFAULT_RUNS = 7;
+export const BUDGET_ISSUE_TITLE = "Semantic gate over budget";
 
 export function parseArgs(argv) {
   const [command, ...rest] = argv;
   if (!["list", "run", "budget"].includes(command)) {
     throw new Error("Usage: semantic_gates.mjs list|run|budget [options]; see the file header.");
   }
-  const options = {command, candidates: false, json: false, timings: null, timingsDir: null,
+  const options = {command, candidates: false, json: false, github: false, timings: null, timingsDir: null,
     runs: DEFAULT_RUNS, limitMs: DEFAULT_LIMIT_MS, issueBody: null};
   const valued = {"--timings": "timings", "--timings-dir": "timingsDir", "--runs": "runs",
     "--limit-ms": "limitMs", "--issue-body": "issueBody"};
@@ -38,6 +46,7 @@ export function parseArgs(argv) {
     const flag = rest[index];
     if (flag === "--candidates") options.candidates = true;
     else if (flag === "--json") options.json = true;
+    else if (flag === "--github") options.github = true;
     else if (valued[flag]) {
       const value = rest[index + 1];
       if (value === undefined || value.startsWith("--")) throw new Error(`${flag} needs a value.`);
@@ -50,7 +59,9 @@ export function parseArgs(argv) {
       } else options[key] = value;
     } else throw new Error(`Unknown option ${flag}.`);
   }
-  if (command === "budget" && !options.timingsDir) throw new Error("budget needs --timings-dir <dir>.");
+  if (command === "budget" && !options.timingsDir === !options.github) {
+    throw new Error("budget needs exactly one of --timings-dir <dir> or --github.");
+  }
   return options;
 }
 
@@ -133,6 +144,58 @@ export function renderBudgetIssue(over, {runs, limitMs}) {
   ].join("\n");
 }
 
+/**
+ * What to do with the one budget issue: open it, replace its body when the
+ * report changed, close it once every gate is within budget, or nothing.
+ */
+export function decideBudgetIssue({body, openIssue}) {
+  if (body === null) return openIssue ? {action: "close", issue: openIssue.number} : {action: "none"};
+  if (!openIssue) return {action: "open", title: BUDGET_ISSUE_TITLE, body};
+  return openIssue.body === body ? {action: "none"} : {action: "update", issue: openIssue.number, body};
+}
+
+function gh(args, input) {
+  const result = spawnSync("gh", args, {encoding: "utf8", maxBuffer: 64 * 1024 * 1024, input});
+  if (result.status !== 0) throw new Error(result.stderr || `gh ${args.join(" ")} failed`);
+  return result.stdout;
+}
+
+/** Downloads the newest nightly runs' gate timings into a fresh directory. */
+function downloadNightlyTimings(repository, runs) {
+  const nightly = JSON.parse(gh(["api",
+    `repos/${repository}/actions/workflows/ci.yml/runs?branch=main&event=schedule&status=completed&per_page=${runs}`]));
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "semantic-timings-"));
+  for (const run of nightly.workflow_runs ?? []) {
+    const artifacts = JSON.parse(gh(["api", `repos/${repository}/actions/runs/${run.id}/artifacts?per_page=100`]));
+    const timing = (artifacts.artifacts ?? []).find((artifact) => !artifact.expired &&
+      artifact.name.startsWith(`semantic-timings-${run.id}-`));
+    if (!timing) continue;
+    gh(["run", "download", String(run.id), "--repo", repository, "--name", timing.name,
+      "--dir", path.join(directory, String(run.id))]);
+  }
+  return directory;
+}
+
+function reportBudgetToGithub(manifest, options) {
+  const repository = process.env.GITHUB_REPOSITORY;
+  if (!/^[\w.-]+\/[\w.-]+$/u.test(repository ?? "")) throw new Error("GITHUB_REPOSITORY is required.");
+  const documents = loadTimings(downloadNightlyTimings(repository, options.runs));
+  const over = overBudget(documents, {gateIds: semanticGateIds(manifest), runs: options.runs, limitMs: options.limitMs});
+  const issues = JSON.parse(gh(["api", `repos/${repository}/issues?state=open&creator=github-actions%5Bbot%5D&per_page=100`]));
+  const openIssue = issues.find((issue) => issue.title === BUDGET_ISSUE_TITLE && !issue.pull_request) ?? null;
+  const decision = decideBudgetIssue({body: renderBudgetIssue(over, options), openIssue});
+  if (decision.action === "open") {
+    gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${decision.title}`, "-F", "body=@-"], decision.body);
+  } else if (decision.action === "update") {
+    gh(["api", "-X", "PATCH", `repos/${repository}/issues/${decision.issue}`, "-F", "body=@-"], decision.body);
+  } else if (decision.action === "close") {
+    gh(["api", "-X", "POST", `repos/${repository}/issues/${decision.issue}/comments`, "-F", "body=@-"],
+      `Every semantic gate is back within ${seconds(options.limitMs)} s at p95 over the last ${options.runs} nightly runs.`);
+    gh(["api", "-X", "PATCH", `repos/${repository}/issues/${decision.issue}`, "-f", "state=closed", "-f", "state_reason=completed"]);
+  }
+  console.log(`Semantic gate budget: ${documents.length} nightly timing file(s), ${over.length} over budget; issue ${decision.action}.`);
+}
+
 function loadTimings(dir) {
   const files = [];
   const walk = (current) => {
@@ -160,6 +223,10 @@ function main(argv) {
     const checks = gateChecks(manifest, options);
     if (options.json) process.stdout.write(`${JSON.stringify(checks, null, 2)}\n`);
     else for (const check of checks) console.log(`${check.id.padEnd(46)} ${check.level}`);
+    return 0;
+  }
+  if (options.command === "budget" && options.github) {
+    reportBudgetToGithub(manifest, options);
     return 0;
   }
   if (options.command === "budget") {

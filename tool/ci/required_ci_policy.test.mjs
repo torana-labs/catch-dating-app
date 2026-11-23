@@ -32,7 +32,7 @@ const dependencies = [...required.matchAll(/^      - ([a-z-]+)$/gmu)].map((match
 const graph = JSON.parse(fs.readFileSync(path.join(root, "tool/harness/component_graph.json"), "utf8"));
 const successfulNeeds = () => {
   const needs = Object.fromEntries(dependencies.map((job) =>
-    [job, {result: ["plan", "source-preflight", ...gatingLanes].includes(job) ? "success" : "skipped"}]));
+    [job, {result: ["plan", "source-preflight", ...gatingLanes, "semantic-checks"].includes(job) ? "success" : "skipped"}]));
   needs.plan.outputs = Object.fromEntries(graph.targets.map(target => [target, "false"]));
   return needs;
 };
@@ -52,7 +52,7 @@ function failed(result) {
 }
 
 test("Required CI retains every automated dependency without the human source gate", () => {
-  assert.deepEqual(dependencies, ["plan", "source-preflight", ...gatingLanes]);
+  assert.deepEqual(dependencies, ["plan", "source-preflight", ...gatingLanes, "semantic-checks"]);
   assert.doesNotMatch(ci, /backend-review|Backend source review|BACKEND_REVIEW_REQUIRED/u);
   passed(run("Require every selected lane"));
   const needs = successfulNeeds();
@@ -188,4 +188,53 @@ test("Required CI accepts merge-queue-proven lanes only when this source's queue
     broken["source-preflight"].result = result;
     failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(broken), QUEUE_RUN: "39822205436"}));
   }
+});
+
+test("the semantic gates block every merge-queue entry, the nightly and an unproven main push, and only report on a pull request", () => {
+  const job = ci.slice(ci.indexOf("\n  semantic-checks:\n"), ci.indexOf("\n  required:\n"));
+  assert.match(job, /name: Semantic checks\n/u);
+  assert.match(job, /needs: \[plan\]\n/u);
+  assert.match(job, /runs-on: ubuntu-24\.04\n/u);
+  // Every queue entry, the nightly, a non-draft pull request and a main push
+  // without queue proof; never plan-selected.
+  assert.match(job, /producer_attempt == format\('\{0\}', github\.run_attempt\)/u);
+  assert.match(job, /github\.event_name == 'merge_group' \|\| github\.event_name == 'schedule'/u);
+  assert.match(job, /github\.event_name == 'pull_request' && !github\.event\.pull_request\.draft/u);
+  assert.match(job, /github\.event_name == 'push' && !needs\.plan\.outputs\.queue_verified_run/u);
+  assert.doesNotMatch(job, /needs\.plan\.outputs\.(?!producer_attempt|queue_verified_run)/u);
+  assert.match(job, /continue-on-error: \$\{\{ github\.event_name == 'pull_request' \}\}/u);
+  assert.match(job, /node tool\/ci\/semantic_gates\.mjs run --candidates --timings build\/ci\/semantic-timings\.json/u);
+  assert.match(job, /fetch-depth: 0/u);
+  // Every setup a gate may declare (tool/lib/semantic_gates.mjs admits no
+  // Flutter or browser): Node, root and Functions dependencies, and ripgrep.
+  for (const step of [/- run: npm ci\n/u, /- run: npm --prefix functions ci --ignore-scripts\n/u,
+    /uses: \.\/\.github\/actions\/install-ripgrep\n/u, /uses: \.\/\.github\/actions\/generate-contracts\n/u]) {
+    assert.match(job, step);
+  }
+
+  const withGate = (result, env) => {
+    const needs = successfulNeeds();
+    needs["semantic-checks"].result = result;
+    return {NEEDS_JSON: JSON.stringify(needs), ...env};
+  };
+  const blocking = {
+    "merge-queue entry": {EVENT_NAME: "merge_group"},
+    "nightly": {EVENT_NAME: "schedule"},
+    "main push with no queue proof": {EVENT_NAME: "push", GITHUB_REF: "refs/heads/main", QUEUE_RUN: ""},
+  };
+  for (const [label, env] of Object.entries(blocking)) {
+    passed(run("Require every selected lane", withGate("success", env)), `${label}: passing gates`);
+    // A failed gate fails Required CI (so a main push or nightly opens Main CI
+    // alert), and a skipped job (a wrong if:) cannot pass either.
+    failed(run("Require every selected lane", withGate("failure", env)), `${label}: failed gates`);
+    failed(run("Require every selected lane", withGate("skipped", env)), `${label}: skipped gates`);
+  }
+  // A main push the merge queue proved skips the job: the queue run already
+  // passed these gates on this exact commit.
+  passed(run("Require every selected lane",
+    withGate("skipped", {EVENT_NAME: "push", GITHUB_REF: "refs/heads/main", QUEUE_RUN: "123456"})));
+  // On a pull request the job continues on error, so its need reads success
+  // even when a gate fails; a skipped draft run passes too.
+  passed(run("Require every selected lane", withGate("success", {})));
+  passed(run("Require every selected lane", withGate("skipped", {})));
 });
