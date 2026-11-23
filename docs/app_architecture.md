@@ -569,8 +569,9 @@ a time, so every legacy screen moves as it is, with no behavior change:
   its shell; what both apps draw around them (the app root, bootstraps, router
   refresh and redirect, shell chrome) goes to `lib/pages/frame/`, and
   `app_deep_links.dart` to `packages/platform/lib/routing/`. The role-selected
-  `goRouterProvider` goes, so `lib/` cannot build either router. Each router
-  declares its own `GoRoute`s for the pages both apps mount.
+  router provider is already gone (each app's root passes its own), so once
+  the routers move `lib/` cannot build either. Each router declares its own
+  `GoRoute`s for the pages both apps mount.
   `tool/ui_capture/check_route_inventory.mjs` reads every file in its
   `canonicalRouterFiles`, each as its own graph, and
   `test/routing/router_topology_test.dart` holds both routers' routes against
