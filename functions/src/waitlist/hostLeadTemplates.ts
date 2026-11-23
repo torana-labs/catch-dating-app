@@ -58,15 +58,18 @@ export const HOST_LEAD_WELCOME_CONSENT_VERSIONS: ReadonlySet<string> =
   new Set(["playbook-lead-whatsapp-v2"]);
 /**
  * The Meta lead forms (form id to consent version) whose wording covers a
- * WhatsApp message before the person presses Submit: "We'll reply on
- * WhatsApp at the number you gave." (tool/ads/meta_campaigns.json, form
- * "Catch Host | Organisers | v3" and later). Forms before v3 said it only on
- * their thank-you screen, after Submit, so they are never listed. A lead
+ * WhatsApp message before the person presses Submit: the disclaimer "We'll
+ * reply on WhatsApp / At the phone number you gave." (consentTitle and
+ * consentLine in tool/ads/meta_campaigns.json). Forms before v3 said it only
+ * on their thank-you screen, after Submit, so they are never listed. A lead
  * records its form id (metaLead.formId); add a new form's id here once it is
  * created and still carries the line.
  */
 export const META_LEAD_FORM_WHATSAPP_CONSENT: ReadonlyMap<string, string> =
-  new Map<string, string>([]);
+  new Map<string, string>([
+    // "Catch Host | Organisers | v3"
+    ["1490757942994590", "meta-leadform-whatsapp-v1"],
+  ]);
 /**
  * Website host enquiries that get the welcome. Not app_link (it gets the app
  * link), walkthrough (a request for a time, which staff answer), referral or
