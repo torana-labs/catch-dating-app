@@ -1,16 +1,16 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_membership_receivers.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final fixtures =
       jsonDecode(
-            File(
+            repoFile(
               'test/event_rehearsal/fixtures/staff_reviews.json',
             ).readAsStringSync(),
           )

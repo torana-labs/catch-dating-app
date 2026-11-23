@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as image;
@@ -13,7 +13,7 @@ void main() {
     const directory =
         'apps/host/ios/Runner/Assets.xcassets/LaunchBackground.imageset';
     final contents =
-        jsonDecode(File('$directory/Contents.json').readAsStringSync())
+        jsonDecode(repoFile('$directory/Contents.json').readAsStringSync())
             as Map<String, dynamic>;
     for (final item in contents['images'] as List<dynamic>) {
       final entry = item as Map<String, dynamic>;
@@ -27,7 +27,7 @@ void main() {
           .extension<CatchTokens>()!
           .bg;
       final bitmap = image.decodePng(
-        File('$directory/${entry['filename']}').readAsBytesSync(),
+        repoFile('$directory/${entry['filename']}').readAsBytesSync(),
       )!;
       final pixel = bitmap.getPixel(0, 0);
       expect(pixel.a, 255);
@@ -39,7 +39,7 @@ void main() {
 
   test('Host native launch matches the shared safe-area reading lane', () {
     final document = XmlDocument.parse(
-      File(
+      repoFile(
         'apps/host/ios/Runner/Base.lproj/LaunchScreen.storyboard',
       ).readAsStringSync(),
     );
@@ -83,7 +83,7 @@ void main() {
   test(
     'Host wordmarks use the locked Archivo axes and singular product name',
     () {
-      final generator = File(
+      final generator = repoFile(
         'tool/branding/generate_catch_icon.swift',
       ).readAsStringSync();
 
@@ -108,7 +108,7 @@ void main() {
       'assets/branding/catch_host_splash_mark_light.png',
       'assets/branding/catch_host_splash_mark_dark.png',
     ]) {
-      final decoded = image.decodePng(File(path).readAsBytesSync());
+      final decoded = image.decodePng(repoFile(path).readAsBytesSync());
       expect(decoded, isNotNull, reason: path);
       expect(decoded!.width, 1024, reason: path);
       expect(decoded.height, 1024, reason: path);
@@ -124,7 +124,7 @@ void main() {
   test(
     'Host installable target receives generated icons and splash assets',
     () {
-      final manifest = File(
+      final manifest = repoFile(
         'tool/branding/native_branding.generated.json',
       ).readAsStringSync();
       expect(
@@ -191,7 +191,7 @@ void main() {
 }
 
 void _expectPngSize(String path, int expected) {
-  final bytes = Uint8List.fromList(File(path).readAsBytesSync());
+  final bytes = Uint8List.fromList(repoFile(path).readAsBytesSync());
   final decoded = image.decodePng(bytes);
   expect(decoded, isNotNull, reason: path);
   expect(decoded!.width, expected, reason: path);

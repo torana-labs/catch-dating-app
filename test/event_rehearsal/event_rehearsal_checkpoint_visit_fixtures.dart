@@ -1,16 +1,16 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement_command.dart';
+import 'package:catch_test_support/repo_file.dart';
 
 import 'event_rehearsal_movement_fixtures.dart';
 
 Map<String, Object?> checkpointVisitBootstrap(String name) {
   final samples =
       jsonDecode(
-            File(
+            repoFile(
               'test/event_rehearsal/fixtures/checkpoint_visits.json',
             ).readAsStringSync(),
           )

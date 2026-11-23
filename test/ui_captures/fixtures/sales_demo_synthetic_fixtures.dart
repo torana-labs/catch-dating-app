@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
@@ -13,6 +12,7 @@ import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_test_support/repo_file.dart';
 
 import '../../events/events_test_helpers.dart' as event_test;
 import '../../organizers/organizers_test_helpers.dart' as organizer_test;
@@ -465,7 +465,7 @@ class SalesDemoSyntheticFixtures {
   }) {
     final personas = <String, _SalesDemoPersona>{};
     for (final path in paths) {
-      final decoded = jsonDecode(File(path).readAsStringSync());
+      final decoded = jsonDecode(repoFile(path).readAsStringSync());
       final root = _stringMap(decoded, context: path);
       if (root['schemaVersion'] != 1 || root['personas'] is! List) {
         throw StateError('Expected a sales demo persona catalog in $path.');

@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../events/events_test_helpers.dart' as event_test;
@@ -43,7 +43,7 @@ void main() {
     test('the contract and the model name the same fields', () {
       final schema =
           jsonDecode(
-                File(
+                repoFile(
                   'contracts/embedded/event_organizer_summary.schema.json',
                 ).readAsStringSync(),
               )

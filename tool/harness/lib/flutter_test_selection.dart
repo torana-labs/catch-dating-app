@@ -9,6 +9,8 @@ import 'flutter_test_shards.dart';
 
 export 'flutter_test_shards.dart';
 
+part 'flutter_test_inputs.dart';
+
 bool _testFile(String name) => testPackage(name) != null;
 
 const _componentGraph = 'tool/harness/component_graph.json';
@@ -205,167 +207,6 @@ Map<String, Object> selectFlutterTests({
   }
 }
 
-const _globalInputNames = {
-  '.metadata',
-  'analysis_options.yaml',
-  'build.yaml',
-  'dart_test.yaml',
-  'l10n.yaml',
-  'pubspec.lock',
-  'pubspec.yaml',
-  'pubspec_overrides.yaml',
-};
-
-// The Flutter CI job pins the SDK and runs the selected files.
-const _globalInputPaths = {
-  '.github/workflows/flutter-ci.yml',
-  'tool/ci/toolchain.env',
-};
-// The schema generator's outputs aren't tracked. Without its rendered output
-// at both commits, these reach every test that imports one, and no import
-// graph can show which. With it, they are probe-only like the rest of
-// contracts/ and tool/, and the changed outputs need import proof instead.
-bool _generatedContractInput(String name) =>
-    (name.startsWith('contracts/') && name.endsWith('.json')) ||
-    const {
-      'tool/contracts/generate_schema_contracts.mjs',
-      'tool/contracts/lib/schema_specs.mjs',
-      'tool/contracts/schema_spec_exceptions.json',
-      'tool/contracts/schema_spec_order.json',
-    }.contains(name);
-
-bool _untrackedGeneratedDart(String name) =>
-    name.startsWith('packages/platform/lib/schema_contracts/generated/') ||
-    RegExp(r'^lib/contexts/[^/]+/data/generated/').hasMatch(name);
-
-const _globalInputDirectories = [
-  '.github/actions/load-toolchain/',
-  '.github/actions/setup-flutter/',
-];
-
-bool _globalTestInput(String name) =>
-    _globalInputNames.contains(name.split('/').last) ||
-    name.endsWith('.arb') ||
-    _globalInputPaths.contains(name) ||
-    _globalInputDirectories.any(name.startsWith);
-
-// Surfaces outside the packages the shards test: backend, web, design, docs,
-// tooling, infrastructure and CI sources, the JavaScript-only packages, other
-// Flutter packages, and golden/integration suites with their own gates. A
-// shard test reaches a Dart file here through the import graph, or reads a
-// file here from disk as a filesystem probe. Any other path, including test
-// fixtures, assets, native folders and new top-level roots, still needs
-// import proof or keeps the full suite.
-const _probeOnlyDirectories = [
-  '.github/',
-  'admin/',
-  'analytics/',
-  'artifacts/',
-  'contracts/',
-  'copy/',
-  'design/',
-  'docs/',
-  'extensions/',
-  'fastlane/',
-  'firebase/',
-  'functions/',
-  'infra/',
-  'integration_test/',
-  'operations/',
-  'packages/brand/',
-  // The package job ("Kernel, Catch UI & Widgetbook package tests") owns these
-  // suites, and the macOS goldens lane owns packages/catch_ui/test/goldens.
-  // A root test that imports one still reaches it through the import graph.
-  'packages/catch_ui/test/',
-  'packages/kernel/test/',
-  'packages/web-config/',
-  'packages/web-ui/',
-  'test/goldens/',
-  'test/integration/',
-  'tool/',
-  'website/',
-  'widgetbook/',
-];
-const _probeOnlyFiles = {
-  '.editorconfig',
-  '.env.example',
-  '.firebaserc',
-  '.gitignore',
-  'Gemfile',
-  'Gemfile.lock',
-  'firebase.json',
-  'firestore.indexes.json',
-  'firestore.rules',
-  'package-lock.json',
-  'package.json',
-  'storage.rules',
-};
-
-bool _probeOnlyInput(String name) =>
-    (name.endsWith('.md') &&
-        !RegExp(r'(^|/)(assets|test|integration_test)/').hasMatch(name)) ||
-    _probeOnlyFiles.contains(name) ||
-    _probeOnlyDirectories.any(name.startsWith) ||
-    _appProbeOnly(name);
-
-// An app package's lib/ and test/ are sources the shards test, so they need
-// import proof like the root package's. Its native folders, integration
-// suites and goldens have their own gates.
-bool _appProbeOnly(String name) {
-  final rest = RegExp(r'^apps/[^/]+/(.*)$').firstMatch(name)?.group(1);
-  return rest != null &&
-      (rest.startsWith('test/goldens/') ||
-          !(rest.startsWith('lib/') || rest.startsWith('test/')));
-}
-
-/// Whether any manifest's top-level `flutter:` section may bundle [name] as
-/// an asset, font or shader. This scans tokens conservatively rather than
-/// parsing YAML: every value is a possible file or directory relative to its
-/// manifest, and escapes, anchors or aliases make the manifest opaque.
-bool _possiblyBundled(String name, Map<String, String> tree) {
-  for (final MapEntry(key: manifest, value: source) in tree.entries) {
-    if (manifest != 'pubspec.yaml' && !manifest.endsWith('/pubspec.yaml')) {
-      continue;
-    }
-    final root = manifest.substring(0, manifest.length - 'pubspec.yaml'.length);
-    final section = StringBuffer();
-    var inside = false;
-    for (final line in source.split('\n')) {
-      if (line.isNotEmpty && !line.startsWith(RegExp(r'[\s#]'))) {
-        inside = line.startsWith('flutter:');
-        if (inside) section.writeln(line.substring('flutter:'.length));
-      } else if (inside) {
-        section.writeln(line);
-      }
-    }
-    final text = section.toString().replaceAll(
-      RegExp(r'(^|\s)#.*$', multiLine: true),
-      ' ',
-    );
-    if (RegExp(r'[\\*&]').hasMatch(text)) return true;
-    tokens:
-    for (var token in text.split(RegExp(r'''[\s,\[\]{}'"]+'''))) {
-      if (token.startsWith('-')) token = token.substring(1);
-      if (token.isEmpty || token.endsWith(':')) continue;
-      if (token.startsWith('/')) return true;
-      final segments = <String>[];
-      for (final segment in '$root$token'.split('/')) {
-        if (segment == '..') {
-          if (segments.isEmpty) continue tokens; // Outside the repository.
-          segments.removeLast();
-        } else if (segment.isNotEmpty && segment != '.') {
-          segments.add(segment);
-        }
-      }
-      final target = segments.join('/');
-      if (target.isEmpty || name == target || name.startsWith('$target/')) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 class _Imports {
   _Imports(this.files, {this.opaqueGenerated = true, Set<String>? paths})
     : paths = paths ?? files.keys.toSet() {
@@ -402,27 +243,32 @@ class _Imports {
   /// Every tracked path, against which declared reads must resolve.
   final Set<String> paths;
 
-  /// The bounded reads of each `dart:io` file reached so far, as repository
-  /// paths.
+  /// The bounded reads of each file-reading file reached so far, as
+  /// repository paths.
   final readsOf = <String, Set<String>>{};
 
   /// The working directory of the test run whose file reads each of
-  /// [readsOf] was bounded for: its package directory ([readsPackage]).
+  /// [readsOf] was bounded for: its package directory ([readsPackage]), or
+  /// [anyReadsPackage] when it reads only repository paths.
   final readsPackageOf = <String, String>{};
 
-  /// The paths the `dart:io` files in [closure] can read when [package]'s
-  /// tests run them.
+  /// The paths the file-reading files in [closure] can read when
+  /// [package]'s tests run them.
   Set<String> reads(Set<String> closure, String package) => {
     for (final name in closure)
-      if (readsPackageOf[name] == package) ...?readsOf[name],
+      if (_readsFrom(name, package)) ...?readsOf[name],
   };
 
-  /// Whether a `dart:io` file in [closure] had its relative reads bounded for
-  /// another package's working directory, so [package]'s tests would read
-  /// other paths: such a test is a filesystem probe.
+  /// Whether a file-reading file in [closure] had its relative reads bounded
+  /// for another package's working directory, so [package]'s tests would
+  /// read other paths: such a test is a filesystem probe.
   bool readsElsewhere(Set<String> closure, String package) => closure.any(
-    (name) => readsOf.containsKey(name) && readsPackageOf[name] != package,
+    (name) => readsOf.containsKey(name) && !_readsFrom(name, package),
   );
+
+  bool _readsFrom(String name, String package) =>
+      readsPackageOf[name] == package ||
+      readsPackageOf[name] == anyReadsPackage;
 
   Set<String> closure(String start) {
     final visited = <String>{};
@@ -468,32 +314,15 @@ class _Imports {
       throw StateError('Cannot parse Dart module: $name');
     }
     final dependencies = <String>{};
+    // Whether the file can read files: through dart:io, or by repository
+    // path through repoFile and repoDirectory.
+    var readsFiles = false;
     void add(StringLiteral literal) {
       final value = literal.stringValue;
       if (value == null) throw StateError('Nonliteral Dart URI in $name');
       final uri = Uri.parse(value);
       if (uri.scheme == 'dart') {
-        final package = readsPackage(name);
-        if (value == 'dart:io' && package != null) {
-          // Relative paths resolve against the test run's working directory,
-          // its package directory.
-          final prefix = package == '.' ? '' : '$package/';
-          final bounded = fileReads(
-            name: name,
-            source: source,
-            unit: parsed.unit,
-            paths: {
-              for (final path in paths)
-                if (path.startsWith(prefix)) path.substring(prefix.length),
-            },
-          );
-          if (bounded == null) {
-            dependencies.add(fileSystemProbe);
-          } else {
-            readsOf[name] = {for (final read in bounded) '$prefix$read'};
-            readsPackageOf[name] = package;
-          }
-        }
+        if (value == 'dart:io') readsFiles = true;
         return;
       }
       String target;
@@ -515,6 +344,7 @@ class _Imports {
         if (opaqueGenerated && _untrackedGeneratedDart(target)) return;
         throw StateError('Missing local Dart module: $target');
       }
+      if (target == repoFileLibrary) readsFiles = true;
       dependencies.add(target);
     }
 
@@ -526,6 +356,29 @@ class _Imports {
             add(conditional.uri);
           }
         }
+      }
+    }
+    final package = readsPackage(name);
+    if (readsFiles && package != null && name != repoFileLibrary) {
+      // Relative paths resolve against the test run's working directory, its
+      // package directory; a shared helper's working directory is unknown.
+      final bounded = fileReads(
+        name: name,
+        source: source,
+        unit: parsed.unit,
+        paths: paths,
+        workingDirectory: switch (package) {
+          '.' => '',
+          anyReadsPackage => null,
+          _ => package,
+        },
+      );
+      if (bounded == null) {
+        dependencies.add(fileSystemProbe);
+      } else {
+        readsOf[name] = bounded.paths;
+        // Repository-path reads are the same from every package directory.
+        readsPackageOf[name] = bounded.relative ? package : anyReadsPackage;
       }
     }
     return dependencies;

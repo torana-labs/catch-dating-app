@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/theme/activity_palette.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -9,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// derives them with a port of [ActivitySwatch]'s HSL math, so this pins the two.
 void main() {
   test('generated website activity swatches match the app palette', () {
-    final css = File(
+    final css = repoFile(
       'packages/web-config/generated/catch-tokens.css',
     ).readAsStringSync();
     String webHex(ActivityKind kind, String role) {
