@@ -940,7 +940,7 @@
         "contracts/firestore/host_payment_accounts.schema.json",
         "contracts/firestore/host_profiles.schema.json",
         "contracts/firestore/organizer_team_memberships.schema.json",
-        "contracts/firestore/organizer_communication_preferences.schema.json",
+        "contracts/firestore/contact_permissions.schema.json",
         "contracts/storage/organizer_logo_images.schema.json",
         "contracts/storage/organizer_photos.schema.json"
       ],
