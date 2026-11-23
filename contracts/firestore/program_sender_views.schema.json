@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_sender_views.schema.json",
+  "title": "ProgramSenderViewDocument",
+  "description": "Server-maintained, display-safe WhatsApp sender of one programme, at programSenderViews/{programId}: the number the programme inbox header, the assistant settings and new planned messages show, exactly as listProgramWhatsappThreads, getProgramAssistantSettings and listOrganizerMoments resolved it (the programme's bound connection, else the organiser's first active WhatsApp sender by id). Written by triggers on organizerPrograms and organizerSenderConnections. Holds the connection id, display number, verified business name and status only: never the WABA, phone number or business ids, the secret version reference, test message ids or recipient hashes, the connecting account, quality or limit tiers, and never identity, permission or mutation authority (sends still validate the connection on the server). Readable by the programme owner and the communications duty (coordinators hold it).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programSenderViews",
+  "x-firestore-path": "programSenderViews/{programId}",
+  "x-document-id-field": "programId",
+  "x-owner": "Programme read model projector (programWhatsapp settingViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "sender",
+    "organizerActiveConnectionId",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "sender": {
+      "$ref": "../callable_responses/program_assistant_settings_response.schema.json#/properties/sender",
+      "description": "The programme's sender, or null when it has neither a bound number nor an active organiser sender."
+    },
+    "organizerActiveConnectionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The organiser's first active WhatsApp sender by id, the one listOrganizerMoments offered new planned messages; null when none is active."
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

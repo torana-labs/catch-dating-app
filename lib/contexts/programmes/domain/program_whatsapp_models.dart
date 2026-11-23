@@ -391,7 +391,9 @@ class ProgramAssistantStaff {
   final String? displayName;
 }
 
-/// `getProgramAssistantSettings`.
+/// One programme's assistant settings, its WhatsApp number and the staff
+/// who can take escalations, as `getProgramAssistantSettings` returned them
+/// and the settings and sender read models now do.
 class ProgramAssistantSettings {
   const ProgramAssistantSettings({
     required this.programId,
@@ -462,6 +464,56 @@ class ProgramAssistantSettings {
   final bool usesDefaults;
   final ProgramWhatsappSender? sender;
   final List<ProgramAssistantStaff> staff;
+}
+
+/// The assistant settings from `programAssistantSettingViews` and the
+/// sender from `programSenderViews` (#2306) at [now], in the shape
+/// `getProgramAssistantSettings` returned: a staff grant is listed only
+/// before its expiry. A missing sender view means no sender.
+ProgramAssistantSettings programAssistantSettingsFromViews(
+  Map<Object?, Object?> settings,
+  Map<Object?, Object?>? sender,
+  DateTime now,
+) => ProgramAssistantSettings.fromCallableData({
+  ...settings,
+  'sender': sender?['sender'],
+  'staff': [
+    for (final row in mapList(settings['staff'], 'staff'))
+      if (requiredInt(row, 'expiresAtMillis') > now.millisecondsSinceEpoch) row,
+  ],
+});
+
+/// When the settings view's staff list next changes by time alone: the
+/// soonest grant expiry after [now], or null.
+DateTime? nextAssistantStaffExpiry(
+  Map<Object?, Object?> settings,
+  DateTime now,
+) {
+  DateTime? next;
+  for (final row in mapList(settings['staff'], 'staff')) {
+    final at = DateTime.fromMillisecondsSinceEpoch(
+      requiredInt(row, 'expiresAtMillis'),
+    );
+    if (at.isAfter(now) && (next == null || at.isBefore(next))) next = at;
+  }
+  return next;
+}
+
+/// The sender in a `programSenderViews` document, or null.
+ProgramWhatsappSender? programWhatsappSenderFromView(
+  Map<Object?, Object?>? view,
+) {
+  final sender = view?['sender'];
+  return sender == null
+      ? null
+      : ProgramWhatsappSender.fromMap(requiredMap(sender, 'sender'));
+}
+
+/// The sender new planned messages send through, as `listOrganizerMoments`
+/// offered it: the organiser's first active WhatsApp sender, or null.
+String? programMessageSenderFromView(Map<Object?, Object?>? view) {
+  final id = view?['organizerActiveConnectionId'];
+  return id is String && id.isNotEmpty ? id : null;
 }
 
 /// A change to the assistant settings; null fields keep their value.

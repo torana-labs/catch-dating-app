@@ -2753,6 +2753,24 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // A programme's display-safe WhatsApp sender (#2306): the connection id,
+    // display number, verified name and status the inbox header, the
+    // assistant settings and new planned messages show. The trigger never
+    // copies provider ids, the secret reference or test evidence. Read by id
+    // by the owner and the communications duty (coordinators hold it).
+    match /programSenderViews/{programId} {
+      allow get: if hasProgramDuty(programId, 'communications');
+      allow list, write: if false;
+    }
+
+    // A programme's assistant settings (#2306), with each escalation grant's
+    // expiry. Read by id by the owner and the coordinator duty, as
+    // requireSettingsAccess admits them; saving stays a command.
+    match /programAssistantSettingViews/{programId} {
+      allow get: if programFullReach(programId);
+      allow list, write: if false;
+    }
+
     // The programme guest directory (#2306): one row per guest (its fields
     // and function rows), household and group, listed by a query naming the
     // programme and the kind. The trigger resolves names, phones and emails

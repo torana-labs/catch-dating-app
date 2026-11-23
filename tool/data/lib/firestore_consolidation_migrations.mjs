@@ -607,6 +607,20 @@ function guestDirectoryStep(source, kind) {
   };
 }
 
+let programSettingViewModule = null;
+function settingViews() {
+  try {
+    programSettingViewModule ??= createFunctionsRequire()(
+      "./lib/programs/programWhatsapp/settingViews.js");
+  } catch (error) {
+    throw new Error(
+      "The program-setting-views migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return programSettingViewModule;
+}
+
 let programArrivalViewModule = null;
 function functionsProgramArrivalViews() {
   try {
@@ -2051,6 +2065,41 @@ export const MIGRATIONS = [
               !validId(data.uid)) return null;
           return programAccessViewRow(db, data.programId, data.uid);
         },
+      },
+    ],
+  },
+  {
+    name: "program-setting-views",
+    description:
+      "The programme inbox header, the planned-message sender and the " +
+      "assistant settings read programSenderViews and " +
+      "programAssistantSettingViews through listeners (#2306) instead of the " +
+      "sender reads of listProgramWhatsappThreads and listOrganizerMoments " +
+      "and the getProgramAssistantSettings callable. Every programme without " +
+      "views gets them: its display-safe sender (the bound connection, else " +
+      "the organiser's first active WhatsApp sender, and that first active " +
+      "sender's id), never provider ids, the secret reference or test " +
+      "evidence; and its assistant settings (the stored ones, else the " +
+      "defaults) with each active escalation grant's expiry. Existing views " +
+      "are never replaced; programmes, connections, settings and grants are " +
+      "never changed. Build Functions first.",
+    steps: [
+      {
+        source: "organizerPrograms",
+        target: "programSenderViews",
+        skipReason: "no organizer, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "programSenderViews", id,
+          (tx) => settingViews().readProgramSenderView(db, tx, id)),
+      },
+      {
+        source: "organizerPrograms",
+        target: "programAssistantSettingViews",
+        skipReason: "no organizer, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db,
+          "programAssistantSettingViews", id,
+          (tx) => settingViews().readProgramAssistantSettingView(db, tx, id)),
       },
     ],
   },
