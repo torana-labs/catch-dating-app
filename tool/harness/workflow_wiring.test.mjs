@@ -548,7 +548,8 @@ test("resolved composition gate owns its authorities and both split suites", () 
     "tool/ui_capture/check_route_inventory.mjs",
     "tool/ui_capture/route_inventory.json",
     "tool/design/screen_top_bar_contracts.json",
-    "lib/routing/go_router.dart",
+    "lib/routing/consumer_router.dart",
+    "lib/routing/host_router.dart",
     "lib/**",
     "apps/host/lib/**",
     "apps/consumer/lib/**",
@@ -1891,7 +1892,12 @@ test("complete source preflight runs beside the lanes and Required CI demands it
   // Preflight is off the critical path: every lane starts from the plan alone,
   // and no lane reads preflight's result or outputs.
   const jobs = ci.slice(ci.indexOf("\njobs:\n")).split(/\n  (?=[a-z][a-z0-9-]*:\n)/u).slice(1);
-  const lanes = jobs.filter(job => !/^(plan|source-preflight|required):/u.test(job));
+  // The proof-reuse shadow comparison waits on the lanes it compares; it is
+  // off every gate (continue-on-error, not in Required CI) and never reads preflight.
+  const shadow = jobs.find(job => job.startsWith("proof-reuse-shadow:"));
+  assert.ok(shadow, "proof-reuse-shadow job");
+  assert.doesNotMatch(shadow, /source-preflight/u);
+  const lanes = jobs.filter(job => !/^(plan|source-preflight|required|proof-reuse-shadow):/u.test(job));
   assert.ok(lanes.length >= 12, `found ${lanes.length} lanes`);
   for (const job of lanes) {
     const id = job.split(":")[0];

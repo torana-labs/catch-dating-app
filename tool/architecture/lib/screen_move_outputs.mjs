@@ -5,6 +5,12 @@ import fs from "node:fs";
 import path from "node:path";
 import {execFileSync, spawnSync} from "node:child_process";
 import {carriedScreensPath} from "./screen_move_rewrite.mjs";
+import {
+  newRootFindings,
+  registryLegacyMembers,
+  registryPath,
+  scanLibrary,
+} from "../../design/check_library_shims.mjs";
 
 export const inventoryOutputs = ["tool/ui_capture/route_inventory.json", "docs/widget_catalog.md"];
 const hostFeaturesPath = "design/features/host_feature_responsibilities.json";
@@ -150,13 +156,21 @@ export function updateCarriedScreens({root, moves}) {
 }
 
 // Drops every entry the analyzer reports as catch_arch_stale_carry: the file
-// already meets the new-root rules.
-export function dropStaleCarries({root, findings}) {
+// already meets the new-root rules. catch_arch_stale_carry judges the lints
+// alone, and tool/design/check_library_shims.mjs also skips carried files, so
+// a library stays carried, with its parts, while that gate would flag any of
+// its files (a legacy or deprecated catch_ui symbol, or a silenced Catch lint).
+export function dropStaleCarries({root, findings, shimFlagged = (files) => shimFlaggedFiles(root, files)}) {
   const json = readCarried(root);
   if (json == null) return [];
-  const stale = new Set(findings
+  const reported = new Set(findings
     .filter((finding) => /catch_arch_stale_carry$/iu.test(finding.code))
     .map((finding) => finding.file));
+  const candidates = json.carried.map((entry) => entry.path).filter((file) => reported.has(file));
+  const flagged = shimFlagged(candidates);
+  const blockedLibraries = new Set(candidates.filter((file) => flagged.has(file))
+    .map((file) => libraryOfFile(root, file)));
+  const stale = new Set(candidates.filter((file) => !blockedLibraries.has(libraryOfFile(root, file))));
   const dropped = json.carried.filter((entry) => stale.has(entry.path)).map((entry) => entry.path);
   if (dropped.length > 0) {
     fs.writeFileSync(path.join(root, carriedScreensPath), formatCarried({
@@ -165,6 +179,23 @@ export function dropStaleCarries({root, findings}) {
     }));
   }
   return dropped;
+}
+
+// The files check_library_shims.mjs would report once they are no longer
+// carried. A checkout without catch_ui has nothing to report.
+export function shimFlaggedFiles(root, files) {
+  if (files.length === 0 || readText(root, "packages/catch_ui/lib/catch_ui.dart") == null) return new Set();
+  const read = (file) => readText(root, file) ?? "";
+  const registrySource = readText(root, registryPath);
+  const {deprecated, legacy} = scanLibrary(read, registryLegacyMembers(
+    registrySource == null ? null : JSON.parse(registrySource)));
+  return new Set(files.filter((file) => newRootFindings(read(file), deprecated, legacy).length > 0));
+}
+
+// The library a Dart file belongs to: its `part of` target, or itself.
+function libraryOfFile(root, file) {
+  const partOf = /^part of '([^']+)';/mu.exec(readText(root, file) ?? "");
+  return partOf == null ? file : path.posix.normalize(path.posix.join(path.posix.dirname(file), partOf[1]));
 }
 
 function readText(root, file) {

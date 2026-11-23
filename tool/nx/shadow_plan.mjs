@@ -32,7 +32,7 @@ export const comparedLanes = ["admin", "capture_freshness", "contracts", "docs",
 // files, per-app dependency settings, the lint plugin or the l10n config.
 // shadow_plan.test.mjs checks this against the planner for
 // every tracked file under these roots.
-const queueCaptureRoots = /^(?:lib|test|integration_test|assets|apps\/(?:consumer|host)|packages\/(?:catch_ui|catch_tokens|kernel|l10n|platform))\/|^pubspec\.(?:yaml|lock)$/u;
+const queueCaptureRoots = /^(?:lib|test|integration_test|assets|apps\/(?:consumer|host)|packages\/(?:catch_test_support|catch_ui|catch_tokens|kernel|l10n|platform))\/|^pubspec\.(?:yaml|lock)$/u;
 const queueCaptureExcluded = /\.md$|^apps\/[^/]+\/(?:android|ios|web|macos|linux|windows|assets|firebase)(?:\/|$)|^apps\/[^/]+\/(?:pubspec\.(?:yaml|lock)|\.metadata|analysis_options\.yaml)$|^packages\/l10n\/l10n\.yaml$/u;
 export const isQueueCaptureInput = (file) => queueCaptureRoots.test(file) && !queueCaptureExcluded.test(file);
 

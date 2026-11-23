@@ -569,8 +569,9 @@ a time, so every legacy screen moves as it is, with no behavior change:
   its shell; what both apps draw around them (the app root, bootstraps, router
   refresh and redirect, shell chrome) goes to `lib/pages/frame/`, and
   `app_deep_links.dart` to `packages/platform/lib/routing/`. The role-selected
-  `goRouterProvider` goes, so `lib/` cannot build either router. Each router
-  declares its own `GoRoute`s for the pages both apps mount.
+  router provider is already gone (each app's root passes its own), so once
+  the routers move `lib/` cannot build either. Each router declares its own
+  `GoRoute`s for the pages both apps mount.
   `tool/ui_capture/check_route_inventory.mjs` reads every file in its
   `canonicalRouterFiles`, each as its own graph, and
   `test/routing/router_topology_test.dart` holds both routers' routes against
@@ -671,7 +672,8 @@ all rehearsal collections remains denied.
 
 ### Exhibit ARCH-ROUTER-LIFECYCLE-001: App Router And Integration-Test Lifecycle
 
-`goRouterProvider` owns both its `GoRouter` disposal and a fresh set of
+Each app's router provider (`consumerGoRouterProvider`, `hostGoRouterProvider`)
+owns both its `GoRouter` disposal and a fresh set of
 `GlobalKey<NavigatorState>` instances for that provider-container lifecycle.
 Navigator keys must not be file-level singletons: a disposed app/test container
 must be able to mount a new router without retaining navigation state.
@@ -1199,8 +1201,9 @@ contracts as substring counts.
 The consumer shell and compact Host shell own bottom tab chrome only for
 root-screen screens. The medium and expanded Host shell instead owns persistent
 side navigation. Branch child routes that own their own route chrome or bottom
-affordance must set `parentNavigatorKey: _rootNavigatorKey` in
-`lib/routing/go_router.dart` so compact detail CTAs, chat composers, and
+affordance must set `parentNavigatorKey: keys.root` in their app's router
+(`lib/routing/consumer_router.dart`, `lib/routing/host_router.dart`) so compact
+detail CTAs, chat composers, and
 full-screen actions are not rendered under the floating tab bar. A later
 master-detail adopter may intentionally keep a child selection inside its Host
 branch on medium or expanded layouts, but the route remains the selection
@@ -4158,8 +4161,15 @@ the resolver rather than reproduce suffix or role formulas.
 
 ## Routing And Navigation
 
-Routing remains centralized in `lib/routing/go_router.dart` until the Phase 4
-split moves each app's router into its package. The route inventory reads the
+Each app declares its own route table in `lib/routing/`:
+`consumer_router.dart` (`consumerGoRouterProvider`) and `host_router.dart`
+(`hostGoRouterProvider`, with its Host workspace parts). What both share sits in
+`router_frame.dart` (the refresh bridge, the auth and profile redirect, the
+initial location, the loading route's screen and the shared `state.extra`
+readers) and `shell/shell_chrome.dart` (Firebase Messaging start-up and the
+destination bar and rail). There is no role-selected router: app roots, tests
+and Widgetbook pass an app's router provider to `MyApp(routerProvider:)`. The
+Phase 4 split later moves each router into its app package. The route inventory reads the
 files `canonicalRouterFiles` in `tool/ui_capture/check_route_inventory.mjs`
 lists, and `test/routing/router_topology_test.dart` snapshots both routers'
 routes, so a route change is always a reviewed snapshot change.
@@ -4187,7 +4197,7 @@ Do not reduce the decision to `uid != null` or a crawled/claimed boolean. Auth
 resolution, app role, profile readiness, viewer relationship, organizer
 visibility, effective lifecycle availability, and authority, event
 availability, and capability/runtime evidence remain separate inputs. Every
-consumer route in `go_router.dart` must have
+consumer route in `consumer_router.dart` must have
 exactly one matrix owner; a route hidden from guest tab chrome still needs an
 explicit guest and profile-readiness redirect. Run
 `node tool/run.mjs check design:public-surface-behavior` whenever a covered
@@ -4239,8 +4249,9 @@ boundary rather than distribute one monolith across `part` files.
 source under `lib/`, `apps/*/lib/`, `packages/` and `widgetbook/lib/`. A file above 800 lines states why in a `// size-exemption: <reason>`
 comment in its first 20 lines; no file passes 2,500 lines, exemption or not.
 The reason lives next to the code it excuses, so there is no baseline file to
-refresh. Today's exemptions are the route table in `lib/routing/go_router.dart`
-(the route inventory requires every `GoRoute` there), the `CatchField` facade in
+refresh. Today's exemptions are the Host route table in
+`lib/routing/host_router.dart` (the route inventory requires every Host `GoRoute`
+there), the `CatchField` facade in
 `packages/catch_ui/lib/src/components/catch_field.dart`, and two pre-existing
 monoliths that should be split before they grow further.
 

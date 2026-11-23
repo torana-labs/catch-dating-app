@@ -13,7 +13,10 @@ import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
  * each graph that mounts them; a route's runtime fields come from the first
  * graph that wires it.
  */
-export const canonicalRouterFiles = ["lib/routing/go_router.dart"];
+export const canonicalRouterFiles = [
+  "lib/routing/consumer_router.dart",
+  "lib/routing/host_router.dart",
+];
 const routeContractPath = fromRepo("packages/platform/lib/routing/route_contract.dart");
 const inventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
 const productionDartRoots = ["lib", "packages/platform/lib", "apps/consumer/lib", "apps/host/lib"];

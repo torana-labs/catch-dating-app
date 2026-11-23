@@ -1,6 +1,10 @@
+// The snapshots expectRouterTopology compares sit beside the router tests
+// (TESTS.md, "Filesystem reads").
+// test-selection-reads: test/routing/
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -78,7 +82,7 @@ void expectRouterTopology(GoRouter router, String snapshotPath) {
   final actual = encodeRouteTopology(
     flattenRouteTopology(router.configuration.routes),
   );
-  final snapshot = File(snapshotPath);
+  final snapshot = repoFile(snapshotPath);
   if (Platform.environment[routerTopologyUpdateVariable] != null) {
     snapshot.writeAsStringSync(actual);
     return;

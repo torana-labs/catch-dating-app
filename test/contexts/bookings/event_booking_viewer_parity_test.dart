@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/bookings/domain/event_signup_decision.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_entitlement.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_plan.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Functions owns these booking rules; the app mirrors them to show booking
@@ -13,7 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   final cases =
       jsonDecode(
-            File(
+            repoFile(
               'contracts/parity/event_booking_viewer_cases.json',
             ).readAsStringSync(),
           )

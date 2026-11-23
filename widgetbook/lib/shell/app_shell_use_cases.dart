@@ -5,6 +5,7 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/routing/shell/adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
+import 'package:catch_dating_app/routing/shell/shell_chrome.dart';
 import 'package:catch_dating_app/routing/shell/host_shell_screen.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
@@ -136,6 +137,7 @@ Widget appShellNavigationBarState(BuildContext context) {
     child: AppShellNavigationBar(
       currentIndex: 2,
       unreadCount: 12,
+      items: consumerAppShellNavigationItems(),
       onDestinationSelected: (_) {},
     ),
   );

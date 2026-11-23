@@ -4,6 +4,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:catch_test_support/repo_file.dart';
+
 /// JSON Schema contracts read straight from `contracts/`, bundled the way
 /// `tool/contracts/generate_schema_contracts.mjs` bundles them: local `$ref`s
 /// are inlined, nested `$schema`/`$id` keys dropped, and profile photo policy
@@ -30,7 +32,7 @@ Map<String, Object?> contractSchema(String title) {
 /// `'firestore/events.schema.json'`.
 Map<String, Object?> contractSchemaAt(String source) =>
     _bundled.putIfAbsent(source, () {
-      final file = File('$_contractRoot/$source').absolute.path;
+      final file = repoFile('$_contractRoot/$source').path;
       final schema = _resolveRefs(_readJson(file), file, keepSchemaMeta: true);
       _applyProfilePhotoPolicy(schema);
       return schema! as Map<String, Object?>;
@@ -41,7 +43,7 @@ final _documents = <String, Object?>{};
 
 final Map<String, String> _sourcesByTitle = () {
   final sources = <String, String>{};
-  final root = Directory(_contractRoot);
+  final root = repoDirectory(_contractRoot);
   for (final entity in root.listSync(recursive: true)) {
     if (entity is! File || !entity.path.endsWith('.schema.json')) continue;
     final title = (_readJson(entity.absolute.path)! as Map)['title'];
@@ -142,9 +144,9 @@ void _applyProfilePhotoPolicy(Object? value) {
 
 final int _maxProfilePhotos =
     (_readJson(
-              File(
+              repoFile(
                 '$_contractRoot/catalogs/profile_photo_policy.json',
-              ).absolute.path,
+              ).path,
             )!
             as Map)['maxPhotos']
         as int;

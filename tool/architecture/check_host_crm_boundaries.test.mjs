@@ -272,7 +272,7 @@ test("flags application queue ownership outside Audience", () => {
     routeContractPath: "packages/platform/lib/routing/route_contract.dart",
     routeContractSource:
       "hostApplicationsScreen('/host/customers/applications'",
-    routerPath: "lib/routing/go_router.dart",
+    routerPath: "lib/routing/host_router.dart",
     routerSource: [
       "navigatorKey: keys.hostCustomers",
       "name: Routes.hostApplicationsScreen.name",
@@ -290,10 +290,10 @@ test("shared workspace keeps application routes in the Audience branch", () => {
   const routeContractSource = fs.readFileSync(
     new URL("../../packages/platform/lib/routing/route_contract.dart", import.meta.url), "utf8");
   const routerSource = fs.readFileSync(
-    new URL("../../lib/routing/go_router.dart", import.meta.url), "utf8");
+    new URL("../../lib/routing/host_router.dart", import.meta.url), "utf8");
   const scan = (source) => applicationRouteOwnershipFindings({
     routeContractPath: "packages/platform/lib/routing/route_contract.dart", routeContractSource,
-    routerPath: "lib/routing/go_router.dart", routerSource: source,
+    routerPath: "lib/routing/host_router.dart", routerSource: source,
   });
   assert.deepEqual(scan(routerSource), []);
   for (const name of ["hostApplicationsScreen", "hostApplicationDetailScreen"]) {

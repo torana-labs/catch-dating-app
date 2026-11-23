@@ -218,7 +218,7 @@ test("fails closed on route constructor typedefs", () => {
   assert.throws(
     () => validateRouteSourceForInventory(
       "typedef AppRoute = GoRoute;\nAppRoute(path: '/hidden');",
-      "lib/routing/go_router.dart",
+      "lib/routing/consumer_router.dart",
     ),
     /route constructor typedefs are not inventory-safe \(GoRoute\)/u,
   );
@@ -237,7 +237,7 @@ test("fails closed on GoRoute definitions outside the canonical graph", () => {
       "final route = router.GoRoute(path: '/hidden');",
       "lib/feature/imported_routes.dart",
     ),
-    /GoRoute construction is outside the canonical router files \(lib\/routing\/go_router\.dart\)/u,
+    /GoRoute construction is outside the canonical router files \(lib\/routing\/consumer_router\.dart, lib\/routing\/host_router\.dart\)/u,
   );
 });
 
@@ -247,7 +247,7 @@ test("fails closed on GoRoute definitions in an app package", () => {
       "final route = GoRoute(path: '/today');",
       "apps/host/lib/today/today_screen.dart",
     ),
-    /GoRoute construction is outside the canonical router files \(lib\/routing\/go_router\.dart\)/u,
+    /GoRoute construction is outside the canonical router files \(lib\/routing\/consumer_router\.dart, lib\/routing\/host_router\.dart\)/u,
   );
 });
 
@@ -273,18 +273,21 @@ void unrelated() { print('diagnostic'); }
 `;
 const inventory = (routerSource = router, imperativePageRoutes = []) => buildInventory({
   routeContractSource: contract,
-  routers: [{path: "lib/routing/go_router.dart", source: routerSource}],
+  routers: [{path: "lib/routing/consumer_router.dart", source: routerSource}],
   imperativePageRoutes,
 });
 
 test("GoRoute construction is legal in every canonical router file and nowhere else", () => {
-  assert.deepEqual(canonicalRouterFiles, ["lib/routing/go_router.dart"]);
+  assert.deepEqual(canonicalRouterFiles, [
+    "lib/routing/consumer_router.dart",
+    "lib/routing/host_router.dart",
+  ]);
   const files = ["apps/host/lib/routing/host_router.dart", "apps/consumer/lib/routing/consumer_router.dart"];
   for (const file of files) {
     validateRouteSourceForInventory("final route = GoRoute(path: '/a');", file, files);
   }
   assert.throws(
-    () => validateRouteSourceForInventory("final route = GoRoute(path: '/a');", "lib/routing/go_router.dart", files),
+    () => validateRouteSourceForInventory("final route = GoRoute(path: '/a');", "lib/routing/router_frame.dart", files),
     /outside the canonical router files \(apps\/host\/lib\/routing\/host_router\.dart, apps\/consumer/u,
   );
 });

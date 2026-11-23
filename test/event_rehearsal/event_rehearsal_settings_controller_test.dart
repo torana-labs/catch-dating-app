@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
@@ -10,13 +9,14 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_settings_c
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_settings_controller.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const sessionId = 'practice-room';
 Map<String, Object?> sample(String name) =>
     (jsonDecode(
-              File(
+              repoFile(
                 'test/event_rehearsal/fixtures/settings_reviews.json',
               ).readAsStringSync(),
             )

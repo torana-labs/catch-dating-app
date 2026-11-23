@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/live/data/event_assistance_departure_history_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure_history.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const historyActor = 'host-1';
@@ -20,7 +20,7 @@ EventAssistanceDepartureHistoryQuery historyQuery({int? beforeRevision}) =>
 
 Map<String, Object?> historyResponse() =>
     (jsonDecode(
-              File(
+              repoFile(
                 'test/event_success/fixtures/departure_history.json',
               ).readAsStringSync(),
             )

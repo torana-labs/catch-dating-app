@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:catch_test_support/repo_file.dart';
 import 'package:test/test.dart';
 
 import '../../tool/architecture/check_ui_composition_contracts.dart';
@@ -39,7 +40,7 @@ void main() {
   test('screen schema accepts exactly the analyzer layout vocabulary', () {
     final schema =
         jsonDecode(
-              File(
+              repoFile(
                 'design/screens/catch.screens.schema.json',
               ).readAsStringSync(),
             )

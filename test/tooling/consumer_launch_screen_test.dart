@@ -1,13 +1,12 @@
-import 'dart:io';
-
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('iOS launch marks use generated role-specific geometry', () {
-    final consumerLaunch = File(
+    final consumerLaunch = repoFile(
       'apps/consumer/ios/Runner/Base.lproj/LaunchScreen.storyboard',
     ).readAsStringSync();
-    final hostLaunch = File(
+    final hostLaunch = repoFile(
       'apps/host/ios/Runner/Base.lproj/LaunchScreen.storyboard',
     ).readAsStringSync();
 

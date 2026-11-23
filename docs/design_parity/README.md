@@ -64,7 +64,7 @@ inventory commit.
 
 ## New Route Workflow
 
-When `lib/routing/go_router.dart` changes, update the route-derived design
+When `lib/routing/consumer_router.dart` or `lib/routing/host_router.dart` changes, update the route-derived design
 ledgers in the same PR:
 
 1. Regenerate the route inventory:

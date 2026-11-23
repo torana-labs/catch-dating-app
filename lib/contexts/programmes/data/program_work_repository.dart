@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:catch_dating_app/contexts/account/account.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_assistant_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_door_live_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_inbox_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_photo_views_repository.dart';

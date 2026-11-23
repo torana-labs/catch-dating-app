@@ -5,14 +5,8 @@
 // transparent: an import of it records the libraries that declare the names
 // used, not the barrel.
 //
-// A branch library (--branch <path>:<flag>) is also described declaration by
-// declaration, with each reference marked by the values of a boolean flag
-// (such as isHostApp) under which it runs. move_screens.mjs walks the router
-// that way, so the host and consumer route tables reach only their own screens.
-//
 //   dart run tool/architecture/dart_symbol_imports.dart \
-//     [--root <dir>] [--out <file>] [--include <dir>]... \
-//     [--branch lib/routing/go_router.dart:isHostApp]
+//     [--root <dir>] [--out <file>] [--include <dir>]...
 import 'dart:convert';
 import 'dart:io';
 
@@ -20,7 +14,6 @@ import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
 
@@ -44,7 +37,6 @@ Future<void> main(List<String> args) async {
   var root = Directory.current.path;
   String? out;
   final includes = <String>[];
-  final branches = <String, String>{};
   for (var index = 0; index < args.length; index++) {
     final arg = args[index];
     String next() {
@@ -62,19 +54,10 @@ Future<void> main(List<String> args) async {
         out = next();
       case '--include':
         includes.add(next());
-      case '--branch':
-        final value = next();
-        final split = value.lastIndexOf(':');
-        if (split <= 0) {
-          stderr.writeln('--branch takes <library path>:<flag>.');
-          exit(64);
-        }
-        branches[value.substring(0, split)] = value.substring(split + 1);
       case '--help' || '-h':
         stdout.writeln(
           'Usage: dart run tool/architecture/dart_symbol_imports.dart '
-          '[--root <dir>] [--out <file>] [--include <dir>]... '
-          '[--branch <library path>:<flag>]',
+          '[--root <dir>] [--out <file>] [--include <dir>]...',
         );
         return;
       default:
@@ -86,7 +69,6 @@ Future<void> main(List<String> args) async {
   final graph = await buildSymbolImportGraph(
     root: root,
     includes: includes.isEmpty ? _defaultIncludes : includes,
-    branches: branches,
   );
   final json = const JsonEncoder.withIndent(' ').convert(graph);
   if (out == null) {
@@ -101,7 +83,6 @@ Future<void> main(List<String> args) async {
 Future<Map<String, Object?>> buildSymbolImportGraph({
   required String root,
   required List<String> includes,
-  Map<String, String> branches = const {},
 }) async {
   final includedPaths = [
     for (final include in includes)
@@ -110,7 +91,6 @@ Future<Map<String, Object?>> buildSymbolImportGraph({
   ];
   final collection = AnalysisContextCollection(includedPaths: includedPaths);
   final files = <String, Object?>{};
-  final branchOutput = <String, Object?>{};
   final unresolved = <String>[];
   String relative(String path) =>
       path.startsWith('$root/') ? path.substring(root.length + 1) : path;
@@ -167,30 +147,12 @@ Future<Map<String, Object?>> buildSymbolImportGraph({
           ],
         };
       }
-      final flag = branches[libraryPath];
-      if (flag != null) {
-        final branch = _BranchCollector(flag, libraryId, result.element);
-        for (final unit in result.units) {
-          unit.unit.accept(branch);
-        }
-        branchOutput[libraryPath] = {
-          'flag': flag,
-          'declarations': branch.output(),
-        };
-      }
     }
-  }
-  final missingBranches = branches.keys
-      .where((path) => !branchOutput.containsKey(path))
-      .toList();
-  if (missingBranches.isNotEmpty) {
-    throw StateError('Branch libraries not analyzed: $missingBranches');
   }
   return {
     'version': 1,
     'root': root,
     'files': files,
-    'branches': branchOutput,
     'unresolvedDirectives': unresolved,
   };
 }
@@ -459,12 +421,17 @@ class _UseCollector extends RecursiveAstVisitor<void> {
     }
     final element = node.element;
     if (element is PrefixElement) return;
-    if (_topLevel(element) is ExtensionElement &&
-        _topLevel(element) != element) {
+    final top = _topLevel(element);
+    if (top is ExtensionElement && top != element) {
       // An extension member applies through any import of its extension.
       _record(element, anyPrefix: true);
       return;
     }
+    // A class, mixin or enum member needs no import of its own: `a.b` reaches
+    // it through `a`, and `Foo.b` names Foo, which is recorded where it is
+    // written. Recording the member's class would keep an import the
+    // analyzer calls unused once a move splits a barrel into direct imports.
+    if (top != null && top != element) return;
     _record(element, prefix: _prefixOf(node));
   }
 
@@ -517,196 +484,4 @@ class _UseCollector extends RecursiveAstVisitor<void> {
     _recordOperator(node.element);
     super.visitFunctionExpressionInvocation(node);
   }
-}
-
-/// Describes a branch library declaration by declaration. Each reference
-/// carries the flag values under which it runs: `if (flag)`, `flag ? a : b`
-/// and collection `if` split on the flag (or `!flag`, or a property named
-/// like it), and `&&`/`||` narrow the branch they guard.
-class _BranchCollector extends RecursiveAstVisitor<void> {
-  _BranchCollector(this.flag, this.libraryId, this.library);
-
-  final String flag;
-  final String Function(LibraryElement) libraryId;
-  final LibraryElement library;
-  final _refs = <String, Map<String, Set<String>>>{};
-  String? _declaration;
-  Set<String> _when = const {'true', 'false'};
-
-  Map<String, Object?> output() => {
-    for (final name in _refs.keys.toList()..sort())
-      name: [
-        for (final target in _refs[name]!.keys.toList()..sort())
-          {'target': target, 'when': _refs[name]![target]!.toList()..sort()},
-      ],
-  };
-
-  void _inDeclaration(String? name, void Function() visit) {
-    final previous = _declaration;
-    _declaration = name;
-    visit();
-    _declaration = previous;
-  }
-
-  @override
-  void visitFunctionDeclaration(FunctionDeclaration node) {
-    if (node.parent is CompilationUnit) {
-      _inDeclaration(
-        node.name.lexeme,
-        () => super.visitFunctionDeclaration(node),
-      );
-    } else {
-      super.visitFunctionDeclaration(node);
-    }
-  }
-
-  @override
-  void visitClassDeclaration(ClassDeclaration node) => _inDeclaration(
-    node.namePart.typeName.lexeme,
-    () => super.visitClassDeclaration(node),
-  );
-
-  @override
-  void visitMixinDeclaration(MixinDeclaration node) =>
-      _inDeclaration(node.name.lexeme, () => super.visitMixinDeclaration(node));
-
-  @override
-  void visitEnumDeclaration(EnumDeclaration node) => _inDeclaration(
-    node.namePart.typeName.lexeme,
-    () => super.visitEnumDeclaration(node),
-  );
-
-  @override
-  void visitExtensionDeclaration(ExtensionDeclaration node) => _inDeclaration(
-    node.name?.lexeme ?? '<unnamed extension>',
-    () => super.visitExtensionDeclaration(node),
-  );
-
-  @override
-  void visitGenericTypeAlias(GenericTypeAlias node) =>
-      _inDeclaration(node.name.lexeme, () => super.visitGenericTypeAlias(node));
-
-  @override
-  void visitTopLevelVariableDeclaration(TopLevelVariableDeclaration node) {
-    for (final variable in node.variables.variables) {
-      _inDeclaration(variable.name.lexeme, () {
-        node.metadata.accept(this);
-        node.variables.type?.accept(this);
-        variable.initializer?.accept(this);
-      });
-    }
-  }
-
-  void _reference(Element? element) {
-    final declaration = _declaration;
-    final top = _topLevel(element);
-    if (declaration == null || top == null || _when.isEmpty) return;
-    final topLibrary = top.library;
-    if (topLibrary == null) return;
-    final target = topLibrary == library
-        ? '#${top.name}'
-        : '${libraryId(topLibrary)}#${top.name}';
-    if (target == '#$declaration') return;
-    _refs
-        .putIfAbsent(declaration, () => {})
-        .putIfAbsent(target, () => {})
-        .addAll(_when);
-  }
-
-  @override
-  void visitSimpleIdentifier(SimpleIdentifier node) {
-    if (!node.inDeclarationContext()) _reference(node.element);
-  }
-
-  @override
-  void visitNamedType(NamedType node) {
-    _reference(node.element);
-    super.visitNamedType(node);
-  }
-
-  @override
-  void visitBinaryExpression(BinaryExpression node) {
-    _reference(node.element);
-    final operator = node.operator.type;
-    if (operator == TokenType.AMPERSAND_AMPERSAND ||
-        operator == TokenType.BAR_BAR) {
-      // The right operand runs only when the left one lets it.
-      node.leftOperand.accept(this);
-      final left = _truth(node.leftOperand);
-      final guard = operator == TokenType.AMPERSAND_AMPERSAND
-          ? left.whenTrue
-          : left.whenFalse;
-      _narrowed(guard, () => node.rightOperand.accept(this));
-      return;
-    }
-    super.visitBinaryExpression(node);
-  }
-
-  @override
-  void visitIfStatement(IfStatement node) {
-    node.expression.accept(this);
-    final truth = _truth(node.expression);
-    _narrowed(truth.whenTrue, () => node.thenStatement.accept(this));
-    _narrowed(truth.whenFalse, () => node.elseStatement?.accept(this));
-  }
-
-  @override
-  void visitIfElement(IfElement node) {
-    node.expression.accept(this);
-    final truth = _truth(node.expression);
-    _narrowed(truth.whenTrue, () => node.thenElement.accept(this));
-    _narrowed(truth.whenFalse, () => node.elseElement?.accept(this));
-  }
-
-  @override
-  void visitConditionalExpression(ConditionalExpression node) {
-    node.condition.accept(this);
-    final truth = _truth(node.condition);
-    _narrowed(truth.whenTrue, () => node.thenExpression.accept(this));
-    _narrowed(truth.whenFalse, () => node.elseExpression.accept(this));
-  }
-
-  void _narrowed(Set<String> values, void Function() visit) {
-    final previous = _when;
-    _when = previous.intersection(values);
-    visit();
-    _when = previous;
-  }
-
-  /// The flag values that make [expression] true and false.
-  ({Set<String> whenTrue, Set<String> whenFalse}) _truth(
-    Expression expression,
-  ) {
-    const both = {'true', 'false'};
-    final node = expression.unParenthesized;
-    if (_namesFlag(node)) return (whenTrue: {'true'}, whenFalse: {'false'});
-    if (node is PrefixExpression && node.operator.type == TokenType.BANG) {
-      final inner = _truth(node.operand);
-      return (whenTrue: inner.whenFalse, whenFalse: inner.whenTrue);
-    }
-    if (node is BinaryExpression) {
-      final left = _truth(node.leftOperand);
-      final right = _truth(node.rightOperand);
-      if (node.operator.type == TokenType.AMPERSAND_AMPERSAND) {
-        return (
-          whenTrue: left.whenTrue.intersection(right.whenTrue),
-          whenFalse: left.whenFalse.union(right.whenFalse),
-        );
-      }
-      if (node.operator.type == TokenType.BAR_BAR) {
-        return (
-          whenTrue: left.whenTrue.union(right.whenTrue),
-          whenFalse: left.whenFalse.intersection(right.whenFalse),
-        );
-      }
-    }
-    return (whenTrue: both, whenFalse: both);
-  }
-
-  bool _namesFlag(Expression node) => switch (node) {
-    SimpleIdentifier(:final name) => name == flag,
-    PrefixedIdentifier(:final identifier) => identifier.name == flag,
-    PropertyAccess(:final propertyName) => propertyName.name == flag,
-    _ => false,
-  };
 }

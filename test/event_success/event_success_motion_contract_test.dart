@@ -1,15 +1,15 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_motion_contract.dart';
 import 'package:catch_platform/schema_contracts/generated/event_success_moment_presentations.g.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final manifest =
       jsonDecode(
-            File(
+            repoFile(
               'assets/motion/event_success/manifest.json',
             ).readAsStringSync(),
           )
@@ -40,7 +40,7 @@ void main() {
     for (final entry in assets.entries) {
       final definition = Map<String, dynamic>.from(entry.value as Map);
       final animation =
-          jsonDecode(File(definition['path'] as String).readAsStringSync())
+          jsonDecode(repoFile(definition['path'] as String).readAsStringSync())
               as Map<String, dynamic>;
       expect(animation['v'], isA<String>(), reason: entry.key);
       expect(animation['fr'], greaterThan(0), reason: entry.key);
@@ -128,10 +128,10 @@ void main() {
   });
 
   test('superseded Event Success painters stay deleted', () {
-    final shared = File(
+    final shared = repoFile(
       'lib/event_success/presentation/companion_parts/event_success_companion_shared.dart',
     ).readAsStringSync();
-    final reveal = File(
+    final reveal = repoFile(
       'lib/event_success/presentation/companion_parts/event_success_companion_reveal_overlay.dart',
     ).readAsStringSync();
     final sources = '$shared\n$reveal';

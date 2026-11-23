@@ -10,6 +10,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_staff_chan
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_section.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -151,7 +152,7 @@ class _Repository extends Fake implements EventRehearsalRepository {
   Future<EventRehearsalBootstrap> fetch(String sessionId) async {
     final data =
         jsonDecode(
-              File(
+              repoFile(
                 'test/event_rehearsal/fixtures/staff_reviews.json',
               ).readAsStringSync(),
             )

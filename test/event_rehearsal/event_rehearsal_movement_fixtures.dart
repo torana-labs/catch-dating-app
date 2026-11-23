@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_observation.dart';
@@ -7,12 +6,13 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement_command.dart';
 import 'package:catch_kernel/brand.dart';
+import 'package:catch_test_support/repo_file.dart';
 
 // Produced and checked by the actual Functions movement projector, including
 // departure visit hashes, group source identities and subsequent observations.
 Map<String, Object?> movementSample(String name) =>
     (jsonDecode(
-              File(
+              repoFile(
                 'test/event_rehearsal/fixtures/movement_reviews.json',
               ).readAsStringSync(),
             )

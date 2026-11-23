@@ -77,10 +77,10 @@ function fixtureRepo(files) {
 // A stand-in for dart_symbol_imports.dart: directives by their text, each
 // import using its own target unless `uses` names the declaring libraries
 // (a barrel).
-function fixtureGraph(root, uses = {}, branches = {}) {
+function fixtureGraph(root, uses = {}) {
   const files = trackedFiles(root);
   const packages = packageRoots(root, files);
-  const graph = {version: 1, files: {}, branches};
+  const graph = {version: 1, files: {}};
   for (const file of files.filter((candidate) => candidate.endsWith(".dart"))) {
     const source = fs.readFileSync(path.join(root, file), "utf8");
     const partOf = /^part of '([^']+)';/mu.exec(source);
@@ -111,8 +111,8 @@ function fixtureGraph(root, uses = {}, branches = {}) {
   return {graph: createGraph(graph, packages), packages, files};
 }
 
-function planFor(root, group, {uses, branches} = {}) {
-  const {graph, packages, files} = fixtureGraph(root, uses, branches);
+function planFor(root, group, {uses} = {}) {
+  const {graph, packages, files} = fixtureGraph(root, uses);
   const map = loadContextMap(fs.readFileSync(path.join(root, "tool/architecture/context_map.json"), "utf8"));
   return {plan: buildGroupPlan({root, group, graph, files, packages, map}), graph, packages, files, map};
 }
@@ -332,6 +332,82 @@ test("barrel imports in moving files become direct imports; barrel exports of fi
   assert.equal(plan.writes.has("lib/hosts/elsewhere.dart"), false);
 });
 
+test("a feature barrel stops exporting files that move into lib/pages or a later context, and its importers import them directly", () => {
+  const root = fixtureRepo({
+    "tool/architecture/context_map.json": mapSource([
+      {path: "lib/reviews/", context: "events"},
+      {path: "lib/hosts/", layer: "app"},
+      {path: "lib/reviews/shared/", context: "events", moveTo: "lib/pages/reviews/", group: "page-reviews"},
+      {path: "lib/reviews/presentation/review_actions.dart", context: "events",
+        moveTo: "lib/contexts/live/actions/review_actions.dart", group: "page-reviews"},
+    ]),
+    "lib/reviews/reviews.dart": [
+      "export 'package:catch_dating_app/contexts/events/data/event_repository.dart';",
+      "export 'shared/reviews_section.dart'; // public-api: event page reviews",
+      "export 'presentation/review_badge.dart';",
+      "export 'presentation/review_actions.dart';",
+      "",
+    ].join("\n"),
+    "lib/reviews/presentation/review_badge.dart": "class ReviewBadge {}\n",
+    "lib/reviews/presentation/review_actions.dart": "class ReviewActions {}\n",
+    "lib/reviews/shared/reviews_section.dart": "class ReviewsSection {}\n",
+    "lib/hosts/mixed.dart": "import 'package:catch_dating_app/reviews/reviews.dart';\n\nclass Mixed {}\n",
+    "lib/hosts/shown.dart": "import 'package:catch_dating_app/reviews/reviews.dart' as r show ReviewsSection, ReviewBadge;\n\nclass Shown {}\n",
+    "lib/hosts/only.dart": "import 'package:catch_dating_app/reviews/reviews.dart';\n\nclass Only {}\n",
+    "lib/hosts/untouched.dart": "import 'package:catch_dating_app/reviews/reviews.dart';\n\nclass Untouched {}\n",
+  });
+  const barrel = "package:catch_dating_app/reviews/reviews.dart";
+  const {plan} = planFor(root, "page-reviews", {uses: {
+    "lib/hosts/mixed.dart": {[barrel]: {
+      "lib/contexts/events/data/event_repository.dart": ["EventRepository"],
+      "lib/reviews/shared/reviews_section.dart": ["ReviewsSection"],
+    }},
+    "lib/hosts/shown.dart": {[barrel]: {
+      "lib/reviews/presentation/review_badge.dart": ["ReviewBadge"],
+      "lib/reviews/shared/reviews_section.dart": ["ReviewsSection"],
+    }},
+    "lib/hosts/only.dart": {[barrel]: {
+      "lib/reviews/presentation/review_actions.dart": ["ReviewActions"],
+      "lib/reviews/shared/reviews_section.dart": ["ReviewsSection"],
+    }},
+    "lib/hosts/untouched.dart": {[barrel]: {"lib/reviews/presentation/review_badge.dart": ["ReviewBadge"]}},
+  }});
+  assert.deepEqual(plan.errors, []);
+  // The barrel sits in the events context, below lib/pages and before live:
+  // both exports would point the wrong way, so they go, comments and all.
+  assert.equal(plan.writes.get("lib/reviews/reviews.dart"), [
+    "export 'package:catch_dating_app/contexts/events/data/event_repository.dart';",
+    "export 'presentation/review_badge.dart';",
+    "",
+  ].join("\n"));
+  assert.deepEqual(plan.deletedExports.map(({target}) => target).sort(),
+    ["lib/reviews/presentation/review_actions.dart", "lib/reviews/shared/reviews_section.dart"]);
+  assert.equal(plan.writes.get("lib/hosts/mixed.dart"), [
+    "import 'package:catch_dating_app/reviews/reviews.dart';",
+    "import 'package:catch_dating_app/pages/reviews/reviews_section.dart';",
+    "",
+    "class Mixed {}",
+    "",
+  ].join("\n"));
+  assert.equal(plan.writes.get("lib/hosts/shown.dart"), [
+    "import 'package:catch_dating_app/reviews/reviews.dart' as r show ReviewBadge;",
+    "import 'package:catch_dating_app/pages/reviews/reviews_section.dart' as r show ReviewsSection;",
+    "",
+    "class Shown {}",
+    "",
+  ].join("\n"));
+  // Nothing else comes through the barrel, so the barrel import goes.
+  assert.equal(plan.writes.get("lib/hosts/only.dart"), [
+    "import 'package:catch_dating_app/contexts/live/actions/review_actions.dart';",
+    "import 'package:catch_dating_app/pages/reviews/reviews_section.dart';",
+    "",
+    "class Only {}",
+    "",
+  ].join("\n"));
+  assert.equal(plan.writes.has("lib/hosts/untouched.dart"), false);
+  assert.equal(plan.splitBarrels, 3);
+});
+
 test("path mentions move as repo paths and package URIs, honour the exclusions, and stale folders fail", () => {
   const moves = new Map([["lib/hosts/today/today_screen.dart", "apps/host/lib/today/today_screen.dart"]]);
   const folders = [["lib/hosts/today/", "apps/host/lib/today/"]];
@@ -520,6 +596,31 @@ test("a carried file that moves again keeps its from; stale carries are dropped"
     [{path: "lib/pages/a.dart", from: "lib/pages/a.dart"}]);
 });
 
+test("a stale carry stays, with its library's parts, while check_library_shims would flag the library", () => {
+  const root = carriedFixture(`${JSON.stringify({description: "d", carried: [
+    {path: "lib/pages/sheet.dart", from: "lib/old/sheet.dart"},
+    {path: "lib/pages/sheet_part.dart", from: "lib/old/sheet_part.dart"},
+    {path: "lib/pages/clean.dart", from: "lib/old/clean.dart"},
+  ]}, null, 2)}\n`);
+  fs.mkdirSync(path.join(root, "packages/catch_ui/lib/src"), {recursive: true});
+  fs.writeFileSync(path.join(root, "packages/catch_ui/lib/catch_ui.dart"), "export 'src/text.dart';\n");
+  fs.writeFileSync(path.join(root, "packages/catch_ui/lib/src/text.dart"),
+    "class CatchText {}\n\n@Deprecated('Use CatchText.')\nclass CatchOldText extends CatchText {}\n");
+  fs.mkdirSync(path.join(root, "lib/pages"), {recursive: true});
+  fs.writeFileSync(path.join(root, "lib/pages/sheet.dart"),
+    "import 'package:catch_ui/catch_ui.dart';\n\npart 'sheet_part.dart';\n\nfinal text = CatchOldText();\n");
+  fs.writeFileSync(path.join(root, "lib/pages/sheet_part.dart"), "part of 'sheet.dart';\n\nfinal other = text;\n");
+  fs.writeFileSync(path.join(root, "lib/pages/clean.dart"), "import 'package:catch_ui/catch_ui.dart';\n\nfinal text = CatchText();\n");
+  const stale = (file) => ({code: "CATCH_ARCH_STALE_CARRY", file, line: 1, message: "stale"});
+  // The library names a deprecated catch_ui class, which the lints leave to
+  // deprecated_member_use and the shims gate reports; its clean part stays too.
+  assert.deepEqual(dropStaleCarries({root, findings: [
+    stale("lib/pages/sheet.dart"), stale("lib/pages/sheet_part.dart"), stale("lib/pages/clean.dart"),
+  ]}), ["lib/pages/clean.dart"]);
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, "tool/architecture/carried_screens.json"), "utf8")).carried
+    .map((entry) => entry.path).sort(), ["lib/pages/sheet.dart", "lib/pages/sheet_part.dart"]);
+});
+
 test("--apply refuses a dirty tree and rolls back its own work when a step fails", () => {
   const root = carriedFixture("{not json\n");
   fs.mkdirSync(path.join(root, "tool/nx"), {recursive: true});
@@ -588,7 +689,7 @@ test("--imports-only replays logged moves onto another branch, including files i
   assert.deepEqual(replayEntries({root, since: "main-after-move"}), []);
 });
 
-test("--classify walks each app from its own code and the router by its flag", () => {
+test("--classify walks each app from its own code through its own router", () => {
   const root = fixtureRepo({
     "tool/architecture/context_map.json": mapSource([
       {path: "lib/hosts/", layer: "app"},
@@ -596,27 +697,20 @@ test("--classify walks each app from its own code and the router by its flag", (
       {path: "lib/events/", layer: "app"},
       {path: "lib/home/", layer: "app"},
     ]),
-    "lib/routing/go_router.dart": "import 'package:catch_dating_app/hosts/today/today_screen.dart';\nimport 'package:catch_dating_app/home/home_screen.dart';\nimport 'package:catch_dating_app/events/event_screen.dart';\n",
-    "lib/routing/router.dart": "import 'package:catch_dating_app/routing/go_router.dart';\n",
+    "apps/host/lib/main.dart": "import 'package:catch_dating_app/routing/host_router.dart';\n\nvoid main() => hostRouter;\n",
+    "apps/consumer/lib/main.dart": "import 'package:catch_dating_app/routing/consumer_router.dart';\n\nvoid main() => consumerRouter;\n",
+    "lib/routing/host_router.dart": "import 'package:catch_dating_app/hosts/today/today_screen.dart';\nimport 'package:catch_dating_app/events/event_screen.dart';\n",
+    "lib/routing/consumer_router.dart": "import 'package:catch_dating_app/home/home_screen.dart';\nimport 'package:catch_dating_app/events/event_screen.dart';\n",
     "lib/hosts/today/today_screen.dart": "class TodayScreen {}\n",
     "lib/home/home_screen.dart": "class HomeScreen {}\n",
     "lib/events/event_screen.dart": "class EventScreen {}\n",
     "lib/events/orphan.dart": "class Orphan {}\n",
   });
-  const branches = {"lib/routing/go_router.dart": {flag: "isHostApp", declarations: {
-    hostRouter: [{target: "#build", when: ["false", "true"]}],
-    consumerRouter: [{target: "#build", when: ["false", "true"]}],
-    build: [
-      {target: "lib/hosts/today/today_screen.dart#TodayScreen", when: ["true"]},
-      {target: "lib/home/home_screen.dart#HomeScreen", when: ["false"]},
-      {target: "lib/events/event_screen.dart#EventScreen", when: ["false", "true"]},
-    ],
-  }}};
   const uses = {
-    "apps/host/lib/main.dart": {"package:catch_dating_app/routing/router.dart": {"lib/routing/go_router.dart": ["hostRouter"]}},
-    "apps/consumer/lib/main.dart": {"package:catch_dating_app/routing/router.dart": {"lib/routing/go_router.dart": ["consumerRouter"]}},
+    "apps/host/lib/main.dart": {"package:catch_dating_app/routing/host_router.dart": {"lib/routing/host_router.dart": ["hostRouter"]}},
+    "apps/consumer/lib/main.dart": {"package:catch_dating_app/routing/consumer_router.dart": {"lib/routing/consumer_router.dart": ["consumerRouter"]}},
   };
-  const {graph, files} = fixtureGraph(root, uses, branches);
+  const {graph, files} = fixtureGraph(root, uses);
   const map = loadContextMap(fs.readFileSync(path.join(root, "tool/architecture/context_map.json"), "utf8"));
   const result = classify({graph, files, map});
   const labels = Object.fromEntries(result.files.map((row) => [row.path, row.label]));
@@ -665,7 +759,9 @@ test("dart_symbol_imports.dart resolves the names each directive uses, through b
     ]}));
     write("lib/a.dart", "class A {}\nclass Unused {}\n");
     write("lib/b.dart", "extension Shout on String {\n  String get shout => toUpperCase();\n}\n");
-    write("lib/barrel.dart", "export 'a.dart';\nexport 'b.dart';\n");
+    // A member reached through a value names no import: Box stays unrecorded.
+    write("lib/c.dart", "class Box {\n  int get size => 1;\n}\nBox makeBox() => Box();\n");
+    write("lib/barrel.dart", "export 'a.dart';\nexport 'b.dart';\nexport 'c.dart';\n");
     write("lib/io_impl.dart", "String platform() => 'io';\n");
     write("lib/web_impl.dart", "String platform() => 'web';\n");
     write("lib/screen.dart", [
@@ -674,7 +770,7 @@ test("dart_symbol_imports.dart resolves the names each directive uses, through b
       "",
       "part 'screen_part.dart';",
       "",
-      "String show(A a) => 'x'.shout + platform();",
+      "String show(A a) => 'x'.shout + platform() + '${makeBox().size}';",
       "",
     ].join("\n"));
     write("lib/screen_part.dart", "part of 'screen.dart';\n");
@@ -685,7 +781,7 @@ test("dart_symbol_imports.dart resolves the names each directive uses, through b
     const screen = graph.files["lib/screen.dart"];
     const [barrel, conditional, part] = screen.directives;
     assert.equal(barrel.target, "lib/barrel.dart");
-    assert.deepEqual(barrel.uses, {"lib/a.dart": ["A"], "lib/b.dart": ["Shout"]});
+    assert.deepEqual(barrel.uses, {"lib/a.dart": ["A"], "lib/b.dart": ["Shout"], "lib/c.dart": ["makeBox"]});
     assert.equal(conditional.target, "lib/io_impl.dart");
     assert.deepEqual(conditional.configurations.map((c) => [c.target, c.uses]),
       [["lib/web_impl.dart", {"lib/web_impl.dart": ["platform"]}]]);

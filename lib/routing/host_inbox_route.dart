@@ -1,4 +1,4 @@
-part of 'go_router.dart';
+part of 'host_router.dart';
 
 @visibleForTesting
 HostInboxScreen hostInboxScreenForUri(Uri uri, {String? initialOrganizerId}) {

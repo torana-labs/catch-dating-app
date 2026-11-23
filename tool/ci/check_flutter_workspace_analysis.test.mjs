@@ -16,6 +16,7 @@ function snapshot(pubspecs) {
 const repositoryPubspecs = {
   "packages/catch_ui/pubspec.yaml": "name: catch_ui\nresolution: workspace\n",
   "packages/catch_ui/test/foundations_test.dart": "",
+  "packages/catch_test_support/pubspec.yaml": "name: catch_test_support\nresolution: workspace\n",
   "packages/catch_tokens/pubspec.yaml": "name: catch_tokens\nresolution: workspace\n",
   "packages/kernel/pubspec.yaml": "name: catch_kernel\nresolution: workspace\n",
   "packages/kernel/test/labelled_test.dart": "",
@@ -31,13 +32,17 @@ test("workspace plan discovers every pubspec and resolves workspace members once
   const plan = buildWorkspaceAnalysisPlan(snapshot(repositoryPubspecs));
   assert.deepEqual(
     plan.packages.map((entry) => entry.directory),
-    ["", "apps/host", "packages/catch_tokens", "packages/catch_ui", "packages/kernel", "packages/l10n", "packages/platform", "tool/widget_dedupe", "widgetbook"],
+    ["", "apps/host", "packages/catch_test_support", "packages/catch_tokens", "packages/catch_ui", "packages/kernel", "packages/l10n", "packages/platform", "tool/widget_dedupe", "widgetbook"],
   );
   assert.deepEqual(
     plan.steps.filter((step) => step.phase === "resolve").map((step) => step.directory),
     ["", "tool/widget_dedupe", "widgetbook"],
   );
-  assert.equal(plan.steps.filter((step) => step.phase === "analyze").length, 9);
+  assert.equal(plan.steps.filter((step) => step.phase === "analyze").length, 10);
+  assert.deepEqual(plan.steps.find((step) => step.directory === "packages/catch_test_support" && step.phase === "analyze"), {
+    phase: "analyze", directory: "packages/catch_test_support", command: "dart",
+    args: ["analyze", "lib", "--fatal-infos"],
+  });
   assert.deepEqual(plan.steps.find((step) => step.directory === "packages/catch_tokens" && step.phase === "analyze"), {
     phase: "analyze", directory: "packages/catch_tokens", command: "dart",
     args: ["analyze", "lib", "--fatal-infos"],
@@ -64,7 +69,7 @@ test("every nested package is analyzed from its own package boundary", () => {
     .map((step) => step.directory);
   assert.deepEqual(
     analyzedDirectories,
-    ["", "apps/host", "packages/catch_tokens", "packages/catch_ui", "packages/kernel", "packages/l10n", "packages/platform", "tool/widget_dedupe", "widgetbook"],
+    ["", "apps/host", "packages/catch_test_support", "packages/catch_tokens", "packages/catch_ui", "packages/kernel", "packages/l10n", "packages/platform", "tool/widget_dedupe", "widgetbook"],
   );
 });
 

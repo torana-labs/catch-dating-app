@@ -25,14 +25,29 @@ String? testPackage(String name) {
   return '.';
 }
 
-/// The package directory whose test runs a test-side `dart:io` file's
-/// relative reads resolve against, or null for any other file: root `test/`
-/// and `tool/` files belong to the root package, an app package's `test/`
-/// files to that app.
+/// The package directory whose test runs a test-side file's relative reads
+/// resolve against, or null for a file whose reads are not test reads: root
+/// `test/` and `tool/` files belong to the root package, an app package's
+/// `test/` files to that app, and the shared test-support package's `lib/`
+/// files to whichever package's test runs them ([anyReadsPackage]).
 String? readsPackage(String name) {
   if (name.startsWith('test/') || name.startsWith('tool/')) return '.';
+  if (name.startsWith(testSupportLib)) return anyReadsPackage;
   return RegExp(r'^(apps/[^/]+)/test/').firstMatch(name)?.group(1);
 }
+
+/// [readsPackage] of a file that every package's tests may run, so it has no
+/// one working directory: only its repository-path reads can be bounded.
+const anyReadsPackage = '*';
+
+/// The shared test-support package's library folder.
+const testSupportLib = 'packages/catch_test_support/lib/';
+
+/// The library whose `repoFile` and `repoDirectory` read files by repository
+/// path. The selector reads their arguments in other files; the library
+/// itself only walks up from the working directory to the root pubspec, a
+/// global input.
+const repoFileLibrary = '${testSupportLib}repo_file.dart';
 
 /// How many of the shard tests [files] each package directory runs.
 Map<String, int> packageCounts(List<String> files) {

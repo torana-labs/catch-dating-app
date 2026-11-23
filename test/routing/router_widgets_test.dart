@@ -20,7 +20,9 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
-import 'package:catch_dating_app/routing/go_router.dart' as app_router;
+import 'package:catch_dating_app/routing/consumer_router.dart' as app_router;
+import 'package:catch_dating_app/routing/host_router.dart' as app_router;
+import 'package:catch_dating_app/routing/router_frame.dart' as app_router;
 import 'package:catch_platform/persistence/command_journal_provider.dart';
 import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
 import 'package:catch_platform/push/fcm_service.dart';

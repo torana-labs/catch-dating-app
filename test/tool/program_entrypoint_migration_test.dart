@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -7,7 +8,9 @@ void main() {
     'the retired Programs list and create modal cannot return as hidden source',
     () {
       expect(
-        File('lib/programs/presentation/program_list_screen.dart').existsSync(),
+        repoFile(
+          'lib/programs/presentation/program_list_screen.dart',
+        ).existsSync(),
         isFalse,
       );
       final retiredSymbols = RegExp(

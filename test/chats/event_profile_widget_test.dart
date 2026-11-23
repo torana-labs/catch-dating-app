@@ -17,6 +17,7 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/contexts/profiles/domain/form_profile_photo_preview.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -30,7 +31,7 @@ import 'event_chat_widget_test.dart' show fixture;
 import 'event_profile_controller_test.dart'
     show CardsRepository, ProfileRepository, miniProfile;
 
-final pixel = File('test/goldens/fixtures/portrait.jpg').readAsBytesSync();
+final pixel = repoFile('test/goldens/fixtures/portrait.jpg').readAsBytesSync();
 const captureKey = ValueKey('event-profile-capture');
 EventProfileEditorState editorState({
   bool shared = false,

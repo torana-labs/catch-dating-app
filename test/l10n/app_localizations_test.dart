@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/routing/shell/app_shell.dart';
+import 'package:catch_dating_app/routing/shell/shell_chrome.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
