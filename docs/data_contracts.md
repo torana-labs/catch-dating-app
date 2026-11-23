@@ -3424,8 +3424,8 @@ dry run and requires explicit `--project` and `--organizer`. `--apply` rebuilds
 views. `--activate` additionally verifies current source/view parity in one
 transaction before setting `contactSummaryVersion: 1`. Deploy rules, indexes
 and writers before a client using SDK reads, then backfill and activate each
-organizer. `onHostDirectoryOrganizerCreated` activates every model for a new
-organizer, which has no sources yet. The Host app reads the contact, form,
+organizer. The `hostDirectoryActivation` projection of `dispatchOrganizers`
+activates every model for a new organizer, which has no sources yet. The Host app reads the contact, form,
 group, response and event directories only through their markers: a missing
 marker is an error to retry, never a callable fallback. The People contacts,
 forms, form responses, campaigns and WhatsApp threads read live pages (see
@@ -6359,8 +6359,8 @@ an answer is picked. The answer rides in the setup draft and goes out with
 `instagramPost`, `friendOrHost`, `teamOutreach` or `other`. Skip sends nothing.
 `createOrganizer` stores it once on the organizer as
 `signupSource: {source, answeredAt}`, where `answeredAt` is the server's time.
-It is server-only: `updateOrganizer` cannot set it, and `syncPublicOrganizer`
-never copies it. It never asks about gender, dating or matching.
+It is server-only: `updateOrganizer` cannot set it, and the public organizer
+projection (`dispatchOrganizers`) never copies it. It never asks about gender, dating or matching.
 
 The answer is self-reported and never changes the derived channel above.
 `adminGetOrganizerOverview` returns it as `signupSource`, which Admin shows as
@@ -6725,8 +6725,10 @@ no other field), so a summary write cannot start another one:
 - the event trigger (`syncOrganizerNextEvent`) writes it when the event is
   created, its `organizerId` changes, or the summary is missing; it skips every
   other event write, booking counters included;
-- the organizer trigger (`syncPublicOrganizer`) rewrites it when a change to
-  the public projection alters a field the summary holds, on every event of
+- the organizer dispatcher's `publicOrganizer` projection
+  (`dispatchOrganizers`) rewrites it when a change to the public projection
+  alters a field the summary holds, or when the organizer write itself moves
+  that summary (so a retry after a partial failure converges), on every event of
   that organizer whose `endTime` is still in the future. It pages 200 events at
   a time through the `organizerId, endTime` index and skips events whose
   summary already matches, so a follower count or next-event change reads and
