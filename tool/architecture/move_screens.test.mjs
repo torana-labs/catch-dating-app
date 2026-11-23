@@ -728,7 +728,9 @@ test("dart_symbol_imports.dart resolves the names each directive uses, through b
     ]}));
     write("lib/a.dart", "class A {}\nclass Unused {}\n");
     write("lib/b.dart", "extension Shout on String {\n  String get shout => toUpperCase();\n}\n");
-    write("lib/barrel.dart", "export 'a.dart';\nexport 'b.dart';\n");
+    // A member reached through a value names no import: Box stays unrecorded.
+    write("lib/c.dart", "class Box {\n  int get size => 1;\n}\nBox makeBox() => Box();\n");
+    write("lib/barrel.dart", "export 'a.dart';\nexport 'b.dart';\nexport 'c.dart';\n");
     write("lib/io_impl.dart", "String platform() => 'io';\n");
     write("lib/web_impl.dart", "String platform() => 'web';\n");
     write("lib/screen.dart", [
@@ -737,7 +739,7 @@ test("dart_symbol_imports.dart resolves the names each directive uses, through b
       "",
       "part 'screen_part.dart';",
       "",
-      "String show(A a) => 'x'.shout + platform();",
+      "String show(A a) => 'x'.shout + platform() + '${makeBox().size}';",
       "",
     ].join("\n"));
     write("lib/screen_part.dart", "part of 'screen.dart';\n");
@@ -748,7 +750,7 @@ test("dart_symbol_imports.dart resolves the names each directive uses, through b
     const screen = graph.files["lib/screen.dart"];
     const [barrel, conditional, part] = screen.directives;
     assert.equal(barrel.target, "lib/barrel.dart");
-    assert.deepEqual(barrel.uses, {"lib/a.dart": ["A"], "lib/b.dart": ["Shout"]});
+    assert.deepEqual(barrel.uses, {"lib/a.dart": ["A"], "lib/b.dart": ["Shout"], "lib/c.dart": ["makeBox"]});
     assert.equal(conditional.target, "lib/io_impl.dart");
     assert.deepEqual(conditional.configurations.map((c) => [c.target, c.uses]),
       [["lib/web_impl.dart", {"lib/web_impl.dart": ["platform"]}]]);

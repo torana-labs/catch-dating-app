@@ -459,12 +459,17 @@ class _UseCollector extends RecursiveAstVisitor<void> {
     }
     final element = node.element;
     if (element is PrefixElement) return;
-    if (_topLevel(element) is ExtensionElement &&
-        _topLevel(element) != element) {
+    final top = _topLevel(element);
+    if (top is ExtensionElement && top != element) {
       // An extension member applies through any import of its extension.
       _record(element, anyPrefix: true);
       return;
     }
+    // A class, mixin or enum member needs no import of its own: `a.b` reaches
+    // it through `a`, and `Foo.b` names Foo, which is recorded where it is
+    // written. Recording the member's class would keep an import the
+    // analyzer calls unused once a move splits a barrel into direct imports.
+    if (top != null && top != element) return;
     _record(element, prefix: _prefixOf(node));
   }
 
