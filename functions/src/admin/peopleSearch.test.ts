@@ -5,7 +5,7 @@ import type {CallableRequest} from "firebase-functions/v2/https";
 import {FakeFirestore} from "../operations/testFirestore";
 import {contractValidator} from "../shared/contractTestValidators";
 import type {AdminSearchPeopleCallableResponse} from "../shared/generated/adminSearchPeopleCallableResponse";
-import {adminSearchPeopleHandler, peopleIndexDocument, syncPeopleIndex} from "./peopleSearch";
+import {adminSearchPeopleHandler, peopleIndexDocument, syncPeopleIndex, syncPeopleIndexFromSource} from "./peopleSearch";
 
 const validate = contractValidator<AdminSearchPeopleCallableResponse>("AdminSearchPeopleCallableResponse");
 const now = new Date("2026-10-31T12:00:00.000Z");
@@ -50,4 +50,18 @@ test("people search finds by name, phone or user id, and every search is audited
   assert.equal(audits.length, 5);
   assert.deepEqual(audits[2].after, {query: "+91 98200 40000", kind: "phone", resultCount: 1});
   await assert.rejects(h.search("riya", {salesStaff: true}), /not authorized/);
+});
+
+test("a late delivery of an older profile write indexes the current profile", async () => {
+  const db = new FakeFirestore();
+  const firestore = db as unknown as FirebaseFirestore.Firestore;
+  // Newer state: the person changed their name. The older event (name "Riya
+  // Old") is delivered last; the trigger ignores its payload and re-reads.
+  db.write("users/riya_uid_1", {name: "Riya New", phoneNumber: "+919820040000"});
+  assert.equal(await syncPeopleIndexFromSource(firestore, "riya_uid_1", now), true);
+  assert.equal(await syncPeopleIndexFromSource(firestore, "riya_uid_1", now), false);
+  assert.equal(db.read("adminPeopleIndex/riya_uid_1")?.name, "Riya New");
+  db.remove("users/riya_uid_1");
+  assert.equal(await syncPeopleIndexFromSource(firestore, "riya_uid_1", now), true);
+  assert.equal(db.read("adminPeopleIndex/riya_uid_1"), undefined);
 });

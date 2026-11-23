@@ -66,26 +66,52 @@ export function peopleIndexDocument(uid: string, user: Record<string, unknown> |
   };
 }
 
+/** The write that brings an index entry up to date: null when it already is. */
+function peopleIndexWrite(uid: string, user: Record<string, unknown> | undefined,
+  existing: FirebaseFirestore.DocumentData | undefined, now: Date): PeopleIndexDocument | "delete" | null {
+  const entry = peopleIndexDocument(uid, user, now);
+  if (!entry) return existing ? "delete" : null;
+  if (existing && JSON.stringify({...existing, updatedAt: ""}) === JSON.stringify({...entry, updatedAt: ""})) return null;
+  return entry;
+}
+
 /** Writes the index entry only when it changed; true when it wrote. */
 export async function syncPeopleIndex(db: FirebaseFirestore.Firestore, uid: string,
   user: Record<string, unknown> | undefined, now: Date): Promise<boolean> {
   const ref = db.collection(PEOPLE_INDEX_COLLECTION).doc(uid);
-  const entry = peopleIndexDocument(uid, user, now);
-  const existing = (await ref.get()).data();
-  if (!entry) {
-    if (!existing) return false;
-    await ref.delete();
-    return true;
-  }
-  if (existing && JSON.stringify({...existing, updatedAt: ""}) === JSON.stringify({...entry, updatedAt: ""})) return false;
-  await ref.set(entry);
+  const write = peopleIndexWrite(uid, user, (await ref.get()).data(), now);
+  if (write === null) return false;
+  if (write === "delete") await ref.delete();
+  else await ref.set(write);
   return true;
 }
 
-/** Not retried (a retrying trigger needs a forced deploy); reconcileAdminInboxNightly catches up. */
-export const onUserWrittenIndexPeople = onDocumentWritten({document: "users/{uid}"},
+/**
+ * Re-reads users/{uid} and writes its index entry in one transaction, so a
+ * late, repeated or out-of-order trigger delivery indexes the current profile,
+ * never the older one its payload carried. True when it wrote.
+ */
+export async function syncPeopleIndexFromSource(db: FirebaseFirestore.Firestore, uid: string,
+  now: Date): Promise<boolean> {
+  const ref = db.collection(PEOPLE_INDEX_COLLECTION).doc(uid);
+  const userRef = db.collection("users").doc(uid);
+  return db.runTransaction(async (tx) => {
+    const [user, existing] = await Promise.all([tx.get(userRef), tx.get(ref)]);
+    const write = peopleIndexWrite(uid, user.data(), existing.data(), now);
+    if (write === null) return false;
+    if (write === "delete") tx.delete(ref);
+    else tx.set(ref, write);
+    return true;
+  });
+}
+
+/**
+ * Retried on failure; the payload only names the person, and the entry comes
+ * from the re-read profile. reconcileAdminInboxNightly still re-indexes everyone.
+ */
+export const onUserWrittenIndexPeople = onDocumentWritten({document: "users/{uid}", retry: true},
   async (event) => {
-    await syncPeopleIndex(admin.firestore(), event.params.uid, event.data?.after.data(), new Date());
+    await syncPeopleIndexFromSource(admin.firestore(), event.params.uid, new Date());
   });
 
 interface PeopleSearchDeps {

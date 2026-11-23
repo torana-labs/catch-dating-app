@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  syncAuthoredReviewReviewerProfile,
   syncOrganizerHostProfile,
   syncHostProfileProjectionsHandler,
   syncUserProfileProjectionsHandler,
@@ -32,7 +31,7 @@ class FakeDocRef {
 }
 
 class FakeBatch {
-  private readonly writes: Array<() => void> = [];
+  protected readonly writes: Array<() => void> = [];
 
   set(ref: FakeDocRef, data: FakeData, options: {merge: boolean}) {
     this.writes.push(() => ref.firestore.set(ref.path, data, options));
@@ -44,9 +43,17 @@ class FakeBatch {
 }
 
 class FakeTransaction extends FakeBatch {
-  async get(ref: FakeDocRef) {
+  async get(ref: FakeDocRef | {get: () => Promise<unknown>}) {
+    assert.equal(this.writes.length, 0, "Firestore reads must precede writes");
+    if (!(ref instanceof FakeDocRef)) return ref.get();
     const data = ref.firestore.get(ref.path);
-    return {ref, exists: data !== undefined, data: () => data};
+    return {ref, exists: data !== undefined, data: () => data,
+      updateTime: data === undefined ? undefined :
+        ref.firestore.updateTime(ref.path)};
+  }
+
+  delete(ref: FakeDocRef) {
+    this.writes.push(() => ref.firestore.delete(ref.path));
   }
 
   update(ref: FakeDocRef, data: FakeData) {
@@ -55,8 +62,13 @@ class FakeTransaction extends FakeBatch {
   }
 }
 
+/** A Timestamp-shaped update time; each write gets a later one. */
+type FakeTime = {seconds: number; nanoseconds: number};
+
 class FakeFirestore {
   afterQuery?: (collectionPath: string, field?: string) => Promise<void>;
+  private readonly updateTimes = new Map<string, FakeTime>();
+  private clock = 0;
 
   async runTransaction<T>(body: (tx: FakeTransaction) => Promise<T>) {
     const tx = new FakeTransaction();
@@ -82,10 +94,19 @@ class FakeFirestore {
   set(path: string, data: FakeData, options?: {merge: boolean}) {
     const current = this.docs[path] ?? {};
     this.docs[path] = options?.merge ? {...current, ...data} : data;
+    this.clock += 1;
+    this.updateTimes.set(path,
+      {seconds: 1_800_000_000, nanoseconds: this.clock});
   }
 
   delete(path: string) {
     delete this.docs[path];
+    this.updateTimes.delete(path);
+  }
+
+  updateTime(path: string): FakeTime {
+    return this.updateTimes.get(path) ??
+      {seconds: 1_700_000_000, nanoseconds: 0};
   }
 }
 
@@ -205,10 +226,19 @@ function profilePhotos(thumbnailUrl = "https://example.test/thumb-1.jpg") {
 test("syncUserProfileProjectionsHandler syncs public profile and reviews only",
   async () => {
     const firestore = new FakeFirestore({
+      "users/host-1": completeUser({
+        displayName: "Asha Updated",
+        profilePhotos: profilePhotos("https://example.test/new-thumb.jpg"),
+      }),
       "reviews/event-1~host-1": {
         reviewerUserId: "host-1",
         reviewerName: "Old Reviewer",
         rating: 5,
+      },
+      "reviews/event-2~host-1": {
+        reviewerUserId: "host-1",
+        reviewerName: "Older Reviewer",
+        rating: 3,
       },
       "reviews/event-1~other-host": {
         reviewerUserId: "other-host",
@@ -217,14 +247,11 @@ test("syncUserProfileProjectionsHandler syncs public profile and reviews only",
       },
     });
 
-    await syncUserProfileProjectionsHandler(
+    assert.equal(await syncUserProfileProjectionsHandler(
       "host-1",
-      completeUser({
-        displayName: "Asha Updated",
-        profilePhotos: profilePhotos("https://example.test/new-thumb.jpg"),
-      }) as never,
+      undefined,
       {firestore: () => firestore as never}
-    );
+    ), "synced");
 
     assert.equal(
       firestore.get("publicProfiles/host-1")?.name,
@@ -232,6 +259,10 @@ test("syncUserProfileProjectionsHandler syncs public profile and reviews only",
     );
     assert.equal(
       firestore.get("reviews/event-1~host-1")?.reviewerName,
+      "Asha Updated"
+    );
+    assert.equal(
+      firestore.get("reviews/event-2~host-1")?.reviewerName,
       "Asha Updated"
     );
     assert.equal(
@@ -244,16 +275,15 @@ test("syncUserProfileProjectionsHandler syncs public profile and reviews only",
 test("syncUserProfileProjectionsHandler deletes profiles below social-ready",
   async () => {
     const firestore = new FakeFirestore({
+      "users/host-1": completeUser({profileComplete: false}),
       "publicProfiles/host-1": {name: "Old Public"},
     });
 
-    await syncUserProfileProjectionsHandler(
+    assert.equal(await syncUserProfileProjectionsHandler(
       "host-1",
-      completeUser({
-        profileComplete: false,
-      }) as never,
+      undefined,
       {firestore: () => firestore as never}
-    );
+    ), "deleted");
 
     assert.equal(firestore.get("publicProfiles/host-1"), undefined);
   }
@@ -294,8 +324,12 @@ test("syncOrganizerHostProfile updates organizer hosts",
 
 test("syncHostProfileProjectionsHandler owns organizer host display snapshots",
   async () => {
-    const timestamp = {} as FirebaseFirestore.Timestamp;
     const firestore = new FakeFirestore({
+      "hostProfiles/host-1": {
+        displayName: "Asha Studio",
+        avatarUrl: "https://example.test/host-avatar.jpg",
+        status: "active",
+      },
       "organizers/club-1": {
         ownerUserId: "host-1",
         hostUserId: "host-1",
@@ -325,13 +359,6 @@ test("syncHostProfileProjectionsHandler owns organizer host display snapshots",
 
     await syncHostProfileProjectionsHandler(
       "host-1",
-      {
-        displayName: "Asha Studio",
-        avatarUrl: "https://example.test/host-avatar.jpg",
-        status: "active",
-        createdAt: timestamp,
-        updatedAt: timestamp,
-      },
       {firestore: () => firestore as never}
     );
 
@@ -376,7 +403,6 @@ test("syncHostProfileProjectionsHandler never falls back to dating identity",
 
     await syncHostProfileProjectionsHandler(
       "host-1",
-      undefined,
       {firestore: () => firestore as never}
     );
 
@@ -387,57 +413,96 @@ test("syncHostProfileProjectionsHandler never falls back to dating identity",
   }
 );
 
-test("syncAuthoredReviewReviewerProfile updates every review by the user",
-  async () => {
-    const firestore = new FakeFirestore({
-      "reviews/event-1~reviewer-1": {
-        reviewerUserId: "reviewer-1",
-        reviewerName: "Old 1",
-      },
-      "reviews/event-2~reviewer-1": {
-        reviewerUserId: "reviewer-1",
-        reviewerName: "Old 2",
-      },
-      "reviews/event-1~reviewer-2": {
-        reviewerUserId: "reviewer-2",
-        reviewerName: "Other",
-      },
-    });
-
-    await syncAuthoredReviewReviewerProfile(
-      "reviewer-1",
-      {reviewerName: "New Reviewer"},
-      {firestore: () => firestore as never}
-    );
-
-    assert.equal(
-      firestore.get("reviews/event-1~reviewer-1")?.reviewerName,
-      "New Reviewer"
-    );
-    assert.equal(
-      firestore.get("reviews/event-2~reviewer-1")?.reviewerName,
-      "New Reviewer"
-    );
-    assert.equal(
-      firestore.get("reviews/event-1~reviewer-2")?.reviewerName,
-      "Other"
-    );
-  }
-);
-
 test("syncUserProfileProjectionsHandler deletes public profile on user delete",
   async () => {
     const firestore = new FakeFirestore({
       "publicProfiles/host-1": {name: "Asha"},
     });
 
-    await syncUserProfileProjectionsHandler(
+    assert.equal(await syncUserProfileProjectionsHandler(
       "host-1",
-      undefined,
+      null,
       {firestore: () => firestore as never}
-    );
+    ), "deleted");
 
     assert.equal(firestore.get("publicProfiles/host-1"), undefined);
+  }
+);
+
+test("out-of-order user writes leave the public profile at the newer state",
+  async () => {
+    const firestore = new FakeFirestore({});
+    const deps = {firestore: () => firestore as never};
+    // Write 1 publishes a company; write 2 removes it and renames.
+    firestore.set("users/host-1", completeUser({company: "Fictional Labs"}));
+    const olderVersion = firestore.updateTime("users/host-1");
+    firestore.set("users/host-1", completeUser({displayName: "Asha Private"}));
+    const newerVersion = firestore.updateTime("users/host-1");
+
+    // The newer event is delivered first, then the older one.
+    assert.equal(await syncUserProfileProjectionsHandler("host-1",
+      newerVersion as never, deps), "synced");
+    assert.equal(await syncUserProfileProjectionsHandler("host-1",
+      olderVersion as never, deps), "stale");
+
+    const projected = firestore.get("publicProfiles/host-1");
+    assert.equal(projected?.name, "Asha Private");
+    assert.equal(projected?.company, undefined);
+  }
+);
+
+test("a late event projects the re-read source, never its own payload",
+  async () => {
+    const firestore = new FakeFirestore({});
+    const deps = {firestore: () => firestore as never};
+    firestore.set("users/host-1", completeUser({company: "Fictional Labs"}));
+    const olderVersion = firestore.updateTime("users/host-1");
+    firestore.set("users/host-1", completeUser({displayName: "Asha Private"}));
+
+    // Even with no version to compare (a repair call), the handler projects
+    // the re-read source, so the removed company is never published.
+    assert.equal(await syncUserProfileProjectionsHandler("host-1",
+      undefined, deps), "synced");
+    assert.equal(firestore.get("publicProfiles/host-1")?.company, undefined);
+    assert.equal(await syncUserProfileProjectionsHandler("host-1",
+      olderVersion as never, deps), "stale");
+    assert.equal(firestore.get("publicProfiles/host-1")?.name, "Asha Private");
+  }
+);
+
+test("a delete event delivered after a re-create keeps the profile",
+  async () => {
+    const firestore = new FakeFirestore({});
+    const deps = {firestore: () => firestore as never};
+    firestore.set("users/host-1", completeUser());
+    assert.equal(await syncUserProfileProjectionsHandler("host-1",
+      firestore.updateTime("users/host-1") as never, deps), "synced");
+    // The re-created profile is the current state; the delete event is stale.
+    assert.equal(await syncUserProfileProjectionsHandler("host-1", null, deps),
+      "stale");
+    assert.ok(firestore.get("publicProfiles/host-1"));
+
+    // An old create event delivered after a real delete cannot resurrect it.
+    const createdVersion = firestore.updateTime("users/host-1");
+    firestore.delete("users/host-1");
+    assert.equal(await syncUserProfileProjectionsHandler("host-1",
+      createdVersion as never, deps), "deleted");
+    assert.equal(firestore.get("publicProfiles/host-1"), undefined);
+  }
+);
+
+test("a late host profile event writes the current host profile",
+  async () => {
+    const firestore = new FakeFirestore({
+      "hostProfiles/host-1": {displayName: "Current Studio", avatarUrl: null},
+      "organizers/organizer-1": {
+        hostUserId: "host-1", hostName: "Old", hostProfiles: [],
+      },
+    });
+    await syncHostProfileProjectionsHandler("host-1",
+      {firestore: () => firestore as never});
+    assert.equal(firestore.get("organizers/organizer-1")?.hostName,
+      "Current Studio");
   }
 );
 

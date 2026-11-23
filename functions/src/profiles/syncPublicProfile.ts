@@ -20,114 +20,182 @@ const defaultDeps: SyncPublicProfileDeps = {
   firestore: () => admin.firestore(),
 };
 
-export const syncPublicProfile = onDocumentWritten(
-  "users/{userId}",
-  async (event) => {
-    const {userId} = event.params;
-    const user = event.data?.after.data() as UserProfileDocument | undefined;
-    await syncUserProfileProjectionsHandler(userId, user);
-  }
-);
+/** Organizer host display fields projected from hostProfiles. */
+interface HostPatch {hostName: string; hostAvatarUrl: string | null}
 
-export const syncHostProfile = onDocumentWritten(
-  "hostProfiles/{userId}",
+/**
+ * What a trigger event saw of its source: the document's updateTime, or null
+ * when the event is a delete.
+ */
+export type SourceVersion = FirebaseFirestore.Timestamp | null;
+
+/**
+ * Re-projects publicProfiles/{uid} and authored review names from the current
+ * users/{uid}. The payload is never projected: the handler re-reads the source
+ * in a transaction, so an older or repeated delivery cannot republish a field
+ * the person has since changed, and retrying is safe.
+ */
+export const syncPublicProfile = onDocumentWritten(
+  {document: "users/{userId}", retry: true},
   async (event) => {
-    const {userId} = event.params;
-    const hostProfile = event.data?.after.data() as
-      HostProfileDocument | undefined;
-    await syncHostProfileProjectionsHandler(userId, hostProfile);
+    await syncUserProfileProjectionsHandler(event.params.userId,
+      sourceVersionOf(event.data?.after));
   }
 );
 
 /**
- * Syncs public/profile-owned denormalized projections after users/{uid} writes.
- * @param {string} userId User id whose private profile changed.
- * @param {UserProfileDocument | undefined} user Current user profile, undefined
- * when the source document was deleted.
- * @param {SyncPublicProfileDeps} deps Injectable Firebase dependencies.
- * @return {Promise<void>}
+ * Re-projects organizer host snapshots from the current hostProfiles/{uid},
+ * re-read inside each organizer transaction; retrying is safe.
  */
-export async function syncUserProfileProjectionsHandler(
-  userId: string,
-  user: UserProfileDocument | undefined,
-  deps: SyncPublicProfileDeps = defaultDeps
-): Promise<void> {
-  const db = deps.firestore();
-  const publicProfileRef = db.collection("publicProfiles").doc(userId);
-
-  // User deleted — remove public profile too
-  if (!user) {
-    logger.info("Deleting public profile", {userId});
-    await publicProfileRef.delete();
-    return;
+export const syncHostProfile = onDocumentWritten(
+  {document: "hostProfiles/{userId}", retry: true},
+  async (event) => {
+    await syncHostProfileProjectionsHandler(event.params.userId);
   }
+);
 
-  if (user.deleted) {
-    logger.info("Deleting public profile for deleted user", {userId});
-    await publicProfileRef.delete();
-    return;
-  }
-
-  if (!isSocialReadyUserProfile(user)) {
-    logger.info("Deleting public profile for incomplete social profile", {
-      userId,
-    });
-    await publicProfileRef.delete();
-    return;
-  }
-
-  const publicProfile = publicProfileFromUserProfileDoc(user);
-
-  // Block underage users from appearing in any swipe queue.
-  if (publicProfile.age < 18) {
-    logger.warn("Blocking underage public profile sync", {
-      userId,
-      age: publicProfile.age,
-    });
-    await publicProfileRef.delete();
-    return;
-  }
-
-  logger.info("Syncing public profile", {userId});
-  await Promise.all([
-    publicProfileRef.set(publicProfile),
-    syncAuthoredReviewReviewerProfile(userId, {
-      reviewerName: publicProfile.name,
-    }, deps),
-  ]);
+/**
+ * The source version a trigger event carried.
+ * @param {FirebaseFirestore.DocumentSnapshot | undefined} after Event after.
+ * @return {SourceVersion | undefined} updateTime, null for a delete, or
+ * undefined when the event carried no snapshot.
+ */
+function sourceVersionOf(
+  after: FirebaseFirestore.DocumentSnapshot | undefined
+): SourceVersion | undefined {
+  if (!after) return undefined;
+  return after.exists ? after.updateTime ?? undefined : null;
 }
 
 /**
- * Syncs organizer-owned denormalized host projections.
+ * Whether a newer write to the source has landed since the event.
+ * @param {FirebaseFirestore.DocumentSnapshot} source Re-read source.
+ * @param {SourceVersion | undefined} eventVersion What the event saw.
+ * @return {boolean} True when a later event owns the projection.
+ */
+function isStaleEvent(
+  source: FirebaseFirestore.DocumentSnapshot,
+  eventVersion: SourceVersion | undefined
+): boolean {
+  if (eventVersion === undefined || !source.exists) return false;
+  // The source exists now, so a delete event was followed by a re-create.
+  if (eventVersion === null) return true;
+  const current = source.updateTime;
+  if (!current) return false;
+  return current.seconds > eventVersion.seconds ||
+    (current.seconds === eventVersion.seconds &&
+      current.nanoseconds > eventVersion.nanoseconds);
+}
+
+/**
+ * Why a user has no public profile, or null when they have one.
+ * @param {UserProfileDocument | undefined} user Current user profile.
+ * @return {string | null} Reason for logs.
+ */
+function hiddenReason(user: UserProfileDocument | undefined): string | null {
+  if (!user) return "user deleted";
+  if (user.deleted) return "user marked deleted";
+  if (!isSocialReadyUserProfile(user)) return "incomplete social profile";
+  return null;
+}
+
+/**
+ * Syncs public/profile-owned denormalized projections from the current
+ * users/{uid}. It re-reads the source inside a transaction and projects that,
+ * so the result always matches the source at commit. An event older than the
+ * source's current version is skipped: the newer event (retried until it
+ * succeeds) owns the projection.
+ * @param {string} userId User id whose private profile changed.
+ * @param {SourceVersion | undefined} eventVersion The source version the
+ * trigger event saw; undefined skips the staleness check (repairs).
+ * @param {SyncPublicProfileDeps} deps Injectable Firebase dependencies.
+ * @return {Promise<"synced" | "deleted" | "stale">} What the call did.
+ */
+export async function syncUserProfileProjectionsHandler(
+  userId: string,
+  eventVersion?: SourceVersion,
+  deps: SyncPublicProfileDeps = defaultDeps
+): Promise<"synced" | "deleted" | "stale"> {
+  const db = deps.firestore();
+  const userRef = db.collection("users").doc(userId);
+  const publicProfileRef = db.collection("publicProfiles").doc(userId);
+  const authoredReviews = db.collection("reviews")
+    .where("reviewerUserId", "==", userId);
+
+  const result = await db.runTransaction(async (tx) => {
+    const source = await tx.get(userRef);
+    if (isStaleEvent(source, eventVersion)) return "stale" as const;
+    const user = source.data() as UserProfileDocument | undefined;
+    const reason = hiddenReason(user);
+    if (reason || !user) {
+      tx.delete(publicProfileRef);
+      return reason ?? "user deleted";
+    }
+    const publicProfile = publicProfileFromUserProfileDoc(user);
+    // Block underage users from appearing in any swipe queue.
+    if (publicProfile.age < 18) {
+      tx.delete(publicProfileRef);
+      return "underage";
+    }
+    const reviews = await tx.get(authoredReviews);
+    tx.set(publicProfileRef, publicProfile);
+    for (const review of reviews.docs) {
+      tx.set(review.ref, {reviewerName: publicProfile.name}, {merge: true});
+    }
+    return "synced" as const;
+  });
+
+  if (result === "stale") {
+    logger.info("Skipping stale public profile event", {userId});
+    return "stale";
+  }
+  if (result === "synced") {
+    logger.info("Synced public profile", {userId});
+    return "synced";
+  }
+  if (result === "underage") {
+    logger.warn("Blocking underage public profile sync", {userId});
+  } else {
+    logger.info("Deleted public profile", {userId, reason: result});
+  }
+  return "deleted";
+}
+
+/**
+ * Syncs organizer-owned denormalized host projections from the current
+ * hostProfiles/{uid}, re-read inside each organizer transaction.
  * @param {string} userId Host user id.
- * @param {HostProfileDocument | undefined} hostProfile Current host profile,
- * undefined when the source document was deleted.
  * @param {SyncPublicProfileDeps} deps Injectable Firebase dependencies.
  * @return {Promise<void>}
  */
 export async function syncHostProfileProjectionsHandler(
   userId: string,
-  hostProfile: HostProfileDocument | undefined,
   deps: SyncPublicProfileDeps = defaultDeps
 ): Promise<void> {
-  await syncOrganizerHostProfile(userId, {
-    hostName: nonBlank(hostProfile?.displayName) ?? "Catch Host",
-    hostAvatarUrl: nonBlank(hostProfile?.avatarUrl),
+  const hostProfileRef = deps.firestore().collection("hostProfiles")
+    .doc(userId);
+  await syncOrganizerHostProfile(userId, async (tx) => {
+    const hostProfile = (await tx.get(hostProfileRef)).data() as
+      HostProfileDocument | undefined;
+    return {
+      hostName: nonBlank(hostProfile?.displayName) ?? "Catch Host",
+      hostAvatarUrl: nonBlank(hostProfile?.avatarUrl),
+    };
   }, deps);
 }
 
 /**
  * Updates organizer denormalized professional host profile fields.
  * @param {string} userId Host user id.
- * @param {object} patch Host projection patch.
- * @param {string} patch.hostName Professional host display name.
- * @param {string | null} patch.hostAvatarUrl Professional host avatar URL.
+ * @param {HostPatch | function} patch Host projection patch, or a reader
+ * that loads it inside each organizer transaction.
  * @param {SyncPublicProfileDeps} deps Injectable Firebase dependencies.
  * @return {Promise<void>}
  */
 export async function syncOrganizerHostProfile(
   userId: string,
-  patch: {hostName: string; hostAvatarUrl: string | null},
+  patch: HostPatch |
+    ((tx: FirebaseFirestore.Transaction) => Promise<HostPatch>),
   deps: SyncPublicProfileDeps = defaultDeps
 ): Promise<void> {
   const db = deps.firestore();
@@ -158,47 +226,23 @@ export async function syncOrganizerHostProfile(
         Parameters<typeof organizerHostProfiles>[0];
       const managerIds = new Set(organizerManagerUserIds(organizer));
       if (!managerIds.has(userId)) return;
+      const host = typeof patch === "function" ? await patch(tx) : patch;
 
       const fields: Record<string, unknown> = {};
       if (organizer.hostUserId === userId) {
-        fields.hostName = patch.hostName;
-        fields.hostAvatarUrl = patch.hostAvatarUrl;
+        fields.hostName = host.hostName;
+        fields.hostAvatarUrl = host.hostAvatarUrl;
       }
       fields.hostProfiles = organizerHostProfiles(organizer)
-        .filter((host) => managerIds.has(host.uid))
-        .map((host) => host.uid === userId ?
-          {...host, displayName: patch.hostName,
-            avatarUrl: patch.hostAvatarUrl} :
-          host
+        .filter((profile) => managerIds.has(profile.uid))
+        .map((profile) => profile.uid === userId ?
+          {...profile, displayName: host.hostName,
+            avatarUrl: host.hostAvatarUrl} :
+          profile
         );
       tx.update(candidate.ref, fields);
     });
   }
-}
-
-/**
- * Updates authored review denormalized reviewer profile fields.
- * @param {string} userId Reviewer user id.
- * @param {object} patch Reviewer projection patch.
- * @param {string} patch.reviewerName Public reviewer display name.
- * @param {SyncPublicProfileDeps} deps Injectable Firebase dependencies.
- * @return {Promise<void>}
- */
-export async function syncAuthoredReviewReviewerProfile(
-  userId: string,
-  patch: {reviewerName: string},
-  deps: SyncPublicProfileDeps = defaultDeps
-): Promise<void> {
-  const db = deps.firestore();
-  const reviewsSnap = await db
-    .collection("reviews")
-    .where("reviewerUserId", "==", userId)
-    .get();
-  if (reviewsSnap.empty) return;
-
-  const batch = db.batch();
-  reviewsSnap.docs.forEach((doc) => batch.set(doc.ref, patch, {merge: true}));
-  await batch.commit();
 }
 
 /**
