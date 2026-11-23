@@ -4,7 +4,7 @@
 // app imports another app's files, and a file moving into lib/pages or
 // lib/contexts imports only the layers below it.
 import path from "node:path";
-import {packageOfPath} from "./dart_moves.mjs";
+import {packageOfPath, resolveUri} from "./dart_moves.mjs";
 import {placePath} from "../check_context_map.mjs";
 import {
   appWalks,
@@ -251,9 +251,14 @@ export function missingDependencies({moves, read, packages, dependenciesOf}) {
     const source = read(from) ?? "";
     const isTest = !to.startsWith(owner.lib);
     const declared = dependenciesOf(owner, {dev: isTest});
-    for (const match of source.matchAll(/^(?:import|export)\s+['"]package:([A-Za-z_][A-Za-z0-9_]*)\//gmu)) {
-      const name = match[1];
+    for (const match of source.matchAll(/^(?:import|export)\s+['"](package:([A-Za-z_][A-Za-z0-9_]*)\/[^'"]*)['"]/gmu)) {
+      const name = match[2];
       if (name === owner.name || declared.has(name)) continue;
+      // A file of the same group that lands in this package is no dependency:
+      // the move rewrites the import to the owner package.
+      const target = resolveUri(from, match[1], packages);
+      const landing = target == null ? null : moves.get(target) ?? null;
+      if (landing != null && packageOfPath(landing, packages)?.name === owner.name) continue;
       const key = `${owner.dir}pubspec.yaml`;
       const needed = missing.get(key) ?? new Map();
       needed.set(name, [...(needed.get(name) ?? []), from]);
