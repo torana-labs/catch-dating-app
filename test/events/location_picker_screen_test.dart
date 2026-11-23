@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/events/data/places_repository.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
-import 'package:catch_dating_app/locations/shared/location_map.dart';
+import 'package:catch_dating_app/pages/event/location/location_map.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_platform/theme/app_theme.dart';

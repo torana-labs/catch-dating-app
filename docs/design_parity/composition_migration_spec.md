@@ -378,7 +378,7 @@ connect routes to sections, states, captures, and controller owners:
   "route": "/events/:id",
   "owner": "events",
   "controller": "eventDetailControllerProvider",
-  "source": "lib/events/presentation/event_detail_screen.dart",
+  "source": "lib/pages/event/event_detail_screen.dart",
   "states": [
     "loading",
     "populated",

@@ -3676,7 +3676,7 @@ Reference implementation:
   at the app boundary;
 - presentation-state factories such as
   `lib/onboarding/presentation/onboarding_flow_state.dart`,
-  `lib/events/presentation/event_detail_screen_state.dart`, and
+  `lib/pages/event/event_detail_screen_state.dart`, and
   `lib/event_success/presentation/event_success_companion_screen_state.dart`
   — receive `AppLocalizations` explicitly and return resolved display copy;
 - `lib/contexts/events/parts/event_activity_visuals.dart` — resolves semantic taxonomy
@@ -4857,9 +4857,9 @@ Reference files:
 - `lib/contexts/connections/domain/cross_paths_pair_hold.dart`
 - `lib/cross_paths/presentation/cross_paths_invitation_controller.dart`
 - `lib/cross_paths/presentation/cross_paths_invitation_screen.dart`
-- `lib/cross_paths/presentation/cross_paths_event_consent_controller.dart`
-- `lib/cross_paths/presentation/cross_paths_event_consent_state.dart`
-- `lib/cross_paths/presentation/cross_paths_event_consent_section.dart`
+- `lib/pages/event/cross_paths_event_consent_controller.dart`
+- `lib/pages/event/cross_paths_event_consent_state.dart`
+- `lib/pages/event/cross_paths_event_consent_section.dart`
 - `lib/contexts/events/domain/event.dart`
 - `lib/safety/presentation/settings_screen.dart`
 - `functions/src/crossPaths/pilotPolicy.ts`
@@ -4868,7 +4868,7 @@ Reference files:
 - `functions/src/crossPaths/pairHolds.ts`
 - `functions/src/events/eventPolicy.ts`
 - `functions/src/events/signUpUserForEvent.ts`
-- `test/cross_paths/cross_paths_event_consent_section_test.dart`
+- `test/pages/event/cross_paths_event_consent_section_test.dart`
 
 Use layered consent for an identifiable people surface: a private default-false
 global preference is the master permission, a deterministic caller-scoped edge
@@ -4971,10 +4971,10 @@ Preserve these boundaries in later adopters:
 
 Reference files:
 
-- `lib/events/presentation/event_detail_screen.dart`
-- `lib/events/presentation/event_detail_controller.dart`
-- `lib/events/presentation/widgets/event_detail_body.dart`
-- `test/events/event_detail_controller_test.dart`
+- `lib/pages/event/event_detail_screen.dart`
+- `lib/pages/event/event_detail_controller.dart`
+- `lib/pages/event/widgets/event_detail_body.dart`
+- `test/pages/event/event_detail_controller_test.dart`
 - `test/events/event_detail_widgets_test.dart`
 - `design/screens/catch.screens.json`
 - `widgetbook/lib/events/catalog/detail_screen.dart`

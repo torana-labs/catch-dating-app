@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_detail_dock.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/goldens/golden_pump.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';

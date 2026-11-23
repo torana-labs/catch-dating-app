@@ -3873,7 +3873,7 @@
       ],
       "evidence": [
         {
-          "path": "test/events/event_detail_screen_state_test.dart",
+          "path": "test/pages/event/event_detail_screen_state_test.dart",
           "contains": [
             "derives eligible paid and paid-unsupported booking states",
             "locks member context for guests",

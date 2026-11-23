@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/bookings/data/event_viewer_state_provi
 import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_detail_dock.dart';
 import 'package:catch_kernel/organizer_supply_capabilities.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';

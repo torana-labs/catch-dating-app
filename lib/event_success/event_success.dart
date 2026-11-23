@@ -46,8 +46,6 @@ export 'presentation/event_assistance_runtime_copy.dart'
 export 'presentation/event_assistance_runtime_limits_section.dart'; // public-api: shared value controls without sender authority
 export 'presentation/event_assistance_sweep_section.dart'; // public-api: shared live and rehearsal sweep roster
 export 'presentation/event_assistance_visit_section.dart'; // public-api: shared live and rehearsal visit observation controls
-export 'presentation/event_message_preferences_navigation_section.dart'; // public-api: consumer event message preferences entry
-export 'presentation/event_sender_preference_controller.dart'; // public-api: verified participant WhatsApp and RCS sender navigation and consent state
 export 'presentation/event_sms_preference_controller.dart'; // public-api: verified participant SMS review and mutation state for guest route composition
 export 'presentation/event_success_companion_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/event_success_defaults_section.dart'; // public-api: shared presentation component used outside this feature

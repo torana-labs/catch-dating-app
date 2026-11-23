@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_event_facts.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
+import 'package:catch_dating_app/pages/event/event_detail_screen_state.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -17,8 +17,8 @@ import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart'
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/pages/event/event_detail_screen.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/routing/route_contract.dart' as app_router;
 import 'package:catch_platform/theme/app_theme.dart';
