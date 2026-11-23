@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {dartIoTests, parseStraceLog, readMapRow, shardOf} from "./test_read_map.mjs";
+import {fileReadingTests, packageOf, parseStraceLog, readMapRow, shardOf} from "./test_read_map.mjs";
 
 const LOG = `100 execve("/opt/flutter/bin/cache/dart-sdk/bin/dart", ["dart"], 0x0 /* 1 vars */) = 0
 100 clone3({flags=CLONE_VM}, 88 <unfinished ...>
@@ -29,6 +29,13 @@ test("each read is attributed to the process kind that made it, threads and chil
   assert.deepEqual(map.tool.opened, ["pubspec.yaml"]);
 });
 
+test("relative paths resolve against the directory the test ran in", () => {
+  const log = `201 openat(AT_FDCWD, "test/fixtures/a.json", O_RDONLY) = 5\n` +
+    `201 openat(AT_FDCWD, "/repo/contracts/b.json", O_RDONLY) = 6\n`;
+  assert.deepEqual(parseStraceLog(log, "/repo", "/repo/apps/host").tool.opened,
+    ["apps/host/test/fixtures/a.json", "contracts/b.json"]);
+});
+
 test("paths outside the repository and generated state are not inputs", () => {
   const all = Object.values(parseStraceLog(LOG, "/repo")).flatMap((kind) =>
     (Array.isArray(kind) ? [] : Object.values(kind).flat()));
@@ -43,12 +50,16 @@ test("an empty or truncated log yields an empty map instead of failing", () => {
   assert.deepEqual(parseStraceLog("201 openat(AT_FDCWD, \"/repo/a", "/repo").tool.opened, []);
 });
 
-test("only test files under test/ that import dart:io are traced, sorted and sharded round-robin", () => {
+test("root and app test files that read files are traced, sorted and sharded round-robin", () => {
   const sources = {"test/b_test.dart": "import 'dart:io';\n", "test/a_test.dart": "import \"dart:io\";",
     "test/c_test.dart": "import 'package:x/x.dart';", "test/helper.dart": "import 'dart:io';",
+    "test/r_test.dart": "import 'package:catch_test_support/repo_file.dart';",
+    "apps/host/test/h_test.dart": "import 'package:catch_test_support/repo_file.dart';",
+    "apps/host/integration_test/j_test.dart": "import 'dart:io';",
     "packages/p/test/d_test.dart": "import 'dart:io';"};
-  const tests = dartIoTests(Object.keys(sources), (file) => sources[file]);
-  assert.deepEqual(tests, ["test/a_test.dart", "test/b_test.dart"]);
+  const tests = fileReadingTests(Object.keys(sources), (file) => sources[file]);
+  assert.deepEqual(tests, ["apps/host/test/h_test.dart", "test/a_test.dart", "test/b_test.dart", "test/r_test.dart"]);
+  assert.deepEqual(tests.map(packageOf), ["apps/host", ".", ".", "."]);
   const five = ["1", "2", "3", "4", "5"];
   assert.deepEqual([0, 1, 2].map((index) => shardOf(five, index, 3)), [["1", "4"], ["2", "5"], ["3"]]);
   assert.throws(() => shardOf(five, 3, 3), /shard/u);

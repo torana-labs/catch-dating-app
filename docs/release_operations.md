@@ -482,13 +482,18 @@ Root and app-package Flutter unit/widget tests are selected by
 objects. Dart's parser follows imports, exports, conditional imports and parts
 in both snapshots, so deleted or moved dependencies remain covered. Every
 ancestor `flutter_test_config.dart` counts as an import of the tests beneath it.
-A test that reaches a `dart:io` file under `test/` or `tool/` runs only when a
+A test that reaches a file-reading file under `test/`, `tool/`, an app
+package's `test/` or `packages/catch_test_support/lib/` runs only when a
 changed path is one that file can read, if those reads are bounded
-(`tool/harness/lib/flutter_test_reads.dart`). Reads are bounded when every
-path the file gives `File`, `Directory`, `Link` or `FileSystemEntity` is a
-string literal, a constant of the same file, or an interpolation or
-conditional of those, or when the file names its roots in a
-`// test-selection-reads:` comment (TESTS.md, "Filesystem reads"). A changed
+(`tool/harness/lib/flutter_test_reads.dart`). A file reads files when it
+imports `dart:io` or the `repoFile()` library of `packages/catch_test_support`.
+Reads are bounded when every path the file gives `File`, `Directory`, `Link`,
+`FileSystemEntity`, `repoFile` or `repoDirectory` is a string literal, a
+constant of the same file, or an interpolation or conditional of those, or
+when the file names its roots in a `// test-selection-reads:` comment
+(TESTS.md, "Filesystem reads"). `repoFile` paths are repository paths;
+other paths resolve against the test's package directory, so a shared
+test-support helper with one is a probe. A changed
 path such a test can read counts as covered, so a test fixture with a known
 reader no longer keeps the full suite. Any other `dart:io` file is a filesystem
 probe and its tests always run, as does a declared file that uses `Process`,
@@ -2554,9 +2559,11 @@ planned those lanes at all.
 
 `Test read map` (`.github/workflows/test-read-map.yml`, driven by
 `tool/ci/test_read_map.mjs`) runs nightly at 03:41 UTC and on dispatch, in
-shadow (RE decision, 22 Nov 2026). Each Flutter test file under `test/` that
-imports `dart:io` runs in its own `flutter test` under `strace -f` on Linux,
-four shards, read-only. The log is reduced to the repository paths each kind
+shadow (RE decision, 22 Nov 2026). Each root or app-package Flutter test file
+that imports `dart:io` or `repoFile()` (`packages/catch_test_support`) runs in
+its own `flutter test`, from its package directory, under `strace -f` on
+Linux, four shards, read-only. A test that reads only through a helper it
+imports is not traced. The log is reduced to the repository paths each kind
 of process touched and deleted before the next test. The test runtime
 (`flutter_tester`) is where a test's own `dart:io` reads happen; its opened,
 listed (directory), probed (stat) and missing paths are kept in full. The

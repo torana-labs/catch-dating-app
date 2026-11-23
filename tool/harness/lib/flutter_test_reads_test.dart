@@ -9,17 +9,26 @@ const _tree = {
   'test/fixtures/x.json',
   'test/fixtures/y.json',
   'packages/catch_ui/assets/fonts/a.ttf',
+  'apps/host/test/fixtures/z.json',
 };
 
-Set<String>? reads(String body, {Set<String> paths = _tree}) {
+FileReads? bounded(String body, {String? workingDirectory = ''}) {
   final source = "import 'dart:io';\n$body";
   return fileReads(
     name: 'test/support/helper.dart',
     source: source,
     unit: parseString(content: source).unit,
-    paths: paths,
+    paths: _tree,
+    workingDirectory: workingDirectory,
   );
 }
+
+Set<String>? reads(String body) => bounded(body)?.paths;
+
+// Records compare sets by identity, so match each field.
+Matcher readsOf(Set<String> paths, {required bool relative}) => isA<FileReads>()
+    .having((reads) => reads.paths, 'paths', paths)
+    .having((reads) => reads.relative, 'relative', relative);
 
 void main() {
   group('derived reads', () {
@@ -105,6 +114,78 @@ final d = FileSystemEntity.isFileSync('./contracts/shared/b.json');
         "final r = Process.runSync('git', ['status']);",
         'final d = Directory.current;',
         'final s = Platform.script;',
+      ]) {
+        expect(reads(body), isNull, reason: body);
+      }
+    });
+  });
+
+  group('repository paths', () {
+    test('repoFile and repoDirectory read repository paths', () {
+      const body = """
+const _root = 'contracts';
+final a = repoFile('test/fixtures/x.json');
+final b = repoDirectory('\$_root/shared');
+""";
+      for (final workingDirectory in ['', 'apps/host', null]) {
+        expect(
+          bounded(body, workingDirectory: workingDirectory),
+          readsOf({
+            'test/fixtures/x.json',
+            'contracts/shared',
+          }, relative: false),
+          reason: '$workingDirectory',
+        );
+      }
+    });
+    test('relative paths resolve against the working directory', () {
+      expect(
+        bounded(
+          "final a = File('test/fixtures/z.json'); final b = repoFile('test/fixtures/x.json');",
+          workingDirectory: 'apps/host',
+        ),
+        readsOf({
+          'apps/host/test/fixtures/z.json',
+          'test/fixtures/x.json',
+        }, relative: true),
+      );
+    });
+    test('without a working directory a relative path stays a probe', () {
+      for (final body in [
+        "final f = File('test/fixtures/x.json');",
+        "const r = 'test'; File f(String s) => File('\$r/\$s');",
+        "// test-selection-reads: test/\nfinal f = File('test/fixtures/x.json');",
+      ]) {
+        expect(bounded(body, workingDirectory: null), isNull, reason: body);
+      }
+      // Package configuration follows the global inputs.
+      expect(
+        bounded(
+          "final c = File('.dart_tool/package_config.json');",
+          workingDirectory: null,
+        ),
+        readsOf({}, relative: false),
+      );
+    });
+    test('declared roots are repository paths in every package', () {
+      const body = """
+// test-selection-reads: contracts/, apps/host/test/fixtures/
+File schema(String s) => repoFile('contracts/\$s');
+File fixture(String s) => File('test/fixtures/\$s');
+""";
+      expect(bounded(body, workingDirectory: 'apps/host')?.paths, {
+        'contracts',
+        'apps/host/test/fixtures',
+      });
+      // From the root, the same relative read leaves the declared roots.
+      expect(bounded(body), isNull);
+    });
+    test('a computed or escaped repository path stays a probe', () {
+      for (final body in [
+        "final f = repoFile(Platform.environment['P']!);",
+        'final read = repoFile;',
+        "final f = repoFile('../outside.json');",
+        'final f = repoFile();',
       ]) {
         expect(reads(body), isNull, reason: body);
       }

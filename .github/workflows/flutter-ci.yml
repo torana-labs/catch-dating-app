@@ -115,7 +115,7 @@ jobs:
           if-no-files-found: error
           retention-days: 7
       - name: Verify test selection safety
-        run: dart test tool/harness/lib/flutter_test_selection_test.dart
+        run: dart test tool/harness/lib/flutter_test_selection_test.dart tool/harness/lib/flutter_test_support_selection_test.dart tool/harness/lib/flutter_test_reads_test.dart
       - name: Select tests from committed dependency closures
         id: select
         env:
