@@ -339,7 +339,7 @@ function suggest(file, rules, app) {
 // The shared pages and the files that open them. A file both apps reach is
 // suggested for the first page whose closure holds it.
 export const pageSeeds = [
-  {page: "frame", files: ["lib/app.dart", "lib/app_bootstrap.dart", "lib/consumer_bootstrap.dart"]},
+  {page: "frame", files: ["lib/pages/frame/app.dart", "lib/pages/frame/app_bootstrap.dart", "lib/pages/frame/consumer_bootstrap.dart"]},
   {page: "start", files: ["lib/pages/start/start_welcome_route_screen.dart"]},
   {page: "sign_in", files: ["lib/auth/presentation/auth_screen.dart"]},
   {page: "event", files: ["lib/events/presentation/event_detail_screen.dart"]},

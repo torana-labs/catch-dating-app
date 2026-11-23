@@ -62,7 +62,7 @@ forms, unpublished events, groups and responses.
 | Security rules | Each collection read for the first time needs a new `match` block and rule tests. `firestore.rules` is 3,228 lines. Each rule that looks up an organizer or event is billed as extra document reads | None. The Function checks authority in code | One new `match` block per view, using helpers that already exist |
 | Writes | None added | Most wave-1 callables also run a rate-limit transaction, a read and a write on `rateLimits`, on every call. Four use an in-memory limiter instead | A trigger on every source collection. `hostReadModels/triggers.ts` has 15 of them at 512 MiB with retries. One write can fan out: a tag vocabulary change pages through every contact |
 | Staleness | Shows changes within moments, but only when a document is written. Anything that depends only on the clock, such as "this item is now due", needs the client's clock or a timed job | Exactly as fresh as the last time it asked, and the answer is computed at server time | Behind the source by the time the trigger takes. `docs/data_contracts.md` calls these "server-maintained views with eventual updates" |
-| Offline | Works. `persistenceEnabled: true` in `lib/app_bootstrap.dart`; a listener serves the disk copy and catches up later | Fails. The caching contract records that assistance views are online-only | Works, if read with a listener. Today's `HostSummaryReader` forces `Source.server`, so today's read models do not work offline |
+| Offline | Works. `persistenceEnabled: true` in `lib/pages/frame/app_bootstrap.dart`; a listener serves the disk copy and catches up later | Fails. The caching contract records that assistance views are online-only | Works, if read with a listener. Today's `HostSummaryReader` forces `Source.server`, so today's read models do not work offline |
 | Private data on the device | Stored on disk. The caching contract records that every account on a device shares this cache, sign-out does not clear it, and rules are not checked against it | Held in memory only | Stored on disk, like any listener |
 | Command fences | A write command that needs a hash the server computed cannot get one from a plain document | The read returns `sourceHash` and the command echoes it. Most live console sheets work this way | The writer must compute and store the hash too |
 
@@ -484,7 +484,7 @@ through their bodies. Every result was then read by hand.
 Shell:  lib/routing/shell/host_app_shell.dart, lib/routing/shell/adaptive_tab_scaffold.dart,
         lib/routing/shell/app_shell.dart, lib/routing/host_workspace_destination.dart,
         lib/routing/host_navigation_workspace.dart, lib/routing/host_workspace_index_screen.dart,
-        lib/routing/host_route_extras.dart, apps/host/lib/host_platform_app.dart, lib/app.dart,
+        lib/routing/host_route_extras.dart, apps/host/lib/host_platform_app.dart, lib/pages/frame/app.dart,
         lib/contexts/profiles/data/profile_location_initializer.dart
 Today:  lib/hosts/today/**
 Create: lib/hosts/presentation/event_management/**

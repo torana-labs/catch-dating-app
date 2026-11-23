@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/bookings/data/event_participation_repo
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
-import 'package:catch_dating_app/notifications/notifications.dart';
+import 'package:catch_dating_app/pages/frame/notifications/foreground_notification_controller.dart';
 import 'package:catch_dating_app/routing/shell/adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
 import 'package:catch_dating_app/routing/shell/shell_chrome.dart';

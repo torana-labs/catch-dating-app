@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/app.dart';
+import 'package:catch_dating_app/pages/frame/app.dart';
 import 'package:catch_dating_app/routing/host_router.dart';
 import 'package:catch_host_app/host_platform_app.dart';
 import 'package:flutter/widgets.dart';

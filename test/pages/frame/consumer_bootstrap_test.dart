@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/app_bootstrap.dart';
-import 'package:catch_dating_app/consumer_bootstrap.dart';
+import 'package:catch_dating_app/pages/frame/app_bootstrap.dart';
+import 'package:catch_dating_app/pages/frame/consumer_bootstrap.dart';
 import 'package:catch_dating_app/pages/start/onboarding_welcome_body.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
@@ -11,7 +11,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test_pump_helpers.dart';
+import '../../test_pump_helpers.dart';
 
 void main() {
   test('animated bootstrap is consumer mobile only', () {

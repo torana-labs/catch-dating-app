@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/notifications/presentation/foreground_notification_controller.dart';
+import 'package:catch_dating_app/pages/frame/notifications/foreground_notification_controller.dart';
 import 'package:catch_dating_app/routing/shell/shell_chrome.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/errors/error_logger.dart';

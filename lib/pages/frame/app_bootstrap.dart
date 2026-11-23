@@ -1,9 +1,8 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/consumer_bootstrap.dart';
 import 'package:catch_dating_app/contexts/account/data/force_update_provider.dart';
 import 'package:catch_dating_app/contexts/account/domain/app_version_config.dart';
-import 'package:catch_dating_app/firebase_options.dart';
+import 'package:catch_dating_app/pages/frame/consumer_bootstrap.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/app_config.dart';
@@ -11,6 +10,7 @@ import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/errors/provider_retry_policy.dart';
 import 'package:catch_platform/firebase/firebase_bootstrap.dart';
+import 'package:catch_platform/firebase/firebase_options.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/push/fcm_service.dart';

@@ -33,7 +33,7 @@ features.
 
 ## Runtime architecture
 
-Flutter code is organized into bounded contexts placed by `tool/architecture/context_map.json` (see the Bounded Context Contract in [docs/app_architecture.md](docs/app_architecture.md#bounded-context-contract)). Screens compose feature-owned controllers/providers, repositories own remote access, and shared UI belongs in canonical `Catch*` primitives when the concept repeats. `apps/<role>/lib/main*.dart` entrypoints build each application shell through `lib/app_bootstrap.dart`; route, authentication, onboarding, force-update, and role gates determine the visible feature graph.
+Flutter code is organized into bounded contexts placed by `tool/architecture/context_map.json` (see the Bounded Context Contract in [docs/app_architecture.md](docs/app_architecture.md#bounded-context-contract)). Screens compose feature-owned controllers/providers, repositories own remote access, and shared UI belongs in canonical `Catch*` primitives when the concept repeats. `apps/<role>/lib/main*.dart` entrypoints build each application shell through `lib/pages/frame/app_bootstrap.dart`; route, authentication, onboarding, force-update, and role gates determine the visible feature graph.
 
 Firebase Auth is phone-first. Profile creation is an onboarding responsibility, not an incidental auth side effect. Firestore is the operational store; callable Functions own privileged mutations and cross-document invariants. Generated schemas/types keep app, Functions, rules, admin, and website boundaries aligned.
 
