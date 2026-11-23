@@ -18,9 +18,9 @@ import {
   replayEntries,
   replayImports,
 } from "./lib/screen_move_apply.mjs";
-import {screenMoveLogPath} from "./lib/screen_move_rewrite.mjs";
+import {screenMovesDir} from "./lib/screen_move_rewrite.mjs";
 import {regeneratedOutputs} from "./lib/screen_move_outputs.mjs";
-import {parseLog, verifyScreenMove} from "./lib/screen_move_verify.mjs";
+import {readRecords, verifyScreenMove} from "./lib/screen_move_verify.mjs";
 
 const modes = ["classify", "plan", "apply", "verify", "imports-only", "check"];
 
@@ -90,8 +90,8 @@ host, consumer, shared or unreached from what each app actually reaches.
 --plan lists the moves (each library with its parts), test and golden moves,
 regenerated outputs and every error that blocks the move; --markdown prints
 it as a pull request description. --apply performs a plan with no errors and
-writes one commit plus an entry in ${screenMoveLogPath}. --verify proves a
-move commit holds only what a move may change. --imports-only replays logged
+writes one commit plus the group's record in ${screenMovesDir}. --verify proves a
+move commit holds only what a move may change. --imports-only replays recorded
 moves onto another branch without committing. --check fails if lib/ or a
 shared package imports an app, an app imports another app, or a moveTo is
 invalid. The analyzer runs over fetched Dart packages
@@ -118,7 +118,7 @@ export function runCli(argv) {
   if (args.mode === "imports-only") {
     const entries = replayEntries({root, from: args.from, since: args.since});
     if (entries.length === 0) {
-      console.log("No logged screen move is missing from this branch.");
+      console.log("No recorded screen move is missing from this branch.");
       return 0;
     }
     console.log(JSON.stringify(replayImports({root, entries, packages, map}), null, 2));
@@ -166,7 +166,7 @@ function runVerify({root, commit, packages}) {
     for (const problem of problems) console.error(`- ${problem}`);
     return 1;
   }
-  console.log(`Commit ${commit} holds only the logged renames, directive lines, moved paths and generated outputs.`);
+  console.log(`Commit ${commit} holds only the recorded renames, directive lines, moved paths and generated outputs.`);
   return 0;
 }
 
@@ -199,7 +199,12 @@ export function checkRepository({root, files, map, read = fileReader(root)}) {
     problems.push(...errors.map((error) => error.message));
   }
   try {
-    parseLog(read(screenMoveLogPath));
+    const records = readRecords({files, read});
+    const groups = new Set();
+    for (const record of records) {
+      if (groups.has(record.group)) problems.push(`${screenMovesDir} records group ${record.group} twice.`);
+      groups.add(record.group);
+    }
   } catch (error) {
     problems.push(error.message);
   }

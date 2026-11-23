@@ -31,24 +31,37 @@
   ],
   "legacy": [
     {"path": "lib/app.dart", "layer": "app"},
+
     {"path": "lib/app_bootstrap.dart", "layer": "app"},
+
     {"path": "lib/consumer_bootstrap.dart", "layer": "app"},
+
     {"path": "lib/dashboard/", "layer": "app"},
+
     {"path": "lib/event_success/event_success_companion_launcher.dart", "layer": "app"},
+
     {"path": "lib/design_fixtures/", "layer": "app"},
+
     {"path": "lib/hosts/hosts.dart", "layer": "app"},
+
     {"path": "lib/hosts/presentation/", "layer": "app"},
+
     {"path": "lib/routing/", "layer": "app"},
 
     {"path": "lib/firebase_options", "layer": "platform"},
 
     {"path": "lib/auth/", "context": "account"},
+
     {"path": "lib/force_update/", "context": "account"},
+
     {"path": "lib/launch_access/", "context": "account"},
 
     {"path": "lib/image_uploads/", "context": "profiles"},
+
     {"path": "lib/onboarding/", "context": "profiles"},
+
     {"path": "lib/public_profile/", "context": "profiles"},
+
     {"path": "lib/user_profile/", "context": "profiles"},
 
     {"path": "lib/safety/", "context": "safety"},
@@ -56,12 +69,17 @@
     {"path": "lib/organizers/", "context": "organizers"},
 
     {"path": "lib/event_policies/", "context": "events"},
+
     {"path": "lib/events/", "context": "events"},
+
     {"path": "lib/hosts/events/presentation/", "context": "events"},
+
     {"path": "lib/hosts/events/", "layer": "app"},
+
     {"path": "lib/locations/", "context": "events"},
 
     {"path": "lib/payments/", "context": "payments"},
+
     {"path": "lib/host_memberships/", "context": "payments"},
 
     {"path": "lib/reviews/", "context": "reviews"},
@@ -71,28 +89,43 @@
     {"path": "lib/explore/", "context": "discovery"},
 
     {"path": "lib/cross_paths/", "context": "connections"},
+
     {"path": "lib/matches/", "context": "connections"},
+
     {"path": "lib/swipes/", "context": "connections"},
 
     {"path": "lib/chats/", "context": "messaging"},
+
     {"path": "lib/notifications/", "context": "messaging"},
 
     {"path": "lib/event_rehearsal/", "context": "live"},
+
     {"path": "lib/event_success/", "context": "live"},
 
     {"path": "lib/hosts/audience/phone_import/", "context": "programmes"},
+
     {"path": "lib/programs/", "context": "programmes"},
 
     {"path": "lib/hosts/create/", "layer": "app"},
+
     {"path": "lib/hosts/door/", "layer": "app"},
+
     {"path": "lib/hosts/today/", "layer": "app"},
+
     {"path": "lib/hosts/live/", "layer": "app"},
+
     {"path": "lib/hosts/insights/", "layer": "app"},
+
     {"path": "lib/hosts/onboarding/", "layer": "app"},
+
     {"path": "lib/hosts/organizer/", "layer": "app"},
+
     {"path": "lib/hosts/people/", "layer": "app"},
+
     {"path": "lib/hosts/forms/", "layer": "app"},
+
     {"path": "lib/hosts/programmes/", "layer": "app"},
+
     {"path": "lib/user_analytics/", "context": "insights"}
   ]
 }

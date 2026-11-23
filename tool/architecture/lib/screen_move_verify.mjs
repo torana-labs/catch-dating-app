@@ -1,7 +1,8 @@
-// The screen-move log and what reads it: --verify, which accepts exactly the
-// diff a move may make, and --imports-only, which replays logged moves onto
-// another branch. The log records each group's moves, so both work however
-// the move PR was merged.
+// The screen-move records and what reads them: --verify, which accepts
+// exactly the diff a move may make, and --imports-only, which replays recorded
+// moves onto another branch. Each group's moves live in their own file under
+// tool/architecture/screen_moves/, so both work however the move PR was
+// merged, and two move PRs never edit the same record.
 import {isDeepStrictEqual} from "node:util";
 import {
   holdsOnlyExports,
@@ -9,50 +10,56 @@ import {
   rewritePathMentions,
   stripDirectiveLines,
 } from "./dart_moves.mjs";
-import {screenMoveLogPath, carriedScreensPath} from "./screen_move_rewrite.mjs";
+import {carriedScreensPath, screenMovesDir} from "./screen_move_rewrite.mjs";
 
 const contextMapPath = "tool/architecture/context_map.json";
 
-export function parseLog(source) {
-  if (source == null || source.trim() === "") return {version: 1, entries: []};
-  const log = JSON.parse(source);
-  if (log?.version !== 1 || !Array.isArray(log.entries)) {
-    throw new Error(`${screenMoveLogPath} must be {"version": 1, "entries": [...]}.`);
-  }
-  const groups = new Set();
-  for (const entry of log.entries) {
-    if (typeof entry?.group !== "string" || entry.moves == null || typeof entry.moves !== "object") {
-      throw new Error(`${screenMoveLogPath} has an entry without a group and moves.`);
-    }
-    if (groups.has(entry.group)) throw new Error(`${screenMoveLogPath} logs group ${entry.group} twice.`);
-    groups.add(entry.group);
-  }
-  return log;
+export function recordPath(group) {
+  return `${screenMovesDir}${group}.json`;
 }
 
-export function formatLog(log) {
-  return `${JSON.stringify(log, null, 2)}\n`;
+export function isRecordPath(file) {
+  return file.startsWith(screenMovesDir) && file.endsWith(".json");
 }
 
-export function logEntry({group, entries, moves, folders}) {
+// One group's record: {version: 1, group, sequence, entries, moves, folders}.
+// `sequence` is when --apply wrote it, in milliseconds since the epoch; it
+// orders replays, so a file that moves twice replays in move order.
+export function parseRecord(source, file) {
+  let record;
+  try {
+    record = JSON.parse(source);
+  } catch (error) {
+    throw new Error(`${file} is not valid JSON: ${error.message}`);
+  }
+  if (record?.version !== 1 || typeof record.group !== "string" ||
+      !Number.isSafeInteger(record.sequence) || record.moves == null || typeof record.moves !== "object") {
+    throw new Error(`${file} must be {"version": 1, "group", "sequence", "entries", "moves", "folders"}.`);
+  }
+  if (recordPath(record.group) !== file) throw new Error(`${file} records group ${record.group}; name it ${recordPath(record.group)}.`);
+  return record;
+}
+
+export function formatRecord(record) {
+  return `${JSON.stringify(record, null, 2)}\n`;
+}
+
+export function moveRecord({group, sequence, entries, moves, folders}) {
   return {
+    version: 1,
     group,
+    sequence,
     entries: entries.map((entry) => ({path: entry.path, moveTo: entry.moveTo})),
     moves: Object.fromEntries([...moves].sort((a, b) => a[0].localeCompare(b[0]))),
     folders: Object.fromEntries([...folders].sort((a, b) => a[0].localeCompare(b[0]))),
   };
 }
 
-// The entries a newer log adds to an older one. The older entries must
-// survive unchanged.
-export function appendedEntries(older, newer) {
-  const problems = [];
-  if (newer.entries.length < older.entries.length ||
-      !isDeepStrictEqual(newer.entries.slice(0, older.entries.length), older.entries)) {
-    problems.push(`${screenMoveLogPath} changed or removed earlier entries`);
-  }
-  const known = new Set(older.entries.map((entry) => entry.group));
-  return {entries: newer.entries.filter((entry) => !known.has(entry.group)), problems};
+// Every record among `files`, in replay order: by sequence, then group.
+export function readRecords({files, read}) {
+  return files.filter(isRecordPath)
+    .map((file) => parseRecord(read(file) ?? "", file))
+    .sort((a, b) => a.sequence - b.sequence || a.group.localeCompare(b.group));
 }
 
 const commentLine = /^[ \t]*\/\/[ \t]*(?:provider-graph:|ignore:)/u;
@@ -62,26 +69,32 @@ const commentLine = /^[ \t]*\/\/[ \t]*(?:provider-graph:|ignore:)/u;
 // other text equal after rewriting moved paths; generator-owned outputs;
 // removed context map lines; carried-screens lines naming moved files;
 // whole-line removals of provider-graph reviews and catch_ui_lints ignores in
-// moved files; new context public API files; and the one appended log entry.
+// moved files; new context public API files; and the one new move record.
 export function verifyScreenMove({changes, read, regenerated, packages}) {
   const problems = [];
-  const older = safeLog(read("old", screenMoveLogPath), problems, "parent");
-  const newer = safeLog(read("new", screenMoveLogPath), problems, "commit");
-  if (older == null || newer == null) return problems;
-  const appended = appendedEntries(older, newer);
-  problems.push(...appended.problems);
-  if (appended.entries.length !== 1) {
-    problems.push(`a move commit appends exactly one ${screenMoveLogPath} entry; this one appends ${appended.entries.length}`);
+  const records = changes.filter((change) => isRecordPath(change.file));
+  for (const change of records.filter((record) => record.status !== "A")) {
+    problems.push(`a move commit only adds its own record; it changed or removed ${change.file}`);
+  }
+  const added = records.filter((record) => record.status === "A");
+  if (added.length !== 1) {
+    problems.push(`a move commit adds exactly one ${screenMovesDir} record; this one adds ${added.length}`);
     return problems;
   }
-  const entry = appended.entries[0];
+  let entry;
+  try {
+    entry = parseRecord(read("new", added[0].file)?.toString() ?? "", added[0].file);
+  } catch (error) {
+    problems.push(error.message);
+    return problems;
+  }
   const moves = new Map(Object.entries(entry.moves));
   const folders = Object.entries(entry.folders ?? {});
   const sources = new Map([...moves].map(([from, to]) => [to, from]));
   const movedPaths = new Set([...moves.keys(), ...moves.values()]);
   const normalizeText = (text) => rewritePathMentions(text, moves, folders, packages).source;
   for (const {status, file} of changes) {
-    if (file === screenMoveLogPath) continue;
+    if (isRecordPath(file)) continue;
     if (status === "D") {
       if (!moves.has(file)) problems.push(`deleted a file the log does not move: ${file}`);
       continue;
@@ -187,15 +200,6 @@ function carriedChanges({before, after, moves}) {
     }
   }
   return problems;
-}
-
-function safeLog(source, problems, side) {
-  try {
-    return parseLog(source == null ? null : source.toString());
-  } catch (error) {
-    problems.push(`the ${side}'s ${screenMoveLogPath} is invalid: ${error.message}`);
-    return null;
-  }
 }
 
 // The new text is the old text with some provider-graph or ignore comment

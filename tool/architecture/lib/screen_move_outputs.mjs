@@ -108,11 +108,17 @@ export function parseCarried(source) {
   return json;
 }
 
+// One entry per line with a blank line between entries, sorted by path, so
+// moves that carry or drop different files touch no shared line and their
+// pull requests merge cleanly.
 export function formatCarried(json) {
-  const carried = [...json.carried]
+  const {carried, ...rest} = json;
+  const entries = [...carried]
     .map((entry) => ({path: entry.path, from: entry.from}))
-    .sort((a, b) => a.path.localeCompare(b.path));
-  return `${JSON.stringify({...json, carried}, null, 2)}\n`;
+    .sort((a, b) => a.path.localeCompare(b.path))
+    .map((entry) => `    {"path": ${JSON.stringify(entry.path)}, "from": ${JSON.stringify(entry.from)}}`);
+  const head = Object.entries(rest).map(([key, value]) => `  ${JSON.stringify(key)}: ${JSON.stringify(value)},`);
+  return ["{", ...head, "  \"carried\": [", entries.join(",\n\n"), "  ]", "}", ""].join("\n");
 }
 
 // The carried list after a move: every moved handwritten Dart file whose old

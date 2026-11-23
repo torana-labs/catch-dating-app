@@ -22,7 +22,7 @@ import {appOf, isLegacyFile} from "./screen_move_plan.mjs";
 
 const layerRank = {kernel: 0, platform: 1, context: 2, pages: 3, app: 4};
 
-export const screenMoveLogPath = "tool/architecture/screen_move_log.json";
+export const screenMovesDir = "tool/architecture/screen_moves/";
 export const carriedScreensPath = "tool/architecture/carried_screens.json";
 
 // Phase 3's exclusions, plus the lint probe fixtures (synthetic
@@ -31,7 +31,7 @@ export const mentionExcluded = [
   ...pathTextExcluded,
   /^tool\/check_catch_ui_lints\.sh$/u,
   /^tool\/catch_ui_lints_probe\//u,
-  new RegExp(`^${escapeRegExp(screenMoveLogPath)}$`, "u"),
+  new RegExp(`^${escapeRegExp(screenMovesDir)}`, "u"),
   new RegExp(`^${escapeRegExp(carriedScreensPath)}$`, "u"),
 ];
 

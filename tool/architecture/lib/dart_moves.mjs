@@ -260,21 +260,30 @@ export function escapeRegExp(value) {
 
 // After a move, legacy entries whose path no longer places any file are
 // removed, whatever other fields (moveTo, group) they carry. Entries are one
-// JSON object per line.
+// JSON object per line with a blank line between neighbours
+// (check_context_map.mjs, legacyLayout), so two moves that each drop an entry
+// never touch adjacent lines. A long-standing entry takes only its own line;
+// a group entry, which its move added with a blank line before it, takes that
+// blank line too, so a move leaves no trace of its own entries.
 export function pruneLegacyEntries(mapSource, files) {
-  const kept = [];
-  let removed = 0;
-  for (const line of mapSource.split("\n")) {
+  const lines = mapSource.split("\n");
+  const drop = new Set();
+  for (const [index, line] of lines.entries()) {
     const entry = legacyEntryOnLine(line);
-    if (entry != null && !files.some((file) => file.startsWith(entry.path))) {
-      removed += 1;
-      continue;
+    if (entry == null || files.some((file) => file.startsWith(entry.path))) continue;
+    drop.add(index);
+    if (entry.group == null) continue;
+    let blank = index - 1;
+    while (blank >= 0 && drop.has(blank)) blank -= 1;
+    if (blank >= 0 && lines[blank].trim() === "") {
+      drop.add(blank);
+    } else if (lines[index + 1]?.trim() === "") {
+      drop.add(index + 1);
     }
-    kept.push(line);
   }
-  let out = kept.join("\n");
-  out = out.replace(/,(\s*\n\s*\])/gu, "$1").replace(/\n{3,}/gu, "\n\n");
-  return {source: out, removed};
+  const out = lines.filter((_, index) => !drop.has(index)).join("\n")
+    .replace(/,(\s*\n\s*\])/gu, "$1");
+  return {source: out, removed: [...drop].filter((index) => legacyEntryOnLine(lines[index]) != null).length};
 }
 
 const legacyEntryFields = new Set(["path", "context", "layer", "moveTo", "group"]);

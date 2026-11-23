@@ -212,6 +212,30 @@ export function checkMappedPaths({map, files}) {
     }));
 }
 
+// Legacy entries sit one per line with a blank line between neighbours, so
+// two moves that each drop an entry never edit adjacent lines and their pull
+// requests merge without conflict (tool/architecture/lib/dart_moves.mjs,
+// pruneLegacyEntries).
+export function checkLegacyLayout(source) {
+  const lines = source.split("\n");
+  const start = lines.findIndex((line) => line.trim() === '"legacy": [');
+  if (start < 0) return [];
+  const findings = [];
+  for (let index = start + 1; index < lines.length && lines[index].trim() !== "]"; index += 1) {
+    const line = lines[index].trim();
+    if (line === "") continue;
+    const next = lines[index + 1]?.trim();
+    if (!/^\{"path": .*\},?$/u.test(line)) {
+      findings.push({rule: "legacyLayout", path: contextMapPath, line: index + 1,
+        reason: "each legacy entry must be one JSON object on its own line"});
+    } else if (next !== "" && next !== "]") {
+      findings.push({rule: "legacyLayout", path: contextMapPath, line: index + 1,
+        reason: "put a blank line after each legacy entry, so parallel moves never edit adjacent lines"});
+    }
+  }
+  return findings;
+}
+
 // What the analyzer cannot see from one file: that the map itself is well
 // formed, that every path it places exists, that every moveTo is a valid
 // destination, and that the spec agrees with it. Placement and import order are
@@ -230,6 +254,7 @@ export function scanContextMap({snapshot}) {
   return {
     contexts: map.contexts.length,
     findings: [
+      ...checkLegacyLayout(mapSource),
       ...checkMappedPaths({map, files: snapshot.files}),
       ...checkMoveTargets({map, files: snapshot.files}),
       ...checkSpecTable({source: sources.get(specPath), map}),
@@ -242,7 +267,8 @@ function printHelp() {
   node tool/architecture/check_context_map.mjs
   node tool/architecture/check_context_map.mjs --json
 
-Checks that ${contextMapPath} is well formed, that every root and legacy
+Checks that ${contextMapPath} is well formed (legacy entries one per line,
+with a blank line between neighbours), that every root and legacy
 path in it still matches a tracked file, that every moveTo points where a
 screen move may land, and that the context table in
 ${specPath} matches it. Where each file sits and which imports it may make are
