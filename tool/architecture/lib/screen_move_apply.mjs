@@ -98,7 +98,7 @@ export function buildGroupPlan({root, group, graph, files, packages, map, read =
   errors.push(...tests.errors);
   const moves = new Map([...source.moves, ...tests.testMoves, ...tests.goldenMoves]);
   const widgetbookDependencies = [...pubspecDependencies(read("widgetbook/pubspec.yaml") ?? "", {dev: true})];
-  const closure = closureErrors({graph, moves, map, packages, widgetbookDependencies});
+  const closure = closureErrors({graph, moves, map, packages, widgetbookDependencies, sourceMoves: source.moves});
   errors.push(...closure);
   errors.push(...missingDependencies({moves, read, packages, dependenciesOf: dependencyReader(read)}));
   const suggestion = suggestClosure({graph, moves, errors: closure, map});
