@@ -10,11 +10,10 @@ import 'package:catch_dating_app/hosts/create/widgets/create_editor_rail.dart';
 import 'package:catch_kernel/brand.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../organizers/organizers_test_helpers.dart';
 
 final _today = DateTime(2026, 10, 27);
 final l10n = AppLocalizationsEn();

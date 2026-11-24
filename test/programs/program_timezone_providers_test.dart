@@ -13,11 +13,10 @@ import 'package:catch_dating_app/contexts/programmes/data/program_setup_reposito
 import 'package:catch_dating_app/contexts/programmes/domain/program_timezone.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_timezone_providers.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../organizers/organizers_test_helpers.dart';
 
 const scope = (accountId: 'account', organizerId: 'organizer');
 
