@@ -8680,6 +8680,25 @@
       ]
     },
     {
+      "collectionGroup": "dataToolRuns",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "DESCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "arrayConfig": "CONTAINS",
+          "queryScope": "COLLECTION"
+        }
+      ]
+    },
+    {
       "collectionGroup": "metaLeadgenEvents",
       "fieldPath": "expiresAt",
       "ttl": true,

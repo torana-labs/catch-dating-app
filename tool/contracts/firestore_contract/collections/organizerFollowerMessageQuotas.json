@@ -10,10 +10,10 @@
   ],
   "owner": "website owner view Message followers",
   "writerContext": "insights",
-  "read": "server only; getOrganizerOwnerView usage count",
+  "read": "server only; usage count copied into hostOrganizerOwnerViews",
   "write": "server only; manageOrganizerOwnerPage transaction",
   "exportedFunctions": [
     "manageOrganizerOwnerPage",
-    "getOrganizerOwnerView"
+    "onHostOrganizerOwnerViewQuotaChanged"
   ]
 }

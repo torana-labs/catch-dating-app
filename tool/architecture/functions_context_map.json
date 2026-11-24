@@ -277,7 +277,6 @@
     "functions/src/reviews/syncOrganizerReviewStats.ts writes organizers",
     "functions/src/safety/accountDeletion.ts writes hostProfiles",
     "functions/src/safety/accountDeletion.ts writes onboarding_drafts",
-    "functions/src/safety/accountDeletion.ts writes organizers",
     "functions/src/safety/accountDeletion.ts writes participantIntakeProfiles",
     "functions/src/safety/accountDeletion.ts writes participantMetricCounters",
     "functions/src/safety/accountDeletion.ts writes publicProfiles",
