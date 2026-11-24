@@ -15,8 +15,10 @@
   "write": "server only; written from programGuests (with their workspace field assertions), programFunctionGuests, programHouseholds and programGuestGroups",
   "exportedFunctions": [
     "onProgramGuestDirectoryGuestChanged",
+    "dispatchProgramGuests",
     "onProgramGuestDirectoryFunctionGuestChanged",
     "onProgramGuestDirectoryHouseholdChanged",
+    "dispatchProgramHouseholds",
     "onProgramGuestDirectoryGroupChanged"
   ],
   "migrationNotes": [

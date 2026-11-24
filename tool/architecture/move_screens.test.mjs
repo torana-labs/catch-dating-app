@@ -6,116 +6,16 @@ import test from "node:test";
 import {execFileSync, spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {loadContextMap} from "./check_context_map.mjs";
-import {
-  directivePattern,
-  packageRoots,
-  pruneLegacyEntries,
-  resolveUri,
-  trackedFiles,
-} from "./lib/dart_moves.mjs";
-import {createGraph} from "./lib/screen_move_graph.mjs";
+import {packageRoots, pruneLegacyEntries, trackedFiles} from "./lib/dart_moves.mjs";
 import {classify} from "./lib/screen_move_plan.mjs";
-import {
-  applyGroupPlan,
-  buildGroupPlan,
-  replayEntries,
-  replayImports,
-} from "./lib/screen_move_apply.mjs";
+import {applyGroupPlan, replayEntries, replayImports} from "./lib/screen_move_apply.mjs";
 import {rewriteMentions, isMentionText, staleFolderMentions} from "./lib/screen_move_rewrite.mjs";
 import {fixtureReads, goldenNames} from "./lib/screen_move_tests.mjs";
 import {carriedAfterMove, dropStaleCarries, newRootMatcher} from "./lib/screen_move_outputs.mjs";
+import {fixtureGraph, fixtureRepo, git, mapSource, planFor} from "./lib/screen_move_test_fixtures.mjs";
 import {checkRepository, runCli} from "./move_screens.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-
-const baseFiles = {
-  "pubspec.yaml": "name: catch_dating_app\n",
-  "apps/host/pubspec.yaml": "name: catch_host_app\ndependencies:\n  catch_dating_app:\n    path: ../..\n  flutter:\n    sdk: flutter\ndev_dependencies:\n  flutter_test:\n    sdk: flutter\n",
-  "apps/consumer/pubspec.yaml": "name: catch_consumer_app\ndependencies:\n  catch_dating_app:\n    path: ../..\n  flutter:\n    sdk: flutter\ndev_dependencies:\n  flutter_test:\n    sdk: flutter\n",
-  "widgetbook/pubspec.yaml": "name: widgetbook_workspace\ndependencies:\n  catch_dating_app:\n    path: ..\n",
-  "apps/host/lib/main.dart": "import 'package:catch_dating_app/routing/router.dart';\n\nvoid main() => hostRouter;\n",
-  "apps/consumer/lib/main.dart": "import 'package:catch_dating_app/routing/router.dart';\n\nvoid main() => consumerRouter;\n",
-  "lib/contexts/events/data/event_repository.dart": "class EventRepository {}\n",
-  "lib/contexts/live/data/live_repository.dart": "class LiveRepository {}\n",
-  "lib/pages/frame/frame.dart": "class Frame {}\n",
-  "tool/nx/markdown_inputs.test.mjs": "export const markdownReaders = {\"tool/design/build_host_feature_responsibilities.mjs\": {\"apps/host/lib/**/README.md\": [\"tools\"], \"apps/consumer/lib/**/README.md\": [\"tools\"]}};\n",
-};
-
-function mapSource(legacy) {
-  return `${JSON.stringify({
-    roots: {
-      contexts: "lib/contexts/",
-      pages: "lib/pages/",
-      kernel: "packages/kernel/lib/",
-      platform: "packages/platform/lib/",
-    },
-    contexts: [{id: "events", owns: "Events."}, {id: "live", owns: "Live."}],
-    legacy: [],
-  }, null, 2).replace(/"legacy": \[\]/u, `"legacy": [\n${legacy.map((entry) => `    ${JSON.stringify(entry).replace(/":/gu, "\": ").replace(/,"/gu, ", \"")}`).join(",\n")}\n  ]`)}\n`;
-}
-
-function git(root, ...args) {
-  return execFileSync("git", args, {cwd: root, encoding: "utf8"});
-}
-
-function fixtureRepo(files) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "screen-move-"));
-  for (const [file, text] of Object.entries({...baseFiles, ...files})) {
-    fs.mkdirSync(path.join(root, path.dirname(file)), {recursive: true});
-    fs.writeFileSync(path.join(root, file), text);
-  }
-  git(root, "init", "-q");
-  // The codemod commits with the ambient identity, which CI runners lack.
-  git(root, "config", "user.name", "Fixture");
-  git(root, "config", "user.email", "fixture@example.com");
-  git(root, "config", "commit.gpgsign", "false");
-  git(root, "add", "-A");
-  git(root, "-c", "user.name=Fixture", "-c", "user.email=fixture@example.com", "commit", "-q", "-m", "fixture");
-  return root;
-}
-
-// A stand-in for dart_symbol_imports.dart: directives by their text, each
-// import using its own target unless `uses` names the declaring libraries
-// (a barrel).
-function fixtureGraph(root, uses = {}) {
-  const files = trackedFiles(root);
-  const packages = packageRoots(root, files);
-  const graph = {version: 1, files: {}};
-  for (const file of files.filter((candidate) => candidate.endsWith(".dart"))) {
-    const source = fs.readFileSync(path.join(root, file), "utf8");
-    const partOf = /^part of '([^']+)';/mu.exec(source);
-    const directives = [];
-    for (const match of source.matchAll(directivePattern)) {
-      const kind = match[1].replace(/\s+/gu, " ");
-      const uri = /['"]([^'"]+)['"]/u.exec(match[2])?.[1];
-      const target = uri == null ? null : resolveUri(file, uri, packages);
-      directives.push({
-        offset: match.index,
-        end: match.index + match[0].length,
-        kind,
-        uri,
-        target,
-        prefix: /\bas\s+(\w+)/u.exec(match[2])?.[1] ?? null,
-        deferred: false,
-        show: /\bshow\s+([\w\s,]+)/u.exec(match[2])?.[1].split(",").map((name) => name.trim()) ?? null,
-        hide: null,
-        configurations: [],
-        uses: kind === "import" ? (uses[file]?.[uri] ?? (target == null ? {} : {[target]: ["X"]})) : undefined,
-      });
-    }
-    graph.files[file] = {
-      library: partOf == null ? file : path.posix.normalize(path.posix.join(path.posix.dirname(file), partOf[1])),
-      directives,
-    };
-  }
-  return {graph: createGraph(graph, packages), packages, files};
-}
-
-function planFor(root, group, {uses} = {}) {
-  const {graph, packages, files} = fixtureGraph(root, uses);
-  const map = loadContextMap(fs.readFileSync(path.join(root, "tool/architecture/context_map.json"), "utf8"));
-  return {plan: buildGroupPlan({root, group, graph, files, packages, map}), graph, packages, files, map};
-}
 
 const todayMap = mapSource([
   {path: "lib/hosts/", layer: "app"},

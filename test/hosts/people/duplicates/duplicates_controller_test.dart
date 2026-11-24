@@ -3,10 +3,10 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_reposi
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact_detail.dart';
 import 'package:catch_dating_app/hosts/people/duplicates/duplicates_controller.dart';
 import 'package:catch_dating_app/hosts/people/duplicates/duplicates_state.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../test_pump_helpers.dart';
 import 'duplicates_fixtures.dart';
 
 const _org = 'organizer-1';

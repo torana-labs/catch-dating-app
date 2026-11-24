@@ -2,13 +2,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_success_guest_history.schema.json",
   "title": "EventSuccessGuestHistoryDocument",
-  "description": "One guest's game history for one night, projected from eventSuccessStandings by trigger: each recorded round with the guest's team or pair and where it stood after that round, and the final standing. The guest reads only their own; nothing else writes it. Kept although no screen reads it yet: the rules let the guest read their own row for the game history screen that #1606 prepared the backend for. Retire it with its trigger if that screen is dropped.",
+  "description": "One guest's game history for one night, projected from eventSuccessStandings by trigger: each recorded round with the guest's team or pair and where it stood after that round, and the final standing. Nothing else writes it. Kept although no screen reads it yet (FIX-14, #2450): clients have no access until the game history screen that #1606 prepared the backend for ships (#2501), and each row expires by TTL a year after its last projection. Retire it with its trigger if that screen is dropped.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "eventSuccessGuestHistory",
   "x-firestore-path": "eventSuccessGuestHistory/{eventId_uid}",
-  "x-owner": "onEventSuccessStandingsWritten trigger; the guest reads their own",
-  "required": ["eventId", "organizerId", "uid", "unitOutcome", "standingsRevision", "rounds", "finalStanding", "updatedAtMs"],
+  "x-owner": "onEventSuccessStandingsWritten trigger; no client reads",
+  "required": ["eventId", "organizerId", "uid", "unitOutcome", "standingsRevision", "rounds", "finalStanding", "updatedAtMs", "expiresAt"],
   "properties": {
     "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "trigger-owned"},
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "trigger-owned"},
@@ -25,7 +25,8 @@
       "oneOf": [{"type": "null"}, {"$ref": "#/definitions/guestStanding"}],
       "x-catch-ownership": "trigger-owned"
     },
-    "updatedAtMs": {"type": "integer", "minimum": 0, "maximum": 9007199254740991, "x-catch-ownership": "trigger-owned"}
+    "updatedAtMs": {"type": "integer", "minimum": 0, "maximum": 9007199254740991, "x-catch-ownership": "trigger-owned"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "description": "TTL field: a year after the last projection.", "x-catch-ownership": "trigger-owned"}
   },
   "definitions": {
     "guestStanding": {

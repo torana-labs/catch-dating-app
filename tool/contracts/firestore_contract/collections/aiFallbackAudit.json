@@ -14,5 +14,8 @@
   "write": "server only",
   "exportedFunctions": [
     "importGuestList"
+  ],
+  "migrationNotes": [
+    "Rows expire by TTL on expiresAt 400 days after they are written (FIX-14, #2450): a full year of monthly cost history, then nothing reads them."
   ]
 }

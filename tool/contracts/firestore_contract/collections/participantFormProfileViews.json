@@ -15,6 +15,7 @@
   "exportedFunctions": [
     "onParticipantFormProfileViewProposalChanged",
     "onParticipantFormProfileViewResponseChanged",
+    "dispatchOrganizerFormResponses",
     "onParticipantFormProfileViewCardChanged",
     "requestAccountDeletion"
   ],
