@@ -41,6 +41,8 @@ import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/analytics_test_helpers.dart';
 import 'package:catch_test_support/dashboard_test_helpers.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart'
+    as organizer_test;
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -51,7 +53,6 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../events/events_test_helpers.dart';
-import '../organizers/organizers_test_helpers.dart' as organizer_test;
 
 part 'dashboard_full_home_shell_tests.dart';
 

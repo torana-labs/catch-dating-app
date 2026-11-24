@@ -14,7 +14,9 @@ import {
   projectInboxSource,
   removedInboxItem,
   sameInboxItem,
+  sourceCollections,
 } from "./model";
+import {isStaleSourceEvent, type SourceVersion} from "../../shared/sourceVersion";
 
 type Data = Record<string, unknown>;
 
@@ -40,15 +42,49 @@ export async function syncInboxSource(db: FirebaseFirestore.Firestore, kind: Inb
   const projection = data ? projectInboxSource(kind, sourceId, data, context) : null;
   if (projection) return syncInboxProjection(db, projection, now);
   const itemRef = db.collection(INBOX_ITEMS_COLLECTION).doc(itemId);
-  return db.runTransaction(async (tx) => {
-    const itemSnap = await tx.get(itemRef);
-    const existing = itemSnap.exists ? itemSnap.data() as InboxItemDocument : null;
-    if (!existing || (!data && existing.status === "done")) {
-      return {itemId, outcome: "skipped", addedSteps: 0};
-    }
-    tx.set(itemRef, removedInboxItem(existing, now));
-    return {itemId, outcome: "written", addedSteps: 0};
+  return db.runTransaction((tx) => removeInTransaction(tx, itemRef, itemId, data, now));
+}
+
+async function removeInTransaction(tx: FirebaseFirestore.Transaction, itemRef: FirebaseFirestore.DocumentReference,
+  itemId: string, data: Data | undefined, now: Date): Promise<InboxSyncResult> {
+  const itemSnap = await tx.get(itemRef);
+  const existing = itemSnap.exists ? itemSnap.data() as InboxItemDocument : null;
+  if (!existing || (!data && existing.status === "done")) {
+    return {itemId, outcome: "skipped", addedSteps: 0};
+  }
+  tx.set(itemRef, removedInboxItem(existing, now));
+  return {itemId, outcome: "written", addedSteps: 0};
+}
+
+/**
+ * The trigger path (#2472): re-reads the source inside the transaction that
+ * writes its item, projects what is stored now rather than the event's
+ * payload, and skips an event older than the source's current version, so
+ * deliveries in any order end at the latest source. Returns the source as
+ * read, for the listing events a request brings with it; undefined when the
+ * source is gone or the event was stale.
+ */
+export async function syncInboxSourceFromStore(db: FirebaseFirestore.Firestore, kind: InboxSourceKind,
+  sourceId: string, eventVersion: SourceVersion | undefined, now: Date,
+  loadContext: InboxContextLoader = contextLoaderFor(sourceId)):
+  Promise<{result: InboxSyncResult; data: Data | undefined}> {
+  const itemId = inboxItemId(kind, sourceId);
+  const itemRef = db.collection(INBOX_ITEMS_COLLECTION).doc(itemId);
+  const sourceRef = db.collection(sourceCollections[kind]).doc(sourceId);
+  let data: Data | undefined;
+  const result = await db.runTransaction(async (tx): Promise<InboxSyncResult> => {
+    data = undefined;
+    const sourceSnap = await tx.get(sourceRef);
+    if (isStaleSourceEvent(sourceSnap, eventVersion)) return {itemId, outcome: "skipped", addedSteps: 0};
+    data = sourceSnap.exists ? sourceSnap.data() as Data : undefined;
+    // Context (organizer or person names) is read outside the transaction:
+    // it labels the item and the nightly reconcile refreshes it.
+    const context = data ? await loadContext(db, kind, data) : {};
+    const projection = data ? projectInboxSource(kind, sourceId, data, context) : null;
+    if (projection) return projectInTransaction(tx, db, projection, now);
+    return removeInTransaction(tx, itemRef, itemId, data, now);
   });
+  return {result, data};
 }
 
 /**
@@ -58,28 +94,35 @@ export async function syncInboxSource(db: FirebaseFirestore.Firestore, kind: Inb
  */
 export async function syncInboxProjection(db: FirebaseFirestore.Firestore, projection: InboxProjection, now: Date,
   unlessExists?: FirebaseFirestore.DocumentReference): Promise<InboxSyncResult> {
+  return db.runTransaction(async (tx) => {
+    if (unlessExists && (await tx.get(unlessExists)).exists) {
+      return {itemId: projection.itemId, outcome: "skipped", addedSteps: 0};
+    }
+    return projectInTransaction(tx, db, projection, now);
+  });
+}
+
+async function projectInTransaction(tx: FirebaseFirestore.Transaction, db: FirebaseFirestore.Firestore,
+  projection: InboxProjection, now: Date): Promise<InboxSyncResult> {
   const {itemId} = projection;
   const itemRef = db.collection(INBOX_ITEMS_COLLECTION).doc(itemId);
   const steps = projection.journey;
   const stepRefs = steps.map((step) =>
     db.collection(INBOX_JOURNEY_COLLECTION).doc(journeyStepDocId(itemId, step.stepId)));
-  return db.runTransaction(async (tx) => {
-    if (unlessExists && (await tx.get(unlessExists)).exists) return {itemId, outcome: "skipped", addedSteps: 0};
-    const [itemSnap, ...stepSnaps] = await tx.getAll(itemRef, ...stepRefs);
-    const existing = itemSnap.exists ? itemSnap.data() as InboxItemDocument : null;
-    const next = nextInboxItem(projection, existing, now);
-    let addedSteps = 0;
-    steps.forEach((step, index) => {
-      if (stepSnaps[index].exists) return;
-      tx.create(stepRefs[index], journeyStepDocument(itemId, step));
-      addedSteps += 1;
-    });
-    if (existing && sameInboxItem(existing, next)) {
-      return {itemId, outcome: addedSteps ? "written" : "unchanged", addedSteps};
-    }
-    tx.set(itemRef, next);
-    return {itemId, outcome: "written", addedSteps};
+  const [itemSnap, ...stepSnaps] = await tx.getAll(itemRef, ...stepRefs);
+  const existing = itemSnap.exists ? itemSnap.data() as InboxItemDocument : null;
+  const next = nextInboxItem(projection, existing, now);
+  let addedSteps = 0;
+  steps.forEach((step, index) => {
+    if (stepSnaps[index].exists) return;
+    tx.create(stepRefs[index], journeyStepDocument(itemId, step));
+    addedSteps += 1;
   });
+  if (existing && sameInboxItem(existing, next)) {
+    return {itemId, outcome: addedSteps ? "written" : "unchanged", addedSteps};
+  }
+  tx.set(itemRef, next);
+  return {itemId, outcome: "written", addedSteps};
 }
 
 export function journeyStepDocument(itemId: string, step: JourneyStep): InboxJourneyStepDocument {

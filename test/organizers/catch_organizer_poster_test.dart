@@ -1,8 +1,7 @@
+import 'package:catch_test_support/organizers_test_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'organizers_test_helpers.dart';
 
 void main() {
   testWidgets('uses editorial title and arrow defaults', (tester) async {

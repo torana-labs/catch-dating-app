@@ -322,7 +322,7 @@ function allowedPlanPath(path: string): boolean {
   const direct = new Set(["organizerSalesAccounts", "salesContacts",
     "salesTasks", "salesOpportunities", "salesActivities", "salesEvidence",
     "salesEvidenceProposals", "salesInboundIntents",
-    "salesContactRelationships", "salesSuppressionDecisions", "salesIntakeLinks",
+    "salesContactRelationships", "salesSuppressionDecisions",
     "salesImportRows", "salesImportCompensations",
     "salesImportHistoryRows", "salesImportHistoryRecords",
     "salesIntelligenceAssessments", "salesIntelligenceClauses",
