@@ -30,7 +30,13 @@ function fakeAdmin(initial) {
   };
   const db = {
     docs,
-    collection,
+    collection: (id) => Object.assign(collection(id), {
+      doc: (docId) => ({
+        set: async (data) => docs.set(`${id}/${docId}`, {...data}),
+        update: async (data) => docs.set(`${id}/${docId}`,
+          {...docs.get(`${id}/${docId}`), ...data}),
+      }),
+    }),
     doc: (path) => ({path, get: async () => snapshot(path)}),
     batch: () => {
       const writes = [];
@@ -73,10 +79,15 @@ const world = () => ({
 
 test("moves every cohort total off the organiser-readable event", async () => {
   const admin = fakeAdmin(world());
-  const plan = await main(["--emulator", "--json", "--apply"], {admin});
+  const plan = await main(["--emulator", "--json", "--apply"], {admin,
+    now: () => 1_790_000_000_000, commit: {sha: null, dirty: null}});
   assert.deepEqual(plan.summary, {events: 2, mapsRemoved: 5, mapsCopied: 4,
     keptNewerPrivateCopy: 1});
   const {docs} = admin.db;
+  // The applied run is recorded (FIX-7).
+  const runs = [...docs].filter(([path]) => path.startsWith("dataToolRuns/"));
+  assert.equal(runs.length, 1);
+  assert.equal(runs[0][1].status, "succeeded");
   for (const id of ["e1", "e2"]) {
     for (const field of ["cohortCounts", "waitlistedCohortCounts",
       "crossPathsPairHeldCohortCounts"]) {
