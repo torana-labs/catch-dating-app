@@ -7,6 +7,7 @@ import {
   assertProdWriteAllowed,
   resolveFirebaseProjectId,
 } from "../lib/firebase_project.mjs";
+import {withRunRecord} from "./lib/run_record.mjs";
 
 /**
  * One-off move of booking cohorts out of the documents organisers read
@@ -45,7 +46,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   await main();
 }
 
-export async function main(argv = process.argv.slice(2), {admin: injected = null} = {}) {
+export async function main(argv = process.argv.slice(2),
+  {admin: injected = null, now = undefined, commit = undefined} = {}) {
   const args = parseCommonArgs(argv, {
     booleanFlags: [],
     valueFlags: [],
@@ -86,7 +88,11 @@ export async function main(argv = process.argv.slice(2), {admin: injected = null
     console.log("\nDry run only. Nothing was written. Re-run with --apply to move the cohorts.");
     return plan;
   }
-  const result = await applyPlan(db, plan, fieldValues);
+  // The applied run is recorded in dataToolRuns (FIX-7).
+  const {counts: result} = await withRunRecord(db, {tool: import.meta.url,
+    projectId, scope: "booking-cohorts",
+    ...(now ? {now} : {}), ...(commit ? {commit} : {})},
+  async () => applyPlan(db, plan, fieldValues));
   const after = await buildPlan(db);
   if (args.json) {
     console.log(JSON.stringify({applied: result, after: after.summary}, null, 2));
