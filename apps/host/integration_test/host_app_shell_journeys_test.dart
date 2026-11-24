@@ -15,6 +15,8 @@ import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_dating_app/routing/shell/host_shell_navigation.dart';
 import 'package:catch_dating_app/routing/shell/host_shell_screen.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart'
+    as organizer_helpers;
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,8 +26,6 @@ import '../../../integration_test/support/app_shell_test_binding.dart';
 import '../../../integration_test/support/app_shell_test_harness.dart';
 import '../../../integration_test/support/app_shell_workflow_steps.dart';
 import '../../../test/events/events_test_helpers.dart' as event_helpers;
-import '../../../test/organizers/organizers_test_helpers.dart'
-    as organizer_helpers;
 import '../../../test/support/profile_readiness_fixtures.dart';
 import 'support/host_app_shell_test_harness.dart';
 

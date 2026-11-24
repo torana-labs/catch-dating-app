@@ -5,11 +5,10 @@ import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.da
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../organizers/organizers_test_helpers.dart';
 
 /// A Tuesday afternoon in November.
 final organizerNow = DateTime(2026, 11, 8, 15);
