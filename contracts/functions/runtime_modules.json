@@ -1,6 +1,7 @@
 {
   "description": "Schema contracts that Cloud Functions runtime code, Functions operation scripts, the website and Admin shared contracts import from functions/src/shared/generated. The schema generator emits a runtime module only for names listed here, plus the types those modules and firestoreAdminTypes.ts depend on. validators: emits the type, schemas/<module>.ts and validators/<module>.ts. types: emits only the type. Tests read every other contract at test time through functions/src/shared/testing/contractValidators.ts.",
   "validators": [
+    "AccessGrantDocument",
     "ActOnEventChatMessageCallablePayload",
     "ActivityNotificationDocument",
     "AddEventHostPhotoCallablePayload",

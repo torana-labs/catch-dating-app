@@ -1,12 +1,12 @@
 /**
  * Organiser access grants (issue #2474 step 3): one
  * accessGrants/organizer__{organizerId}__{uid} document per organiser owner
- * and manager. It is the one definition of "organiser manager": security
- * rules get() it, and requireOrganizerManager, the analytics and payout
- * checks read it. Every command that changes an organiser's owner or
- * managers stages it on the transaction that changes the organiser's
- * hostUserId, ownerUserId and hostUserIds fields and its team edges, which
- * stay as copies for released Host builds' organizer queries.
+ * and manager. It mirrors the organiser's canonical hostUserId, ownerUserId
+ * and hostUserIds, derived with the helpers the callables use and staged on
+ * the transaction of every command that changes them. Security rules, which
+ * can only get() a known id, and the payout owner query read it; callables
+ * keep reading the fields it mirrors, so all share one definition of
+ * organiser owner and manager. Team edges grant nothing on their own.
  */
 
 import type {
@@ -131,27 +131,4 @@ export function stageOrganizerAccessGrants(writer: AccessGrantWriter,
   for (const uid of before.keys()) {
     if (!after.has(uid)) tx.delete(ref(uid));
   }
-}
-
-/**
- * Reads one account's organiser access document, inside the caller's
- * transaction when it has one.
- * @param {FirebaseFirestore.Firestore} db Firestore.
- * @param {string} organizerId The organiser.
- * @param {string} uid The account.
- * @param {FirebaseFirestore.Transaction} transaction Optional transaction.
- * @return {Promise<OrganizerAccessRole|null>} The live role, or null.
- */
-export async function readOrganizerAccessRole(
-  db: FirebaseFirestore.Firestore, organizerId: string, uid: string,
-  transaction?: FirebaseFirestore.Transaction):
-  Promise<OrganizerAccessRole | null> {
-  const ref = db.collection(accessGrantsCollection)
-    .doc(organizerAccessGrantId(organizerId, uid));
-  const snap = transaction ? await transaction.get(ref) : await ref.get();
-  const data = snap.data() as AccessGrantDocument | undefined;
-  if (!data || data.scopeType !== "organizer" ||
-      data.scopeId !== organizerId || data.uid !== uid ||
-      data.status !== "active") return null;
-  return data.role === "owner" || data.role === "manager" ? data.role : null;
 }

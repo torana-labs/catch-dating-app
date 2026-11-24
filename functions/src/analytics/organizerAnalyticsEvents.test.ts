@@ -337,7 +337,9 @@ test("presence retry identity excludes raw session", async () => {
 });
 
 for (const status of ["active", "removed"]) {
-  test(`team member preview respects ${status} membership`, async () => {
+  // A team edge alone is not organiser management (#2474 step 3): only the
+  // manager fields the access documents mirror make a preview.
+  test(`a ${status} team edge alone is visitor activity`, async () => {
     const bigQuery = new FakeBigQuery();
     const request = callableRequest({organizerId: "club-1",
       eventName: "listingView",
@@ -349,7 +351,7 @@ for (const status of ["active", "removed"]) {
           organizerId: "club-1", uid: "manager-1", role: "manager", status,
         },
       }), bigQuery));
-    assert.equal(bigQuery.inserted.length, status === "active" ? 0 : 1);
+    assert.equal(bigQuery.inserted.length, 1);
   });
 }
 
