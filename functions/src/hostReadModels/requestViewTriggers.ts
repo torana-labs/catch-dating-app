@@ -139,3 +139,25 @@ export const onHostRequestViewContactWritten = onDocumentWritten({
     await reconcileHostEventRequestViewsForPerson(db, uid, organizerId);
   }
 });
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const organizerContactsProjections = defineProjections(
+  "organizerContacts", [
+    {
+      id: "hostRequestViewContactWritten", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after} = change;
+        const db = admin.firestore();
+        for (const {uid, organizerId} of requestViewPeopleForContact(
+          before, after)) {
+          await reconcileHostEventRequestViewsForPerson(db, uid, organizerId);
+        }
+      },
+    },
+  ]);

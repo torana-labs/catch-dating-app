@@ -13,7 +13,8 @@
   "read": "get by id by full reach (coordinators and the owner) while not deleted; never listed",
   "write": "server only; written from programTravelLegs",
   "exportedFunctions": [
-    "onProgramAlertLegChanged"
+    "onProgramAlertLegChanged",
+    "dispatchProgramTravelLegs"
   ],
   "migrationNotes": [
     "Readiness counts of inbound journeys. The program-live-board-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."

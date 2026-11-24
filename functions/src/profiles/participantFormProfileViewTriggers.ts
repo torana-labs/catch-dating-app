@@ -3,6 +3,7 @@ import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {reconcileParticipantFormProfileView,
   reconcileParticipantIntakeProfileView, responseWriteChangesReview} from
   "./participantFormProfileViewStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true};
 
@@ -33,3 +34,24 @@ export const onParticipantIntakeProfileViewChanged = onDocumentWritten(
   {...options, document: "participantIntakeProfiles/{uid}"},
   (event) => reconcileParticipantIntakeProfileView(admin.firestore(),
     event.params.uid));
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const organizerFormResponsesProjections = defineProjections(
+  "organizerFormResponses", [
+    {
+      id: "participantFormProfileViewResponseChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after, documentId} = change;
+        if (!responseWriteChangesReview(before,
+          after)) return;
+        await reconcileParticipantFormProfileView(admin.firestore(),
+          documentId);
+      },
+    },
+  ]);
