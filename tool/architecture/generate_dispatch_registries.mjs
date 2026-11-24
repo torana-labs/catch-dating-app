@@ -107,13 +107,13 @@ export function renderRegistry(source, registrations) {
   for (const {file: from, name} of registrations) {
     let local = name;
     if (used.has(local) || local === "dispatchTrigger") {
-      local = `${name}${used.size + 1}`;
+      local = `${name.replace(/Projections$/u, "")}${used.size + 1}`;
     }
     used.set(local, true);
     const specifier = importSpecifier(file, from);
     imports.push(local === name ?
       `import {${name}} from\n  "${specifier}";` :
-      `import {${name} as ${local}} from\n  "${specifier}";`);
+      `import {\n  ${name} as ${local},\n} from "${specifier}";`);
     sets.push(`    ${local},`);
   }
   return [

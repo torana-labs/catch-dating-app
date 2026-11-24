@@ -5,6 +5,7 @@ import {
   reconcileFormEditorView,
   reconcileFormSourceView,
 } from "./formViewStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true};
 
@@ -67,3 +68,24 @@ export const onHostFormSourceViewLinkChanged = onDocumentWritten({
     await reconcileFormSourceView(admin.firestore(), formId);
   }
 });
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const organizerFormsProjections = defineProjections("organizerForms", [
+  {
+    id: "hostFormEditorViewFormChanged", kind: "projection",
+    when: () => true,
+    run: async (change) => {
+      const {before, after, documentId} = change;
+      const db = admin.firestore();
+      const formId = documentId;
+      await reconcileFormEditorView(db, formId);
+      if (before && after && before.organizerId === after.organizerId) return;
+      await reconcileFormSourceView(db, formId);
+    },
+  },
+]);

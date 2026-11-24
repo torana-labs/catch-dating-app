@@ -185,3 +185,60 @@ export const onHostMergeCandidateViewDecisionChanged = onDocumentWritten({
       data.contactIds as string[]);
   }
 });
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const organizerFormsProjections = defineProjections("organizerForms", [
+  {
+    id: "hostAudienceSourceViewFormChanged", kind: "projection",
+    when: () => true,
+    run: async (change) => {
+      const {before, after} = change;
+      if (same(before, after, ["organizerId", "title",
+        "activeVersionId"])) return;
+      await audienceSources(before, after);
+    },
+  },
+]);
+
+export const organizerContactsProjections = defineProjections(
+  "organizerContacts", [
+    {
+      id: "hostMergeCandidateViewContactChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after, documentId} = change;
+        const db = admin.firestore();
+        const eligibilitySame = same(before, after, eligibilityFields);
+        if (eligibilitySame && same(before, after, shownContactFields)) return;
+        for (const organizerId of organizerIds(before, after)) {
+          await reconcileContactMergeCandidates(db, organizerId,
+            documentId, eligibilitySame);
+        }
+      },
+    },
+  ]);
+
+export const organizerContactEventEdgesProjections = defineProjections(
+  "organizerContactEventEdges", [
+    {
+      id: "hostMergeCandidateViewEdgeChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after} = change;
+        const db = admin.firestore();
+        if (same(before, after, ["organizerId", "contactId",
+          "eventId"])) return;
+        for (const data of [before, after]) {
+          if (typeof data?.organizerId !== "string" ||
+            typeof data.contactId !== "string") continue;
+          await reconcileContactMergeCandidates(db, data.organizerId,
+            data.contactId, true);
+        }
+      },
+    },
+  ]);

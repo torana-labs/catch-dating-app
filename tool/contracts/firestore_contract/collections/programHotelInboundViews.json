@@ -14,8 +14,10 @@
   "write": "server only; written from programTravelLegs, programTravelParties, programGuests and the programme's transport settings",
   "exportedFunctions": [
     "onProgramHotelInboundLegChanged",
+    "dispatchProgramTravelLegs",
     "onProgramHotelInboundPartyChanged",
     "onProgramTripGuestChanged",
+    "dispatchProgramGuests",
     "dispatchOrganizerPrograms"
   ],
   "migrationNotes": [

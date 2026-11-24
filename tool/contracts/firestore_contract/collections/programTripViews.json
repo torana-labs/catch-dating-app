@@ -15,7 +15,8 @@
   "write": "server only; written from transportTrips, programGuests and programTravelLegs",
   "exportedFunctions": [
     "onProgramTripViewChanged",
-    "onProgramTripGuestChanged"
+    "onProgramTripGuestChanged",
+    "dispatchProgramGuests"
   ],
   "migrationNotes": [
     "Exactly the row the retired listProgramTrips callable returned, with the manifest's guest names from the recorded dispatch snapshot; the trip's notes, rate, driver and account ids stay in transportTrips. Hotel desks also read a trip's pickup point id, vendor id, kind, arrival time and void reason, which getProgramHotelInbound did not return. The program-trip-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
