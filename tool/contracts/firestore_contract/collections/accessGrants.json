@@ -7,7 +7,8 @@
   "rulesTestFile": "functions/test/rules/access_grants.rules.test.cjs",
   "rulesTestNames": [
     "lets an account get and list only its own access grants",
-    "decides programme reads from the access grant even when the view is stale or missing"
+    "decides programme reads from the access grant even when the view is stale or missing",
+    "decides event operator reads from the access grant, not the staff grant record"
   ],
   "owner": "access grant writers (functions/src/domain/access), called in the same transaction by every programme grant, owner and revocation command and every event staff grant, group duty and revocation command",
   "writerContext": "access",
