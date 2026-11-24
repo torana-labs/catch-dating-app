@@ -1364,6 +1364,14 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // A guest's full dating profile, sensitive answers included (#2493,
+    // FIX-8). syncPublicProfile writes it beside publicProfiles; only the
+    // matching-feed callables read it, with the admin SDK, for the guests
+    // they chose. No client reads it, not even the guest.
+    match /guestProfiles/{uid} {
+      allow read, write: if false;
+    }
+
     // Canonical organizer authority. All mutations remain callable-owned so
     // type audits, relationship projections, and compatibility shadows stay
     // atomic during the released-client migration window.
