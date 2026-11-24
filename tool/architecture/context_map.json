@@ -40,6 +40,20 @@
 
     {"path": "lib/routing/", "layer": "app"},
 
+    {"path": "test/events/events_test_helpers.dart", "layer": "app", "moveTo": "packages/catch_test_support/lib/events_test_helpers.dart", "group": "test-support-events"},
+
+    {"path": "test/events/event_viewer_state_fixtures.dart", "layer": "app", "moveTo": "packages/catch_test_support/lib/event_viewer_state_fixtures.dart", "group": "test-support-events"},
+
+    {"path": "test/support/profile_readiness_fixtures.dart", "layer": "app", "moveTo": "packages/catch_test_support/lib/profile_readiness_fixtures.dart", "group": "test-support-events"},
+
+    {"path": "test/onboarding/onboarding_test_helpers.dart", "layer": "app", "moveTo": "packages/catch_test_support/lib/onboarding_test_helpers.dart", "group": "test-support-events"},
+
+    {"path": "test/hosts/support/host_crm_response_fixtures.dart", "layer": "app", "moveTo": "packages/catch_test_support/lib/hosts/host_crm_response_fixtures.dart", "group": "test-support-events"},
+
+    {"path": "test/hosts/support/host_events_timeline_test_support.dart", "layer": "app", "moveTo": "packages/catch_test_support/lib/hosts/host_events_timeline_test_support.dart", "group": "test-support-events"},
+
+    {"path": "test/hosts/support/read_model_feeds.dart", "layer": "app", "moveTo": "packages/catch_test_support/lib/hosts/read_model_feeds.dart", "group": "test-support-events"},
+
 
     {"path": "lib/auth/", "context": "account"},
 
