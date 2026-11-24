@@ -436,8 +436,8 @@ A claimed organiser's team manages its page in place, on the page itself
 fields, the same ones every organiser command checks: the owner
 (`ownerUserId`) is **owner**; managers and hosts (`hostUserIds`) are
 **editor**; **analyst** is reserved in the contract and the page (insights and
-"Open in Catch Host" only) until a team command grants it. The server returns
-the role's capabilities with the view, and each capability mirrors its
+"Open in Catch Host" only) until a team command grants it. The view stores
+each role's capabilities, and each capability mirrors its
 command: about through `updateOrganizer` (owner only, as that command
 requires), the photo order and owner links through `manageOrganizerOwnerPage`
 (owner and editors), review replies through `setReviewResponse`, Pixel and GA4
@@ -447,8 +447,8 @@ through `manageOrganizerOwnerPage`, which reserves one of two sends per
 calendar month (Asia/Kolkata) in `organizerFollowerMessageQuotas` and then
 calls `createOrganizerPost`. Insights read 30 server-only `organizerInsights`
 day documents that `rollupOrganizerInsightsDaily` writes each night from the
-host analytics marts and `organizerFollows`; `getOrganizerOwnerView` returns
-them with the editable content. A signed-out visitor sees one quiet sign-in
+host analytics marts and `organizerFollows`; the `hostOrganizerOwnerViews`
+projection keeps the last 40 of them with the editable content. A signed-out visitor sees one quiet sign-in
 line above the footer (today's claim sign-in); a signed-in visitor who is not
 on the team sees only the public page. Photo uploads and removals, events and
 live tools stay in Catch Host.
