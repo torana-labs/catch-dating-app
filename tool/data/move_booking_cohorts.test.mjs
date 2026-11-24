@@ -43,7 +43,13 @@ function fakeAdmin(initial) {
   };
   const db = {
     docs,
-    collection,
+    collection: (id) => Object.assign(collection(id), {
+      doc: (docId) => ({
+        set: async (data) => docs.set(`${id}/${docId}`, {...data}),
+        update: async (data) => docs.set(`${id}/${docId}`,
+          {...docs.get(`${id}/${docId}`), ...data}),
+      }),
+    }),
     doc: (path) => ({path, get: async () => snapshot(path)}),
     batch: () => {
       const writes = [];
@@ -81,10 +87,16 @@ const world = () => ({
 
 test("moves every cohort out of the documents organisers read", async () => {
   const admin = fakeAdmin(world());
-  const plan = await main(["--emulator", "--json", "--apply"], {admin});
+  const plan = await main(["--emulator", "--json", "--apply"], {admin,
+    now: () => 1_790_000_000_000, commit: {sha: null, dirty: null}});
   assert.deepEqual(plan.summary, {bookings: 2, offers: 1, legacyMirrors: 1,
     copies: 2, keptNewerPrivateCopy: 1, invalid: 0});
   const {docs} = admin.db;
+  // The applied run is recorded (FIX-7).
+  const runs = [...docs].filter(([path]) => path.startsWith("dataToolRuns/"));
+  assert.equal(runs.length, 1);
+  assert.equal(runs[0][1].status, "succeeded");
+  assert.equal(runs[0][1].tool, "tool/data/move_booking_cohorts.mjs");
   for (const path of ["eventBookings/e1_u1", "eventBookings/e1_u2",
     "eventParticipations/e1_u1"]) {
     assert.equal(Object.hasOwn(docs.get(path), "cohortAtSignup"), false, path);
