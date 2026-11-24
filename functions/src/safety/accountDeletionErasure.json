@@ -963,10 +963,6 @@
       "handling": "deleted",
       "how": "queueParticipantPrivateStateCleanup deletes participantIntakeProfiles/{uid}."
     },
-    "participantMetricCounters": {
-      "handling": "deleted",
-      "how": "queueEventSuccessCleanup deletes participantMetricCounters/{uid}, the account's own running totals."
-    },
     "participantOrganizerCards": {
       "handling": "deleted",
       "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."

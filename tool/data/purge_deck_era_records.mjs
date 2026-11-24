@@ -22,13 +22,12 @@ import {
  * What it deletes, in this order (so a crash and rerun finishes the job):
  * 1. Chats (`matches/{id}`, conversationType `match` or none) whose mutual
  *    likes were not both current picks: their participantSignalFacts (by
- *    matchId) with the matching participantMetricCounters decrements, both
+ *    matchId), both
  *    `notifications/{uid}/items/match_{id}` items, every document in the
  *    chat's subcollections (messages, including `profileReaction_*`), then
  *    the chat document. Blocked chats are kept for safety review.
  * 2. Deck-era like facts in participantSignalFacts (outgoing_like,
- *    incoming_like, private_interest_sent/received) with their counter
- *    decrements.
+ *    incoming_like, private_interest_sent/received).
  * 3. `profileReaction_*` messages left in chats that are kept because both
  *    people picked each other with current picks.
  * 4. The deck-era profileDecisions documents themselves (and with them every
@@ -100,10 +99,6 @@ export async function main(argv = process.argv.slice(2), {
   const admin = injectedAdmin ?? requireFromFunctions("firebase-admin");
   admin.initializeApp({projectId});
   const db = admin.firestore();
-  const fieldValues = {
-    increment: (value) => admin.firestore.FieldValue.increment(value),
-    delete: () => admin.firestore.FieldValue.delete(),
-  };
 
   const plan = await buildDeckEraPurgePlan(db, {classifier});
   printPlan(plan, {json: args.json, summaryOnly: args.summaryOnly, projectId});
@@ -114,7 +109,7 @@ export async function main(argv = process.argv.slice(2), {
     return;
   }
 
-  const result = await applyDeckEraPurgePlan(db, plan, {fieldValues});
+  const result = await applyDeckEraPurgePlan(db, plan);
   const after = await buildDeckEraPurgePlan(db, {classifier});
   if (args.json) {
     console.log(JSON.stringify({applied: result, after: after.summary}, null, 2));
@@ -144,17 +139,12 @@ export async function buildDeckEraPurgePlan(db, {classifier}) {
   const decisions = await planDecisions(db, classifier, warnings);
   const chats = await planChats(db, decisions, warnings);
   const likeFacts = await planLikeFacts(db, decisions, classifier, warnings);
-  const counterUpdates = await planCounterUpdates(db, [
-    ...chats.facts,
-    ...likeFacts.facts,
-  ], warnings);
 
   const summary = {
     cutoff: classifier.deckRetiredAtIso,
     decisions: decisions.summary,
     likeSignalFacts: likeFacts.summary,
     chats: chats.summary,
-    counters: summarizeCounters(counterUpdates),
     storageImagePrefixes: chats.storagePrefixes,
     warnings,
   };
@@ -168,7 +158,6 @@ export async function buildDeckEraPurgePlan(db, {classifier}) {
     likeFacts: likeFacts.facts,
     keptChatReactionMessages: chats.keptChatReactionMessages,
     decisionDocs: decisions.deckEraDocs,
-    counterUpdates,
   };
 }
 
@@ -405,71 +394,9 @@ async function planLikeFacts(db, decisions, classifier, warnings) {
   return {summary, facts};
 }
 
-/**
- * Each signal fact was written in one transaction with a `value` increment of
- * `participantMetricCounters/{uid}.counters[type]`, so deleting the fact
- * decrements the counter by the same value. When a type's planned count
- * reaches zero its `lastSeenByType` entry is removed too.
- */
-async function planCounterUpdates(db, facts, warnings) {
-  const byUid = new Map();
-  const seen = new Set();
-  for (const fact of facts) {
-    if (seen.has(fact.path)) continue;
-    seen.add(fact.path);
-    if (typeof fact.uid !== "string" || typeof fact.type !== "string") {
-      warnings.push(`${fact.path} has no uid/type; deleted without a counter change.`);
-      continue;
-    }
-    const entry = byUid.get(fact.uid) ?? new Map();
-    entry.set(fact.type, (entry.get(fact.type) ?? 0) + fact.value);
-    byUid.set(fact.uid, entry);
-  }
-  const updates = new Map();
-  const uids = [...byUid.keys()].sort();
-  for (let i = 0; i < uids.length; i += 300) {
-    const chunk = uids.slice(i, i + 300);
-    const refs = chunk.map((uid) => db.collection("participantMetricCounters").doc(uid));
-    const snaps = refs.length > 0 ? await db.getAll(...refs) : [];
-    snaps.forEach((snap, index) => {
-      const uid = chunk[index];
-      if (!snap.exists) {
-        warnings.push(`participantMetricCounters/${uid} is missing; no counter to decrement.`);
-        return;
-      }
-      const counters = snap.data()?.counters ?? {};
-      const decrements = {};
-      const clearLastSeen = [];
-      for (const [type, value] of byUid.get(uid)) {
-        decrements[type] = value;
-        const current = typeof counters[type] === "number" ? counters[type] : 0;
-        if (current < value) {
-          warnings.push(
-            `participantMetricCounters/${uid}.counters.${type} is ${current}, ` +
-            `below the ${value} being removed; it will go negative.`
-          );
-        }
-        if (current - value <= 0) clearLastSeen.push(type);
-      }
-      updates.set(uid, {path: snap.ref.path, uid, decrements, clearLastSeen});
-    });
-  }
-  return updates;
-}
-
-function summarizeCounters(counterUpdates) {
-  const decrementsByType = {};
-  for (const update of counterUpdates.values()) {
-    for (const [type, value] of Object.entries(update.decrements)) {
-      decrementsByType[type] = (decrementsByType[type] ?? 0) + value;
-    }
-  }
-  return {usersAdjusted: counterUpdates.size, decrementsByType};
-}
-
 // ── Apply ─────────────────────────────────────────────────────────────────
 
-export async function applyDeckEraPurgePlan(db, plan, {fieldValues}) {
+export async function applyDeckEraPurgePlan(db, plan) {
   const result = {batches: 0, writes: 0};
   const commit = async (writes) => {
     if (writes.length === 0) return;
@@ -480,47 +407,6 @@ export async function applyDeckEraPurgePlan(db, plan, {fieldValues}) {
     result.writes += writes.length;
   };
 
-  // Each batch decrements the counters by exactly the facts it deletes, so a
-  // rerun after a crash never decrements twice. A user's lastSeenByType entry
-  // is cleared in the batch that deletes their last planned fact.
-  const applyFacts = async (facts) => {
-    const remaining = new Map();
-    for (const fact of facts) remaining.set(fact.uid, (remaining.get(fact.uid) ?? 0) + 1);
-    const sorted = [...facts].sort((a, b) =>
-      String(a.uid).localeCompare(String(b.uid)) || a.path.localeCompare(b.path));
-    let writes = [];
-    let pending = new Map();
-    const flush = async () => {
-      for (const [uid, delta] of pending) {
-        const update = plan.counterUpdates.get(uid);
-        if (!update) continue;
-        const patch = {};
-        for (const [type, value] of Object.entries(delta)) {
-          patch[`counters.${type}`] = fieldValues.increment(-value);
-          if (remaining.get(uid) === 0 && update.clearLastSeen.includes(type)) {
-            patch[`lastSeenByType.${type}`] = fieldValues.delete();
-          }
-        }
-        writes.push((batch) => batch.update(db.doc(update.path), patch));
-      }
-      await commit(writes);
-      writes = [];
-      pending = new Map();
-    };
-    for (const fact of sorted) {
-      if (writes.length + pending.size >= WRITE_BATCH - 1) await flush();
-      if (typeof fact.uid !== "string") {
-        writes.push((batch) => batch.delete(db.doc(fact.path)));
-        continue;
-      }
-      writes.push((batch) => batch.delete(db.doc(fact.path)));
-      const delta = pending.get(fact.uid) ?? {};
-      delta[fact.type] = (delta[fact.type] ?? 0) + fact.value;
-      pending.set(fact.uid, delta);
-      remaining.set(fact.uid, remaining.get(fact.uid) - 1);
-    }
-    await flush();
-  };
   const applyDeletes = async (entries) => {
     for (let i = 0; i < entries.length; i += WRITE_BATCH) {
       await commit(entries.slice(i, i + WRITE_BATCH)
@@ -528,10 +414,10 @@ export async function applyDeckEraPurgePlan(db, plan, {fieldValues}) {
     }
   };
 
-  // Facts from both phases share counter documents, so they apply together.
+  // A chat fact can also be a like fact; delete each path once.
   const facts = new Map([...plan.chatFacts, ...plan.likeFacts]
     .map((fact) => [fact.path, fact]));
-  await applyFacts([...facts.values()]);
+  await applyDeletes([...facts.values()]);
   await applyDeletes(plan.chatNotifications);
   await applyDeletes(plan.chatSubcollectionDocs);
   await applyDeletes(plan.chatDocs);
@@ -605,9 +491,6 @@ function printSummary(summary, {summaryOnly = false} = {}) {
   console.log(`  profileReaction messages to delete in kept chats: ${c.profileReactionMessagesInKeptChats}`);
   console.log(`  match notifications to delete: ${c.notificationsDeleted}`);
   console.log(`  chat signal facts to delete: ${c.chatSignalFactsDeleted}`);
-  console.log("\nCounters (participantMetricCounters)");
-  console.log(`  users adjusted: ${summary.counters.usersAdjusted}`);
-  console.log(`  decrements: ${JSON.stringify(summary.counters.decrementsByType)}`);
   console.log(`\nStorage image prefixes for deleted chats: ${summary.storageImagePrefixes.length}`);
   if (!summaryOnly) {
     for (const prefix of summary.storageImagePrefixes.slice(0, 100)) console.log(`  ${prefix}`);
@@ -623,8 +506,8 @@ function printHelp() {
   console.log(`Usage: node tool/data/purge_deck_era_records.mjs (--env <name> | --project <id> | --emulator) [options]
 
 One-off purge of the retired swipe deck's likes, passes and like comments,
-the chats that exist only because of them, and their derived signal facts and
-counters. Dry run by default. Build Functions first
+the chats that exist only because of them, and their derived signal facts.
+Dry run by default. Build Functions first
 (npm --prefix functions run build): the deck-era rule is loaded from
 functions/lib/matching/deckEraDecision.js.
 
