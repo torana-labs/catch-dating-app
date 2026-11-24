@@ -17,7 +17,8 @@
     "dispatchEvents",
     "onHostRequestViewProfileWritten",
     "onHostRequestViewContactSummaryWritten",
-    "onHostRequestViewContactWritten"
+    "onHostRequestViewContactWritten",
+    "dispatchOrganizerContacts"
   ],
   "migrationNotes": [
     "rows equal what the retired listOrganizerRequests callable returned for the event, unfiltered by blocks; readers hide anyone with a block either way. The host-event-request-views copy-forward migration creates views for events that had people waiting before the triggers."

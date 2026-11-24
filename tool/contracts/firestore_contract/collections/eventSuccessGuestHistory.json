@@ -10,12 +10,13 @@
   ],
   "owner": "onEventSuccessStandingsWritten trigger",
   "writerContext": "live",
-  "read": "the guest whose uid it carries gets their own eventId_uid document",
+  "read": "server only until the game history screen ships (#2501)",
   "write": "server only",
   "exportedFunctions": [
     "onEventSuccessStandingsWritten"
   ],
   "migrationNotes": [
-    "Projected from eventSuccessStandings on every standings write; nights scored before the trigger deploys have no history until their standings are written again."
+    "Projected from eventSuccessStandings on every standings write; nights scored before the trigger deploys have no history until their standings are written again.",
+    "Client reads closed and a one-year TTL on expiresAt added while no screen reads it (FIX-14, #2450); reopen the guest's own get when #2501 ships."
   ]
 }

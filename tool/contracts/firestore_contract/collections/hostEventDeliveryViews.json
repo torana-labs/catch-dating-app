@@ -18,6 +18,7 @@
     "dispatchEventAttendees",
     "dispatchEvents",
     "onHostEventDeliveryViewWorkItemChanged",
+    "dispatchOperationWorkItems",
     "onHostEventDeliveryViewRunChanged",
     "dispatchOrganizers",
     "repairEventAssistanceDelivery"

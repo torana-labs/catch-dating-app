@@ -3693,11 +3693,10 @@ service cloud.firestore {
     }
 
     // One guest's game history, projected from the standings by trigger.
+    // No screen reads guest game history yet (#2501), so clients have no
+    // access; reopen the guest's own get when that screen ships.
     match /eventSuccessGuestHistory/{historyId} {
-      allow get: if isAuthed()
-        && resource != null
-        && resource.data.uid == request.auth.uid;
-      allow list, write: if false;
+      allow read, write: if false;
     }
 
     match /eventSuccessFeedback/{feedbackId} {
@@ -4292,9 +4291,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /catchWhatsappReadinessPublications/{privateDocument=**} {
-      allow read, write: if false;
-    }
-    match /eventIntakeReviewDecisions/{privateDocument=**} {
       allow read, write: if false;
     }
     match /eventRosterHandoffs/{privateDocument=**} {

@@ -15,7 +15,8 @@
   "exportedFunctions": [
     "dispatchOrganizerPrograms",
     "onProgramSettingViewSettingsChanged",
-    "onProgramSettingViewGrantChanged"
+    "onProgramSettingViewGrantChanged",
+    "dispatchProgramStaffGrants"
   ],
   "migrationNotes": [
     "Replaces getProgramAssistantSettings for the Host app (#2306): the settings exactly as the callable returned them (defaults with usesDefaults and revision 0 when none are saved) and the escalation staff with each grant's expiry instead of the callable's clock filter. Saving stays updateProgramAssistantSettings, fenced by the revision. The program-setting-views copy-forward migration creates views for programmes that predate the triggers.",

@@ -162,3 +162,40 @@ export const onHostContactDetailViewMergeReceiptWritten = onDocumentWritten({
     await reconcileHostContactDetailView(db, contactId);
   }
 });
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const organizerContactsProjections = defineProjections(
+  "organizerContacts", [
+    {
+      id: "hostContactDetailViewContactWritten", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after, documentId} = change;
+        if (!contactDetailContactChanged(before,
+          after)) return;
+        await reconcileHostContactDetailView(admin.firestore(),
+          documentId);
+      },
+    },
+  ]);
+
+export const organizerContactEventEdgesProjections = defineProjections(
+  "organizerContactEventEdges", [
+    {
+      id: "hostContactDetailViewEdgeWritten", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after} = change;
+        const db = admin.firestore();
+        for (const contactId of contactDetailContactsForEdge(
+          before, after)) {
+          await reconcileHostContactDetailView(db, contactId);
+        }
+      },
+    },
+  ]);
