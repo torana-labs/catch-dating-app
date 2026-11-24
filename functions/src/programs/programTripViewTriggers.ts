@@ -115,3 +115,53 @@ export const programHotelInboundSettingsProjections = defineProjections(
     run: (change, ctx) =>
       reconcileProgramInboundCurbTimes(ctx.db, change.documentId),
   }]);
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const programGuestsProjections = defineProjections("programGuests", [
+  {
+    id: "programTripGuestChanged", kind: "projection",
+    when: () => true,
+    run: async (change) => {
+      const {before, after, documentId} = change;
+      const programId = after?.programId ?? before?.programId;
+      if (typeof programId !== "string" || !programId ||
+          unchanged(before, after, ["displayName"])) return;
+      const db = admin.firestore();
+      // One equality filter keeps this off the composite index list; the
+      // programme is checked on each journey.
+      const legs = await db.collection("programTravelLegs")
+        .where("guestId", "==", documentId).limit(fanoutLimit).get();
+      for (const leg of legs.docs) {
+        if (leg.data().programId !== programId) continue;
+        await reconcileProgramHotelInboundView(db, leg.id);
+        const trips = await db.collection("transportTrips")
+          .where("legIds", "array-contains", leg.id).limit(20).get();
+        for (const trip of trips.docs) {
+          await reconcileProgramTripView(db, trip.id);
+        }
+      }
+    },
+  },
+]);
+
+export const programTravelLegsProjections = defineProjections(
+  "programTravelLegs", [
+    {
+      id: "programHotelInboundLegChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after, documentId} = change;
+        if (unchanged(before, after, ["kind", "readiness", "destinationHotelId",
+          "partyId", "guestId", "passengers", "flightNumber", "flightStatus",
+          "scheduledArrivalAt", "estimatedArrivalAt", "actualArrivalAt",
+          "manualCurbAt", "readyAt", "international"])) return;
+        await reconcileProgramHotelInboundView(admin.firestore(),
+          documentId);
+      },
+    },
+  ]);

@@ -276,7 +276,7 @@ describe("firestore.rules", () => {
       await seed(["eventSuccessGuestHistory", "event-1_runner-1"], {
         eventId: "event-1", organizerId: "club-1", uid: "runner-1",
         unitOutcome: "score", standingsRevision: 1, rounds: [],
-        finalStanding: null, updatedAtMs: 1,
+        finalStanding: null, updatedAtMs: 1, expiresAt: new Date(1),
       });
 
       const host = authedDb("host-1");
@@ -290,7 +290,8 @@ describe("firestore.rules", () => {
       }));
       await assertFails(getDocs(collection(host, "eventCloseOuts")));
 
-      await assertSucceeds(getDoc(doc(authedDb("runner-1"),
+      // Closed to every client until the game history screen ships (#2501).
+      await assertFails(getDoc(doc(authedDb("runner-1"),
         "eventSuccessGuestHistory", "event-1_runner-1")));
       await assertFails(getDoc(doc(authedDb("runner-2"),
         "eventSuccessGuestHistory", "event-1_runner-1")));

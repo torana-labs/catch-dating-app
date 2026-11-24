@@ -18,3 +18,4 @@ export {
   generateProfilePhotoThumbnail,
 } from "./generateProfilePhotoThumbnail";
 export {manageWebsiteAccount} from "./websiteAccount";
+export {dispatchUsers} from "./dispatch/users.generated";

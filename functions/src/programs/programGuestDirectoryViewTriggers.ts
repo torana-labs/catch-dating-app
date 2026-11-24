@@ -2,6 +2,7 @@ import * as admin from "firebase-admin";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {reconcileProgramGuestDirectoryRow} from
   "./programGuestDirectoryViews";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true};
 
@@ -59,3 +60,34 @@ export const onProgramGuestDirectoryGroupChanged = onDocumentWritten({
   await reconcileProgramGuestDirectoryRow(admin.firestore(), "group",
     event.params.groupId);
 });
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const programGuestsProjections = defineProjections("programGuests", [
+  {
+    id: "programGuestDirectoryGuestChanged", kind: "projection",
+    when: () => true,
+    run: async (change) => {
+      const {documentId} = change;
+      await reconcileProgramGuestDirectoryRow(admin.firestore(), "guest",
+        documentId);
+    },
+  },
+]);
+
+export const programHouseholdsProjections = defineProjections(
+  "programHouseholds", [
+    {
+      id: "programGuestDirectoryHouseholdChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {documentId} = change;
+        await reconcileProgramGuestDirectoryRow(admin.firestore(), "household",
+          documentId);
+      },
+    },
+  ]);

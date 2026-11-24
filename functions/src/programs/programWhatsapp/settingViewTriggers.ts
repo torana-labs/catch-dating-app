@@ -89,3 +89,32 @@ export const onProgramSenderViewConnectionChanged = onDocumentWritten({
     await reconcileOrganizerSenderViews(admin.firestore(), organizerId);
   }
 });
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const programStaffGrantsProjections = defineProjections(
+  "programStaffGrants", [
+    {
+      id: "programSettingViewGrantChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after} = change;
+        if (same(before, after, ["programId", "organizerId", "uid", "status",
+          "revokedAt", "displayName", "expiresAt"])) return;
+        const programIds = new Set<string>();
+        for (const data of [before, after]) {
+          if (typeof data?.programId === "string" && data.programId) {
+            programIds.add(data.programId);
+          }
+        }
+        for (const programId of programIds) {
+          await reconcileProgramAssistantSettingView(admin.firestore(),
+            programId);
+        }
+      },
+    },
+  ]);
