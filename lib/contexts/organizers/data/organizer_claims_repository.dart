@@ -9,16 +9,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'organizer_claims_repository.g.dart';
 
-/// The roles a claim names, as `requestOrganizerClaim` takes them.
-enum OrganizerClaimRole {
-  owner,
-  founder,
-  manager,
-  marketer,
-  venueManager,
-  other,
-}
-
 /// Claiming a page Catch already holds. `findClaimableOrganizers` lists the
 /// pages it found for the signed-in person's verified number (the server
 /// reads the number from the sign-in, never from the app);

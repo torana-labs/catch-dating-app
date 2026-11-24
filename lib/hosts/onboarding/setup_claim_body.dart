@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/contexts/organizers/data/organizer_claims_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/claimable_organizer.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';

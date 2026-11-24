@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 
 /// Where Catch learned that a phone number belongs with an organizer page,
 /// as `findClaimableOrganizers` labels it. The number itself never reaches
@@ -170,3 +170,13 @@ List<T> _list<T>(Object? value, T? Function(Object?) parse) => [
   if (value is List)
     for (final item in value) ?parse(item),
 ];
+
+/// The roles a claim names, as `requestOrganizerClaim` takes them.
+enum OrganizerClaimRole {
+  owner,
+  founder,
+  manager,
+  marketer,
+  venueManager,
+  other,
+}

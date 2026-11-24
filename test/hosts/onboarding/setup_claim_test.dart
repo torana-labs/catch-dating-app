@@ -6,6 +6,7 @@ import 'package:catch_dating_app/hosts/onboarding/setup_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -78,7 +79,7 @@ Future<_ClaimsRepository> _pumpSetup(
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  await pumpFeatureUi(tester);
   return repository;
 }
 
@@ -206,7 +207,7 @@ void main() {
 
       expect(find.text('Is this you?'), findsOneWidget);
       await tester.tap(find.text('This is me'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(find.text('Claim your page'), findsOneWidget);
       await tester.enterText(
@@ -219,7 +220,7 @@ void main() {
       await tester.tap(find.text('Founder'));
       await tester.pump();
       await tester.tap(find.text('Send claim'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(repository.claims, ['org-lantern|Riya Kapoor|founder']);
       expect(
@@ -243,7 +244,7 @@ void main() {
       );
 
       await tester.tap(find.text('None of these, start a new page'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(find.text('Start your page'), findsOneWidget);
     });
   });
