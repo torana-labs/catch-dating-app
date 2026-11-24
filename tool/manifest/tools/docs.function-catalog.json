@@ -25,5 +25,5 @@
     "node tool/docs/function_catalog.mjs --check"
   ],
   "role": "gate",
-  "queueGate": "candidate"
+  "queueGate": "always"
 }
