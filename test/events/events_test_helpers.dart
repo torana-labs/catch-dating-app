@@ -1,3 +1,4 @@
+// size-exemption: shared event builders and the repository fakes tests compose.
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
