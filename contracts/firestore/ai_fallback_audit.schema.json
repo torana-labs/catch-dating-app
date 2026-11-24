@@ -2,14 +2,14 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/ai_fallback_audit.schema.json",
   "title": "AiFallbackAuditDocument",
-  "description": "One row per paid, failed or refused try-it AI fallback read (#2062): the command, task, outcome, tokens and cost only. Never the input, the output, a uid or a name. Cache hits write no row. Rows from the admin live test call carry test: true.",
+  "description": "One row per paid, failed or refused try-it AI fallback read (#2062): the command, task, outcome, tokens and cost only. Never the input, the output, a uid or a name. Cache hits write no row. Rows from the admin live test call carry test: true. A TTL policy on expiresAt deletes each row 400 days after it is written (FIX-14, #2450), keeping a full year of monthly cost history.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "aiFallbackAudit",
   "x-firestore-path": "aiFallbackAudit/{auditId}",
   "x-document-id-field": "auditId",
   "x-owner": "trusted try-it import callables",
-  "required": ["schemaVersion", "commandId", "task", "outcome", "inputTokens", "outputTokens", "costMicros", "monthKey", "createdAt"],
+  "required": ["schemaVersion", "commandId", "task", "outcome", "inputTokens", "outputTokens", "costMicros", "monthKey", "createdAt", "expiresAt"],
   "properties": {
     "schemaVersion": {"const": 1},
     "commandId": {"type": "string", "pattern": "^[a-z][a-z0-9-]*\\.[a-z][a-z0-9-]*$"},
@@ -20,6 +20,7 @@
     "costMicros": {"type": "integer", "minimum": 0},
     "monthKey": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}$"},
     "test": {"const": true, "description": "Present only on rows from adminAiFallbackTestCall: an operator's live test of the federation path, charged against the same monthly cap."},
-    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "description": "TTL field: 400 days after the row is written."}
   }
 }

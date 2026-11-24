@@ -28,9 +28,6 @@ interface EventIntakeDashboardDeps {
   firestore: () => FirebaseFirestore.Firestore;
   repository?: EventIntakeOperationsRepository;
   now?: () => Date;
-  loadReviewDecisions?: (
-    db: FirebaseFirestore.Firestore
-  ) => Promise<Array<Record<string, unknown>>>;
   loadOrganizerCeilings?: (
     db: FirebaseFirestore.Firestore,
     organizerIds: string[]
@@ -85,9 +82,6 @@ export async function adminGetEventIntakeDashboardHandler(
     await Promise.all(runs.map((run) =>
       loadRunWorkItems(repository, run.runId)))
   ).flat();
-  const decisions = deps.loadReviewDecisions ?
-    await deps.loadReviewDecisions(db) :
-    await loadReviewDecisions(db);
   const generatedAt = runs[0]?.updatedAt ??
     (deps.now?.() ?? new Date()).toISOString();
   const projectedBridge =
@@ -97,10 +91,7 @@ export async function adminGetEventIntakeDashboardHandler(
     await deps.loadOrganizerCeilings(db, organizerIds) :
     await loadOrganizerCeilings(db, organizerIds);
   return {
-    bridge: overlayEventIntakeDecisions(
-      attachOrganizerCeilings(projectedBridge, organizerCeilings),
-      decisions
-    ),
+    bridge: attachOrganizerCeilings(projectedBridge, organizerCeilings),
   };
 }
 
@@ -245,7 +236,7 @@ function projectOperationsBridge({
     },
     guardrails: [
       "Event Intake is projected from immutable completed Supply Intake runs.",
-      "Admin review records decisions only; it does not publish an event.",
+      "This view is read-only; it does not publish an event.",
     ],
     sourceProfiles: profiles,
     queryTemplates: [],
@@ -365,124 +356,6 @@ function addProjection(
   target.set(id, record);
 }
 
-async function loadReviewDecisions(
-  db: FirebaseFirestore.Firestore
-): Promise<Array<Record<string, unknown>>> {
-  const snapshot = await db.collection(
-    "eventIntakeReviewDecisions"
-  ).limit(500).get();
-  return snapshot.docs.map((doc) => doc.data());
-}
-
-export function overlayEventIntakeDecisions(
-  bridge: Record<string, unknown>,
-  decisions: Array<Record<string, unknown>>
-): Record<string, unknown> {
-  const byTarget = new Map(
-    decisions.map((decision) => [
-      `${nonEmptyString(decision.targetType)}:` +
-        `${nonEmptyString(decision.targetId)}`,
-      decision,
-    ])
-  );
-  const sourceProfiles = overlayDecisionArray(
-    asArray(bridge.sourceProfiles),
-    "source_profile",
-    byTarget
-  );
-  const queryTemplates = overlayDecisionArray(
-    asArray(bridge.queryTemplates),
-    "query_template",
-    byTarget
-  );
-  const sourceResults = overlayDecisionArray(
-    asArray(bridge.sourceResults),
-    "source_result",
-    byTarget
-  );
-  const eventCandidates = overlayDecisionArray(
-    asArray(bridge.eventCandidates),
-    "event_candidate",
-    byTarget
-  );
-  const runPlan = overlayDecisionObject(
-    recordValue(bridge.runPlan) ?? {},
-    "run_plan",
-    byTarget
-  );
-  const summary = recordValue(bridge.summary) ?? {};
-  return {
-    ...bridge,
-    summary: {
-      ...summary,
-      approvedCandidates: eventCandidates.filter((candidate) =>
-        candidate.reviewState === "approved"
-      ).length,
-      candidatesNeedingReview: eventCandidates.filter((candidate) =>
-        !["approved", "rejected"].includes(
-          String(candidate.reviewState)
-        )
-      ).length,
-      overlaidDecisions: byTarget.size,
-    },
-    sourceProfiles,
-    queryTemplates,
-    runPlan,
-    sourceResults,
-    eventCandidates,
-  };
-}
-
-function overlayDecisionArray(
-  values: unknown[],
-  targetType: string,
-  byTarget: Map<string, Record<string, unknown>>
-): Array<Record<string, unknown>> {
-  return values.map((value) =>
-    overlayDecisionObject(recordValue(value) ?? {}, targetType, byTarget));
-}
-
-function overlayDecisionObject(
-  item: Record<string, unknown>,
-  targetType: string,
-  byTarget: Map<string, Record<string, unknown>>
-): Record<string, unknown> {
-  const id = nonEmptyString(item.id);
-  const decision = id ? byTarget.get(`${targetType}:${id}`) : null;
-  if (!decision) return item;
-  const edits = recordValue(decision.edits) ?? {};
-  const editValues = afterValuesFromEditDiff(edits);
-  const decisionStatus =
-    nonEmptyString(decision.decisionStatus) ?? "needs_changes";
-  const stateField =
-    targetType === "event_candidate" ? "reviewState" : "status";
-  return {
-    ...item,
-    ...editValues,
-    id,
-    [stateField]: decisionStatus,
-    latestDecision: {
-      decision: nonEmptyString(decision.decision),
-      note: nonEmptyString(decision.note),
-      reviewer: nonEmptyString(decision.reviewedByUid),
-      reviewedAt: isoFromTimestamp(decision.reviewedAt),
-    },
-  };
-}
-
-function afterValuesFromEditDiff(
-  edits: Record<string, unknown>
-): Record<string, unknown> {
-  return Object.fromEntries(Object.entries(edits).flatMap(([field, value]) => {
-    const diff = recordValue(value);
-    if (diff && Object.prototype.hasOwnProperty.call(diff, "after")) {
-      return [[field, diff.after]];
-    }
-    // Preserve reads of legacy flat decisions written before diff payloads.
-    return [[field, value]];
-  }));
-}
-
 function asArray(value: unknown): unknown[] {
   return Array.isArray(value) ? value : [];
 }
@@ -499,23 +372,6 @@ function nonEmptyString(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : null;
-}
-
-function isoFromTimestamp(value: unknown): string | null {
-  if (value instanceof Date && Number.isFinite(value.getTime())) {
-    return value.toISOString();
-  }
-  const record = recordValue(value);
-  if (typeof record?.toDate === "function") {
-    const date = (record.toDate as () => unknown)();
-    return date instanceof Date && Number.isFinite(date.getTime()) ?
-      date.toISOString() :
-      null;
-  }
-  if (typeof value === "string" && Number.isFinite(Date.parse(value))) {
-    return new Date(value).toISOString();
-  }
-  return null;
 }
 
 function compareById(

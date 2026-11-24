@@ -27,7 +27,9 @@ import {
 // preview and its apply share one paid call. Its beforeUse hook reserves
 // the durable allowance only when the cache misses. Every paid or failed
 // call writes one aiFallbackAudit row: command, task, outcome, tokens and
-// cost; never the input, the output, a uid or a name.
+// cost; never the input, the output, a uid or a name. A TTL policy on
+// expiresAt removes audit rows after 400 days, which keeps a full year of
+// monthly cost history.
 
 export const AI_FALLBACK_RESULTS = "aiFallbackResults";
 export const AI_FALLBACK_AUDIT = "aiFallbackAudit";
@@ -35,6 +37,7 @@ export const AI_FALLBACK_AUDIT = "aiFallbackAudit";
 export const AI_FALLBACK_CREDENTIAL_REF =
   "anthropic/workload-identity-federation";
 const RESULT_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const AUDIT_TTL_MS = 400 * 24 * 60 * 60 * 1000;
 /** Input, prompt and schema must render under the provider's 32 KiB. */
 const MAX_INPUT_BYTES = 20_000;
 const MAX_PROMPT_BYTES = 6_000;
@@ -196,7 +199,9 @@ async function audit(deps: AiFallbackDeps, request: AiFallbackRequest,
       inputTokens: usage.inputTokens, outputTokens: usage.outputTokens,
       costMicros: usage.costMicros, monthKey: monthKeyOf(deps.now()),
       ...(options.test ? {test: true} : {}),
-      createdAt: deps.serverTimestamp()});
+      createdAt: deps.serverTimestamp(),
+      expiresAt: deps.timestampFromMillis(
+        deps.now().getTime() + AUDIT_TTL_MS)});
   } catch (error) {
     logger.warn("AI fallback audit row was not written.",
       {task: request.task,
