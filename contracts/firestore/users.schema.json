@@ -281,27 +281,27 @@
     "prefsHideReligion": {
       "type": "boolean",
       "description": "When true, the guest's religion reaches no other guest and no organiser: the profile projections (guestProfiles, eventGuestProfiles, publicProfiles) and the matching feeds leave it out (#2493, FIX-8). Missing means hidden: religion is hidden by default until counsel answers OQ-C4.",
-      "x-catch-ownership": "client-writable"
+      "x-catch-ownership": "callable-owned"
     },
     "prefsHideRelationshipGoal": {
       "type": "boolean",
       "description": "When true, the guest's relationship goal reaches no other guest and no organiser: the profile projections (guestProfiles, eventGuestProfiles, publicProfiles) and the matching feeds leave it out (#2493, FIX-8). Missing means shown.",
-      "x-catch-ownership": "client-writable"
+      "x-catch-ownership": "callable-owned"
     },
     "prefsHideDrinking": {
       "type": "boolean",
       "description": "When true, the guest's drinking answer reaches no other guest and no organiser: the profile projections (guestProfiles, eventGuestProfiles, publicProfiles) and the matching feeds leave it out (#2493, FIX-8). Missing means shown.",
-      "x-catch-ownership": "client-writable"
+      "x-catch-ownership": "callable-owned"
     },
     "prefsHideSmoking": {
       "type": "boolean",
       "description": "When true, the guest's smoking answer reaches no other guest and no organiser: the profile projections (guestProfiles, eventGuestProfiles, publicProfiles) and the matching feeds leave it out (#2493, FIX-8). Missing means shown.",
-      "x-catch-ownership": "client-writable"
+      "x-catch-ownership": "callable-owned"
     },
     "prefsHideChildren": {
       "type": "boolean",
       "description": "When true, the guest's children answer reaches no other guest and no organiser: the profile projections (guestProfiles, eventGuestProfiles, publicProfiles) and the matching feeds leave it out (#2493, FIX-8). Missing means shown.",
-      "x-catch-ownership": "client-writable"
+      "x-catch-ownership": "callable-owned"
     },
     "prefsShowInCrossPaths": {
       "type": "boolean",
