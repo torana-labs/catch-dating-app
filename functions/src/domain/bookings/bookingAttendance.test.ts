@@ -38,7 +38,8 @@ test("marking a booking attended moves the booking, roster and counter",
     assert.equal(booking.status, "attended");
     assert.equal(booking.attendeeId, rosterId);
     assert.equal(booking.genderAtSignup, "woman");
-    assert.equal(booking.cohortAtSignup, "regular");
+    // The cohort (sexual orientation) an older write left is removed (#2493).
+    assert.equal(Object.hasOwn(booking, "cohortAtSignup"), false);
     assert.equal(booking.paymentId, "payment-1");
     assert.equal(firestore.get("events/event-1")?.checkedInCount, 3);
     const roster = firestore.get(`eventAttendees/${rosterId}`)!;

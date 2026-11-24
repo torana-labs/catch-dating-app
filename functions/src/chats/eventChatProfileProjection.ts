@@ -27,6 +27,17 @@ export const eventProfileCoreIds = [
   "children",
 ] as const;
 
+/**
+ * Core fields an organiser's hosts never see, even when the guest shared them
+ * with the other guests in the chat: every field the person-field catalog
+ * classes as sensitive, such as gender, age, relationship goal, drinking,
+ * smoking and children (#2493, owner decision OQ-1).
+ */
+export const hostHiddenEventProfileCoreIds: ReadonlySet<string> = new Set(
+  eventProfileCoreIds.filter((fieldId) => fieldId === "age" ||
+    personFieldCatalog.fields.find((item) => item.id === fieldId)
+      ?.privacyClass === "sensitive"));
+
 /** Explicit selectable values, never a projection of the complete profile. */
 export function eventProfileCoreFields(
   user: User | null,
