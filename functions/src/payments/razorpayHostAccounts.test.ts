@@ -9,7 +9,8 @@ import {
 test("creates a Razorpay Route linked account without persisting KYC data",
   async () => {
     const firestore = new FakeFirestore({
-      "organizerTeamMemberships/club-1_host-1": {
+      "accessGrants/organizer__club-1__host-1": {
+        scopeType: "organizer", scopeId: "club-1",
         organizerId: "club-1", uid: "host-1", role: "owner", status: "active",
       },
     });
@@ -106,7 +107,8 @@ test("creates a Razorpay Route linked account without persisting KYC data",
 test("retries continue the checkpointed Route account and product",
   async () => {
     const firestore = new FakeFirestore({
-      "organizerTeamMemberships/club-1_host-1": {
+      "accessGrants/organizer__club-1__host-1": {
+        scopeType: "organizer", scopeId: "club-1",
         organizerId: "club-1", uid: "host-1", role: "owner", status: "active",
       },
     });
@@ -250,13 +252,15 @@ test(
   }
 );
 
-test("refuses payout setup without an active owner seat", async () => {
+test("refuses payout setup without an owner access document", async () => {
   const firestore = new FakeFirestore({
-    "organizerTeamMemberships/club-1_host-1": {
+    "accessGrants/organizer__club-1__host-1": {
+      scopeType: "organizer", scopeId: "club-1",
       organizerId: "club-1", uid: "host-1", role: "manager", status: "active",
     },
-    "organizerTeamMemberships/club-2_host-1": {
-      organizerId: "club-2", uid: "host-1", role: "owner", status: "removed",
+    "accessGrants/organizer__club-2__host-1": {
+      scopeType: "organizer", scopeId: "club-2",
+      organizerId: "club-2", uid: "host-1", role: "owner", status: "inactive",
     },
   });
   await assert.rejects(

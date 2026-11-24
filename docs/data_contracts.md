@@ -5276,7 +5276,8 @@ it in the same transaction as the programme or grant
 is in force the moment its command commits and no trigger stands between a
 command and the rules. Step 1 writes programme scopes
 (`program__{programId}__{uid}`) and step 2 event scopes
-(`event__{eventId}__{uid}`, below); organiser scopes follow. The
+(`event__{eventId}__{uid}`, below) and step 3 organiser scopes
+(`organizer__{organizerId}__{uid}`, below). The
 programme document carries `role` (`owner` for the creator, else `staff`),
 `status`, `activeFromMillis`, `expiresAtMillis`, `assignments`, `grantedBy`,
 `revision`, `updatedAt` and `reach`: the expiry maps below, computed by the same
@@ -5289,11 +5290,28 @@ owners and grants written before the transactional writers, then refreshes
 `accessGrants` and `programAccessViews`, so a rerun that writes nothing shows
 both agree with their sources.
 
+Organiser access documents (`organizer__{organizerId}__{uid}`, #2474 step 3)
+hold `role` (`owner` or `manager`), `status: active`, no expiry and empty
+`reach`. Every command that changes an organiser's `hostUserId`, `ownerUserId`
+or `hostUserIds` writes them in the same transaction (`createOrganizer` and the
+try-it workspace, `addOrganizerManager`, `removeOrganizerManager`,
+`transferOrganizerOwnership`, claim approval; try-it expiry and account
+deletion remove them), deriving the holders with `organizerManagerUserIds` and
+`organizerOwnerUserId`, the helpers the callables use. They mirror those
+canonical fields rather than replacing them: Firestore rules, Storage rules for
+organiser media, `requireOrganizerManager`, the analytics preview check and the
+payout owner check read the document, while synchronous `isOrganizerManager`
+checks keep reading the fields they mirror. A team edge alone
+(`organizerTeamMemberships`) grants nothing, and a `hostProfiles` entry never
+names a manager. The `access-grants-organizers` migration creates documents
+for holders written before these writers and refreshes roles.
+
 `programAccessViews/{programId}__{uid}` (#1339) is one account's current
 authority over one programme as released Host builds read it, written beside
 its access document in the same transaction by the commands above, and by a
-trigger on `organizers` (`onProgramAccessViewOrganizerChanged`) for the
-display-only organizer manager flag. It was created for existing owners and
+projection on the organizers dispatcher (`programAccessViewOrganizerManagers`
+in `dispatchOrganizers`, which replaced `onProgramAccessViewOrganizerChanged`)
+for the display-only organizer manager flag. It was created for existing owners and
 grants by the `program-access-views` copy-forward migration, for organiser
 managers by `program-access-views-organizer-managers`, and is repaired by
 `program-access-views-refresh` (a view that differs from what the writers would

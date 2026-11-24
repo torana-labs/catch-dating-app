@@ -546,6 +546,42 @@ function eventAccessGrantRow(grant) {
   }
 }
 
+let organizerAccessGrantModule = null;
+function functionsOrganizerAccessGrant() {
+  try {
+    organizerAccessGrantModule ??= createFunctionsRequire()(
+      "./lib/domain/access/organizerAccessGrants.js");
+  } catch (error) {
+    throw new Error(
+      "The access-grants-organizers migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return organizerAccessGrantModule;
+}
+
+/**
+ * An organiser's missing access documents from its manager fields, as the
+ * team commands write them (#2474 step 3): the fields are the one
+ * definition of organiser manager, so a team edge alone grants nothing.
+ */
+async function organizerAccessEntries(db, organizerId, organizer) {
+  if (!validId(organizerId)) return [];
+  const {organizerAccessHolders, organizerAccessGrant} =
+    functionsOrganizerAccessGrant();
+  const entries = [];
+  for (const [uid, role] of organizerAccessHolders(organizer)) {
+    if (!validId(uid)) continue;
+    const id = `organizer__${organizerId}__${uid}`;
+    const existing = await db.collection("accessGrants").doc(id).get();
+    if (existing.exists) continue;
+    entries.push({targetId: id, data: organizerAccessGrant({organizerId, uid,
+      role, grantedBy: null,
+      updatedAt: organizer.updatedAt ?? organizer.createdAt ?? new Date()})});
+  }
+  return entries;
+}
+
 /** Every field the refresh compares; updatedAt records when a command ran. */
 const accessGrantFields = [
   "scopeType", "scopeId", "uid", "organizerId", "role", "status",
@@ -1673,6 +1709,43 @@ export const MIGRATIONS = [
           // updatedAt records when a command ran; it is never refreshed.
           delete row.updatedAt;
           return row;
+        },
+      },
+    ],
+  },
+  {
+    name: "access-grants-organizers",
+    description:
+      "Security rules and requireOrganizerManager decide organiser management " +
+      "from accessGrants (#2474 step 3), which every command that changes an " +
+      "organiser's hostUserId, ownerUserId or hostUserIds writes in the same " +
+      "transaction. Every owner and manager those fields name without an " +
+      "access document gets one (owner: ownerUserId, else hostUserId); a " +
+      "team edge alone grants nothing. Then every organiser access document " +
+      "whose role differs from the fields is rewritten. Organisers and team " +
+      "edges are never changed and nothing is deleted. Build Functions first.",
+    steps: [
+      {
+        source: "organizers",
+        target: "accessGrants",
+        skipReason: "every holder already has an access document",
+        expand: (data, id, db) => organizerAccessEntries(db, id, data),
+      },
+      {
+        kind: "fill",
+        collection: "accessGrants",
+        refresh: ["role", "status", "scopeType", "scopeId", "uid",
+          "organizerId"],
+        fill: async (data, id, db) => {
+          if (data.scopeType !== "organizer" || !validId(data.scopeId) ||
+              typeof data.uid !== "string") return null;
+          const organizer = await db.collection("organizers")
+            .doc(data.scopeId).get();
+          const {organizerAccessHolders} = functionsOrganizerAccessGrant();
+          const role = organizerAccessHolders(organizer.data()).get(data.uid);
+          if (!role) return null; // Reported by the plan, never deleted.
+          return {scopeType: "organizer", scopeId: data.scopeId,
+            uid: data.uid, organizerId: data.scopeId, role, status: "active"};
         },
       },
     ],

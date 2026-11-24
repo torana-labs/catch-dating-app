@@ -166,6 +166,7 @@
   "onParticipantFormProfileViewResponseChanged",
   "onPaymentWritten",
   "onProgramAccessViewGrantChanged",
+  "onProgramAccessViewOrganizerChanged",
   "onProgramAccessViewProgramChanged",
   "onProgramAlertLegChanged",
   "onProgramArrivalGuestChanged",

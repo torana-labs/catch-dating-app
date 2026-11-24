@@ -214,4 +214,39 @@ describe("access grant rules", () => {
           expiresAtMillis: future(2)}]}));
       await assertFails(roster("lapsed-1"));
     });
+
+  it(
+    "decides organiser management from the access grant, not the organiser fields or a team edge",
+    async () => {
+      const {organizerAccessGrant} =
+        require("./organizerAccessGrantFixture.cjs");
+      // The fields name host-1, but no command wrote its access document.
+      await seedRaw(["organizers", "club-raw"], {hostUserId: "host-1",
+        ownerUserId: "host-1", hostUserIds: ["host-1"], status: "active",
+        archived: false});
+      // mgr-1 holds an access document the fields do not name (a writer
+      // outside the commands): the document decides.
+      await seedRaw(["accessGrants", "organizer__club-raw__mgr-1"],
+        organizerAccessGrant("club-raw", "mgr-1", "manager"));
+      // An active team edge alone.
+      await seedRaw(["organizerTeamMemberships", "club-raw_team-1"],
+        {organizerId: "club-raw", uid: "team-1", role: "manager",
+          status: "active"});
+      await seedRaw(["hostDirectorySummaries", "club-raw"],
+        {organizerId: "club-raw", version: 1});
+      const organizer = (uid) => getDoc(doc(authed(uid), "organizers",
+        "club-raw"));
+      const summary = (uid) => getDoc(doc(authed(uid),
+        "hostDirectorySummaries", "club-raw"));
+      await assertFails(organizer("host-1"));
+      await assertFails(summary("host-1"));
+      await assertFails(organizer("team-1"));
+      await assertSucceeds(organizer("mgr-1"));
+      await assertSucceeds(summary("mgr-1"));
+      // A removed holder's document is gone with the removal.
+      await seedRaw(["accessGrants", "organizer__club-raw__gone-1"],
+        {...organizerAccessGrant("club-raw", "gone-1", "manager"),
+          status: "inactive"});
+      await assertFails(organizer("gone-1"));
+    });
 });
