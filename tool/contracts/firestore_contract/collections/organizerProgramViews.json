@@ -15,7 +15,6 @@
   "read": "get for the creator, the organizer's current managers and a live programAdmin duty; list by a query naming createdBy (the creator) or organizerId (a current manager); never while deleted",
   "write": "server only; written from organizerPrograms, programFunctions, programPickupPoints and programHotels; the list counts from programGuests and programTravelLegs and a nightly recount",
   "exportedFunctions": [
-    "onOrganizerProgramViewChanged",
     "dispatchOrganizerPrograms",
     "onOrganizerProgramFunctionChanged",
     "onOrganizerProgramPickupPointChanged",

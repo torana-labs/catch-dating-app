@@ -1,4 +1,3 @@
-import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import {
   bookingPayments,
   isBookingPaymentData,
@@ -605,21 +604,10 @@ export async function onPaymentWrittenHandler(
   await refreshScorecardsForEventIds(eventIdsFromDocs(before, after), deps);
 }
 
-export const onBookingPaymentWritten = onDocumentWritten(
-  `${GUEST_PAYMENTS}/{paymentId}`,
-  async (event) => {
-    const before = event.data?.before.data() as PaymentDocument | undefined;
-    const after = event.data?.after.data() as PaymentDocument | undefined;
-    if (!isBookingPaymentData(after ?? before)) return;
-    await onPaymentWrittenHandler(before, after);
-  }
-);
-
 /**
  * A booking payment: its events' success scorecards, recomputed.
- * dispatchGuestPayments (issue #2451) runs the same work; both run until the
- * old trigger retires, which is safe because it re-reads its sources,
- * so a retry, a replay or a second run converges.
+ * Served by dispatchGuestPayments (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
  */
 export const eventSuccessScorecardPaymentProjections = defineProjections(
   "guestPayments", [{
