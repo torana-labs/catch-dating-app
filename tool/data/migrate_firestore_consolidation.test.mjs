@@ -696,7 +696,10 @@ test("program-staff-views creates each staff row once, without the full phone nu
 
 test("screen-read view migrations create each board, work-list row and moment row once, without contacts", async () => {
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
-  const later = Math.floor((Date.now() + 86_400_000) / 1000) * 1000;
+  // A fixed, far-future expiry: the grants stay active whatever today is, and
+  // the copied views never carry a clock-derived number that could contain one
+  // of the contact strings asserted absent below.
+  const later = Date.parse("2099-01-15T09:30:00Z");
   const db = fakeDb({
     "organizers/o1": {name: "Sharma Weddings", phone: "+919800000000"},
     "organizerPrograms/p1": {organizerId: "o1", createdBy: "owner-1", status: "active",
@@ -706,7 +709,7 @@ test("screen-read view migrations create each board, work-list row and moment ro
     "programHotels/h9": {programId: "p9", organizerId: "o1", name: "Elsewhere"},
     "programRoomBlocks/b1": {programId: "p1", organizerId: "o1", hotelId: "h1", label: "General",
       roomType: null, totalRooms: 2, assignedCount: 0, heldForGroupIds: [],
-      startsAt: at(1_800_600_000_000), endsAt: at(1_800_900_000_000), notes: "rate 777"},
+      startsAt: at(1_800_600_000_000), endsAt: at(1_800_900_000_000), notes: "rate card corporate-rate"},
     "programStays/s1": {programId: "p1", organizerId: "o1", guestId: "g1", hotelId: "h1",
       roomBlockId: "b1", roomLabel: "301", startsAt: null, endsAt: null, status: "confirmed",
       roomReadyAt: null, hotelArrivedAt: null, notes: "call mum", revision: 3},
@@ -759,7 +762,9 @@ test("screen-read view migrations create each board, work-list row and moment ro
   assert.equal(db.data["organizerMomentViews/auto1"], undefined);
   const copied = JSON.stringify(Object.fromEntries(Object.entries(db.data).filter(
     ([key]) => /^(programHotelRoomViews|hostAssignmentViews|organizerMomentViews)\//.test(key))));
-  for (const secret of ["9800000000", "9811111111", "9822222222", "777", "mum", "0001"]) {
+  const secrets = ["9800000000", "9811111111", "9822222222", "corporate-rate", "mum", "0001"];
+  for (const secret of secrets) {
+    assert.equal(String(later).includes(secret), false, `fixture expiry contains ${secret}`);
     assert.equal(copied.includes(secret), false, secret);
   }
   assert.equal(db.data["programStays/s1"].notes, "call mum");
