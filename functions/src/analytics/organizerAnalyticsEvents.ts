@@ -79,8 +79,8 @@ export async function recordOrganizerAnalyticsEventHandler(
   const organizer = await assertOrganizerScope(db, payload);
   assertLinkScope(organizer, payload);
   // Preview by authenticated canonical staff is never visitor activity.
-  if (request.auth && await isOrganizerPreview(db, organizer,
-    payload.organizerId, request.auth.uid)) {
+  if (request.auth && await isOrganizerPreview(db, payload.organizerId,
+    request.auth.uid)) {
     return {accepted: true};
   }
   const organizerId = payload.organizerId;
@@ -300,8 +300,7 @@ function isPublicId(value: string): boolean {
 }
 
 async function isOrganizerPreview(
-  db: FirebaseFirestore.Firestore, organizer: OrganizerDocument,
-  organizerId: string, uid: string
+  db: FirebaseFirestore.Firestore, organizerId: string, uid: string
 ): Promise<boolean> {
   // The organiser's owner or a manager, by the one access document security
   // rules read too (#2474 step 3).
