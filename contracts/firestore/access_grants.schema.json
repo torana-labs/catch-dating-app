@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/access_grants.schema.json",
   "title": "AccessGrantDocument",
-  "description": "One person's current authority over one scope, the document security rules get() by id to decide access (STR-2, FIX-10). Written in the same transaction as every grant, owner or revocation that changes it, never by a trigger, so a revocation is in force the moment its command commits. Holds authorisation only: ids, roles, duty names and expiry instants, no name, phone number or free text. Programme scopes since step 1 and event scopes since step 2 (#2474); organiser scopes follow. No document, an inactive document, or an expiry instant at or before the request time means no access.",
+  "description": "One person's current authority over one scope, the document security rules get() by id to decide access (STR-2, FIX-10). Written in the same transaction as every grant, owner or revocation that changes it, never by a trigger, so a revocation is in force the moment its command commits. Holds authorisation only: ids, roles, duty names and expiry instants, no name, phone number or free text. Programme scopes since step 1, event scopes since step 2 and organiser scopes since step 3 (#2474). An organiser document mirrors the organiser's canonical manager fields, written in the same transaction by every command that changes them; security rules and requireOrganizerManager read it, and synchronous callable checks keep reading the fields they mirror. No document, an inactive document, or an expiry instant at or before the request time means no access.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "accessGrants",
@@ -30,13 +30,14 @@
       "type": "string",
       "enum": [
         "program",
-        "event"
+        "event",
+        "organizer"
       ],
       "description": "The kind of scope. The document id is scopeType__scopeId__uid."
     },
     "scopeId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId",
-      "description": "The scope's document id: an organizerPrograms id for a programme, an events id for an event."
+      "description": "The scope's document id: an organizerPrograms id for a programme, an events id for an event, an organizers id for an organiser."
     },
     "uid": {
       "type": "string",
@@ -46,15 +47,16 @@
     },
     "organizerId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId",
-      "description": "The organiser that owns the scope. It never changes for a programme or an event."
+      "description": "The organiser that owns the scope (the scope itself for an organiser). It never changes."
     },
     "role": {
       "type": "string",
       "enum": [
         "owner",
+        "manager",
         "staff"
       ],
-      "description": "owner is the programme's creator and holds every duty and scope; staff hold what reach names. Organiser managers have no programme or event document: their setup and event authority comes from the organiser."
+      "description": "Programme: owner is the creator and holds every duty and scope; staff hold what reach names. Event: staff. Organiser: owner (ownerUserId, else hostUserId) or manager (every other id in hostUserId, ownerUserId and hostUserIds), derived with the helpers the callables use, so the document mirrors the organiser's manager fields in the same commit. Organiser managers have no programme or event document."
     },
     "status": {
       "type": "string",
@@ -175,6 +177,24 @@
     },
     "version": {
       "const": 1
+    },
+    "synthetic": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
+    },
+    "seedPrefix": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"
+    },
+    "scenario": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"
+    },
+    "demoOps": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"
+    },
+    "demoOpsId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"
+    },
+    "demoOpsCommand": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
     }
   },
   "definitions": {
