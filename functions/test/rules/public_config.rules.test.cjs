@@ -55,5 +55,14 @@ describe("firestore.rules", () => {
       await assertFails(setDoc(doc(authedDb("runner-1"), "config", "discoveryIndexing"), {forceNoindex: false}));
       await assertFails(updateDoc(doc(authedDb("runner-1"), "config", "discoveryIndexing"), {forceNoindex: false}));
     });
+
+    it("denies clients the guest data visibility floor", async () => {
+      await seed(["config", "guestDataVisibility"], {groupSizeFloor: 10, reason: "Launch default"});
+
+      await assertFails(getDoc(doc(testEnv.unauthenticatedContext().firestore(), "config", "guestDataVisibility")));
+      await assertFails(getDoc(doc(authedDb("host-1"), "config", "guestDataVisibility")));
+      await assertFails(setDoc(doc(authedDb("host-1"), "config", "guestDataVisibility"), {groupSizeFloor: 2}));
+      await assertFails(updateDoc(doc(authedDb("host-1"), "config", "guestDataVisibility"), {groupSizeFloor: 2}));
+    });
   });
 });

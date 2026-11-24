@@ -605,7 +605,10 @@ a time, so every legacy screen moves as it is, with no behavior change:
   between neighbours, so moves that drop or carry different entries touch no
   shared line. A move PR's diff is renames plus directive and path lines; a
   conflict is resolved by rerunning the codemod on the latest main, never by
-  hand.
+  hand. An entry may also move root test files into an app's `test/` or
+  `integration_test/` folder before their subjects move, such as the Host
+  capture catalog with the Host tests that share its helpers. Every importer
+  then joins the group, and a moved test imports no root test file.
 - **Order.** Infrastructure first (the codemod; lint and tool readiness; app
   test shards and coverage; app-package dependencies; shared test support in
   `packages/catch_test_support`; captures split per app), then the actions and

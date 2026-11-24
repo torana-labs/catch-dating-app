@@ -8,6 +8,11 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import {rebuildOrganizerContact} from
   "../organizers/organizerAudienceProjection";
+import {
+  isStaleSourceEvent,
+  sourceVersionOf,
+  type SourceVersion,
+} from "../shared/sourceVersion";
 
 interface AttributionProjectionDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -22,11 +27,18 @@ const defaultDeps: AttributionProjectionDeps = {
 type AttributionFactKind = "registration" | "checkIn";
 type AttributionOperation = "credit" | "reversal";
 
-/** Projects verified attendee transitions into attribution facts. */
+/**
+ * Projects verified attendee transitions into attribution facts. Given the
+ * edge's document, each fact the transition touched is decided by the edge
+ * as re-read inside its transaction: credited while the edge holds it,
+ * reversed once it no longer does. So a late or racing delivery lands on the
+ * edge's latest state, never on the event's (#2472).
+ */
 export async function projectEventInviteAttributions(
   before: OrganizerContactEventEdgeDocument | undefined,
   after: OrganizerContactEventEdgeDocument | undefined,
-  deps: AttributionProjectionDeps = defaultDeps
+  deps: AttributionProjectionDeps = defaultDeps,
+  edgeRef?: FirebaseFirestore.DocumentReference
 ): Promise<void> {
   const edge = after ?? before;
   const inviteLinkId = edge?.inviteLinkId ?? null;
@@ -38,37 +50,87 @@ export async function projectEventInviteAttributions(
       inviteLinkId,
       transition.factKind,
       transition.operation,
-      deps
+      deps,
+      edgeRef
     );
   }
 }
 
+/**
+ * The trigger path: re-reads the edge, skips an event older than the edge's
+ * current version, and projects the transition from the event's before to
+ * the edge as stored now, deciding each fact by the edge read in its
+ * transaction.
+ * @param {string} edgeId The organizerContactEventEdges document id.
+ * @param {OrganizerContactEventEdgeDocument | undefined} before Event before.
+ * @param {SourceVersion | undefined} eventVersion What the event saw.
+ * @param {AttributionProjectionDeps} deps Dependencies.
+ * @return {Promise<"applied" | "stale">} Whether the event was projected.
+ */
+export async function projectEventInviteAttributionEvent(
+  edgeId: string,
+  before: OrganizerContactEventEdgeDocument | undefined,
+  eventVersion: SourceVersion | undefined,
+  deps: AttributionProjectionDeps = defaultDeps
+): Promise<"applied" | "stale"> {
+  const edgeRef = deps.firestore().collection("organizerContactEventEdges")
+    .doc(edgeId);
+  const snap = await edgeRef.get();
+  if (isStaleSourceEvent(snap, eventVersion)) return "stale";
+  const current = snap.exists ?
+    snap.data() as OrganizerContactEventEdgeDocument : undefined;
+  await projectEventInviteAttributions(before, current, deps, edgeRef);
+  return "applied";
+}
+
+function holdsFact(edge: OrganizerContactEventEdgeDocument | undefined,
+  factKind: AttributionFactKind): boolean {
+  return factKind === "registration" ? registered(edge) :
+    edge?.checkedIn === true;
+}
+
 async function projectAttributionTransition(
-  edge: OrganizerContactEventEdgeDocument,
+  eventEdge: OrganizerContactEventEdgeDocument,
   inviteLinkId: string,
   factKind: AttributionFactKind,
-  operation: AttributionOperation,
-  deps: AttributionProjectionDeps
+  eventOperation: AttributionOperation,
+  deps: AttributionProjectionDeps,
+  edgeRef?: FirebaseFirestore.DocumentReference
 ): Promise<void> {
   const db = deps.firestore();
   const linkRef = db.collection("eventInviteLinks").doc(inviteLinkId);
-  const sourceFactId = `${edge.attendeeId}:${factKind}`;
+  const sourceFactId = `${eventEdge.attendeeId}:${factKind}`;
   const creditId = attributionId(sourceFactId, "credit");
-  const attributionIdValue = attributionId(sourceFactId, operation);
-  const attributionRef = db.collection("eventInviteAttributions")
-    .doc(attributionIdValue);
   const creditRef = db.collection("eventInviteAttributions").doc(creditId);
+  const reversalRef = db.collection("eventInviteAttributions")
+    .doc(attributionId(sourceFactId, "reversal"));
+  let attributionIdValue = attributionId(sourceFactId, eventOperation);
   const advocateContactId = await db.runTransaction(async (tx) => {
-    const [linkSnap, attributionSnap, creditSnap] = await Promise.all([
+    const [linkSnap, creditSnap, reversalSnap, edgeSnap] = await Promise.all([
       tx.get(linkRef),
-      tx.get(attributionRef),
-      operation === "reversal" ? tx.get(creditRef) : Promise.resolve(null),
+      tx.get(creditRef),
+      tx.get(reversalRef),
+      edgeRef ? tx.get(edgeRef) : Promise.resolve(null),
     ]);
+    // The edge as stored now decides; without its reference (direct
+    // calls), the event's own transition does.
+    const latest = edgeSnap ? edgeSnap.data() as
+      OrganizerContactEventEdgeDocument | undefined : undefined;
+    const edge = latest ?? eventEdge;
+    const operation: AttributionOperation = edgeSnap ?
+      holdsFact(latest, factKind) ? "credit" : "reversal" :
+      eventOperation;
+    attributionIdValue = attributionId(sourceFactId, operation);
+    const attributionRef = operation === "credit" ? creditRef : reversalRef;
+    const attributionSnap = operation === "credit" ? creditSnap :
+      reversalSnap;
     if (attributionSnap.exists || !linkSnap.exists) return null;
+    if (latest && (latest.inviteLinkId !== inviteLinkId ||
+        !latest.linkedUid)) return null;
     const link = linkSnap.data() as EventInviteLinkDocument;
     if (link.eventId !== edge.eventId ||
         link.organizerId !== edge.organizerId) return null;
-    if (operation === "reversal" && !creditSnap?.exists) return null;
+    if (operation === "reversal" && !creditSnap.exists) return null;
     if (operation === "credit" && !withinAttributionWindow(edge, link)) {
       return null;
     }
@@ -80,7 +142,7 @@ async function projectAttributionTransition(
       subjectContactId: edge.contactId,
     });
     const now = deps.timestamp();
-    const credit = creditSnap?.data() as
+    const credit = creditSnap.data() as
       Partial<EventInviteAttributionDocument> | undefined;
     const occurredAt = operation === "reversal" ? credit?.occurredAt :
       attributionOccurredAt(edge, factKind);
@@ -240,13 +302,16 @@ function attributionId(
     .digest("hex").slice(0, 48)}`;
 }
 
+/**
+ * Retried: attribution ids make each credit and reversal a single create,
+ * and every fact is decided by the edge as stored now.
+ */
 export const onOrganizerContactEventEdgeInviteAttributed = onDocumentWritten(
-  "organizerContactEventEdges/{edgeId}",
+  {document: "organizerContactEventEdges/{edgeId}", retry: true},
   async (event) => {
     const before = event.data?.before.data() as
       OrganizerContactEventEdgeDocument | undefined;
-    const after = event.data?.after.data() as
-      OrganizerContactEventEdgeDocument | undefined;
-    await projectEventInviteAttributions(before, after);
+    await projectEventInviteAttributionEvent(event.params.edgeId, before,
+      sourceVersionOf(event.data?.after));
   }
 );

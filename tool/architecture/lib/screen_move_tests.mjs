@@ -2,7 +2,10 @@
 // imports a file now in apps/<app>/lib moves to apps/<app>/test (or
 // integration_test), with the support files only such tests use and the
 // golden baselines it names. Tests of files moving within lib/ stay in the
-// root package but are re-mirrored under their subject's new folder.
+// root package but are re-mirrored under their subject's new folder. A test
+// that the group's own entries move (a test-only move into apps/<app>/test)
+// keeps its entry's target; its golden baselines and fixture reads are
+// checked like any other test moving into an app.
 import path from "node:path";
 import {isGeneratedPart, usedLibraries} from "./screen_move_graph.mjs";
 import {resolveUri} from "./dart_moves.mjs";
@@ -37,7 +40,9 @@ export function planTestMoves({graph, files, moves, packages, folderEntries, rea
   const errors = [];
   const tracked = new Set(files);
   const after = (file) => moves.get(file) ?? file;
-  const tests = files.filter(isRootTest).sort();
+  // Tests the group's own entries move (a test-only move into
+  // apps/<app>/test) are placed by those entries, not by their imports.
+  const tests = files.filter((file) => isRootTest(file) && !moves.has(file)).sort();
   const dependencies = new Map(tests.map((test) =>
     [test, [...new Set(testDependencies(graph, test, read, packages))]]));
   const appsReached = (test) => new Set(dependencies.get(test)
@@ -73,6 +78,7 @@ export function planTestMoves({graph, files, moves, packages, folderEntries, rea
   for (const [test, app] of destination) {
     for (const library of dependencies.get(test)) {
       if (!isRootTest(library) || destination.get(library) === app || sharedSupport.has(library)) continue;
+      if (after(library).startsWith(`apps/${app}/`)) continue;
       sharedSupport.add(library);
       errors.push({
         kind: "testSupport",
@@ -95,7 +101,8 @@ export function planTestMoves({graph, files, moves, packages, folderEntries, rea
   }
 
   const goldenMoves = new Map();
-  for (const [test, target] of testMoves) {
+  const groupTestMoves = [...moves].filter(([from, to]) => isRootTest(from) && /^apps\//u.test(to));
+  for (const [test, target] of [...testMoves, ...groupTestMoves]) {
     if (!/^apps\//u.test(target)) continue;
     const source = read(test) ?? "";
     for (const name of goldenNames(source)) {
