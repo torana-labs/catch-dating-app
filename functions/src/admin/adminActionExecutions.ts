@@ -24,6 +24,13 @@ import {
   AdminRoleClaim,
   requireAdminRole,
 } from "../platform/adminAuth";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
 
 const listExecutionRoles = ["admin", "adminOwner", "support"] as const;
 const executionCollection = "adminActionExecutions";
@@ -109,18 +116,39 @@ export async function adminRecordActionExecutionHandler(
   return {execution: await repository.record(input, context, deps.now())};
 }
 
-export async function adminListActionExecutionsHandler(
+/**
+ * adminListActionExecutions: listExecutionRoles only (STR-10 policy).
+ * @param {AdminActionExecutionDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
+ */
+export function adminListActionExecutionsSpec(
+  deps: AdminActionExecutionDeps = defaultDeps):
+  CallableSpec<
+    AdminListActionExecutionsCallablePayload,
+    AdminContext,
+    AdminListActionExecutionsResponse> {
+  return {
+    name: "adminListActionExecutions",
+    policy: adminRoles(listExecutionRoles),
+    input: validateAdminListActionExecutionsCallablePayload,
+    normalize: normalizeListPayload,
+    handle: (context) => adminListActionExecutionsWork(context, deps),
+  };
+}
+
+/** The deployed path of adminListActionExecutions, for tests. */
+export function adminListActionExecutionsHandler(
   request: CallableRequest<unknown>,
-  deps: AdminActionExecutionDeps = defaultDeps
-): Promise<AdminListActionExecutionsResponse> {
-  const context = requireAdminRole(request, listExecutionRoles);
-  const input = validateCallableWithAjv<
-    AdminListActionExecutionsCallablePayload
-  >(
-    request,
-    validateAdminListActionExecutionsCallablePayload,
-    normalizeListPayload
-  );
+  deps: AdminActionExecutionDeps = defaultDeps):
+  Promise<AdminListActionExecutionsResponse> {
+  return runCallable(adminListActionExecutionsSpec(deps), request);
+}
+
+async function adminListActionExecutionsWork(
+  {data: input, actor: context}:
+    CallableContext<AdminListActionExecutionsCallablePayload, AdminContext>,
+  deps: AdminActionExecutionDeps):
+  Promise<AdminListActionExecutionsResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(
     db,
@@ -397,7 +425,5 @@ export const adminRecordActionExecution = onCall(
   (request) => adminRecordActionExecutionHandler(request)
 );
 
-export const adminListActionExecutions = onCall(
-  appCheckCallableOptions,
-  (request) => adminListActionExecutionsHandler(request)
-);
+export const adminListActionExecutions = callable(
+  adminListActionExecutionsSpec());

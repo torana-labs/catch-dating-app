@@ -27,6 +27,14 @@ import {
   SafetySettings,
   readSafetySettings,
 } from "./safetyPolicy";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 export interface SafetySettingsDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -71,18 +79,36 @@ export async function adminGetSafetySettingsHandler(
 /**
  * Owner-only: replaces the reasons and rules. Codes stay unique; a reason
  * already used on reports is switched off rather than removed.
- * @param {CallableRequest<unknown>} request Callable request.
+ * Policy: SAFETY_OWNER_ROLES (STR-10).
  * @param {SafetySettingsDeps} deps Dependencies.
- * @return {Promise<AdminGetSafetySettingsCallableResponse>} New settings.
+ * @return {CallableSpec} The callable.
  */
-export async function adminUpdateSafetySettingsHandler(
-  request: CallableRequest<unknown>,
-  deps: SafetySettingsDeps = defaultDeps
-): Promise<AdminGetSafetySettingsCallableResponse> {
-  const context = requireAdminRole(request, SAFETY_OWNER_ROLES);
-  const payload = validateCallableWithAjv<
-    AdminUpdateSafetySettingsCallablePayload>(request,
-      validateAdminUpdateSafetySettingsCallablePayload);
+export function adminUpdateSafetySettingsSpec(
+  deps: SafetySettingsDeps = defaultDeps):
+  CallableSpec<
+    AdminUpdateSafetySettingsCallablePayload,
+    AdminContext,
+    AdminGetSafetySettingsCallableResponse> {
+  return {
+    name: "adminUpdateSafetySettings",
+    policy: adminRoles(SAFETY_OWNER_ROLES),
+    input: validateAdminUpdateSafetySettingsCallablePayload,
+    handle: (context) => adminUpdateSafetySettingsWork(context, deps),
+  };
+}
+
+/** The deployed path of adminUpdateSafetySettings, for tests. */
+export function adminUpdateSafetySettingsHandler(
+  request: CallableRequest<unknown>, deps: SafetySettingsDeps = defaultDeps):
+  Promise<AdminGetSafetySettingsCallableResponse> {
+  return runCallable(adminUpdateSafetySettingsSpec(deps), request);
+}
+
+async function adminUpdateSafetySettingsWork(
+  {request, data: payload, actor: context}:
+    CallableContext<AdminUpdateSafetySettingsCallablePayload, AdminContext>,
+  deps: SafetySettingsDeps):
+  Promise<AdminGetSafetySettingsCallableResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, context.uid, "adminUpdateSafetySettings",
     {maxRequests: 20, windowMs: 60_000});
@@ -149,5 +175,5 @@ export async function adminUpdateSafetySettingsHandler(
 export const adminGetSafetySettings = onCall(appCheckCallableOptions,
   (request) => adminGetSafetySettingsHandler(request));
 
-export const adminUpdateSafetySettings = onCall(appCheckCallableOptions,
-  (request) => adminUpdateSafetySettingsHandler(request));
+export const adminUpdateSafetySettings = callable(
+  adminUpdateSafetySettingsSpec());

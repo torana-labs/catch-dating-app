@@ -1,15 +1,13 @@
-import {onCall, CallableRequest, HttpsError} from
+import {CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {appCheckCallableOptions} from "../shared/callableOptions";
-import {requireAdminRole} from "../platform/adminAuth";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import type {AdminSetOrganizerIndexStatusCallablePayload} from
   "../shared/generated/adminSetOrganizerIndexStatusCallablePayload";
 import {
   validateAdminSetOrganizerIndexStatusCallablePayload,
 } from "../shared/generated/validators/adminSetOrganizerIndexStatusInput";
-import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {requireDoc} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import type {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
 import {
@@ -21,6 +19,14 @@ import {
 } from "../domain/organizers/organizerAdminSearch";
 import {assertOrganizerPublicContent} from
   "../organizers/organizerPublicContent";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 const indexReviewRoles = ["admin", "adminOwner", "support"] as const;
 
@@ -48,21 +54,37 @@ type IndexReviewChecklist =
 
 /**
  * Reviews and updates the SEO indexing state for a public organizer page.
- * @param {CallableRequest<unknown>} request Callable request.
- * @param {OrganizerIndexingDeps} deps Injectable dependencies.
- * @return {Promise<AdminSetOrganizerIndexStatusResponse>} Updated page state.
+ * Policy: indexReviewRoles (STR-10).
+ * @param {OrganizerIndexingDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminSetOrganizerIndexStatusHandler(
-  request: CallableRequest<unknown>,
-  deps: OrganizerIndexingDeps = defaultDeps
-): Promise<AdminSetOrganizerIndexStatusResponse> {
-  const adminContext = requireAdminRole(request, indexReviewRoles);
-  const data =
-    validateCallableWithAjv<AdminSetOrganizerIndexStatusCallablePayload>(
-      request,
-      validateAdminSetOrganizerIndexStatusCallablePayload,
-      normalizeAdminSetOrganizerIndexStatusPayload
-    );
+export function adminSetOrganizerIndexStatusSpec(
+  deps: OrganizerIndexingDeps = defaultDeps):
+  CallableSpec<
+    AdminSetOrganizerIndexStatusCallablePayload,
+    AdminContext,
+    AdminSetOrganizerIndexStatusResponse> {
+  return {
+    name: "adminSetOrganizerIndexStatus",
+    policy: adminRoles(indexReviewRoles),
+    input: validateAdminSetOrganizerIndexStatusCallablePayload,
+    normalize: normalizeAdminSetOrganizerIndexStatusPayload,
+    handle: (context) => adminSetOrganizerIndexStatusWork(context, deps),
+  };
+}
+
+/** The deployed path of adminSetOrganizerIndexStatus, for tests. */
+export function adminSetOrganizerIndexStatusHandler(
+  request: CallableRequest<unknown>, deps: OrganizerIndexingDeps = defaultDeps):
+  Promise<AdminSetOrganizerIndexStatusResponse> {
+  return runCallable(adminSetOrganizerIndexStatusSpec(deps), request);
+}
+
+async function adminSetOrganizerIndexStatusWork(
+  {request, data, actor: adminContext}:
+    CallableContext<AdminSetOrganizerIndexStatusCallablePayload, AdminContext>,
+  deps: OrganizerIndexingDeps):
+  Promise<AdminSetOrganizerIndexStatusResponse> {
   assertChecklistForIndexableStatus(data.indexStatus, data.checklist);
   if (!data.reviewNote) {
     throw new HttpsError(
@@ -214,7 +236,5 @@ function normalizeNullableString(value: unknown): unknown {
   return trimmed.length === 0 ? null : trimmed;
 }
 
-export const adminSetOrganizerIndexStatus = onCall(
-  appCheckCallableOptions,
-  (request) => adminSetOrganizerIndexStatusHandler(request)
-);
+export const adminSetOrganizerIndexStatus = callable(
+  adminSetOrganizerIndexStatusSpec());
