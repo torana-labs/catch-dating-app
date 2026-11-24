@@ -37,7 +37,7 @@ export const COMPENSATION_DEPENDENCY_COLLECTIONS = [
   "salesHostSettlementEvidenceUses", "salesHostSettlementIdentities",
   "salesIntelligenceAssessments", "salesIntelligenceClauses",
   "salesIntelligenceScoreSnapshots", "salesOutreachDrafts",
-  "salesDemoBlueprints", "salesIntakeLinks",
+  "salesDemoBlueprints",
   "salesImportHistoryRows", "salesImportHistoryRecords",
 ] as const;
 
