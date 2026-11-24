@@ -75,9 +75,17 @@ function world(): Record<string, Record<string, unknown>> {
   return seed;
 }
 
+/** Auth has verified only these accounts' emails. */
+const verifiedEmails: Record<string, string> = {
+  "host-ok": "Host@Example.com",
+  "host-opt-email": "Opted@Example.com",
+  "host-1": "me@example.com",
+};
+
 const authFacts = async (uids: string[]) => new Map<string, AuthFacts>(
   uids.filter((uid) => uid !== "host-no-auth").map((uid) => [uid, {
-    disabled: uid === "host-disabled", staff: uid === "host-staff"}]));
+    disabled: uid === "host-disabled", staff: uid === "host-staff",
+    verifiedEmail: verifiedEmails[uid] ?? null}]));
 
 interface Call {method: string; url: string; body: Record<string, unknown>}
 
@@ -222,6 +230,35 @@ test("a host opted out by the organizer email is left out, though the " +
   assert.equal(receipt?.members, 0);
   assert.equal(receipt?.excluded.optedOut, 1);
   assert.ok(calls.every((call) => !call.url.includes("usersreplace")));
+});
+
+test("an email Auth has not verified is never uploaded", async () => {
+  const db = new FakeFirestore({
+    "organizerGrowthFacts/org-1": facts(now - day),
+    "organizers/org-1": owned("host-1", {email: "club@example.com"}),
+    "users/host-1": {phoneNumber: "+919876543210",
+      email: "typed@example.com"},
+    "organizerGrowthFacts/org-2": facts(now - 2 * day),
+    "organizers/org-2": owned("host-2", {email: "other-club@example.com"}),
+    "users/host-2": {email: "typed-only@example.com"},
+  });
+  const {calls, fetchImpl} = graph(created);
+  // Auth holds a different, unverified email for host-1.
+  const receipt = await runHostAudienceSync(deps(db, fetchImpl, {
+    authFacts: async (uids) => new Map(uids.map((uid) => [uid,
+      {disabled: false, staff: false, verifiedEmail: null}])),
+  }));
+  const replace = calls.find((call) => call.url.includes("usersreplace"));
+  // host-1 goes up by phone alone; host-2 has no verified key at all.
+  assert.deepEqual((replace?.body.payload as {data: string[][]}).data,
+    [["", sha256Hex("919876543210")]]);
+  assert.equal(receipt?.members, 1);
+  assert.equal(receipt?.excluded.noContact, 1);
+  const sent = JSON.stringify(calls);
+  for (const email of ["typed@example.com", "club@example.com",
+    "typed-only@example.com", "other-club@example.com"]) {
+    assert.equal(sent.includes(hashedEmail(email)!), false, email);
+  }
 });
 
 test("a refused replace is recorded as failed with Meta's status", async () => {
