@@ -1306,11 +1306,11 @@
     },
     "supportConversationMessages": {
       "handling": "kept",
-      "reason": "authorUid names only staff (inbound messages have authorUid null); the person's messages stay with their conversation, which deletion unlinks from the account (#2468)."
+      "reason": "authorUid names only staff (inbound messages have authorUid null). The person's messages stay with their conversation for the support retention and expire with it by Firestore TTL (expiresAt copied onto each message) (#2468)."
     },
     "supportConversations": {
       "handling": "anonymised",
-      "how": "queueSupportRecordCleanup clears uid; the conversation is keyed by the channel contact and stays as Catch's support record. Deleting it after a support retention period has no purge yet (#2468).",
+      "how": "queueSupportRecordCleanup clears uid; the conversation is keyed by the channel contact and stays as Catch's support record until its Firestore TTL (expiresAt): 180 days after it closes, or after the deletion if later, which the deletion stamps on a closed conversation and its messages (supportRetention.ts; default period, owner to confirm) (#2468).",
       "handledBy": [
         "functions/src/safety/accountDeletionSupportRecords.ts"
       ]
