@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import {matchesGlob, planAffected} from "../harness/lib/component_graph.mjs";
 import {isToolsManifestPath} from "./tools_manifest.mjs";
 
@@ -441,6 +443,54 @@ export function uniqueToolChecks(tools) {
     seen.add(command);
     return [{toolId: tool.id, command}];
   }));
+}
+
+// Commands that several checks run before their own work. One tool run needs
+// each only once while its inputs are unchanged: the Functions build takes about
+// 40 s in CI and six data checks repeated it. If a check changes an input (or
+// removes the output), the next check that needs the prerequisite runs it again.
+export const SHARED_CHECK_PREREQUISITES = Object.freeze([Object.freeze({
+  command: "npm --prefix functions run build",
+  inputs: Object.freeze(["functions/src", "functions/tsconfig.json", "functions/package.json",
+    "functions/package-lock.json"]),
+  output: "functions/lib",
+})]);
+
+/**
+ * Splits a check into a shared prerequisite and the work that follows it:
+ * "npm --prefix functions run build && node --test x.mjs" becomes
+ * {prerequisite: <the Functions build entry>, rest: "node --test x.mjs"}.
+ * A bare prerequisite has rest null; any other command has prerequisite null.
+ */
+export function splitSharedPrerequisite(command) {
+  for (const prerequisite of SHARED_CHECK_PREREQUISITES) {
+    if (command === prerequisite.command) return {prerequisite, rest: null};
+    if (command.startsWith(`${prerequisite.command} && `)) {
+      return {prerequisite, rest: command.slice(prerequisite.command.length + 4)};
+    }
+  }
+  return {prerequisite: null, rest: command};
+}
+
+/**
+ * A fingerprint of a prerequisite's inputs (every file's path, size and
+ * modification time) and whether its output exists. Equal fingerprints mean
+ * the earlier run's output is still current.
+ */
+export function prerequisiteFingerprint(prerequisite, root) {
+  const parts = [`output:${fs.existsSync(path.join(root, prerequisite.output))}`];
+  const visit = (relative) => {
+    const absolute = path.join(root, relative);
+    let stat;
+    try { stat = fs.statSync(absolute); } catch { parts.push(`${relative}:missing`); return; }
+    if (stat.isDirectory()) {
+      for (const name of fs.readdirSync(absolute).sort()) visit(path.join(relative, name));
+    } else {
+      parts.push(`${relative}:${stat.size}:${stat.mtimeMs}`);
+    }
+  };
+  for (const input of prerequisite.inputs) visit(input);
+  return parts.join("\n");
 }
 
 // Share only complete registered check owners from this run's actual Tools plan.

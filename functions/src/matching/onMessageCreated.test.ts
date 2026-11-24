@@ -166,6 +166,11 @@ function harness({
       ...(conversationType === "organizerHostInquiry" ? {
         organizerId: "org-1"} : {}),
     },
+    "matches/match-1/messages/message-1": {
+      senderId: "runner-1",
+      text: "Hello there",
+      sentAt: {seconds: 1, nanoseconds: 0},
+    },
     "publicProfiles/runner-1": {name: "Runner One"},
     "users/runner-2": {},
     "organizers/org-1": {
@@ -259,6 +264,48 @@ test("onMessageCreatedHandler applies a retried event once", async () => {
   assert.deepEqual(h.scorecardRefreshes, ["event-1"]);
 });
 
+test("messages delivered out of order end at the latest preview", async () => {
+  const h = harness();
+  h.firestore.set("publicProfiles/runner-2", {name: "Runner Two"});
+  h.firestore.set("users/runner-1", {});
+  h.firestore.set("matches/match-1/messages/message-2", {
+    senderId: "runner-2", text: "Newer reply",
+    sentAt: {seconds: 2, nanoseconds: 0},
+  });
+  const reply = {
+    id: "event-2",
+    params: {matchId: "match-1", messageId: "message-2"},
+    data: {data: () => ({senderId: "runner-2", text: "Newer reply",
+      sentAt: {seconds: 2, nanoseconds: 0}})},
+  };
+
+  // The newer message's event lands first, the older one's after it.
+  await onMessageCreatedHandler(reply, h.deps);
+  await onMessageCreatedHandler(event("event-1"), h.deps);
+
+  const match = h.firestore.get("matches/match-1");
+  assert.deepEqual(match?.lastMessageAt, {seconds: 2, nanoseconds: 0});
+  assert.equal(match?.lastMessagePreview, "Newer reply");
+  assert.equal(match?.lastMessageSenderId, "runner-2");
+  assert.deepEqual(match?.unreadCounts, {"runner-1": 1, "runner-2": 0});
+  // Both messages are still pushed, once each.
+  assert.deepEqual(h.notifications.map((n) => n.messageId).sort(),
+    ["message-1", "message-2"]);
+  assert.ok(h.firestore.get("commandReceipts/onMessageCreated_event-1"));
+});
+
+test("a message deleted before the trigger runs is not previewed or pushed",
+  async () => {
+    const h = harness();
+    h.firestore.set("matches/match-1/messages/message-1", undefined);
+
+    await onMessageCreatedHandler(event("event-1"), h.deps);
+
+    assert.equal(h.firestore.get("matches/match-1")?.lastMessagePreview,
+      null);
+    assert.equal(h.notifications.length, 0);
+  });
+
 test("onMessageCreatedHandler refreshes every event attached to the match",
   async () => {
     const h = harness({eventIds: ["event-1", "event-2"]});
@@ -272,6 +319,10 @@ test("onMessageCreatedHandler refreshes every event attached to the match",
 test("onMessageCreatedHandler redacts blocked content in push and preview",
   async () => {
     const h = harness();
+    h.firestore.set("matches/match-1/messages/message-1", {
+      senderId: "runner-1", text: "you stupid kafir",
+      sentAt: {seconds: 1, nanoseconds: 0},
+    });
 
     await onMessageCreatedHandler(
       {
@@ -335,6 +386,8 @@ test("Host replies target Consumer and use professional identity", async () => {
   reply.data.data = () => ({
     ...event("reply").data.data(), senderId: "runner-2",
   });
+  // The stored message is the Host's reply.
+  h.firestore.set("matches/match-1/messages/message-1", reply.data.data());
   await onMessageCreatedHandler(reply, h.deps);
   assert.deepEqual(h.pushRequests, [{uid: "runner-1", role: "consumer"}]);
   assert.equal(h.notifications[0]?.title, "Professional Host");
