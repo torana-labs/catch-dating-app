@@ -249,7 +249,8 @@ async function queueRelationshipCleanup(params: {
     queuePaymentCleanup(db, uid, now, writer),
     queueNotificationCleanup(db, uid, writer),
     queueEventBroadcastCleanup(db, uid, writer),
-    queueOrganizerCommunicationPreferenceCleanup(db, uid, writer),
+    queueContactPermissionCleanup(db, uid, writer),
+    queueAccessCleanup(db, uid, writer),
     queueHostAnalyticsSnapshotCleanup(db, uid, writer),
     queueParticipantPrivateStateCleanup(db, uid, writer),
     queueEventSuccessCleanup(db, uid, writer),
@@ -304,40 +305,52 @@ async function queueOrganizerAudienceIdentityCleanup(
 }
 
 /**
- * Deletes permission evidence and redacts retained contact provenance. The
- * contact permissions (issue #2460) go with their old copies: the person's
- * permission documents, their contactPermissionReceipts exactly as the old
- * receipt collections are deleted, and their guest permission rows.
+ * Deletes the account's contact consent (issue #2460) and redacts retained
+ * contact provenance: its users/{uid}/contactPermissions documents, its
+ * contactPermissionReceipts (whether to keep them anonymised awaits counsel,
+ * OQ-C2) and its guestMessagingPermissions rows.
  */
-async function queueOrganizerCommunicationPreferenceCleanup(
+async function queueContactPermissionCleanup(
   db: FirebaseFirestore.Firestore,
   uid: string,
   writer: BatchQueue
 ) {
-  const [preferences, receipts, origins, catchReceipts, permissions,
-    permissionReceipts, guestRows] = await Promise.all([
-    db.collection("organizerCommunicationPreferences")
-      .where("uid", "==", uid).get(),
-    db.collection("organizerCommunicationPermissionReceipts")
-      .where("uid", "==", uid).get(),
-    db.collection("organizerContactOrigins")
-      .where("actorUid", "==", uid).get(),
-    db.collection("catchCommunicationPermissionReceipts")
-      .where("uid", "==", uid).get(),
-    db.collection("users").doc(uid).collection("contactPermissions").get(),
-    db.collection("contactPermissionReceipts")
-      .where("uid", "==", uid).get(),
-    db.collection("guestMessagingPermissions")
-      .where("uid", "==", uid).get(),
-  ]);
-  preferences.forEach((doc) => writer.delete(doc.ref));
-  receipts.forEach((doc) => writer.delete(doc.ref));
-  catchReceipts.forEach((doc) => writer.delete(doc.ref));
+  const [origins, permissions, permissionReceipts, guestRows] =
+    await Promise.all([
+      db.collection("organizerContactOrigins")
+        .where("actorUid", "==", uid).get(),
+      db.collection("users").doc(uid).collection("contactPermissions").get(),
+      db.collection("contactPermissionReceipts")
+        .where("uid", "==", uid).get(),
+      db.collection("guestMessagingPermissions")
+        .where("uid", "==", uid).get(),
+    ]);
   permissions.forEach((doc) => writer.delete(doc.ref));
   permissionReceipts.forEach((doc) => writer.delete(doc.ref));
   guestRows.forEach((doc) => writer.delete(doc.ref));
-  writer.delete(db.collection("catchCommunicationPreferences").doc(uid));
   origins.forEach((doc) => writer.update(doc.ref, {actorUid: null}));
+}
+
+/**
+ * Ends the account's authority to act (issue #2474, decision 7): deletes its
+ * accessGrants documents and revokes its active organizer team edges with
+ * the status and fields removeOrganizerManager writes.
+ */
+async function queueAccessCleanup(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  writer: BatchQueue
+) {
+  const [grants, memberships] = await Promise.all([
+    db.collection("accessGrants").where("uid", "==", uid).get(),
+    db.collection("organizerTeamMemberships")
+      .where("uid", "==", uid).where("status", "==", "active").get(),
+  ]);
+  grants.forEach((doc) => writer.delete(doc.ref));
+  memberships.forEach((doc) => writer.set(doc.ref, {
+    status: "removed",
+    removedAt: admin.firestore.FieldValue.serverTimestamp(),
+  }, {merge: true}));
 }
 
 /** Releases and deletes pair reservations that expose the deleted account. */
