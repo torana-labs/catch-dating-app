@@ -17,6 +17,7 @@ import {
   hostContactDigests,
   isAdMatchingOptedOut,
 } from "../adMatching/optOuts";
+import {firebaseVerifiedEmail} from "../adMatching/verifiedEmail";
 
 export const AD_CONVERSION_DELIVERIES = "adConversionDeliveries";
 export const MAX_DELIVERY_ATTEMPTS = 5;
@@ -26,9 +27,11 @@ export type Delivery = AdConversionDeliveryDocument;
 /**
  * Builds one queue record per destination. Pure: contact details are hashed
  * here and only digests are returned, so raw phone or email never reach the
- * queue. An opted-out owner's records are born cancelled with outcome
- * `opted_out` and no contact digests, so the conversion is never sent and a
- * retried trigger cannot queue it again.
+ * queue. The only email used is the owner's verified Firebase Auth email;
+ * the typed `users.email` and `organizers.email` are never sent. An
+ * opted-out owner's records are born cancelled with outcome `opted_out` and
+ * no contact digests, so the conversion is never sent and a retried trigger
+ * cannot queue it again.
  * @param {object} input Conversion, organizer, owner and time.
  * @return {Delivery[]} Records to create, or none.
  */
@@ -42,12 +45,13 @@ export function hostDeliveryRecords(input: {
   metaLeadId?: string | null;
   /** The owner's phone or email is opted out of ad matching. */
   optedOut?: boolean;
+  /** The owner's verified Firebase Auth email (`verifiedAuthEmail`). */
+  verifiedEmail?: string | null;
 }): Delivery[] {
   const uid = conversionOwner(input.organizer);
   if (!uid || !input.owner || input.owner.deletedAt) return [];
   const phoneSha256 = hashedPhone(input.owner.phoneNumber);
-  const emailSha256 = hashedEmail(input.owner.email) ??
-    hashedEmail(input.organizer?.email);
+  const emailSha256 = hashedEmail(input.verifiedEmail);
   // Without a contact key neither platform can match the conversion.
   if (!phoneSha256 && !emailSha256) return [];
   const eventId = hostConversionEventId(input.organizerId, input.conversion);
@@ -95,6 +99,8 @@ export async function enqueueHostConversions(input: {
   organizerId: string;
   conversions: HostConversionName[];
   nowMillis: number;
+  /** The owner's verified Auth email; defaults to Firebase Auth. */
+  verifiedEmail?: (uid: string) => Promise<string | null>;
 }): Promise<number> {
   if (input.conversions.length === 0) return 0;
   const organizer = (await input.db.collection("organizers")
@@ -102,16 +108,19 @@ export async function enqueueHostConversions(input: {
   const uid = conversionOwner(organizer);
   if (!uid) return 0;
   const owner = (await input.db.collection("users").doc(uid).get()).data();
+  const verifiedEmail = owner ?
+    await (input.verifiedEmail ?? firebaseVerifiedEmail)(uid) : null;
   // Checked once per enqueue and again by the worker before each send.
   const optedOut = await anyAdMatchingOptedOut(input.db,
-    hostContactDigests(owner, organizer));
+    [...hostContactDigests(owner, organizer),
+      {emailSha256: hashedEmail(verifiedEmail)}]);
   const metaLeadId = optedOut ? null :
-    await matchingMetaLead(input.db, owner, organizer);
+    await matchingMetaLead(input.db, owner, verifiedEmail);
   let created = 0;
   for (const conversion of input.conversions) {
     for (const record of hostDeliveryRecords({organizerId: input.organizerId,
       conversion, organizer, owner, nowMillis: input.nowMillis,
-      metaLeadId, optedOut})) {
+      metaLeadId, optedOut, verifiedEmail})) {
       try {
         await input.db.collection(AD_CONVERSION_DELIVERIES)
           .doc(record.deliveryId).create(record);
@@ -126,19 +135,21 @@ export async function enqueueHostConversions(input: {
 
 /**
  * The Meta lead-form lead an owner came from: a processed lead whose hashed
- * phone, then email, matches the owner's. A lead carrying any opted-out
- * identifier is never attached. Null when there is none.
+ * phone, then verified email, matches the owner's. A typed, unverified email
+ * never matches, since it could name someone else's lead. A lead carrying
+ * any opted-out identifier is never attached. Null when there is none.
  * @param {FirebaseFirestore.Firestore} db Firestore.
  * @param {object|undefined} owner Owner's user document.
- * @param {object|undefined} organizer Organizer document.
+ * @param {string|null|undefined} verifiedEmail The owner's verified Auth
+ * email.
  * @return {Promise<string|null>} Meta lead ID.
  */
 export async function matchingMetaLead(db: FirebaseFirestore.Firestore,
   owner: Record<string, unknown> | undefined,
-  organizer: Record<string, unknown> | undefined): Promise<string | null> {
+  verifiedEmail: string | null | undefined): Promise<string | null> {
   const keys: Array<["phoneSha256" | "emailSha256", string | null]> = [
     ["phoneSha256", hashedPhone(owner?.phoneNumber)],
-    ["emailSha256", hashedEmail(owner?.email) ?? hashedEmail(organizer?.email)],
+    ["emailSha256", hashedEmail(verifiedEmail)],
   ];
   for (const [field, digest] of keys) {
     if (!digest) continue;
