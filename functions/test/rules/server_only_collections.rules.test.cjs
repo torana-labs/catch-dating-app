@@ -45,7 +45,6 @@ const SERVER_ONLY = [
   "eventApprovalNotificationPreferences",
   "eventApprovalNotificationReceipts",
   "eventApprovalNotificationSettings",
-  "eventIntakeReviewDecisions",
   "eventPlanChanges",
   "eventRosterHandoffs",
   "eventSeatIdentityAliases",
