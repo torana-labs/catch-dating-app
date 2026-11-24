@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "group": "test-support-organizers",
+  "sequence": 1795504636089,
+  "entries": [
+    {
+      "path": "test/organizers/organizers_test_helpers.dart",
+      "moveTo": "packages/catch_test_support/lib/organizers_test_helpers.dart"
+    }
+  ],
+  "moves": {
+    "test/organizers/organizers_test_helpers.dart": "packages/catch_test_support/lib/organizers_test_helpers.dart"
+  },
+  "folders": {}
+}

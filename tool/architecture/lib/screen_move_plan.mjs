@@ -23,6 +23,12 @@ function isTestPath(file) {
   return /^(?:test|integration_test)\//u.test(file);
 }
 
+// The app whose test/ or integration_test/ folder holds the file, if any.
+// Only that app's own tests can import such a file, by a relative path.
+function appTestOf(file) {
+  return /^apps\/([^/]+)\/(?:test|integration_test)\//u.exec(file)?.[1] ?? null;
+}
+
 // Files left for the move PRs: everything under lib/ outside the target
 // roots.
 export function isLegacyFile(file, map) {
@@ -115,7 +121,10 @@ export function planSourceMoves({group, map, files, graph, read}) {
 
 // Checks every import edge that the move changes. `after` maps a file to
 // where it sits once the group (and its tests) have moved.
-export function closureErrors({graph, moves, map, packages, widgetbookDependencies = []}) {
+// `sourceMoves` are the moves the group's own entries make; a test file among
+// them that moves into apps/<app>/test is checked here, while tests that
+// follow their imports are checked by planTestMoves.
+export function closureErrors({graph, moves, map, packages, widgetbookDependencies = [], sourceMoves = new Map()}) {
   const errors = [];
   const after = (file) => moves.get(file) ?? file;
   const movingLibraries = [...moves.keys()].filter((file) =>
@@ -133,6 +142,18 @@ export function closureErrors({graph, moves, map, packages, widgetbookDependenci
           file: importer,
           message: `${importer} (apps/${importerApp}) imports ${library}, which moves to apps/${targetApp}.`,
         });
+        continue;
+      }
+      const testApp = sourceMoves.has(library) ? appTestOf(target) : null;
+      if (testApp != null) {
+        if (!movedImporter && appTestOf(location) !== testApp) {
+          errors.push({
+            kind: "testClosure",
+            file: importer,
+            target: library,
+            message: `${importer} imports ${library}, which moves to ${target}; only apps/${testApp} tests can import it, so add ${importer} to the group.`,
+          });
+        }
         continue;
       }
       if (targetApp == null || movedImporter || isTestPath(location)) continue;
@@ -160,13 +181,13 @@ export function closureErrors({graph, moves, map, packages, widgetbookDependenci
         });
       }
     }
-    errors.push(...ownImportErrors({graph, library, target, after, map}));
+    errors.push(...ownImportErrors({graph, library, target, after, map, testMove: sourceMoves.has(library)}));
   }
   return errors;
 }
 
 // What a moving library may import from its new home.
-function ownImportErrors({graph, library, target, after, map}) {
+function ownImportErrors({graph, library, target, after, map, testMove = false}) {
   const errors = [];
   const targetApp = appOf(target);
   const into = target.startsWith(map.roots.pages)
@@ -181,6 +202,10 @@ function ownImportErrors({graph, library, target, after, map}) {
       for (const used of usedLibraries(directive)) {
         const location = after(used);
         const usedApp = appOf(location);
+        if (testMove && appTestOf(target) != null && isTestPath(location)) {
+          errors.push({kind: "testClosure", file: library, message: `${library} moves to ${target} but imports ${location}, which stays in the root package; add it to the group, or move it into packages/catch_test_support first.`});
+          continue;
+        }
         if (targetApp != null && usedApp != null && usedApp !== targetApp) {
           errors.push({kind: "crossApp", file: library, message: `${library} moves to apps/${targetApp} but imports ${location} (apps/${usedApp}).`});
           continue;

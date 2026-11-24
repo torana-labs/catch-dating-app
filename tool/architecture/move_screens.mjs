@@ -85,7 +85,9 @@ Options: --root <repo> (default: this checkout), --graph <file> (a saved
 dart_symbol_imports.dart output instead of running the analyzer).
 
 A group is the set of ${contextMapPath} legacy entries with that "group"; each
-moves its folder or file to its "moveTo". --classify labels every legacy file
+moves its folder or file to its "moveTo". A root test file may move into an
+app's test/ or integration_test/ folder; every file that imports it must then
+move too. --classify labels every legacy file
 host, consumer, shared or unreached from what each app actually reaches.
 --plan lists the moves (each library with its parts), test and golden moves,
 regenerated outputs and every error that blocks the move; --markdown prints

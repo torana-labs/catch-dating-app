@@ -32,6 +32,8 @@ import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart'
+    show FakeOrganizersRepository, seededOrganizersRepository;
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -41,8 +43,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../organizers/organizers_test_helpers.dart'
-    show FakeOrganizersRepository, seededOrganizersRepository;
 import 'event_viewer_state_fixtures.dart';
 import 'events_test_helpers.dart';
 

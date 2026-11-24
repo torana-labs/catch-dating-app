@@ -10,10 +10,6 @@
         "reason": "Server-only collection read through the website's Firestore viewer identity; no rules test yet."
       },
       {
-        "id": "hostProfiles",
-        "reason": "Client access (public) has no rules test yet."
-      },
-      {
         "id": "organizerContactIdentityLinks",
         "reason": "Server-only collection; no test yet proves client reads and writes are denied."
       },

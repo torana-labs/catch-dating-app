@@ -275,7 +275,6 @@
     "functions/src/reviews/syncOrganizerReviewStats.ts writes organizers",
     "functions/src/safety/accountDeletion.ts writes hostProfiles",
     "functions/src/safety/accountDeletion.ts writes onboarding_drafts",
-    "functions/src/safety/accountDeletion.ts writes organizers",
     "functions/src/safety/accountDeletion.ts writes participantIntakeProfiles",
     "functions/src/safety/accountDeletion.ts writes participantMetricCounters",
     "functions/src/safety/accountDeletion.ts writes publicProfiles",
@@ -283,6 +282,8 @@
     "functions/src/safety/accountDeletionSeats.ts writes eventSeatIdentityAliases",
     "functions/src/safety/accountDeletionSeats.ts writes eventSeatVerifiedPhones",
     "functions/src/safety/accountDeletionSeats.ts writes events",
+    "functions/src/safety/accountDeletionSupportRecords.ts writes accessApplications",
+    "functions/src/safety/accountDeletionSupportRecords.ts writes tryItWorkspaces",
     "functions/src/takedownRequests/admin.ts writes takedownRequests"
   ],
   "legacy": [

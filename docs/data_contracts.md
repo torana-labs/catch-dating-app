@@ -2120,6 +2120,31 @@ attendee generations, check-in, episode and checkpoint hashes, the case
 binding hash, the staff source hash); a replay whose fence no longer matches
 live state is still rejected. Old documents stay.
 
+### Data Tool Run Records
+
+`dataToolRuns/{runId}` records each applied run of a backfill or migration
+tool under `tool/data/` (FIX-7). The tool writes it through
+`withRunRecord` in `tool/data/lib/run_record.mjs` with the Admin SDK: as
+`running` before its apply phase, then `succeeded` with its counts, or
+`failed` with the counts reached and the error's first line. Dry runs write
+nothing.
+
+- Shape (`contracts/firestore/data_tool_runs.schema.json`): `runId`, `tool`
+  (repository path), `scope` (such as the migration names), `projectId`,
+  `commitSha`, `commitDirty`, `status`, `counts`, `failure`, `startedAt`,
+  `finishedAt`, `expiresAt`. No document data or personal data.
+- Id: the tool's file name, the start time in milliseconds and eight random
+  hex digits.
+- Retention: `expiresAt` is 365 days after the run starts; the collection's
+  TTL policy is a `fieldOverrides` entry for `dataToolRuns.expiresAt` in
+  `firestore.indexes.json`.
+- Adoption: `data:run-record-adoption` (`tool/data/check_run_records.mjs`)
+  fails when a writing tool under `tool/data/` (manifest surface
+  `remote-write` or `remote-destructive`) does not import the helper. Tools
+  written before it are listed as legacy, and the list only shrinks.
+  `tool/data/migrate_firestore_consolidation.mjs` is the first adopter.
+- Server only: rules deny every client read and write.
+
 ### Dispatch Dead Letters
 
 `dispatchDeadLetters/{projectionId}_{eventId}` records a dispatched projection
@@ -6142,6 +6167,27 @@ current authorized club ids, resolved absolute range, derived granularity,
 preset, optional event id, and IANA timezone. Authorization is resolved before
 the cache lookup, so host-role changes produce a different cache identity.
 
+**Group-size floor for dating counts (FIX-21).** An organiser sees an event's
+connection (mutual match) and chat counts only when at least the platform
+floor of guests came. The group is the larger of the mart's and the
+operational roster's check-ins. Below the floor, `getHostAnalytics` returns 0
+for that event's `topEvents[].mutualMatchCount` and `chatStartedCount`, and
+the event adds nothing to the Connections and Chats cards, their prior-period
+baseline or the trend buckets. The cards' caption names the floor, and a
+`dating-count-group-floor` data-quality row counts the withheld events.
+`adminGetHostAnalytics` is not floored. Per-link invite counts and direct host
+reads of `eventSuccessScorecards` are gone (FIX-12), so this callable is the
+only path by which these counts reach an organiser.
+
+The floor is the platform setting `config/guestDataVisibility.groupSizeFloor`
+(`contracts/firestore/config_guest_data_visibility.schema.json`): an integer
+from 2 to 500, server-only through `match /config/{docId}`. The owner sets it
+in the Firebase console, optionally with `reason`, `updatedAt` and
+`updatedBy`. A missing document reads as **10**. A malformed one also reads as
+10, because a privacy floor fails closed;
+`functions/src/analytics/guestDataVisibility.ts` parses it. Any future screen
+that shows event-level dating counts to an organiser reads the same setting.
+
 Clients cannot read or write snapshots. The callable validates a cached
 response against `host_analytics_response.schema.json` before serving it,
 falls back to a live BigQuery build on missing/expired/invalid cache data, and
@@ -7817,11 +7863,7 @@ The generic opportunity mutation requires fresh Admin Owner authority before
 receipt replay and at transaction execution; stage history retains its finance
 proof. Loss and reopening require a reason, and reopening needs a dated next step.
 
-`salesIntakeLinks` joins the exact reviewed Supply Intake candidate generation and
-curation decision to its private organizer Sales companion. Explicit identity
-selection precedes linking; retry can complete the private join after Intake
-succeeded without overwriting an existing account or publishing the organizer.
-Imports retain every reviewed cohort/source-row relationship and union cohort IDs
+Sales imports retain every reviewed cohort/source-row relationship and union cohort IDs
 once per account, fenced by the preview's account revision. Unresolved identities
 remain in offline review; neither import nor an assistant invents canonical IDs.
 

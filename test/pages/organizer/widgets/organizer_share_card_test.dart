@@ -2,14 +2,13 @@ import 'package:catch_dating_app/pages/organizer/widgets/organizer_hero_top_bar.
 import 'package:catch_dating_app/pages/organizer/widgets/organizer_share_card.dart';
 import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:share_plus/share_plus.dart';
-
-import '../../../organizers/organizers_test_helpers.dart';
 
 void main() {
   testWidgets('renders an editorial club share card', (tester) async {

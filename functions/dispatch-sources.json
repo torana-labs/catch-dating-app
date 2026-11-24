@@ -13,6 +13,30 @@
       "document": "guestPayments/{paymentId}",
       "area": "payments"
     },
+    "operationWorkItems": {
+      "document": "operationWorkItems/{workItemId}",
+      "area": "hostReadModels"
+    },
+    "organizerApplications": {
+      "document": "organizerApplications/{applicationId}",
+      "area": "hostReadModels"
+    },
+    "organizerContactEventEdges": {
+      "document": "organizerContactEventEdges/{edgeId}",
+      "area": "hostReadModels"
+    },
+    "organizerContacts": {
+      "document": "organizerContacts/{contactId}",
+      "area": "hostReadModels"
+    },
+    "organizerFormResponses": {
+      "document": "organizerFormResponses/{responseId}",
+      "area": "hostReadModels"
+    },
+    "organizerForms": {
+      "document": "organizerForms/{formId}",
+      "area": "hostReadModels"
+    },
     "organizerPrograms": {
       "document": "organizerPrograms/{programId}",
       "area": "programs"
@@ -20,6 +44,30 @@
     "organizers": {
       "document": "organizers/{organizerId}",
       "area": "organizers"
+    },
+    "programGuests": {
+      "document": "programGuests/{guestId}",
+      "area": "programs"
+    },
+    "programHotels": {
+      "document": "programHotels/{hotelId}",
+      "area": "programs"
+    },
+    "programHouseholds": {
+      "document": "programHouseholds/{householdId}",
+      "area": "programs"
+    },
+    "programStaffGrants": {
+      "document": "programStaffGrants/{grantId}",
+      "area": "programs"
+    },
+    "programTravelLegs": {
+      "document": "programTravelLegs/{legId}",
+      "area": "programs"
+    },
+    "users": {
+      "document": "users/{uid}",
+      "area": "profiles"
     }
   }
 }

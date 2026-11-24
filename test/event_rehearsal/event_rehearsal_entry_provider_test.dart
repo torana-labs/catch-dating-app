@@ -4,10 +4,11 @@ import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_entry_view_model.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart'
+    show buildOrganizer;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../organizers/organizers_test_helpers.dart' show buildOrganizer;
 import 'event_rehearsal_configuration_test.dart' show rehearsalSourceEvent;
 
 void main() {

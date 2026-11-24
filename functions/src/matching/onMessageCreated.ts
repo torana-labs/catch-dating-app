@@ -61,8 +61,38 @@ const defaultDeps: MessageCreatedDeps = {
   refreshScorecard: refreshEventSuccessScorecard,
 };
 
+type TimestampLike = {seconds: number; nanoseconds: number};
+
+function isTimestampLike(value: unknown): value is TimestampLike {
+  return typeof value === "object" && value !== null &&
+    typeof (value as TimestampLike).seconds === "number" &&
+    typeof (value as TimestampLike).nanoseconds === "number";
+}
+
 /**
- * Applies server-owned match metadata for a newly created chat message.
+ * Whether a message was sent before the match's current last message, so a
+ * late or out-of-order delivery must not replace the newer preview. A
+ * message or match without a stored time is never older.
+ * @param {unknown} sentAt The message's sentAt.
+ * @param {unknown} lastMessageAt The match's lastMessageAt.
+ * @return {boolean} True when the match already shows a newer message.
+ */
+export function sentBeforeLastMessage(sentAt: unknown,
+  lastMessageAt: unknown): boolean {
+  if (!isTimestampLike(sentAt) || !isTimestampLike(lastMessageAt)) {
+    return false;
+  }
+  return sentAt.seconds < lastMessageAt.seconds ||
+    (sentAt.seconds === lastMessageAt.seconds &&
+      sentAt.nanoseconds < lastMessageAt.nanoseconds);
+}
+
+/**
+ * Applies server-owned match metadata for a newly created chat message. The
+ * message is re-read in the transaction (it may since be redacted or
+ * deleted), and its preview replaces the match's only when no newer message
+ * is already shown, so deliveries in any order end at the latest message.
+ * The receipt keeps a retried event to one write and one push.
  * @param {MessageCreatedEvent} event Firestore message-created event.
  * @param {MessageCreatedDeps} deps Injectable dependencies for tests.
  */
@@ -71,21 +101,16 @@ export async function onMessageCreatedHandler(
   deps: MessageCreatedDeps = defaultDeps
 ): Promise<void> {
   const {matchId, messageId} = event.params;
-  const message = event.data?.data() as ChatMessageDocument | undefined;
-  if (!message) return;
-
-  // Never surface blocked content through the push or the denormalized
-  // lastMessagePreview. moderateChatMessage redacts the stored message on a
-  // separate (racing) trigger, so the push/preview must redact independently.
-  const displayMessage =
-    message.text && moderateText(message.text).action === "block" ?
-      {...message, text: "[message removed for review]"} :
-      message;
+  if (!event.data?.data()) return;
 
   const db = deps.firestore();
   const eventId = event.id ?? `${matchId}_${messageId}`;
   const matchRef = db.collection("matches").doc(matchId);
+  const messageRef = matchRef.collection("messages").doc(messageId);
   const receiptRef = commandReceiptRef(db, "onMessageCreated", eventId);
+  // The stored message, as last read inside the transaction.
+  let message = event.data.data() as ChatMessageDocument;
+  let displayMessage = message;
 
   let recipientId: string | null = null;
   let shouldNotify = false;
@@ -104,22 +129,30 @@ export async function onMessageCreatedHandler(
     shouldNotify = false;
     pushContext.role = "consumer";
     pushContext.allowed = true;
-    const senderProfileRef = db.collection("publicProfiles").doc(
-      message.senderId
-    );
-    const [receiptSnap, matchDoc, senderProfileDoc] = await Promise.all([
+    const [receiptSnap, matchDoc, messageDoc] = await Promise.all([
       tx.get(receiptRef),
       tx.get(matchRef),
-      tx.get(senderProfileRef),
+      tx.get(messageRef),
     ]);
 
     const nowMillis = Date.now();
     const receipt = classifyCommandReceipt(receiptSnap, {
       command: "onMessageCreated", nowMillis,
     });
-    if (receipt.kind !== "none" || !matchDoc.exists) {
+    // A message deleted before this ran is neither previewed nor pushed.
+    if (receipt.kind !== "none" || !matchDoc.exists || !messageDoc.exists) {
       return;
     }
+    message = messageDoc.data() as ChatMessageDocument;
+    // Never surface blocked content through the push or the denormalized
+    // lastMessagePreview. moderateChatMessage redacts the stored message on
+    // a separate (racing) trigger, so the push/preview redact independently.
+    displayMessage =
+      message.text && moderateText(message.text).action === "block" ?
+        {...message, text: "[message removed for review]"} :
+        message;
+    const senderProfileDoc = await tx.get(
+      db.collection("publicProfiles").doc(message.senderId));
 
     const match = matchDoc.data() as MatchDocument;
     if (match.status === "blocked" || match.status === "closed" ||
@@ -173,13 +206,17 @@ export async function onMessageCreatedHandler(
 
     // Keep match-list metadata server-owned. The client writes only the
     // message. The receipt makes this increment idempotent across retries.
-    tx.update(matchRef, {
-      lastMessageAt: messageSentAt,
-      lastMessagePreview: buildMessagePreview(displayMessage),
-      lastMessageSenderId: message.senderId,
-      [`unreadCounts.${message.senderId}`]: 0,
-      [`unreadCounts.${recipientId}`]: 1,
-    });
+    // A message older than the one the match shows is still pushed, but
+    // leaves the newer preview and unread flags alone.
+    if (!sentBeforeLastMessage(message.sentAt, match.lastMessageAt)) {
+      tx.update(matchRef, {
+        lastMessageAt: messageSentAt,
+        lastMessagePreview: buildMessagePreview(displayMessage),
+        lastMessageSenderId: message.senderId,
+        [`unreadCounts.${message.senderId}`]: 0,
+        [`unreadCounts.${recipientId}`]: 1,
+      });
+    }
 
     writeCommandReceipt(tx, receiptRef, {
       command: "onMessageCreated", retention: "trigger", nowMillis,
@@ -250,8 +287,12 @@ async function refreshScorecardsForEvents(
   await Promise.all(eventIds.map((eventId) => refreshScorecard(eventId)));
 }
 
+/**
+ * Retried: the receipt makes a retry a no-op once the transaction commits,
+ * and the preview never moves back to an older message.
+ */
 export const onMessageCreated = onDocumentCreated(
-  "matches/{matchId}/messages/{messageId}",
+  {document: "matches/{matchId}/messages/{messageId}", retry: true},
   (event) => onMessageCreatedHandler(event)
 );
 
