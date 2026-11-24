@@ -8,7 +8,6 @@ import {requireAuth} from "../shared/auth";
 import {eventBroadcastDeliveryKey} from "../shared/eventBroadcasts";
 import type {
   ProfilePhoto,
-  OrganizerFollowDocument,
   OrganizerContactIdentityLinkDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
@@ -17,6 +16,7 @@ import {endAccountHostMemberships} from
   "../hostMemberships/accountDeletion";
 import {safetyRetainUntil} from "./safetyPolicy";
 import {retainSafetyRecordsForDeletedAccount} from "./safetyRetention";
+import {queueEventDataCleanup} from "./accountDeletionEventData";
 
 type StorageBucket = ReturnType<ReturnType<typeof admin.storage>["bucket"]>;
 
@@ -89,6 +89,9 @@ export async function requestAccountDeletionHandler(
   );
 
   const writer = new BatchQueue(db);
+  // Writes that must land after the main ones, e.g. a standings rename whose
+  // trigger re-projects game histories from the cleaned assignments.
+  const afterCommit = new BatchQueue(db);
   writer.delete(db.collection("hostProfiles").doc(uid));
   writer.delete(db.collection("publicProfiles").doc(uid));
   writer.delete(db.collection("crossPathsShowcaseEligibility").doc(uid));
@@ -99,6 +102,7 @@ export async function requestAccountDeletionHandler(
     uid,
     now,
     writer,
+    afterCommit,
   });
   await removeOrganizerHostIdentity(db, uid);
   await retainSafetyRecordsForDeletedAccount(db, uid, Date.now());
@@ -108,6 +112,7 @@ export async function requestAccountDeletionHandler(
   writer.set(db.collection("users").doc(uid), deletedUserProfileTombstone(now));
 
   await writer.commit();
+  await afterCommit.commit();
 
   // Mark the already-present deletion guard complete only after cleanup.
   await deletedUserRef.set({
@@ -225,8 +230,9 @@ async function queueRelationshipCleanup(params: {
   uid: string;
   now: FirebaseFirestore.FieldValue;
   writer: BatchQueue;
+  afterCommit: BatchQueue;
 }) {
-  const {db, uid, now, writer} = params;
+  const {db, uid, now, writer, afterCommit} = params;
   // Release pair holds while their persisted UID identity proof is current.
   await queueCrossPathsPairHoldCleanup(db, uid, writer);
   // The seat ledger, participation and linked attendee identity update
@@ -236,7 +242,7 @@ async function queueRelationshipCleanup(params: {
   // Paid memberships stop billing before their records are erased below.
   await endAccountHostMemberships(uid).catch(() => undefined);
   await Promise.all([
-    queueOrganizerMembershipCleanup(db, uid, now, writer),
+    queueOrganizerFollowCleanup(db, uid, writer),
     queueOrganizerAudienceIdentityCleanup(db, uid, now, writer),
     queueCrossPathsConsentCleanup(db, uid, writer),
     queueCrossPathsSuggestionExposureCleanup(db, uid, writer),
@@ -254,6 +260,7 @@ async function queueRelationshipCleanup(params: {
     queueHostAnalyticsSnapshotCleanup(db, uid, writer),
     queueParticipantPrivateStateCleanup(db, uid, writer),
     queueEventSuccessCleanup(db, uid, writer),
+    queueEventDataCleanup({db, uid, writer, afterCommit}),
     queueBlockCleanup(db, uid, writer),
     queueReportCleanup(db, uid, now, writer),
   ]);
@@ -465,29 +472,19 @@ async function queueEventSuccessCleanup(
 }
 
 /**
- * Marks the user's organizer follow edges inactive and updates aggregates.
+ * Deletes the account's organizer follow edges (#2468). Deleting an edge
+ * stops its pushes, and syncOrganizerFollowerStats recounts the
+ * organizer's active edges on every edge write, so the follower count
+ * follows without an increment here.
  */
-async function queueOrganizerMembershipCleanup(
+async function queueOrganizerFollowCleanup(
   db: FirebaseFirestore.Firestore,
   uid: string,
-  now: FirebaseFirestore.FieldValue,
   writer: BatchQueue
 ) {
   const follows = await db.collection("organizerFollows")
     .where("uid", "==", uid).get();
-  follows.forEach((doc) => {
-    const follow = doc.data() as OrganizerFollowDocument;
-    writer.set(doc.ref, {
-      status: "inactive",
-      unfollowedAt: now,
-      pushNotificationsEnabled: false,
-    }, {merge: true});
-    if (follow.status === "active") {
-      writer.update(db.collection("organizers").doc(follow.organizerId), {
-        followerCount: admin.firestore.FieldValue.increment(-1),
-      });
-    }
-  });
+  follows.forEach((doc) => writer.delete(doc.ref));
 }
 
 /** Deletes private Cross Paths consent edges owned by the account. */
@@ -787,11 +784,25 @@ async function queueReportCleanup(
   });
 }
 
+/** The writes the deletion steps queue; BatchQueue implements it. */
+export interface DeletionWriter {
+  set(
+    ref: FirebaseFirestore.DocumentReference,
+    data: FirebaseFirestore.DocumentData,
+    options?: FirebaseFirestore.SetOptions
+  ): void;
+  update(
+    ref: FirebaseFirestore.DocumentReference,
+    data: FirebaseFirestore.UpdateData<FirebaseFirestore.DocumentData>
+  ): void;
+  delete(ref: FirebaseFirestore.DocumentReference): void;
+}
+
 /**
  * Small write-batch queue that chunks account deletion work under Firestore's
  * 500-write batch limit.
  */
-class BatchQueue {
+class BatchQueue implements DeletionWriter {
   private batches: FirebaseFirestore.WriteBatch[] = [];
   private current: FirebaseFirestore.WriteBatch;
   private operationCount = 0;
