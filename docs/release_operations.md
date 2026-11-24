@@ -2678,6 +2678,26 @@ consumes the map: it selects no tests and blocks nothing. Removing a test
 from the selector's always-run set needs a clean shadow week, the release
 engineer's sign-off and then the owner's.
 
+#### Read-map selection shadow
+
+Each trace shard first lists the selector's always-run set
+(`flutter_test_selection.dart --probes-only`) and traces those tests too, so a
+test that reads only through a helper it imports still gets a map. The combine
+job then runs `tool/ci/read_map_selection_shadow.mjs` (report-only, RE
+decision, 24 Nov 2026). For each always-run test it splits the runtime reads
+into font, asset and engine files (fonts, shaders, `NativeAssetsManifest.json`,
+asset folders), fixture and data files, and directory listings. The engine's
+`icudtl.dat` lookup, which every test makes, is ignored. A test is
+**enumerable** when it lists no directory and probes no missing path: it could
+be selected on exactly what it read. **Assets only** marks the enumerable tests
+that read nothing but font, asset and engine files. With the previous day's
+marker (`test-read-map-day-<day>`) as the base and the run's commit as the
+head, it also says whether reads alone would have selected each test for
+main's changes in between: a changed named or missing path, or a path under a
+listed directory. The step summary has the table, and
+`read-map-selection-shadow.json` and the always-run list ride in the
+`test-read-map-<run id>` artifact. Nothing selects on it.
+
 #### Once-a-day reports
 
 This repository's scheduled runs start 7.5-10.6 hours late, whatever the hour

@@ -1,0 +1,26 @@
+{
+  "id": "ci:read-map-selection-shadow",
+  "category": "ci",
+  "path": "tool/ci/read_map_selection_shadow.mjs",
+  "command": "node tool/ci/read_map_selection_shadow.mjs",
+  "surface": "remote-read",
+  "checkSafety": "local-readonly",
+  "status": "active",
+  "description": "Read-map selection shadow, report-only: for each test the Flutter selector keeps on every pull request (flutter_test_selection.dart --probes-only), classifies its runtime reads from the nightly read map into font, asset and engine files, fixture and data files, and directory listings, flags tests whose reads are all named paths (enumerable, candidates to be path-selected) and those that read only assets, and, with --day and --head, says whether reads alone would have selected each one for main's changes since the previous day's map. Runs in test-read-map.yml's combine job; selects nothing.",
+  "checks": [
+    "node --check tool/ci/read_map_selection_shadow.mjs",
+    "node --test tool/ci/read_map_selection_shadow.test.mjs"
+  ],
+  "impactPaths": [
+    ".github/workflows/test-read-map.yml",
+    "tool/ci/read_map_selection_shadow.test.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "role": "finder",
+  "runbook": "docs/release_operations.md#test-read-map"
+}

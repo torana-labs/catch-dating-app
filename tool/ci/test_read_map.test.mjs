@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {fileReadingTests, packageOf, parseStraceLog, readMapRow, shardOf} from "./test_read_map.mjs";
+import {fileReadingTests, packageOf, parseStraceLog, readMapRow, shardOf, testsToTrace} from "./test_read_map.mjs";
 
 const LOG = `100 execve("/opt/flutter/bin/cache/dart-sdk/bin/dart", ["dart"], 0x0 /* 1 vars */) = 0
 100 clone3({flags=CLONE_VM}, 88 <unfinished ...>
@@ -72,4 +72,14 @@ test("a row keeps the runtime's reads in full and the compiler's separately", ()
   assert.deepEqual(row.runtime.opened, ["contracts/a.json"]);
   assert.deepEqual(row.compiler, {opened: ["lib/app.dart"], listed: []});
   assert.equal(row.toolOpened, 1);
+});
+
+test("the selector's always-run tests are traced too, each once, root and app tests only", () => {
+  const sources = {"test/a_test.dart": "import 'dart:io';", "test/helper_user_test.dart": "import 'support/x.dart';",
+    "apps/host/test/h_test.dart": "void main() {}", "test/support/x.dart": "import 'dart:io';"};
+  const read = (file) => sources[file];
+  assert.deepEqual(testsToTrace(Object.keys(sources), read), ["test/a_test.dart"]);
+  assert.deepEqual(testsToTrace(Object.keys(sources), read,
+    ["test/helper_user_test.dart", "test/a_test.dart", "apps/host/test/h_test.dart", "test/gone_test.dart", "test/support/x.dart"]),
+  ["apps/host/test/h_test.dart", "test/a_test.dart", "test/helper_user_test.dart"]);
 });
