@@ -16,13 +16,11 @@
     "dispatchEvents",
     "onHostEventSetupViewPreferencesChanged",
     "dispatchOrganizers",
-    "onHostEventSetupViewAttendeeChanged",
     "dispatchEventAttendees",
     "onHostEventSetupViewAttendeeImportChanged",
     "onHostEventSetupViewParticipationChanged",
     "onHostEventSetupViewWaitlistOfferChanged",
     "onHostEventSetupViewEventOfferChanged",
-    "onHostEventSetupViewGuestPaymentChanged",
     "dispatchGuestPayments",
     "onHostEventSetupViewMomentChanged"
   ],

@@ -13,7 +13,6 @@
   "read": "current organizer managers get by id while their account is not deleted; a view not written yet reads as missing",
   "write": "server only; rebuilt from the event's attendees, its closeout decisions and the event itself, deleted when the event is gone or its roster is over the report limit",
   "exportedFunctions": [
-    "onHostEventAttendanceReportAttendeeWritten",
     "dispatchEventAttendees",
     "onHostEventAttendanceReportDispositionWritten",
     "dispatchEvents"

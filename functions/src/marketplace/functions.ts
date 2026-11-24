@@ -7,6 +7,5 @@ export {
   onEventSuccessConversationGraphWritten,
   onEventSuccessFeedbackWritten,
   onEventWaitlistOfferWritten,
-  onBookingPaymentWritten,
 } from "./eventSuccessScorecards";
 export {adminGetMarketplace} from "./adminGetMarketplace";

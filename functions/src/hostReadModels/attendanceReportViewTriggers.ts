@@ -66,22 +66,10 @@ function eventIds(...ids: unknown[]): string[] {
     typeof id === "string" && id.length > 0);
 }
 
-/** A guest booked, checked in, undone, cancelled or moved. */
-export const onHostEventAttendanceReportAttendeeWritten = onDocumentWritten({
-  ...options, document: "eventAttendees/{attendeeId}",
-}, async (event) => {
-  const db = admin.firestore();
-  for (const eventId of attendanceReportEventsForAttendee(
-    event.data?.before.data(), event.data?.after.data())) {
-    await reconcileHostEventAttendanceReport(db, eventId);
-  }
-});
-
 /**
  * A guest booked, checked in, undone, cancelled or moved.
- * dispatchEventAttendees (issue #2451) runs the same work; both run until the
- * old trigger retires, which is safe because it re-reads its sources,
- * so a retry, a replay or a second run converges.
+ * Served by dispatchEventAttendees (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
  */
 export const hostAttendanceReportAttendeeProjections = defineProjections(
   "eventAttendees", [{

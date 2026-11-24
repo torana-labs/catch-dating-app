@@ -4,7 +4,6 @@
 export {listMyHostAssignments} from "./listMyHostAssignments";
 export {
   onHostAssignmentProgramGrantChanged,
-  onHostAssignmentProgramChanged,
   onHostAssignmentEventGrantChanged,
   onHostAssignmentMembershipChanged,
 } from "./hostAssignmentViewTriggers";
