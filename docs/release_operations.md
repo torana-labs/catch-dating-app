@@ -316,7 +316,8 @@ a miss: a lane that would have been reused, checked or unchecked, but failed. Bo
 `continue-on-error` and outside `Required CI`; any unknown means not eligible.
 
 `Proof reuse daily` (`.github/workflows/proof-reuse-daily.yml`,
-`tool/ci/proof_reuse_report.mjs`) runs at 05:17 UTC and rolls up the previous
+`tool/ci/proof_reuse_report.mjs`) runs once a day (see "Once-a-day reports"
+under the Test read map) and rolls up the previous
 UTC day's queue runs, bucketed by run creation time, into the
 `proof-reuse-daily-<date>` artifact (`proof-reuse-daily-<date>.json`, schema
 `proof-reuse-daily/1`, kept 90 days) and a summary table. `runs` counts the
@@ -2577,8 +2578,8 @@ commit on main touched the workflow file by that cron time, the check reads
 | Firestore Data Validation (`data-validation.yml`) | 20:13 | Not dispatched: it uses prod, though read-only | "Scheduled run missed" |
 | Deploy backend (`backend-deploy.yml`) | 21:13 | Dispatched once for dev; prod is never dispatched | "Scheduled run missed" |
 | CI nightly (`ci.yml`) | 02:23 | Dispatched once with `full`; the night counts as unknown | "Main CI is red" |
-| Test read map (`test-read-map.yml`) | 03:41 | Not dispatched: report-only shadow job | "Scheduled run missed" |
-| Proof reuse daily (`proof-reuse-daily.yml`) | 05:17 | Not dispatched: report-only; dispatch it with that day's `date` | "Scheduled run missed" |
+| Test read map (`test-read-map.yml`) | 03:41 (also after main push CI, once a day from 00:00) | Not dispatched: report-only shadow job | "Scheduled run missed" |
+| Proof reuse daily (`proof-reuse-daily.yml`) | 05:17 (also after main push CI, once a day from 02:00) | Not dispatched: report-only; dispatch it with that day's `date` | "Scheduled run missed" |
 
 Each missed run gets one comment on its issue (opened if none is open) naming
 the run, what was dispatched and, for a prod run, the command to run it, for
@@ -2657,7 +2658,7 @@ planned those lanes at all.
 ### Test read map
 
 `Test read map` (`.github/workflows/test-read-map.yml`, driven by
-`tool/ci/test_read_map.mjs`) runs nightly at 03:41 UTC and on dispatch, in
+`tool/ci/test_read_map.mjs`) runs once a day and on dispatch, in
 shadow (RE decision, 22 Nov 2026). Each root or app-package Flutter test file
 that imports `dart:io` or `repoFile()` (`packages/catch_test_support`) runs in
 its own `flutter test`, from its package directory, under `strace -f` on
@@ -2676,6 +2677,28 @@ and the native assets manifest, and tests that list directories. Nothing
 consumes the map: it selects no tests and blocks nothing. Removing a test
 from the selector's always-run set needs a clean shadow week, the release
 engineer's sign-off and then the owner's.
+
+#### Once-a-day reports
+
+This repository's scheduled runs start 7.5-10.6 hours late, whatever the hour
+(RE, 24 Nov 2026), so the two report-only dailies, Test read map and Proof
+reuse daily, no longer depend on the scheduler. Each also runs on
+`workflow_run` when CI completes on main, for main's own push runs only (same
+repository, branch `main`), and keeps its cron (03:41 and 05:17 UTC) as a
+fallback. A gate job (`tool/ci/daily_once_gate.mjs`, reading the Actions
+artifacts API) lets a wake work only when the day's artifact does not exist
+yet:
+
+- Test read map: `test-read-map-day-<today>`, a marker holding the summary
+  that the combine job uploads (kept 3 days). It still traces current main.
+- Proof reuse daily: `proof-reuse-daily-<yesterday>`, and only from 02:00 UTC
+  (`--not-before-hour 2`), so the day it rolls up has finished its last queue
+  runs.
+
+A dispatch always runs. Every other wake that day finds the artifact and skips,
+and each workflow's concurrency group keeps two wakes from working at once.
+The Scheduled run watchdog counts a run of either workflow from that first
+working hour of the day, so a wake before the cron time is not a miss.
 
 ### Semantic check replay
 

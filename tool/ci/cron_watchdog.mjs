@@ -81,6 +81,8 @@ export const TARGETS = Object.freeze([
     cron: "41 3 * * *",
     // Report-only: a shadow job nothing consumes, so a missed night is noted, not re-run.
     reportOnly: true,
+    // Also wakes after main's push CI and works once per UTC day (daily_once_gate.mjs).
+    dailyFrom: 0,
     issue: MISSED_TITLE,
   },
   {
@@ -90,9 +92,17 @@ export const TARGETS = Object.freeze([
     cron: "17 5 * * *",
     // Report-only: a missed day is noted; dispatch it with that day's date to rebuild it.
     reportOnly: true,
+    // Also wakes after main's push CI, once per UTC day from 02:00 (daily_once_gate.mjs).
+    dailyFrom: 2,
     issue: MISSED_TITLE,
   },
 ]);
+
+/** [year, month, day] of a UTC time, for Date.UTC. */
+const utcDay = (ms) => {
+  const day = new Date(ms);
+  return [day.getUTCFullYear(), day.getUTCMonth(), day.getUTCDate()];
+};
 
 /** The latest occurrence at or before `now` of a daily "M H * * *" cron, in UTC milliseconds. */
 export function latestOccurrence(cron, now) {
@@ -163,9 +173,16 @@ export function decide({now, graceHours, repository, runs, records, onMainBy = {
     const expected = expectedRun(target.cron, now, graceHours);
     const expectedIso = new Date(expected).toISOString();
     // Only a scheduled or dispatched run stands in for the schedule: CI's push
-    // runs on main are not the nightly.
-    const started = (runs[target.id] ?? []).some((run) => ["schedule", "workflow_dispatch"].includes(run.event) &&
-      Date.parse(run.created_at) >= expected);
+    // runs on main are not the nightly. A once-a-day target (dailyFrom) also
+    // wakes after main's push CI and does the day's work at the first wake from
+    // that UTC hour, so any of its runs since then counts, even one before
+    // the cron time (later wakes that day find the work done and skip).
+    const from = target.dailyFrom === undefined ? expected :
+      Math.min(expected, Date.UTC(...utcDay(expected), target.dailyFrom));
+    const events = target.dailyFrom === undefined ? ["schedule", "workflow_dispatch"] :
+      ["schedule", "workflow_dispatch", "workflow_run"];
+    const started = (runs[target.id] ?? []).some((run) => events.includes(run.event) &&
+      Date.parse(run.created_at) >= from);
     if (onMainBy[target.id] === false) {
       checks.push({target: target.id, expected: expectedIso, status: "not_scheduled_yet"});
       continue;

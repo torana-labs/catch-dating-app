@@ -208,3 +208,39 @@ test("the watchdog also wakes after main CI, one check at a time, with unchanged
   // A workflow_run wake is never a dry run and uses the default grace.
   assert.match(workflow, /DRY_RUN: \$\{\{ github\.event_name == 'workflow_dispatch' && inputs\.dry_run \}\}/u);
 });
+
+test("a once-a-day target counts a push-CI wake from its first hour, even before the cron time", () => {
+  const now = at("2026-11-24T07:00:00Z");
+  // The read map ran at 00:40 after a main push; no run since the 03:41 cron time.
+  const early = decide({now, graceHours: 3, repository, runs: {"test-read-map": [run("2026-11-24T00:40:00Z", "workflow_run")]},
+    records: new Set(), targets: only("test-read-map")});
+  assert.equal(early.checks[0].status, "started");
+  assert.deepEqual(early.reports, {});
+  // The proof-reuse daily works only from 02:00, so a 01:30 wake did nothing and does not count.
+  const tooEarly = decide({now: at("2026-11-24T09:00:00Z"), graceHours: 3, repository,
+    runs: {"proof-reuse-daily": [run("2026-11-24T01:30:00Z", "workflow_run")]}, records: new Set(),
+    targets: only("proof-reuse-daily")});
+  assert.equal(tooEarly.checks[0].status, "missing");
+  const settled = decide({now: at("2026-11-24T09:00:00Z"), graceHours: 3, repository,
+    runs: {"proof-reuse-daily": [run("2026-11-24T02:10:00Z", "workflow_run")]}, records: new Set(),
+    targets: only("proof-reuse-daily")});
+  assert.equal(settled.checks[0].status, "started");
+  // A run from the previous day never counts.
+  const stale = decide({now, graceHours: 3, repository, runs: {"test-read-map": [run("2026-11-23T23:50:00Z", "workflow_run")]},
+    records: new Set(), targets: only("test-read-map")});
+  assert.equal(stale.checks[0].status, "missing");
+  // Targets without dailyFrom still ignore workflow_run runs.
+  assert.equal(target("deploy-backend").dailyFrom, undefined);
+});
+
+test("the once-a-day targets match their workflows: push-CI wake, gate and concurrency", () => {
+  for (const entry of TARGETS.filter((item) => item.dailyFrom !== undefined)) {
+    const source = fs.readFileSync(new URL(`../../.github/workflows/${entry.workflow}`, import.meta.url), "utf8");
+    assert.match(source, /workflow_run:\n\s+workflows: \[CI\]\n\s+types: \[completed\]\n\s+branches: \[main\]/u, entry.workflow);
+    assert.match(source, /github\.event\.workflow_run\.event == 'push' &&\n\s+github\.event\.workflow_run\.head_repository\.full_name == github\.repository &&\n\s+github\.event\.workflow_run\.head_branch == 'main'/u, entry.workflow);
+    const hour = entry.dailyFrom ? ` --not-before-hour ${entry.dailyFrom}` : "";
+    assert.ok(source.includes(`node tool/ci/daily_once_gate.mjs --artifact "`) && source.includes(`$DAY"${hour}\n`), entry.workflow);
+    assert.match(source, /^concurrency:\n\s+group: /mu, entry.workflow);
+    assert.match(source, /needs\.gate\.outputs\.run == 'true'/u, entry.workflow);
+  }
+});

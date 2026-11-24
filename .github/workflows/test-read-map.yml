@@ -5,13 +5,20 @@ name: Test read map
 # under `strace -f`, and the repository paths its test runtime opened, listed and probed are
 # recorded, with the compiler's reads kept separate. Nothing consumes the map
 # yet: it changes no selection and never blocks anything. Linux, read-only;
-# it uploads one JSONL artifact per night. Logic and tests:
+# it uploads one JSONL artifact per day. Scheduled runs start hours late, so it
+# also wakes after main's push CI; the gate job (tool/ci/daily_once_gate.mjs)
+# lets only the first wake of each UTC day work (24 Nov 2026). Logic and tests:
 # tool/ci/test_read_map.mjs. Operator guide: docs/release_operations.md,
 # "Test read map".
 
 on:
   schedule:
+    # Fallback: scheduled runs start hours late, so main's push CI wakes it too.
     - cron: "41 3 * * *"
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 
 permissions: {}
@@ -21,8 +28,49 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  gate:
+    name: Once a day
+    # A workflow_run wake counts only for main's own push CI runs, never a
+    # pull-request run (a fork's branch can also be called main), as in #2408.
+    if: >-
+      github.event_name != 'workflow_run' || (
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      # Read the checkout and list artifacts.
+      actions: read
+      contents: read
+    outputs:
+      run: ${{ steps.gate.outputs.run }}
+      day: ${{ steps.day.outputs.day }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            tool/ci
+            .github/actions/load-toolchain
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - id: day
+        run: echo "day=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+      - id: gate
+        name: Run only if today's artifact does not exist yet
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DAY: ${{ steps.day.outputs.day }}
+        run: node tool/ci/daily_once_gate.mjs --artifact "test-read-map-day-$DAY"
+
   trace:
     name: Read map (shard ${{ matrix.shard }}/4)
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:
@@ -53,7 +101,7 @@ jobs:
 
   combine:
     name: Combine the read map
-    needs: trace
+    needs: [gate, trace]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions: {}
@@ -76,4 +124,11 @@ jobs:
           name: test-read-map-${{ github.run_id }}
           path: test-read-map.jsonl
           retention-days: 30
+          if-no-files-found: error
+      # The once-a-day marker the gate looks for: today's map exists.
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-read-map-day-${{ needs.gate.outputs.day }}
+          path: summary.json
+          retention-days: 3
           if-no-files-found: error
