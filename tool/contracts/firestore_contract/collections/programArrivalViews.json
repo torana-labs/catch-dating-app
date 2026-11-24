@@ -19,7 +19,6 @@
     "onProgramArrivalGuestChanged",
     "onProgramArrivalHotelChanged",
     "onProgramArrivalStaffLabelChanged",
-    "onProgramArrivalSettingsChanged",
     "dispatchOrganizerPrograms"
   ],
   "migrationNotes": [

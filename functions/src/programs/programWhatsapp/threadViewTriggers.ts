@@ -62,21 +62,10 @@ async function reconcileProgramThreadRows(db: FirebaseFirestore.Firestore,
   }
 }
 
-/** The programme's side labels or organizer: every thread's row. */
-export const onProgramWhatsappThreadViewProgramChanged = onDocumentWritten({
-  ...options, document: "organizerPrograms/{programId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (unchanged(before, after, ["organizerId", "householdSideLabels"])) return;
-  await reconcileProgramThreadRows(admin.firestore(), event.params.programId);
-});
-
 /**
  * The programme's side labels or organizer: every thread's row.
- * dispatchOrganizerPrograms (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by dispatchOrganizerPrograms (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
  */
 export const programWhatsappThreadProgramProjections = defineProjections(
   "organizerPrograms", [{

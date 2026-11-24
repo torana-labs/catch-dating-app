@@ -10,7 +10,7 @@
     "tool/ci/test_read_map.mjs",
     "tool/ci/test_read_map.test.mjs"
   ],
-  "description": "Shadow read map: runs each Flutter test file under test/ that imports dart:io in its own flutter test under strace -f and records the repository paths its test runtime opened, listed and probed, with the compiler's reads kept separate. Nightly from test-read-map.yml; nothing consumes it yet.",
+  "description": "Shadow read map: runs each Flutter test file under test/ that imports dart:io in its own flutter test under strace -f and records the repository paths its test runtime opened, listed and probed, with the compiler's reads kept separate. With --also it also traces the selector's always-run set (--probes-only output). Daily from test-read-map.yml; the read-map selection shadow compares the two, and nothing selects on it.",
   "checks": [
     "node --check tool/ci/test_read_map.mjs",
     "node --test tool/ci/test_read_map.test.mjs"
