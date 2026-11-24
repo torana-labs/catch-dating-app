@@ -599,8 +599,6 @@
           "cancellationReason",
           "constraints",
           "genderCounts",
-          "cohortCounts",
-          "waitlistedCohortCounts",
           "discoveryMarketId",
           "discoveryCityName",
           "discoveryActivityKind",
