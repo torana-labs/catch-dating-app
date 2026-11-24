@@ -16,7 +16,6 @@
     "onProgramWhatsappThreadViewThreadChanged",
     "onProgramWhatsappThreadViewHouseholdChanged",
     "dispatchProgramHouseholds",
-    "onProgramWhatsappThreadViewProgramChanged",
     "dispatchOrganizerPrograms"
   ],
   "migrationNotes": [

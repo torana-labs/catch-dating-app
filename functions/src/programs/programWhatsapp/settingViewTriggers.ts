@@ -25,25 +25,9 @@ async function reconcileProgramSettingViews(db: FirebaseFirestore.Firestore,
 }
 
 /**
- * A programme appearing, vanishing, moving organizer or binding another
- * WhatsApp number: its sender and assistant settings views.
- */
-export const onProgramSettingViewProgramChanged = onDocumentWritten({
-  ...options, document: "organizerPrograms/{programId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (same(before, after, ["organizerId", "whatsappSenderConnectionId"])) {
-    return;
-  }
-  await reconcileProgramSettingViews(admin.firestore(), event.params.programId);
-});
-
-/**
  * A programme's organizer or WhatsApp number: its settings views.
- * dispatchOrganizerPrograms (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by dispatchOrganizerPrograms (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
  */
 export const programSettingViewProgramProjections = defineProjections(
   "organizerPrograms", [{

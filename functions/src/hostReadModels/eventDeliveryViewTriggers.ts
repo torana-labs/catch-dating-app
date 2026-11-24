@@ -186,15 +186,11 @@ export const onHostEventDeliveryViewMessageChanged = onDocumentWritten({
 export const onHostEventDeliveryViewGuestChanged = onDocumentWritten({
   ...options, document: "eventAssistanceGuests/{documentId}",
 }, (event) => reconcileForWrite("eventAssistanceGuests", event));
-export const onHostEventDeliveryViewAttendeeChanged = onDocumentWritten({
-  ...options, document: "eventAttendees/{documentId}",
-}, (event) => reconcileForWrite("eventAttendees", event));
 
 /**
  * An attendee write: its live delivery views.
- * dispatchEventAttendees (issue #2451) runs the same work; both run until the
- * old trigger retires, which is safe because it re-reads its sources,
- * so a retry, a replay or a second run converges.
+ * Served by dispatchEventAttendees (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
  */
 export const hostEventDeliveryViewAttendeeProjections = defineProjections(
   "eventAttendees", [{

@@ -1,7 +1,6 @@
 import * as admin from "firebase-admin";
 import {isDeepStrictEqual} from "node:util";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
-import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import {
   reconcileHostContactDetailView,
   reconcileHostContactDetailViewsForAccount,
@@ -112,22 +111,10 @@ export const onHostContactDetailViewEdgeWritten = onDocumentWritten({
   }
 });
 
-/** A completed or refunded Catch payment of a linked account. */
-export const onHostContactDetailViewPaymentWritten = onDocumentWritten({
-  ...options, document: `${GUEST_PAYMENTS}/{paymentId}`,
-}, async (event) => {
-  const db = admin.firestore();
-  for (const uid of contactDetailPayersForPayment(
-    event.data?.before.data(), event.data?.after.data())) {
-    await reconcileHostContactDetailViewsForAccount(db, uid);
-  }
-});
-
 /**
  * A completed or refunded Catch payment of a linked account.
- * dispatchGuestPayments (issue #2451) runs the same work; both run until the
- * old trigger retires, which is safe because it re-reads its sources,
- * so a retry, a replay or a second run converges.
+ * Served by dispatchGuestPayments (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
  */
 export const hostContactDetailPaymentProjections = defineProjections(
   "guestPayments", [{

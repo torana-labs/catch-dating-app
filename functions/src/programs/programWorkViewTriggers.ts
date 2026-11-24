@@ -9,17 +9,10 @@ import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true};
 
-/** A programme's title, zone, status, capabilities or vehicle classes. */
-export const onProgramWorkSummaryChanged = onDocumentWritten({
-  ...options, document: "organizerPrograms/{programId}",
-}, (event) => reconcileProgramWorkSummary(admin.firestore(),
-  event.params.programId));
-
 /**
  * A programme's title, zone, status, capabilities or vehicle classes.
- * dispatchOrganizerPrograms (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by dispatchOrganizerPrograms (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
  */
 export const programWorkSummaryProjections = defineProjections(
   "organizerPrograms", [{

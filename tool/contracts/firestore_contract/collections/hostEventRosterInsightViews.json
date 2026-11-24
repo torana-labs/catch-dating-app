@@ -14,7 +14,6 @@
   "write": "server only; written by every evaluation that changes it, frozen a day after the event ends, deleted with the event or its organizer",
   "exportedFunctions": [
     "dispatchEvents",
-    "onHostRosterInsightAttendeeChanged",
     "dispatchEventAttendees",
     "onHostRosterInsightEdgeChanged",
     "dispatchOrganizerContactEventEdges",

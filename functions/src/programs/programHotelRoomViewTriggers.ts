@@ -143,21 +143,10 @@ async function reconcileProgramHotelBoards(db: FirebaseFirestore.Firestore,
   await reconcileAll(hotels.docs.map((doc) => [programId, doc.id]));
 }
 
-/** The programme's time zone or organizer: every hotel's board. */
-export const onProgramHotelRoomProgramChanged = onDocumentWritten({
-  ...options, document: "organizerPrograms/{programId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (unchanged(before, after, ["timezone", "organizerId"])) return;
-  await reconcileProgramHotelBoards(admin.firestore(), event.params.programId);
-});
-
 /**
  * The programme's time zone or organizer: every hotel's board.
- * dispatchOrganizerPrograms (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by dispatchOrganizerPrograms (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
  */
 export const programHotelRoomProgramProjections = defineProjections(
   "organizerPrograms", [{

@@ -14,9 +14,7 @@
   "write": "server only; triggers on eventBookings, eventAttendees, guestPayments, organizerApplications, organizerEventOfferRecipients and events rebuild a row from the guest's own records and delete it when none remain",
   "exportedFunctions": [
     "onGuestEventStatusParticipationWritten",
-    "onGuestEventStatusAttendeeWritten",
     "dispatchEventAttendees",
-    "onGuestEventStatusPaymentWritten",
     "dispatchGuestPayments",
     "onGuestEventStatusApplicationWritten",
     "dispatchOrganizerApplications",

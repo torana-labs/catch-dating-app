@@ -21,7 +21,6 @@
     "dispatchProgramTravelLegs",
     "onProgramHotelRoomGuestChanged",
     "dispatchProgramGuests",
-    "onProgramHotelRoomProgramChanged",
     "dispatchOrganizerPrograms"
   ],
   "migrationNotes": [

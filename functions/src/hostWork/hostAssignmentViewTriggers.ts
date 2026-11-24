@@ -49,24 +49,9 @@ async function reconcileProgramStaffRows(db: FirebaseFirestore.Firestore,
 }
 
 /**
- * A programme's title, status, organizer or owner: every staff row of it.
- * Other programme writes leave the rows alone.
- */
-export const onHostAssignmentProgramChanged = onDocumentWritten({
-  ...options, document: "organizerPrograms/{programId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (unchanged(before, after, ["title", "status", "organizerId",
-    "createdBy"])) return;
-  await reconcileProgramStaffRows(admin.firestore(), event.params.programId);
-});
-
-/**
  * A programme's title, status, organizer or owner.
- * dispatchOrganizerPrograms (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by dispatchOrganizerPrograms (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
  */
 export const hostAssignmentProgramProjections = defineProjections(
   "organizerPrograms", [{

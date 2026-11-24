@@ -3,8 +3,6 @@
 
 export {
   onGuestEventStatusParticipationWritten,
-  onGuestEventStatusAttendeeWritten,
-  onGuestEventStatusPaymentWritten,
   onGuestEventStatusApplicationWritten,
   onGuestEventStatusOfferRecipientWritten,
   onEventGuestEntryFormWritten,

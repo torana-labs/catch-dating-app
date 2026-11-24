@@ -15,7 +15,6 @@
   "exportedFunctions": [
     "onHostAssignmentProgramGrantChanged",
     "dispatchProgramStaffGrants",
-    "onHostAssignmentProgramChanged",
     "dispatchOrganizerPrograms",
     "onHostAssignmentEventGrantChanged",
     "dispatchEvents",

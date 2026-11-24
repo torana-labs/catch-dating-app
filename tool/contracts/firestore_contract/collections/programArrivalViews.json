@@ -23,7 +23,6 @@
     "dispatchProgramHotels",
     "onProgramArrivalStaffLabelChanged",
     "dispatchProgramStaffGrants",
-    "onProgramArrivalSettingsChanged",
     "dispatchOrganizerPrograms"
   ],
   "migrationNotes": [

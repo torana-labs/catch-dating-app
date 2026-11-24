@@ -102,22 +102,10 @@ async function reconcileProgramInboundCurbTimes(db: FirebaseFirestore.Firestore,
   }
 }
 
-/** The programme's transport settings: every inbound journey's curb time. */
-export const onProgramHotelInboundSettingsChanged = onDocumentWritten({
-  ...options, document: "organizerPrograms/{programId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (!after || unchanged(before, after, ["transportSettings"])) return;
-  await reconcileProgramInboundCurbTimes(admin.firestore(),
-    event.params.programId);
-});
-
 /**
  * The programme's transport settings: every inbound journey's curb time.
- * dispatchOrganizerPrograms (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by dispatchOrganizerPrograms (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
  */
 export const programHotelInboundSettingsProjections = defineProjections(
   "organizerPrograms", [{
