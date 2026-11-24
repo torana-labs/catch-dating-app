@@ -315,10 +315,6 @@
       "handling": "kept",
       "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
     },
-    "eventIntakeReviewDecisions": {
-      "handling": "kept",
-      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
-    },
     "eventInviteAttributions": {
       "handling": "kept",
       "needsDecision": true,

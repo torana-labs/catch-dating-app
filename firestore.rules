@@ -4269,9 +4269,6 @@ service cloud.firestore {
     match /catchWhatsappReadinessPublications/{privateDocument=**} {
       allow read, write: if false;
     }
-    match /eventIntakeReviewDecisions/{privateDocument=**} {
-      allow read, write: if false;
-    }
     match /eventRosterHandoffs/{privateDocument=**} {
       allow read, write: if false;
     }
