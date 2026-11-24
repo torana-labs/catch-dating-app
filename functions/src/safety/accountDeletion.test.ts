@@ -156,17 +156,6 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         status: "active",
         pushNotificationsEnabled: true,
       },
-      "organizerCommunicationPreferences/club-1_runner-1": {
-        organizerId: "club-1",
-        uid: "runner-1",
-        whatsapp: {status: "optedIn"},
-        sms: {status: "unknown"},
-      },
-      "organizerCommunicationPermissionReceipts/receipt-1": {
-        organizerId: "club-1",
-        uid: "runner-1",
-        channel: "whatsapp",
-      },
       "eventChatMessages/message-1": {uid: "runner-1", text: "Private"},
       "eventChatMessages/message-other": {uid: "runner-2", text: "Other"},
       "eventChatReactions/reaction-1": {uid: "runner-1"},
@@ -199,12 +188,6 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
       "adConversionDeliveries/meta_hc_runner2": {uid: "runner-2"},
       "participantIntakeProfiles/runner-1": {fields: [], revision: 1},
       "participantIntakeProfiles/runner-2": {fields: [], revision: 1},
-      "catchCommunicationPreferences/runner-1": {
-        uid: "runner-1", whatsapp: {status: "optedIn"},
-      },
-      "catchCommunicationPermissionReceipts/catch-receipt-1": {
-        uid: "runner-1", channel: "whatsapp", sourceOrganizerId: "club-1",
-      },
       "users/runner-1/contactPermissions/catch": {senderKind: "catch",
         senderId: "catch", grants: {}, granted: []},
       "users/runner-1/contactPermissions/organizer_club-1": {
@@ -458,16 +441,6 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   assert.ok(
     harness.deletedPublicDocs.includes("onboarding_drafts/runner-1")
   );
-  assert.ok(
-    harness.deletedPublicDocs.includes(
-      "organizerCommunicationPreferences/club-1_runner-1"
-    )
-  );
-  assert.ok(
-    harness.deletedPublicDocs.includes(
-      "organizerCommunicationPermissionReceipts/receipt-1"
-    )
-  );
   assert.ok(harness.updateWrites.some((write) =>
     write.path === "eventChatMessages/message-1" && write.data.uid === null &&
     write.data.text === null && write.data.status === "removed"));
@@ -507,10 +480,6 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     "participantIntakeProfiles/runner-2"]) {
     assert.equal(harness.deletedPublicDocs.includes(path), false);
   }
-  assert.ok(harness.deletedPublicDocs.includes(
-    "catchCommunicationPreferences/runner-1"));
-  assert.ok(harness.deletedPublicDocs.includes(
-    "catchCommunicationPermissionReceipts/catch-receipt-1"));
   for (const path of ["users/runner-1/contactPermissions/catch",
     "users/runner-1/contactPermissions/organizer_club-1",
     "contactPermissionReceipts/catch-receipt-1",
@@ -1410,6 +1379,45 @@ async function deleteRunnerOne(seed: Record<string, FakeDocumentData>) {
     Parameters<typeof requestAccountDeletionHandler>[0], harness.deps);
   return harness;
 }
+
+test("deletion deletes the account's access grants only (#2474)",
+  async () => {
+    const harness = await deleteRunnerOne({
+      "accessGrants/program__prog-1__runner-1": {scopeType: "program",
+        scopeId: "prog-1", uid: "runner-1", role: "staff"},
+      "accessGrants/organizer__club-1__runner-1": {scopeType: "organizer",
+        scopeId: "club-1", uid: "runner-1", role: "manager"},
+      "accessGrants/program__prog-1__runner-2": {scopeType: "program",
+        scopeId: "prog-1", uid: "runner-2", role: "staff"},
+    });
+    assert.ok(harness.deletedPublicDocs.includes(
+      "accessGrants/program__prog-1__runner-1"));
+    assert.ok(harness.deletedPublicDocs.includes(
+      "accessGrants/organizer__club-1__runner-1"));
+    assert.ok(!harness.deletedPublicDocs.includes(
+      "accessGrants/program__prog-1__runner-2"));
+  });
+
+test("deletion revokes the account's active team edges as team removal does " +
+  "(#2474)", async () => {
+  const harness = await deleteRunnerOne({
+    "organizerTeamMemberships/club-1_runner-1": {organizerId: "club-1",
+      uid: "runner-1", role: "manager", status: "active"},
+    "organizerTeamMemberships/club-2_runner-1": {organizerId: "club-2",
+      uid: "runner-1", role: "manager", status: "removed"},
+    "organizerTeamMemberships/club-1_runner-2": {organizerId: "club-1",
+      uid: "runner-2", role: "manager", status: "active"},
+  });
+  const revoked = harness.setWrites.filter((write) =>
+    write.path.startsWith("organizerTeamMemberships/"));
+  assert.deepEqual(revoked.map((write) => write.path),
+    ["organizerTeamMemberships/club-1_runner-1"]);
+  assert.equal(revoked[0].data.status, "removed");
+  assert.ok(revoked[0].data.removedAt instanceof admin.firestore.FieldValue);
+  assert.deepEqual(revoked[0].options, {merge: true});
+  assert.equal(harness.deletedPublicDocs.some((path) =>
+    path.startsWith("organizerTeamMemberships/")), false);
+});
 
 test("deletion erases the account's signal facts as uid and as peerUid (#2444)",
   async () => {

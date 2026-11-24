@@ -12,9 +12,8 @@
       "reason": "Launch access application at accessApplications/{uid}, with the applicant's answers. Deletion leaves it. Proposed: delete the applicant's document and keep only the staff review outcome."
     },
     "accessGrants": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "The account's current authority over one scope (ids, roles, duties, expiry; no name or phone). Rules already refuse a deleted account, but deletion leaves the document. Proposed: delete the account's access grants at deletion (the access lane's accountDeletion follow-up)."
+      "handling": "deleted",
+      "how": "queueAccessCleanup deletes the account's accessGrants documents (issue #2474, decision 7)."
     },
     "accountSafetyActions": {
       "handling": "kept",
@@ -149,11 +148,11 @@
     },
     "contactPermissionReceipts": {
       "handling": "deleted",
-      "how": "queueOrganizerCommunicationPreferenceCleanup deletes the account's receipts exactly as the old receipt collections are deleted. Consent proof. Retention of consent receipts is counsel question OQ-C2; deletion does not change it here."
+      "how": "queueContactPermissionCleanup deletes the account's receipts. Consent proof. Retention of consent receipts is counsel question OQ-C2; deletion does not change it here."
     },
     "contactPermissions": {
       "handling": "deleted",
-      "how": "queueOrganizerCommunicationPreferenceCleanup deletes users/{uid}/contactPermissions."
+      "how": "queueContactPermissionCleanup deletes users/{uid}/contactPermissions."
     },
     "crossPathsInvitations": {
       "handling": "deleted",
@@ -532,7 +531,7 @@
     },
     "guestMessagingPermissions": {
       "handling": "deleted",
-      "how": "queueOrganizerCommunicationPreferenceCleanup deletes the account's guest permission rows."
+      "how": "queueContactPermissionCleanup deletes the account's guest permission rows."
     },
     "guestPayments": {
       "handling": "kept",
@@ -730,7 +729,7 @@
     },
     "organizerContactOrigins": {
       "handling": "anonymised",
-      "how": "queueOrganizerCommunicationPreferenceCleanup sets actorUid to null on origins the account created."
+      "how": "queueContactPermissionCleanup sets actorUid to null on origins the account created."
     },
     "organizerContactOutreach": {
       "handling": "kept",
@@ -896,8 +895,7 @@
     },
     "organizerTeamMemberships": {
       "handling": "kept",
-      "needsDecision": true,
-      "reason": "Owner or manager edge of the account on an organiser team. Deletion removes the account from organizers.hostUserIds but leaves this edge. Proposed: delete it."
+      "reason": "Revoked, not deleted (issue #2474, decision 7): queueAccessCleanup sets status removed and removedAt on the account's active edges, exactly as removeOrganizerManager does, and removeOrganizerHostIdentity removes the account from the organiser's manager fields. The removed edge keeps its organizer and uid as the team's audit record."
     },
     "organizerTrackingSettings": {
       "handling": "kept",
