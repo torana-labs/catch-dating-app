@@ -53,6 +53,8 @@ import {
   eventBookingsByStatusInTransaction,
   participantUids,
 } from "../shared/relationshipDocuments";
+import {bookingPrivateFactsRef, legacyBookingCohort, readBookingCohort,
+  storedBookingCohort, writeBookingCohort} from "../shared/bookingPrivateFacts";
 import {hasBlockingRelationshipInTransaction} from "../safety/blocking";
 import {normalizeEventIdPayload} from "./eventPayloadNormalization";
 import {
@@ -229,8 +231,11 @@ export async function createEventWaitlistOffersHandler(
         ]) : [false, false];
       const rosterSlot = candidate ? await readOfferRoster(db, tx, eventId,
         uid) : null;
+      const storedCohort = candidate ? await readBookingCohort({db, tx,
+        eventId, uid, booking: participation}) : undefined;
       return {uid, participationRef, participationSnap, userSnap, offerRef,
-        offerSnap, blocked, hasActiveCommunityMembership, rosterSlot};
+        offerSnap, blocked, hasActiveCommunityMembership, rosterSlot,
+        storedCohort};
     }));
 
     const expiresInMinutes = offerWindowMinutes(event, payload);
@@ -292,8 +297,7 @@ export async function createEventWaitlistOffersHandler(
         row.userSnap,
         "UserProfileDocument (waitlist offer)"
       );
-      const cohortAtOffer = participation.cohortAtSignup ??
-        cohortIdForUser(user);
+      const cohortAtOffer = row.storedCohort ?? cohortIdForUser(user);
       try {
         assertPolicyAllowsSignup({
           policy,
@@ -322,7 +326,8 @@ export async function createEventWaitlistOffersHandler(
         eventId,
         organizerId: event.organizerId,
         uid: row.uid,
-        cohortAtOffer,
+        // The reserved cohort lives in eventBookingPrivateFacts (#2493).
+        cohortAtOffer: admin.firestore.FieldValue.delete(),
         status: "active" satisfies WaitlistOfferStatus,
         source: "host",
         offeredBy: hostUid,
@@ -336,6 +341,7 @@ export async function createEventWaitlistOffersHandler(
         createdAt: now,
         updatedAt: now,
       }, {merge: true});
+      writeBookingCohort({db, tx, eventId, uid: row.uid, cohortAtOffer});
       const offered = {
         waitlistOfferStatus: "active",
         waitlistOfferedAt: now,
@@ -487,9 +493,13 @@ export async function acceptEventWaitlistOfferHandler(
       "UserProfileDocument (waitlist offer accept)"
     );
     const policy = eventPolicyFromEvent(event);
-    const cohortId = typeof offer.cohortAtOffer === "string" ?
-      offer.cohortAtOffer :
-      participation.cohortAtSignup ?? cohortIdForUser(user);
+    const privateFacts = (await tx.get(bookingPrivateFactsRef(db,
+      eventParticipationId(eventId, uid)))).data();
+    const cohortId = storedBookingCohort(privateFacts, eventId, uid,
+      "cohortAtOffer") ??
+      (typeof offer.cohortAtOffer === "string" ? offer.cohortAtOffer : null) ??
+      storedBookingCohort(privateFacts, eventId, uid) ??
+      legacyBookingCohort(participation) ?? cohortIdForUser(user);
     const signedUpCount = activeParticipations
       .filter((edge) => edge.data.status === "signedUp")
       .length;

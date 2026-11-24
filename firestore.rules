@@ -3062,6 +3062,14 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // A booking cohort encodes the guest's gender and who they are interested
+    // in (their sexual orientation). Organisers read eventBookings and
+    // eventWaitlistOffers, so the cohort lives here, where no client and no
+    // organiser can read it (#2493).
+    match /eventBookingPrivateFacts/{bookingId} {
+      allow read, write: if false;
+    }
+
     // TRANSITIONAL legacy mirror of eventBookings for released app builds,
     // written only by onEventBookingMirroredToLegacy. Same readers as
     // eventBookings; phase 2 of the rename removes this block.

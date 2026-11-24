@@ -11,6 +11,7 @@ import {HttpsError} from "firebase-functions/v2/https";
 import {validateEventAttendeeDocument} from
   "../../shared/generated/validators/eventAttendeeDocument";
 import {eventParticipationId} from "../../shared/relationshipDocuments";
+import {readBookingCohort} from "../../shared/bookingPrivateFacts";
 import {FirestoreSeatIdentityAuthority, SeatIdentityAuthorityError} from
   "../../events/seatIdentityAuthority";
 import {FirestoreSeatTransaction, assertCurrentReadySeatSnapshot} from
@@ -143,6 +144,9 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
     const rosterSlot = bridgedBooking && input.guest ?
       await readCatchBookingRoster({db, tx, eventId, uid: recipientUid,
         attendeeId: receipt.attendeeId}) : null;
+    const bridgedCohort = bridgedBooking && input.guest ?
+      await readBookingCohort({db, tx, eventId, uid: recipientUid,
+        booking: participation}) : undefined;
     const now = Timestamp.fromMillis(nowMillis);
     if (bridgedBooking && (participation?.eventId !== eventId ||
         participation?.uid !== recipientUid ||
@@ -156,7 +160,7 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
           .collection("eventBookings")
           .doc(eventParticipationId(eventId, recipientUid)),
         participation: participation!, event: event as EventDocument,
-        eventId, uid: recipientUid}) : {};
+        eventId, uid: recipientUid, cohortAtSignup: bridgedCohort}) : {};
     if (release) {
       applySeatPlan(seatTx, release);
       // A multi-place booking returns every place it held at once.
