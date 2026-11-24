@@ -207,6 +207,29 @@ Map<String, Object> selectFlutterTests({
   }
 }
 
+/// The tests [selectFlutterTests] keeps on every change because their file
+/// reads cannot be bounded, by repository path, with why: `probe` (the import
+/// closure reaches a filesystem probe) or `reads_elsewhere` (a reader's
+/// relative reads were bounded for another package's working directory).
+/// Descriptive only: selection never consults it. Generated contract Dart is
+/// an opaque leaf here, as it is when the generated outputs are not rendered.
+Map<String, String> retainedProbes({
+  required Map<String, String> files,
+  Set<String>? paths,
+}) {
+  final graph = _Imports(files, paths: paths ?? files.keys.toSet());
+  final tests = files.keys.where(_testFile).toList()..sort();
+  return {
+    for (final test in tests)
+      if (graph.testClosure(test) case final closure
+          when closure.contains(_Imports.fileSystemProbe) ||
+              graph.readsElsewhere(closure, testPackage(test)!))
+        test: closure.contains(_Imports.fileSystemProbe)
+            ? 'probe'
+            : 'reads_elsewhere',
+  };
+}
+
 class _Imports {
   _Imports(this.files, {this.opaqueGenerated = true, Set<String>? paths})
     : paths = paths ?? files.keys.toSet() {
@@ -545,9 +568,43 @@ Future<void> main(List<String> arguments) async {
       '--commit-window',
       '--output',
       '--github-output',
+      '--probes-only',
     ].contains(key),
   )) {
     throw ArgumentError('Unknown option');
+  }
+  if (!['true', 'false'].contains(args['--probes-only'] ?? 'false')) {
+    throw ArgumentError('Invalid --probes-only');
+  }
+  // Reports the always-run set at one commit and selects nothing: no plan,
+  // shards or GitHub output are written.
+  if (args['--probes-only'] == 'true') {
+    final head = args['--head'] ?? '';
+    if (!RegExp(r'^[0-9a-f]{40}$').hasMatch(head)) {
+      throw ArgumentError('Exact Git SHAs required');
+    }
+    _git(['cat-file', '-e', '$head^{commit}']);
+    final output = args['--output'];
+    if (output == null) throw ArgumentError('--output is required');
+    final paths =
+        (_git(['ls-tree', '-r', '--name-only', '-z', head]).stdout as String)
+            .split('\u0000')
+            .where((name) => name.isNotEmpty)
+            .toSet();
+    final probes = retainedProbes(files: await _tree(head), paths: paths);
+    File(output).parent.createSync(recursive: true);
+    File(output).writeAsStringSync(
+      '${const JsonEncoder.withIndent('  ').convert({
+        'sourceSha': head,
+        'probesRetained': [
+          for (final entry in probes.entries) {'test': entry.key, 'why': entry.value},
+        ],
+      })}\n',
+    );
+    stdout.writeln(
+      jsonEncode({'sourceSha': head, 'probesRetained': probes.length}),
+    );
+    return;
   }
   final base = args['--base'] ?? '';
   final head = args['--head'] ?? '';
