@@ -2,14 +2,15 @@
 // that import this file depend on it.
 
 import 'dart:async';
+
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart' show Fake;
-import '../../../events/events_test_helpers.dart';
 
 class CaptureMatchRepository extends Fake implements MatchRepository {
   CaptureMatchRepository({required this.matches});

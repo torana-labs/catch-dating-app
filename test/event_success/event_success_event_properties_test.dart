@@ -10,9 +10,8 @@ import 'package:catch_dating_app/event_success/presentation/event_success_live_e
 import 'package:catch_dating_app/event_success/presentation/event_success_moment_presentation_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
+import 'package:catch_test_support/events_test_helpers.dart' show buildEvent;
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart' show buildEvent;
 
 final _l10n = AppLocalizationsEn();
 

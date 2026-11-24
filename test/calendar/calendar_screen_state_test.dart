@@ -2,10 +2,9 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen_state.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart';
 
 final _l10n = AppLocalizationsEn();
 

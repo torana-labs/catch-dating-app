@@ -24,14 +24,13 @@ import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'events_test_helpers.dart';
 
 void main() {
   group('Events widgets', () {

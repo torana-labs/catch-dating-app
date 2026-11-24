@@ -9,11 +9,10 @@ import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_platform/errors/error_logger.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
-
-import '../events/events_test_helpers.dart';
 
 class FakePhotoUserProfileRepository extends Fake
     implements UserProfileRepository {

@@ -17,7 +17,7 @@ import 'package:catch_dating_app/contexts/profiles/data/public_profile_repositor
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
-import '../../../events/events_test_helpers.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import '../../fixtures/sales_demo_synthetic_fixtures.dart';
 import 'capture_fixtures.dart';
 import 'capture_viewer.dart';

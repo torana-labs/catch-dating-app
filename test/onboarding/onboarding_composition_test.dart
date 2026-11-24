@@ -1,10 +1,9 @@
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/pages/onboarding/onboarding_controller.dart';
 import 'package:catch_dating_app/pages/onboarding/onboarding_step.dart';
+import 'package:catch_test_support/onboarding_test_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'onboarding_test_helpers.dart';
 
 void main() {
   testWidgets('welcome and form steps keep the canonical step-flow surface', (

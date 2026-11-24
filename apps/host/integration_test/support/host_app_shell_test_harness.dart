@@ -20,6 +20,7 @@ import 'package:catch_platform/riverpod_ui/catch_localized_error_scaffold.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_platform/schema_contracts/generated/host_attention_policies.g.dart';
+import 'package:catch_test_support/hosts/host_crm_response_fixtures.dart';
 import 'package:catch_test_support/organizers_test_helpers.dart'
     show buildOrganizer;
 import 'package:catch_test_support/test_pump_helpers.dart';
@@ -33,7 +34,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../integration_test/support/app_shell_test_harness.dart';
-import '../../../../test/hosts/support/host_crm_response_fixtures.dart';
 
 /// Answers one callable from a Host journey before the backend's own
 /// fixtures. Return `null` to defer to [HostShellBackend].

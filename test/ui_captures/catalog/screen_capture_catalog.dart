@@ -247,8 +247,10 @@ import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart
 import 'package:catch_test_support/design_fixtures/matches_chat_surface_fixtures.dart';
 import 'package:catch_test_support/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_test_support/design_fixtures/utility_surface_fixtures.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:catch_test_support/organizers_test_helpers.dart'
     as organizer_test;
+import 'package:catch_test_support/profile_readiness_fixtures.dart';
 import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -274,7 +276,6 @@ import 'package:flutter_test/flutter_test.dart'
     show Fake, Finder, WidgetTester, expect, find, findsOneWidget;
 import 'package:image_picker/image_picker.dart';
 
-import '../../events/events_test_helpers.dart';
 import '../../hosts/events/events_fixtures.dart' as events_fixtures;
 import '../../hosts/forms/forms_captures.dart';
 import '../../hosts/live/formats/formats_captures.dart';
@@ -284,7 +285,6 @@ import '../../hosts/organizer/organizer_captures.dart';
 import '../../hosts/people/people_captures.dart';
 import '../../hosts/programmes/planner/planner_captures.dart';
 import '../../hosts/programmes/staff/staff_captures.dart';
-import '../../support/profile_readiness_fixtures.dart';
 import '../fixtures/host_audience_journey_fixture.dart';
 import '../fixtures/sales_demo_synthetic_fixtures.dart';
 import '../support/capture_device.dart';

@@ -18,11 +18,10 @@ import 'package:catch_dating_app/routing/router_frame.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/routing/route_contract.dart';
+import 'package:catch_test_support/events_test_helpers.dart' as events;
 import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart' as events;
 
 final _l10n = AppLocalizationsEn();
 final _matrixNow = DateTime(2026, 7, 21, 12);

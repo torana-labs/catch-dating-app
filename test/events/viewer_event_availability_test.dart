@@ -2,9 +2,8 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_participation.da
 import 'package:catch_dating_app/contexts/bookings/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'events_test_helpers.dart';
 
 void main() {
   group('resolveViewerEventAvailability', () {

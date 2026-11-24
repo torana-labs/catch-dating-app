@@ -6,6 +6,7 @@ import 'package:catch_dating_app/pages/event/location/location_map.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
@@ -13,8 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
-
-import 'events_test_helpers.dart';
 
 void main() {
   group('LocationPickerScreen', () {

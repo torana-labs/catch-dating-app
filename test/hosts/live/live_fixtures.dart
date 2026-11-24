@@ -8,10 +8,10 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_standings.da
 import 'package:catch_dating_app/contexts/live/parts/live_plan_step_row.dart';
 import 'package:catch_dating_app/hosts/live/live_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 
 import '../../event_success/event_assistance_cases_fixtures.dart';
 import '../../event_success/event_assistance_deliveries_fixtures.dart';
-import '../../events/events_test_helpers.dart';
 
 /// Doors at 7:30 PM on a Tuesday.
 final liveDoors = DateTime(2026, 10, 27, 19, 30);

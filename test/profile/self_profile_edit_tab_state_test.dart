@@ -4,10 +4,9 @@ import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_photo_intent_factory.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart';
 
 const PhotoUploadState _idleUploadState = PhotoUploadState();
 final _today = DateTime(2026, 6, 24);

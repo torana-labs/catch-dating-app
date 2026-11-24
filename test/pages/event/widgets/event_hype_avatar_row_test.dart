@@ -2,12 +2,11 @@ import 'package:catch_dating_app/contexts/connections/data/swipe_candidate_repos
 import 'package:catch_dating_app/pages/event/widgets/event_hype_avatar_row.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../../events/events_test_helpers.dart';
 
 void main() {
   testWidgets(
