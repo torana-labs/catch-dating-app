@@ -1,0 +1,31 @@
+{
+  "id": "contracts:account-deletion-erasure",
+  "category": "contracts",
+  "path": "tool/contracts/check_account_deletion_erasure.mjs",
+  "command": "node tool/contracts/check_account_deletion_erasure.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Checks that every registered Firestore collection whose schema has a uid-like field, or whose path is keyed by uid, has an erasure entry in functions/src/safety/accountDeletionErasure.json (deleted, anonymised, kept with a reason, or not personal with a reason), and that every deleted or anonymised entry names a collection the account deletion flow writes. Prints the coverage table unless --quiet.",
+  "impactPaths": [
+    "tool/contracts/check_account_deletion_erasure.test.mjs",
+    "tool/contracts/firestore_contract/**",
+    "tool/contracts/lib/firestore_contract.mjs",
+    "contracts/firestore/**",
+    "contracts/shared/**",
+    "contracts/operations/**",
+    "functions/src/safety/accountDeletionErasure.json",
+    "functions/src/safety/accountDeletion.ts",
+    "functions/src/safety/accountDeletionSeats.ts",
+    "functions/src/safety/safetyRetention.ts",
+    "functions/src/safety/accountStanding.ts",
+    "functions/src/hostMemberships/accountDeletion.ts",
+    "functions/src/admin/peopleSearch.ts",
+    "functions/src/organizers/publicOrganizerProjection.ts"
+  ],
+  "checks": [
+    "node --check tool/contracts/check_account_deletion_erasure.mjs",
+    "node --test tool/contracts/check_account_deletion_erasure.test.mjs",
+    "node tool/contracts/check_account_deletion_erasure.mjs --quiet"
+  ],
+  "queueGate": "always"
+}
