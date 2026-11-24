@@ -1245,7 +1245,10 @@ describe("firestore.rules", () => {
       ), outcomes));
     });
 
-    it("exposes event scorecards only to the event host", async () => {
+    // FIX-12: scorecards carry event-level catch, match and chat counts, so
+    // hosts get no direct read until an event-level stats screen applies the
+    // group-size floor. The server still computes them.
+    it("keeps event scorecards server-only, even from the event host", async () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
@@ -1259,7 +1262,7 @@ describe("firestore.rules", () => {
         updatedAt: Timestamp.fromDate(new Date("2026-05-02T03:00:00.000Z")),
       });
 
-      await assertSucceeds(
+      await assertFails(
         getDoc(doc(authedDb("host-1"), "eventSuccessScorecards", "event-1")),
       );
       await assertFails(
