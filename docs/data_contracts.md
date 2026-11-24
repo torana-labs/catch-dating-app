@@ -4746,6 +4746,28 @@ organiser reads either collection directly. Catch service replies stop only
 for a sender-wide Catch withdrawal (a receipt with no purpose), not for a
 marketing-only one.
 
+Event-day consent (issue #2494) is the guest's event document,
+`users/{uid}/contactPermissions/event_{eventId}` (`senderKind: event`,
+`senderId` the event id, plus `organizerId`). Its grants are
+`sms:eventService`, `rcs:eventService` and `whatsapp:eventService`, one per
+channel per event, each bound to one roster row (`attendeeId`,
+`attendeeGeneration`, `recipientBinding`), one sender (`senderId`,
+`senderIdentityHash`; a new sender replaces the grant, so the guest is asked
+again) and one number until `expiresAt`, with its `revision` and the opt-in
+`evidence` a withdrawal keeps; and `phone:bookingUpdates` and
+`email:bookingUpdates`, the approval-notification choices for the verified
+account phone and email. The document's `expiresAt` is the latest channel
+expiry and the field its TTL policy deletes it by. The three preference
+stores, the three withdrawal links and `manageEventApprovalNotifications`
+write it and its `contactPermissionReceipts` entries (event receipts keep the
+old event receipt ids and fields under `event`; each approval revision writes
+a phone and an email receipt) in the transaction that still writes
+`eventAssistancePermissions` and `eventApprovalNotificationPreferences`. The
+SMS, RCS and WhatsApp send gates read only the event document of the roster
+row's `linkedUid`, so an unlinked row has no consent, and the approval gate
+reads only its two bookingUpdates grants. A guest linked to two roster rows in
+one event cannot opt in until the host merges them.
+
 The settings page reads the signed-in guest's permissions from the
 guest-owned read model `guestMessagingPermissions/{permissionId}`: one row
 per sender (`catchpref_{uid}` for Catch, an `orgpref_` id for an organizer),
