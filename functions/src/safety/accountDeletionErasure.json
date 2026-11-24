@@ -7,9 +7,11 @@
   ],
   "collections": {
     "accessApplications": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Launch access application at accessApplications/{uid}, with the applicant's answers. Deletion leaves it. Proposed: delete the applicant's document and keep only the staff review outcome."
+      "handling": "deleted",
+      "how": "queueSupportRecordCleanup deletes accessApplications/{uid}; each staff review decision is already in adminAuditLogs (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionSupportRecords.ts"
+      ]
     },
     "accessGrants": {
       "handling": "deleted",
@@ -60,9 +62,11 @@
       "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
     },
     "adminInboxItems": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Staff work item: assigneeUid and the dismissal and recommendation byUid name staff, but nominatorUid names the person who nominated an organiser. Proposed: keep for nominator credit or clear nominatorUid at deletion."
+      "handling": "anonymised",
+      "how": "queueSupportRecordCleanup clears nominatorUid: a deleted account earns no nominator credit. assigneeUid and the byUid fields name staff and are left for the staff-access pass (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionSupportRecords.ts"
+      ]
     },
     "adminInboxJourney": {
       "handling": "kept",
@@ -130,8 +134,7 @@
     },
     "catchWhatsappReplyOperations": {
       "handling": "kept",
-      "needsDecision": true,
-      "reason": "Catch support reply claim naming the recipient account (recipientUid) and the staff actor. Proposed: keep for the support retention period and clear recipientUid at deletion."
+      "reason": "recipientUid is a required part of the one-reply-per-inbound claim and its evidence hashes, so clearing it needs a schema change; the sender is source-only and disabled, so no claim is written yet. Revisit with the sender's activation (#2468)."
     },
     "catchWhatsappReplyReadiness": {
       "handling": "kept",
@@ -179,9 +182,11 @@
       "reason": "The deletion fence itself: uid, status and timestamps only. Retries, late work and webhooks read it to treat the account as deleted."
     },
     "deliveryMessages": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Delivery pipeline record whose context names the recipient account. Proposed: delete the account's records or give the collection a TTL."
+      "handling": "deleted",
+      "how": "queueSupportRecordCleanup deletes the approval-notification outbox records addressed to the account (intent.context.uid); other delivery contexts carry no uid (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionSupportRecords.ts"
+      ]
     },
     "demoOpsConfirmations": {
       "handling": "kept",
@@ -320,19 +325,25 @@
       "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
     },
     "eventInviteAttributions": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Attribution evidence naming the invited account (subjectUid); hosts see only aggregates. Proposed: clear subjectUid at deletion and keep the aggregate effect."
+      "handling": "anonymised",
+      "how": "queueOrganizerRecordCleanup clears subjectUid; the attribution and its aggregate effect stay (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionOrganizerRecords.ts"
+      ]
     },
     "eventInviteLinks": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Invite link owned by a host or a guest account (hostUid, ownerUid). Proposed: keep the link's counters and clear ownerUid when a guest owner is deleted."
+      "handling": "anonymised",
+      "how": "queueOrganizerRecordCleanup clears ownerUid where the account owns the link and keeps its counters; hostUid is left for the staff-access pass (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionOrganizerRecords.ts"
+      ]
     },
     "eventInviteTouches": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Short-lived evidence that the account resolved an invite URL. Proposed: delete the account's touches, or give the collection a TTL."
+      "handling": "deleted",
+      "how": "queueOrganizerRecordCleanup deletes the account's touches; the rest expire by TTL (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionOrganizerRecords.ts"
+      ]
     },
     "eventLivePositions": {
       "handling": "kept",
@@ -411,9 +422,11 @@
       "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
     },
     "eventShareIntents": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Evidence that the account opened a share surface, feeding host link counts. Proposed: delete the account's intents."
+      "handling": "deleted",
+      "how": "queueOrganizerRecordCleanup deletes the account's share intents; host link counts were already incremented (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionOrganizerRecords.ts"
+      ]
     },
     "eventStaffGrants": {
       "handling": "kept",
@@ -515,9 +528,11 @@
       ]
     },
     "eventWaitlistOffers": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Waitlist offer to the guest at eventWaitlistOffers/{eventId_uid}. Deletion leaves it. Proposed: delete open offers and keep settled ones only as long as the booking they produced."
+      "handling": "deleted",
+      "how": "queueOrganizerRecordCleanup deletes the account's offers, open or closed, which releases an active offer's roster place; an accepted offer stays as the record of the booking it produced, which deletion keeps (status deleted) for the roster and seat ledger (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionOrganizerRecords.ts"
+      ]
     },
     "events": {
       "handling": "kept",
@@ -568,9 +583,12 @@
       "how": "queueHostAnalyticsSnapshotCleanup deletes the account's snapshots."
     },
     "hostApplicationDetailViews": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Manager view of a host application that can carry the applicant's community membership uid. Proposed: refresh it after the membership is deleted."
+      "handling": "anonymised",
+      "how": "The view trigger reconciles an application's view on every application write, so clearing linkedUid at deletion (with the deleted community membership) rewrites the view without the membership uid (#2468).",
+      "handledBy": [
+        "functions/src/hostReadModels/applicationDetailViewTriggers.ts",
+        "functions/src/hostReadModels/applicationDetailViewStore.ts"
+      ]
     },
     "hostAssignmentViews": {
       "handling": "kept",
@@ -670,9 +688,11 @@
       "how": "Deleted at the start of account deletion."
     },
     "operationWorkItems": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Supply Intake work item whose payload names the account that submitted a listing (submittedBy.uid). Proposed: redact submittedBy.uid at deletion."
+      "handling": "anonymised",
+      "how": "queueSupportRecordCleanup sets normalizedPayload.intake.listing.submittedBy.uid to null (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionSupportRecords.ts"
+      ]
     },
     "organizerApplicationFormVersions": {
       "handling": "kept",
@@ -687,14 +707,18 @@
       "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
     },
     "organizerApplicationResponses": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Organiser-owned application answers linked to the applicant's account (linkedUid). Proposed: clear linkedUid as organizerContacts does; the organiser keeps its record."
+      "handling": "anonymised",
+      "how": "queueOrganizerRecordCleanup clears linkedUid, as organizerContacts does; the organiser keeps the answers (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionOrganizerRecords.ts"
+      ]
     },
     "organizerApplications": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Organiser application summary linked to the applicant's account (linkedUid). Proposed: clear linkedUid as organizerContacts does."
+      "handling": "anonymised",
+      "how": "queueOrganizerRecordCleanup clears linkedUid, as organizerContacts does; the organiser keeps its review record (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionOrganizerRecords.ts"
+      ]
     },
     "organizerAttentionItems": {
       "handling": "kept",
@@ -714,9 +738,11 @@
       "reason": "Organiser bill history; byUid names the staff member who acted. Financial record kept for payments and fraud (deletedUsers.retainedFor); the uid ties the ledger entry to the account that paid, earned or was charged."
     },
     "organizerCampaignRecipients": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Frozen campaign recipient naming the follower's account. Proposed: clear followerRecipient.uid at deletion and keep the delivery receipt."
+      "handling": "anonymised",
+      "how": "queueOrganizerRecordCleanup clears followerRecipient (its uid is required, so the object goes) and keeps the delivery receipt; a row not yet sent is also excluded as deleted. The row id is a hash of the campaign and uid (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionOrganizerRecords.ts"
+      ]
     },
     "organizerCampaigns": {
       "handling": "kept",
@@ -777,9 +803,11 @@
       "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
     },
     "organizerEventOfferRecipients": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Single-uid claim of an organiser's offer invitation by the recipient account. Proposed: clear recipientUid at deletion and keep issuedByUid as the organiser's audit."
+      "handling": "anonymised",
+      "how": "queueOrganizerRecordCleanup clears recipientUid and claimedAtMillis together (the grant's claim invariant) and revokes the grant so no account can claim it again; issuedByUid stays as the organiser's audit (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionOrganizerRecords.ts"
+      ]
     },
     "organizerEventOffers": {
       "handling": "kept",
@@ -798,9 +826,11 @@
       "reason": "Financial record kept for payments and fraud (deletedUsers.retainedFor); the uid ties the ledger entry to the account that paid, earned or was charged."
     },
     "organizerFormAssets": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Metadata of the respondent's private uploads (respondentUid). Proposed: delete the account's assets and their files."
+      "handling": "deleted",
+      "how": "queueOrganizerRecordCleanup deletes the account's upload records and their Storage files (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionOrganizerRecords.ts"
+      ]
     },
     "organizerFormAutomationRules": {
       "handling": "kept",
@@ -819,14 +849,18 @@
       "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
     },
     "organizerFormResponseDrafts": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Expiring autosave of the respondent's answers (respondentUid). Proposed: delete the account's drafts."
+      "handling": "deleted",
+      "how": "queueOrganizerRecordCleanup deletes the account's drafts, except one locked by an unresolved fee (paymentAttemptId), which payment reconciliation still reads (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionOrganizerRecords.ts"
+      ]
     },
     "organizerFormResponses": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Organiser-owned submitted response by the account (respondentUid). Proposed: clear respondentUid and keep the organiser's response, as organizerContacts does."
+      "handling": "anonymised",
+      "how": "queueOrganizerRecordCleanup clears respondentUid; the organiser keeps the submitted response, as organizerContacts keeps the contact. Its application loses linkedUid in the same writes, so the organiser still sees the answers (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionOrganizerRecords.ts"
+      ]
     },
     "organizerFormShareLinks": {
       "handling": "kept",
@@ -1084,8 +1118,7 @@
     },
     "publicEventAdmissionReceipts": {
       "handling": "kept",
-      "needsDecision": true,
-      "reason": "Admission receipt naming the recipient account. Deletion leaves it. Proposed: keep it when it backs a paid admission (payments retention), otherwise delete it."
+      "reason": "Payments retention: every receipt backs a captured payment (the schema requires a provider payment and at least 100 paise), so the proposal's paid case is every receipt (#2468)."
     },
     "publicEvents": {
       "handling": "kept",
@@ -1258,24 +1291,29 @@
       "reason": "Internal Suvbot and seed tooling: it names staff testers and synthetic accounts only, never a real guest."
     },
     "supplyIntakeRequests": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Intake request whose tryItImport.uid names the account that started a try-it import (approval fields name staff). Proposed: clear tryItImport.uid at deletion."
+      "handling": "anonymised",
+      "how": "queueSupportRecordCleanup replaces tryItImport.uid (a required string) with the marker deleted-account and clears request.submittedBy.uid for a front-door submitter; approval fields and staff submitters name staff and are left for the staff-access pass (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionSupportRecords.ts"
+      ]
     },
     "supplyNominators": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "A person staff allowed to nominate organisers, with their account uid. Proposed: delete the record when that account is deleted."
+      "handling": "deleted",
+      "how": "queueSupportRecordCleanup deletes the account's nominator entries (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionSupportRecords.ts"
+      ]
     },
     "supportConversationMessages": {
       "handling": "kept",
-      "needsDecision": true,
-      "reason": "Message in a support conversation written by the person or by staff (authorUid). Proposed: keep for a support retention period, then delete."
+      "reason": "authorUid names only staff (inbound messages have authorUid null); the person's messages stay with their conversation, which deletion unlinks from the account (#2468)."
     },
     "supportConversations": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "The person's support conversation with Catch. Proposed: keep for a support retention period, clear uid at deletion, then delete."
+      "handling": "anonymised",
+      "how": "queueSupportRecordCleanup clears uid; the conversation is keyed by the channel contact and stays as Catch's support record. Deleting it after a support retention period has no purge yet (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionSupportRecords.ts"
+      ]
     },
     "supportSavedReplies": {
       "handling": "kept",
@@ -1294,9 +1332,11 @@
       "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
     },
     "tryItWorkspaces": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "The account's try-it workspace at tryItWorkspaces/{uid}. Proposed: delete it at deletion."
+      "handling": "deleted",
+      "how": "queueSupportRecordCleanup deletes tryItWorkspaces/{uid}. The private workspace organizer itself is left to the host-access pass, as removeOrganizerHostIdentity leaves other organizers (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionSupportRecords.ts"
+      ]
     },
     "users": {
       "handling": "anonymised",
@@ -1311,9 +1351,11 @@
       "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
     },
     "whatsappDispatches": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "WhatsApp dispatch whose context names the recipient account. Proposed: delete the account's dispatches or give the collection a TTL."
+      "handling": "deleted",
+      "how": "queueSupportRecordCleanup deletes the dispatches addressed to the account (context.uid); a late provider callback then finds no binding and is dropped (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionSupportRecords.ts"
+      ]
     },
     "workspaceFieldAssertions": {
       "handling": "kept",
