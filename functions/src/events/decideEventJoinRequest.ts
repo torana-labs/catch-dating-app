@@ -56,6 +56,8 @@ import {
 import {signUpUserForEvent} from "./signUpUserForEvent";
 import {requireEventTimeRange} from "./configuredEvent";
 import {updateEventBookingCounters} from "../domain/events/eventDocumentWrites";
+import {readEventWithCohortCounts} from
+  "../domain/events/eventCohortCounts";
 
 interface DecideEventJoinRequestDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -137,13 +139,8 @@ export async function decideEventJoinRequestHandler(
       throw new HttpsError("not-found", "User profile not found.");
     }
 
-    const event = requireDoc<EventDocument>(
-
-      eventSnap,
-
-      "EventDocument"
-
-    );
+    const event = await readEventWithCohortCounts(tx, db, eventId,
+      requireDoc<EventDocument>(eventSnap, "EventDocument"));
     const requester = requireDoc<UserProfileDocument>(
       requesterSnap,
       "UserProfileDocument (join request)"

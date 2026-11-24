@@ -22,6 +22,8 @@ import {
   assertReceipt, authorizeSetupManager, hashRequest,
   receiptFor, requireRevision, ProgressiveSetupDependencies,
 } from "./service";
+import {readEventWithCohortCounts} from
+  "../../domain/events/eventCohortCounts";
 
 type GuestAccessSettings = Pick<Command,
   "listing" | "showGuestList" | "priceHiddenUntilBookingOpens">;
@@ -84,6 +86,10 @@ export async function setEventPublication(params: {
     if (!event || event.organizerId !== command.organizerId) {
       throw new HttpsError("not-found", "Event not found.");
     }
+    // The discovery projection needs the cohort totals, which are kept
+    // off the event (#2493).
+    const admissionEvent = await readEventWithCohortCounts(tx, db,
+      command.eventId, event);
     if (receiptSnap.exists) {
       const receipt = receiptSnap.data()!;
       assertReceipt(receipt, operation, actorUid, command.organizerId,
@@ -115,7 +121,7 @@ export async function setEventPublication(params: {
           "Save who can book in the event's preferences until it is " +
           "published.");
       }
-      booking = publishedBookingModePatch(event as EventDocument,
+      booking = publishedBookingModePatch(admissionEvent as EventDocument,
         command.bookingMode);
     }
     if (settingsOnly && Object.keys(settings).length === 0 && !booking) {
@@ -153,7 +159,7 @@ export async function setEventPublication(params: {
         removals.push("followersFirstUntilMs");
       }
       Object.assign(patch, admission ?? {}, preparePublishedEventPatch({
-        event: {...event, ...admission} as EventDocument, organizer,
+        event: {...admissionEvent, ...admission} as EventDocument, organizer,
         nowMillis, timestampFromMillis: deps.timestampFromMillis}));
     }
     // Validating the target enforces the complete published schema, and the

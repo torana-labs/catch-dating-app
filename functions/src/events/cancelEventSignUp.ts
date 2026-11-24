@@ -84,6 +84,8 @@ import {processLegacyCancellationRefund} from
 import {NativeCancellationRefundProvider} from
   "../payments/legacyRefunds/provider";
 import {updateEventBookingCounters} from "../domain/events/eventDocumentWrites";
+import {readEventWithCohortCounts} from
+  "../domain/events/eventCohortCounts";
 
 interface PromotionPush {
   token: string;
@@ -202,13 +204,8 @@ export async function cancelEventSignUpHandler(
       throw new HttpsError("not-found", "User profile not found.");
     }
 
-    const event = requireDoc<EventDocument>(
-
-      eventSnap,
-
-      "EventDocument"
-
-    );
+    const event = await readEventWithCohortCounts(tx, db, eventId,
+      requireDoc<EventDocument>(eventSnap, "EventDocument"));
     const user = requireDoc<UserProfileDocument>(
       userSnap,
       "UserProfileDocument"

@@ -790,7 +790,8 @@
     "EventSeatIdentityAliasDocument",
     "EventSeatLedgerDocument",
     "EventSeatReservationDocument",
-    "EventSeatVerifiedPhoneDocument"
+    "EventSeatVerifiedPhoneDocument",
+    "EventCohortCountsDocument"
   ],
   "types": [
     "ActOnEventChatMessageCallableResponse",

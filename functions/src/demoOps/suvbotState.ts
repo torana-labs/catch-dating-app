@@ -129,6 +129,7 @@ export async function buildResetPlan(
       if (keep.has(`events/${eventId}`)) continue;
       paths.add(`eventSuccessScorecards/${eventId}`);
       paths.add(`eventSeatLedgers/${eventId}`);
+      paths.add(`eventCohortCounts/${eventId}`);
       for (const collection of ["eventAttendees",
         ...eventSeatRecordCollections]) {
         await collectQuery(db.collection(collection)
@@ -355,9 +356,20 @@ export async function repairDemoEventAggregates(
         bookedCount: booked.length,
       }),
     };
-    const doc = {path: eventSnap.ref.path, data: repaired};
+    // Cohort totals stay off the organiser-readable event (#2493).
+    const {cohortCounts: totals, waitlistedCohortCounts,
+      crossPathsPairHeldCohortCounts, ...eventData} =
+      repaired as FirebaseFirestore.DocumentData;
+    const doc = {path: eventSnap.ref.path, data: eventData};
     assertValidSuvbotDocument(doc);
-    await eventSnap.ref.set(repaired);
+    const countsDoc = {path: `eventCohortCounts/${eventId}`, data: {
+      eventId, cohortCounts: totals,
+      waitlistedCohortCounts: waitlistedCohortCounts ?? {},
+      crossPathsPairHeldCohortCounts: crossPathsPairHeldCohortCounts ?? {},
+      updatedAt: eventData.updatedAt ?? event.updatedAt}};
+    assertValidSuvbotDocument(countsDoc);
+    await eventSnap.ref.set(eventData);
+    await db.doc(countsDoc.path).set(countsDoc.data);
   }
 }
 

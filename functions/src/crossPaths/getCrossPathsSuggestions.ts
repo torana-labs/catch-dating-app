@@ -52,6 +52,8 @@ import {
   currentCrossPathsTermsVersion,
 } from "./setCrossPathsEventConsent";
 import {crossPathsPilotEventEnabled} from "./pilotPolicy";
+import {fetchEventWithCohortCounts} from
+  "../domain/events/eventCohortCounts";
 
 export const crossPathsSuggestionSigningKey = defineSecret(
   "CROSS_PATHS_SUGGESTION_SIGNING_KEY"
@@ -348,7 +350,7 @@ async function loadEventContext(params: {
     "EventDocument (Cross Paths suggestion)"
   );
   if (!isPublicConfiguredEvent(candidate)) return null;
-  const event = candidate;
+  const event = await fetchEventWithCohortCounts(db, eventId, candidate);
   const startMillis = event.startTime.toMillis();
   if (
     !crossPathsPilotEventEnabled(event) ||

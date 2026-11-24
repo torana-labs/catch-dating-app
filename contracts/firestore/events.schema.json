@@ -27,8 +27,6 @@
     "cancelledAt",
     "cancellationReason",
     "genderCounts",
-    "cohortCounts",
-    "waitlistedCohortCounts",
     "publicationState",
     "setupRevision",
     "name",
@@ -212,6 +210,7 @@
       "additionalProperties": {
         "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
       },
+      "description": "Retired 24 Nov 2026 (#2493): never written. A cohort encodes gender and who a guest is interested in, and on a small event a per-cohort total can point to one person, so the booking totals by cohort live in the server-only eventCohortCounts. Tolerated only until move-event-cohort-counts clears the copies older writes left; every counter write also removes it.",
       "x-catch-ownership": "callable-owned"
     },
     "waitlistedCohortCounts": {
@@ -219,6 +218,7 @@
       "additionalProperties": {
         "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
       },
+      "description": "Retired 24 Nov 2026 (#2493): never written. A cohort encodes gender and who a guest is interested in, and on a small event a per-cohort total can point to one person, so the waitlist totals by cohort live in the server-only eventCohortCounts. Tolerated only until move-event-cohort-counts clears the copies older writes left; every counter write also removes it.",
       "x-catch-ownership": "callable-owned"
     },
     "crossPathsPairHeldCount": {
@@ -234,6 +234,7 @@
       "additionalProperties": {
         "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
       },
+      "description": "Retired 24 Nov 2026 (#2493): never written. A cohort encodes gender and who a guest is interested in, and on a small event a per-cohort total can point to one person, so the Cross Paths pair-hold totals by cohort live in the server-only eventCohortCounts. Tolerated only until move-event-cohort-counts clears the copies older writes left; every counter write also removes it.",
       "x-catch-ownership": "callable-owned"
     },
     "crossPathsDiscoveryEnabled": {

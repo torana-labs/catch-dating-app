@@ -351,7 +351,13 @@ export function buildSuvbotWorldPlan(
       world, event, eventDocId, organizerId: ids.organizer, market, clock,
       participations, firstMoment, now, marker, ts,
     });
-    docs.push({path: `events/${eventDocId}`, data: eventDoc});
+    // Cohort totals stay off the organiser-readable event (#2493).
+    const {cohortCounts, waitlistedCohortCounts,
+      crossPathsPairHeldCohortCounts, ...eventData} = eventDoc;
+    docs.push({path: `events/${eventDocId}`, data: eventData});
+    docs.push({path: `eventCohortCounts/${eventDocId}`, data: {
+      eventId: eventDocId, cohortCounts, waitlistedCohortCounts,
+      crossPathsPairHeldCohortCounts, updatedAt: eventDoc.updatedAt}});
     docs.push(...demoEventSeatDocs({eventId: eventDocId,
       organizerId: ids.organizer, event: eventDoc, participations}));
     if (isPrimary) {

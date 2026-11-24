@@ -1,0 +1,39 @@
+{
+  "id": "eventCohortCounts",
+  "path": "eventCohortCounts/{eventId}",
+  "rulesMatch": "/eventCohortCounts/{eventId}",
+  "typescriptInterface": "EventCohortCountsDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/booking_privacy.rules.test.cjs",
+  "owner": "functions/src/domain/events/eventDocumentWrites.ts (updateEventBookingCounters, updateEventPairHoldCounters), in the transaction of each booking, waitlist, offer or pair-hold command",
+  "writerContext": "events",
+  "read": "server only; no client and no organiser reads it",
+  "write": "server only; replaced map by map by the events-owned counter writes",
+  "exportedFunctions": [
+    "signUpForFreeEvent",
+    "cancelEventSignUp",
+    "joinEventWaitlist",
+    "leaveEventWaitlist",
+    "decideEventJoinRequest",
+    "createEventWaitlistOffers",
+    "acceptEventWaitlistOffer",
+    "registerPublicEvent",
+    "sendCrossPathsInvitation",
+    "respondCrossPathsInvitation"
+  ],
+  "migrationNotes": [
+    "Issue #2493. Added 24 Nov 2026: per-cohort totals can point to one guest's orientation on a small event, and organisers read events, so cohortCounts, waitlistedCohortCounts and crossPathsPairHeldCohortCounts moved here. A map not moved yet falls back to the event's copy; tool/data/move_event_cohort_counts.mjs moves the rest."
+  ],
+  "newCollectionRationale": {
+    "whyNotAnExistingCollection": "Per-cohort totals can point to one guest's sexual orientation on a small event, so no client and no organiser may read them. events/{eventId}, where they lived, is readable by the organiser's managers and staff, rules cannot hide one field of it, and eventSeatLedgers is the seat authority with its own revisioned shape.",
+    "readers": [
+      "signUpForFreeEvent",
+      "cancelEventSignUp",
+      "joinEventWaitlist",
+      "decideEventJoinRequest",
+      "sendCrossPathsInvitation",
+      "functions/src/domain/events/eventCohortCounts.ts",
+      "functions/src/events/eventDiscoveryProjection.ts"
+    ]
+  }
+}
