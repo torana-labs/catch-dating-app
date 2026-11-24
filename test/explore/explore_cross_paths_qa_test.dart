@@ -16,12 +16,11 @@ import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dar
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:catch_test_support/event_organizer_summary_fixture.dart';
+import 'package:catch_test_support/events_test_helpers.dart' as event_test;
 import 'package:catch_test_support/organizers_test_helpers.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart' as event_test;
 
 void main() {
   test(

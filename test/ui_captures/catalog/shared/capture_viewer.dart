@@ -2,7 +2,7 @@
 // that import this file depend on it.
 
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import '../../../events/events_test_helpers.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 
 const captureViewerUid = 'runner-viewer';
 final captureViewer =

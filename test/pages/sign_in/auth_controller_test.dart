@@ -10,13 +10,12 @@ import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/push/fcm_service.dart';
+import 'package:catch_test_support/onboarding_test_helpers.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../onboarding/onboarding_test_helpers.dart';
 
 void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);

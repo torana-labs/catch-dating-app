@@ -5,10 +5,9 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/explore/presentation/explore_cross_paths_provider.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_mixed_feed_state.dart';
+import 'package:catch_test_support/events_test_helpers.dart' as events;
 import 'package:catch_test_support/organizers_test_helpers.dart' as organizers;
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart' as events;
 
 ExploreEventItem _item({
   required String id,

@@ -4,12 +4,11 @@ import 'package:catch_dating_app/pages/start/onboarding_welcome_body.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/startup/startup_animation_scope.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/onboarding_test_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'onboarding_test_helpers.dart';
 
 void main() {
   group('Welcome reel handoff', () {

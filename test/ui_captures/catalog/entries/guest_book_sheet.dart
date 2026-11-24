@@ -29,7 +29,7 @@ import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/pages/event/event_detail_screen.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
-import '../../../events/events_test_helpers.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import '../../fixtures/sales_demo_synthetic_fixtures.dart';
 import '../../support/capture_device.dart';
 import '../screen_capture_entry.dart';

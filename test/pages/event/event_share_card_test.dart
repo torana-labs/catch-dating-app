@@ -3,13 +3,12 @@ import 'package:catch_dating_app/pages/event/event_share_card.dart';
 import 'package:catch_kernel/brand.dart';
 import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:share_plus/share_plus.dart';
-
-import '../../events/events_test_helpers.dart';
 
 void main() {
   testWidgets('exports an event invite as a png with the event link', (

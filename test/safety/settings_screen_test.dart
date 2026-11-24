@@ -19,6 +19,7 @@ import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/brand/live_brand.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -27,8 +28,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../events/events_test_helpers.dart';
 
 void main() {
   testWidgets('Host analytics requires a choice and can be withdrawn', (

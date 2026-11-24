@@ -7,13 +7,13 @@ import 'package:catch_dating_app/contexts/events/data/event_publication_reposito
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
+import 'package:catch_test_support/hosts/read_model_feeds.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'event_controller_test_support.dart';
-import 'support/read_model_feeds.dart';
 
 PrivateEventBasicSummary publicationEvent({
   int revision = 2,

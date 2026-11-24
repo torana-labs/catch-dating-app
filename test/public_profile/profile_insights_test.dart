@@ -1,9 +1,8 @@
 import 'package:catch_dating_app/contexts/profiles/domain/profile_insights.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart';
 
 ActivityPreferences runningPrefs({
   int paceMinSecsPerKm = defaultPaceMinSecsPerKm,

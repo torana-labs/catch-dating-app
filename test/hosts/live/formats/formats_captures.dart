@@ -21,10 +21,10 @@ import 'package:catch_dating_app/hosts/live/formats/formats_sweep_screen.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_sweep_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter/widgets.dart';
 import 'package:riverpod/misc.dart' show Override;
 
-import '../../../events/events_test_helpers.dart';
 import 'formats_fixtures.dart';
 
 /// The formats capture fixtures: a pickleball ladder in round four, quiz

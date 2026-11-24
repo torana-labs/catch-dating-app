@@ -1,9 +1,8 @@
 import 'package:catch_dating_app/contexts/audience/data/read_models/host_contact_detail_reads.dart';
+import 'package:catch_test_support/hosts/host_crm_response_fixtures.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../hosts/support/host_crm_response_fixtures.dart';
 
 Map<String, Object?> _row({int revision = 4}) => {
   'contactId': 'contact-1',

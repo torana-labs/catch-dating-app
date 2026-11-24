@@ -18,7 +18,7 @@ import 'package:catch_dating_app/hosts/events/events_state.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 
-import '../../events/events_test_helpers.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 
 /// The fixture night: Tuesday 27 October 2026, the afternoon before doors.
 final eventsNow = DateTime(2026, 10, 27, 16);

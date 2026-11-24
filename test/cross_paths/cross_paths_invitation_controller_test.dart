@@ -3,10 +3,9 @@ import 'package:catch_dating_app/contexts/connections/domain/cross_paths_invitat
 import 'package:catch_dating_app/contexts/connections/domain/cross_paths_pair_hold.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_invitation_controller.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart';
 
 class _FakeCrossPathsRepository extends Fake implements CrossPathsRepository {
   Object? error;

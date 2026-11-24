@@ -9,11 +9,10 @@ import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/pages/event/event_detail_view_model.dart';
 import 'package:catch_platform/riverpod_ui/failed_reads.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'events_test_helpers.dart';
 
 void main() {
   test('Retry re-runs the organizer read keyed by the loaded event', () async {

@@ -1,9 +1,8 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/pages/event/event_detail_screen_state.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
+import 'package:catch_test_support/events_test_helpers.dart' as events;
 import 'package:flutter_test/flutter_test.dart';
-
-import 'events_test_helpers.dart' as events;
 
 final _l10n = AppLocalizationsEn();
 

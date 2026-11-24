@@ -42,6 +42,7 @@ import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/events_test_helpers.dart' as event_test;
 import 'package:catch_test_support/organizers_test_helpers.dart'
     as organizer_test;
 import 'package:catch_test_support/test_pump_helpers.dart';
@@ -50,7 +51,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../events/events_test_helpers.dart' as event_test;
 import 'inbox/host_inbox_test_fixtures.dart' as inbox_fixture;
 
 part 'host_inbox_sends_tests.dart';

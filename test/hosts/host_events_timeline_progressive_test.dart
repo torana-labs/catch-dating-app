@@ -2,11 +2,10 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
+import 'package:catch_test_support/hosts/host_events_timeline_test_support.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart';
-import 'support/host_events_timeline_test_support.dart';
 
 void main() {
   test(
