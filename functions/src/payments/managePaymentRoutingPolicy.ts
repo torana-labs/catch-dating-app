@@ -1,13 +1,10 @@
 import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
-import {onCall, HttpsError, type CallableRequest} from
+import {HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
 import {Timestamp} from "firebase-admin/firestore";
-import {requireAdminRole} from "../platform/adminAuth";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
-import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import type {ManagePaymentRoutingPolicyCallablePayload as Payload} from
   "../shared/generated/managePaymentRoutingPolicyCallablePayload";
 import type {ManagePaymentRoutingPolicyCallableResponse as Result} from
@@ -18,6 +15,14 @@ import {validateManagePaymentRoutingPolicyCallablePayload} from
   "../shared/generated/validators/managePaymentRoutingPolicyInput";
 import {organizerPaymentPolicyId, parsePaymentRoutingPolicy} from
   "./paymentRouting";
+import {
+  callableWithLimits,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 interface Dependencies {
   db: () => FirebaseFirestore.Firestore;
@@ -28,12 +33,31 @@ const defaults: Dependencies = {db: () => admin.firestore(),
   rateLimit: checkRateLimit, now: Date.now};
 
 /** Route selection does not establish account or payment eligibility. */
-export async function managePaymentRoutingPolicyHandler(
+/**
+ * managePaymentRoutingPolicy: ["adminOwner"] only (STR-10 policy).
+ * @param {Dependencies} deps Dependencies.
+ * @return {CallableSpec} The callable.
+ */
+export function managePaymentRoutingPolicySpec(deps: Dependencies = defaults):
+  CallableSpec<Payload, AdminContext, Result> {
+  return {
+    name: "managePaymentRoutingPolicy",
+    policy: adminRoles(["adminOwner"]),
+    input: validateManagePaymentRoutingPolicyCallablePayload,
+    handle: (context) => managePaymentRoutingPolicyWork(context, deps),
+  };
+}
+
+/** The deployed path of managePaymentRoutingPolicy, for tests. */
+export function managePaymentRoutingPolicyHandler(
   request: CallableRequest<unknown>, deps: Dependencies = defaults):
   Promise<Result> {
-  const actor = requireAdminRole(request, ["adminOwner"]);
-  const data = validateCallableWithAjv<Payload>(request,
-    validateManagePaymentRoutingPolicyCallablePayload);
+  return runCallable(managePaymentRoutingPolicySpec(deps), request);
+}
+
+async function managePaymentRoutingPolicyWork(
+  {data, actor}: CallableContext<Payload, AdminContext>, deps: Dependencies):
+  Promise<Result> {
   if (data.action === "read" ? data.expectedRevision !== null ||
       data.formFee !== null || data.eventAdmission !== null ||
       (data.hostMembership ?? null) !== null :
@@ -118,6 +142,6 @@ function selectionKey(value: Payload["formFee"]): unknown {
   return [value.route, value.mode, value.currency, value.merchantCountry];
 }
 
-export const managePaymentRoutingPolicy = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 30, maxInstances: 10}),
-  (request) => managePaymentRoutingPolicyHandler(request));
+export const managePaymentRoutingPolicy = callableWithLimits(
+  {timeoutSeconds: 30, maxInstances: 10},
+  managePaymentRoutingPolicySpec());
