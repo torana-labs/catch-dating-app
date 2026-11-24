@@ -4,7 +4,10 @@ name: Proof reuse daily
 # (proof-reuse-shadow-<run>-<attempt>, from ci.yml) into the
 # proof-reuse-daily-<date> artifact, schema proof-reuse-daily/1, and posts each
 # miss once to the "Proof reuse shadow miss" issue (Phase 1, 22 Nov 2026).
-# Report-only: it reads Actions and writes that issue, nothing else. Logic and
+# Report-only: it reads Actions and writes that issue, nothing else. Scheduled
+# runs start hours late, so it also wakes after main's push CI; the gate job
+# (tool/ci/daily_once_gate.mjs) lets only the first wake from 02:00 UTC roll up
+# the previous day (24 Nov 2026). Logic and
 # tests: tool/ci/proof_reuse_report.mjs. Operator guide:
 # docs/release_operations.md, "Required PR Checks".
 

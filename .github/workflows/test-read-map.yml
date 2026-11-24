@@ -5,7 +5,9 @@ name: Test read map
 # under `strace -f`, and the repository paths its test runtime opened, listed and probed are
 # recorded, with the compiler's reads kept separate. Nothing consumes the map
 # yet: it changes no selection and never blocks anything. Linux, read-only;
-# it uploads one JSONL artifact per night. Logic and tests:
+# it uploads one JSONL artifact per day. Scheduled runs start hours late, so it
+# also wakes after main's push CI; the gate job (tool/ci/daily_once_gate.mjs)
+# lets only the first wake of each UTC day work (24 Nov 2026). Logic and tests:
 # tool/ci/test_read_map.mjs. Operator guide: docs/release_operations.md,
 # "Test read map".
 
