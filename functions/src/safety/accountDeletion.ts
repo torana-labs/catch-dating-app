@@ -96,6 +96,7 @@ export async function requestAccountDeletionHandler(
   const afterCommit = new BatchQueue(db);
   writer.delete(db.collection("hostProfiles").doc(uid));
   writer.delete(db.collection("publicProfiles").doc(uid));
+  writer.delete(db.collection("guestProfiles").doc(uid));
   writer.delete(db.collection("crossPathsShowcaseEligibility").doc(uid));
   writer.delete(db.collection("onboarding_drafts").doc(uid));
 
@@ -416,7 +417,7 @@ async function queueParticipantPrivateStateCleanup(
     "eventChatDirectoryEntries",
     "guestBookingFacts", "guestEventStatuses", "participantFormProfileViews",
     "participantIntakeProfileViews", "adConversionContexts",
-    "adConversionDeliveries"]) {
+    "adConversionDeliveries", "eventGuestProfiles"]) {
     const records = await db.collection(collection)
       .where("uid", "==", uid).get();
     records.forEach((doc) => writer.delete(doc.ref));

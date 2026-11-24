@@ -469,11 +469,15 @@ async function loadCandidateBundle(
   publicProfile: PublicProfileDocument;
   showcase: CrossPathsShowcaseEligibilityDocument;
 } | null> {
-  const [userSnap, publicSnap, showcaseSnap] = await Promise.all([
+  const [userSnap, guestSnap, showcaseSnap] = await Promise.all([
     db.collection("users").doc(candidateUid).get(),
-    db.collection("publicProfiles").doc(candidateUid).get(),
+    // The server-only full profile (#2493, FIX-8); publicProfiles until the
+    // guest-profiles migration has copied it.
+    db.collection("guestProfiles").doc(candidateUid).get(),
     db.collection("crossPathsShowcaseEligibility").doc(candidateUid).get(),
   ]);
+  const publicSnap = guestSnap.exists ? guestSnap :
+    await db.collection("publicProfiles").doc(candidateUid).get();
   if (!userSnap.exists || !publicSnap.exists || !showcaseSnap.exists) {
     return null;
   }

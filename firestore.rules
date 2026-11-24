@@ -1364,6 +1364,34 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // A guest's full dating profile, sensitive answers included (#2493,
+    // FIX-8). syncPublicProfile writes it beside publicProfiles; only the
+    // matching-feed callables read it, with the admin SDK, for the guests
+    // they chose. No client reads it, not even the guest.
+    match /guestProfiles/{uid} {
+      allow read, write: if false;
+    }
+
+    // A guest's dating profile as the other guests of one event see it
+    // (#2493, FIX-8, owner decision OQ-1). Rules cannot ask whether two people
+    // share any event, so the event is in the id: a guest gets the copy only
+    // while both bookings are signedUp or attended, so a cancellation hides it
+    // at once. Organisers have no path here.
+    match /eventGuestProfiles/{copyId} {
+      allow get: if isAuthed()
+        && !isDeletedUser(request.auth.uid)
+        && resource.data.eventId is string
+        && resource.data.uid is string
+        && copyId == resource.data.eventId + '__' + resource.data.uid
+        && !isDeletedUser(resource.data.uid)
+        && !hasBlockBetween(request.auth.uid, resource.data.uid)
+        && hasEventBookingStatus(resource.data.eventId, request.auth.uid,
+          ['signedUp', 'attended'])
+        && hasEventBookingStatus(resource.data.eventId, resource.data.uid,
+          ['signedUp', 'attended']);
+      allow list, write: if false;
+    }
+
     // Canonical organizer authority. All mutations remain callable-owned so
     // type audits, relationship projections, and compatibility shadows stay
     // atomic during the released-client migration window.

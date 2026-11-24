@@ -27,14 +27,21 @@ export async function fetchUidsBlockedWithViewer(
   return blocked;
 }
 
-/** Loads public profile projections in the supplied candidate order. */
+/**
+ * Loads the candidates' full dating profiles in the supplied order, from the
+ * server-only guestProfiles the feed callables alone read (#2493, FIX-8). A
+ * profile the projector has not copied there yet falls back to
+ * publicProfiles until the guest-profiles migration has run.
+ */
 export async function fetchCandidatePublicProfiles(
   db: FirebaseFirestore.Firestore,
   uids: string[]
 ): Promise<CandidatePublicProfile[]> {
-  const snaps = await Promise.all(
-    uids.map((uid) => db.collection("publicProfiles").doc(uid).get())
-  );
+  const snaps = await Promise.all(uids.map(async (uid) => {
+    const guest = await db.collection("guestProfiles").doc(uid).get();
+    return guest.exists ? guest :
+      db.collection("publicProfiles").doc(uid).get();
+  }));
   const profiles: CandidatePublicProfile[] = [];
   snaps.forEach((snap, index) => {
     if (!snap.exists) return;

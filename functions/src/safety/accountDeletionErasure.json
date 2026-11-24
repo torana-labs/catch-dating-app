@@ -316,6 +316,10 @@
       "handling": "deleted",
       "how": "queueCrossPathsConsentCleanup deletes the account's consent edges."
     },
+    "eventGuestProfiles": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account (#2493)."
+    },
     "eventHostPhotos": {
       "handling": "kept",
       "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
@@ -573,6 +577,10 @@
     "guestPayments": {
       "handling": "kept",
       "reason": "queuePaymentCleanup marks the account's payments userDeleted. Financial record kept for payments and fraud (deletedUsers.retainedFor); the uid ties the ledger entry to the account that paid, earned or was charged."
+    },
+    "guestProfiles": {
+      "handling": "deleted",
+      "how": "Deleted at the start of account deletion, beside publicProfiles (#2493)."
     },
     "hostAnalyticsSnapshots": {
       "handling": "deleted",

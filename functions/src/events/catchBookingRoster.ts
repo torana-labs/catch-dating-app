@@ -7,6 +7,8 @@ import type {
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {eventAttendeeId, normalizeRosterPhone} from "./eventAttendees";
 import {catchBookingAttendeeDocument} from "./eventAttendeeProjection";
+import {bookingSharesEventProfile, eventGuestProfileData,
+  eventGuestProfileRef} from "../shared/eventGuestProfiles";
 
 /**
  * In-transaction roster writer for Catch bookings. The booking
@@ -25,6 +27,11 @@ export interface CatchBookingRosterSlot {
   displayName: string | undefined;
   /** More than one row is linked to the account: left for reconciliation. */
   ambiguous?: boolean;
+  /**
+   * The guest's full dating profile (guestProfiles, or publicProfiles until
+   * the copy exists), for the event copy co-guests read (#2493).
+   */
+  profile?: FirebaseFirestore.DocumentData;
 }
 
 /**
@@ -67,15 +74,17 @@ export async function readCatchBookingRoster(params: {
       phone ? `phone:${phone}` : `uid:${uid}`);
   }
   const attendeeRef = db.collection("eventAttendees").doc(attendeeId);
-  const [attendeeSnap, profileSnap] = await Promise.all([
+  const [attendeeSnap, guestProfileSnap, profileSnap] = await Promise.all([
     tx.get(attendeeRef),
+    tx.get(db.collection("guestProfiles").doc(uid)),
     tx.get(db.collection("publicProfiles").doc(uid)),
   ]);
   const name = profileSnap.data()?.name;
   return {bookingRef, linkedAttendeeId, attendeeRef,
     existing: attendeeSnap.data() as EventAttendeeDocument | undefined,
     displayName: typeof name === "string" && name.trim() ?
-      name.trim() : undefined};
+      name.trim() : undefined,
+    profile: guestProfileSnap.data() ?? profileSnap.data()};
 }
 
 /**
@@ -137,6 +146,12 @@ export function writeCatchBookingRoster(params: {
   if (slot.linkedAttendeeId !== slot.attendeeRef.id) {
     tx.set(slot.bookingRef, {attendeeId: slot.attendeeRef.id},
       {merge: true});
+  }
+  // The event copy co-guests read (#2493). Rules check both bookings, so a
+  // booking that leaves signedUp or attended needs no write here.
+  if (slot.profile && bookingSharesEventProfile(booking.status)) {
+    tx.set(eventGuestProfileRef(params.db, booking.eventId, booking.uid),
+      eventGuestProfileData(slot.profile, booking.eventId, booking.uid));
   }
 }
 
