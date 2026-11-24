@@ -13,7 +13,8 @@
   "read": "current organizer managers get and list (organizerId and formId equality, optionally status) while their account is not deleted",
   "write": "server only; rewritten from each guestPayments document whose purpose is form, and deleted with it",
   "exportedFunctions": [
-    "onHostFormPaymentViewPaymentChanged"
+    "onHostFormPaymentViewPaymentChanged",
+    "dispatchGuestPayments"
   ],
   "migrationNotes": [
     "row equals the ledger row listOrganizerFormPayments returns; answers, respondent identity and contact, the connection, the account and hashes never appear. The host-form-payment-views copy-forward migration creates views for form fees recorded before the trigger.",

@@ -2,6 +2,7 @@ import * as admin from "firebase-admin";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {isDeepStrictEqual} from "node:util";
 import {reconcileProgramHotelRoomView} from "./programHotelRoomViews";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true};
 const fanoutLimit = 600;
@@ -134,6 +135,14 @@ export const onProgramHotelRoomGuestChanged = onDocumentWritten({
   await reconcileAll([...pairs.values()]);
 });
 
+/** Every hotel board of a programme. */
+async function reconcileProgramHotelBoards(db: FirebaseFirestore.Firestore,
+  programId: string): Promise<void> {
+  const hotels = await db.collection("programHotels")
+    .where("programId", "==", programId).limit(fanoutLimit).get();
+  await reconcileAll(hotels.docs.map((doc) => [programId, doc.id]));
+}
+
 /** The programme's time zone or organizer: every hotel's board. */
 export const onProgramHotelRoomProgramChanged = onDocumentWritten({
   ...options, document: "organizerPrograms/{programId}",
@@ -141,9 +150,20 @@ export const onProgramHotelRoomProgramChanged = onDocumentWritten({
   const before = event.data?.before.data();
   const after = event.data?.after.data();
   if (unchanged(before, after, ["timezone", "organizerId"])) return;
-  const db = admin.firestore();
-  const programId = event.params.programId;
-  const hotels = await db.collection("programHotels")
-    .where("programId", "==", programId).limit(fanoutLimit).get();
-  await reconcileAll(hotels.docs.map((doc) => [programId, doc.id]));
+  await reconcileProgramHotelBoards(admin.firestore(), event.params.programId);
 });
+
+/**
+ * The programme's time zone or organizer: every hotel's board.
+ * dispatchOrganizerPrograms (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const programHotelRoomProgramProjections = defineProjections(
+  "organizerPrograms", [{
+    id: "programHotelRoomView", kind: "projection",
+    when: ({before, after}) =>
+      !(unchanged(before, after, ["timezone", "organizerId"])),
+    run: (change, ctx) =>
+      reconcileProgramHotelBoards(ctx.db, change.documentId),
+  }]);

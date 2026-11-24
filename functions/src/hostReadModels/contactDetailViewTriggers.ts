@@ -124,6 +124,24 @@ export const onHostContactDetailViewPaymentWritten = onDocumentWritten({
 });
 
 /**
+ * A completed or refunded Catch payment of a linked account.
+ * dispatchGuestPayments (issue #2451) runs the same work; both run until the
+ * old trigger retires, which is safe because it re-reads its sources,
+ * so a retry, a replay or a second run converges.
+ */
+export const hostContactDetailPaymentProjections = defineProjections(
+  "guestPayments", [{
+    id: "hostContactDetailView", kind: "projection",
+    when: () => true,
+    run: async (change, ctx) => {
+      for (const uid of contactDetailPayersForPayment(change.before,
+        change.after)) {
+        await reconcileHostContactDetailViewsForAccount(ctx.db, uid);
+      }
+    },
+  }]);
+
+/**
  * An event renamed or its origin changed: its contacts' detail views.
  * Served by the events dispatcher (issue #2451); it re-reads its
  * sources, so a retry or a replay converges.

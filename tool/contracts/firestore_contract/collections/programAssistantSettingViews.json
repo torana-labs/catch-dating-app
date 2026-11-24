@@ -14,6 +14,7 @@
   "write": "server only; written from organizerPrograms, programAssistantSettings and programStaffGrants",
   "exportedFunctions": [
     "onProgramSettingViewProgramChanged",
+    "dispatchOrganizerPrograms",
     "onProgramSettingViewSettingsChanged",
     "onProgramSettingViewGrantChanged"
   ],

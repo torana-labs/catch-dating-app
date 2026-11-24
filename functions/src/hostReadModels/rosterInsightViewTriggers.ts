@@ -247,6 +247,20 @@ export const hostRosterInsightEventProjections = defineProjections("events", [{
 export const onHostRosterInsightAttendeeChanged = onDocumentWritten({
   ...options, document: "eventAttendees/{documentId}",
 }, (event) => reconcileForWrite("eventAttendees", event));
+
+/**
+ * An attendee write: the roster labels of its open event.
+ * dispatchEventAttendees (issue #2451) runs the same work; both run until the
+ * old trigger retires, which is safe because it re-reads its sources,
+ * so a retry, a replay or a second run converges.
+ */
+export const hostRosterInsightAttendeeProjections = defineProjections(
+  "eventAttendees", [{
+    id: "hostRosterInsightView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange("eventAttendees", change.documentId,
+      change.before, change.after),
+  }]);
 export const onHostRosterInsightEdgeChanged = onDocumentWritten({
   ...options, document: "organizerContactEventEdges/{documentId}",
 }, (event) => reconcileForWrite("organizerContactEventEdges", event));

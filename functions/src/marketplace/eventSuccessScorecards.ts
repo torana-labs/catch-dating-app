@@ -24,6 +24,7 @@ import {buildFeedbackSignalFact} from "./signalBuilders";
 import {
   recordParticipantSignalFactsBestEffort,
 } from "./participantSignals";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const eventSuccessFeedbackCollection = "eventSuccessFeedback";
 const eventSuccessConversationGraphsCollection =
@@ -623,6 +624,21 @@ export const onBookingPaymentWritten = onDocumentWritten(
     await onPaymentWrittenHandler(before, after);
   }
 );
+
+/**
+ * A booking payment: its events' success scorecards, recomputed.
+ * dispatchGuestPayments (issue #2451) runs the same work; both run until the
+ * old trigger retires, which is safe because it re-reads its sources,
+ * so a retry, a replay or a second run converges.
+ */
+export const eventSuccessScorecardPaymentProjections = defineProjections(
+  "guestPayments", [{
+    id: "eventSuccessScorecards", kind: "projection",
+    when: ({before, after}) => isBookingPaymentData(after ?? before),
+    run: (change) => onPaymentWrittenHandler(
+      change.before as PaymentDocument | undefined,
+      change.after as PaymentDocument | undefined),
+  }]);
 
 /**
  * Handles waitlist offer writes that change host curation funnel counts.

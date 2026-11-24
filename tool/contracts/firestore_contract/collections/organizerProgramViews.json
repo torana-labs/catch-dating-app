@@ -16,6 +16,7 @@
   "write": "server only; written from organizerPrograms, programFunctions, programPickupPoints and programHotels; the list counts from programGuests and programTravelLegs and a nightly recount",
   "exportedFunctions": [
     "onOrganizerProgramViewChanged",
+    "dispatchOrganizerPrograms",
     "onOrganizerProgramFunctionChanged",
     "onOrganizerProgramPickupPointChanged",
     "onOrganizerProgramHotelChanged",

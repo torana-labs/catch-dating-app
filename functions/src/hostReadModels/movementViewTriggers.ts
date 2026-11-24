@@ -249,6 +249,20 @@ export const onHostMovementViewCheckpointChanged = onDocumentWritten({
 export const onHostMovementViewAttendeeChanged = onDocumentWritten({
   ...options, document: "eventAttendees/{documentId}",
 }, (event) => reconcileForWrite("eventAttendees", event));
+
+/**
+ * An attendee write: the checkpoint views it can change.
+ * dispatchEventAttendees (issue #2451) runs the same work; both run until the
+ * old trigger retires, which is safe because it re-reads its sources,
+ * so a retry, a replay or a second run converges.
+ */
+export const hostMovementViewAttendeeProjections = defineProjections(
+  "eventAttendees", [{
+    id: "hostMovementView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange("eventAttendees", change.documentId,
+      change.before, change.after),
+  }]);
 export const onHostMovementViewGuestChanged = onDocumentWritten({
   ...options, document: "eventAssistanceGuests/{documentId}",
 }, (event) => reconcileForWrite("eventAssistanceGuests", event));

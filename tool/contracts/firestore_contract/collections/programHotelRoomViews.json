@@ -18,7 +18,8 @@
     "onProgramHotelRoomHotelChanged",
     "onProgramHotelRoomLegChanged",
     "onProgramHotelRoomGuestChanged",
-    "onProgramHotelRoomProgramChanged"
+    "onProgramHotelRoomProgramChanged",
+    "dispatchOrganizerPrograms"
   ],
   "migrationNotes": [
     "Exactly the board getProgramHotelRooms returned, without the caller's access expiry and the read time; the stay revisions are the upsertProgramStay fence. Guest and block ids and display names only, never a contact field or note. The program-hotel-room-views copy-forward migration creates boards for hotels that predate the triggers and leaves boards the triggers wrote alone."

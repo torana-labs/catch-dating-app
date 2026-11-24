@@ -1,6 +1,7 @@
 // The Functions this area deploys. src/index.ts re-exports this file
 // (read by functions/scripts/functionExports.cjs).
 
+export {dispatchGuestPayments} from "./dispatch/guestPayments.generated";
 export {razorpayWebhook} from "./razorpayWebhook";
 export {listOrganizerFormPayments} from
   "./formPayments/formPaymentLedger";

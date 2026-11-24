@@ -15,7 +15,8 @@
   "exportedFunctions": [
     "onProgramWhatsappThreadViewThreadChanged",
     "onProgramWhatsappThreadViewHouseholdChanged",
-    "onProgramWhatsappThreadViewProgramChanged"
+    "onProgramWhatsappThreadViewProgramChanged",
+    "dispatchOrganizerPrograms"
   ],
   "migrationNotes": [
     "Exactly the row listProgramWhatsappThreads returns without the clock-dependent serviceWindowOpen, plus the household's label, primary contact name and guest count from the retired getProgramWhatsappThread callable's header. The phone hash, sender connection and take-over uid stay in programWhatsappThreads. Deleted with its thread by the archive retention sweep. The program-whatsapp-thread-views copy-forward migration creates views for threads that predate the triggers and leaves views the triggers wrote alone."

@@ -287,6 +287,20 @@ export const onHostGuestViewPlanChanged = onDocumentWritten({
 export const onHostGuestViewAttendeeChanged = onDocumentWritten({
   ...options, document: "eventAttendees/{documentId}",
 }, (event) => reconcileForWrite("eventAttendees", event));
+
+/**
+ * An attendee write: its accountability and membership views.
+ * dispatchEventAttendees (issue #2451) runs the same work; both run until the
+ * old trigger retires, which is safe because it re-reads its sources,
+ * so a retry, a replay or a second run converges.
+ */
+export const hostGuestViewAttendeeProjections = defineProjections(
+  "eventAttendees", [{
+    id: "hostGuestView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange("eventAttendees", change.documentId,
+      change.before, change.after),
+  }]);
 export const onHostGuestViewGuestChanged = onDocumentWritten({
   ...options, document: "eventAssistanceGuests/{documentId}",
 }, (event) => reconcileForWrite("eventAssistanceGuests", event));

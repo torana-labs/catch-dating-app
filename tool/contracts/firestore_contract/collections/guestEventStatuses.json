@@ -15,7 +15,9 @@
   "exportedFunctions": [
     "onGuestEventStatusParticipationWritten",
     "onGuestEventStatusAttendeeWritten",
+    "dispatchEventAttendees",
     "onGuestEventStatusPaymentWritten",
+    "dispatchGuestPayments",
     "onGuestEventStatusApplicationWritten",
     "onGuestEventStatusOfferRecipientWritten",
     "dispatchEvents",

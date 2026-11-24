@@ -217,6 +217,21 @@ export const onGuestEventStatusAttendeeWritten = onDocumentWritten({
 }, (event) => refreshPairs(guestEventStatusPairs(...versions(event),
   "eventId", "linkedUid", ["status", "source", "organizerId"])));
 
+/**
+ * A roster row's link, source or status: the linked guest's status row.
+ * dispatchEventAttendees (issue #2451) runs the same work; both run until the
+ * old trigger retires, which is safe because it re-reads its sources,
+ * so a retry, a replay or a second run converges.
+ */
+export const guestEventStatusAttendeeProjections = defineProjections(
+  "eventAttendees", [{
+    id: "guestEventStatuses", kind: "projection",
+    when: () => true,
+    run: (change) => refreshPairs(guestEventStatusPairs(change.before,
+      change.after, "eventId", "linkedUid",
+      ["status", "source", "organizerId"])),
+  }]);
+
 export const onGuestEventStatusPaymentWritten = onDocumentWritten({
   ...options, document: `${GUEST_PAYMENTS}/{documentId}`,
 }, async (event) => {
@@ -226,6 +241,21 @@ export const onGuestEventStatusPaymentWritten = onDocumentWritten({
   await refreshPairs(guestEventStatusPairs(before, after, "eventId",
     "recipientUid", null));
 });
+
+/**
+ * A website or offer payment: the guest's status row.
+ * dispatchGuestPayments (issue #2451) runs the same work; both run until the
+ * old trigger retires, which is safe because it re-reads its sources,
+ * so a retry, a replay or a second run converges.
+ */
+export const guestEventStatusPaymentProjections = defineProjections(
+  "guestPayments", [{
+    id: "guestEventStatuses", kind: "projection",
+    when: ({before, after}) => [before?.purpose, after?.purpose].some(
+      (purpose) => purpose === "publicEvent" || purpose === "offer"),
+    run: (change) => refreshPairs(guestEventStatusPairs(change.before,
+      change.after, "eventId", "recipientUid", null)),
+  }]);
 
 export const onGuestEventStatusApplicationWritten = onDocumentWritten({
   ...options, document: "organizerApplications/{documentId}",

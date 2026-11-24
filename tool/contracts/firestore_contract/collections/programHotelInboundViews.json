@@ -16,7 +16,8 @@
     "onProgramHotelInboundLegChanged",
     "onProgramHotelInboundPartyChanged",
     "onProgramTripGuestChanged",
-    "onProgramHotelInboundSettingsChanged"
+    "onProgramHotelInboundSettingsChanged",
+    "dispatchOrganizerPrograms"
   ],
   "migrationNotes": [
     "Exactly the expected-guest row getProgramHotelInbound returned; nothing about the flight, claimant or pickup point. The program-trip-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."

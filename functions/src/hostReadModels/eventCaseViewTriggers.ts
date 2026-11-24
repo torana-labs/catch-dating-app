@@ -144,6 +144,20 @@ export const onHostEventCaseViewAttendeeChanged = onDocumentWritten({
 }, (event) => reconcileForWrite("eventAttendees", event));
 
 /**
+ * An attendee's identity, generation, name or status: its cases' views.
+ * dispatchEventAttendees (issue #2451) runs the same work; both run until the
+ * old trigger retires, which is safe because it re-reads its sources,
+ * so a retry, a replay or a second run converges.
+ */
+export const hostEventCaseViewAttendeeProjections = defineProjections(
+  "eventAttendees", [{
+    id: "hostEventCaseView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange("eventAttendees", change.documentId,
+      change.before, change.after),
+  }]);
+
+/**
  * An event's organizer, status or end: its open case views.
  * Served by the events dispatcher (issue #2451); it re-reads its
  * sources, so a retry or a replay converges.
