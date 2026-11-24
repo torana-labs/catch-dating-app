@@ -17,7 +17,15 @@ import {readCaptureArchive} from "../import_hosted_captures.mjs";
 // the render and reuse jobs re-verify every seed as they verify a committed PNG.
 
 const manifestPath = "tool/marketing/capture_manifest.json";
+// Runs listed per producer workflow. CI runs dozens of times an hour, so a
+// short listing loses a fresh render within minutes and the next PR renders
+// everything again on macOS.
+export const SEED_RUN_LISTING = 100;
+// Most bundles opened per plan.
 export const SEED_LOOKBACK = 20;
+// Most run-artifact listings per plan: a plan that finds nothing stops here
+// instead of listing every candidate run's artifacts (GITHUB_TOKEN rate limit).
+export const SEED_RUN_LOOKUPS = 100;
 // Workflows whose runs upload canonical-marketing bundles: CI's capture lane,
 // the Marketing Website release and the capture workflow's own dispatch and
 // label runs (a reusable workflow's artifacts belong to its caller's run).
@@ -86,14 +94,16 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
     for (const file of PRODUCER_WORKFLOWS) {
       const workflow = await request(`repos/${repository}/actions/workflows/${file}`);
       workflowIds.set(file, workflow.id);
-      listed.push(...(await request(`repos/${repository}/actions/workflows/${workflow.id}/runs?per_page=${SEED_LOOKBACK}`)).workflow_runs);
+      listed.push(...(await request(`repos/${repository}/actions/workflows/${workflow.id}/runs?per_page=${SEED_RUN_LISTING}`)).workflow_runs);
     }
     const candidates = seedRuns({repositoryId, workflowIds, runs: listed});
     let font = null;
     let consulted = 0;
+    let lookups = 0;
     let remaining = stale();
     for (const producer of candidates) {
-      if (!remaining.size || consulted >= SEED_LOOKBACK) break;
+      if (!remaining.size || consulted >= SEED_LOOKBACK || lookups >= SEED_RUN_LOOKUPS) break;
+      lookups += 1;
       const artifact = seedArtifact({run: producer, artifacts: (await request(
         `repos/${repository}/actions/runs/${producer.id}/artifacts?per_page=100`)).artifacts});
       if (!artifact) continue;

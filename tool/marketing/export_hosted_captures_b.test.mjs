@@ -11,7 +11,7 @@ import {pathToFileURL} from "node:url";
 import {extractSteps} from "../harness/lib/workflow_steps.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {canonicalInventory, exportHostedCaptures, MAX_CAPTURES, resolveCaptureRequest} from "./export_hosted_captures.mjs";
-import {planHostedCaptures} from "./lib/capture_seeds.mjs";
+import {planHostedCaptures, SEED_RUN_LOOKUPS} from "./lib/capture_seeds.mjs";
 import {brand} from "@catch/brand";
 import {editProvenance, evaluate, fixture, flutterVersion, labelEvent, packBundle, preserveAndAdvance, producerWorkflowIds, repository, requestOptions, seedHarness, webStubs, writeCaptureCatalog} from "./lib/hosted_capture_support.test.mjs";
 
@@ -169,6 +169,22 @@ test("a change that leaves capture inputs alone is planned entirely from an earl
   assert.deepEqual([plan.render, plan.renderIds], [false, []]);
   assert.deepEqual(plan.seedIds.sort(), h.manifest.captures.map(c => c.id).sort());
   assert.deepEqual(plan.seedSources.map(s => s.event), ["merge_group"]);
+});
+
+
+test("a bundle behind many newer runs is still found, and a plan that finds none stops after the lookup cap", async t => {
+  // CI runs dozens of times an hour: a fresh render must survive 30 newer runs.
+  const found = seedHarness(t, {}, {}, {newerRuns: 30});
+  const plan = await found.plan();
+  assert.deepEqual([plan.render, plan.renderIds], [false, []]);
+  assert.deepEqual(plan.seedSources.map(s => s.runId), [70]);
+  // Behind 150 newer runs (50 per producer, all listed) the plan lists
+  // artifacts for exactly SEED_RUN_LOOKUPS runs and gives up before the bundle.
+  const missed = seedHarness(t, {}, {}, {newerRuns: 150});
+  const fallback = await missed.plan();
+  assert.equal(fallback.render, true);
+  assert.equal(missed.endpoints.filter(endpoint => endpoint.endsWith("/artifacts?per_page=100")).length, SEED_RUN_LOOKUPS);
+  assert.ok(missed.endpoints.every(endpoint => !endpoint.endsWith("/runs/70/artifacts?per_page=100")));
 });
 
 
