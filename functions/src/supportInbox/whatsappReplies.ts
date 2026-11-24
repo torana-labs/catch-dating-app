@@ -6,6 +6,11 @@ import type {
 import type {AdminGetSupportConversationCallableResponse} from
   "../shared/generated/adminGetSupportConversationCallableResponse";
 import {SUPPORT_CONVERSATIONS} from "./conversations";
+import {
+  pageRemainingMessageExpiry,
+  readFirstMessagePage,
+  writeMessagePageExpiry,
+} from "./retention";
 
 // WhatsApp replies sent from Catch's number to a Support conversation, as
 // conversation state: the 24-hour customer-service window, the message that
@@ -159,6 +164,10 @@ export async function claimSupportWhatsappReply(
       providerMessageId: null,
       bodyHash: claim.bodyHash,
       deliveryErrorCode: null,
+      // A reply drafted on a closed conversation expires with it until
+      // its delivery reopens the conversation.
+      ...(conversation.status === "closed" && conversation.expiresAt ?
+        {expiresAt: conversation.expiresAt} : {}),
     } satisfies Message);
     context.onClaim?.(tx);
     return {kind: "claimed" as const,
@@ -187,7 +196,9 @@ export async function completeSupportWhatsappReply(
     .doc(input.conversationId);
   const messageRef = db.doc(messagePath(input.conversationId,
     input.messageId));
-  return db.runTransaction(async (tx) => {
+  let reopenedPage: FirebaseFirestore.QueryDocumentSnapshot[] | null = null;
+  const result = await db.runTransaction(async (tx) => {
+    reopenedPage = null;
     const [conversationSnap, messageSnap] = await Promise.all([
       tx.get(conversationRef), tx.get(messageRef),
     ]);
@@ -197,6 +208,10 @@ export async function completeSupportWhatsappReply(
         message.deliveryState !== "sending") {
       throw new Error("Support reply claim changed.");
     }
+    // A sent reply reopens a closed conversation, so its messages lose
+    // their expiry with it.
+    const page = !input.automatic && conversation.status === "closed" ?
+      await readFirstMessagePage(tx, db, input.conversationId) : null;
     const saved: Message = {...message, deliveryState: "accepted",
       providerMessageId: input.providerMessageId};
     tx.update(messageRef, {deliveryState: saved.deliveryState,
@@ -210,10 +225,21 @@ export async function completeSupportWhatsappReply(
       status: "waitingOnThem",
       lastMessageAt: input.now,
       lastMessagePreview: preview(message.text),
+      ...(page ? {expiresAt: null} : {}),
       updatedAt: input.now,
     });
+    if (page) {
+      writeMessagePageExpiry(tx, page, null);
+      reopenedPage = page;
+    }
     return saved;
   });
+  const page = reopenedPage as FirebaseFirestore.QueryDocumentSnapshot[] |
+    null;
+  if (page) {
+    await pageRemainingMessageExpiry(db, input.conversationId, page, null);
+  }
+  return result;
 }
 
 /**
