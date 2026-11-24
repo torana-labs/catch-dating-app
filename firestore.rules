@@ -3903,10 +3903,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    match /participantMetricCounters/{uid} {
-      allow read, write: if false;
-    }
-
     // ── Payments ──────────────────────────────────────────────────────────────
     // Server-owned Stripe Connect and Razorpay Route account state. New ids are
     // {uid}_{provider}; resource ownership keeps both direct reads and the

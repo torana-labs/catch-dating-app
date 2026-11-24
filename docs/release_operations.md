@@ -3679,8 +3679,7 @@ it runs again:
    untouched for safety review. It never deletes Cross Paths plans or Host
    inquiries.
 2. **Deck-era like facts.** These are `outgoing_like`, `incoming_like` and
-   `private_interest_*` facts in `participantSignalFacts`. Each batch reduces
-   `participantMetricCounters` by exactly the facts it deletes.
+   `private_interest_*` facts in `participantSignalFacts`.
 3. **`profileReaction_*` messages** left in chats it kept.
 4. **The deck-era `profileDecisions` documents**, which takes every like
    comment with them.
@@ -3843,7 +3842,8 @@ Firestore `eventSuccessScorecards` for past events keep aggregate counts until
 they are next refreshed.
 
 The `matches` and `participantMetricCounters` exports were removed because
-nothing reads them (FIX-5, #2447). Once the owner uninstalls `bq-host-matches`
+nothing reads them (FIX-5, #2447); the `participantMetricCounters` collection
+itself was removed later (FIX-14, #2450). Once the owner uninstalls `bq-host-matches`
 and drops `catch_analytics.matches_raw_changelog`, every exported chat row is
 gone, deck-era ones included, and the `matches` statements above no longer
 apply. The `Deck-era purge` workflow's `bigquery` mode cleans only the signal
