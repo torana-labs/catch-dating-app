@@ -3,11 +3,18 @@ import {isDeepStrictEqual} from "node:util";
 
 type FakeData = Record<string, unknown>;
 
+/** A document's update time, as stale-event guards compare it. */
+export interface FakeUpdateTime {
+  seconds: number;
+  nanoseconds: number;
+}
+
 class FakeSnapshot {
   constructor(
     readonly id: string,
     private readonly value?: FakeData,
-    readonly ref?: FakeDocReference
+    readonly ref?: FakeDocReference,
+    readonly updateTime?: FakeUpdateTime
   ) {}
 
   get exists(): boolean {
@@ -36,7 +43,8 @@ class FakeDocReference {
   }
 
   async get(): Promise<FakeSnapshot> {
-    return new FakeSnapshot(this.id, this.firestore.read(this.path), this);
+    return new FakeSnapshot(this.id, this.firestore.read(this.path), this,
+      this.firestore.updateTimeOf(this.path));
   }
 
   async set(value: FakeData): Promise<void> {
@@ -295,6 +303,8 @@ class FakeTransaction {
 
 export class FakeFirestore {
   private readonly docs = new Map<string, FakeData>();
+  private readonly updateTimes = new Map<string, FakeUpdateTime>();
+  private clock = 0;
   private transactionTail: Promise<unknown> = Promise.resolve();
   private nextAutoId = 0;
   failNextCommit = false;
@@ -327,10 +337,19 @@ export class FakeFirestore {
 
   write(path: string, value: FakeData): void {
     this.docs.set(path, structuredClone(value));
+    // Every write moves the document's update time forward.
+    this.clock += 1;
+    this.updateTimes.set(path, {seconds: this.clock, nanoseconds: 0});
   }
 
   remove(path: string): void {
     this.docs.delete(path);
+    this.updateTimes.delete(path);
+  }
+
+  /** The document's update time; undefined while it does not exist. */
+  updateTimeOf(path: string): FakeUpdateTime | undefined {
+    return this.updateTimes.get(path);
   }
 
   entries(): Array<[string, FakeData]> {
