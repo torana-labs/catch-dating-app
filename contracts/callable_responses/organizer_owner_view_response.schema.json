@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/organizer_owner_view_response.schema.json",
   "title": "OrganizerOwnerViewCallableResponse",
-  "description": "Callable response returned by getOrganizerOwnerView: who the caller is on this organiser's team, what they may do on the website, the last 30 days of page activity from organizerInsights, and the editable page content the owner panels start from.",
+  "description": "The website owner view of one organiser page, as the retired getOrganizerOwnerView callable (Nov 2026) returned it; hostOrganizerOwnerViews references its capabilities, links, about and photos, and the owner-view role and capability types come from it: who the caller is on this organiser's team, what they may do on the website, the last 30 days of page activity from organizerInsights, and the editable page content the owner panels start from.",
   "type": "object",
   "additionalProperties": false,
   "required": [
