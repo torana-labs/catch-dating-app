@@ -111,7 +111,12 @@ the full validation fallback.
 Graph checks, exact tool owners, and mandatory checks all expand through the
 same transitive `alsoCheckIds`; an unavailable required check fails planning.
 Identical check commands run once per invocation, preserving their first owner's
-order. When the required same-run React marketing lane owns validation, Tools
+order. A check written as `npm --prefix functions run build && <command>` runs
+the shared Functions build once per invocation, at the first check that needs
+it, then its own `<command>`; the build runs again only if `functions/src`, the
+Functions package files or `functions/lib` changed since (`SHARED_CHECK_PREREQUISITES`
+in `tool/lib/tool_impact.mjs`). A failed build fails every check that needs it.
+When the required same-run React marketing lane owns validation, Tools
 reuses its exact site build, Storybook build, accessibility gate, and visual
 comparisons. The React lane runs the visual comparisons only in the CI nightly
 (owner decision, 23 Nov 2026), so in the merge queue the report-only
