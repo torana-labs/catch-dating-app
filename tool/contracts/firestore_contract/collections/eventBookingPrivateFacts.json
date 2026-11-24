@@ -1,0 +1,27 @@
+{
+  "id": "eventBookingPrivateFacts",
+  "path": "eventBookingPrivateFacts/{bookingId}",
+  "rulesMatch": "/eventBookingPrivateFacts/{bookingId}",
+  "typescriptInterface": "EventBookingPrivateFactsDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/booking_privacy.rules.test.cjs",
+  "owner": "functions/src/shared/bookingPrivateFacts.ts, called in the booking's transaction by the booking, waitlist, offer and cancellation callables",
+  "writerContext": "shared",
+  "sharedWriterReason": "The booking commands (bookings) record the cohort in the booking's transaction, the organiser-routed payment cancellation (payments) reads it there, and account deletion (safety) deletes it with the account's bookings. One module writes it.",
+  "read": "server only; no client and no organiser reads it",
+  "write": "server only; written beside every booking or waitlist offer write that sets a cohort, deleted at account deletion",
+  "exportedFunctions": [
+    "signUpForFreeEvent",
+    "cancelEventSignUp",
+    "joinEventWaitlist",
+    "leaveEventWaitlist",
+    "decideEventJoinRequest",
+    "createEventWaitlistOffers",
+    "acceptEventWaitlistOffer",
+    "registerPublicEvent",
+    "requestAccountDeletion"
+  ],
+  "migrationNotes": [
+    "Issue #2493. Added 24 Nov 2026: a booking cohort encodes the guest's sexual orientation, and organisers read eventBookings and eventWaitlistOffers, so cohortAtSignup and cohortAtOffer moved here. tool/data/move_booking_cohorts.mjs copies the cohorts older writes left on bookings and offers here and removes them there."
+  ]
+}
