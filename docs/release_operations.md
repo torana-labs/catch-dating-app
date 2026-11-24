@@ -552,6 +552,12 @@ path outside its roots, or names a root that is not in the tree. Declared roots
 are trusted for computed paths, so the nightly full run is the backstop for a
 wrong declaration. Dart files anywhere in the repository are covered by the
 import graph.
+`dart run tool/harness/lib/flutter_test_selection.dart --probes-only true
+--head <sha> --output <file>` lists that always-run set at one commit, each
+test with `why`: `probe` (its imports reach a filesystem probe) or
+`reads_elsewhere` (a shared reader's relative reads were bounded for another
+package's directory). It selects nothing and writes no plan or shards; the
+nightly read-map shadow compares this set with what the tests actually read.
 Paths outside the packages the shards test (backend, web, design, docs,
 tooling, CI, golden and integration suites, the app packages' native folders,
 `integration_test/` and goldens, the `packages/catch_ui` and `packages/kernel`

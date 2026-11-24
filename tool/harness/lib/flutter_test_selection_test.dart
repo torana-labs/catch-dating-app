@@ -961,6 +961,31 @@ void main() {
         'test/probe_test.dart',
       ]);
     });
+    test(
+      'retained probes name the always-run set, and selection keeps exactly it',
+      () {
+        final extra = {
+          'test/cross_test.dart':
+              "import '../apps/host/test/support/fixture.dart'; void main() {}",
+        };
+        final probes = retainedProbes(
+          files: {...files, ...extra},
+          paths: {...paths, ...extra.keys},
+        );
+        expect(probes, {
+          'test/cross_test.dart': 'reads_elsewhere',
+          'test/probe_test.dart': 'probe',
+        });
+        // A change no test imports or reads selects exactly the retained probes:
+        // the descriptive set matches what selection keeps.
+        expect(
+          selected(appPlan({'apps/host/ios/Runner/Info.plist'}, extra: extra)),
+          probes.keys.toList(),
+        );
+        // Bounded readers in their own package are not retained.
+        expect(probes, isNot(contains('apps/host/test/fixture_test.dart')));
+      },
+    );
     test('test configs stop at the app package directory', () {
       expect(selected(appPlan({'apps/host/test/flutter_test_config.dart'})), [
         'apps/host/test/fixture_test.dart',
@@ -973,6 +998,79 @@ void main() {
         'test/probe_test.dart',
       ]);
     });
+  });
+  test('--probes-only reports the always-run set and writes no plan', () {
+    final root = Directory.systemTemp.createTempSync('catch-flutter-probes-');
+    final selector = File(
+      'tool/harness/lib/flutter_test_selection.dart',
+    ).absolute.path;
+    final packages = File('.dart_tool/package_config.json').absolute.path;
+    String git(List<String> args) {
+      final result = Process.runSync('git', args, workingDirectory: root.path);
+      expect(result.exitCode, 0, reason: result.stderr as String);
+      return (result.stdout as String).trim();
+    }
+
+    try {
+      git(['init', '--quiet']);
+      final files = {
+        ...fixture,
+        'test/probe_test.dart':
+            "import 'dart:io'; void main() => File(Platform.environment['P']!);",
+      };
+      for (final entry in files.entries) {
+        File('${root.path}/${entry.key}')
+          ..parent.createSync(recursive: true)
+          ..writeAsStringSync(entry.value);
+      }
+      git(['add', '.']);
+      git([
+        '-c',
+        'user.name=CI test',
+        '-c',
+        'user.email=ci@example.invalid',
+        'commit',
+        '--quiet',
+        '-m',
+        'fixture',
+      ]);
+      final head = git(['rev-parse', 'HEAD']);
+      final output = '${root.path}/out/probes.json';
+      final run = Process.runSync(Platform.resolvedExecutable, [
+        '--packages=$packages',
+        selector,
+        '--probes-only',
+        'true',
+        '--head',
+        head,
+        '--output',
+        output,
+      ], workingDirectory: root.path);
+      expect(run.exitCode, 0, reason: '${run.stdout}${run.stderr}');
+      expect(jsonDecode(File(output).readAsStringSync()), {
+        'sourceSha': head,
+        'probesRetained': [
+          {'test': 'test/probe_test.dart', 'why': 'probe'},
+        ],
+      });
+      expect(jsonDecode(run.stdout as String), {
+        'sourceSha': head,
+        'probesRetained': 1,
+      });
+      final invalid = Process.runSync(Platform.resolvedExecutable, [
+        '--packages=$packages',
+        selector,
+        '--probes-only',
+        'yes',
+        '--head',
+        head,
+        '--output',
+        output,
+      ], workingDirectory: root.path);
+      expect(invalid.exitCode, isNot(0));
+    } finally {
+      root.deleteSync(recursive: true);
+    }
   });
   test('Dart sources outside lib and test are covered by the import graph', () {
     final files = {
