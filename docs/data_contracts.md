@@ -3293,10 +3293,18 @@ booking was counted under (`cohortAtSignup`) and the cohort a live waitlist
 offer reserves (`cohortAtOffer`) live in the server-only
 `eventBookingPrivateFacts/{eventId}_{uid}`, written by
 `functions/src/shared/bookingPrivateFacts.ts` beside the booking or offer in
-the same transaction and deleted at account deletion. Every booking write
+the same transaction and deleted at account deletion. The event's totals
+by cohort (`cohortCounts`, `waitlistedCohortCounts`,
+`crossPathsPairHeldCohortCounts`) can point to one guest on a small event, so
+they live in the server-only `eventCohortCounts/{eventId}`, never on
+`events/{eventId}`: `updateEventBookingCounters` and
+`updateEventPairHoldCounters` write each map there and remove the event's
+copy in the same write, and admission logic reads them through
+`functions/src/domain/events/eventCohortCounts.ts`. Organisers keep only what
+the admission policy needs: gender totals stay on the event. Every booking write
 removes a cohort an older write left on the booking, and every offer write
-removes one left on the offer. `tool/data/move_booking_cohorts.mjs` moves the
-copies older writes left. The Host ops CSV has no cohort column, and an
+removes one left on the offer. `tool/data/move_booking_cohorts.mjs` and
+`tool/data/move_event_cohort_counts.mjs` move the copies older writes left. The Host ops CSV has no cohort column, and an
 organiser's hosts in an event chat never receive a guest's sensitive
 mini-profile answers (gender, age, relationship goal, drinking, smoking,
 children), even when the guest shared them with the other guests.
