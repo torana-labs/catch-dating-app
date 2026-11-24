@@ -1138,14 +1138,17 @@ export function publicProfileFromUserDoc(userDoc) {
     occupation: userDoc.occupation,
     company: userDoc.company,
     education: userDoc.education,
-    religion: userDoc.religion,
+    // Hide switches, as the Functions projection applies them (#2493):
+    // religion is hidden unless turned on.
+    ...(userDoc.prefsHideReligion === false ? {religion: userDoc.religion} : {}),
     languages: userDoc.languages,
-    relationshipGoal: userDoc.relationshipGoal,
-    drinking: userDoc.drinking,
-    smoking: userDoc.smoking,
+    ...(userDoc.prefsHideRelationshipGoal === true ? {} :
+      {relationshipGoal: userDoc.relationshipGoal}),
+    ...(userDoc.prefsHideDrinking === true ? {} : {drinking: userDoc.drinking}),
+    ...(userDoc.prefsHideSmoking === true ? {} : {smoking: userDoc.smoking}),
     workout: userDoc.workout,
     diet: userDoc.diet,
-    children: userDoc.children,
+    ...(userDoc.prefsHideChildren === true ? {} : {children: userDoc.children}),
     activityPreferences: normalizedActivityPreferences(userDoc),
   };
 }
