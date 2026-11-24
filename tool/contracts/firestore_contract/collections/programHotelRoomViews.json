@@ -18,7 +18,6 @@
     "onProgramHotelRoomHotelChanged",
     "onProgramHotelRoomLegChanged",
     "onProgramHotelRoomGuestChanged",
-    "onProgramHotelRoomProgramChanged",
     "dispatchOrganizerPrograms"
   ],
   "migrationNotes": [

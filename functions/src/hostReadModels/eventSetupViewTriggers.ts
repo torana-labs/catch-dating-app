@@ -139,15 +139,11 @@ export const hostEventSetupViewProjections = defineProjections("organizers", [{
   run: (change) => reconcileForChange("organizers", change.documentId,
     change.before, change.after),
 }]);
-export const onHostEventSetupViewAttendeeChanged = onDocumentWritten({
-  ...options, document: "eventAttendees/{documentId}",
-}, (event) => reconcileForWrite("eventAttendees", event));
 
 /**
  * An attendee write: its event's setup view.
- * dispatchEventAttendees (issue #2451) runs the same work; both run until the
- * old trigger retires, which is safe because it re-reads its sources,
- * so a retry, a replay or a second run converges.
+ * Served by dispatchEventAttendees (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
  */
 export const hostEventSetupViewAttendeeProjections = defineProjections(
   "eventAttendees", [{
@@ -168,15 +164,11 @@ export const onHostEventSetupViewWaitlistOfferChanged = onDocumentWritten({
 export const onHostEventSetupViewEventOfferChanged = onDocumentWritten({
   ...options, document: "organizerEventOffers/{documentId}",
 }, (event) => reconcileForWrite("organizerEventOffers", event));
-export const onHostEventSetupViewGuestPaymentChanged = onDocumentWritten({
-  ...options, document: `${GUEST_PAYMENTS}/{documentId}`,
-}, (event) => reconcileForWrite(GUEST_PAYMENTS, event));
 
 /**
  * A guest payment of any purpose: its event's setup view.
- * dispatchGuestPayments (issue #2451) runs the same work; both run until the
- * old trigger retires, which is safe because it re-reads its sources,
- * so a retry, a replay or a second run converges.
+ * Served by dispatchGuestPayments (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
  */
 export const hostEventSetupViewPaymentProjections = defineProjections(
   "guestPayments", [{
