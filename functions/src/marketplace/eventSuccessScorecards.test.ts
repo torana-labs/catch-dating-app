@@ -281,7 +281,7 @@ test("buildEventHostFunnelMetrics computes the operating funnel", () => {
 });
 
 test(
-  "invite link scorecard trigger ignores connection-counter writes",
+  "invite link scorecard trigger ignores writes that leave funnel counters unchanged",
   async () => {
     await onEventInviteLinkWrittenHandler(
       {
@@ -291,9 +291,7 @@ test(
         confirmedCount: 1,
         paidCount: 1,
         checkedInCount: 1,
-        catcherCount: 0,
-        matchCount: 0,
-        chatStartedCount: 0,
+        updatedAt: "BEFORE",
       } as never,
       {
         eventId: "event-1",
@@ -302,9 +300,7 @@ test(
         confirmedCount: 1,
         paidCount: 1,
         checkedInCount: 1,
-        catcherCount: 1,
-        matchCount: 1,
-        chatStartedCount: 1,
+        updatedAt: "AFTER",
       } as never,
       {
         firestore: () => {
@@ -533,12 +529,9 @@ test(
     >;
     assert.equal(scorecard.mutualMatchCount, 1);
     assert.equal(scorecard.chatStartedCount, 1);
-    assert.deepEqual(writes["eventInviteLinks/link-1"], {
-      catcherCount: 0,
-      matchCount: 1,
-      chatStartedCount: 1,
-      updatedAt: "SERVER_TIMESTAMP",
-    });
+    // FIX-12: invite links no longer carry per-link catch, match or chat
+    // counts, so the scorecard refresh never writes to them.
+    assert.equal(writes["eventInviteLinks/link-1"], undefined);
   }
 );
 

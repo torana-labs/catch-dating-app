@@ -4,7 +4,7 @@
   "rulesMatch": "/eventInviteLinks/{inviteLinkId}",
   "typescriptInterface": "EventInviteLinkDocument",
   "dartModel": "lib/contexts/events/domain/event_invite_link.dart",
-  "owner": "event invite link callables and event-success scorecard recomputation",
+  "owner": "event invite link callables and funnel-attribution triggers",
   "writerContext": "events",
   "read": "club host only",
   "write": "server only",
@@ -20,12 +20,11 @@
     "onEventParticipationWritten",
     "onBookingPaymentWritten",
     "dispatchGuestPayments",
-    "onEventWaitlistOfferWritten",
-    "onSwipeCreated",
-    "onMessageCreated"
+    "onEventWaitlistOfferWritten"
   ],
   "migrationNotes": [
     "Named host, direct-recipient, promoter, partner, and attendee-referrer links carry opaque versioned bearer tokens; secret material is never client-readable.",
-    "Share intent is a Catch-owned button action, not proof that WhatsApp or another destination received a message. Verified registration and check-in attribution is projected from canonical attendee facts and remains reversible."
+    "Share intent is a Catch-owned button action, not proof that WhatsApp or another destination received a message. Verified registration and check-in attribution is projected from canonical attendee facts and remains reversible.",
+    "Links carry no catch, match or chat counts (FIX-12): a direct-recipient or attendee-referrer link is effectively one person."
   ]
 }
