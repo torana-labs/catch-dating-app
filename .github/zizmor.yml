@@ -15,6 +15,12 @@ rules:
       # beyond the run's event, repository and branch, and keeps its own
       # permissions (read contents, dispatch dev-only runs, write issues).
       - cron-watchdog.yml
+      # Both wake only after main's own push CI runs (same repository, branch
+      # main), check out main, read nothing from the triggering run beyond its
+      # event, repository and branch, and keep their permissions; the gate job
+      # only reads artifacts.
+      - test-read-map.yml
+      - proof-reuse-daily.yml
   unpinned-uses:
     ignore:
       # Open work owns these files: codex/deploy-one-cli-run (backend deploy,

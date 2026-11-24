@@ -1,0 +1,27 @@
+{
+  "id": "ci:daily-once-gate",
+  "category": "ci",
+  "path": "tool/ci/daily_once_gate.mjs",
+  "command": "node tool/ci/daily_once_gate.mjs",
+  "surface": "remote-read",
+  "checkSafety": "local-readonly",
+  "status": "active",
+  "description": "Once-a-day gate for the report-only Test read map and Proof reuse daily, which also wake after each push CI run on main because scheduled runs start hours late: a dispatch always runs; a schedule or workflow_run wake runs only when the day's artifact (test-read-map-day-<date>, proof-reuse-daily-<date>) does not exist yet and, with --not-before-hour, only from that UTC hour. Reads the Actions artifacts API and writes run and reason to GITHUB_OUTPUT.",
+  "checks": [
+    "node --check tool/ci/daily_once_gate.mjs",
+    "node --test tool/ci/daily_once_gate.test.mjs"
+  ],
+  "impactPaths": [
+    ".github/workflows/proof-reuse-daily.yml",
+    ".github/workflows/test-read-map.yml",
+    "tool/ci/daily_once_gate.test.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "role": "finder",
+  "runbook": "docs/release_operations.md#test-read-map"
+}
