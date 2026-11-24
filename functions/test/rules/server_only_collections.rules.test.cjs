@@ -40,6 +40,7 @@ const SERVER_ONLY = [
   "demoOpsEvents",
   "demoOpsRequests",
   "discoverySettings",
+  "dataToolRuns",
   "dispatchDeadLetters",
   "eventApprovalNotificationBudgets",
   "eventApprovalNotificationPreferences",

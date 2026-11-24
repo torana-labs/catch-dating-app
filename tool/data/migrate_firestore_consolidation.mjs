@@ -14,6 +14,7 @@ import {
   summarizePlan,
   writePlanBackup,
 } from "./lib/copy_forward.mjs";
+import {withRunRecord} from "./lib/run_record.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const requireFromFunctions = createRequire(
@@ -67,10 +68,30 @@ export async function main(argv = process.argv.slice(2)) {
     return;
   }
   writePlanBackup(args.backupFile, plans);
-  for (const plan of plans) {
-    const result = await applyMigrationPlan(db, plan);
-    console.log(`Applied ${result.migration}: created ${result.created} document(s).`);
-  }
+  const {runId} = await applyPlans(db, plans, {projectId});
+  console.log(`Run record: dataToolRuns/${runId}`);
+}
+
+/**
+ * Applies the plans inside one run record (dataToolRuns), counting the
+ * documents each migration created.
+ * @param {FirebaseFirestore.Firestore} db Admin Firestore.
+ * @param {object[]} plans Plans from planMigration.
+ * @param {object} options projectId, and for tests now and commit.
+ * @return {Promise<{runId: string, counts: Record<string, number>}>}
+ */
+export function applyPlans(db, plans, options) {
+  return withRunRecord(db, {
+    tool: import.meta.url,
+    scope: plans.map((plan) => plan.migration).join(","),
+    ...options,
+  }, async ({counts}) => {
+    for (const plan of plans) {
+      const result = await applyMigrationPlan(db, plan);
+      counts[`${result.migration}.created`] = result.created;
+      console.log(`Applied ${result.migration}: created ${result.created} document(s).`);
+    }
+  });
 }
 
 function printSummary(summary) {

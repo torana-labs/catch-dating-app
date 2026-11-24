@@ -1,0 +1,39 @@
+{
+  "id": "data:run-record-adoption",
+  "category": "data",
+  "path": "tool/data/check_run_records.mjs",
+  "command": "node tool/data/check_run_records.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Fails when a writing tool under tool/data/ (manifest surface remote-write or remote-destructive) does not record its applied runs in dataToolRuns through tool/data/lib/run_record.mjs. Tools that predate the helper are listed as legacy, and the list only shrinks.",
+  "impactPaths": [
+    "tool/data/*.mjs",
+    "tool/data/lib/run_record.mjs",
+    "tool/data/lib/run_record.test.mjs",
+    "tool/data/lib/run_record_test_support.mjs",
+    "tool/manifest/tools/data.*.json"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "checks": [
+    "node --check tool/data/check_run_records.mjs",
+    "node --test tool/data/check_run_records.test.mjs tool/data/lib/run_record.test.mjs",
+    "node tool/data/check_run_records.mjs"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "DATA-TOOL-RUN-RECORD-001",
+      "title": "Writing data tools record each applied run",
+      "appliesTo": [
+        "tool/data/*.mjs",
+        "tool/manifest/tools/data.*.json"
+      ],
+      "instruction": "A tool under tool/data/ that writes to Firestore wraps its apply phase in withRunRecord from tool/data/lib/run_record.mjs, so dataToolRuns holds the tool, commit, project, counts and times of every applied run. Dry runs write nothing. Remove a legacy tool from the check's list when it adopts the helper."
+    }
+  ]
+}
