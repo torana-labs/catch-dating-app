@@ -16,7 +16,6 @@ const privatePaths = [
   "salesPrivacyRestrictions/host-one", "salesPrivacyPolicies/current",
   "salesPrivacyPlans/plan-one", "salesPrivacyBatchReceipts/receipt-one",
   "salesImportHistoryRows/row-one", "salesImportHistoryRecords/record-one",
-  "salesIntakeLinks/synthetic-private",
   "salesHostSettlementAttestations/synthetic-private",
   "salesHostSettlementEvidenceUses/synthetic-private",
   "salesHostSettlementIdentities/synthetic-private",
