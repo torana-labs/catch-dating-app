@@ -3,6 +3,7 @@
   "path": "hostProfiles/{uid}",
   "rulesMatch": "/hostProfiles/{uid}",
   "typescriptInterface": "HostProfileDocument",
+  "rulesTestFile": "functions/test/rules/host_profiles.rules.test.cjs",
   "dartModel": "lib/contexts/organizers/domain/host_profile.dart",
   "owner": "professional host identity owned by the authenticated host; seeded and projected by organizer/profile functions",
   "writerContext": "organizers",
@@ -20,6 +21,11 @@
       "rulesMustContain": [
         "isValidHostProfile",
         "hostProfileServerOwnedFields"
+      ],
+      "rulesTestNames": [
+        "denies the host marking themselves verified",
+        "denies the host linking themselves to organizers",
+        "denies the host setting or changing the avatar URL"
       ]
     },
     {
