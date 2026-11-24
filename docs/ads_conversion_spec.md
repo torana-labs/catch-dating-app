@@ -265,6 +265,14 @@ its plus sign; Meta takes the digest of the same number as digits only, country
 code first and no plus (`hashedPhone` and `hashedPhoneForMeta` in
 `hostConversions.ts`). Raw contact details never leave the server.
 
+The only email a host conversion or customer list sends is the account's
+Firebase Auth email when Auth has verified it (an email-link check, or a
+Google or Apple sign-in): `verifiedAuthEmail` in
+`functions/src/acquisition/adMatching/verifiedEmail.ts`. `users.email` and
+`organizers.email` are typed and never checked, so they could name someone
+else; they are never uploaded and never used to attach a Meta lead, but they
+still count for opt-outs.
+
 A delivery is sent only when the person has not opted out of ad matching (see
 [Ad-matching notice and opt-out](#ad-matching-notice-and-opt-out)) and the
 account is not deleted. The queue checks the opt-out record at enqueue, where an
@@ -356,9 +364,11 @@ creates it when missing.
   `adminRoleAssignments` record), a test or demo account (`synthetic`,
   `demoOps`, `demoOpsId`, `seedPrefix` or `scenario`), sign-in disabled or a
   restricted, suspended or banned safety standing, under 18 by date of birth,
-  an opted-out phone, account email or organizer email, or no contact key.
+  an opted-out phone, verified email, account email or organizer email, or no
+  contact key (no E.164 phone and no verified email).
 - **Upload.** Rows are `[EMAIL, PHONE]`: the SHA-256 of the trimmed, lowercased
-  email (the owner's, else the organizer's) and of the E.164 phone as digits
+  verified Firebase Auth email (never the typed account or organizer email)
+  and of the E.164 phone as digits
   only, an empty string for a missing key. Each run replaces the whole list
   through `/{audience_id}/usersreplace` in one session of 10,000-row batches,
   so removals and opt-outs leave Meta within a day. When no one qualifies, the

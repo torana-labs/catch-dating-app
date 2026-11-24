@@ -33,6 +33,7 @@
   "getInstantDraft",
   "getOrganizerCrmSummary",
   "getOrganizerEventSetupDefaults",
+  "getOrganizerOwnerView",
   "getOrganizerProviderSetup",
   "getOrganizerWhatsappThread",
   "getParticipantActivity",
