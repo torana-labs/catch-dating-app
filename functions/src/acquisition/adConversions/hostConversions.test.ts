@@ -84,15 +84,16 @@ const owner = {phoneNumber: "+919876543210", email: ""};
 
 test("one record per destination, holding only digests", () => {
   const records = hostDeliveryRecords({organizerId: "org-1",
-    conversion: "organizer_qualified", organizer, owner, nowMillis: now});
+    conversion: "organizer_qualified", organizer, owner, nowMillis: now,
+    verifiedEmail: " Host@Example.com "});
   assert.deepEqual(records.map((r) => r.destination), ["meta", "google"]);
   assert.equal(records[0].eventId, records[1].eventId);
   assert.match(records[0].deliveryId, /^meta_hc_[a-f0-9]{32}$/u);
   const text = JSON.stringify(records);
   assert.equal(text.includes("+919876543210"), false);
-  assert.equal(text.includes("club@example.com"), false);
+  assert.equal(text.includes("host@example.com"), false);
   assert.equal(records[0].matching.emailSha256,
-    hashedEmail("club@example.com"));
+    hashedEmail("host@example.com"));
   assert.equal(records[0].expiresAt.toMillis() - now, 7 * day);
   // Deleted owners and owners with no contact key are skipped.
   assert.deepEqual(hostDeliveryRecords({organizerId: "org-1",
@@ -101,6 +102,20 @@ test("one record per destination, holding only digests", () => {
   assert.deepEqual(hostDeliveryRecords({organizerId: "org-1",
     conversion: "organizer_signup", organizer: {...organizer, email: ""},
     owner: {phoneNumber: "", email: ""}, nowMillis: now}), []);
+});
+
+test("a typed, unverified email is never a matching key", () => {
+  // The account and organizer emails are typed and never checked.
+  const typed = {phoneNumber: "+919876543210", email: "typed@example.com"};
+  const [record] = hostDeliveryRecords({organizerId: "org-1",
+    conversion: "organizer_qualified", organizer, owner: typed,
+    nowMillis: now, verifiedEmail: null});
+  assert.equal(record.matching.emailSha256, null);
+  assert.equal(record.matching.phoneSha256, hashedPhone("+919876543210"));
+  // With no phone, typed emails alone give the platforms nothing to match.
+  assert.deepEqual(hostDeliveryRecords({organizerId: "org-1",
+    conversion: "organizer_qualified", organizer,
+    owner: {...typed, phoneNumber: ""}, nowMillis: now}), []);
 });
 
 test("an opted-out owner's records are born cancelled without digests",
@@ -121,7 +136,8 @@ test("an opted-out owner's records are born cancelled without digests",
 
 test("wire payloads carry hashed keys and the shared event ID", () => {
   const [meta, google] = hostDeliveryRecords({organizerId: "org-1",
-    conversion: "organizer_qualified", organizer, owner, nowMillis: now});
+    conversion: "organizer_qualified", organizer, owner, nowMillis: now,
+    verifiedEmail: "host@example.com"});
   const event = metaEvent(meta);
   assert.equal(event.event_name, "QualifiedHost");
   assert.equal(event.event_id, meta.eventId);

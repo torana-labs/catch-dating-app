@@ -24,6 +24,7 @@ import {
   hostContactDigests,
   inAdMatchingOptOuts,
 } from "../adMatching/optOuts";
+import {verifiedAuthEmail} from "../adMatching/verifiedEmail";
 import {
   MetaAudienceError,
   type MetaAudienceRow,
@@ -38,7 +39,8 @@ import {
  * Meta customer-file audience of the owners of organizers with a first
  * booked event, rebuilt and replaced whole every day so removals and
  * opt-outs leave Meta within a day. Only hashed phone (Meta's digits-only
- * form) and email are uploaded; the run keeps counts, never identifiers.
+ * form) and the account's verified Firebase Auth email are uploaded; the
+ * run keeps counts, never identifiers.
  * Google Customer Match is not built: the Ads account is not eligible yet.
  */
 export const adAudiencesMode = defineString("AD_AUDIENCES_MODE",
@@ -64,6 +66,9 @@ export interface AuthFacts {
   disabled: boolean;
   /** Holds an Admin role claim, current or retired. */
   staff: boolean;
+  /** The Auth email when Auth has verified it, else null
+   * (`verifiedAuthEmail`). The only email a row may carry. */
+  verifiedEmail: string | null;
 }
 
 export interface HostAudienceInput {
@@ -159,8 +164,9 @@ export function hostAudienceMembers(input: HostAudienceInput):
       excluded.underAge += 1;
       continue;
     }
-    const emailSha256 = hashedEmail(user.email) ??
-      hashedEmail(organizer?.email);
+    // Only a verified email is uploaded; the typed account and organizer
+    // emails still count for opt-outs below.
+    const emailSha256 = hashedEmail(auth.verifiedEmail);
     const phoneSha256 = hashedPhone(user.phoneNumber);
     if (inAdMatchingOptOuts(input.optedOut, {phoneSha256, emailSha256}) ||
         hostContactDigests(user, organizer)
@@ -236,7 +242,8 @@ export async function firebaseAuthFacts(uids: string[]):
       const claims = user.customClaims ?? {};
       facts.set(user.uid, {disabled: user.disabled,
         staff: Object.entries(claims).some(([claim, value]) =>
-          value === true && staffClaims.has(claim))});
+          value === true && staffClaims.has(claim)),
+        verifiedEmail: verifiedAuthEmail(user)});
     }
   }
   return facts;
