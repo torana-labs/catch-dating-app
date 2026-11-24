@@ -5246,7 +5246,8 @@ it in the same transaction as the programme or grant
 `functions/src/domain/access/programAccessGrants.ts`), so a grant or revocation
 is in force the moment its command commits and no trigger stands between a
 command and the rules. Step 1 writes programme scopes
-(`program__{programId}__{uid}`); event and organiser scopes follow. The
+(`program__{programId}__{uid}`) and step 2 event scopes
+(`event__{eventId}__{uid}`, below); organiser scopes follow. The
 programme document carries `role` (`owner` for the creator, else `staff`),
 `status`, `activeFromMillis`, `expiresAtMillis`, `assignments`, `grantedBy`,
 `revision`, `updatedAt` and `reach`: the expiry maps below, computed by the same
@@ -5943,6 +5944,20 @@ read and all writes are denied. Staff operate through callables
 and the restricted Host operator route,
 which never grants CRM, campaign, import, provider, event-edit or organizer-wide
 authority. Organizer managers continue to work without a grant.
+
+Security rules never read `eventStaffGrants` for authority (#2474 step 2).
+`grantEventStaff`, `revokeEventStaff` and `setEventAssistanceGroupStaff` write
+`accessGrants/event__{eventId}__{uid}` beside the grant in one transaction
+(`functions/src/domain/access/eventAccessGrants.ts`): `role: staff`, `status`,
+`expiresAtMillis` (the grant's expiry), `reach.permissions` (each event-wide
+permission to the instant the operator window ends, as
+`eventOperatorExpiryMillis` computes it, never extended by a group duty) and
+`reach.groupDuties` (`groupId__duty` to that duty's instant). The roster, claim
+queue, door list and private event rules (`hasActiveEventOperatorGrant`,
+`hasActiveEventStaffGrant`) check the document, its organiser against the
+event's, and the instant against the request time. The `access-grants-events`
+migration creates documents for grants written before the transactional
+writers, then refreshes them.
 
 The same staff document optionally carries `groupDuties`: a lead, pacer or
 sweep duty for each saved group, with its own expiry and reviewed source hash.
