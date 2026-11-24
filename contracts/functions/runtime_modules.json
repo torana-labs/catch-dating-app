@@ -532,7 +532,6 @@
     "OrganizerTrackingSettingsDocument",
     "OrganizerInsightsDocument",
     "OrganizerFollowerMessageQuotaDocument",
-    "GetOrganizerOwnerViewCallablePayload",
     "OrganizerOwnerViewCallableResponse",
     "ManageOrganizerOwnerPageCallablePayload",
     "ManageOrganizerOwnerPageCallableResponse",

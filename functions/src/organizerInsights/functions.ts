@@ -3,5 +3,4 @@
 
 export {rollupOrganizerInsightsDaily} from
   "./insightsRollup";
-export {getOrganizerOwnerView} from "./ownerView";
 export {manageOrganizerOwnerPage} from "./ownerPage";

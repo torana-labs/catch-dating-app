@@ -10,8 +10,7 @@ import {getOrganizerBillingStatusHandler} from
   "../money/organizerBillingStatus";
 import {getOrganizerEntitlementHandler} from
   "../entitlements/organizerEntitlementRead";
-import {getOrganizerOwnerViewHandler, insightsWindow} from
-  "../organizerInsights/ownerView";
+import {ownerViewCapabilities} from "../organizerInsights/ownerAccess";
 import {
   reconcileAllOrganizerBillingViews,
   reconcileOrganizerBillingView,
@@ -120,19 +119,30 @@ test("the entitlement view is the callable's grants without the clock",
     assert.equal(fake.get("hostOrganizerEntitlementViews/org"), undefined);
   });
 
-test("the owner view holds the callable's facts, the window is the reader's",
+test("the owner view holds the page facts, the window is the reader's",
   async () => {
     const now = new Date(Date.UTC(2026, 10, 20, 9));
     const day = (offset: number) => new Date(now.getTime() -
       offset * 86_400_000).toISOString().slice(0, 10);
+    const key = (offset: number) => day(offset).replace(/-/gu, "");
     const fake = store({
-      [`organizerInsights/org_${day(2).replace(/-/gu, "")}`]: {
+      [`organizerInsights/org_${key(2)}`]: {
         organizerId: "org", date: day(2), visits: 12, linkClicks: 3,
         bookingClicks: 1, newFollowers: 2,
         sources: [{source: "instagram", clicks: 3}],
         links: [{linkId: "l1", clicks: 3}], computedAtMillis: 1},
-      [`organizerInsights/org_${day(35).replace(/-/gu, "")}`]: {
+      [`organizerInsights/org_${key(35)}`]: {
         organizerId: "org", date: day(35), visits: 99, linkClicks: 0,
+        bookingClicks: 0, newFollowers: 0, sources: [], links: [],
+        computedAtMillis: 1},
+      // Another organiser's document under a forged id is never kept.
+      [`organizerInsights/org_${key(3)}`]: {
+        organizerId: "org-2", date: day(3), visits: 900, linkClicks: 0,
+        bookingClicks: 0, newFollowers: 0, sources: [], links: [],
+        computedAtMillis: 1},
+      // Days beyond the 40 the view keeps are left out.
+      [`organizerInsights/org_${key(45)}`]: {
+        organizerId: "org", date: day(45), visits: 7, linkClicks: 0,
         bookingClicks: 0, newFollowers: 0, sources: [], links: [],
         computedAtMillis: 1},
       "organizerFollowerMessageQuotas/org_202611": {organizerId: "org",
@@ -143,28 +153,29 @@ test("the owner view holds the callable's facts, the window is the reader's",
     const view = fake.get("hostOrganizerOwnerViews/org")!;
     assert.equal(validateOwner(view), true,
       JSON.stringify(validateOwner.errors));
-    const callable = await getOrganizerOwnerViewHandler(request("owner"),
-      {firestore: () => db, now: () => now,
-        findWhatsappSender: async () => null});
     assert.equal(view.ownerUid, "owner");
-    assert.deepEqual((view.capabilitiesByRole as Record<string, unknown>)
-      .owner, callable.capabilities);
-    assert.deepEqual(view.links, callable.links);
-    assert.equal(view.about, callable.about);
-    assert.deepEqual(view.photos, callable.photos);
+    assert.deepEqual(view.capabilitiesByRole, {
+      owner: [...ownerViewCapabilities.owner],
+      editor: [...ownerViewCapabilities.editor],
+      analyst: [...ownerViewCapabilities.analyst]});
+    const editor = (view.capabilitiesByRole as Record<string, string[]>)
+      .editor;
+    assert.equal(editor.includes("about"), false);
+    assert.equal(editor.includes("settings"), false);
+    assert.deepEqual(view.links, []);
+    assert.equal(view.about, "  Runs every Sunday.  ");
+    assert.deepEqual(view.photos, [{id: "p1",
+      url: "https://example.com/p1.jpg", thumbnailUrl: null}]);
     assert.deepEqual(view.followerMessageMonths, [{month: "2026-11",
       used: 1}]);
-    assert.equal(view.followerMessageLimit, callable.followerMessages.limit);
+    assert.equal(view.followerMessageLimit, 2);
     assert.equal(view.whatsappAvailable, false);
-    // The reader's 30-day window from the stored days matches the callable.
-    const days = view.insightDays as Array<{date: string}>;
-    assert.equal(days.length, 2);
-    const window = insightsWindow(now, Array.from({length: 30},
-      (_, index) => {
-        const date = day(30 - index);
-        const row = days.find((candidate) => candidate.date === date);
-        return row ? {...row, organizerId: "org", computedAtMillis: 1} as
-          never : null;
-      }));
-    assert.deepEqual(window, callable.insights);
+    // The stored days; the website works out its 30-day window from them.
+    assert.deepEqual(view.insightDays, [
+      {date: day(35), visits: 99, linkClicks: 0, bookingClicks: 0,
+        newFollowers: 0, sources: [], links: []},
+      {date: day(2), visits: 12, linkClicks: 3, bookingClicks: 1,
+        newFollowers: 2, sources: [{source: "instagram", clicks: 3}],
+        links: [{linkId: "l1", clicks: 3}]},
+    ]);
   });
