@@ -21,7 +21,7 @@ export const contactPermissionReceiptsCollection = "contactPermissionReceipts";
 export type ContactSender =
   | {kind: "catch"}
   | {kind: "organizer"; organizerId: string};
-/** The catch and organizer keys; event documents use eventContactPermissions. */
+/** Catch and organizer keys; event documents use eventContactPermissions. */
 export type ContactGrantKey = Extract<
   ContactPermissionDocument["granted"][number],
   "whatsapp:eventOperations" | "whatsapp:marketing" |

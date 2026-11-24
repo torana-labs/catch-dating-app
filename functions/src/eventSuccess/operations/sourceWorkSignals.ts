@@ -136,9 +136,10 @@ function scopeFor(collection: Collection, documentId: string,
     attendeeId = null;
     break;
   case "eventAssistanceGroupProgress": attendeeId = null; break;
+  // contactPermissions: one event-day channel grant, shaped by
+  // eventContactSourceChanges (issue #2494).
   case "eventAssistanceGuests":
   case "eventAssistancePermissions":
-  // One event-day channel grant, shaped by eventContactSourceChanges.
   case "contactPermissions":
   case "eventAssistanceMemberships": break;
   case "eventAssistanceMessages": {
