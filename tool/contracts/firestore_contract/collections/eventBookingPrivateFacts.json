@@ -23,5 +23,16 @@
   ],
   "migrationNotes": [
     "Issue #2493. Added 24 Nov 2026: a booking cohort encodes the guest's sexual orientation, and organisers read eventBookings and eventWaitlistOffers, so cohortAtSignup and cohortAtOffer moved here. tool/data/move_booking_cohorts.mjs copies the cohorts older writes left on bookings and offers here and removes them there."
-  ]
+  ],
+  "newCollectionRationale": {
+    "whyNotAnExistingCollection": "The cohort is a guest's sexual orientation and must be readable by no client and no organiser. eventBookings and eventWaitlistOffers, where it lived, are readable by the event's organiser managers, and security rules cannot hide one field of a document, so it needs its own server-only document.",
+    "readers": [
+      "cancelEventSignUp",
+      "joinEventWaitlist",
+      "decideEventJoinRequest",
+      "acceptEventWaitlistOffer",
+      "functions/src/shared/bookingPrivateFacts.ts",
+      "functions/src/events/eventPolicy.ts"
+    ]
+  }
 }
