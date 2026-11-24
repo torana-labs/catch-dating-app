@@ -121,7 +121,14 @@ reuses its exact site build, Storybook build, accessibility gate, and visual
 comparisons. The React lane runs the visual comparisons only in the CI nightly
 (owner decision, 23 Nov 2026), so in the merge queue the report-only
 `web:storybook-visuals` check is deferred to the nightly with them; a story
-that cannot render still fails the accessibility gate there. Postbuild, build-output, and Storybook configuration tests still run
+that cannot render still fails the accessibility gate there. When the plan
+does not select the marketing lane, Tools defers that report itself outside the
+nightly: CI passes `--defer-visual-report` unless its `visual_report` input is
+set (scheduled, or dispatched with full), and the runner prints
+"nightly-only visual report (see #2426)". On the nightly the report runs exactly
+once, in the React lane or in Tools. The marketing accessibility gate and its
+Storybook build still run in Tools on every event when marketing is not
+selected. Postbuild, build-output, and Storybook configuration tests still run
 in Tools. Standalone tool checks keep their own builds and browser gates. This
 reuse requires the React caller to retain its normal deployable build; changed
 commands execute until their equivalence is verified.

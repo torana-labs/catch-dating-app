@@ -1121,3 +1121,29 @@ test("sparse planner runs without loading or launching full-checkout producer ve
   assert.equal(refused.status, 1);
   assert.doesNotMatch(refused.stdout, /==>/u);
 });
+
+test("the nightly-only visual report deferral names exactly the manifest's report command", () => {
+  const source = fs.readFileSync(path.join(repositoryRoot, "tool/run.mjs"), "utf8");
+  const deferred = /function deferredVisualReport\(\{toolId, command\}\) \{\n\s+return toolId === "([^"]+)" &&\n\s+command === "([^"]+)";/u.exec(source);
+  assert.ok(deferred, "deferredVisualReport must compare a literal tool id and command");
+  const [, toolId, command] = deferred;
+  const tool = loadToolsManifest().tools.find((entry) => entry.id === toolId && entry.status === "active");
+  assert.ok(tool?.checks.includes(command), "the deferred command must be one of the tool's registered checks");
+  assert.match(command, /--report$/u, "only the report-only comparison is deferred");
+  // Its other checks (syntax, self-test, Storybook config) still run when deferred.
+  assert.ok(tool.checks.filter((check) => check !== command).length >= 2);
+  // The deferral is checked before React ownership, so a deferred run says why.
+  const loop = source.slice(source.indexOf("for (const {toolId, command} of uniqueToolChecks(compatible))"));
+  assert.ok(loop.indexOf("deferredVisualReport(") < loop.indexOf("reactOwnsMarketingCheck("));
+  assert.match(loop, /nightly-only visual report \(see #2426\)/u);
+  assert.match(source, /deferVisualReport: args\.includes\("--defer-visual-report"\)/u);
+});
+
+test("a deferred run still runs every other check and says the visual report is nightly-only", (context) => {
+  const fixture = createRunnerFixture(context);
+  const passed = run(["check", "fixture:check", "--defer-visual-report"], {cwd: fixture});
+  assert.equal(passed.status, 0, passed.stderr);
+  assert.match(passed.stdout, /==> fixture:check: node tool\/check\.mjs/u);
+  assert.match(passed.stdout, /fixture-check/u);
+  assert.doesNotMatch(passed.stdout, /nightly-only visual report/u);
+});

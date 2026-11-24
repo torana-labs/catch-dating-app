@@ -110,7 +110,8 @@ function listClosedTools(manifest, {category, json}) {
 }
 
 async function checkTools(args) {
-  const {categories, ids, manifestOnly, marketingChecksInReact, generatedInventoriesMaterialized} = parseCheckArgs(args);
+  const {categories, ids, manifestOnly, marketingChecksInReact, generatedInventoriesMaterialized,
+    deferVisualReport} = parseCheckArgs(args);
   const manifest = loadManifest();
   const tools = categories.length === 0 ? selectTools(manifest, {ids}) :
     categories.flatMap((category) => selectTools(manifest, {category, ids}));
@@ -146,7 +147,7 @@ async function checkTools(args) {
     requireSelection(tools.filter((tool) => tool.category === category), {category, ids});
   }
   requireSelection(tools, {ids});
-  await runChecks(tools, {marketingChecksInReact, generatedInventoriesMaterialized});
+  await runChecks(tools, {marketingChecksInReact, generatedInventoriesMaterialized, deferVisualReport});
 }
 
 // Checks read the Admin and Functions import graphs, which include modules their
@@ -170,6 +171,16 @@ function reactOwnsMarketingCheck({toolId, command}) {
         command === "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --report"));
 }
 
+// The Storybook visual report only reports pixel changes and never fails, so it
+// runs in the CI nightly alone (owner decision, 23 Nov 2026, #2426). CI passes
+// --defer-visual-report on every other run; standalone runs keep it.
+// A function, not a module constant: the CLI dispatches before later
+// top-level bindings initialise.
+function deferredVisualReport({toolId, command}) {
+  return toolId === "web:storybook-visuals" &&
+    command === "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --report";
+}
+
 function materializedInventoryOwnsCheck({toolId, command}) {
   return (toolId === "design:widget-catalog" && command === "node tool/design/generate_widget_catalog.mjs --check") ||
     (["ui-capture:route-inventory", "design:parity-gate"].includes(toolId) &&
@@ -186,7 +197,7 @@ function verifyProducerCommand(script, flag) {
 }
 
 async function runChecks(tools, {marketingChecksInReact = false,
-  generatedInventoriesMaterialized = false} = {}) {
+  generatedInventoriesMaterialized = false, deferVisualReport = false} = {}) {
   if (marketingChecksInReact && process.env.GITHUB_ACTIONS !== "true") {
     console.error("--marketing-checks-in-react requires the same-run CI marketing lane.");
     process.exitCode = 64;
@@ -245,6 +256,10 @@ async function runChecks(tools, {marketingChecksInReact = false,
     // CI's required aggregate owns the parallel React result. Match both the
     // tool and exact command: an altered check must execute until its new
     // equivalence is established. Standalone runs retain builds and browser gates.
+    if (deferVisualReport && deferredVisualReport({toolId, command})) {
+      console.log(`==> ${toolId}: nightly-only visual report (see #2426).`);
+      continue;
+    }
     if (marketingChecksInReact && reactOwnsMarketingCheck({toolId, command})) {
       console.log(`==> ${toolId}: provided by the required same-run React marketing lane.`);
       continue;
@@ -409,7 +424,8 @@ async function affectedToolChecks(args) {
     return;
   }
   await runChecks(tools, {marketingChecksInReact: options.marketingChecksInReact,
-    generatedInventoriesMaterialized: options.generatedInventoriesMaterialized});
+    generatedInventoriesMaterialized: options.generatedInventoriesMaterialized,
+    deferVisualReport: options.deferVisualReport});
 }
 
 function runTool(args) {
@@ -674,7 +690,8 @@ function parseCheckArgs(args) {
   });
   return {categories, ids, manifestOnly,
     marketingChecksInReact: args.includes("--marketing-checks-in-react"),
-    generatedInventoriesMaterialized: args.includes("--generated-inventories-materialized")};
+    generatedInventoriesMaterialized: args.includes("--generated-inventories-materialized"),
+    deferVisualReport: args.includes("--defer-visual-report")};
 }
 
 function parseAffectedToolArgs(args) {
@@ -695,6 +712,7 @@ function parseAffectedToolArgs(args) {
     mode: valueAfter(args, "--mode") ?? "pr",
     marketingChecksInReact: args.includes("--marketing-checks-in-react"),
     generatedInventoriesMaterialized: args.includes("--generated-inventories-materialized"),
+    deferVisualReport: args.includes("--defer-visual-report"),
     githubOutput: valueAfter(args, "--github-output"),
   };
 }
@@ -728,6 +746,8 @@ Commands:
     aggregate owns the same-run React marketing lane.
   --generated-inventories-materialized verifies this job's source-bound receipt
     and current output bytes before reusing route/catalog drift checks.
+  --defer-visual-report skips the report-only Storybook visual comparison, which
+    CI runs in its nightly alone (#2426); every other check still runs.
   run <tool-id> [args...]
 
 Examples:
