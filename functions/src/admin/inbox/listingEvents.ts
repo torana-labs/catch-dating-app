@@ -2,7 +2,8 @@
 import {packagedEventPublication} from "../../operations/supplyIntake/eventPublication";
 import {listingEventImportRow} from "../listingEventImports";
 import {InboxSourceKind, projectListingEvent, sourceCollections} from "./model";
-import {InboxSyncResult, syncInboxProjection, syncInboxSource} from "./store";
+import {InboxSyncResult, syncInboxProjection, syncInboxSource, syncInboxSourceFromStore} from "./store";
+import type {SourceVersion} from "../../shared/sourceVersion";
 
 type Data = Record<string, unknown>;
 
@@ -37,4 +38,15 @@ export async function syncInboxDocument(db: FirebaseFirestore.Firestore, kind: I
   const item = await syncInboxSource(db, kind, sourceId, data, now);
   if (kind !== "supplyIntakeRequest" || !data) return [item];
   return [item, ...await syncListingEventItems(db, sourceId, data, now)];
+}
+
+/**
+ * The trigger path: the source re-read in the item's transaction, skipping a
+ * stale event, then the waiting events of the request as it is stored now.
+ */
+export async function syncInboxDocumentFromStore(db: FirebaseFirestore.Firestore, kind: InboxSourceKind,
+  sourceId: string, eventVersion: SourceVersion | undefined, now: Date): Promise<InboxSyncResult[]> {
+  const {result, data} = await syncInboxSourceFromStore(db, kind, sourceId, eventVersion, now);
+  if (kind !== "supplyIntakeRequest" || !data) return [result];
+  return [result, ...await syncListingEventItems(db, sourceId, data, now)];
 }
