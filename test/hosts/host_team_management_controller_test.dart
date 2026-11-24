@@ -1,10 +1,9 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_team_management_controller.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../organizers/organizers_test_helpers.dart';
 
 void main() {
   group('HostTeamManagementController', () {

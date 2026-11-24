@@ -12,10 +12,10 @@ import 'package:catch_dating_app/pages/event/event_price_copy.dart';
 import 'package:catch_kernel/organizer_supply_capabilities.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/catch_async_state.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart' as organizers;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../events/events_test_helpers.dart' as events;
-import '../../organizers/organizers_test_helpers.dart' as organizers;
 
 final _l10n = AppLocalizationsEn();
 
