@@ -229,9 +229,11 @@ test("buildHostAnalyticsFromRecords aggregates host-safe metrics", () => {
     mutualMatchCount: 1,
     chatStartedCount: 1,
   }));
+  // These groups are below the dating-count floor; switch it off to check the
+  // arithmetic. The floor has its own tests below.
   const response = buildHostAnalyticsFromRecords(input, range, new Date(
     "2026-06-18T12:00:00.000Z"
-  ));
+  ), {groupSizeFloor: 0});
 
   assert.equal(response.scope.organizerName, "Neemwood Run Club");
   assert.deepEqual(response.scope.organizerIds, ["club-1"]);
@@ -372,7 +374,7 @@ test("buildHostAnalyticsFromRecords totals beyond the top event slice", () => {
     martRows: [...eventRows, organizerReviewRow],
   } as unknown as AnalyticsRecords, range, new Date(
     "2026-06-18T12:00:00.000Z"
-  ));
+  ), {groupSizeFloor: 0});
 
   assert.equal(response.topEvents.length, 25);
   assert.equal(metric(response, "bookings").value, 30);
@@ -679,8 +681,118 @@ function hostCallableFixture(moveEvent = false) {
     ({auth: {uid}, data}) as unknown as Parameters<
       typeof getHostAnalyticsHandler
     >[0];
-  return {organizer, deps, request, factReads: () => facts};
+  return {organizer, deps, request, factReads: () => facts, config: cached};
 }
+test("an event below the group-size floor returns no dating counts", () => {
+  const range = resolveAnalyticsRange({
+    rangePreset: "custom",
+    startDate: "2026-06-01",
+    endDate: "2026-06-30",
+    granularity: "month",
+  }, new Date("2026-06-18T12:00:00.000Z"));
+  const input = records();
+  // event-1: six guests came (records()). event-2: twelve came.
+  input.events.push({
+    ...input.events[0],
+    id: "event-2",
+    data: {
+      ...input.events[0].data,
+      startTime: "2026-06-14T13:30:00.000Z",
+      capacityLimit: 16,
+    },
+  } as unknown as AnalyticsRecords["events"][number]);
+  input.martRows.push(martRow({
+    eventId: "event-2",
+    eventTitle: "Supper club · 2026-06-14",
+    eventStartTime: "2026-06-14T13:30:00.000Z",
+    date: "2026-06-14",
+    capacityLimit: 16,
+    bookedCount: 14,
+    checkedInCount: 12,
+    mutualMatchCount: 4,
+    chatStartedCount: 3,
+  }));
+  // Prior period: a four-guest event whose counts must not set a baseline.
+  input.martRows.push(martRow({
+    eventId: "event-0",
+    date: "2026-05-20",
+    checkedInCount: 4,
+    mutualMatchCount: 2,
+    chatStartedCount: 1,
+  }));
+
+  // The platform default (10) applies when no floor is passed.
+  const response = buildHostAnalyticsFromRecords(input, range,
+    new Date("2026-06-18T12:00:00.000Z"));
+
+  const small = response.topEvents.find((row) => row.eventId === "event-1");
+  const large = response.topEvents.find((row) => row.eventId === "event-2");
+  assert.ok(small && large);
+  assert.equal(small.checkedInCount, 6);
+  assert.equal(small.mutualMatchCount, 0);
+  assert.equal(small.chatStartedCount, 0);
+  assert.equal(large.mutualMatchCount, 4);
+  assert.equal(large.chatStartedCount, 3);
+  // Totals and trend carry only the event at or above the floor.
+  assert.equal(metric(response, "connections").value, 4);
+  assert.equal(metric(response, "chats").value, 3);
+  assert.equal(metric(response, "connections").previousValue, 0);
+  assert.equal(metric(response, "chats").previousValue, 0);
+  assert.match(metric(response, "connections").caption ?? "",
+    /at least 10 guests/);
+  const matches = response.trend.reduce((sum, point) =>
+    sum + (point.metrics.matches ?? 0), 0);
+  const chats = response.trend.reduce((sum, point) =>
+    sum + (point.metrics.chats ?? 0), 0);
+  assert.equal(matches, 4);
+  assert.equal(chats, 3);
+  const floorRow = response.dataQuality.find((row) =>
+    row.id === "dating-count-group-floor");
+  assert.equal(floorRow?.state, "partial");
+  assert.match(floorRow?.detail ?? "", /1 event where fewer than 10/);
+  assert.equal(validateHostAnalyticsCallableResponse(response), true,
+    JSON.stringify(validateHostAnalyticsCallableResponse.errors));
+});
+
+test("the group-size floor counts operational check-ins and a set floor",
+  () => {
+    const range = resolveAnalyticsRange({
+      rangePreset: "custom",
+      startDate: "2026-06-01",
+      endDate: "2026-06-30",
+    }, new Date("2026-06-18T12:00:00.000Z"));
+    const input = records();
+    // The mart saw six; the roster has seven checked in.
+    input.operationalAttendees = Array.from({length: 7}, (_, index) => ({
+      id: `attendee-${index}`,
+      data: {eventId: "event-1", status: "checkedIn", source: "hostManual"},
+    })) as unknown as AnalyticsRecords["operationalAttendees"];
+
+    const atSeven = buildHostAnalyticsFromRecords(input, range,
+      new Date("2026-06-18T12:00:00.000Z"), {groupSizeFloor: 7});
+    assert.equal(atSeven.topEvents[0].mutualMatchCount, 3);
+    assert.equal(metric(atSeven, "connections").value, 3);
+
+    const atEight = buildHostAnalyticsFromRecords(input, range,
+      new Date("2026-06-18T12:00:00.000Z"), {groupSizeFloor: 8});
+    assert.equal(atEight.topEvents[0].mutualMatchCount, 0);
+    assert.equal(metric(atEight, "connections").value, 0);
+  });
+
+test("getHostAnalytics reads the floor from config/guestDataVisibility",
+  async () => {
+    const fixture = hostCallableFixture();
+    fixture.organizer.hostUserIds = ["manager"];
+    fixture.config.set("config/guestDataVisibility", {groupSizeFloor: 25});
+    const result = await getHostAnalyticsHandler(
+      fixture.request("manager", {organizerId: "org"}),
+      fixture.deps
+    );
+    assert.match(
+      result.summaryCards.find((card) => card.id === "chats")?.caption ?? "",
+      /at least 25 guests/
+    );
+  });
 
 test("provider booking clicks disclose missing " +
   "mart coverage and never imply purchases", () => {

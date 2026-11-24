@@ -11,6 +11,7 @@ import {
   reconcileProgramDoorJournalView,
   reconcileProgramDoorRow,
 } from "./programDoorViews";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true};
 const fanoutLimit = 600;
@@ -154,3 +155,81 @@ export const onProgramDoorStaffLabelChanged = onDocumentWritten({
     await reconcileProgramDoorJournalView(db, doc.id);
   }
 });
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const programStaffGrantsProjections = defineProjections(
+  "programStaffGrants", [
+    {
+      id: "programDoorStaffLabelChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after} = change;
+        const programId = programIdOf(before, after);
+        const uid = after?.uid ?? before?.uid;
+        if (!programId || typeof uid !== "string") return;
+        if (before && after && before.displayName === after.displayName) return;
+        const db = admin.firestore();
+        // One equality filter keeps this off the composite index list; the
+        // programme is checked on each entry.
+        const entries = await db.collection("programDoorJournal")
+          .where("actorUid", "==", uid).limit(fanoutLimit).get();
+        for (const doc of entries.docs) {
+          if (doc.data().programId !== programId) continue;
+          await reconcileProgramDoorJournalView(db, doc.id);
+        }
+      },
+    },
+  ]);
+
+export const programGuestsProjections = defineProjections("programGuests", [
+  {
+    id: "programDoorGuestChanged", kind: "projection",
+    when: () => true,
+    run: async (change) => {
+      const {before, after, documentId} = change;
+      const db = admin.firestore();
+      const guestId = documentId;
+      const programId = programIdOf(before, after);
+      if (!programId) return;
+      const watched = (data: Data) => [data?.displayName, data?.householdId];
+      if (before && after &&
+          JSON.stringify(watched(before)) === JSON.stringify(watched(after))) {
+        return;
+      }
+      await reconcileGuestRows(db, programId, guestId);
+      const views = await db.collection(programDoorJournalViewsCollection)
+        .where("programId", "==", programId).where("guestId", "==", guestId)
+        .limit(fanoutLimit).get();
+      for (const doc of views.docs) {
+        await reconcileProgramDoorJournalView(db, doc.id);
+      }
+    },
+  },
+]);
+
+export const programHouseholdsProjections = defineProjections(
+  "programHouseholds", [
+    {
+      id: "programDoorHouseholdChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after} = change;
+        const db = admin.firestore();
+        const programId = programIdOf(before, after);
+        if (!programId) return;
+        if (before && after && before.label === after.label &&
+          JSON.stringify(before.memberGuestIds) ===
+            JSON.stringify(after.memberGuestIds)) return;
+        const members = new Set<string>([...(before?.memberGuestIds ?? []),
+          ...(after?.memberGuestIds ?? [])]);
+        for (const guestId of members) {
+          await reconcileGuestRows(db, programId, guestId);
+        }
+      },
+    },
+  ]);

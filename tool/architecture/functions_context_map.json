@@ -284,6 +284,8 @@
     "functions/src/safety/accountDeletionSeats.ts writes eventSeatIdentityAliases",
     "functions/src/safety/accountDeletionSeats.ts writes eventSeatVerifiedPhones",
     "functions/src/safety/accountDeletionSeats.ts writes events",
+    "functions/src/safety/accountDeletionSupportRecords.ts writes accessApplications",
+    "functions/src/safety/accountDeletionSupportRecords.ts writes tryItWorkspaces",
     "functions/src/takedownRequests/admin.ts writes takedownRequests"
   ],
   "legacy": [

@@ -277,3 +277,35 @@ export const onHostRosterInsightBookingPaymentChanged = onDocumentWritten({
     after: event.data?.after.data(),
   });
 });
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const organizerContactsProjections = defineProjections(
+  "organizerContacts", [
+    {
+      id: "hostRosterInsightContactChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after, documentId} = change;
+        await reconcileForChange("organizerContacts", documentId, before,
+          after);
+      },
+    },
+  ]);
+
+export const organizerContactEventEdgesProjections = defineProjections(
+  "organizerContactEventEdges", [
+    {
+      id: "hostRosterInsightEdgeChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after, documentId} = change;
+        await reconcileForChange("organizerContactEventEdges", documentId,
+          before, after);
+      },
+    },
+  ]);

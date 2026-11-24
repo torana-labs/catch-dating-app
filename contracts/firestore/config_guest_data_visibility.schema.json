@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/config_guest_data_visibility.schema.json",
+  "title": "ConfigGuestDataVisibilityDocument",
+  "description": "Server-only platform setting stored at config/guestDataVisibility. groupSizeFloor is the smallest group of guests who came for which an organiser sees an event's catch, match or chat counts; below it they read as zero and add to no total or trend. With no document the floor is 10. Any other shape also reads as 10, because a privacy floor that cannot be read fails closed. functions/src/analytics/guestDataVisibility.ts parses exactly this shape.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "config_guest_data_visibility",
+  "x-firestore-path": "config/guestDataVisibility",
+  "x-document-id-field": "guestDataVisibility",
+  "x-owner": "the owner in the Firebase console (Admin credentials); read by getHostAnalytics",
+  "required": ["groupSizeFloor"],
+  "properties": {
+    "groupSizeFloor": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 500,
+      "description": "Smallest group of guests who came for which organisers see dating counts. Default 10."
+    },
+    "reason": {
+      "type": "string",
+      "description": "Why the floor is set, for the next reader."
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedBy": {
+      "type": "string",
+      "description": "Who set the floor."
+    }
+  }
+}

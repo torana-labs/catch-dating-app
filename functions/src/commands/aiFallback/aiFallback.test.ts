@@ -136,9 +136,11 @@ test("a paid read uses the federation token, settles priced cost, counts the rea
   assert.equal(JSON.stringify(day).includes("visitor-1"), false);
   const [row] = auditRows(db);
   valid(validate.audit, row, "audit");
-  assert.deepEqual({...row, createdAt: null}, {schemaVersion: 1, commandId: "guests.import-list",
+  assert.deepEqual({...row, createdAt: null, expiresAt: null}, {schemaVersion: 1, commandId: "guests.import-list",
     task: "guest-column-mapping", outcome: "paid", inputTokens: 300, outputTokens: 40, costMicros: 50,
-    monthKey: "2026-11", createdAt: null});
+    monthKey: "2026-11", createdAt: null, expiresAt: null});
+  // The TTL policy removes audit rows 400 days after they are written.
+  assert.deepEqual(row.expiresAt, stamp(NOW.getTime() + 400 * 24 * 60 * 60 * 1000));
   const [cached] = inCollection(db, "aiFallbackResults");
   valid(validate.results, cached, "result cache");
 });
