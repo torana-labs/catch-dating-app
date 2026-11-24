@@ -161,7 +161,7 @@ test("an opted-out phone or email cancels the record before any send",
         conversion: "organizer_qualified",
         organizer: {ownership: {state: "claimed", ownerUserId: "host-1"}},
         owner: {phoneNumber: "+919876543210", email: "host@example.com"},
-        nowMillis: now});
+        verifiedEmail: "host@example.com", nowMillis: now});
       const {db, docs} = fakeDb({
         "users/host-1": {phoneNumber: "+919876543210"},
         ...Object.fromEntries(withEmail.map((r) =>
@@ -238,7 +238,8 @@ test("enqueue records an opted-out owner's conversion as cancelled",
       ...optOut("email", hashedEmail("host@example.com")!),
     });
     assert.equal(await enqueueHostConversions({db, organizerId: "org-1",
-      conversions: ["organizer_signup"], nowMillis: now}), 2);
+      conversions: ["organizer_signup"], nowMillis: now,
+      verifiedEmail: async () => null}), 2);
     const queued = [...docs.entries()]
       .filter(([path]) => path.startsWith("adConversionDeliveries/"))
       .map(([, data]) => data as unknown as Delivery);
@@ -268,13 +269,58 @@ test("enqueue never attaches a lead that carries an opted-out identifier",
       ...optOut("email", leadEmail),
     });
     await enqueueHostConversions({db, organizerId: "org-1",
-      conversions: ["organizer_signup"], nowMillis: now});
+      conversions: ["organizer_signup"], nowMillis: now,
+      verifiedEmail: async () => null});
     const queued = [...docs.entries()]
       .filter(([path]) => path.startsWith("adConversionDeliveries/"))
       .map(([, data]) => data as unknown as Delivery);
     assert.equal(queued.length, 2);
     assert.ok(queued.every((r) => r.status === "pending" &&
       r.metaLeadId === null));
+  });
+
+test("enqueue sends only the verified Auth email, and matches leads by it",
+  async () => {
+    const queue = async (verified: string | null) => {
+      const {db, docs} = fakeDb({
+        "organizers/org-1": {ownership: {state: "claimed",
+          ownerUserId: "host-1"}, email: "club@example.com"},
+        "users/host-1": {phoneNumber: "+919876543210",
+          email: "typed@example.com"},
+        // A lead whose email is the typed one: never matched by it.
+        "metaLeadgenEvents/1234567890123": {status: "processed",
+          leadgenId: "1234567890123", phoneSha256: null,
+          emailSha256: hashedEmail("typed@example.com")},
+        "metaLeadgenEvents/1234567890999": {status: "processed",
+          leadgenId: "1234567890999", phoneSha256: null,
+          emailSha256: hashedEmail("verified@example.com")},
+      });
+      const asked: string[] = [];
+      await enqueueHostConversions({db, organizerId: "org-1",
+        conversions: ["organizer_signup"], nowMillis: now,
+        verifiedEmail: async (uid) => {
+          asked.push(uid);
+          return verified;
+        }});
+      assert.deepEqual(asked, ["host-1"]);
+      return [...docs.entries()]
+        .filter(([path]) => path.startsWith("adConversionDeliveries/"))
+        .map(([, data]) => data as unknown as Delivery);
+    };
+    const unverified = await queue(null);
+    assert.equal(unverified.length, 2);
+    for (const record of unverified) {
+      assert.equal(record.matching.emailSha256, null);
+      assert.equal(record.matching.phoneSha256,
+        hashedPhone("+919876543210"));
+      assert.equal(record.metaLeadId, null);
+    }
+    const verified = await queue("Verified@Example.com");
+    for (const record of verified) {
+      assert.equal(record.matching.emailSha256,
+        hashedEmail("verified@example.com"));
+      assert.equal(record.metaLeadId, "1234567890999");
+    }
   });
 
 test("an interrupted send is picked up again", async () => {

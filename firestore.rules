@@ -367,31 +367,36 @@ service cloud.firestore {
             || programReach(programId).functionScoped.get(duty + '__' + functionId, 0) > request.time.toMillis()));
     }
 
-    // When a grant's event-wide permissions end, as eventOperatorExpiryMillis
-    // reads it for the callables: operatorExpiresAt (null grants none); a
-    // grant written before that field holds its expiresAt for a check-in
-    // operator and nothing for an event operator. Group duties keep
-    // expiresAt later and never extend it.
-    function eventOperatorExpiresAt(grant) {
-      return grant.keys().hasAny(['operatorExpiresAt'])
-        ? grant.operatorExpiresAt
-        : (grant.role == 'checkInOperator' ? grant.expiresAt : null);
+    // An event staff member's authority, read from its
+    // accessGrants/event__{eventId}__{uid} document (#2474 step 2). The staff
+    // commands (grantEventStaff, revokeEventStaff and
+    // setEventAssistanceGroupStaff) write it beside the eventStaffGrants
+    // record in one transaction, so a grant or revocation is in force the
+    // moment it commits; rules never read the grant record for authority.
+    // reach.permissions already ends at the operator window
+    // eventOperatorExpiryMillis computes for the callables; a live group
+    // duty keeps the document live but never extends a permission.
+    function eventAccessPath(eventId) {
+      return /databases/$(database)/documents/accessGrants/$(accessGrantDocId('event', eventId, request.auth.uid));
+    }
+
+    function eventAccessLive(eventId, organizerId) {
+      let access = get(eventAccessPath(eventId)).data;
+      return access.scopeType == 'event'
+        && access.uid == request.auth.uid
+        && access.organizerId == organizerId
+        && access.status == 'active'
+        && access.expiresAtMillis != null
+        && request.time.toMillis() < access.expiresAtMillis;
     }
 
     function hasActiveEventOperatorGrant(eventId, permission) {
-      let grantPath = /databases/$(database)/documents/eventStaffGrants/$(
-        eventStaffGrantDocId(eventId, request.auth.uid));
       return isAuthed()
-        && exists(grantPath)
-        && get(grantPath).data.eventId == eventId
-        && get(grantPath).data.uid == request.auth.uid
-        && get(grantPath).data.organizerId
-          == get(/databases/$(database)/documents/events/$(eventId)).data.organizerId
-        && get(grantPath).data.status == 'active'
-        && get(grantPath).data.expiresAt > request.time
-        && eventOperatorExpiresAt(get(grantPath).data) != null
-        && eventOperatorExpiresAt(get(grantPath).data) > request.time
-        && permission in get(grantPath).data.permissions;
+        && exists(eventAccessPath(eventId))
+        && eventAccessLive(eventId,
+          get(/databases/$(database)/documents/events/$(eventId)).data.organizerId)
+        && get(eventAccessPath(eventId)).data.reach.permissions
+          .get(permission, 0) > request.time.toMillis();
     }
 
     function hasEventBookingStatus(eventId, uid, statuses) {
@@ -945,6 +950,12 @@ service cloud.firestore {
     // projection id and event id that still failed past the max age, for a
     // reconcile tool. Only Cloud Functions write it; TTL deletes it.
     match /dispatchDeadLetters/{deadLetterId} {
+      allow read, write: if false;
+    }
+
+    // Run records of backfill and migration tools (FIX-7): one per applied
+    // run, written by the tool with the Admin SDK; TTL deletes it.
+    match /dataToolRuns/{runId} {
       allow read, write: if false;
     }
 
@@ -3180,18 +3191,12 @@ service cloud.firestore {
         );
     }
 
-    // An active staff grant for the event, whatever its duties: staff open
-    // the event they work on in the Host app.
+    // A live event access document, whatever its duties: staff open the
+    // event they work on in the Host app.
     function hasActiveEventStaffGrant(eventId, organizerId) {
-      let grant = /databases/$(database)/documents/eventStaffGrants/$(
-        eventStaffGrantDocId(eventId, request.auth.uid));
       return isAuthed()
-        && exists(grant)
-        && get(grant).data.eventId == eventId
-        && get(grant).data.uid == request.auth.uid
-        && get(grant).data.organizerId == organizerId
-        && get(grant).data.status == 'active'
-        && get(grant).data.expiresAt > request.time;
+        && exists(eventAccessPath(eventId))
+        && eventAccessLive(eventId, organizerId);
     }
 
     // The canonical event holds booking counts by gender and cohort, Cross
@@ -4219,9 +4224,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /salesHostSettlementIdentities/{privateDocument=**} {
-      allow read, write: if false;
-    }
-    match /salesIntakeLinks/{privateDocument=**} {
       allow read, write: if false;
     }
     match /salesProviderAttempts/{privateDocument=**} {

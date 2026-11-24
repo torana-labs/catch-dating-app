@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/access_grants.schema.json",
   "title": "AccessGrantDocument",
-  "description": "One person's current authority over one scope, the document security rules get() by id to decide access (STR-2, FIX-10). Written in the same transaction as every grant, owner or revocation that changes it, never by a trigger, so a revocation is in force the moment its command commits. Holds authorisation only: ids, roles, duty names and expiry instants, no name, phone number or free text. Step 1 writes programme scopes (#2474); event and organiser scopes follow. No document, an inactive document, or an expiry instant at or before the request time means no access.",
+  "description": "One person's current authority over one scope, the document security rules get() by id to decide access (STR-2, FIX-10). Written in the same transaction as every grant, owner or revocation that changes it, never by a trigger, so a revocation is in force the moment its command commits. Holds authorisation only: ids, roles, duty names and expiry instants, no name, phone number or free text. Programme scopes since step 1 and event scopes since step 2 (#2474); organiser scopes follow. No document, an inactive document, or an expiry instant at or before the request time means no access.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "accessGrants",
@@ -29,13 +29,14 @@
     "scopeType": {
       "type": "string",
       "enum": [
-        "program"
+        "program",
+        "event"
       ],
       "description": "The kind of scope. The document id is scopeType__scopeId__uid."
     },
     "scopeId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId",
-      "description": "The scope's document id: an organizerPrograms id for a programme."
+      "description": "The scope's document id: an organizerPrograms id for a programme, an events id for an event."
     },
     "uid": {
       "type": "string",
@@ -45,7 +46,7 @@
     },
     "organizerId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId",
-      "description": "The organiser that owns the scope. It never changes for a programme."
+      "description": "The organiser that owns the scope. It never changes for a programme or an event."
     },
     "role": {
       "type": "string",
@@ -53,7 +54,7 @@
         "owner",
         "staff"
       ],
-      "description": "owner is the programme's creator and holds every duty and scope; staff hold the duties in reach. Organiser managers who neither created the programme nor hold a grant have no document: their setup access comes from the organiser."
+      "description": "owner is the programme's creator and holds every duty and scope; staff hold what reach names. Organiser managers have no programme or event document: their setup and event authority comes from the organiser."
     },
     "status": {
       "type": "string",
@@ -81,21 +82,6 @@
     "reach": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "duties",
-        "pickupAll",
-        "pickupScoped",
-        "hotelAll",
-        "hotelScoped",
-        "functionAll",
-        "functionScoped",
-        "programAll",
-        "workPickup",
-        "workHotel",
-        "workFunction",
-        "arrivalRoutes",
-        "tripRoutes"
-      ],
       "properties": {
         "duties": {
           "$ref": "#/definitions/expiryMap",
@@ -148,9 +134,17 @@
         "tripRoutes": {
           "$ref": "#/definitions/expiryMap",
           "description": "The transport trips the account's reconciliation viewer, transport dispatcher and coordinator assignments reach, as the retired listProgramTrips callable resolved them: key pickup|hotel with the same meaning as arrivalRoutes (an id or * on each side; a trip with no hotel is ~ on that side, which only * reaches). Capped at 300 routes per assignment, failing closed."
+        },
+        "permissions": {
+          "$ref": "#/definitions/expiryMap",
+          "description": "Event scope: each event-wide staff permission (viewRoster, setAttendance, reviewRuntimeClaims, publishLiveLocation) to the exclusive instant it ends, which is the operator window eventOperatorExpiryMillis computes, bounded by the grant's expiry. Group duties never extend it."
+        },
+        "groupDuties": {
+          "$ref": "#/definitions/expiryMap",
+          "description": "Event scope: groupId__duty to the exclusive instant that group duty ends."
         }
       },
-      "description": "The expiry maps security rules compare with request.time, computed by the same function that builds programAccessViews (programAccessViewFor), so rules need no clock-driven write. Empty for the owner, whose role covers every duty and scope."
+      "description": "The expiry instants security rules compare with request.time, computed by the same functions the commands use, so rules need no clock-driven write. A programme document holds the programme maps (from programAccessViewFor; empty for the owner); an event document holds permissions and groupDuties (from eventOperatorExpiryMillis and the grant's group duties). Every key a scope uses is always written."
     },
     "assignments": {
       "type": "array",
@@ -158,7 +152,7 @@
       "items": {
         "$ref": "../shared/program_common.schema.json#/definitions/programStaffGrantedDuty"
       },
-      "description": "The staff member's live duty assignments with their resource scopes and own expiries; empty for the owner and for an inactive grant. A transport route needs one assignment to cover both ends, which the flattened maps cannot say."
+      "description": "The staff member's live duty assignments with their resource scopes and own expiries; empty for the owner and for an inactive grant. A transport route needs one assignment to cover both ends, which the flattened maps cannot say. Empty for an event document."
     },
     "grantedBy": {
       "type": [

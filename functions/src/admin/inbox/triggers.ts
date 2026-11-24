@@ -12,20 +12,23 @@ import {
   journeyStepDocId,
   sourceCollections,
 } from "./model";
-import {syncInboxDocument} from "./listingEvents";
+import {syncInboxDocument, syncInboxDocumentFromStore} from "./listingEvents";
+import {sourceVersionOf} from "../../shared/sourceVersion";
 import {journeyStepDocument} from "./store";
 import {syncPeopleIndex} from "../peopleSearch";
 
 /**
- * Every source write re-projects its one inbox item. The triggers are not
- * retried (a retrying trigger needs a forced deploy); reconcileAdminInboxNightly
- * re-projects every source, so an item a failed trigger missed catches up.
+ * Every source write re-projects its one inbox item from the source as it is
+ * stored now, re-read in the item's transaction; an event older than the
+ * source's current version is skipped (#2472). Retried: a rerun projects the
+ * same stored source and writes a journey step once.
+ * reconcileAdminInboxNightly remains the backstop.
  */
 function inboxTrigger(kind: InboxSourceKind) {
-  return onDocumentWritten({document: `${sourceCollections[kind]}/{sourceId}`, timeoutSeconds: 300},
+  return onDocumentWritten({document: `${sourceCollections[kind]}/{sourceId}`, timeoutSeconds: 300, retry: true},
     async (event) => {
-      const results = await syncInboxDocument(admin.firestore(), kind, event.params.sourceId,
-        event.data?.after.data(), new Date());
+      const results = await syncInboxDocumentFromStore(admin.firestore(), kind, event.params.sourceId,
+        sourceVersionOf(event.data?.after), new Date());
       const written = results.filter((result) => result.outcome === "written");
       if (written.length) logger.info("Inbox items synced.", {kind, sourceId: event.params.sourceId, written: written.length});
     });

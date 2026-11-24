@@ -1206,11 +1206,13 @@ activity. These exports do not establish deployment or production enablement.
 
 ### Organizer owner view (#1109)
 
-`getOrganizerOwnerView` (read) and `manageOrganizerOwnerPage` (setLinks,
-setPhotoOrder, sendFollowerMessage) serve the website owner view. Both require
-auth, App Check, generated payload validation and a per-user rate limit, and
-derive the role from the organiser document (owner, editor for managers and
-hosts; analyst reserved). setLinks reuses the owner-link policy of
+The website owner view reads `hostOrganizerOwnerViews/{organizerId}` (see
+`docs/backend_operation_catalog/functions/hostReadModels.md`) and writes
+through `manageOrganizerOwnerPage` (setLinks, setPhotoOrder,
+sendFollowerMessage). The command requires auth, App Check, generated payload
+validation and a per-user rate limit, and derives the role from the organiser
+document (owner, editor for managers and hosts; analyst reserved). The
+`getOrganizerOwnerView` read callable was retired in Nov 2026 (#2174). setLinks reuses the owner-link policy of
 `adminUpdateOrganizerDetails`; setPhotoOrder only permutes stored photos;
 sendFollowerMessage reserves one of two monthly sends in a transaction, then
 calls `createOrganizerPost` (whose weekly quota still applies) and releases the

@@ -10,10 +10,10 @@
   ],
   "owner": "organizer insights roll-up (website owner view)",
   "writerContext": "insights",
-  "read": "server only; getOrganizerOwnerView projection for the organiser's team",
+  "read": "server only; copied into hostOrganizerOwnerViews for the organiser's team",
   "write": "server only; nightly roll-up and backfill",
   "exportedFunctions": [
     "rollupOrganizerInsightsDaily",
-    "getOrganizerOwnerView"
+    "onHostOrganizerOwnerViewInsightsChanged"
   ]
 }

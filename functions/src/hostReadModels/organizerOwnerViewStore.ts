@@ -45,10 +45,10 @@ function previousMonths(now: Date, count: number): string[] {
 
 /**
  * One organizer's owner view, read only, for the website owner page: the
- * facts getOrganizerOwnerView computed its response from, without the
- * reader or the clock. It keeps the owner's uid and each role's
- * capabilities (the reader's role follows from whether they are the owner,
- * since only managers can read it), the last 40 days of insights (the
+ * facts the retired getOrganizerOwnerView callable computed its response
+ * from, without the reader or the clock. It keeps the owner's uid and each
+ * role's capabilities (the reader's role follows from whether they are the
+ * owner, since only managers can read it), the last 40 days of insights (the
  * reader's 30-day window is worked out from its clock), the owner links,
  * about text and photos, the follower message allowance by month (Asia/
  * Kolkata) and whether follower messages can go on WhatsApp. Sender

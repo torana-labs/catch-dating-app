@@ -2120,6 +2120,31 @@ attendee generations, check-in, episode and checkpoint hashes, the case
 binding hash, the staff source hash); a replay whose fence no longer matches
 live state is still rejected. Old documents stay.
 
+### Data Tool Run Records
+
+`dataToolRuns/{runId}` records each applied run of a backfill or migration
+tool under `tool/data/` (FIX-7). The tool writes it through
+`withRunRecord` in `tool/data/lib/run_record.mjs` with the Admin SDK: as
+`running` before its apply phase, then `succeeded` with its counts, or
+`failed` with the counts reached and the error's first line. Dry runs write
+nothing.
+
+- Shape (`contracts/firestore/data_tool_runs.schema.json`): `runId`, `tool`
+  (repository path), `scope` (such as the migration names), `projectId`,
+  `commitSha`, `commitDirty`, `status`, `counts`, `failure`, `startedAt`,
+  `finishedAt`, `expiresAt`. No document data or personal data.
+- Id: the tool's file name, the start time in milliseconds and eight random
+  hex digits.
+- Retention: `expiresAt` is 365 days after the run starts; the collection's
+  TTL policy is a `fieldOverrides` entry for `dataToolRuns.expiresAt` in
+  `firestore.indexes.json`.
+- Adoption: `data:run-record-adoption` (`tool/data/check_run_records.mjs`)
+  fails when a writing tool under `tool/data/` (manifest surface
+  `remote-write` or `remote-destructive`) does not import the helper. Tools
+  written before it are listed as legacy, and the list only shrinks.
+  `tool/data/migrate_firestore_consolidation.mjs` is the first adopter.
+- Server only: rules deny every client read and write.
+
 ### Dispatch Dead Letters
 
 `dispatchDeadLetters/{projectionId}_{eventId}` records a dispatched projection
@@ -5246,7 +5271,8 @@ it in the same transaction as the programme or grant
 `functions/src/domain/access/programAccessGrants.ts`), so a grant or revocation
 is in force the moment its command commits and no trigger stands between a
 command and the rules. Step 1 writes programme scopes
-(`program__{programId}__{uid}`); event and organiser scopes follow. The
+(`program__{programId}__{uid}`) and step 2 event scopes
+(`event__{eventId}__{uid}`, below); organiser scopes follow. The
 programme document carries `role` (`owner` for the creator, else `staff`),
 `status`, `activeFromMillis`, `expiresAtMillis`, `assignments`, `grantedBy`,
 `revision`, `updatedAt` and `reach`: the expiry maps below, computed by the same
@@ -5943,6 +5969,20 @@ read and all writes are denied. Staff operate through callables
 and the restricted Host operator route,
 which never grants CRM, campaign, import, provider, event-edit or organizer-wide
 authority. Organizer managers continue to work without a grant.
+
+Security rules never read `eventStaffGrants` for authority (#2474 step 2).
+`grantEventStaff`, `revokeEventStaff` and `setEventAssistanceGroupStaff` write
+`accessGrants/event__{eventId}__{uid}` beside the grant in one transaction
+(`functions/src/domain/access/eventAccessGrants.ts`): `role: staff`, `status`,
+`expiresAtMillis` (the grant's expiry), `reach.permissions` (each event-wide
+permission to the instant the operator window ends, as
+`eventOperatorExpiryMillis` computes it, never extended by a group duty) and
+`reach.groupDuties` (`groupId__duty` to that duty's instant). The roster, claim
+queue, door list and private event rules (`hasActiveEventOperatorGrant`,
+`hasActiveEventStaffGrant`) check the document, its organiser against the
+event's, and the instant against the request time. The `access-grants-events`
+migration creates documents for grants written before the transactional
+writers, then refreshes them.
 
 The same staff document optionally carries `groupDuties`: a lead, pacer or
 sweep duty for each saved group, with its own expiry and reviewed source hash.
@@ -7817,11 +7857,7 @@ The generic opportunity mutation requires fresh Admin Owner authority before
 receipt replay and at transaction execution; stage history retains its finance
 proof. Loss and reopening require a reason, and reopening needs a dated next step.
 
-`salesIntakeLinks` joins the exact reviewed Supply Intake candidate generation and
-curation decision to its private organizer Sales companion. Explicit identity
-selection precedes linking; retry can complete the private join after Intake
-succeeded without overwriting an existing account or publishing the organizer.
-Imports retain every reviewed cohort/source-row relationship and union cohort IDs
+Sales imports retain every reviewed cohort/source-row relationship and union cohort IDs
 once per account, fenced by the preview's account revision. Unresolved identities
 remain in offline review; neither import nor an assistant invents canonical IDs.
 
