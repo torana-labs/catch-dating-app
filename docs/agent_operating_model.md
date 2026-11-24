@@ -413,7 +413,7 @@ Every pull request targets `main` and can merge on its own.
 - Bring a branch up to date by merging `main` into it. Never rebase or
   force-push a branch that has a PR.
 - The integration owner sequences PRs that touch hot files (for example
-  `nx.json`, `tool/nx/shadow_plan.mjs`, `tool/harness/component_graph.*` and
+  `nx.json`, `tool/nx/lanes.mjs`, `tool/nx/shadow_plan.mjs`, `tool/harness/component_graph.*` and
   `tool/manifest/manifest.json`), queueing one at a time. Merge `main` into such a
   branch when the integration owner asks or right before it is enqueued.
 

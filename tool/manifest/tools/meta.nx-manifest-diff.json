@@ -13,6 +13,7 @@
   "impactPaths": [
     "tool/nx/manifest_diff.test.mjs",
     "tool/nx/select_lanes.mjs",
+    "tool/nx/lanes.mjs",
     "tool/nx/shadow_plan.mjs",
     "tool/nx/workflow_callers.mjs",
     "tool/manifest/**"

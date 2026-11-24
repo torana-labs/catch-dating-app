@@ -1,0 +1,23 @@
+{
+  "id": "meta:nx-lanes",
+  "category": "meta",
+  "path": "tool/nx/lanes.mjs",
+  "command": "node --test tool/nx/lanes.test.mjs",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "The CI lanes and how Nx chooses them: the lane list, the Nx project-to-lane map, the CI caller graph, the queue-only capture and iOS rules, native build inputs and nx affected. select_lanes.mjs selects with selectNxLanes; shadow_plan.mjs compares the same selection with the planner's until the planner is retired.",
+  "checks": [
+    "node --check tool/nx/lanes.mjs",
+    "node --test tool/nx/lanes.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/nx/lanes.test.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  }
+}

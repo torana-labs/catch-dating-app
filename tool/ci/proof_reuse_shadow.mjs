@@ -69,7 +69,7 @@ export const laneClass = (lane) => (ELIGIBLE_LANES.includes(lane) ? "eligible" :
   Object.entries(INELIGIBLE).find(([, lanes]) => lanes.includes(lane))?.[0] ?? "unknown_lane");
 /** A pull request that changes CI, the hasher or the toolchain is never eligible (RE, 22 Nov 2026). */
 export const changesCi = (file) => /^(\.github\/workflows\/|\.github\/actions\/|tool\/ci\/|tool\/nx\/)/u.test(file);
-const HASHER_SOURCES = ["tool/nx/lane_key.mjs", "tool/nx/lane_key_replay.mjs", "tool/nx/shadow_plan.mjs",
+const HASHER_SOURCES = ["tool/nx/lane_key.mjs", "tool/nx/lane_key_replay.mjs", "tool/nx/lanes.mjs",
   "tool/nx/workflow_callers.mjs", "tool/ci/proof_reuse_shadow.mjs"];
 const FAILED = new Set(["failure", "cancelled", "timed_out", "action_required", "startup_failure", "stale"]);
 
@@ -185,7 +185,7 @@ const pages = (endpoint) => gh(["api", "--paginate", "--slurp", endpoint]);
 async function keyerFor() {
   const {createKeyer} = await import("../nx/lane_key_replay.mjs");
   const {keySchema} = await import("../nx/lane_key.mjs");
-  const {comparedLanes} = await import("../nx/shadow_plan.mjs");
+  const {comparedLanes} = await import("../nx/lanes.mjs");
   return {key: createKeyer(), version: hasherVersion(keySchema), lanes: comparedLanes};
 }
 
@@ -262,7 +262,7 @@ async function main(argv) {
       report = await verdictsFor({repository, head: args.head, headRef: args["head-ref"]});
     } catch (error) {
       // Anything unknown is not eligible.
-      const {comparedLanes} = await import("../nx/shadow_plan.mjs");
+      const {comparedLanes} = await import("../nx/lanes.mjs");
       report = {pr: null, head: args.head, error: error.message.split("\n")[0],
         lanes: decideVerdicts({lanes: comparedLanes, reason: "unknown", version: "unknown"})};
     }
