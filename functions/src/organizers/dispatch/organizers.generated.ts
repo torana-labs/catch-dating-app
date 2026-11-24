@@ -31,6 +31,8 @@ import {hostAssignmentViewProjections} from
   "../../hostWork/hostAssignmentViewTriggers";
 import {publicOrganizerProjections} from
   "../publicOrganizerProjection";
+import {programAccessViewOrganizerProjections} from
+  "../../programs/programAccessViewTriggers";
 import {publicPageOrganizerProjections} from
   "../../publicPages/triggers";
 
@@ -52,5 +54,6 @@ export const dispatchOrganizers = dispatchTrigger(
     hostProviderConnectionViewProjections,
     hostAssignmentViewProjections,
     publicOrganizerProjections,
+    programAccessViewOrganizerProjections,
     publicPageOrganizerProjections,
   ]);

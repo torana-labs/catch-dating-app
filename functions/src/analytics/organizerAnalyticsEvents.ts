@@ -21,6 +21,8 @@ import {
   assertPublicOrganizerPageEligible,
   normalizePublicWebsitePath,
 } from "../shared/publicOrganizerPage";
+import {readOrganizerAccessRole} from
+  "../domain/access/organizerAccessGrants";
 
 interface OrganizerAnalyticsDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -292,12 +294,6 @@ function boundedSource(value: string | null | undefined): string | null {
   return value && publicSources.has(value) ? value : null;
 }
 
-function organizerManagerIds(organizer: OrganizerDocument): string[] {
-  return [organizer.ownerUserId, organizer.hostUserId,
-    ...(organizer.hostUserIds ?? []),
-    ...(organizer.hostProfiles ?? []).map((host) => host.uid)]
-    .filter((uid): uid is string => typeof uid === "string");
-}
 
 function isPublicId(value: string): boolean {
   return /^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$/u.test(value);
@@ -307,10 +303,7 @@ async function isOrganizerPreview(
   db: FirebaseFirestore.Firestore, organizer: OrganizerDocument,
   organizerId: string, uid: string
 ): Promise<boolean> {
-  if (organizerManagerIds(organizer).includes(uid)) return true;
-  const membership = await db.collection("organizerTeamMemberships")
-    .doc(`${organizerId}_${uid}`).get();
-  return membership.exists && membership.get("organizerId") === organizerId &&
-    membership.get("uid") === uid && membership.get("status") === "active" &&
-    ["owner", "manager"].includes(membership.get("role"));
+  // The organiser's owner or a manager, by the one access document security
+  // rules read too (#2474 step 3).
+  return await readOrganizerAccessRole(db, organizerId, uid) !== null;
 }

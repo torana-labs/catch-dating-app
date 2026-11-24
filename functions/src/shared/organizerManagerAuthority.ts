@@ -1,9 +1,13 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import type {OrganizerDocument} from "./generated/firestoreAdminTypes";
-import {isOrganizerManager} from "./organizerHosts";
-import {requireDoc} from "./validation";
+import {readOrganizerAccessRole} from
+  "../domain/access/organizerAccessGrants";
 
-/** Requires canonical organizer management authority. */
+/**
+ * Requires organiser management authority: a live
+ * accessGrants/organizer__{organizerId}__{uid} document, the same document
+ * security rules read (#2474 step 3). The owner and every manager hold one;
+ * the commands that change them write it in their own transaction.
+ */
 export async function requireOrganizerManager(params: {
   db: FirebaseFirestore.Firestore;
   organizerId: string;
@@ -16,11 +20,9 @@ export async function requireOrganizerManager(params: {
   if (!organizerSnap.exists) {
     throw new HttpsError("not-found", "Organizer not found.");
   }
-  const authorized = isOrganizerManager(
-    requireDoc<OrganizerDocument>(organizerSnap, "OrganizerDocument"),
-    params.actorUid
-  );
-  if (!authorized) {
+  const role = await readOrganizerAccessRole(params.db, params.organizerId,
+    params.actorUid, params.transaction);
+  if (role === null) {
     throw new HttpsError(
       "permission-denied",
       "Only organizer owners and managers can access this organizer."
