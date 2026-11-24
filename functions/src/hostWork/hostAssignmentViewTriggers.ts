@@ -146,3 +146,30 @@ export const hostAssignmentViewProjections = defineProjections(
     run: (change, ctx) => reconcileOrganizerNameRows(ctx.db,
       change.documentId),
   }]);
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const programStaffGrantsProjections = defineProjections(
+  "programStaffGrants", [
+    {
+      id: "hostAssignmentProgramGrantChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after} = change;
+        const db = admin.firestore();
+        const seen = new Set<string>();
+        for (const grant of [before,
+          after]) {
+          if (!text(grant?.uid) || !text(grant?.programId)) continue;
+          const key = `${grant.uid}__${grant.programId}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          await reconcileProgramAssignmentView(db, grant.uid, grant.programId);
+        }
+      },
+    },
+  ]);

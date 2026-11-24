@@ -1831,8 +1831,10 @@ call. Stay-in-touch picks and the no-show note are recorded flags only.
 `contracts/firestore/event_success_guest_history.schema.json` declares
 `eventSuccessGuestHistory/{eventId}_{uid}`, written only by the
 `onEventSuccessStandingsWritten` trigger from `eventSuccessStandings` and the
-guest's assignments or arrival group (the Host scoreboard's unit ids). Each
-guest gets only their own document.
+guest's assignments or arrival group (the Host scoreboard's unit ids). No
+screen reads it yet, so clients have no access until the game history screen
+ships (#2501), and `expiresAt` (a year after the last projection) carries a
+TTL policy (FIX-14, #2450).
 
 ### Event Success Presence And Late-Arrival Boundary
 
@@ -5773,10 +5775,10 @@ shapes for files, never a guest's details.
 
 All four are server-only. `expiresAt` (a Firestore timestamp) drives the
 TTL policies on `aiFallbackUsage` (reader days after seven days; month
-documents carry no `expiresAt` and stay as the spend record) and
-`aiFallbackResults` (30 days), declared in `firestore.indexes.json`
-`fieldOverrides` and deployed with the Firestore indexes. Audit rows have no
-TTL. `guests.import-list` and `sales.import-past` answer `aiRead` and
+documents carry no `expiresAt` and stay as the spend record),
+`aiFallbackResults` (30 days) and `aiFallbackAudit` (400 days, a full year of
+monthly cost history; FIX-14, #2450), declared in `firestore.indexes.json`
+`fieldOverrides` and deployed with the Firestore indexes. `guests.import-list` and `sales.import-past` answer `aiRead` and
 `reviewFields` (the columns the model chose; past sales may also choose the
 amount, currency and city columns) so the host checks them. Both fields are
 optional: absent means false. `form.import-from-link` answers the same two
@@ -6166,6 +6168,27 @@ scope hash includes the authenticated uid through the document id plus the
 current authorized club ids, resolved absolute range, derived granularity,
 preset, optional event id, and IANA timezone. Authorization is resolved before
 the cache lookup, so host-role changes produce a different cache identity.
+
+**Group-size floor for dating counts (FIX-21).** An organiser sees an event's
+connection (mutual match) and chat counts only when at least the platform
+floor of guests came. The group is the larger of the mart's and the
+operational roster's check-ins. Below the floor, `getHostAnalytics` returns 0
+for that event's `topEvents[].mutualMatchCount` and `chatStartedCount`, and
+the event adds nothing to the Connections and Chats cards, their prior-period
+baseline or the trend buckets. The cards' caption names the floor, and a
+`dating-count-group-floor` data-quality row counts the withheld events.
+`adminGetHostAnalytics` is not floored. Per-link invite counts and direct host
+reads of `eventSuccessScorecards` are gone (FIX-12), so this callable is the
+only path by which these counts reach an organiser.
+
+The floor is the platform setting `config/guestDataVisibility.groupSizeFloor`
+(`contracts/firestore/config_guest_data_visibility.schema.json`): an integer
+from 2 to 500, server-only through `match /config/{docId}`. The owner sets it
+in the Firebase console, optionally with `reason`, `updatedAt` and
+`updatedBy`. A missing document reads as **10**. A malformed one also reads as
+10, because a privacy floor fails closed;
+`functions/src/analytics/guestDataVisibility.ts` parses it. Any future screen
+that shows event-level dating counts to an organiser reads the same setting.
 
 Clients cannot read or write snapshots. The callable validates a cached
 response against `host_analytics_response.schema.json` before serving it,

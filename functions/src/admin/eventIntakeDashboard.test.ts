@@ -8,7 +8,6 @@ import {operationRun, operationWorkItem} from
 import {
   adminGetEventIntakeDashboardHandler,
   attachOrganizerCeilings,
-  overlayEventIntakeDecisions,
 } from "./eventIntakeDashboard";
 
 const now = "2026-07-27T08:00:00.000Z";
@@ -16,12 +15,10 @@ const now = "2026-07-27T08:00:00.000Z";
 async function harness() {
   const repository = new InMemoryOperationsRepository();
   const rateLimitCalls: string[] = [];
-  const decisions: Array<Record<string, unknown>> = [];
   const deps = {
     firestore: () => ({}) as FirebaseFirestore.Firestore,
     repository,
     now: () => new Date(now),
-    loadReviewDecisions: async () => decisions,
     loadOrganizerCeilings: async () => new Map(),
     checkRateLimit: async (
       _db: FirebaseFirestore.Firestore,
@@ -31,7 +28,7 @@ async function harness() {
       rateLimitCalls.push(`${uid}:${action}`);
     },
   };
-  return {repository, rateLimitCalls, decisions, deps};
+  return {repository, rateLimitCalls, deps};
 }
 
 test(
@@ -113,48 +110,6 @@ test(
   }
 );
 
-test("review decisions survive refresh and preserve projection ids",
-  async () => {
-    const h = await harness();
-    await seedCompletedRun(h.repository, {
-      runId: "run:mumbai:current",
-      market: "mumbai",
-      updatedAt: "2026-07-27T07:00:00.000Z",
-    });
-    await h.repository.createWorkItem(eventCandidateWorkItem({
-      runId: "run:mumbai:current",
-      id: "candidate-1",
-    }));
-    h.decisions.push({
-      targetType: "event_candidate",
-      targetId: "candidate-1",
-      decision: "approve",
-      decisionStatus: "approved",
-      note: "Official source and venue verified.",
-      edits: {
-        id: {before: "candidate-1", after: "attempted-rewrite"},
-        title: {before: "candidate-1", after: "Verified candidate"},
-      },
-      reviewedByUid: "admin-1",
-      reviewedAt: "2026-07-27T07:30:00.000Z",
-    });
-
-    const result = await adminGetEventIntakeDashboardHandler(
-      callableRequest("admin-1", {support: true}),
-      h.deps
-    );
-    const candidate =
-      (result.bridge.eventCandidates as Array<Record<string, unknown>>)[0];
-    assert.equal(candidate.id, "candidate-1");
-    assert.equal(candidate.title, "Verified candidate");
-    assert.equal(candidate.reviewState, "approved");
-    assert.equal(
-      (result.bridge.summary as Record<string, unknown>)
-        .approvedCandidates,
-      1
-    );
-  });
-
 test("Operations storage fails closed before an invalid projection is read",
   async () => {
     const h = await harness();
@@ -196,33 +151,6 @@ test("returns an explicit empty Operations projection", async () => {
   assert.deepEqual(result.bridge.eventCandidates, []);
   assert.deepEqual(result.bridge.sourceResults, []);
   assert.deepEqual(result.bridge.commands, {});
-});
-
-test("overlayEventIntakeDecisions preserves source ids across edits", () => {
-  const result = overlayEventIntakeDecisions({
-    summary: {},
-    sourceProfiles: [],
-    queryTemplates: [],
-    runPlan: {},
-    sourceResults: [{id: "source-1", status: "needs_review"}],
-    eventCandidates: [],
-  }, [{
-    targetType: "source_result",
-    targetId: "source-1",
-    decision: "needs_changes",
-    decisionStatus: "needs_changes",
-    note: "Replace the placeholder source.",
-    edits: {
-      id: {before: "source-1", after: "attempted-rewrite"},
-      title: {before: "Source", after: "Needs a real source"},
-    },
-    reviewedByUid: "admin-1",
-    reviewedAt: "2026-07-11T00:00:00.000Z",
-  }]);
-  const sourceResults = result.sourceResults as
-    Array<Record<string, unknown>>;
-  assert.equal(sourceResults[0].id, "source-1");
-  assert.equal(sourceResults[0].status, "needs_changes");
 });
 
 test("attaches the attributed organizer app visibility ceiling", () => {

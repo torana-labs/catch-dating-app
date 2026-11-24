@@ -662,6 +662,13 @@ service cloud.firestore {
         && data.updatedAt is timestamp;
     }
 
+    // FIX-11: the host owns their name, title and bio. Verification,
+    // organizer links and the avatar are server-owned: organizer callables
+    // seed the avatar from the host's own photo with Admin credentials.
+    function hostProfileServerOwnedFields() {
+      return ['verified', 'linkedOrganizerIds', 'avatarUrl'];
+    }
+
     function isValidHostProfile(data) {
       return data.keys().hasOnly([
           'displayName',
@@ -882,9 +889,16 @@ service cloud.firestore {
     // users/{uid} dating profile data and publicProfiles/{uid}.
     match /hostProfiles/{uid} {
       allow read: if true;
-      allow create, update: if isAuthed()
+      allow create: if isAuthed()
         && request.auth.uid == uid
-        && isValidHostProfile(request.resource.data);
+        && isValidHostProfile(request.resource.data)
+        && !request.resource.data.keys()
+          .hasAny(hostProfileServerOwnedFields());
+      allow update: if isAuthed()
+        && request.auth.uid == uid
+        && isValidHostProfile(request.resource.data)
+        && !request.resource.data.diff(resource.data).affectedKeys()
+          .hasAny(hostProfileServerOwnedFields());
       allow delete: if false;
     }
 
@@ -3671,11 +3685,10 @@ service cloud.firestore {
     }
 
     // One guest's game history, projected from the standings by trigger.
+    // No screen reads guest game history yet (#2501), so clients have no
+    // access; reopen the guest's own get when that screen ships.
     match /eventSuccessGuestHistory/{historyId} {
-      allow get: if isAuthed()
-        && resource != null
-        && resource.data.uid == request.auth.uid;
-      allow list, write: if false;
+      allow read, write: if false;
     }
 
     match /eventSuccessFeedback/{feedbackId} {
@@ -4273,9 +4286,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /catchWhatsappReadinessPublications/{privateDocument=**} {
-      allow read, write: if false;
-    }
-    match /eventIntakeReviewDecisions/{privateDocument=**} {
       allow read, write: if false;
     }
     match /eventRosterHandoffs/{privateDocument=**} {

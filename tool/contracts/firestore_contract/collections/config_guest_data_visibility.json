@@ -1,0 +1,16 @@
+{
+  "id": "config_guest_data_visibility",
+  "path": "config/guestDataVisibility",
+  "rulesMatch": "/config/{docId}",
+  "rulesTestFile": "functions/test/rules/public_config.rules.test.cjs",
+  "rulesTestNames": [
+    "denies clients the guest data visibility floor"
+  ],
+  "owner": "the platform's group-size floor for dating counts, validated by functions/src/analytics/guestDataVisibility.ts",
+  "writerContext": "platform",
+  "read": "server only, by getHostAnalytics; clients denied",
+  "write": "the owner in the Firebase console (Admin credentials); clients denied",
+  "migrationNotes": [
+    "Absent: the floor is 10. groupSizeFloor (integer 2-500) sets it. Only groupSizeFloor, reason, updatedAt and updatedBy are allowed; any other shape reads as the default of 10 (FIX-21)."
+  ]
+}

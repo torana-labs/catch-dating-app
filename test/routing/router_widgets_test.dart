@@ -28,6 +28,8 @@ import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
 import 'package:catch_platform/push/fcm_service.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart'
+    as organizer_helpers;
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,7 +38,6 @@ import 'package:go_router/go_router.dart';
 
 import '../events/events_test_helpers.dart' as run_helpers;
 import '../onboarding/onboarding_test_helpers.dart' as onboarding_helpers;
-import '../organizers/organizers_test_helpers.dart' as organizer_helpers;
 import '../support/profile_readiness_fixtures.dart';
 
 class _ControlledProfileRepository

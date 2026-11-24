@@ -68,33 +68,41 @@ export interface PhoneLeadChange {
   remove: string[];
 }
 
+/** Where lead writes go: a batch it commits, or the caller's transaction. */
+export interface PhoneLeadWriter {
+  set(ref: FirebaseFirestore.DocumentReference, data: FirebaseFirestore.DocumentData,
+    options: FirebaseFirestore.SetOptions): unknown;
+}
+
 /**
  * Writes one source's view of an organizer's numbers: entries for [add],
  * none for [remove]. Write-only (merge), so it is safe to call again.
- * Does nothing while the source is off.
+ * Does nothing while the source is off. Given a writer (a transaction), it
+ * queues the writes there and the caller commits them.
  * @return {Promise<number>} Documents written.
  */
 export async function applyPhoneLeadChange(db: FirebaseFirestore.Firestore,
   params: {organizerId: string; source: PhoneLeadSource; change: PhoneLeadChange;
-    now: Date; policy?: ShadowProfilePolicy}): Promise<number> {
+    now: Date; policy?: ShadowProfilePolicy; writer?: PhoneLeadWriter}): Promise<number> {
   if (!sourceEnabled(params.source, params.policy ?? SHADOW_PROFILE_POLICY)) return 0;
   const key = entryKey(params.organizerId, params.source);
   const entry: PhoneLeadEntry = {organizerId: params.organizerId, source: params.source,
     strength: SOURCE_STRENGTH[params.source], lastSeenAt: params.now.toISOString()};
-  const batch = db.batch();
+  const batch = params.writer ? null : db.batch();
+  const writer: PhoneLeadWriter = params.writer ?? batch!;
   let writes = 0;
   for (const leadId of new Set(params.change.add)) {
-    batch.set(db.collection(ORGANIZER_PHONE_LEADS).doc(leadId),
+    writer.set(db.collection(ORGANIZER_PHONE_LEADS).doc(leadId),
       {schemaVersion: 1, updatedAt: entry.lastSeenAt, entries: {[key]: entry}}, {merge: true});
     writes += 1;
   }
   for (const leadId of new Set(params.change.remove)) {
     if (params.change.add.includes(leadId)) continue;
-    batch.set(db.collection(ORGANIZER_PHONE_LEADS).doc(leadId),
+    writer.set(db.collection(ORGANIZER_PHONE_LEADS).doc(leadId),
       {schemaVersion: 1, updatedAt: entry.lastSeenAt, entries: {[key]: FieldValue.delete()}}, {merge: true});
     writes += 1;
   }
-  if (writes > 0) await batch.commit();
+  if (batch && writes > 0) await batch.commit();
   return writes;
 }
 

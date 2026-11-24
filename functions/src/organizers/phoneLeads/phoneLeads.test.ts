@@ -9,7 +9,7 @@ import {
   type ShadowProfilePolicy,
 } from "./policy";
 import {e164, enabledEntries, entryKey} from "./store";
-import {salesRelationshipPhones, syncObservations} from "./sync";
+import {salesRelationshipPhones, syncObservations, syncRelationshipFromStore} from "./sync";
 import {
   findClaimableOrganizersHandler,
   organizerPrefill,
@@ -68,6 +68,37 @@ test("sync writes nothing while off, then adds and removes entries", async () =>
   assert.deepEqual(moved?.entries, {});
   const added = (await store.collection("organizerPhoneLeads").doc("lead-919000000009").get()).data();
   assert.ok(added?.entries[entryKey("org-lantern", "sales_crm_verified")]);
+});
+
+test("phone changes delivered out of order end at the relationship's latest phones (#2472)", async () => {
+  const fake = new FakeFirestore();
+  const store = fake as unknown as FirebaseFirestore.Firestore;
+  const path = "salesContactRelationships/rel-1";
+  const relationship = (phone: string) => ({organizerId: "org-lantern",
+    endpoints: [{kind: "phone", value: phone, verificationStatus: "verified"}]});
+  const key = entryKey("org-lantern", "sales_crm_verified");
+  const entries = async (leadId: string) =>
+    (await store.collection("organizerPhoneLeads").doc(leadId).get()).data()?.entries ?? {};
+  fake.put(path, relationship("+919000000001"));
+  const created = fake.updateTimeOf(path);
+  fake.put(path, relationship("+919000000009"));
+  const changed = fake.updateTimeOf(path);
+  const deliver = (before: Record<string, unknown> | undefined, version: typeof created | null) =>
+    syncRelationshipFromStore(store, "rel-1", before, version as never, NOW, {hash, policy: ON});
+
+  // The change's event lands first, the creation's event after it.
+  assert.equal(await deliver(relationship("+919000000001"), changed), 2);
+  assert.equal(await deliver(undefined, created), "stale");
+  assert.deepEqual(await entries("lead-919000000001"), {});
+  assert.ok((await entries("lead-919000000009"))[key]);
+
+  // Deleted: a late write event adds nothing from its payload; the delete
+  // event removes the phone.
+  fake.remove(path);
+  await deliver(relationship("+919000000001"), changed);
+  assert.deepEqual(await entries("lead-919000000001"), {});
+  await deliver(relationship("+919000000009"), null);
+  assert.deepEqual(await entries("lead-919000000009"), {});
 });
 
 test("entries from sources that are off are ignored", () => {

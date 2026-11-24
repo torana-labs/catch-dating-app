@@ -26,7 +26,7 @@
     "avatarUrl": {
       "type": ["string", "null"],
       "maxLength": 2048,
-      "description": "Professional host avatar or organization logo URL."
+      "description": "Professional host avatar or organization logo URL. Server-owned: organizer callables seed it from the host's own profile photo, and firestore.rules forbid the host from setting or changing it."
     },
     "roleTitle": {
       "type": ["string", "null"],
@@ -43,10 +43,12 @@
       "enum": ["active", "pending", "suspended"]
     },
     "verified": {
-      "type": "boolean"
+      "type": "boolean",
+      "description": "Server-owned verification flag. firestore.rules forbid the host from setting or changing it."
     },
     "linkedOrganizerIds": {
       "type": "array",
+      "description": "Server-owned organizer links. firestore.rules forbid the host from setting or changing them; organizer membership lives on organizers/{organizerId}.",
       "maxItems": 20,
       "uniqueItems": true,
       "items": {

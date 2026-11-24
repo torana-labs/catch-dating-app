@@ -15,6 +15,7 @@
     "dispatchEvents",
     "onHostRequestViewProfileWritten",
     "onHostRequestViewContactSummaryWritten",
-    "onHostRequestViewContactWritten"
+    "onHostRequestViewContactWritten",
+    "dispatchOrganizerContacts"
   ]
 }

@@ -17,6 +17,7 @@
     "dispatchEventAttendees",
     "dispatchGuestPayments",
     "onGuestEventStatusApplicationWritten",
+    "dispatchOrganizerApplications",
     "onGuestEventStatusOfferRecipientWritten",
     "dispatchEvents",
     "requestAccountDeletion"

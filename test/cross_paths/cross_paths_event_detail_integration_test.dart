@@ -6,13 +6,13 @@ import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/pages/event/event_detail_screen.dart';
 import 'package:catch_dating_app/pages/event/event_detail_view_model.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart'
+    show FakeOrganizersRepository;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
-import '../organizers/organizers_test_helpers.dart'
-    show FakeOrganizersRepository;
 
 void main() {
   group('Cross Paths Event Detail integration', () {
