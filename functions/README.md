@@ -567,7 +567,6 @@ enter previews.
 | `expireTryItWorkspaces` | `src/commands/workspaceExpiry.ts` | Daily: removes try-it workspaces unused for 30 days, unless kept. |
 | `findClaimableOrganizers` | `src/organizers/phoneLeads/find.ts` | Shadow profiles (off): the "Is this you?" read for Catch Host setup; unclaimed organizers matched to the caller's verified phone, with prefill and missing fields. |
 | `followOrganizerByPhone` | `src/organizers/followOrganizerByPhone.ts` | Not yet described. |
-| `getOrganizerOwnerView` | `src/organizerInsights/ownerView.ts` | The website owner view for an organiser's team: role, capabilities, 30 days of organizerInsights, links, about, photos and follower-message usage. |
 | `getProgramAssistantSettings` | `src/programs/programWhatsapp/callables.ts` | Programme assistant settings (defaults when unsaved), the wedding's WhatsApp number and the staff for escalations; managers and coordinators. |
 | `getProgramDriverTrip` | `src/programs/programWebLinks.ts` | Not yet described. |
 | `getProgramFamilyView` | `src/programs/familyView.ts` | The family's counts-only programme view (no names) by a family link. |
