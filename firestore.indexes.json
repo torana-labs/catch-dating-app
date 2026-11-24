@@ -8619,6 +8619,28 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "accessGrants",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "scopeType",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "role",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "mode": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

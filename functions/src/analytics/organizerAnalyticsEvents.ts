@@ -21,6 +21,7 @@ import {
   assertPublicOrganizerPageEligible,
   normalizePublicWebsitePath,
 } from "../shared/publicOrganizerPage";
+import {isOrganizerManager} from "../shared/organizerHosts";
 
 interface OrganizerAnalyticsDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -76,9 +77,9 @@ export async function recordOrganizerAnalyticsEventHandler(
   const db = deps.firestore();
   const organizer = await assertOrganizerScope(db, payload);
   assertLinkScope(organizer, payload);
-  // Preview by authenticated canonical staff is never visitor activity.
-  if (request.auth && await isOrganizerPreview(db, organizer,
-    payload.organizerId, request.auth.uid)) {
+  // Preview by the organiser's owner or a manager (the canonical fields the
+  // access documents mirror, #2474 step 3) is never visitor activity.
+  if (request.auth && isOrganizerManager(organizer, request.auth.uid)) {
     return {accepted: true};
   }
   const organizerId = payload.organizerId;
@@ -292,25 +293,8 @@ function boundedSource(value: string | null | undefined): string | null {
   return value && publicSources.has(value) ? value : null;
 }
 
-function organizerManagerIds(organizer: OrganizerDocument): string[] {
-  return [organizer.ownerUserId, organizer.hostUserId,
-    ...(organizer.hostUserIds ?? []),
-    ...(organizer.hostProfiles ?? []).map((host) => host.uid)]
-    .filter((uid): uid is string => typeof uid === "string");
-}
 
 function isPublicId(value: string): boolean {
   return /^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$/u.test(value);
 }
 
-async function isOrganizerPreview(
-  db: FirebaseFirestore.Firestore, organizer: OrganizerDocument,
-  organizerId: string, uid: string
-): Promise<boolean> {
-  if (organizerManagerIds(organizer).includes(uid)) return true;
-  const membership = await db.collection("organizerTeamMemberships")
-    .doc(`${organizerId}_${uid}`).get();
-  return membership.exists && membership.get("organizerId") === organizerId &&
-    membership.get("uid") === uid && membership.get("status") === "active" &&
-    ["owner", "manager"].includes(membership.get("role"));
-}

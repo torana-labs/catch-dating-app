@@ -185,6 +185,41 @@ test("buildOrganizerHostProfileRepairPlan refreshes multi-host projections",
   }
 );
 
+test("a repair writes the organiser's access documents with its manager fields",
+  async () => {
+    const firestore = fakeFirestore({
+      hostProfiles: {},
+      organizers: {"club-1": {hostUserId: "host-1", hostName: "Old"}},
+    });
+    await applyOrganizerHostProfileRepairPlan(firestore, {
+      repairs: [{
+        path: "organizers/club-1",
+        organizerId: "club-1",
+        expected: {ownerUserId: "host-1", hostUserIds: ["host-1", "cohost-1"]},
+      }],
+    });
+    const owner = firestore.data.accessGrants["organizer__club-1__host-1"];
+    assert.equal(owner.role, "owner");
+    assert.equal(owner.scopeType, "organizer");
+    assert.equal(
+      firestore.data.accessGrants["organizer__club-1__cohost-1"].role,
+      "manager");
+  }
+);
+
+test("a host profile snapshot never names a manager", async () => {
+  const firestore = fakeFirestore({
+    hostProfiles: {"host-1": {displayName: "Host"}},
+    organizers: {"club-1": {hostUserId: "host-1", ownerUserId: "host-1",
+      hostUserIds: ["host-1"], hostName: "Host",
+      hostProfiles: [{uid: "host-1", displayName: "Host", avatarUrl: null,
+        role: "owner"}, {uid: "removed-1", displayName: "Gone",
+        avatarUrl: null, role: "host"}]}},
+  });
+  const plan = await buildOrganizerHostProfileRepairPlan(firestore);
+  assert.deepEqual(plan.repairs[0].expected.hostUserIds, ["host-1"]);
+});
+
 test("applyOrganizerHostProfileRepairPlan writes only planned host fields",
   async () => {
     const firestore = fakeFirestore({
@@ -242,6 +277,11 @@ function fakeFirestore(initialData) {
       const writes = [];
       return {
         update: (ref, patch) => writes.push(() => ref.update(patch)),
+        set: (ref, value) => writes.push(() => {
+          const [collectionName, docId] = ref.path.split("/");
+          data[collectionName] ??= {};
+          data[collectionName][docId] = value;
+        }),
         commit: async () => {
           for (const write of writes) write();
         },
@@ -259,5 +299,5 @@ function docSnapshot(collectionName, id, value) {
 }
 
 test("CLI shared helpers preserve project precedence and dry-run policy", (t) => {
-  verifyRecomputeCli(t, new URL("./recompute_organizer_host_profiles.mjs", import.meta.url), {organizers: {organizer: {hostUserId: "host", hostName: "Old"}}, hostProfiles: {host: {displayName: "New"}}});
+  verifyRecomputeCli(t, new URL("./recompute_organizer_host_profiles.mjs", import.meta.url), {organizers: {organizer: {hostUserId: "host", hostName: "Old"}}, hostProfiles: {host: {displayName: "New"}}}, {writes: 2});
 });

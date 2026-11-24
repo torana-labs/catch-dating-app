@@ -12,6 +12,7 @@ const {
   doc,
   event,
   eventStaffGrant,
+  seedEventStaffGrant,
   externalEvent,
   getDoc,
   getDocs,
@@ -43,11 +44,11 @@ describe("firestore.rules", () => {
       await assertFails(getDoc(doc(anonymous, "events", "event-1")));
       await assertFails(getDoc(doc(authedDb("foreign-host"), "events", "event-1")));
       await assertSucceeds(getDoc(doc(authedDb("host-1"), "events", "event-1")));
-      await seed(["eventStaffGrants", "event-1__operator-1"], eventStaffGrant());
+      await seedEventStaffGrant("event-1__operator-1", eventStaffGrant());
       await assertSucceeds(getDoc(doc(authedDb("operator-1"), "events", "event-1")));
-      await seed(["eventStaffGrants", "event-1__operator-1"], eventStaffGrant({status: "revoked"}));
+      await seedEventStaffGrant("event-1__operator-1", eventStaffGrant({status: "revoked"}));
       await assertFails(getDoc(doc(authedDb("operator-1"), "events", "event-1")));
-      await seed(["eventStaffGrants", "event-1__operator-1"], eventStaffGrant({expiresAt: Timestamp.fromMillis(1)}));
+      await seedEventStaffGrant("event-1__operator-1", eventStaffGrant({expiresAt: Timestamp.fromMillis(1)}));
       await assertFails(getDoc(doc(authedDb("operator-1"), "events", "event-1")));
       await seed(["deletedUsers", "host-1"], {});
       await assertFails(getDoc(doc(authedDb("host-1"), "events", "event-1")));
@@ -69,20 +70,20 @@ describe("firestore.rules", () => {
       await seed(["events", "unlabelled"], unlabelled);
       await seed(["events", "malformed"], event({publicationState: null}));
 
+      // A team edge alone is not organiser management (#2474 step 3): the
+      // organiser's access documents, written with its manager fields, are.
       for (const db of [anonymous, authedDb("guest-1"), authedDb("foreign-host"),
-        authedDb("former-1"), authedDb("operator-1")]) {
+        authedDb("former-1"), authedDb("operator-1"), authedDb("team-1")]) {
         await assertFails(getDoc(doc(db, "events", "event-1")));
       }
-      for (const uid of ["host-1", "cohost-1", "team-1"]) {
+      for (const uid of ["host-1", "cohost-1"]) {
         await assertSucceeds(getDoc(doc(authedDb(uid), "events", "event-1")));
       }
-      await seed(["eventStaffGrants", "event-1__operator-1"],
-        eventStaffGrant({permissions: ["setAttendance"]}));
+      await seedEventStaffGrant("event-1__operator-1", eventStaffGrant({permissions: ["setAttendance"]}));
       await assertSucceeds(getDoc(doc(authedDb("operator-1"), "events", "event-1")));
-      await seed(["eventStaffGrants", "event-1__operator-1"], eventStaffGrant({status: "revoked"}));
+      await seedEventStaffGrant("event-1__operator-1", eventStaffGrant({status: "revoked"}));
       await assertFails(getDoc(doc(authedDb("operator-1"), "events", "event-1")));
-      await seed(["eventStaffGrants", "event-1__operator-1"],
-        eventStaffGrant({organizerId: "other-club"}));
+      await seedEventStaffGrant("event-1__operator-1", eventStaffGrant({organizerId: "other-club"}));
       await assertFails(getDoc(doc(authedDb("operator-1"), "events", "event-1")));
       for (const id of ["private", "unlabelled", "malformed"]) {
         await assertFails(getDoc(doc(anonymous, "events", id)));

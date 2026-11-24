@@ -23,7 +23,8 @@ test("createStripeHostOnboardingLinkHandler creates and stores host account",
         email: "host@example.com",
         displayName: "Catch Host",
       },
-      "organizerTeamMemberships/club-1_host-1": {
+      "accessGrants/organizer__club-1__host-1": {
+        scopeType: "organizer", scopeId: "club-1",
         organizerId: "club-1",
         uid: "host-1",
         role: "owner",
@@ -104,13 +105,15 @@ test("createStripeHostOnboardingLinkHandler requires an active owner seat",
         email: "host@example.com",
         displayName: "Catch Host",
       },
-      "organizerTeamMemberships/club-1_host-1": {
+      "accessGrants/organizer__club-1__host-1": {
+        scopeType: "organizer", scopeId: "club-1",
         organizerId: "club-1",
         uid: "host-1",
         role: "owner",
-        status: "removed",
+        status: "inactive",
       },
-      "organizerTeamMemberships/club-2_host-1": {
+      "accessGrants/organizer__club-2__host-1": {
+        scopeType: "organizer", scopeId: "club-2",
         organizerId: "club-2",
         uid: "host-1",
         role: "manager",

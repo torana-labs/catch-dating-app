@@ -3,7 +3,13 @@ import type {OrganizerDocument} from "./generated/firestoreAdminTypes";
 import {isOrganizerManager} from "./organizerHosts";
 import {requireDoc} from "./validation";
 
-/** Requires canonical organizer management authority. */
+/**
+ * Requires canonical organizer management authority: the organiser's
+ * hostUserId, ownerUserId and hostUserIds, read in the caller's transaction.
+ * The accessGrants/organizer__{organizerId}__{uid} documents security rules
+ * read mirror exactly these fields, written in the same transaction by every
+ * command that changes them (#2474 step 3), so both decide alike.
+ */
 export async function requireOrganizerManager(params: {
   db: FirebaseFirestore.Firestore;
   organizerId: string;

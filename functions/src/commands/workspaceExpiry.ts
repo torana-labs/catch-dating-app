@@ -18,6 +18,8 @@ import {
   readWorkspaceEvents,
   readWorkspaceForms,
 } from "./workspaceDisposal";
+import {stageOrganizerAccessGrants} from
+  "../domain/access/organizerAccessGrants";
 
 // An untouched try-it workspace is removed 30 days after its last command
 // (owner decision, 18 Nov 2026). Each command pushes expiresAt out; this
@@ -146,6 +148,10 @@ export async function expireTryItWorkspace(deps: WorkspaceExpiryDeps,
     }
     if (growthSnap.exists) tx.delete(growthRef);
     if (teamSnap.exists) tx.delete(teamRef);
+    // The workspace's access documents go with it (#2474 step 3).
+    stageOrganizerAccessGrants(tx, db, {organizerId: pointer.organizerId,
+      before: organizer ?? {ownerUserId: uid}, after: null,
+      grantedBy: null, updatedAt: admin.firestore.Timestamp.now()});
     tx.set(pointerRef, {...pointer, state: "expired", expiresAt: null,
       expiredAt: at});
     setAdminAuditLogInTransaction(tx, db,

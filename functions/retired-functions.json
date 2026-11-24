@@ -140,6 +140,7 @@
   "onOrganizerProgramViewChanged",
   "onPaymentWritten",
   "onProgramAccessViewGrantChanged",
+  "onProgramAccessViewOrganizerChanged",
   "onProgramAccessViewProgramChanged",
   "onProgramArrivalSettingsChanged",
   "onProgramHotelInboundSettingsChanged",

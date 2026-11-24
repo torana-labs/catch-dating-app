@@ -1034,6 +1034,80 @@ test("program-access-views-organizer-managers adds manager views and the flag on
   assert.equal(again.totals.conflicts, 0);
 });
 
+test("access-grants-organizers grants every holder the manager fields name, never a team edge alone", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "access-grants-organizers");
+  const db = fakeDb({
+    "organizers/o1": {hostUserId: "legacy-1", ownerUserId: "owner-1",
+      hostUserIds: ["owner-1", "mgr-1"], hostProfiles: [{uid: "shown-only"}]},
+    "organizers/o2": {hostUserId: "host-2", hostUserIds: []},
+    "organizers/o3": {hostUserId: null, ownerUserId: null, hostUserIds: []},
+    "organizerTeamMemberships/o1_team-only": {organizerId: "o1", uid: "team-only",
+      role: "manager", status: "active"},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.steps[0].toCreate.length, 4);
+  assert.equal(plan.totals.conflicts, 0);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["accessGrants/organizer__o1__owner-1"].role, "owner");
+  assert.equal(db.data["accessGrants/organizer__o1__legacy-1"].role, "manager");
+  assert.equal(db.data["accessGrants/organizer__o1__mgr-1"].role, "manager");
+  assert.equal(db.data["accessGrants/organizer__o2__host-2"].role, "owner");
+  assert.equal(db.data["accessGrants/organizer__o1__team-only"], undefined);
+  assert.equal(db.data["accessGrants/organizer__o1__shown-only"], undefined);
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0, "a rerun writes nothing");
+  assert.equal(again.totals.conflicts, 0);
+  // A role that drifted from the fields is refreshed once.
+  db.data["accessGrants/organizer__o1__mgr-1"] = {
+    ...db.data["accessGrants/organizer__o1__mgr-1"], role: "owner"};
+  const repair = await planMigration(db, migration);
+  assert.equal(repair.steps[1].toFill.length, 1);
+  await applyMigrationPlan(db, repair);
+  assert.equal(db.data["accessGrants/organizer__o1__mgr-1"].role, "manager");
+});
+
+test("access-grants-events grants each event staff member once, permissions ending at the operator window", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "access-grants-events");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const soon = Math.floor((Date.now() + 3_600_000) / 1000) * 1000;
+  const later = Math.floor((Date.now() + 86_400_000) / 1000) * 1000;
+  const grant = (uid, overrides = {}) => ({organizerId: "club-1", eventId: "e1", uid,
+    displayName: "Casey", phoneLastFour: "3210", role: "eventOperator",
+    permissions: ["viewRoster", "setAttendance"], operatorExpiresAt: at(soon),
+    groupDuties: [{groupId: "g1", duty: "sweep", expiresAtMillis: later,
+      sourceHash: "h1", grantedBy: "host-1", grantedAtMillis: 1}],
+    status: "active", createdBy: "host-1", createdAt: at(1), updatedAt: at(7),
+    expiresAt: at(later), revokedBy: null, revokedAt: null, revision: 3, ...overrides});
+  const db = fakeDb({
+    "eventStaffGrants/e1__op-1": grant("op-1"),
+    "eventStaffGrants/e1__gone-1": grant("gone-1", {status: "revoked",
+      revokedBy: "host-1", revokedAt: at(5)}),
+    "eventStaffGrants/e1__mismatch": grant("op-1"),
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.steps[0].toCreate.length, 2);
+  assert.equal(plan.totals.conflicts, 0);
+  await applyMigrationPlan(db, plan);
+  const op = db.data["accessGrants/event__e1__op-1"];
+  assert.equal(op.scopeType, "event");
+  assert.equal(op.status, "active");
+  assert.deepEqual(op.reach.permissions, {viewRoster: soon, setAttendance: soon});
+  assert.deepEqual(op.reach.groupDuties, {"g1__sweep": later});
+  assert.equal(JSON.stringify(op).includes("Casey"), false);
+  assert.equal(db.data["accessGrants/event__e1__gone-1"].status, "inactive");
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0, "a rerun writes nothing");
+  assert.equal(again.totals.conflicts, 0);
+  // A stale access document is repaired once from its grant.
+  db.data["accessGrants/event__e1__op-1"] = {...op,
+    reach: {...op.reach, permissions: {viewRoster: later}}};
+  const repair = await planMigration(db, migration);
+  assert.equal(repair.steps[1].toFill.length, 1);
+  await applyMigrationPlan(db, repair);
+  assert.deepEqual(db.data["accessGrants/event__e1__op-1"].reach.permissions,
+    {viewRoster: soon, setAttendance: soon});
+});
+
 test("access-grants-programs grants each owner and staff member once, then agrees with the views", async () => {
   const views = MIGRATIONS.find((entry) => entry.name === "program-access-views");
   const migration = MIGRATIONS.find((entry) => entry.name === "access-grants-programs");
