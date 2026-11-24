@@ -95,22 +95,9 @@ export const onOrganizerProgramPickupPointChanged = onDocumentWritten({
   await reconcilePrograms(before, after);
 });
 
-/** A hotel's name, address, reception contact or active flag. */
-export const onOrganizerProgramHotelChanged = onDocumentWritten({
-  ...options, document: "programHotels/{hotelId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (unchanged(before, after, ["programId", "organizerId", "name",
-    "address", "receptionContact", "active", "revision"])) return;
-  await reconcilePrograms(before, after);
-});
-
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const programHotelsProjections = defineProjections("programHotels", [
   {

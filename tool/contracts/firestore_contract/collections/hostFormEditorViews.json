@@ -13,7 +13,6 @@
   "read": "current organizer managers get one form's view by id, as getOrganizerFormEditor admitted them (requireOrganizerManager); a view not written yet reads as missing; nobody lists the collection",
   "write": "server only; written from organizerForms and organizerFormDrafts and deleted when either is gone",
   "exportedFunctions": [
-    "onHostFormEditorViewFormChanged",
     "dispatchOrganizerForms",
     "onHostFormEditorViewDraftChanged"
   ],

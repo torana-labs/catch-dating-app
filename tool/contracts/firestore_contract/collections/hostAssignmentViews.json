@@ -13,7 +13,6 @@
   "read": "get and list (query naming uid) by the account the row names only, while not deleted",
   "write": "server only; written from programStaffGrants, eventStaffGrants, organizerTeamMemberships, organizerPrograms, events and organizers",
   "exportedFunctions": [
-    "onHostAssignmentProgramGrantChanged",
     "dispatchProgramStaffGrants",
     "dispatchOrganizerPrograms",
     "onHostAssignmentEventGrantChanged",

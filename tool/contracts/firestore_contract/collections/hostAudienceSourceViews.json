@@ -13,7 +13,6 @@
   "read": "current organizer managers get their organizer's view by id, as listOrganizerSavedAudiences admitted them (requireOrganizerManager); a view not written yet reads as missing; nobody lists the collection",
   "write": "server only; written from organizerForms, organizerApplicationForms, organizerFormVersions, events and organizerContactTagVocabularies",
   "exportedFunctions": [
-    "onHostAudienceSourceViewFormChanged",
     "dispatchOrganizerForms",
     "onHostAudienceSourceViewApplicationFormChanged",
     "onHostAudienceSourceViewVersionChanged",

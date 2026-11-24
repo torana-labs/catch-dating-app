@@ -13,10 +13,8 @@
   "read": "current organizer managers get by id while their account is not deleted; a view not written yet reads as missing",
   "write": "server only; written from the contact, its trait row, its event edges, the linked verified account's Catch payments, event titles and the merge receipts that name it as survivor, deleted when the contact is deleted, hidden or merged",
   "exportedFunctions": [
-    "onHostContactDetailViewContactWritten",
     "dispatchOrganizerContacts",
     "onHostContactDetailViewTraitsWritten",
-    "onHostContactDetailViewEdgeWritten",
     "dispatchOrganizerContactEventEdges",
     "dispatchGuestPayments",
     "dispatchEvents",

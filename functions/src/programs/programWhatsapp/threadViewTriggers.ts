@@ -30,26 +30,6 @@ export const onProgramWhatsappThreadViewThreadChanged = onDocumentWritten({
     event.params.threadId);
 });
 
-/**
- * A household's label, contact name, members or side: its thread's row. The
- * thread id is derived from the programme and household, so no query runs.
- */
-export const onProgramWhatsappThreadViewHouseholdChanged = onDocumentWritten({
-  ...options, document: "programHouseholds/{householdId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (unchanged(before, after, ["programId", "organizerId", "label",
-    "primaryContactName", "memberGuestIds", "side"])) return;
-  const db = admin.firestore();
-  const programIds = new Set([before?.programId, after?.programId]
-    .filter((id): id is string => typeof id === "string" && id.length > 0));
-  for (const programId of programIds) {
-    await reconcileProgramWhatsappThreadView(db,
-      programWhatsappThreadId(programId, event.params.householdId));
-  }
-});
-
 /** Every WhatsApp thread row of a programme. */
 async function reconcileProgramThreadRows(db: FirebaseFirestore.Firestore,
   programId: string): Promise<void> {
@@ -76,10 +56,8 @@ export const programWhatsappThreadProgramProjections = defineProjections(
   }]);
 
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const programHouseholdsProjections = defineProjections(
   "programHouseholds", [

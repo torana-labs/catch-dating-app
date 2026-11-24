@@ -2,15 +2,11 @@
 // (read by functions/scripts/functionExports.cjs).
 
 export {
-  onHostContactSummaryChanged,
   onHostContactTraitsSummaryChanged,
   onHostContactChannelSummaryChanged,
   onHostContactVocabularySummaryChanged,
-  onHostFormSummaryChanged,
   onHostAudienceSummaryCoverageChanged,
   onHostGroupSummaryChanged,
-  onHostResponseSummaryChanged,
-  onHostApplicationSummaryChanged,
   onHostApplicationEvidenceSummaryChanged,
   onHostResponseConversionSummaryChanged,
   onHostResponseSourceLabelSummaryChanged,
@@ -29,8 +25,6 @@ export {
 export {
   onOrganizerAttentionParticipationChanged,
   onOrganizerAttentionAssistanceCaseChanged,
-  onOrganizerAttentionDeliveryReviewChanged,
-  onOrganizerAttentionApplicationChanged,
   onOrganizerAttentionProviderSyncChanged,
   onOrganizerAttentionAutomationRuleChanged,
   onOrganizerAttentionAutomationRunChanged,
@@ -55,24 +49,23 @@ export {
 } from "./providerConnectionViewTriggers";
 export {onHostFormVersionFilterSourceChanged} from
   "./formVersionFilterTriggers";
-export {onHostFormEditorViewFormChanged, onHostFormEditorViewDraftChanged,
+export {
+  onHostFormEditorViewDraftChanged,
   onHostFormAnalyticsViewVersionChanged,
   onHostFormAnalyticsViewAggregateChanged,
-  onHostFormSourceViewLinkChanged} from "./formViewTriggers";
+  onHostFormSourceViewLinkChanged,
+} from "./formViewTriggers";
 export {
-  onHostAudienceSourceViewFormChanged,
   onHostAudienceSourceViewApplicationFormChanged,
   onHostAudienceSourceViewVersionChanged,
   onHostAudienceSourceViewTagsChanged,
   onHostMergeCandidateViewClaimChanged,
   onHostMergeCandidateViewLinkChanged,
-  onHostMergeCandidateViewContactChanged,
-  onHostMergeCandidateViewEdgeChanged,
   onHostMergeCandidateViewDecisionChanged,
 } from "./crmViewTriggers";
-export {onHostWhatsappThreadViewThreadChanged,
-  onHostWhatsappThreadViewContactChanged} from
-  "./whatsappThreadViewTriggers";
+export {
+  onHostWhatsappThreadViewThreadChanged,
+} from "./whatsappThreadViewTriggers";
 export {onHostSendCampaignChanged, onHostSendAnnouncementChanged,
   onHostSendFollowerPostChanged, onHostSendFollowerDeliveryChanged,
   onHostSendTemplateChanged, onHostSendSavedAudienceChanged} from
@@ -100,26 +93,20 @@ export {
   onHostRequestViewParticipationWritten,
   onHostRequestViewProfileWritten,
   onHostRequestViewContactSummaryWritten,
-  onHostRequestViewContactWritten,
 } from "./requestViewTriggers";
 export {
-  onHostContactDetailViewContactWritten,
   onHostContactDetailViewTraitsWritten,
-  onHostContactDetailViewEdgeWritten,
   onHostContactDetailViewMergeReceiptWritten,
 } from "./contactDetailViewTriggers";
 export {
   onHostEventAttendanceReportDispositionWritten,
 } from "./attendanceReportViewTriggers";
-export {onHostApplicationDetailViewApplicationWritten,
-  onHostApplicationDetailViewFormResponseWritten,
+export {
   onHostApplicationDetailViewImportedResponseWritten,
   onHostApplicationDetailViewOriginWritten,
-  onHostApplicationDetailViewMembershipWritten} from
-  "./applicationDetailViewTriggers";
+  onHostApplicationDetailViewMembershipWritten,
+} from "./applicationDetailViewTriggers";
 export {
-  onHostRosterInsightEdgeChanged,
-  onHostRosterInsightContactChanged,
   onHostRosterInsightTraitsChanged,
   onHostRosterInsightBookingPaymentChanged,
 } from "./rosterInsightViewTriggers";
@@ -127,7 +114,6 @@ export {onHostEventCaseViewCaseChanged} from "./eventCaseViewTriggers";
 export {
   onHostEventDeliveryViewMessageChanged,
   onHostEventDeliveryViewGuestChanged,
-  onHostEventDeliveryViewWorkItemChanged,
   onHostEventDeliveryViewRunChanged,
 } from "./eventDeliveryViewTriggers";
 export {
@@ -137,7 +123,6 @@ export {
   onHostMovementViewCheckpointChanged,
   onHostMovementViewGuestChanged,
   onHostMovementViewMembershipChanged,
-  onHostMovementViewWorkItemChanged,
   onHostMovementViewStaffGrantChanged,
 } from "./movementViewTriggers";
 export {dispatchOperationWorkItems} from

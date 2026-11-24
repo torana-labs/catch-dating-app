@@ -239,23 +239,9 @@ export const eventChatDirectoryEventProjections = defineProjections("events", [{
     "eventId", change.documentId),
 }]);
 
-export const onEventChatDirectoryUserWritten = onDocumentWritten({
-  ...options, document: "users/{documentId}",
-}, async (event) => {
-  const [before, after] = versions(event);
-  if (before && after && !changed(before, after,
-    ["displayName", "profileComplete", "profileClaimedAt", "deleted"])) {
-    return;
-  }
-  await refreshEventChatDirectoryEntriesFor(admin.firestore(), "uid",
-    event.params.documentId);
-});
-
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const usersProjections = defineProjections("users", [
   {

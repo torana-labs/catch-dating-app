@@ -21,9 +21,7 @@
     "dispatchEvents",
     "onHostRequestViewProfileWritten",
     "onHostRequestViewContactSummaryWritten",
-    "onHostRequestViewContactWritten",
-    "dispatchOrganizerContacts",
-    "onHostWhatsappThreadViewContactChanged"
+    "dispatchOrganizerContacts"
   ],
   "migrationNotes": [
     "Contacts are organizer-scoped operational records, never Consumer profiles.",

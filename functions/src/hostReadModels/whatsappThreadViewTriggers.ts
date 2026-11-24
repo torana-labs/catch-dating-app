@@ -17,22 +17,9 @@ export const onHostWhatsappThreadViewThreadChanged = onDocumentWritten({
 }, (event) => reconcileWhatsappThreadView(admin.firestore(),
   event.params.threadId));
 
-/** A contact rename, merge, hide, delete or identity change. */
-export const onHostWhatsappThreadViewContactChanged = onDocumentWritten({
-  ...options, document: "organizerContacts/{contactId}",
-}, async (event) => {
-  const threadIds = contactWhatsappThreadIds(event.params.contactId,
-    event.data?.before.data(), event.data?.after.data());
-  for (const threadId of threadIds) {
-    await reconcileWhatsappThreadView(admin.firestore(), threadId);
-  }
-});
-
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const organizerContactsProjections = defineProjections(
   "organizerContacts", [

@@ -15,9 +15,7 @@
   "exportedFunctions": [
     "onHostMergeCandidateViewClaimChanged",
     "onHostMergeCandidateViewLinkChanged",
-    "onHostMergeCandidateViewContactChanged",
     "dispatchOrganizerContacts",
-    "onHostMergeCandidateViewEdgeChanged",
     "dispatchOrganizerContactEventEdges",
     "onHostMergeCandidateViewDecisionChanged"
   ],

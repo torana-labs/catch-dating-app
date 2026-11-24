@@ -83,84 +83,15 @@ export const onProgramDoorJoinChanged = onDocumentWritten({
   }
 });
 
-/**
- * A guest's name, household or existence: their row at every function, and
- * the journal views that name them.
- */
-export const onProgramDoorGuestChanged = onDocumentWritten({
-  ...options, document: "programGuests/{guestId}",
-}, async (event) => {
-  const db = admin.firestore();
-  const guestId = event.params.guestId;
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  const programId = programIdOf(before, after);
-  if (!programId) return;
-  const watched = (data: Data) => [data?.displayName, data?.householdId];
-  if (before && after &&
-      JSON.stringify(watched(before)) === JSON.stringify(watched(after))) {
-    return;
-  }
-  await reconcileGuestRows(db, programId, guestId);
-  const views = await db.collection(programDoorJournalViewsCollection)
-    .where("programId", "==", programId).where("guestId", "==", guestId)
-    .limit(fanoutLimit).get();
-  for (const doc of views.docs) {
-    await reconcileProgramDoorJournalView(db, doc.id);
-  }
-});
-
-/** A household's label or members: each member's rows. */
-export const onProgramDoorHouseholdChanged = onDocumentWritten({
-  ...options, document: "programHouseholds/{householdId}",
-}, async (event) => {
-  const db = admin.firestore();
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  const programId = programIdOf(before, after);
-  if (!programId) return;
-  if (before && after && before.label === after.label &&
-      JSON.stringify(before.memberGuestIds) ===
-        JSON.stringify(after.memberGuestIds)) return;
-  const members = new Set<string>([...(before?.memberGuestIds ?? []),
-    ...(after?.memberGuestIds ?? [])]);
-  for (const guestId of members) {
-    await reconcileGuestRows(db, programId, guestId);
-  }
-});
-
 /** A door journal entry appearing, or being anonymized. */
 export const onProgramDoorJournalChanged = onDocumentWritten({
   ...options, document: "programDoorJournal/{journalId}",
 }, (event) => reconcileProgramDoorJournalView(admin.firestore(),
   event.params.journalId));
 
-/** A staff member's display name: the label on their journal entries. */
-export const onProgramDoorStaffLabelChanged = onDocumentWritten({
-  ...options, document: "programStaffGrants/{grantId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  const programId = programIdOf(before, after);
-  const uid = after?.uid ?? before?.uid;
-  if (!programId || typeof uid !== "string") return;
-  if (before && after && before.displayName === after.displayName) return;
-  const db = admin.firestore();
-  // One equality filter keeps this off the composite index list; the
-  // programme is checked on each entry.
-  const entries = await db.collection("programDoorJournal")
-    .where("actorUid", "==", uid).limit(fanoutLimit).get();
-  for (const doc of entries.docs) {
-    if (doc.data().programId !== programId) continue;
-    await reconcileProgramDoorJournalView(db, doc.id);
-  }
-});
-
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const programStaffGrantsProjections = defineProjections(
   "programStaffGrants", [

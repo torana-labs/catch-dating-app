@@ -21,22 +21,6 @@ function ids(before: Data, after: Data, field: string): string[] {
   return [...values];
 }
 
-/**
- * A form saved, published, paused, answered or deleted: its editor view.
- * Its owner changing or the form vanishing: its share-link funnel view too.
- */
-export const onHostFormEditorViewFormChanged = onDocumentWritten({
-  ...options, document: "organizerForms/{formId}",
-}, async (event) => {
-  const db = admin.firestore();
-  const formId = event.params.formId;
-  await reconcileFormEditorView(db, formId);
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (before && after && before.organizerId === after.organizerId) return;
-  await reconcileFormSourceView(db, formId);
-});
-
 /** A draft saved or deleted: its form's editor view. */
 export const onHostFormEditorViewDraftChanged = onDocumentWritten({
   ...options, document: "organizerFormDrafts/{formId}",
@@ -70,10 +54,8 @@ export const onHostFormSourceViewLinkChanged = onDocumentWritten({
 });
 
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const organizerFormsProjections = defineProjections("organizerForms", [
   {

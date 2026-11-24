@@ -13,9 +13,7 @@
   "read": "current organizer managers get by id while their account is not deleted; a view not written yet reads as missing",
   "write": "server only; written from the application, its generic-form or imported response, its contact origin and the applicant's community membership, deleted with the application",
   "exportedFunctions": [
-    "onHostApplicationDetailViewApplicationWritten",
     "dispatchOrganizerApplications",
-    "onHostApplicationDetailViewFormResponseWritten",
     "dispatchOrganizerFormResponses",
     "onHostApplicationDetailViewImportedResponseWritten",
     "onHostApplicationDetailViewOriginWritten",

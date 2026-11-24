@@ -265,9 +265,6 @@ export const onHostMovementViewGuestChanged = onDocumentWritten({
 export const onHostMovementViewMembershipChanged = onDocumentWritten({
   ...options, document: "eventAssistanceMemberships/{documentId}",
 }, (event) => reconcileForWrite("eventAssistanceMemberships", event));
-export const onHostMovementViewWorkItemChanged = onDocumentWritten({
-  ...options, document: "operationWorkItems/{documentId}",
-}, (event) => reconcileForWrite("operationWorkItems", event));
 export const onHostMovementViewStaffGrantChanged = onDocumentWritten({
   ...options, document: "eventStaffGrants/{documentId}",
 }, (event) => reconcileForWrite("eventStaffGrants", event));
@@ -284,10 +281,8 @@ export const hostMovementViewProjections = defineProjections("organizers", [{
 }]);
 
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const operationWorkItemsProjections = defineProjections(
   "operationWorkItems", [

@@ -84,32 +84,11 @@ export function contactDetailEventChanged(before: Data, after: Data): boolean {
     !isDeepStrictEqual(pick(before), pick(after));
 }
 
-/** A contact hidden, deleted, merged, linked or unlinked. */
-export const onHostContactDetailViewContactWritten = onDocumentWritten({
-  ...options, document: "organizerContacts/{contactId}",
-}, async (event) => {
-  if (!contactDetailContactChanged(event.data?.before.data(),
-    event.data?.after.data())) return;
-  await reconcileHostContactDetailView(admin.firestore(),
-    event.params.contactId);
-});
-
 /** Attendance, reliability and segment facts. */
 export const onHostContactDetailViewTraitsWritten = onDocumentWritten({
   ...options, document: "organizerContactTraits/{contactId}",
 }, (event) => reconcileHostContactDetailView(admin.firestore(),
   event.params.contactId));
-
-/** A night booked, attended, cancelled or moved by a merge. */
-export const onHostContactDetailViewEdgeWritten = onDocumentWritten({
-  ...options, document: "organizerContactEventEdges/{edgeId}",
-}, async (event) => {
-  const db = admin.firestore();
-  for (const contactId of contactDetailContactsForEdge(
-    event.data?.before.data(), event.data?.after.data())) {
-    await reconcileHostContactDetailView(db, contactId);
-  }
-});
 
 /**
  * A completed or refunded Catch payment of a linked account.
@@ -164,10 +143,8 @@ export const onHostContactDetailViewMergeReceiptWritten = onDocumentWritten({
 });
 
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const organizerContactsProjections = defineProjections(
   "organizerContacts", [

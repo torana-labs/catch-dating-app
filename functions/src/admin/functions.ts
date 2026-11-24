@@ -80,10 +80,7 @@ export {
 export {
   adminRecommendOrganizerClaim,
 } from "./organizerClaimRecommendation";
-export {
-  adminSearchPeople,
-  onUserWrittenIndexPeople,
-} from "./peopleSearch";
+export {adminSearchPeople} from "./peopleSearch";
 export {
   adminGetListingEventReview,
   adminPublishListingEvents,
