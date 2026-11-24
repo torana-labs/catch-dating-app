@@ -2120,6 +2120,31 @@ attendee generations, check-in, episode and checkpoint hashes, the case
 binding hash, the staff source hash); a replay whose fence no longer matches
 live state is still rejected. Old documents stay.
 
+### Data Tool Run Records
+
+`dataToolRuns/{runId}` records each applied run of a backfill or migration
+tool under `tool/data/` (FIX-7). The tool writes it through
+`withRunRecord` in `tool/data/lib/run_record.mjs` with the Admin SDK: as
+`running` before its apply phase, then `succeeded` with its counts, or
+`failed` with the counts reached and the error's first line. Dry runs write
+nothing.
+
+- Shape (`contracts/firestore/data_tool_runs.schema.json`): `runId`, `tool`
+  (repository path), `scope` (such as the migration names), `projectId`,
+  `commitSha`, `commitDirty`, `status`, `counts`, `failure`, `startedAt`,
+  `finishedAt`, `expiresAt`. No document data or personal data.
+- Id: the tool's file name, the start time in milliseconds and eight random
+  hex digits.
+- Retention: `expiresAt` is 365 days after the run starts; the collection's
+  TTL policy is a `fieldOverrides` entry for `dataToolRuns.expiresAt` in
+  `firestore.indexes.json`.
+- Adoption: `data:run-record-adoption` (`tool/data/check_run_records.mjs`)
+  fails when a writing tool under `tool/data/` (manifest surface
+  `remote-write` or `remote-destructive`) does not import the helper. Tools
+  written before it are listed as legacy, and the list only shrinks.
+  `tool/data/migrate_firestore_consolidation.mjs` is the first adopter.
+- Server only: rules deny every client read and write.
+
 ### Dispatch Dead Letters
 
 `dispatchDeadLetters/{projectionId}_{eventId}` records a dispatched projection
