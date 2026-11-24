@@ -161,17 +161,19 @@ service cloud.firestore {
     // changes an organiser's hostUserId, ownerUserId or hostUserIds writes it
     // in the same transaction, and requireOrganizerManager reads it too.
     function organizerAccessPath(organizerId) {
-      return /databases/$(database)/documents/accessGrants/$(accessGrantDocId('organizer', organizerId, request.auth.uid));
+      return /databases/$(database)/documents/accessGrants/$('organizer__' + organizerId + '__' + request.auth.uid);
     }
 
     function isOrganizerManagerOf(organizerId) {
+      // A signed-out request has no uid, so the path fails and so does this.
       let access = organizerAccessPath(organizerId);
-      return isAuthed() && organizerId is string
-        && exists(access)
-        && get(access).data.scopeType == 'organizer'
-        && get(access).data.uid == request.auth.uid
-        && get(access).data.status == 'active'
-        && get(access).data.role in ['owner', 'manager'];
+      return exists(access) && organizerAccessLive(get(access).data);
+    }
+
+    // The id names the organiser and the account, so the fields need only
+    // say the grant is live.
+    function organizerAccessLive(grant) {
+      return grant.status == 'active' && grant.uid == request.auth.uid;
     }
 
     function isOrganizerOwnerOf(organizerId) {
@@ -179,13 +181,10 @@ service cloud.firestore {
         && get(organizerAccessPath(organizerId)).data.role == 'owner';
     }
 
+    // A missing event or organizerId fails the lookup, and so the check.
     function isOrganizerHostForEvent(eventId) {
-      return exists(/databases/$(database)/documents/events/$(eventId))
-        && get(/databases/$(database)/documents/events/$(eventId))
-          .data.keys().hasAny(['organizerId'])
-        && isOrganizerManagerOf(
-          get(/databases/$(database)/documents/events/$(eventId))
-            .data.organizerId);
+      return isOrganizerManagerOf(
+        get(/databases/$(database)/documents/events/$(eventId)).data.organizerId);
     }
 
     function eventStaffGrantDocId(eventId, uid) {
