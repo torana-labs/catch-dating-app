@@ -3,19 +3,14 @@ import {HttpsError} from "firebase-functions/v2/https";
 import type {
   OrganizerFormResponseDraftDocument as Draft,
   OrganizerFormVersionDocument as Version,
-  OrganizerCommunicationPreferenceDocument as OrganizerPreference,
-  OrganizerCommunicationPermissionReceiptDocument as OrganizerReceipt,
-  CatchCommunicationPreferenceDocument as CatchPreference,
-  CatchCommunicationPermissionReceiptDocument as CatchReceipt,
   FormCommunicationConsentIntentDocument as Intent,
 } from "../shared/generated/firestoreAdminTypes";
 import type {SaveOrganizerFormResponseDraftCallablePayload} from
   "../shared/generated/saveOrganizerFormResponseDraftCallablePayload";
-import {organizerCommunicationPreferenceId,
-  unknownOrganizerCommunicationChannel} from
-  "../shared/organizerCommunicationPreferences";
-import {requireDoc} from "../shared/validation";
-import {readContactPermissionState, writeContactPermissionState} from
+import type {ContactPermissionReceipt, ContactSender} from
+  "../shared/contactPermissions";
+import {grantFromReceipt, nextContactPermission,
+  readContactPermissionState, writeContactPermissionState} from
   "../messaging/contactPermissions";
 
 type Choices = NonNullable<
@@ -220,97 +215,60 @@ export async function prepareFormMessagingGrants(params: {
     throw new HttpsError("failed-precondition",
       "Messaging permission requires a verified participant decision.");
   }
-  const organizerRef = db.collection("organizerCommunicationPreferences")
-    .doc(organizerCommunicationPreferenceId(draft.organizerId, uid));
-  const catchRef = db.collection("catchCommunicationPreferences").doc(uid);
-  const [organizerSnap, catchSnap, deleted] = await Promise.all([
-    decision.organizerWhatsapp ? tx.get(organizerRef) : null,
-    decision.catchWhatsapp ? tx.get(catchRef) : null,
+  const scopes = (["organizer", "catch"] as const).filter((scope) =>
+    scope === "organizer" ? decision.organizerWhatsapp :
+      decision.catchWhatsapp);
+  const senders: Record<typeof scopes[number], ContactSender> = {
+    organizer: {kind: "organizer", organizerId: draft.organizerId},
+    catch: {kind: "catch"},
+  };
+  const [deleted, ...contacts] = await Promise.all([
     tx.get(db.collection("deletedUsers").doc(uid)),
+    ...scopes.map((scope) => readContactPermissionState(db, tx,
+      {uid, sender: senders[scope]})),
   ]);
   // A delayed checkout cannot re-enable communication after account deletion.
   if (deleted.exists) return () => undefined;
-  const organizer = organizerSnap?.exists ?
-    requireDoc<OrganizerPreference>(organizerSnap,
-      "OrganizerCommunicationPreferenceDocument") : null;
-  const catchPreference = catchSnap?.exists ?
-    requireDoc<CatchPreference>(catchSnap,
-      "CatchCommunicationPreferenceDocument") : null;
-  if ((organizer && (organizer.uid !== uid ||
-        organizer.organizerId !== draft.organizerId)) ||
-      (catchPreference && catchPreference.uid !== uid)) {
-    throw new HttpsError("failed-precondition",
-      "Messaging permission ownership is inconsistent.");
-  }
   const writes: Array<() => void> = [];
-  for (const scope of ["organizer", "catch"] as const) {
-    if (scope === "organizer" ? !decision.organizerWhatsapp :
-      !decision.catchWhatsapp) continue;
-    const preference = scope === "organizer" ? organizer : catchPreference;
-    const previous = preference?.whatsapp;
+  scopes.forEach((scope, index) => {
+    const contact = contacts[index];
+    const previous = contact.existing?.grants["whatsapp:marketing"];
     const decidedAt = scope === "organizer" ? decision.organizerDecidedAt :
       decision.catchDecidedAt;
     // Grant time is when the applicant chose it, not when a delayed webhook
     // finalized payment. A later STOP/settings decision always wins.
-    if (previous?.updatedAt &&
-        previous.updatedAt.toMillis() >= decidedAt.toMillis()) continue;
-    const contact = await readContactPermissionState(db, tx, {uid,
-      previous: preference, sender: scope === "organizer" ?
-        {kind: "organizer", organizerId: draft.organizerId} :
-        {kind: "catch"}});
+    if (previous && previous.updatedAt.toMillis() >= decidedAt.toMillis()) {
+      return;
+    }
     const receiptId = "fcpr_" + sha256(
       [scope, uid, draft.organizerId, responseId].join("|")).slice(0, 48);
     const copy = scope === "organizer" ? formMessagingTerms.organizerWhatsapp :
       formMessagingTerms.catchWhatsapp;
-    const shared = {
-      uid, channel: "whatsapp" as const, decision: "optedIn" as const,
-      evidenceStatus: "complete" as const, termsVersion: decision.termsVersion,
+    // The first form copy named no purpose. It is recorded as a marketing
+    // answer the send gate does not honour (contactGrantIsEffective).
+    const receipt: ContactPermissionReceipt = {
+      senderKind: scope, senderId: scope === "catch" ? "catch" :
+        draft.organizerId,
+      ...(scope === "catch" ? {sourceOrganizerId: draft.organizerId} : {}),
+      uid, channel: "whatsapp", decision: "optedIn",
+      evidenceStatus: "complete", termsVersion: decision.termsVersion,
       consentCopyHash: sha256([decision.termsVersion, scope, copy].join("|")),
-      source: "hostFormResponse" as const, sourceEventId: null,
-      sourceFormId: draft.formId, sourceResponseId: responseId,
-      sourceProviderEventId: null, actorClass: "participant" as const,
-      actorUid: uid, identityStrength: "phoneVerified" as const,
-      grantedAt: decidedAt, revokedAt: null,
-      supersedesReceiptId: previous?.currentReceiptId ?? null, createdAt: now,
-    };
-    const channel: OrganizerPreference["whatsapp"] = {
-      status: "optedIn", evidenceStatus: "complete",
-      currentReceiptId: receiptId, termsVersion: decision.termsVersion,
       source: "hostFormResponse", sourceEventId: null,
-      updatedAt: decidedAt,
+      sourceFormId: draft.formId, sourceResponseId: responseId,
+      sourceProviderEventId: null, actorClass: "participant",
+      actorUid: uid, identityStrength: "phoneVerified",
+      grantedAt: decidedAt, revokedAt: null,
+      supersedesReceiptId: previous?.receiptId ?? null, createdAt: now,
     };
-    if (scope === "organizer") {
-      const receipt: OrganizerReceipt = {organizerId: draft.organizerId,
-        ...shared};
-      const updated: OrganizerPreference = {organizerId: draft.organizerId,
-        uid, whatsapp: channel,
-        ...(organizer?.whatsappPurposes ?
-          {whatsappPurposes: organizer.whatsappPurposes} : {}),
-        sms: organizer?.sms ?? unknownOrganizerCommunicationChannel(),
-        createdAt: organizer?.createdAt ?? now, updatedAt: now};
-      writes.push(() => {
-        tx.create(db.collection("organizerCommunicationPermissionReceipts")
-          .doc(receiptId), receipt);
-        tx.set(organizerRef, updated);
-        writeContactPermissionState(tx, contact, {next: updated, now,
-          receipts: [{id: receiptId, document: receipt, created: true}]});
-      });
-    } else {
-      const receipt: CatchReceipt = {sourceOrganizerId: draft.organizerId,
-        ...shared};
-      const updated: CatchPreference = {uid, whatsapp: channel,
-        ...(catchPreference?.whatsappPurposes ?
-          {whatsappPurposes: catchPreference.whatsappPurposes} : {}),
-        createdAt: catchPreference?.createdAt ?? now, updatedAt: now};
-      writes.push(() => {
-        tx.create(db.collection("catchCommunicationPermissionReceipts")
-          .doc(receiptId), receipt);
-        tx.set(catchRef, updated);
-        writeContactPermissionState(tx, contact, {next: updated, now,
-          receipts: [{id: receiptId, document: receipt, created: true}]});
-      });
-    }
-  }
+    // Ambiguous first-form copy is kept as evidence but never reverses a
+    // marketing withdrawal; only an expressly reviewed opt-in can.
+    const keepsWithdrawal = previous?.status === "optedOut";
+    writes.push(() => writeContactPermissionState(tx, contact, {
+      next: nextContactPermission(contact, keepsWithdrawal ? {} : {
+        "whatsapp:marketing": grantFromReceipt(receipt, receiptId, decidedAt),
+      }, now),
+      receipts: [{id: receiptId, document: receipt}]}));
+  });
   return () => {
     for (const write of writes) write();
   };

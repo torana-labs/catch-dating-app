@@ -101,6 +101,7 @@
   "onInstantDraftPhoneLeads",
   "onNativeCancellationRefund",
   "onOrganizerAttentionOrganizerChanged",
+  "onOrganizerCommunicationPreferenceAudienceProjected",
   "onOrganizerGrowthNativePaymentWritten",
   "onOrganizerGrowthOfferPaymentWritten",
   "onOrganizerGrowthPublicPaymentWritten",

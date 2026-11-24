@@ -25,8 +25,8 @@ import {validateCatchWhatsappReadinessIngressDocument} from
   "../shared/generated/validators/catchWhatsappReadinessIngressDocument";
 import {validateCatchWhatsappReadinessAuditDocument} from
   "../shared/generated/validators/catchWhatsappReadinessAuditDocument";
-import {validateCatchCommunicationPreferenceDocument} from
-  "../shared/generated/validators/catchCommunicationPreferenceDocument";
+import {catchWithdrewAllWhatsapp, contactPermissionRef,
+  readContactPermission} from "../shared/contactPermissions";
 import {
   prepareCatchReadinessEvidence,
   loadProtectedCatchReadinessArchive,
@@ -529,11 +529,8 @@ export async function applyCatchReadinessReviewInFirestore(
                               .collection("catchWhatsappEndpointStops")
                               .doc("cwstop_" + endpointKey),
                           ),
-                          tx.get(
-                            db
-                              .collection("catchCommunicationPreferences")
-                              .doc(scope.recipientUid),
-                          ),
+                          tx.get(contactPermissionRef(db,
+                            scope.recipientUid, {kind: "catch"})),
                           tx.get(
                             db
                               .collection("deletedUsers")
@@ -564,14 +561,13 @@ export async function applyCatchReadinessReviewInFirestore(
                             ingress.verifiedAtMillis &&
                           ingress.verifiedAtMillis <=
                             approval.reviewedAtMillis;
-                        const pref = serialized(preference.data());
+                        const pref = readContactPermission(
+                          preference.data(), {kind: "catch"});
                         const invalidPreference =
                           preference.exists &&
-                          (!validateCatchCommunicationPreferenceDocument(
-                            pref,
-                          ) ||
-                            pref.uid !== scope.recipientUid ||
-                            pref.whatsapp.status === "optedOut");
+                          (!pref ||
+                            (await catchWithdrewAllWhatsapp(
+                              (ref) => tx.get(ref), db, pref)));
                         const identity = await fence.readCurrent(
                           structuredClone(approval),
                         );

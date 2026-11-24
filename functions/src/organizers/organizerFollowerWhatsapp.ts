@@ -1,12 +1,16 @@
 import {createHash} from "node:crypto";
 import type {
-  OrganizerCommunicationPermissionReceiptDocument,
-  OrganizerCommunicationPreferenceDocument,
   OrganizerMessageTemplateDocument,
   OrganizerSenderConnectionDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {organizerFollowerWhatsappRoute} from
   "../platform/delivery/communicationRoutes";
+import {
+  contactPermissionStatus,
+  type ContactGrant,
+  type ContactPermission,
+  type ContactPermissionReceipt,
+} from "../shared/contactPermissions";
 
 /**
  * Follower updates on WhatsApp (route organizerFollowerWhatsapp).
@@ -48,8 +52,6 @@ const followerWhatsappConsentCopy = {
     "Send me this organiser\u2019s updates on WhatsApp. Reply STOP to stop.",
 } as const;
 
-type ChannelPreference = OrganizerCommunicationPreferenceDocument["whatsapp"];
-type Receipt = OrganizerCommunicationPermissionReceiptDocument;
 
 /** Returns the reviewed follower consent copy hash, or null when unknown. */
 export function followerWhatsappConsentCopyHash(
@@ -62,34 +64,24 @@ export function followerWhatsappConsentCopyHash(
 }
 
 /**
- * The purpose gate. A broad WhatsApp withdrawal (settings, STOP) that is
- * not older than the follower grant wins; the grant counts only when its
- * evidence is complete, its terms are the reviewed ones and it is bound to
- * the same phone the message would go to.
+ * The purpose gate, over the follower's contact permission for this
+ * organizer. A withdrawal (settings, STOP) wins; a STOP recorded on the
+ * endpoint at or after the grant also wins; the grant counts only while it
+ * is effective (complete evidence, the reviewed copy) and bound to the same
+ * phone the message would go to.
  */
 export function effectiveFollowerWhatsappStatus(
-  preference: OrganizerCommunicationPreferenceDocument | null | undefined,
+  permission: Pick<ContactPermission, "grants" | "granted"> | null |
+    undefined,
   endpointE164: string | null | undefined,
   stoppedAtMillis: number | null = null,
 ): "unknown" | "optedIn" | "optedOut" {
-  const scoped = preference?.whatsappPurposes?.followerUpdates;
-  const broad = preference?.whatsapp;
-  const scopedAt = scoped?.updatedAt?.toMillis() ?? null;
-  if (broad?.status === "optedOut" &&
-      (scopedAt === null || !broad.updatedAt ||
-        broad.updatedAt.toMillis() >= scopedAt)) {
-    return "optedOut";
-  }
-  if (!scoped || scoped.status === "unknown") return "unknown";
-  if (scoped.status === "optedOut") return "optedOut";
-  if (stoppedAtMillis !== null &&
-      (scopedAt === null || stoppedAtMillis >= scopedAt)) {
-    return "optedOut";
-  }
-  if (!endpointE164 || scoped.endpointE164 !== endpointE164) return "unknown";
-  return scoped.evidenceStatus === "complete" && !!scoped.currentReceiptId &&
-    scoped.termsVersion === followerWhatsappTermsVersion &&
-    scoped.source === "organizerFollowByPhone" ? "optedIn" : "unknown";
+  const grant = permission?.grants["whatsapp:followerUpdates"];
+  if (grant?.status === "optedOut") return "optedOut";
+  if (grant && stoppedAtMillis !== null &&
+      stoppedAtMillis >= grant.updatedAt.toMillis()) return "optedOut";
+  return contactPermissionStatus(permission, "whatsapp:followerUpdates",
+    endpointE164);
 }
 
 export type FollowerWhatsappBlocker =
@@ -105,7 +97,8 @@ export type FollowerWhatsappBlocker =
  */
 export function resolveFollowerWhatsappPlan(facts: {
   verifiedPhoneE164: string | null;
-  preference: OrganizerCommunicationPreferenceDocument | null | undefined;
+  permission: Pick<ContactPermission, "grants" | "granted"> | null |
+    undefined;
   stoppedAtMillis: number | null;
   senderReady: boolean;
 }): {
@@ -113,7 +106,7 @@ export function resolveFollowerWhatsappPlan(facts: {
   availability: "available" | "unavailable";
   blocker: FollowerWhatsappBlocker | null;
 } {
-  const status = effectiveFollowerWhatsappStatus(facts.preference,
+  const status = effectiveFollowerWhatsappStatus(facts.permission,
     facts.verifiedPhoneE164, facts.stoppedAtMillis);
   const blocker: FollowerWhatsappBlocker | null =
     !facts.senderReady ? "senderUnavailable" :
@@ -165,14 +158,15 @@ export function followByPhonePermissionReceipt(params: {
   requestId: string;
   supersedesReceiptId: string | null;
   now: FirebaseFirestore.Timestamp;
-}): {id: string; document: Receipt} {
+}): {id: string; document: ContactPermissionReceipt} {
   const consentCopyHash = followerWhatsappConsentCopyHash(
     followerWhatsappTermsVersion)!;
   const id = `ocpr_${sha256([params.organizerId, params.uid, "whatsapp",
     "optedIn", "organizerFollowByPhone", followerWhatsappPurpose,
     params.endpointE164, params.requestId].join("|")).slice(0, 48)}`;
   return {id, document: {
-    organizerId: params.organizerId,
+    senderKind: "organizer",
+    senderId: params.organizerId,
     uid: params.uid,
     channel: "whatsapp",
     purpose: followerWhatsappPurpose,
@@ -196,20 +190,18 @@ export function followByPhonePermissionReceipt(params: {
   }};
 }
 
-/** The current-preference projection that references a grant receipt. */
+/** The followerUpdates grant that references a grant receipt. */
 export function followerWhatsappGrant(params: {
   receiptId: string;
   endpointE164: string;
   now: FirebaseFirestore.Timestamp;
-}): ChannelPreference {
+}): ContactGrant {
   return {
     status: "optedIn",
-    evidenceStatus: "complete",
-    currentReceiptId: params.receiptId,
     endpointE164: params.endpointE164,
+    receiptId: params.receiptId,
     termsVersion: followerWhatsappTermsVersion,
     source: "organizerFollowByPhone",
-    sourceEventId: null,
     updatedAt: params.now,
   };
 }

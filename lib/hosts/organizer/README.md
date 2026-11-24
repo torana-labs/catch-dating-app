@@ -89,11 +89,11 @@ Typed handoffs:
 - `contracts/callables/remove_organizer_manager_payload.schema.json`
 - `contracts/callables/transfer_organizer_ownership_payload.schema.json`
 - `contracts/callables/update_organizer_payload.schema.json`
+- `contracts/firestore/contact_permissions.schema.json`
 - `contracts/firestore/event_attendees.schema.json`
 - `contracts/firestore/host_analytics_snapshots.schema.json`
 - `contracts/firestore/host_payment_accounts.schema.json`
 - `contracts/firestore/host_profiles.schema.json`
-- `contracts/firestore/organizer_communication_preferences.schema.json`
 - `contracts/firestore/organizer_team_memberships.schema.json`
 - `contracts/firestore/organizers.schema.json`
 - `contracts/storage/organizer_logo_images.schema.json`

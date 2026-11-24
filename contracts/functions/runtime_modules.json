@@ -123,7 +123,6 @@
     "CancelCrossPathsInvitationOrPlanCallablePayload",
     "CancelCrossPathsInvitationOrPlanCallableResponse",
     "CancelEventCallablePayload",
-    "CatchCommunicationPreferenceDocument",
     "CatchWhatsappAppAuthorityDocument",
     "CatchWhatsappAutoReplyDocument",
     "CatchWhatsappClarificationDocument",

@@ -13,7 +13,6 @@ import type {
   OrganizerAudienceSummaryDocument,
   OrganizerCampaignDocument,
   OrganizerCampaignRecipientDocument,
-  OrganizerCommunicationPreferenceDocument,
   OrganizerContactChannelStateDocument,
   OrganizerContactDocument,
   OrganizerContactTraitDocument,
@@ -39,10 +38,11 @@ import {
   validateUpsertOrganizerCampaignCallablePayload,
 } from "../shared/generated/validators/upsertOrganizerCampaignInput";
 import {
-  effectiveOrganizerWhatsappPurposeStatus,
-  organizerCommunicationPreferenceId,
-} from
-  "../shared/organizerCommunicationPreferences";
+  contactPermissionRef,
+  contactPermissionStatus,
+  readContactPermission,
+  type ContactPermission,
+} from "../shared/contactPermissions";
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {checkRateLimit, RateLimitConfig} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
@@ -104,7 +104,7 @@ interface AudienceRow {
   contactId: string;
   contact: OrganizerContactDocument | null;
   trait: OrganizerContactTraitDocument | null;
-  preference: OrganizerCommunicationPreferenceDocument | null;
+  permission: ContactPermission | null;
   channelState: OrganizerContactChannelStateDocument | null;
   eligibility: "eligible" | "excluded";
   exclusionReason: ExclusionReason;
@@ -482,16 +482,8 @@ export async function approveOrganizerCampaignHandler(
             db.collection("organizerContacts").doc(row.contactId),
             db.collection("organizerContactTraits").doc(row.contactId),
             ...(row.contact?.linkedUid ?
-              [
-                db
-                  .collection("organizerCommunicationPreferences")
-                  .doc(
-                    organizerCommunicationPreferenceId(
-                      data.organizerId,
-                      row.contact.linkedUid,
-                    ),
-                  ),
-              ] :
+              [contactPermissionRef(db, row.contact.linkedUid,
+                {kind: "organizer", organizerId: data.organizerId})] :
               []),
             db
               .collection("organizerContactChannelStates")
@@ -602,8 +594,10 @@ export async function approveOrganizerCampaignHandler(
           messagingConsent: row.programRecipient.messagingConsent,
         } : null,
         endpointHash: row.endpointHash,
-        permissionTermsVersion: row.preference?.whatsapp.termsVersion ?? null,
-        permissionUpdatedAt: row.preference?.whatsapp.updatedAt ?? null,
+        permissionTermsVersion: row.permission?.grants[
+          "whatsapp:marketing"]?.termsVersion ?? null,
+        permissionUpdatedAt: row.permission?.grants[
+          "whatsapp:marketing"]?.updatedAt ?? null,
         renderedVariablesHash: hashCanonical(variables),
         inviteLinkId,
         status: row.eligibility === "eligible" ? "pending" : "suppressed",
@@ -984,7 +978,7 @@ async function loadProgramSelectionRows(params: {
       contactId: recipient.recipientKey,
       contact: null,
       trait: null,
-      preference: null,
+      permission: null,
       channelState: null,
       eligibility: declined ? "excluded" : "eligible",
       exclusionReason: declined ? "optedOut" : null,
@@ -1006,7 +1000,7 @@ async function loadProgramSelectionRows(params: {
       contactId: unreachable.recipientKey,
       contact: null,
       trait: null,
-      preference: null,
+      permission: null,
       channelState: null,
       eligibility: "excluded",
       exclusionReason: "noVerifiedEndpoint",
@@ -1049,7 +1043,7 @@ async function loadSavedAudienceCampaignRows(params: {
           contactId: row.contactId,
           contact: row.contact,
           trait: row.trait,
-          preference: row.preference,
+          permission: row.permission,
           channelState: row.channelState,
         })),
       params.now,
@@ -1084,34 +1078,24 @@ async function loadLegacyAudienceRows(params: {
   const contacts = contactSnaps.map(
     (snap) => snap.data() as OrganizerContactDocument | undefined,
   );
-  const preferenceRefs = contacts
-    .filter((contact) => contact?.linkedUid)
-    .map((contact) =>
-      params.db
-        .collection("organizerCommunicationPreferences")
-        .doc(
-          organizerCommunicationPreferenceId(
-            params.organizerId,
-            contact!.linkedUid!,
-          ),
-        ),
-    );
+  const sender = {kind: "organizer" as const,
+    organizerId: params.organizerId};
+  const linkedUids = [...new Set(contacts
+    .map((contact) => contact?.linkedUid)
+    .filter((uid): uid is string => !!uid))];
+  const permissionRefs = linkedUids.map((uid) =>
+    contactPermissionRef(params.db, uid, sender));
   const channelRefs = selected.map((doc) =>
     params.db
       .collection("organizerContactChannelStates")
       .doc(organizerContactChannelStateId(params.organizerId, doc.id)),
   );
-  const [preferenceSnaps, channelSnaps] = await Promise.all([
-    preferenceRefs.length === 0 ? [] : params.db.getAll(...preferenceRefs),
+  const [permissionSnaps, channelSnaps] = await Promise.all([
+    permissionRefs.length === 0 ? [] : params.db.getAll(...permissionRefs),
     channelRefs.length === 0 ? [] : params.db.getAll(...channelRefs),
   ]);
-  const preferences = new Map(
-    preferenceSnaps.map((snap) => [
-      (snap.data() as OrganizerCommunicationPreferenceDocument | undefined)
-        ?.uid,
-      snap.data() as OrganizerCommunicationPreferenceDocument | undefined,
-    ]),
-  );
+  const permissions = new Map(linkedUids.map((uid, index) => [uid,
+    readContactPermission(permissionSnaps[index]?.data(), sender)]));
   const channelStates = new Map(
     channelSnaps.map((snap) => [
       (snap.data() as OrganizerContactChannelStateDocument | undefined)
@@ -1125,8 +1109,8 @@ async function loadLegacyAudienceRows(params: {
         contactId: traitSnap.id,
         trait: traitSnap.data() as OrganizerContactTraitDocument,
         contact: contacts[index],
-        preference: contacts[index]?.linkedUid ?
-          (preferences.get(contacts[index]?.linkedUid ?? "") ?? null) :
+        permission: contacts[index]?.linkedUid ?
+          (permissions.get(contacts[index]?.linkedUid ?? "") ?? null) :
           null,
         channelState: channelStates.get(traitSnap.id) ?? null,
       })),
@@ -1152,12 +1136,11 @@ function audienceRowsFromSnapshots(params: {
     const trait = params.snapshots[index++].data() as
       | OrganizerContactTraitDocument
       | undefined;
-    let preference: OrganizerCommunicationPreferenceDocument | null = null;
+    let permission: ContactPermission | null = null;
     if (original.contact?.linkedUid) {
-      preference =
-        (params.snapshots[index++].data() as
-          | OrganizerCommunicationPreferenceDocument
-          | undefined) ?? null;
+      permission = readContactPermission(
+        params.snapshots[index++].data(),
+        {kind: "organizer", organizerId: params.organizerId});
     }
     const channelState =
       (params.snapshots[index++].data() as
@@ -1167,7 +1150,7 @@ function audienceRowsFromSnapshots(params: {
       contactId: original.contactId,
       contact,
       trait,
-      preference,
+      permission,
       channelState,
     };
   });
@@ -1179,7 +1162,7 @@ export function evaluateAudienceRows(
     contactId: string;
     contact: OrganizerContactDocument | undefined;
     trait: OrganizerContactTraitDocument | undefined;
-    preference: OrganizerCommunicationPreferenceDocument | null;
+    permission: ContactPermission | null;
     channelState: OrganizerContactChannelStateDocument | null;
   }>,
   now: FirebaseFirestore.Timestamp,
@@ -1187,7 +1170,7 @@ export function evaluateAudienceRows(
 ): AudienceRow[] {
   const seenEndpoints = new Set<string>();
   return inputs.map((input): AudienceRow => {
-    const {contact, trait, preference, channelState} = input;
+    const {contact, trait, permission, channelState} = input;
     let reason: ExclusionReason = null;
     if (!contact || !trait || contact.deletedAt !== null ||
         contact.hiddenAt != null) reason = "deleted";
@@ -1212,18 +1195,15 @@ export function evaluateAudienceRows(
     ) {
       reason = "noVerifiedEndpoint";
     } else if (
-      !preference ||
-      preference.organizerId !== contact.organizerId ||
-      preference.uid !== contact.linkedUid ||
-      effectiveOrganizerWhatsappPurposeStatus(preference, "marketing",
-        contact.phoneE164) ===
-        "unknown"
+      !permission ||
+      permission.senderId !== contact.organizerId ||
+      contactPermissionStatus(permission, "whatsapp:marketing",
+        contact.phoneE164) === "unknown"
     ) {
       reason = "unknownPermission";
     } else if (
-      effectiveOrganizerWhatsappPurposeStatus(preference, "marketing",
-        contact.phoneE164) ===
-        "optedOut"
+      contactPermissionStatus(permission, "whatsapp:marketing",
+        contact.phoneE164) === "optedOut"
     ) reason = "optedOut";
     else if (channelState?.suppressionStatus === "optedOut") {
       reason = "optedOut";
@@ -1252,7 +1232,7 @@ export function evaluateAudienceRows(
       contactId: input.contactId,
       contact: contact ?? deletedContact(input.contactId, now),
       trait: trait ?? deletedTrait(input.contactId, now),
-      preference,
+      permission,
       channelState,
       eligibility: reason ? "excluded" : "eligible",
       exclusionReason: reason,
@@ -1386,9 +1366,10 @@ export function campaignAudienceSnapshotHash(rows: AudienceRow[]): string {
         exclusionReason: row.exclusionReason,
         endpointHash: row.endpointHash,
         permissionTermsVersion:
-          row.preference?.whatsapp.termsVersion ?? null,
+          row.permission?.grants["whatsapp:marketing"]?.termsVersion ?? null,
         permissionUpdatedAtMillis:
-          row.preference?.whatsapp.updatedAt?.toMillis() ?? null,
+          row.permission?.grants["whatsapp:marketing"]?.updatedAt
+            .toMillis() ?? null,
       })),
   );
 }

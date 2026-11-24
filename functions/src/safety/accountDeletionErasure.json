@@ -105,14 +105,6 @@
       "handling": "deleted",
       "how": "queueBlockCleanup deletes block edges in both directions."
     },
-    "catchCommunicationPermissionReceipts": {
-      "handling": "deleted",
-      "how": "queueOrganizerCommunicationPreferenceCleanup deletes the account's receipts. Consent proof. Retention of consent receipts is counsel question OQ-C2; deletion does not change it here."
-    },
-    "catchCommunicationPreferences": {
-      "handling": "deleted",
-      "how": "queueOrganizerCommunicationPreferenceCleanup deletes catchCommunicationPreferences/{uid}."
-    },
     "catchWhatsappAppAuthorities": {
       "handling": "kept",
       "reason": "Capability authority bound to the Catch WhatsApp operator's account; Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
@@ -711,14 +703,6 @@
       "handling": "kept",
       "needsDecision": true,
       "reason": "The account's attempt to prove it runs an organiser listing. Proposed: delete unresolved attempts at deletion."
-    },
-    "organizerCommunicationPermissionReceipts": {
-      "handling": "deleted",
-      "how": "queueOrganizerCommunicationPreferenceCleanup deletes the account's receipts. Consent proof. Retention of consent receipts is counsel question OQ-C2; deletion does not change it here."
-    },
-    "organizerCommunicationPreferences": {
-      "handling": "deleted",
-      "how": "queueOrganizerCommunicationPreferenceCleanup deletes the account's preferences."
     },
     "organizerCommunityMembershipDecisions": {
       "handling": "deleted",

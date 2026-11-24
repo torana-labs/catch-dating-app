@@ -239,7 +239,7 @@ for (const rsvp of [true, false]) {
       contact: contacts[0][1] as unknown as OrganizerContactDocument,
       trait: h.store.docs[`organizerContactTraits/${accepted.contactId}`] as
         unknown as OrganizerContactTraitDocument,
-      preference: null, channelState: null,
+      permission: null, channelState: null,
     }], now, []);
     assert.equal(eligibility[0].eligibility, "excluded");
     assert.equal(await formAdmissionContactId({db: h.store.asFirestore(),

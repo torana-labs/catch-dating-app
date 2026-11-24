@@ -8,6 +8,11 @@ import {manageWebsiteAccountHandler as manage} from "./websiteAccount";
 import type {ManageWebsiteAccountCallableResponse} from
   "../shared/generated/manageWebsiteAccountCallableResponse";
 import {contractValidator} from "../shared/contractTestValidators";
+import {
+  optedInGrant,
+  optedOutGrant,
+  organizerPermissionSeed,
+} from "../shared/testing/contactPermissionFixtures";
 import {validateManageWebsiteAccountCallablePayload} from
   "../shared/generated/validators/manageWebsiteAccountInput";
 
@@ -20,8 +25,8 @@ const at = (iso: string) => Timestamp.fromDate(new Date(iso));
 
 function fixture() {
   const store = new FormPaymentTestStore();
-  const set = (path: string, data: Record<string, unknown>) =>
-    store.records.set(path, data);
+  const set = (path: string, data: object) =>
+    store.records.set(path, data as Record<string, unknown>);
   set("organizers/run", {name: "Brindle Run Club", publicPage: {
     publishStatus: "published",
     canonicalPath: "/organizers/brindle-run-club/"}});
@@ -59,16 +64,19 @@ function fixture() {
   set("reviews/r3", {organizerId: "run", reviewerUserId: "other",
     reviewerName: "Bo", rating: 1, comment: "Not mine",
     createdAt: at("2026-10-05T09:00:00Z")});
-  set("organizerCommunicationPreferences/run_guest", {organizerId: "run",
-    uid: "guest", whatsapp: {status: "optedIn", evidenceStatus: "complete",
-      currentReceiptId: "receipt1"},
-    sms: {status: "optedIn", evidenceStatus: "incomplete",
-      currentReceiptId: null}});
-  set("organizerCommunicationPreferences/quiz_guest", {organizerId: "quiz",
-    uid: "guest", whatsapp: {status: "optedOut", evidenceStatus: "complete",
-      currentReceiptId: "receipt2"},
-    sms: {status: "unknown", evidenceStatus: "notApplicable",
-      currentReceiptId: null}});
+  // The guest's own contact permissions; another guest's never show.
+  set(...organizerPermissionSeed("run", "guest", {
+    "whatsapp:marketing": optedInGrant("+919800000001",
+      {receiptId: "receipt1"}),
+    "sms:marketing": optedInGrant("+919800000001",
+      {receiptId: null, status: "optedIn"}),
+  }));
+  set(...organizerPermissionSeed("quiz", "guest", {
+    "whatsapp:marketing": optedOutGrant({receiptId: "receipt2"}),
+  }));
+  set(...organizerPermissionSeed("run", "other", {
+    "whatsapp:marketing": optedInGrant("+919800000002"),
+  }));
   const deps = {
     db: () => store as unknown as FirebaseFirestore.Firestore,
     now: () => today,

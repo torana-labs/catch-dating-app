@@ -32,6 +32,7 @@ type Ref = {
   path: string;
   id: string;
   get?: () => Promise<{ data: () => Data | undefined }>;
+  collection?: (child: string) => {doc: (id: string) => Ref};
 };
 const hash = (value: unknown): string =>
   createHash("sha256").update(JSON.stringify(value)).digest("hex");
@@ -45,7 +46,7 @@ class TestFirestore {
   onRead: (() => void) | null = null;
   beforeCommit: (() => void) | null = null;
   afterCommit: (() => void) | null = null;
-  collection(name: string) {
+  collection(name: string): {doc: (id: string) => Ref} {
     return {
       doc: (id: string): Ref => ({
         path: name + "/" + id,
@@ -53,6 +54,8 @@ class TestFirestore {
         get: async () => ({
           data: () => structuredClone(this.records.get(name + "/" + id)),
         }),
+        collection: (child: string) =>
+          this.collection(name + "/" + id + "/" + child),
       }),
     };
   }
@@ -343,7 +346,7 @@ test(
       (f: ReturnType<typeof fixture>) =>
         f.db.records.set("deletedUsers/recipient", {}),
       (f: ReturnType<typeof fixture>) =>
-        f.db.records.set("catchCommunicationPreferences/recipient", {}),
+        f.db.records.set("users/recipient/contactPermissions/catch", {}),
       (f: ReturnType<typeof fixture>) => (f.identity.authority.disabled = true),
       (f: ReturnType<typeof fixture>) =>
         (f.identity.authority.roles = ["support"]),

@@ -4736,7 +4736,7 @@ but new campaign writes cannot submit legacy segment ids.
 Reference files:
 
 - `functions/src/shared/organizerContactOrigins.ts`
-- `functions/src/shared/organizerCommunicationPreferences.ts`
+- `functions/src/shared/contactPermissions.ts`
 - `functions/src/events/eventAttendees.ts`
 - `functions/src/organizers/organizerAudienceProjection.ts`
 - `functions/src/organizers/organizerContactMerges.ts`

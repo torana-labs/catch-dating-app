@@ -30,6 +30,11 @@ class FakeDocReference {
     return `${this.collectionPath}/${this.id}`;
   }
 
+  /** A subcollection of this document, as users/{uid}/... paths need. */
+  collection(name: string): FakeCollection {
+    return this.firestore.collection(`${this.path}/${name}`);
+  }
+
   async get(): Promise<FakeSnapshot> {
     return new FakeSnapshot(this.id, this.firestore.read(this.path), this);
   }

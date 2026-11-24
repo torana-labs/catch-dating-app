@@ -2,10 +2,14 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import type {
-  OrganizerCommunicationPreferenceDocument,
   OrganizerMessageTemplateDocument,
   OrganizerSenderConnectionDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {
+  effectiveContactKeys,
+  type ContactGrant,
+  type ContactPermission,
+} from "../shared/contactPermissions";
 import {
   effectiveFollowerWhatsappStatus,
   followByPhonePermissionReceipt,
@@ -20,53 +24,51 @@ import {
 const phone = "+919812345678";
 const at = (millis: number) => Timestamp.fromMillis(millis);
 
-function preference(
-  overrides: Partial<OrganizerCommunicationPreferenceDocument> = {},
-): OrganizerCommunicationPreferenceDocument {
-  const unknown = {status: "unknown" as const,
-    evidenceStatus: "notApplicable" as const, currentReceiptId: null,
-    termsVersion: null, source: null, sourceEventId: null, updatedAt: null};
-  return {organizerId: "org-1", uid: "uid-1", whatsapp: unknown, sms: unknown,
-    whatsappPurposes: {followerUpdates: followerWhatsappGrant({
-      receiptId: "ocpr_grant", endpointE164: phone, now: at(2_000)})},
-    createdAt: at(1_000), updatedAt: at(2_000), ...overrides};
+function permission(
+  grants: ContactPermission["grants"] = {"whatsapp:followerUpdates":
+    followerWhatsappGrant({receiptId: "ocpr_grant", endpointE164: phone,
+      now: at(2_000)})},
+): ContactPermission {
+  return {senderKind: "organizer", senderId: "org-1", grants,
+    granted: effectiveContactKeys(grants), updatedAt: at(2_000)};
 }
 
 test("a complete follower grant bound to the same phone is opted in", () => {
-  assert.equal(effectiveFollowerWhatsappStatus(preference(), phone), "optedIn");
+  assert.equal(effectiveFollowerWhatsappStatus(permission(), phone),
+    "optedIn");
 });
 
 test("a changed verified phone makes the grant unknown, never opted in",
   () => {
-    assert.equal(effectiveFollowerWhatsappStatus(preference(),
+    assert.equal(effectiveFollowerWhatsappStatus(permission(),
       "+919800000000"), "unknown");
-    assert.equal(effectiveFollowerWhatsappStatus(preference(), null),
+    assert.equal(effectiveFollowerWhatsappStatus(permission(), null),
       "unknown");
   });
 
-test("a later broad withdrawal or STOP wins over the follower grant", () => {
-  const withdrawn = preference({whatsapp: {status: "optedOut",
-    evidenceStatus: "complete", currentReceiptId: "pmpr_x",
-    termsVersion: null, source: "participantSettings", sourceEventId: null,
-    updatedAt: at(3_000)}});
-  assert.equal(effectiveFollowerWhatsappStatus(withdrawn, phone), "optedOut");
-  assert.equal(effectiveFollowerWhatsappStatus(preference(), phone, 2_500),
+test("a later withdrawal or STOP wins over the follower grant", () => {
+  const withdrawal: ContactGrant = {status: "optedOut", endpointE164: null,
+    receiptId: "pmpr_x", termsVersion: null, source: "participantSettings",
+    updatedAt: at(3_000)};
+  assert.equal(effectiveFollowerWhatsappStatus(permission(
+    {"whatsapp:followerUpdates": withdrawal}), phone), "optedOut");
+  assert.equal(effectiveFollowerWhatsappStatus(permission(), phone, 2_500),
     "optedOut");
   // A grant given after the STOP re-opens the route.
-  assert.equal(effectiveFollowerWhatsappStatus(preference(), phone, 1_500),
+  assert.equal(effectiveFollowerWhatsappStatus(permission(), phone, 1_500),
     "optedIn");
 });
 
 test("campaign marketing consent never reads as follower consent", () => {
-  const marketingOnly = preference({whatsappPurposes: {marketing:
+  const marketingOnly = permission({"whatsapp:marketing":
     followerWhatsappGrant({receiptId: "ocpr_m", endpointE164: phone,
-      now: at(2_000)})}});
+      now: at(2_000)})});
   assert.equal(effectiveFollowerWhatsappStatus(marketingOnly, phone),
     "unknown");
 });
 
 test("plan resolution names the first blocker", () => {
-  const base = {verifiedPhoneE164: phone, preference: preference(),
+  const base = {verifiedPhoneE164: phone, permission: permission(),
     stoppedAtMillis: null, senderReady: true};
   assert.deepEqual(resolveFollowerWhatsappPlan(base), {
     routeId: "organizerFollowerWhatsapp", availability: "available",
@@ -75,7 +77,7 @@ test("plan resolution names the first blocker", () => {
     .blocker, "senderUnavailable");
   assert.equal(resolveFollowerWhatsappPlan({...base, verifiedPhoneE164: null})
     .blocker, "missingPhone");
-  assert.equal(resolveFollowerWhatsappPlan({...base, preference: null})
+  assert.equal(resolveFollowerWhatsappPlan({...base, permission: null})
     .blocker, "permissionRequired");
   assert.equal(resolveFollowerWhatsappPlan({...base, stoppedAtMillis: 9_000})
     .blocker, "contactOptedOut");
@@ -86,6 +88,7 @@ test("the grant receipt carries reviewed copy, purpose and phone", () => {
     uid: "uid-1", endpointE164: phone, requestId: "req-1",
     supersedesReceiptId: null, now: at(5_000)});
   assert.match(id, /^ocpr_[a-f0-9]{48}$/u);
+  assert.equal(document.senderId, "org-1");
   assert.equal(document.purpose, "followerUpdates");
   assert.equal(document.endpointE164, phone);
   assert.equal(document.source, "organizerFollowByPhone");

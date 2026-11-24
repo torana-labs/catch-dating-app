@@ -13,7 +13,7 @@ const {ADMIN_ROLE_CLAIMS} = require("../../lib/platform/adminAuth.js");
 const {validateCatchWhatsappReadinessIngressDocument: validIngress} = require("../../lib/shared/generated/validators/catchWhatsappReadinessIngressDocument.js");
 const {validateCatchWhatsappReadinessApprovalDocument: validApproval} = require("../../lib/shared/generated/validators/catchWhatsappReadinessApprovalDocument.js");
 const {validateCatchWhatsappReadinessAuditDocument: validAudit} = require("../../lib/shared/generated/validators/catchWhatsappReadinessAuditDocument.js");
-const {validateCatchCommunicationPreferenceDocument: validPreference} = require("../../lib/shared/generated/validators/catchCommunicationPreferenceDocument.js");
+const {catchWithdrewAllWhatsapp, contactPermissionRef, readContactPermission} = require("../../lib/shared/contactPermissions.js");
 const sha = bytes => createHash("sha256").update(bytes).digest("hex");
 const ref = value => typeof value === "string" && /^[A-Za-z0-9_-]{1,128}$/u.test(value);
 const hash = value => typeof value === "string" && /^[a-f0-9]{64}$/u.test(value);
@@ -327,12 +327,13 @@ function createProtectedReadinessRuntime({privateFiles: files, binding,
         await readPublication(services, tx, candidate, bundle, pending, operation);
         const endpointKey = sha(JSON.stringify([scope.wabaId, scope.phoneNumberId, scope.endpointHash]));
         const read = async (collection, id) => tx.get(services.store.db.collection(collection).doc(id));
+        const catchPermission = contactPermissionRef(services.store.db, scope.recipientUid, {kind: "catch"});
         const [approvalSnap, auditSnap, recordSnap, ingressSnap, stop, pref, deleted] = await Promise.all([
           read("catchWhatsappReadinessApprovals", reference), read("catchWhatsappReadinessAudits", reference),
           read("catchWhatsappReplyReadiness", "cwready_" + endpointKey),
           read("catchWhatsappReadinessIngress", bundle.ingress.document.ingressId),
           read("catchWhatsappEndpointStops", "cwstop_" + endpointKey),
-          read("catchCommunicationPreferences", scope.recipientUid), read("deletedUsers", scope.recipientUid)]);
+          tx.get(catchPermission), read("deletedUsers", scope.recipientUid)]);
         const audit = auditSnap.data();
         const record = recordSnap.data();
         const approval = candidate.approval.approval;
@@ -356,10 +357,11 @@ function createProtectedReadinessRuntime({privateFiles: files, binding,
             setupHash(approvalSnap.data()) !== setupHash({...candidate.approval, state: "consumed",
               consumedAtMillis: audit.atMillis, recordSha256: audit.recordSha256}) ||
             setupHash(ingressSnap.data()) !== setupHash(bundle.ingress.document)) fail();
-        const preference = pref.data();
+        const permission = readContactPermission(pref.data(), {kind: "catch"});
+        const withdrewAll = permission !== null &&
+          await catchWithdrewAllWhatsapp((ref) => tx.get(ref), services.store.db, permission);
         return now() < record.expiresAtMillis && !stop.exists && !deleted.exists &&
-          (!pref.exists || (validPreference(preference) && preference.uid === scope.recipientUid &&
-            preference.whatsapp.status !== "optedOut"));
+          (!pref.exists || (permission !== null && !withdrewAll));
       });
     },
     async apply(policy) {

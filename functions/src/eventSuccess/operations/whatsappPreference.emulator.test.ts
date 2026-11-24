@@ -465,9 +465,14 @@ test("a changed recipient needs fresh consent; withdrawal keeps old evidence",
 test("organizer marketing consent cannot substitute for event-service consent",
   async () => {
     const h = await harness();
-    const path = "organizerCommunicationPreferences/" +
-      h.context.organizerId + "_" + h.actor.uid;
-    await h.write(path, {whatsappOptIn: true, smsOptIn: true});
+    const path = `users/${h.actor.uid}/contactPermissions/organizer_${
+      h.context.organizerId}`;
+    await h.write(path, {senderKind: "organizer",
+      senderId: h.context.organizerId, granted: ["whatsapp:marketing"],
+      grants: {"whatsapp:marketing": {status: "optedIn",
+        endpointE164: h.actor.phone, receiptId: "receipt-1",
+        termsVersion: "organizer-updates-v1",
+        source: "publicEventRegistration"}}});
     const before = await h.read(path);
     assert.equal((await h.store.get(h.actor, h.scope)).view.preference,
       "notSet");

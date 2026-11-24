@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/contact_permission_receipts.schema.json",
   "title": "ContactPermissionReceiptDocument",
-  "description": "Immutable, append-only evidence for one contact permission decision by one person for one sender: a grant or a withdrawal on one channel, optionally for one purpose. It holds the fields of the catchCommunicationPermissionReceipts and organizerCommunicationPermissionReceipts it replaces plus senderKind and senderId, and keeps the same document id. Top-level because it is legal evidence that may need to outlive the account in anonymised form (issue #2460). Server only; no client and no organiser reads it.",
+  "description": "Immutable, append-only evidence for one contact permission decision by one person for one sender: a grant or a withdrawal on one channel, optionally for one purpose. It replaced catchCommunicationPermissionReceipts and organizerCommunicationPermissionReceipts (issue #2460) and keeps their fields and id schemes, plus senderKind and senderId. Top-level because it is legal evidence that may need to outlive the account in anonymised form (issue #2460). Server only; no client and no organiser reads it.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "contactPermissionReceipts",

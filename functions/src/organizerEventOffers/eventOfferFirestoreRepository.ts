@@ -9,12 +9,10 @@ import type {
   OrganizerContactDocument, OrganizerContactOriginDocument,
   OrganizerFormResponseDocument, OrganizerFormVersionDocument,
   OrganizerFormConversionReceiptDocument,
-  OrganizerCommunicationPreferenceDocument,
   OrganizerContactChannelStateDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {effectiveOrganizerWhatsappPurposeStatus,
-  organizerCommunicationPreferenceId} from
-  "../shared/organizerCommunicationPreferences";
+import {contactPermissionRef, contactPermissionStatus,
+  readContactPermission} from "../shared/contactPermissions";
 import {
   organizerContactChannelStateId,
 } from "../organizers/organizerCampaignModel";
@@ -451,7 +449,7 @@ export class FirestoreEventOfferRepository implements OfferRepository {
         eventPaymentTerms: async (eventId) =>
           (await readPreferences(eventId))?.paymentTerms ?? null,
         eventPreferences: readPreferences,
-        handoffPresentation: async (offer, sourceResponseId) => {
+        handoffPresentation: async (offer) => {
           const [eventData, contactData] = await Promise.all([
             read("events", offer.eventId),
             read("organizerContacts", offer.contactId),
@@ -465,10 +463,11 @@ export class FirestoreEventOfferRepository implements OfferRepository {
               "Offer event or contact is unavailable.");
           }
           const phone = contact.phoneE164;
-          const [preferenceData, channelData, stopData] = await Promise.all([
-            contact.linkedUid ? read("organizerCommunicationPreferences",
-              organizerCommunicationPreferenceId(offer.organizerId,
-                contact.linkedUid)) : Promise.resolve(undefined),
+          const sender = {kind: "organizer" as const,
+            organizerId: offer.organizerId};
+          const [permissionData, channelData, stopData] = await Promise.all([
+            contact.linkedUid ? readRef(contactPermissionRef(this.db,
+              contact.linkedUid, sender)) : Promise.resolve(undefined),
             read("organizerContactChannelStates",
               organizerContactChannelStateId(offer.organizerId,
                 offer.contactId)),
@@ -476,12 +475,10 @@ export class FirestoreEventOfferRepository implements OfferRepository {
               whatsappStopId(offer.organizerId, hashEndpoint(phone))) :
               Promise.resolve(undefined),
           ]);
-          const preference = preferenceData as
-            OrganizerCommunicationPreferenceDocument | undefined;
+          const permission = readContactPermission(permissionData, sender);
           const channel = channelData as
             OrganizerContactChannelStateDocument | undefined;
-          if (preference && (preference.organizerId !== offer.organizerId ||
-              preference.uid !== contact.linkedUid)) {
+          if (permissionData && !permission) {
             throw new OfferDomainError("conflict",
               "Stored contact permission has a foreign owner.");
           }
@@ -490,8 +487,8 @@ export class FirestoreEventOfferRepository implements OfferRepository {
             throw new OfferDomainError("conflict",
               "Stored contact channel has a foreign owner.");
           }
-          const purposeStatus = effectiveOrganizerWhatsappPurposeStatus(
-            preference, "eventOperations", phone, sourceResponseId);
+          const purposeStatus = contactPermissionStatus(permission,
+            "whatsapp:eventOperations", phone);
           const optedOut = contact.whatsappStatus === "optedOut" ||
             purposeStatus === "optedOut";
           const suppressed = channel?.adminSuppressed === true ||

@@ -5,10 +5,8 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
-import type {
-  OrganizerCommunicationPermissionReceiptDocument,
-  OrganizerCommunicationPreferenceDocument,
-} from "../shared/generated/firestoreAdminTypes";
+import type {ContactPermissionReceipt} from "../shared/contactPermissions";
+import {contactPermissionReceiptRef} from "../shared/contactPermissions";
 import type {FollowOrganizerByPhoneCallablePayload} from
   "../shared/generated/followOrganizerByPhoneCallablePayload";
 import type {FollowOrganizerByPhoneCallableResponse} from
@@ -18,23 +16,18 @@ import {validateFollowOrganizerByPhoneCallablePayload} from
 import {validateFollowOrganizerByPhoneCallableResponse} from
   "../shared/generated/validators/followOrganizerByPhoneOutput";
 import {
-  organizerCommunicationPreferenceId,
-  unknownOrganizerCommunicationChannel,
-} from "../shared/organizerCommunicationPreferences";
-import {
   activeOrganizerFollowPatch,
   organizerRelationshipId,
 } from "../shared/relationshipDocuments";
-import {readContactPermissionState, writeContactPermissionState} from
-  "../messaging/contactPermissions";
+import {nextContactPermission, readContactPermissionState,
+  writeContactPermissionState} from "../messaging/contactPermissions";
 import {
   followByPhonePermissionReceipt,
   followerWhatsappGrant,
   followerWhatsappTermsVersion,
 } from "./organizerFollowerWhatsapp";
 
-type Preference = OrganizerCommunicationPreferenceDocument;
-type Receipt = OrganizerCommunicationPermissionReceiptDocument;
+type Receipt = ContactPermissionReceipt;
 
 export interface FollowOrganizerByPhoneDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -86,15 +79,14 @@ export async function followOrganizerByPhoneHandler(
   const organizerRef = db.collection("organizers").doc(data.organizerId);
   const followRef = db.collection("organizerFollows")
     .doc(organizerRelationshipId(data.organizerId, uid));
-  const preferenceRef = db.collection("organizerCommunicationPreferences")
-    .doc(organizerCommunicationPreferenceId(data.organizerId, uid));
+  const sender = {kind: "organizer" as const, organizerId: data.organizerId};
   const response = await db.runTransaction(async (tx) => {
-    const [organizerSnap, deletedSnap, followSnap, preferenceSnap] =
+    const [organizerSnap, deletedSnap, followSnap, contact] =
       await Promise.all([
         tx.get(organizerRef),
         tx.get(db.collection("deletedUsers").doc(uid)),
         tx.get(followRef),
-        tx.get(preferenceRef),
+        readContactPermissionState(db, tx, {uid, sender}),
       ]);
     if (!organizerSnap.exists) {
       throw new HttpsError("not-found", "Organizer not found.");
@@ -103,26 +95,16 @@ export async function followOrganizerByPhoneHandler(
       throw new HttpsError("failed-precondition",
         "This account cannot follow organizers.");
     }
-    const previous = preferenceSnap.data() as Preference | undefined;
-    if (previous && (previous.uid !== uid ||
-        previous.organizerId !== data.organizerId)) {
-      throw new HttpsError("failed-precondition",
-        "Messaging permission ownership is inconsistent.");
-    }
     const receipt = data.whatsappUpdates ? followByPhonePermissionReceipt({
       organizerId: data.organizerId, uid, endpointE164: phone,
       requestId: data.requestId,
-      supersedesReceiptId:
-        previous?.whatsappPurposes?.followerUpdates?.currentReceiptId ?? null,
+      supersedesReceiptId: contact.existing?.grants[
+        "whatsapp:followerUpdates"]?.receiptId ?? null,
       now,
     }) : null;
     const receiptRef = receipt ?
-      db.collection("organizerCommunicationPermissionReceipts")
-        .doc(receipt.id) : null;
+      contactPermissionReceiptRef(db, receipt.id) : null;
     const replaySnap = receiptRef ? await tx.get(receiptRef) : null;
-    const contact = receipt && !replaySnap?.exists ?
-      await readContactPermissionState(db, tx, {uid, previous: previous ?? null,
-        sender: {kind: "organizer", organizerId: data.organizerId}}) : null;
 
     // Follow edge: identical to followOrganizer, minus the profile gate.
     const follow = followSnap.data() as
@@ -144,7 +126,7 @@ export async function followOrganizerByPhoneHandler(
     }
     if (replaySnap?.exists) {
       const stored = replaySnap.data() as Receipt;
-      if (stored.uid !== uid || stored.organizerId !== data.organizerId ||
+      if (stored.uid !== uid || stored.senderId !== data.organizerId ||
           stored.purpose !== "followerUpdates" ||
           stored.endpointE164 !== phone || stored.decision !== "optedIn") {
         throw new HttpsError("already-exists",
@@ -153,22 +135,12 @@ export async function followOrganizerByPhoneHandler(
       return {following: true as const, whatsappUpdates: "optedIn" as const,
         receiptId: receipt.id, idempotentReplay: true};
     }
-    tx.create(receiptRef, receipt.document);
     const grant = followerWhatsappGrant({receiptId: receipt.id,
       endpointE164: phone, now});
-    const document: Preference = {
-      organizerId: data.organizerId,
-      uid,
-      whatsapp: previous?.whatsapp ?? unknownOrganizerCommunicationChannel(),
-      whatsappPurposes: {...(previous?.whatsappPurposes ?? {}),
-        followerUpdates: grant},
-      sms: previous?.sms ?? unknownOrganizerCommunicationChannel(),
-      createdAt: previous?.createdAt ?? now,
-      updatedAt: now,
-    };
-    tx.set(preferenceRef, document);
-    writeContactPermissionState(tx, contact!, {next: document, now,
-      receipts: [{id: receipt.id, document: receipt.document, created: true}]});
+    writeContactPermissionState(tx, contact, {
+      next: nextContactPermission(contact,
+        {"whatsapp:followerUpdates": grant}, now),
+      receipts: [{id: receipt.id, document: receipt.document}]});
     return {following: true as const, whatsappUpdates: "optedIn" as const,
       receiptId: receipt.id, idempotentReplay: false};
   });

@@ -15,8 +15,6 @@ import type {
   EventAttendeeImportDocument,
   EventDocument,
   OnboardingDraftDocument,
-  OrganizerCommunicationPermissionReceiptDocument,
-  OrganizerCommunicationPreferenceDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import type {ImportEventAttendeesCallablePayload} from
   "../shared/generated/importEventAttendeesCallablePayload";
@@ -62,13 +60,19 @@ import {
 } from "../shared/commandReceipts";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
-  organizerCommunicationPreferenceId,
   publicRegistrationPermissionReceipt,
-  unknownOrganizerCommunicationChannel,
 } from
   "../shared/organizerCommunicationPreferences";
-import {readContactPermissionState, writeContactPermissionState} from
+import {grantFromReceipt, nextContactPermission,
+  readContactPermissionState, writeContactPermissionState} from
   "../messaging/contactPermissions";
+import {
+  contactPermissionReceiptRef,
+  type ContactGrant,
+  type ContactGrantKey,
+  type ContactPermission,
+  type ContactPermissionReceipt,
+} from "../shared/contactPermissions";
 import {eventPolicyFromEvent} from "./eventPolicy";
 import {isEventPubliclyAccessible} from "./eventPublicationAccess";
 import {marketForIdOrAlias} from "../locations/marketConfig";
@@ -864,19 +868,17 @@ export async function registerPublicEventHandler(
         "This verified phone has multiple guest records to reconcile.");
     }
     const selectedAttendeeRef = phoneMatches.docs[0]?.ref ?? attendeeRef;
-    const communicationPreferenceRef = db
-      .collection("organizerCommunicationPreferences")
-      .doc(organizerCommunicationPreferenceId(organizerId, uid));
     const [
       organizerSnap,
       attendeeSnap,
       onboardingDraftSnap,
-      communicationPreferenceSnap,
+      contact,
     ] = await Promise.all([
       tx.get(eventOrganizerRef(db, event)),
       tx.get(selectedAttendeeRef),
       tx.get(onboardingDraftRef),
-      tx.get(communicationPreferenceRef),
+      readContactPermissionState(db, tx, {uid,
+        sender: {kind: "organizer", organizerId}}),
     ]);
     const organizer = requireEventOrganizer(organizerSnap, event);
     const policy = eventPolicyFromEvent(event);
@@ -903,25 +905,17 @@ export async function registerPublicEventHandler(
     }
     const permissionReceipts = registrationReplay ? [] :
       publicRegistrationPermissionReceipts({
-        existing: communicationPreferenceSnap.exists ?
-          communicationPreferenceSnap.data() as
-            OrganizerCommunicationPreferenceDocument : undefined,
+        existing: contact.existing,
         organizerId,
         uid,
         eventId: payload.eventId,
         organizerUpdates: payload.organizerUpdates,
+        endpointE164: phone,
         now,
       });
     const receiptSnaps = await Promise.all(permissionReceipts.map((receipt) =>
-      tx.get(db.collection("organizerCommunicationPermissionReceipts")
-        .doc(receipt.id))
+      tx.get(contactPermissionReceiptRef(db, receipt.id))
     ));
-    const contact = permissionReceipts.length > 0 ?
-      await readContactPermissionState(db, tx, {uid,
-        sender: {kind: "organizer", organizerId},
-        previous: communicationPreferenceSnap.exists ?
-          communicationPreferenceSnap.data() as
-            OrganizerCommunicationPreferenceDocument : null}) : null;
     let applyIdentity: () => void = () => undefined;
     let applySeat: () => void = () => undefined;
     let createAttendeeAlias: () => void = () => undefined;
@@ -1042,40 +1036,17 @@ export async function registerPublicEventHandler(
         phoneE164: phone,
       }));
     }
-    const communicationPreference = registrationReplay ? null :
-      mergeOrganizerCommunicationPreference({
-        existing: communicationPreferenceSnap.exists ?
-          communicationPreferenceSnap.data() as
-            OrganizerCommunicationPreferenceDocument : undefined,
-        organizerId,
-        uid,
-        eventId: payload.eventId,
-        organizerUpdates: payload.organizerUpdates,
-        now,
-        permissionReceipts,
-      });
-    if (communicationPreference) {
-      tx.set(communicationPreferenceRef, communicationPreference);
-    }
-    if (communicationPreference && contact) {
-      // The registration phone is verified, so the permission names it.
-      writeContactPermissionState(tx, contact, {next: communicationPreference,
-        now, receipts: permissionReceipts.map((receipt, index) => ({
-          id: receipt.id, document: receipt.document,
-          created: !receiptSnaps[index].exists, endpointE164: phone}))});
-    }
     for (let index = 0; index < permissionReceipts.length; index += 1) {
-      const receipt = permissionReceipts[index];
-      const existingReceipt = receiptSnaps[index];
-      if (existingReceipt.exists) {
-        assertPermissionReceiptReplay(existingReceipt, receipt.document);
-      } else {
-        tx.create(
-          db.collection("organizerCommunicationPermissionReceipts")
-            .doc(receipt.id),
-          receipt.document
-        );
+      if (receiptSnaps[index].exists) {
+        assertPermissionReceiptReplay(receiptSnaps[index],
+          permissionReceipts[index].document);
       }
+    }
+    if (permissionReceipts.length > 0) {
+      writeContactPermissionState(tx, contact, {
+        next: registrationContactPermission(contact, permissionReceipts, now),
+        receipts: permissionReceipts.filter((_, index) =>
+          !receiptSnaps[index].exists)});
     }
     return {
       eventId: payload.eventId,
@@ -1103,65 +1074,33 @@ export function onboardingDraftSeed(params: {
 }
 
 /**
- * Applies only explicit opt-ins from registration. An unchecked box never
- * revokes a prior grant; withdrawal belongs to the self-service/STOP path.
+ * Applies only explicit opt-ins from registration, each bound to the verified
+ * registration phone. An unchecked box never revokes a prior grant;
+ * withdrawal belongs to the self-service/STOP path.
  */
-export function mergeOrganizerCommunicationPreference(params: {
-  existing?: OrganizerCommunicationPreferenceDocument;
-  organizerId: string;
-  uid: string;
-  eventId: string;
-  organizerUpdates?: RegisterPublicEventCallablePayload["organizerUpdates"];
-  now: FirebaseFirestore.Timestamp;
-  permissionReceipts?: Array<{
-    id: string;
-    document: OrganizerCommunicationPermissionReceiptDocument;
-  }>;
-}): OrganizerCommunicationPreferenceDocument | null {
-  const grantsWhatsapp = params.organizerUpdates?.whatsapp === true;
-  const grantsSms = params.organizerUpdates?.sms === true;
-  if (!params.existing && !grantsWhatsapp && !grantsSms) return null;
-  if (params.existing && !grantsWhatsapp && !grantsSms) return null;
-
-  const receipts = params.permissionReceipts ??
-    publicRegistrationPermissionReceipts(params);
-  const receiptByChannel = new Map(receipts.map((receipt) => [
-    receipt.document.channel,
-    receipt,
-  ]));
-  const optedInChannel = (channel: "whatsapp" | "sms") => ({
-    status: "optedIn" as const,
-    evidenceStatus: "complete" as const,
-    currentReceiptId: receiptByChannel.get(channel)!.id,
-    termsVersion: params.organizerUpdates!.termsVersion,
-    source: "publicEventRegistration" as const,
-    sourceEventId: params.eventId,
-    updatedAt: params.now,
-  });
-  return {
-    organizerId: params.organizerId,
-    uid: params.uid,
-    whatsapp: grantsWhatsapp ? optedInChannel("whatsapp") :
-      params.existing?.whatsapp ?? unknownOrganizerCommunicationChannel(),
-    ...(params.existing?.whatsappPurposes ?
-      {whatsappPurposes: params.existing.whatsappPurposes} : {}),
-    sms: grantsSms ? optedInChannel("sms") :
-      params.existing?.sms ?? unknownOrganizerCommunicationChannel(),
-    createdAt: params.existing?.createdAt ?? params.now,
-    updatedAt: params.now,
-  };
+export function registrationContactPermission(
+  state: Parameters<typeof nextContactPermission>[0],
+  receipts: Array<{id: string; document: ContactPermissionReceipt}>,
+  now: FirebaseFirestore.Timestamp): ContactPermission {
+  const changes: Partial<Record<ContactGrantKey, ContactGrant>> = {};
+  for (const receipt of receipts) {
+    changes[`${receipt.document.channel}:marketing`] =
+      grantFromReceipt(receipt.document, receipt.id, now);
+  }
+  return nextContactPermission(state, changes, now);
 }
 
 export function publicRegistrationPermissionReceipts(params: {
-  existing?: OrganizerCommunicationPreferenceDocument;
+  existing?: ContactPermission | null;
   organizerId: string;
   uid: string;
   eventId: string;
   organizerUpdates?: RegisterPublicEventCallablePayload["organizerUpdates"];
+  endpointE164: string;
   now: FirebaseFirestore.Timestamp;
 }): Array<{
   id: string;
-  document: OrganizerCommunicationPermissionReceiptDocument;
+  document: ContactPermissionReceipt;
 }> {
   const grants = [
     ...(params.organizerUpdates?.whatsapp === true ?
@@ -1175,7 +1114,9 @@ export function publicRegistrationPermissionReceipts(params: {
       channel,
       eventId: params.eventId,
       termsVersion: params.organizerUpdates!.termsVersion,
-      supersedesReceiptId: params.existing?.[channel].currentReceiptId ?? null,
+      endpointE164: params.endpointE164,
+      supersedesReceiptId:
+        params.existing?.grants[`${channel}:marketing`]?.receiptId ?? null,
       now: params.now,
     });
     if (!receipt) {
@@ -1190,11 +1131,11 @@ export function publicRegistrationPermissionReceipts(params: {
 
 function assertPermissionReceiptReplay(
   snapshot: FirebaseFirestore.DocumentSnapshot,
-  expected: OrganizerCommunicationPermissionReceiptDocument
+  expected: ContactPermissionReceipt
 ): void {
-  const existing = snapshot.data() as
-    OrganizerCommunicationPermissionReceiptDocument | undefined;
-  if (!existing || existing.organizerId !== expected.organizerId ||
+  const existing = snapshot.data() as ContactPermissionReceipt | undefined;
+  if (!existing || existing.senderKind !== expected.senderKind ||
+      existing.senderId !== expected.senderId ||
       existing.uid !== expected.uid || existing.channel !== expected.channel ||
       existing.decision !== expected.decision ||
       existing.source !== expected.source ||

@@ -462,7 +462,7 @@ enter previews.
 | `onEventBookingMirroredToLegacy` | `src/events/eventBookingLegacyMirror.ts` | TRANSITIONAL: `eventBookings/{id}` onWrite — copies the booking (or its deletion) to the legacy `eventParticipations/{id}` mirror that released app builds read; removed in phase 2 of the rename |
 | `onCrossPathsBlockCreated` | `src/crossPaths/` | `blocks/{id}` onCreate — invalidates invitations/holds and closes accepted event plans |
 | `onEventAttendeeAudienceProjected` | `src/organizers/organizerAudienceProjection.ts` | Event attendee writes project organizer-scoped contact and attendance history |
-| `onOrganizerCommunicationPreferenceAudienceProjected` | `src/organizers/organizerAudienceProjection.ts` | Organizer communication preferences update consent-safe audience reachability |
+| `onContactPermissionAudienceProjected` | `src/organizers/organizerAudienceProjection.ts` | Organizer contact permissions (`users/{uid}/contactPermissions`) update consent-safe audience reachability |
 | `onOrganizerContactEventEdgeInviteAttributed` | `src/events/eventInviteAttributionProjection.ts` | Verified invite outcomes update contact advocacy evidence |
 | `onOrganizerFormResponseAggregated` | `src/organizers/organizerFormOperations.ts` | Projects submitted and withdrawn response transitions into precomputed form, source, and question aggregates |
 | `onOrganizerApplicationAutomated` / `onOrganizerAttendanceAutomated` | `src/organizers/organizerFormAutomations.ts` | Queues future acceptance and attendance actions from current authorized sources; attendance follow-ups wait for the event end |

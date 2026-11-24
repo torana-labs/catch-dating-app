@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
-import {organizerCommunicationPreferenceId} from
-  "../shared/organizerCommunicationPreferences";
+import {organizerPermissionSeed, optedOutGrant} from
+  "../shared/testing/contactPermissionFixtures";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {getOrganizerContactDetailHandler} from "./organizerContacts";
 import {AudienceTestStore} from "./organizerAudienceTestStore";
@@ -143,11 +143,10 @@ function linkedHarness(includeHistory?: boolean) {
   h.store.docs["guestPayments/payment-1"] = {purpose: "booking",
     userId: "guest-1", eventId: "event-1",
     status: "completed", amountMinor: 5000, currency: "INR"};
-  const preferencePath = "organizerCommunicationPreferences/" +
-    organizerCommunicationPreferenceId("org-1", "guest-1");
-  h.store.docs[preferencePath] = {organizerId: "org-1", uid: "guest-1",
-    whatsapp: {status: "optedOut", evidenceStatus: "complete",
-      currentReceiptId: null, source: "publicRegistration", updatedAt: now}};
+  const [preferencePath, permission] = organizerPermissionSeed("org-1",
+    "guest-1", {"whatsapp:marketing": optedOutGrant({receiptId: null,
+      source: "inboundStop", updatedAt: now})});
+  h.store.docs[preferencePath] = permission as never;
   return {...h, preferencePath, now, edge};
 }
 
@@ -204,10 +203,12 @@ test("overview and history preserve enrichment payloads and read budgets",
       assert.equal(result.revenue.amounts[0].amountMinor, 5000);
       assert.equal(result.events[0].revenues[0].amountMinor, 5000);
       assert.deepEqual(result.whatsappPermission, {status: "optedOut",
-        evidenceStatus: "complete", receiptId: null,
-        source: "publicRegistration", sourceFormId: null,
+        evidenceStatus: "incomplete", receiptId: null,
+        source: "inboundStop", sourceFormId: null,
         sourceFormTitle: null, decisionAtMillis: 1000,
-        identityStrength: null, purposes: {}});
+        identityStrength: null, purposes: {marketing: {status: "optedOut",
+          evidenceStatus: "incomplete", receiptId: null,
+          decisionAtMillis: 1000, deliveryAvailable: false}}});
       assert.equal(result.timeline.length, mode === false ? 0 : 2);
     }
     assert.deepEqual(results[1], results[2]);

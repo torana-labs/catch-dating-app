@@ -11,7 +11,8 @@ import {
   attendanceReceiptId,
   eventAttendeeId,
   importEventAttendeesForHost,
-  mergeOrganizerCommunicationPreference,
+  publicRegistrationPermissionReceipts,
+  registrationContactPermission,
   normalizeRosterPhone,
   onboardingDraftSeed,
   prepareImportRows,
@@ -963,44 +964,33 @@ test("OTP registration seeds a private account draft without a profile", () => {
 
 test("registration consent only adds explicit channel grants", () => {
   const now = admin.firestore.Timestamp.fromMillis(10);
-  assert.equal(mergeOrganizerCommunicationPreference({
-    organizerId: "organizer-1",
-    uid: "user-1",
-    eventId: "event-1",
-    now,
-  }), null);
+  const phone = "+919876543210";
+  const state = {db: {} as never, uid: "user-1",
+    sender: {kind: "organizer" as const, organizerId: "organizer-1"},
+    existing: null};
+  assert.deepEqual(publicRegistrationPermissionReceipts({
+    organizerId: "organizer-1", uid: "user-1", eventId: "event-1",
+    endpointE164: phone, now}), []);
+  const receipts = publicRegistrationPermissionReceipts({
+    organizerId: "organizer-1", uid: "user-1", eventId: "event-1",
+    organizerUpdates: {whatsapp: true, sms: false,
+      termsVersion: "organizer-updates-v1"},
+    endpointE164: phone, now});
+  const permission = registrationContactPermission(state, receipts, now);
+  const grant = permission.grants["whatsapp:marketing"];
+  assert.equal(grant?.status, "optedIn");
+  assert.equal(grant?.endpointE164, phone);
+  assert.match(grant?.receiptId ?? "", /^ocpr_/);
+  assert.equal(permission.grants["sms:marketing"], undefined);
+  assert.deepEqual(permission.granted, ["whatsapp:marketing"]);
 
-  const preference = mergeOrganizerCommunicationPreference({
-    organizerId: "organizer-1",
-    uid: "user-1",
-    eventId: "event-1",
-    organizerUpdates: {
-      whatsapp: true,
-      sms: false,
-      termsVersion: "organizer-updates-v1",
-    },
-    now,
-  });
-  assert.equal(preference?.whatsapp.status, "optedIn");
-  assert.equal(preference?.whatsapp.evidenceStatus, "complete");
-  assert.match(preference?.whatsapp.currentReceiptId ?? "", /^ocpr_/);
-  assert.equal(preference?.sms.status, "unknown");
-  assert.equal(preference?.sms.evidenceStatus, "notApplicable");
-
-  const replay = mergeOrganizerCommunicationPreference({
-    existing: preference!,
-    organizerId: "organizer-1",
-    uid: "user-1",
-    eventId: "event-2",
-    organizerUpdates: {
-      whatsapp: false,
-      sms: false,
-      termsVersion: "organizer-updates-v1",
-    },
-    now: admin.firestore.Timestamp.fromMillis(20),
-  });
-  assert.equal(replay, null);
-  assert.equal(preference?.whatsapp.status, "optedIn");
+  // A newer reviewed registration opt-in reverses an earlier withdrawal.
+  const withdrawn = registrationContactPermission({...state, existing: {
+    ...permission, grants: {"whatsapp:marketing": {status: "optedOut",
+      endpointE164: null, receiptId: "pmpr_stop", termsVersion: null,
+      source: "participantSettings",
+      updatedAt: admin.firestore.Timestamp.fromMillis(5)}}}}, receipts, now);
+  assert.deepEqual(withdrawn.granted, ["whatsapp:marketing"]);
 });
 
 test("absolute attendance replays and preserves prior state", async () => {

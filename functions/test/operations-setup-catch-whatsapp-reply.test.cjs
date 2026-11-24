@@ -142,9 +142,11 @@ function runtimeFixture(consolidated = false) {
       return {docs, empty: docs.length === 0};
     },
   });
+  const collection = (name) => ({...query(name), doc: (id) => ({id, path: name + "/" + id,
+    get: async () => snapshot(name + "/" + id),
+    collection: (child) => collection(name + "/" + id + "/" + child)})});
   const db = {projectId: scope.projectId, databaseId: "(default)",
-    collection: (name) => ({...query(name), doc: (id) => ({id, path: name + "/" + id,
-      get: async () => snapshot(name + "/" + id)})}),
+    collection,
     runTransaction: async (callback, options) => {
       assert.ok(options.readOnly === true || options.maxAttempts === 1);
       const pending = new Map();

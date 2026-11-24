@@ -3,7 +3,6 @@ import test from "node:test";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {
-  OrganizerCommunicationPreferenceDocument,
   OrganizerContactDocument,
   OrganizerContactTraitDocument,
   OrganizerSavedAudienceDocument,
@@ -15,6 +14,18 @@ import {
   savedAudienceDefinitionMatches,
   SavedAudienceEvaluationRow,
 } from "./organizerSavedAudiences";
+import {effectiveContactKeys} from "../shared/contactPermissions";
+
+function marketingPermission(receiptId: string | null,
+  endpointE164 = "+919876543210") {
+  const grants = {"whatsapp:marketing": {status: "optedIn" as const,
+    endpointE164, receiptId, termsVersion: "organizer-updates-v1",
+    source: "publicEventRegistration" as const,
+    updatedAt: admin.firestore.Timestamp.fromMillis(1)}};
+  return {senderKind: "organizer" as const, senderId: "organizer-1", grants,
+    granted: effectiveContactKeys(grants),
+    updatedAt: admin.firestore.Timestamp.fromMillis(1)};
+}
 
 const now = admin.firestore.Timestamp.fromMillis(
   Date.UTC(2026, 7, 30, 12),
@@ -45,15 +56,7 @@ function row(): SavedAudienceEvaluationRow {
       ),
       segmentIds: ["repeat_attendee", "regular"],
     } as OrganizerContactTraitDocument,
-    preference: {
-      organizerId: "organizer-1",
-      uid: "user-1",
-      whatsapp: {
-        status: "optedIn",
-        evidenceStatus: "complete",
-        currentReceiptId: "receipt-1",
-      },
-    } as OrganizerCommunicationPreferenceDocument,
+    permission: marketingPermission("receipt-1"),
     channelState: null,
   };
 }
@@ -107,13 +110,15 @@ test("past attendees match legacy traits from their attendance count", () => {
 });
 
 test(
-  "named-intent reach fails closed on incomplete evidence or suppression",
+  "named-intent reach needs an effective grant for the contact's number",
   () => {
     const candidate = row();
     assert.equal(isReachableForOrganizerWhatsappCampaign(candidate), true);
-    candidate.preference!.whatsapp.evidenceStatus = "incomplete";
+    candidate.permission = marketingPermission(null);
     assert.equal(isReachableForOrganizerWhatsappCampaign(candidate), false);
-    candidate.preference!.whatsapp.evidenceStatus = "complete";
+    candidate.permission = marketingPermission("receipt-1", "+919800000002");
+    assert.equal(isReachableForOrganizerWhatsappCampaign(candidate), false);
+    candidate.permission = marketingPermission("receipt-1");
     candidate.channelState = {
       suppressionStatus: "adminSuppressed",
       adminSuppressed: true,

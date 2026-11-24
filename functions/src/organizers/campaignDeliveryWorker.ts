@@ -24,7 +24,6 @@ import type {
   EventDocument,
   OrganizerCampaignDocument,
   OrganizerCampaignRecipientDocument,
-  OrganizerCommunicationPreferenceDocument,
   OrganizerContactChannelStateDocument,
   OrganizerContactDocument,
   OrganizerMessageTemplateDocument,
@@ -41,9 +40,11 @@ import {whatsappStatusCorrelation} from
 import type {CampaignWhatsappDispatchDocument} from
   "../shared/generated/campaignWhatsappDispatchDocument";
 import {
-  effectiveOrganizerWhatsappPurposeStatus,
-  organizerCommunicationPreferenceId,
-} from "../shared/organizerCommunicationPreferences";
+  contactPermissionRef,
+  contactPermissionStatus,
+  readContactPermission,
+  type ContactPermission,
+} from "../shared/contactPermissions";
 import {
   classifyMetaError,
   hashCanonical,
@@ -221,10 +222,10 @@ async function readCampaignFacts(
   const contact = contactSnap?.data() as
     | OrganizerContactDocument
     | undefined;
-  const preferenceRef = contact?.linkedUid ?
-    db.collection("organizerCommunicationPreferences").doc(
-      organizerCommunicationPreferenceId(
-        intent.context.organizerId, contact.linkedUid)) :
+  const sender = {kind: "organizer" as const,
+    organizerId: intent.context.organizerId};
+  const permissionRef = contact?.linkedUid ?
+    contactPermissionRef(db, contact.linkedUid, sender) :
     null;
   const channelRef = recipient.contactId ?
     db.collection("organizerContactChannelStates").doc(
@@ -258,7 +259,7 @@ async function readCampaignFacts(
       .limit(10) :
     null;
   const related = await Promise.all([
-    preferenceRef ? tx.get(preferenceRef) : null,
+    permissionRef ? tx.get(permissionRef) : null,
     channelRef ? tx.get(channelRef) : null,
     tx.get(connectionRef),
     tx.get(templateRef),
@@ -268,9 +269,7 @@ async function readCampaignFacts(
     householdRef ? tx.get(householdRef) : null,
     endpointHistoryQuery ? tx.get(endpointHistoryQuery) : null,
   ]);
-  const preference = related[0]?.data() as
-    | OrganizerCommunicationPreferenceDocument
-    | undefined;
+  const permission = readContactPermission(related[0]?.data(), sender);
   const channelState = related[1]?.data() as
     | OrganizerContactChannelStateDocument
     | undefined;
@@ -317,7 +316,7 @@ async function readCampaignFacts(
     }) :
     finalSuppressionReason({
       organizerId: intent.context.organizerId,
-      campaign, recipient, contact, preference, channelState,
+      campaign, recipient, contact, permission, channelState,
       connection, template, event, inviteToken, now,
     });
   // The frozen recipient content hash re-verifies inside the claim window —
@@ -421,7 +420,7 @@ export function finalSuppressionReason(params: {
   campaign: OrganizerCampaignDocument;
   recipient: OrganizerCampaignRecipientDocument;
   contact: OrganizerContactDocument | undefined;
-  preference: OrganizerCommunicationPreferenceDocument | undefined;
+  permission: ContactPermission | null;
   channelState: OrganizerContactChannelStateDocument | undefined;
   connection: OrganizerSenderConnectionDocument | undefined;
   template: OrganizerMessageTemplateDocument | undefined;
@@ -444,16 +443,12 @@ export function finalSuppressionReason(params: {
   ) {
     return "invalidEndpoint";
   }
-  if (!params.preference ||
-      params.preference.organizerId !== params.organizerId ||
-      params.preference.uid !== params.contact.linkedUid) {
+  if (!params.permission ||
+      params.permission.senderId !== params.organizerId) {
     return "unknownPermission";
   }
-  const permissionStatus = effectiveOrganizerWhatsappPurposeStatus(
-    params.preference,
-    "marketing",
-    params.contact.phoneE164
-  );
+  const permissionStatus = contactPermissionStatus(params.permission,
+    "whatsapp:marketing", params.contact.phoneE164);
   if (permissionStatus === "unknown") return "unknownPermission";
   if (permissionStatus === "optedOut") return "optedOut";
   if (

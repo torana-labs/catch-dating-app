@@ -29,7 +29,7 @@
     "adminRevokeOrganizerEntitlementGrant",
     "onEventAttendeeAudienceProjected",
     "onHostMembershipAudienceProjected",
-    "onOrganizerCommunicationPreferenceAudienceProjected",
+    "onContactPermissionAudienceProjected",
     "resolveEventAssistanceAccountability",
     "resolveEventAssistanceCase",
     "transferEventAssistanceGroup",

@@ -27,8 +27,8 @@ import {
   whatsappStopId,
   parseWhatsappStop,
 } from "../../shared/organizerWhatsappStops";
-import {organizerCommunicationPreferenceId} from
-  "../../shared/organizerCommunicationPreferences";
+import {contactPermissionRef, readContactPermission} from
+  "../../shared/contactPermissions";
 import {hashEndpoint} from "../../platform/delivery/endpointHash";
 import {preferences, receipts, settings} from "./preferences";
 import {readApplication, type LoadIdentity} from "./source";
@@ -99,15 +99,12 @@ export async function readFacts(
   ) {
     return stop("superseded");
   }
-  const [prefSnap, configSnap, user, broadSnap] = await Promise.all([
+  const sender = {kind: "organizer" as const, organizerId: c.organizerId};
+  const [prefSnap, configSnap, user, permissionSnap] = await Promise.all([
     tx.get(db.collection(preferences).doc(preferenceId(c.eventId, c.uid))),
     tx.get(db.collection(settings).doc(c.organizerId)),
     identity(c.uid),
-    tx.get(
-      db
-        .collection("organizerCommunicationPreferences")
-        .doc(organizerCommunicationPreferenceId(c.organizerId, c.uid)),
-    ),
+    tx.get(contactPermissionRef(db, c.uid, sender)),
   ]);
   const preference = prefSnap.data();
   const config = configSnap.data();
@@ -184,15 +181,19 @@ export async function readFacts(
     phone,
     email,
   };
-  const broad = broadSnap.data();
+  const grants = readContactPermission(permissionSnap.data(), sender)
+    ?.grants ?? {};
   // A new event-specific choice can supersede an older withdrawal, but
   // missing withdrawal evidence must never reopen a route.
-  const withdrawn = (channel?: {
-    status?: string;
-    updatedAt?: {_seconds: number; _nanoseconds: number};
-  }) => {
-    if (channel?.status !== "optedOut") return false;
-    const at = channel.updatedAt ? timestampMillis(channel.updatedAt) : NaN;
+  const withdrawn = (grant?: {status?: string; updatedAt?: unknown}) => {
+    if (grant?.status !== "optedOut") return false;
+    const value = grant.updatedAt as {toMillis?: () => number;
+      _seconds?: number; _nanoseconds?: number} | undefined;
+    const at = typeof value?.toMillis === "function" ? value.toMillis() :
+      typeof value?._seconds === "number" &&
+        typeof value._nanoseconds === "number" ?
+        timestampMillis({_seconds: value._seconds,
+          _nanoseconds: value._nanoseconds}) : NaN;
     return !Number.isFinite(at) || at >= preference.updatedAtMillis;
   };
   const endpointStop = phone ?
@@ -208,9 +209,8 @@ export async function readFacts(
   const whatsappAllowed =
     (!endpointStopRecord ||
       endpointStopRecord.stoppedAt < preference.updatedAtMillis) &&
-    !withdrawn(broad?.whatsapp) &&
-    !withdrawn(broad?.whatsappPurposes?.eventOperations);
-  const smsAllowed = whatsappAllowed && !withdrawn(broad?.sms);
+    !withdrawn(grants["whatsapp:eventOperations"]);
+  const smsAllowed = whatsappAllowed && !withdrawn(grants["sms:marketing"]);
   const readyWhatsapp = Boolean(
     phone &&
       whatsappAllowed &&

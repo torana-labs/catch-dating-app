@@ -11,7 +11,7 @@
   "owner": "messaging contact permission writer, called in the same transaction by every consent writer",
   "writerContext": "messaging",
   "read": "server only; no client and no organiser reads receipts",
-  "write": "server only and append-only: created beside the catchCommunicationPermissionReceipts or organizerCommunicationPermissionReceipts receipt it copies, with the same id",
+  "write": "server only and append-only: created by the consent writer that records the decision",
   "exportedFunctions": [
     "registerPublicEvent",
     "followOrganizerByPhone",
@@ -23,6 +23,6 @@
     "requestAccountDeletion"
   ],
   "migrationNotes": [
-    "Issue #2460 phase 1. Holds the union of the two receipt collections' fields plus senderKind and senderId. Account deletion deletes a person's receipts exactly as it deletes the old receipt collections; whether to keep them anonymised instead awaits counsel (OQ-C2)."
+    "Issue #2460. The one receipt log for contact consent: it replaced catchCommunicationPermissionReceipts and organizerCommunicationPermissionReceipts and keeps their ids. Account deletion deletes a person's receipts; whether to keep them anonymised instead awaits counsel (OQ-C2)."
   ]
 }

@@ -12,8 +12,6 @@ import {
   organizerPostPayloadHash,
 } from "./organizerPostDelivery";
 import {createOrganizerPostHandler} from "./organizerPosts";
-import {organizerCommunicationPreferenceId} from
-  "../shared/organizerCommunicationPreferences";
 
 type FakeData = Record<string, unknown>;
 type Filter = {field: string; op: string; value: unknown};
@@ -673,9 +671,6 @@ test("follower updates reject moderated copy before writing or rate limiting",
   });
 
 function followerWhatsappDocs(): Record<string, FakeData> {
-  const unknown = {status: "unknown", evidenceStatus: "notApplicable",
-    currentReceiptId: null, termsVersion: null, source: null,
-    sourceEventId: null, updatedAt: null};
   return {
     "organizerSenderConnections/conn-1": {organizerId: "organizer-1",
       channel: "whatsapp", status: "active", phoneNumberId: "pn-1",
@@ -686,15 +681,14 @@ function followerWhatsappDocs(): Record<string, FakeData> {
       variableNames: ["update_text"], parameterBindings: [{
         variableName: "update_text", component: "body", position: 0,
         buttonIndex: null}]},
-    [`organizerCommunicationPreferences/${
-      organizerCommunicationPreferenceId("organizer-1", "user-1")}`]: {
-      organizerId: "organizer-1", uid: "user-1", whatsapp: unknown,
-      sms: unknown, whatsappPurposes: {followerUpdates: {status: "optedIn",
-        evidenceStatus: "complete", currentReceiptId: "ocpr_user1",
-        endpointE164: "+919812345678", termsVersion: "follower-whatsapp-v1",
-        source: "organizerFollowByPhone", sourceEventId: null,
+    "users/user-1/contactPermissions/organizer_organizer-1": {
+      senderKind: "organizer", senderId: "organizer-1",
+      grants: {"whatsapp:followerUpdates": {status: "optedIn",
+        endpointE164: "+919812345678", receiptId: "ocpr_user1",
+        termsVersion: "follower-whatsapp-v1",
+        source: "organizerFollowByPhone",
         updatedAt: new FakeTimestamp(nowMillis - 1000)}},
-      createdAt: new FakeTimestamp(nowMillis - 1000),
+      granted: ["whatsapp:followerUpdates"],
       updatedAt: new FakeTimestamp(nowMillis - 1000)},
   };
 }

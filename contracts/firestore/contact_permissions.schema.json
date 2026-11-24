@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/contact_permissions.schema.json",
   "title": "ContactPermissionDocument",
-  "description": "Server-owned answer to whether one sender may message this person, stored at users/{uid}/contactPermissions/{senderKey}: senderKey is catch or organizer_{organizerId}. grants holds one explicit answer per channel:purpose, each bound to the receipt in contactPermissionReceipts that proves it and, for an opt-in, to the phone number it was given for. granted lists the keys that are effective now. No document, or no key, means no consent. Until the readers move (issue #2460, step 3), every writer of catchCommunicationPreferences and organizerCommunicationPreferences rewrites this document from that preference in the same transaction.",
+  "description": "Server-owned answer to whether one sender may message this person, stored at users/{uid}/contactPermissions/{senderKey}: senderKey is catch or organizer_{organizerId}. grants holds one explicit answer per channel:purpose, each bound to the receipt in contactPermissionReceipts that proves it and, for an opt-in, to the phone number it was given for. granted lists the keys that are effective now. No document, or no key, means no consent. Every consent decision rewrites it in the transaction that records the decision's receipt (issue #2460).",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "contactPermissions",
