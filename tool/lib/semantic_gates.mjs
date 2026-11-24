@@ -40,6 +40,8 @@ export const EXCLUDED = Object.freeze({
 
 /** Whole-repo checks whose command is phrased as a test file. */
 export const INCLUDED = Object.freeze({
+  "contracts:schema-modules":
+    "checks every generated Functions schema module against the canonical registry and runtime_modules.json",
   "firebase:function-binding-intent":
     "asserts every Functions export's binding intent across the whole Functions source",
 });

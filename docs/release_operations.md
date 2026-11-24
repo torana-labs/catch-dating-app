@@ -647,6 +647,12 @@ decision, 22 Nov 2026; evidence in
 - `"candidate"` marks a check still gathering history: it runs and reports, and never blocks.
 - Three checks joined the gate with a short but clean replay (21 to 27 commits, no failures) at the architecture sign-off (#2445): `audit:functions-contexts`, `contracts:client-write-contracts` and `contracts:bigquery-export-paths`. They also block in the functions and contracts lanes, which run them only when Nx selects the lane; the gate blocks every merge-queue entry, so a change to a file only the check reads (the context map, an export env file) cannot skip them.
 - `contracts:account-deletion-erasure` joined the gate with sign-off condition 3 (#2444): every registered collection whose schema holds a uid needs an entry in `functions/src/safety/accountDeletionErasure.json`. It also blocks in the contracts lane.
+- Three checks joined the gate on 24 Nov 2026 after #2496 merged with `tool/contracts/schema_modules.test.mjs` failing. That test ran only in the Tools lane, which reports and does not block, so main went red. The three are:
+  - `contracts:schema-modules`: the checks of `contracts:generate-schemas` (the schema module and schema spec tests) as their own whole-repo tool, about 2-4 s. The generator itself cannot gate, because the gate runs a tool's manifest command and `validateQueueGates` refuses generators.
+  - `docs:function-catalog`: promoted from candidate, 0.1 s.
+  - `data:run-record-adoption`: 0.1 s.
+
+  Two other Tools-lane consistency checks stay out because they are too slow for the 10 s budget: `firebase:function-binding-intent` (about 60 s) and `contracts:organizer-nomenclature` (9-15 s). Affected-tools selection still runs them.
 - `node tool/ci/semantic_gates.mjs list --candidates` prints both.
 - `validateQueueGates` (`tool/lib/semantic_gates.mjs`, run by `meta:tool-manifest`) admits the field only on an active whole-repo check: local, non-generator, a repository script, no Flutter or browser setup.
 - `tool/lib/semantic_gates.test.mjs` pins the approved list. A gated check leaving the manifest, losing its field, or a new gate fails that test until the list changes on purpose.
