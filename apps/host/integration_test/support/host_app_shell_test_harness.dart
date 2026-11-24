@@ -276,6 +276,12 @@ class HostShellBackend {
       // A journey's ticket code is the attendee id it names.
       'resolveEventTicketCode' => _resolveTicket(request),
       'createOrganizer' => _createOrganizer(request),
+      // Setup asks for pages Catch found for the host's number: the
+      // shadow-profile read is off, so setup starts a new page as before.
+      'findClaimableOrganizers' => {
+        'enabled': false,
+        'candidates': const <Object?>[],
+      },
       'listMyOrganizerJourneys' => {'journeys': const <Object?>[]},
       // The shell asks for the plan on wide screens: a social host, no
       // weddings plan, so the Host tabs stay.

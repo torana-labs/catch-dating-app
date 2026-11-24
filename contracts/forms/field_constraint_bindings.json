@@ -350,6 +350,9 @@
     "recordProgramFunctionRsvpCallablePayload": [
       "rsvpStatus"
     ],
+    "requestOrganizerClaimCallablePayload": [
+      "requesterName"
+    ],
     "resolveEventAssistanceCaseCallablePayload": [
       "command.payload.owner"
     ],
