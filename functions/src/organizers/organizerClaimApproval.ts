@@ -1,3 +1,4 @@
+import * as admin from "firebase-admin";
 import crypto from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {
@@ -20,6 +21,8 @@ import {
 import {organizerSupplyCapabilitiesFor} from
   "../shared/organizerSupplyCapabilities";
 import {prepareClaimSalesTransition} from "./claimSalesActivity";
+import {stageOrganizerAccessGrants} from
+  "../domain/access/organizerAccessGrants";
 
 /**
  * Everything that turns a claim request into ownership. Staff approval and
@@ -176,6 +179,13 @@ export async function prepareOrganizerClaimApproval(
       tx.set(db.collection("organizerClaimRequests").doc(otherPendingRequestId),
         {status: "superseded", updatedAt: timestamp}, {merge: true});
     }
+    // The claimant becomes the only access holder in the claim's own commit
+    // (#2474 step 3); anyone who held access before loses it.
+    stageOrganizerAccessGrants(tx, db, {organizerId, before: organizer,
+      after: {ownerUserId: requesterUid, hostUserId: requesterUid,
+        hostUserIds: [requesterUid]},
+      grantedBy: approval.notificationActorUid ?? null,
+      updatedAt: admin.firestore.Timestamp.now()});
     tx.set(
       db.collection("organizerTeamMemberships")
         .doc(organizerRelationshipId(organizerId, requesterUid)),

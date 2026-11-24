@@ -153,4 +153,100 @@ describe("access grant rules", () => {
     await assertFails(getDoc(doc(authed("lapsed-1"),
       "programGuestDirectoryViews", "guest__g1")));
     });
+
+  it(
+    "decides event operator reads from the access grant, not the staff grant record",
+    async () => {
+      const {Timestamp} = require("firebase/firestore");
+      const {eventAccessGrantFromStaffGrant} = require("./rulesHarness.cjs");
+      const in2h = Timestamp.fromMillis(future(2));
+      const staffGrant = (uid, overrides = {}) => ({organizerId: "club-1",
+        eventId: "event-1", uid, displayName: "Casey", phoneLastFour: "3210",
+        role: "checkInOperator", permissions: ["viewRoster",
+          "reviewRuntimeClaims"], operatorExpiresAt: in2h, groupDuties: [],
+        status: "active", createdBy: "host-1", createdAt: Timestamp.now(),
+        expiresAt: in2h, revokedBy: null, revokedAt: null,
+        updatedAt: Timestamp.now(), revision: 1, ...overrides});
+      await seedRaw(["organizers", "club-1"], {hostUserId: "host-1",
+        name: "Sunset Striders"});
+      await seedRaw(["events", "event-1"], {organizerId: "club-1",
+        publicationState: "published"});
+      await seedRaw(["events", "event-private"], {organizerId: "club-1",
+        publicationState: "private"});
+      await seedRaw(["eventAttendees", "attendee-1"], {eventId: "event-1",
+        organizerId: "club-1", displayName: "Asha Shah",
+        phoneE164: "+919876543210", status: "registered"});
+      const roster = (uid) => getDocs(query(collection(authed(uid),
+        "eventAttendees"), where("eventId", "==", "event-1")));
+      const privateEvent = (uid) => getDoc(doc(authed(uid), "events",
+        "event-private"));
+      const seedAccess = (eventId, grant) => seedRaw(
+        ["accessGrants", `event__${eventId}__${grant.uid}`],
+        eventAccessGrantFromStaffGrant({...grant, eventId}));
+
+      // Revoked in the command's transaction; the grant record still reads
+      // live (as a writer outside the commands might leave it).
+      await seedRaw(["eventStaffGrants", "event-1__revoked-1"],
+        staffGrant("revoked-1"));
+      await seedAccess("event-1", staffGrant("revoked-1", {
+        status: "revoked", revokedBy: "host-1", revokedAt: Timestamp.now()}));
+      await assertFails(roster("revoked-1"));
+
+      // A live grant record with no access document grants nothing.
+      await seedRaw(["eventStaffGrants", "event-1__unmigrated-1"],
+        staffGrant("unmigrated-1"));
+      await seedRaw(["eventStaffGrants", "event-private__unmigrated-1"],
+        staffGrant("unmigrated-1", {eventId: "event-private"}));
+      await assertFails(roster("unmigrated-1"));
+      await assertFails(privateEvent("unmigrated-1"));
+
+      // A live access document decides on its own.
+      await seedAccess("event-1", staffGrant("live-1"));
+      await seedAccess("event-private", staffGrant("live-1"));
+      await assertSucceeds(roster("live-1"));
+      await assertSucceeds(privateEvent("live-1"));
+
+      // Its permission ends at the operator window, whatever else lives.
+      await seedAccess("event-1", staffGrant("lapsed-1", {
+        role: "eventOperator",
+        operatorExpiresAt: Timestamp.fromMillis(Date.now() - 1000),
+        groupDuties: [{groupId: "g1", duty: "sweep",
+          expiresAtMillis: future(2)}]}));
+      await assertFails(roster("lapsed-1"));
+    });
+
+  it(
+    "decides organiser management from the access grant, not the organiser fields or a team edge",
+    async () => {
+      const {organizerAccessGrant} =
+        require("./organizerAccessGrantFixture.cjs");
+      // The fields name host-1, but no command wrote its access document.
+      await seedRaw(["organizers", "club-raw"], {hostUserId: "host-1",
+        ownerUserId: "host-1", hostUserIds: ["host-1"], status: "active",
+        archived: false});
+      // mgr-1 holds an access document the fields do not name (a writer
+      // outside the commands): the document decides.
+      await seedRaw(["accessGrants", "organizer__club-raw__mgr-1"],
+        organizerAccessGrant("club-raw", "mgr-1", "manager"));
+      // An active team edge alone.
+      await seedRaw(["organizerTeamMemberships", "club-raw_team-1"],
+        {organizerId: "club-raw", uid: "team-1", role: "manager",
+          status: "active"});
+      await seedRaw(["hostDirectorySummaries", "club-raw"],
+        {organizerId: "club-raw", version: 1});
+      const organizer = (uid) => getDoc(doc(authed(uid), "organizers",
+        "club-raw"));
+      const summary = (uid) => getDoc(doc(authed(uid),
+        "hostDirectorySummaries", "club-raw"));
+      await assertFails(organizer("host-1"));
+      await assertFails(summary("host-1"));
+      await assertFails(organizer("team-1"));
+      await assertSucceeds(organizer("mgr-1"));
+      await assertSucceeds(summary("mgr-1"));
+      // A removed holder's document is gone with the removal.
+      await seedRaw(["accessGrants", "organizer__club-raw__gone-1"],
+        {...organizerAccessGrant("club-raw", "gone-1", "manager"),
+          status: "inactive"});
+      await assertFails(organizer("gone-1"));
+    });
 });

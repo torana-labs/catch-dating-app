@@ -7,20 +7,32 @@
   "rulesTestFile": "functions/test/rules/access_grants.rules.test.cjs",
   "rulesTestNames": [
     "lets an account get and list only its own access grants",
-    "decides programme reads from the access grant even when the view is stale or missing"
+    "decides programme reads from the access grant even when the view is stale or missing",
+    "decides event operator reads from the access grant, not the staff grant record",
+    "decides organiser management from the access grant, not the organiser fields or a team edge"
   ],
-  "owner": "access grant writer (functions/src/domain/access), called in the same transaction by every programme grant, owner and revocation command",
+  "owner": "access grant writers (functions/src/domain/access), called in the same transaction by every programme grant, owner and revocation command and every event staff grant, group duty and revocation command, and every organiser team, creation, claim and try-it expiry command",
   "writerContext": "access",
-  "read": "an account gets its own document by the id scopeType__scopeId__uid and lists its own documents by a query naming its uid, while its account is not deleted. Programme read models authorise through it with one get()",
-  "write": "server only; written in the transaction of the command that creates the programme or issues, claims or revokes a staff grant, never by a trigger",
+  "read": "an account gets its own document by the id scopeType__scopeId__uid and lists its own documents by a query naming its uid, while its account is not deleted. Programme read models and an event operator's roster, claim queue, door list and private event authorise through it with one get(); organiser management (rules, Storage organiser media, requireOrganizerManager, analytics preview, payout setup) reads the organiser document",
+  "write": "server only; written in the transaction of the command that creates the programme, issues, claims or revokes a programme staff grant, or grants, changes or revokes event staff access, never by a trigger",
   "exportedFunctions": [
     "createOrganizerProgram",
     "grantProgramStaff",
     "revokeProgramStaff",
-    "claimProgramStaffInvite"
+    "claimProgramStaffInvite",
+    "grantEventStaff",
+    "revokeEventStaff",
+    "setEventAssistanceGroupStaff",
+    "createOrganizer",
+    "addOrganizerManager",
+    "removeOrganizerManager",
+    "transferOrganizerOwnership",
+    "expireTryItWorkspaces"
   ],
   "migrationNotes": [
     "Issue #2474 step 1 (STR-2 + FIX-10). The programme access document replaces programAccessViews as the rules authority: the same programAccessViewFor computes its reach, without the organizer manager flag, so security rules decide exactly as before but from a document written in the grant's transaction.",
-    "The access-grants-programs migration in tool/data/migrate_firestore_consolidation.mjs creates documents for programme owners and staff grants written before the transactional writers."
+    "The access-grants-programs migration in tool/data/migrate_firestore_consolidation.mjs creates documents for programme owners and staff grants written before the transactional writers.",
+    "Issue #2474 step 2: event staff grants get accessGrants/event__{eventId}__{uid}, written beside the eventStaffGrants record by grantEventStaff, revokeEventStaff and setEventAssistanceGroupStaff. reach.permissions ends at the operator window eventOperatorExpiryMillis computes; group duties never extend it. The access-grants-events migration creates documents for grants written before the transactional writers.",
+    "Issue #2474 step 3: organiser owners and managers get accessGrants/organizer__{organizerId}__{uid}, derived from hostUserId, ownerUserId and hostUserIds with the callables' own helpers and written in the same transaction as every change to them, so it mirrors those fields rather than replacing them for synchronous callable checks. A team edge alone grants nothing. The access-grants-organizers migration creates documents for holders written before."
   ]
 }

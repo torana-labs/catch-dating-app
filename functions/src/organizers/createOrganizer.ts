@@ -39,6 +39,8 @@ import {
   reviewFlagPatch,
   suppressionModule,
 } from "../listingSuppressions/registry";
+import {stageOrganizerAccessGrants} from
+  "../domain/access/organizerAccessGrants";
 
 interface CreateOrganizerDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -302,6 +304,11 @@ export async function stageOwnedOrganizerCreate(
     uid: ownerUid,
     role: "owner",
   }), {merge: true});
+  // The owner's access commits with the organiser (#2474 step 3).
+  stageOrganizerAccessGrants(tx, db, {organizerId, before: null,
+    after: {hostUserId: ownerUid, ownerUserId: ownerUid,
+      hostUserIds: [ownerUid]},
+    grantedBy: ownerUid, updatedAt: admin.firestore.Timestamp.now()});
   if (!hostProfileSnap.exists) {
     tx.set(
       hostProfileRef,

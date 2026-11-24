@@ -15,6 +15,7 @@ const {
   eventRuntimeClaimRequest,
   eventRuntimeParticipant,
   eventStaffGrant,
+  seedEventStaffGrant,
   getDoc,
   getDocs,
   it,
@@ -312,10 +313,7 @@ describe("firestore.rules", () => {
         ["eventRuntimeClaimRequests", "event-1_runner-1"],
         eventRuntimeClaimRequest(),
       );
-      await seed(
-        ["eventStaffGrants", "event-1__operator-1"],
-        eventStaffGrant(),
-      );
+      await seedEventStaffGrant("event-1__operator-1", eventStaffGrant());
 
       await assertSucceeds(getDocs(query(
         collection(authedDb("operator-1"), "eventAttendees"),
@@ -354,9 +352,8 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["organizers", "club-2"], organizer({hostUserId: "host-2"}));
       await seed(["events", "event-1"], event());
-      await seed(["eventStaffGrants", "event-1__operator-1"], eventStaffGrant());
-      await seed(["eventStaffGrants", "event-1__operator-2"],
-        eventStaffGrant({uid: "operator-2", status: "revoked"}));
+      await seedEventStaffGrant("event-1__operator-1", eventStaffGrant());
+      await seedEventStaffGrant("event-1__operator-2", eventStaffGrant({uid: "operator-2", status: "revoked"}));
       const staff = (uid, organizerId = "club-1") => query(
         collection(authedDb(uid), "eventStaffGrants"),
         where("eventId", "==", "event-1"),
@@ -382,10 +379,7 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(["events", "event-2"], event());
-      await seed(
-        ["eventStaffGrants", "event-1__operator-1"],
-        eventStaffGrant(),
-      );
+      await seedEventStaffGrant("event-1__operator-1", eventStaffGrant());
       const presence = (eventId, uid) => ({
         schemaVersion: 1,
         eventId,
@@ -440,10 +434,7 @@ describe("firestore.rules", () => {
         }],
         ["wrong-organizer", {organizerId: "club-2"}],
       ]) {
-        await seed(
-          ["eventStaffGrants", `event-1__${uid}`],
-          eventStaffGrant({uid, ...overrides}),
-        );
+        await seedEventStaffGrant(`event-1__${uid}`, eventStaffGrant({uid, ...overrides}));
         await assertFails(getDocs(query(
           collection(authedDb(uid), "eventAttendees"),
           where("eventId", "==", "event-1"),
@@ -484,11 +475,8 @@ describe("firestore.rules", () => {
           grantedBy: "host-1",
           grantedAtMillis: past.toMillis(),
         }];
-        const operator = (uid, eventId, overrides) => seed(
-          ["eventStaffGrants", `${eventId}__${uid}`],
-          eventStaffGrant({uid, eventId, role: "eventOperator", groupDuties,
-            expiresAt: future, ...overrides}),
-        );
+        const operator = (uid, eventId, overrides) => seedEventStaffGrant(`${eventId}__${uid}`, eventStaffGrant({uid, eventId, role: "eventOperator", groupDuties,
+            expiresAt: future, ...overrides}));
         const readsRoster = (uid) => getDocs(query(
           collection(authedDb(uid), "eventAttendees"),
           where("eventId", "==", "event-1")));
@@ -528,8 +516,7 @@ describe("firestore.rules", () => {
         // A grant written without operatorExpiresAt: a check-in operator
         // falls back to expiresAt, an event operator holds nothing
         // event-wide, as the callables read it.
-        await seed(["eventStaffGrants", "event-1__legacy-checkin"],
-          eventStaffGrant({uid: "legacy-checkin"}));
+        await seedEventStaffGrant("event-1__legacy-checkin", eventStaffGrant({uid: "legacy-checkin"}));
         await assertSucceeds(readsRoster("legacy-checkin"));
         await operator("legacy-operator", "event-1", {});
         await assertFails(readsRoster("legacy-operator"));

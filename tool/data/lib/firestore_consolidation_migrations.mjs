@@ -521,6 +521,67 @@ async function newProgramAccessGrantRow(db, programId, uid) {
   return existing.exists ? null : programAccessGrantRow(db, programId, uid);
 }
 
+let eventAccessGrantModule = null;
+function functionsEventAccessGrant() {
+  try {
+    eventAccessGrantModule ??= createFunctionsRequire()(
+      "./lib/domain/access/eventAccessGrants.js");
+  } catch (error) {
+    throw new Error(
+      "The access-grants-events migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return eventAccessGrantModule;
+}
+
+/** An event staff grant's access document, as the grant commands write it. */
+function eventAccessGrantRow(grant) {
+  try {
+    return functionsEventAccessGrant().eventAccessGrant(grant,
+      grant.updatedAt ?? grant.createdAt);
+  } catch {
+    // A grant that fails its contract gets no document, as in the writers.
+    return null;
+  }
+}
+
+let organizerAccessGrantModule = null;
+function functionsOrganizerAccessGrant() {
+  try {
+    organizerAccessGrantModule ??= createFunctionsRequire()(
+      "./lib/domain/access/organizerAccessGrants.js");
+  } catch (error) {
+    throw new Error(
+      "The access-grants-organizers migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return organizerAccessGrantModule;
+}
+
+/**
+ * An organiser's missing access documents from its manager fields, as the
+ * team commands write them (#2474 step 3): the fields are the one
+ * definition of organiser manager, so a team edge alone grants nothing.
+ */
+async function organizerAccessEntries(db, organizerId, organizer) {
+  if (!validId(organizerId)) return [];
+  const {organizerAccessHolders, organizerAccessGrant} =
+    functionsOrganizerAccessGrant();
+  const entries = [];
+  for (const [uid, role] of organizerAccessHolders(organizer)) {
+    if (!validId(uid)) continue;
+    const id = `organizer__${organizerId}__${uid}`;
+    const existing = await db.collection("accessGrants").doc(id).get();
+    if (existing.exists) continue;
+    entries.push({targetId: id, data: organizerAccessGrant({organizerId, uid,
+      role, grantedBy: null,
+      updatedAt: organizer.updatedAt ?? organizer.createdAt ?? new Date()})});
+  }
+  return entries;
+}
+
 /** Every field the refresh compares; updatedAt records when a command ran. */
 const accessGrantFields = [
   "scopeType", "scopeId", "uid", "organizerId", "role", "status",
@@ -1602,6 +1663,89 @@ export const MIGRATIONS = [
           if (!validId(data.programId) || typeof data.uid !== "string" ||
               !validId(data.uid)) return null;
           return programAccessViewRow(db, data.programId, data.uid);
+        },
+      },
+    ],
+  },
+  {
+    name: "access-grants-events",
+    description:
+      "Security rules decide an event operator's roster, claim queue, door " +
+      "list and private event reads from accessGrants (#2474 step 2), which " +
+      "grantEventStaff, revokeEventStaff and setEventAssistanceGroupStaff " +
+      "write beside the eventStaffGrants record in one transaction. Every " +
+      "grant without an access document gets one, built by eventAccessGrant " +
+      "as the commands build it (revoked grants get an inactive one); then " +
+      "every event access document that differs from what the commands " +
+      "would write now is rewritten, so a rerun that writes nothing shows " +
+      "they agree with the grants. Grants are never changed and nothing is " +
+      "deleted. Build Functions first.",
+    steps: [
+      {
+        source: "eventStaffGrants",
+        target: "accessGrants",
+        skipReason: "not a grant whose id is eventId__uid, or already granted",
+        targetId: (id, data) => validId(data.eventId) && validId(data.uid) &&
+          id === `${data.eventId}__${data.uid}` ?
+          `event__${data.eventId}__${data.uid}` : null,
+        transform: async (data, id, db) => {
+          const existing = await db.collection("accessGrants")
+            .doc(`event__${data.eventId}__${data.uid}`).get();
+          return existing.exists ? null : eventAccessGrantRow(data);
+        },
+      },
+      {
+        kind: "fill",
+        collection: "accessGrants",
+        refresh: accessGrantFields,
+        fill: async (data, id, db) => {
+          if (data.scopeType !== "event" || !validId(data.scopeId) ||
+              typeof data.uid !== "string" || !validId(data.uid)) return null;
+          const grant = await db.collection("eventStaffGrants")
+            .doc(`${data.scopeId}__${data.uid}`).get();
+          if (!grant.exists) return null;
+          const row = eventAccessGrantRow(grant.data());
+          if (!row) return null;
+          // updatedAt records when a command ran; it is never refreshed.
+          delete row.updatedAt;
+          return row;
+        },
+      },
+    ],
+  },
+  {
+    name: "access-grants-organizers",
+    description:
+      "Security rules and requireOrganizerManager decide organiser management " +
+      "from accessGrants (#2474 step 3), which every command that changes an " +
+      "organiser's hostUserId, ownerUserId or hostUserIds writes in the same " +
+      "transaction. Every owner and manager those fields name without an " +
+      "access document gets one (owner: ownerUserId, else hostUserId); a " +
+      "team edge alone grants nothing. Then every organiser access document " +
+      "whose role differs from the fields is rewritten. Organisers and team " +
+      "edges are never changed and nothing is deleted. Build Functions first.",
+    steps: [
+      {
+        source: "organizers",
+        target: "accessGrants",
+        skipReason: "every holder already has an access document",
+        expand: (data, id, db) => organizerAccessEntries(db, id, data),
+      },
+      {
+        kind: "fill",
+        collection: "accessGrants",
+        refresh: ["role", "status", "scopeType", "scopeId", "uid",
+          "organizerId"],
+        fill: async (data, id, db) => {
+          if (data.scopeType !== "organizer" || !validId(data.scopeId) ||
+              typeof data.uid !== "string") return null;
+          const organizer = await db.collection("organizers")
+            .doc(data.scopeId).get();
+          const {organizerAccessHolders} = functionsOrganizerAccessGrant();
+          const role = organizerAccessHolders(organizer.data()).get(data.uid);
+          if (!role) return null; // Reported by the plan, never deleted.
+          return {scopeType: "organizer", scopeId: data.scopeId,
+            uid: data.uid, organizerId: data.scopeId, role, status: "active"};
         },
       },
     ],

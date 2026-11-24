@@ -5273,7 +5273,9 @@ it in the same transaction as the programme or grant
 `functions/src/domain/access/programAccessGrants.ts`), so a grant or revocation
 is in force the moment its command commits and no trigger stands between a
 command and the rules. Step 1 writes programme scopes
-(`program__{programId}__{uid}`); event and organiser scopes follow. The
+(`program__{programId}__{uid}`) and step 2 event scopes
+(`event__{eventId}__{uid}`, below) and step 3 organiser scopes
+(`organizer__{organizerId}__{uid}`, below). The
 programme document carries `role` (`owner` for the creator, else `staff`),
 `status`, `activeFromMillis`, `expiresAtMillis`, `assignments`, `grantedBy`,
 `revision`, `updatedAt` and `reach`: the expiry maps below, computed by the same
@@ -5286,11 +5288,28 @@ owners and grants written before the transactional writers, then refreshes
 `accessGrants` and `programAccessViews`, so a rerun that writes nothing shows
 both agree with their sources.
 
+Organiser access documents (`organizer__{organizerId}__{uid}`, #2474 step 3)
+hold `role` (`owner` or `manager`), `status: active`, no expiry and empty
+`reach`. Every command that changes an organiser's `hostUserId`, `ownerUserId`
+or `hostUserIds` writes them in the same transaction (`createOrganizer` and the
+try-it workspace, `addOrganizerManager`, `removeOrganizerManager`,
+`transferOrganizerOwnership`, claim approval; try-it expiry and account
+deletion remove them), deriving the holders with `organizerManagerUserIds` and
+`organizerOwnerUserId`, the helpers the callables use. They mirror those
+canonical fields rather than replacing them: Firestore rules, Storage rules for
+organiser media, `requireOrganizerManager`, the analytics preview check and the
+payout owner check read the document, while synchronous `isOrganizerManager`
+checks keep reading the fields they mirror. A team edge alone
+(`organizerTeamMemberships`) grants nothing, and a `hostProfiles` entry never
+names a manager. The `access-grants-organizers` migration creates documents
+for holders written before these writers and refreshes roles.
+
 `programAccessViews/{programId}__{uid}` (#1339) is one account's current
 authority over one programme as released Host builds read it, written beside
 its access document in the same transaction by the commands above, and by a
-trigger on `organizers` (`onProgramAccessViewOrganizerChanged`) for the
-display-only organizer manager flag. It was created for existing owners and
+projection on the organizers dispatcher (`programAccessViewOrganizerManagers`
+in `dispatchOrganizers`, which replaced `onProgramAccessViewOrganizerChanged`)
+for the display-only organizer manager flag. It was created for existing owners and
 grants by the `program-access-views` copy-forward migration, for organiser
 managers by `program-access-views-organizer-managers`, and is repaired by
 `program-access-views-refresh` (a view that differs from what the writers would
@@ -5970,6 +5989,20 @@ read and all writes are denied. Staff operate through callables
 and the restricted Host operator route,
 which never grants CRM, campaign, import, provider, event-edit or organizer-wide
 authority. Organizer managers continue to work without a grant.
+
+Security rules never read `eventStaffGrants` for authority (#2474 step 2).
+`grantEventStaff`, `revokeEventStaff` and `setEventAssistanceGroupStaff` write
+`accessGrants/event__{eventId}__{uid}` beside the grant in one transaction
+(`functions/src/domain/access/eventAccessGrants.ts`): `role: staff`, `status`,
+`expiresAtMillis` (the grant's expiry), `reach.permissions` (each event-wide
+permission to the instant the operator window ends, as
+`eventOperatorExpiryMillis` computes it, never extended by a group duty) and
+`reach.groupDuties` (`groupId__duty` to that duty's instant). The roster, claim
+queue, door list and private event rules (`hasActiveEventOperatorGrant`,
+`hasActiveEventStaffGrant`) check the document, its organiser against the
+event's, and the instant against the request time. The `access-grants-events`
+migration creates documents for grants written before the transactional
+writers, then refreshes them.
 
 The same staff document optionally carries `groupDuties`: a lead, pacer or
 sweep duty for each saved group, with its own expiry and reviewed source hash.

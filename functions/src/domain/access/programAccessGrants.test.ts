@@ -62,7 +62,7 @@ test("a staff grant's reach is exactly the view's expiry maps", () => {
   const document = programAccessGrant(staff, "owner-1", updatedAt)!;
   assert.equal(document.role, "staff");
   assert.equal(document.status, "active");
-  assert.equal(document.reach.programAll.guestRelations, now + 2 * hour);
+  assert.equal(document.reach.programAll?.guestRelations, now + 2 * hour);
   for (const key of maps) {
     assert.deepEqual(document.reach[key], staff[key], key);
   }

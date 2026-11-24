@@ -15,5 +15,8 @@
     "revokeEventStaff",
     "getEventAssistanceGroupStaff",
     "setEventAssistanceGroupStaff"
+  ],
+  "migrationNotes": [
+    "Issue #2474 step 2: security rules no longer read this record for authority; each writer stages accessGrants/event__{eventId}__{uid} in the same transaction, and rules decide from that. The grantee's own get and the managers' staff-panel list are unchanged for released Host builds."
   ]
 }
