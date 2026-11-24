@@ -40,6 +40,8 @@
 
     {"path": "lib/routing/", "layer": "app"},
 
+    {"path": "test/organizers/organizers_test_helpers.dart", "layer": "app", "moveTo": "packages/catch_test_support/lib/organizers_test_helpers.dart", "group": "test-support-organizers"},
+
 
     {"path": "lib/auth/", "context": "account"},
 
