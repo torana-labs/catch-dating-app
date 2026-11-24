@@ -5,7 +5,6 @@ import {
   onDocumentCreated,
   onDocumentWritten,
 } from "firebase-functions/v2/firestore";
-import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import {reconcilePublicEvent} from "../events/publicEventProjection";
 import {eventGuestEntries, refreshEventGuestEntry} from "./eventGuestEntry";
 import {guestEventStatuses, refreshGuestEventStatus} from
@@ -212,16 +211,10 @@ export const onGuestEventStatusParticipationWritten = onDocumentWritten({
 }, (event) => refreshPairs(guestEventStatusPairs(...versions(event),
   "eventId", "uid", ["status", "organizerId"])));
 
-export const onGuestEventStatusAttendeeWritten = onDocumentWritten({
-  ...options, document: "eventAttendees/{documentId}",
-}, (event) => refreshPairs(guestEventStatusPairs(...versions(event),
-  "eventId", "linkedUid", ["status", "source", "organizerId"])));
-
 /**
  * A roster row's link, source or status: the linked guest's status row.
- * dispatchEventAttendees (issue #2451) runs the same work; both run until the
- * old trigger retires, which is safe because it re-reads its sources,
- * so a retry, a replay or a second run converges.
+ * Served by dispatchEventAttendees (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
  */
 export const guestEventStatusAttendeeProjections = defineProjections(
   "eventAttendees", [{
@@ -232,21 +225,10 @@ export const guestEventStatusAttendeeProjections = defineProjections(
       ["status", "source", "organizerId"])),
   }]);
 
-export const onGuestEventStatusPaymentWritten = onDocumentWritten({
-  ...options, document: `${GUEST_PAYMENTS}/{documentId}`,
-}, async (event) => {
-  const [before, after] = versions(event);
-  if (![before?.purpose, after?.purpose].some((purpose) =>
-    purpose === "publicEvent" || purpose === "offer")) return;
-  await refreshPairs(guestEventStatusPairs(before, after, "eventId",
-    "recipientUid", null));
-});
-
 /**
  * A website or offer payment: the guest's status row.
- * dispatchGuestPayments (issue #2451) runs the same work; both run until the
- * old trigger retires, which is safe because it re-reads its sources,
- * so a retry, a replay or a second run converges.
+ * Served by dispatchGuestPayments (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
  */
 export const guestEventStatusPaymentProjections = defineProjections(
   "guestPayments", [{

@@ -15,7 +15,6 @@
   "exportedFunctions": [
     "onEventChatDirectoryMembershipWritten",
     "onEventChatDirectoryParticipationWritten",
-    "onEventChatDirectoryAttendeeWritten",
     "dispatchEventAttendees",
     "onEventChatDirectoryRoomWritten",
     "dispatchEvents",
