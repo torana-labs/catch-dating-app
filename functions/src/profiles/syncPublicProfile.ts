@@ -11,8 +11,9 @@ import {isSocialReadyUserProfile} from "../shared/profileReadiness";
 import {organizerHostProfiles, organizerManagerUserIds} from
   "../shared/organizerHosts";
 import {HostProfileDocument} from "../shared/hostProfiles";
-import {EVENT_GUEST_PROFILES, eventGuestProfileData, eventGuestProfileRef,
-  eventGuestProfileStatuses, maxEventGuestProfileCopies} from
+import {EVENT_GUEST_PROFILES, bookingSharesEventProfile,
+  eventGuestProfileData, eventGuestProfileRef, maxEventGuestProfileCopies}
+  from
   "../shared/eventGuestProfiles";
 
 interface SyncPublicProfileDeps {
@@ -127,9 +128,8 @@ export async function syncUserProfileProjectionsHandler(
   const authoredReviews = db.collection("reviews")
     .where("reviewerUserId", "==", userId);
   // The copies co-guests read (#2493): one per live booking.
-  const liveBookings = db.collection("eventBookings")
+  const guestBookings = db.collection("eventBookings")
     .where("uid", "==", userId)
-    .where("status", "in", [...eventGuestProfileStatuses])
     .limit(maxEventGuestProfileCopies);
   const eventCopies = db.collection(EVENT_GUEST_PROFILES)
     .where("uid", "==", userId);
@@ -143,7 +143,7 @@ export async function syncUserProfileProjectionsHandler(
       const copies = await tx.get(eventCopies);
       tx.delete(publicProfileRef);
       tx.delete(guestProfileRef);
-      copies.forEach((copy) => tx.delete(copy.ref));
+      copies.docs.forEach((copy) => tx.delete(copy.ref));
       return reason ?? "user deleted";
     }
     const publicProfile = publicProfileFromUserProfileDoc(user);
@@ -152,16 +152,17 @@ export async function syncUserProfileProjectionsHandler(
       const copies = await tx.get(eventCopies);
       tx.delete(publicProfileRef);
       tx.delete(guestProfileRef);
-      copies.forEach((copy) => tx.delete(copy.ref));
+      copies.docs.forEach((copy) => tx.delete(copy.ref));
       return "underage";
     }
     const [reviews, bookings] = await Promise.all([
-      tx.get(authoredReviews), tx.get(liveBookings)]);
+      tx.get(authoredReviews), tx.get(guestBookings)]);
     tx.set(publicProfileRef, publicProfile);
     tx.set(guestProfileRef, publicProfile);
     for (const booking of bookings.docs) {
-      const eventId = booking.data().eventId;
-      if (typeof eventId !== "string" || !eventId) continue;
+      const {eventId, status} = booking.data();
+      if (typeof eventId !== "string" || !eventId ||
+          !bookingSharesEventProfile(status)) continue;
       tx.set(eventGuestProfileRef(db, eventId, userId),
         eventGuestProfileData(publicProfile, eventId, userId));
     }

@@ -2449,6 +2449,42 @@ export const MIGRATIONS = [
       },
     ],
   },
+  {
+    name: "event-guest-profiles",
+    description:
+      "Every signedUp or attended booking gets the guest's event profile " +
+      "copy at eventGuestProfiles/{eventId}__{uid} (#2493), as the booking " +
+      "writers now write it, from the guest's guestProfiles (or " +
+      "publicProfiles until guest-profiles has run). Run guest-profiles " +
+      "first. An existing copy is never replaced, and nothing is deleted.",
+    steps: [
+      {
+        source: "eventBookings",
+        target: "eventGuestProfiles",
+        skipReason: "not signedUp or attended, no profile, or a booking " +
+          "writer already wrote the copy",
+        // A copy a booking writer already wrote is current (its expiry
+        // differs from a fresh one), so it is skipped rather than compared.
+        targetId: async (id, data, db) => {
+          if (typeof data.eventId !== "string" ||
+              typeof data.uid !== "string" ||
+              !["signedUp", "attended"].includes(data.status)) return null;
+          const targetId = `${data.eventId}__${data.uid}`;
+          const existing = await db.collection("eventGuestProfiles")
+            .doc(targetId).get();
+          return existing.exists ? null : targetId;
+        },
+        transform: async (data, id, db) => {
+          const profile = (await db.collection("guestProfiles").doc(data.uid)
+            .get()).data() ?? (await db.collection("publicProfiles")
+            .doc(data.uid).get()).data();
+          if (!profile) return null;
+          return {...profile, eventId: data.eventId, uid: data.uid,
+            expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)};
+        },
+      },
+    ],
+  },
 ];
 
 /**

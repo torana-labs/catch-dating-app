@@ -15,13 +15,18 @@
  * them all when the profile goes. Account deletion deletes them by uid.
  */
 
+import {Timestamp} from "firebase-admin/firestore";
+
 export const EVENT_GUEST_PROFILES = "eventGuestProfiles";
+
+/** A copy is deleted by TTL a year after its last write. */
+export const EVENT_GUEST_PROFILE_TTL_MS = 365 * 24 * 60 * 60 * 1000;
 
 /** Booking statuses whose guests may see each other's event profile. */
 export const eventGuestProfileStatuses = ["signedUp", "attended"] as const;
 
-/** Bookings the profile projector refreshes copies for, per change. */
-export const maxEventGuestProfileCopies = 200;
+/** Bookings the profile projector reads to refresh copies, per change. */
+export const maxEventGuestProfileCopies = 500;
 
 type Db = FirebaseFirestore.Firestore;
 
@@ -64,9 +69,12 @@ export function bookingSharesEventProfile(status: unknown): boolean {
  * @param {object} profile The guest's guestProfiles data.
  * @param {string} eventId The event.
  * @param {string} uid The guest.
+ * @param {number} nowMillis Write time, for the TTL expiry.
  * @return {FirebaseFirestore.DocumentData} The copy.
  */
 export function eventGuestProfileData(profile: FirebaseFirestore.DocumentData,
-  eventId: string, uid: string): FirebaseFirestore.DocumentData {
-  return {...profile, eventId, uid};
+  eventId: string, uid: string, nowMillis = Date.now()):
+  FirebaseFirestore.DocumentData {
+  return {...profile, eventId, uid,
+    expiresAt: Timestamp.fromMillis(nowMillis + EVENT_GUEST_PROFILE_TTL_MS)};
 }

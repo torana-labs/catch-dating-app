@@ -84,6 +84,34 @@ test("a first booking creates a uid-keyed row and links the booking to it",
       false);
   });
 
+// The event copy the other guests read (#2493): written for a signedUp or
+// attended booking from the guest's full profile, never for any other status.
+test("a live booking writes the guest's event profile for co-guests",
+  async () => {
+    const h = fakeDb({
+      "publicProfiles/u1": {name: "Asha"},
+      "guestProfiles/u1": {name: "Asha", religion: "hindu"},
+    });
+    const slot = await readCatchBookingRoster({db: h.db, tx: h.tx,
+      eventId: "e1", uid: "u1", verifiedPhone: async () => null});
+    writeCatchBookingRoster({db: h.db, tx: h.tx, slot, booking: booking(),
+      now});
+    const copy = h.docs.get("eventGuestProfiles/e1__u1");
+    assert.equal(copy?.religion, "hindu");
+    assert.equal(copy?.eventId, "e1");
+    assert.equal(copy?.uid, "u1");
+    assert.ok(copy?.expiresAt);
+
+    const waiting = fakeDb({"guestProfiles/u2": {name: "Bina"}});
+    const waitingSlot = await readCatchBookingRoster({db: waiting.db,
+      tx: waiting.tx, eventId: "e1", uid: "u2",
+      verifiedPhone: async () => null});
+    writeCatchBookingRoster({db: waiting.db, tx: waiting.tx,
+      slot: waitingSlot, booking: booking({uid: "u2", status: "waitlisted"}),
+      now});
+    assert.equal(waiting.docs.has("eventGuestProfiles/e1__u2"), false);
+  });
+
 test("the booking's link wins over every other key and is not rewritten",
   async () => {
     let phoneLoaded = false;

@@ -13,6 +13,7 @@
   "required": [
     "eventId",
     "uid",
+    "expiresAt",
     "name",
     "age",
     "gender",
@@ -27,6 +28,11 @@
     },
     "uid": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "When the TTL policy deletes the copy: a year after its last write. Rewriting it on every profile change and booking write keeps a live copy alive.",
       "x-catch-ownership": "server-only"
     },
     "name": {

@@ -294,6 +294,26 @@ test("guest-profiles copies every public profile once and replaces none", async 
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
+test("event-guest-profiles copies a live booking's guest profile once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "event-guest-profiles");
+  const db = fakeDb({
+    "eventBookings/e1_a": {eventId: "e1", uid: "a", status: "attended"},
+    "eventBookings/e1_b": {eventId: "e1", uid: "b", status: "cancelled"},
+    "eventBookings/e2_a": {eventId: "e2", uid: "a", status: "signedUp"},
+    "guestProfiles/a": {name: "Asha", religion: "hindu"},
+    "guestProfiles/b": {name: "Bina"},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 2);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["eventGuestProfiles/e1__a"].religion, "hindu");
+  assert.equal(db.data["eventGuestProfiles/e2__a"].eventId, "e2");
+  assert.equal(db.data["eventGuestProfiles/e1__b"], undefined);
+  // A rerun finds every copy written and plans nothing.
+  assert.equal((await planMigration(db, migration)).totals.conflicts, 0);
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
 test("guest-event-read-models creates each entry and row once from its first record", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "guest-event-read-models");
   const db = fakeDb({
