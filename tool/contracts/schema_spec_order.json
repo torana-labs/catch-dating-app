@@ -664,7 +664,6 @@
   "DemoOpsConfirmationDocument",
   "DemoSelfServiceAccessDocument",
   "ParticipantSignalFactDocument",
-  "ParticipantMetricCounterDocument",
   "EventSeatLedgerDocument",
   "EventSeatReservationDocument",
   "EventSeatRequestReceiptDocument",
