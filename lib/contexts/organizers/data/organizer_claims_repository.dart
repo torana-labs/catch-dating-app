@@ -73,8 +73,8 @@ class OrganizerClaimsRepository {
   );
 }
 
-// keepalive: one stateless callable client for claim reads and requests,
-// shared by Catch Host setup across its steps.
+// keepalive: account-free: one stateless callable client for claim reads
+// and requests, shared by Catch Host setup across its steps.
 @Riverpod(keepAlive: true)
 OrganizerClaimsRepository organizerClaimsRepository(Ref ref) =>
     OrganizerClaimsRepository(ref.watch(firebaseFunctionsProvider));
