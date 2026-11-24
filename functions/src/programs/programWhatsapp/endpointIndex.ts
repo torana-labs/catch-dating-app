@@ -11,6 +11,11 @@ import {
   PROGRAM_WHATSAPP_ENDPOINT_INDEX,
   programWhatsappEndpointIndexId,
 } from "./ids";
+import {
+  isStaleSourceEvent,
+  sourceVersionOf,
+  type SourceVersion,
+} from "../../shared/sourceVersion";
 
 // The endpoint index maps {programId, sha256(E.164)} to the household a
 // WhatsApp number reaches. A trigger on programHouseholds and programGuests
@@ -87,60 +92,105 @@ export function indexRouting(claimants: EndpointClaimant[]): Pick<
   };
 }
 
+type ClaimStep = {claim: EndpointClaim; op: "claim" | "release"};
+
+function claimSteps(change: {before: EndpointClaim | null;
+  after: EndpointClaim | null}): ClaimStep[] {
+  if (sameClaim(change.before, change.after)) return [];
+  const steps: ClaimStep[] = [];
+  if (change.before) steps.push({claim: change.before, op: "release"});
+  if (change.after) steps.push({claim: change.after, op: "claim"});
+  return steps;
+}
+
 /** Applies one record's claim change to the index inside a transaction. */
 export async function applyEndpointClaimChange(
   db: FirebaseFirestore.Firestore,
   change: {before: EndpointClaim | null; after: EndpointClaim | null},
   nowMillis: number,
 ): Promise<void> {
-  if (sameClaim(change.before, change.after)) return;
-  const steps: {claim: EndpointClaim; op: "claim" | "release"}[] = [];
-  if (change.before) steps.push({claim: change.before, op: "release"});
-  if (change.after) steps.push({claim: change.after, op: "claim"});
-  await db.runTransaction(async (tx) => {
-    const refs = steps.map((step) => db
-      .collection(PROGRAM_WHATSAPP_ENDPOINT_INDEX)
-      .doc(programWhatsappEndpointIndexId(step.claim.programId,
-        step.claim.endpointHash)));
-    const snaps = await Promise.all(refs.map((ref) => tx.get(ref)));
-    const pending = new Map<string, {ref: FirebaseFirestore.DocumentReference;
-      current: ProgramWhatsappEndpointIndexDocument | undefined;
-      claimants: EndpointClaimant[]; claim: EndpointClaim}>();
-    steps.forEach((step, index) => {
-      const ref = refs[index];
-      const entry = pending.get(ref.path) ?? {ref,
-        current: snaps[index].data() as
-          ProgramWhatsappEndpointIndexDocument | undefined,
-        claimants: (snaps[index].data() as
-          ProgramWhatsappEndpointIndexDocument | undefined)?.claimants ?? [],
-        claim: step.claim};
-      entry.claimants = mergeClaimants(entry.claimants, step.claim.claimant,
-        step.op);
-      pending.set(ref.path, entry);
-    });
-    for (const entry of pending.values()) {
-      const routing = indexRouting(entry.claimants);
-      if (!routing) {
-        // The index is derived data; the last claimant leaving removes it.
-        if (entry.current) tx.delete(entry.ref);
-        continue;
-      }
-      const next: ProgramWhatsappEndpointIndexDocument = {
-        schemaVersion: 1,
-        programId: entry.claim.programId,
-        organizerId: entry.claim.organizerId,
-        endpointHash: entry.claim.endpointHash,
-        ...routing,
-        claimants: entry.claimants,
-        updatedAtMillis: nowMillis,
-        revision: (entry.current?.revision ?? 0) + 1,
-      };
-      if (!validateProgramWhatsappEndpointIndexDocument(next)) {
-        throw new Error("Invalid programme WhatsApp endpoint index");
-      }
-      tx.set(entry.ref, next);
-    }
+  const steps = claimSteps(change);
+  if (steps.length === 0) return;
+  await db.runTransaction((tx) => applyStepsInTransaction(db, tx, steps,
+    nowMillis));
+}
+
+/**
+ * The trigger path (#2472): re-reads the source record inside the
+ * transaction and claims the number it holds now, not the one in the event.
+ * The event's before claim is still released (a number the record no
+ * longer holds), and an event older than the record's current version is
+ * skipped, so deliveries in any order end at the record's latest number.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {object} source The record, its claim rule and the event.
+ * @param {number} nowMillis Write time.
+ * @return {Promise<"applied"|"stale">} Whether the event was applied.
+ */
+export async function applyEndpointSourceEvent(
+  db: FirebaseFirestore.Firestore,
+  source: {
+    ref: FirebaseFirestore.DocumentReference;
+    claimOf: (data: Data) => EndpointClaim | null;
+    before: Data;
+    eventVersion: SourceVersion | undefined;
+  },
+  nowMillis: number,
+): Promise<"applied" | "stale"> {
+  return db.runTransaction(async (tx) => {
+    const snap = await tx.get(source.ref);
+    if (isStaleSourceEvent(snap, source.eventVersion)) return "stale";
+    const steps = claimSteps({before: source.claimOf(source.before),
+      after: source.claimOf(snap.exists ? snap.data() : undefined)});
+    if (steps.length) await applyStepsInTransaction(db, tx, steps, nowMillis);
+    return "applied";
   });
+}
+
+async function applyStepsInTransaction(db: FirebaseFirestore.Firestore,
+  tx: FirebaseFirestore.Transaction, steps: ClaimStep[], nowMillis: number):
+  Promise<void> {
+  const refs = steps.map((step) => db
+    .collection(PROGRAM_WHATSAPP_ENDPOINT_INDEX)
+    .doc(programWhatsappEndpointIndexId(step.claim.programId,
+      step.claim.endpointHash)));
+  const snaps = await Promise.all(refs.map((ref) => tx.get(ref)));
+  const pending = new Map<string, {ref: FirebaseFirestore.DocumentReference;
+    current: ProgramWhatsappEndpointIndexDocument | undefined;
+    claimants: EndpointClaimant[]; claim: EndpointClaim}>();
+  steps.forEach((step, index) => {
+    const ref = refs[index];
+    const entry = pending.get(ref.path) ?? {ref,
+      current: snaps[index].data() as
+        ProgramWhatsappEndpointIndexDocument | undefined,
+      claimants: (snaps[index].data() as
+        ProgramWhatsappEndpointIndexDocument | undefined)?.claimants ?? [],
+      claim: step.claim};
+    entry.claimants = mergeClaimants(entry.claimants, step.claim.claimant,
+      step.op);
+    pending.set(ref.path, entry);
+  });
+  for (const entry of pending.values()) {
+    const routing = indexRouting(entry.claimants);
+    if (!routing) {
+      // The index is derived data; the last claimant leaving removes it.
+      if (entry.current) tx.delete(entry.ref);
+      continue;
+    }
+    const next: ProgramWhatsappEndpointIndexDocument = {
+      schemaVersion: 1,
+      programId: entry.claim.programId,
+      organizerId: entry.claim.organizerId,
+      endpointHash: entry.claim.endpointHash,
+      ...routing,
+      claimants: entry.claimants,
+      updatedAtMillis: nowMillis,
+      revision: (entry.current?.revision ?? 0) + 1,
+    };
+    if (!validateProgramWhatsappEndpointIndexDocument(next)) {
+      throw new Error("Invalid programme WhatsApp endpoint index");
+    }
+    tx.set(entry.ref, next);
+  }
 }
 
 /** Reads the index for one programme and number (the webhook's lookup). */
@@ -154,22 +204,30 @@ export async function readEndpointIndex(db: FirebaseFirestore.Firestore,
     data.programId === programId ? data : null;
 }
 
+// Retried: the claim comes from the re-read record and claimant merges are
+// idempotent, so a rerun leaves the index as it is.
 export const onProgramHouseholdWhatsappEndpointWritten = onDocumentWritten(
-  "programHouseholds/{householdId}", async (event) => {
-    await applyEndpointClaimChange(admin.firestore(), {
-      before: householdEndpointClaim(event.params.householdId,
-        event.data?.before.data()),
-      after: householdEndpointClaim(event.params.householdId,
-        event.data?.after.data()),
+  {document: "programHouseholds/{householdId}", retry: true},
+  async (event) => {
+    const db = admin.firestore();
+    const householdId = event.params.householdId;
+    await applyEndpointSourceEvent(db, {
+      ref: db.collection("programHouseholds").doc(householdId),
+      claimOf: (data) => householdEndpointClaim(householdId, data),
+      before: event.data?.before.data(),
+      eventVersion: sourceVersionOf(event.data?.after),
     }, Date.now());
   });
 
 export const onProgramGuestWhatsappEndpointWritten = onDocumentWritten(
-  "programGuests/{guestId}", async (event) => {
-    await applyEndpointClaimChange(admin.firestore(), {
-      before: guestEndpointClaim(event.params.guestId,
-        event.data?.before.data()),
-      after: guestEndpointClaim(event.params.guestId,
-        event.data?.after.data()),
+  {document: "programGuests/{guestId}", retry: true},
+  async (event) => {
+    const db = admin.firestore();
+    const guestId = event.params.guestId;
+    await applyEndpointSourceEvent(db, {
+      ref: db.collection("programGuests").doc(guestId),
+      claimOf: (data) => guestEndpointClaim(guestId, data),
+      before: event.data?.before.data(),
+      eventVersion: sourceVersionOf(event.data?.after),
     }, Date.now());
   });

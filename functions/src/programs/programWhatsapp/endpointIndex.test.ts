@@ -5,6 +5,7 @@ import {contractValidator} from "../../shared/contractTestValidators";
 import {hashEndpoint} from "../../platform/delivery/endpointHash";
 import {
   applyEndpointClaimChange,
+  applyEndpointSourceEvent,
   guestEndpointClaim,
   householdEndpointClaim,
   mergeClaimants,
@@ -67,6 +68,52 @@ test("two households on one number are ambiguous; a change keeps the other",
       before: household("household-2", phone), after: null}, 4000);
     assert.equal(fake.getDoc(path), undefined);
   });
+
+test("number changes delivered out of order route to the latest number " +
+  "(#2472)", async () => {
+  const fake = db();
+  const firestore = asDb(fake);
+  const sourcePath = "programHouseholds/household-1";
+  const record = (primaryPhoneE164: string) => ({programId: "program-1",
+    organizerId: "org-1", primaryPhoneE164});
+  const second = "+919876509999";
+  const secondHash = hashEndpoint(second);
+  // The household is created with one number, then changes to another.
+  fake.setDoc(sourcePath, record(phone));
+  const created = fake.updateTimeOf(sourcePath);
+  fake.setDoc(sourcePath, record(second));
+  const changed = fake.updateTimeOf(sourcePath);
+  const deliver = (before: Record<string, unknown> | undefined,
+    eventVersion: typeof created | null) =>
+    applyEndpointSourceEvent(firestore, {
+      ref: firestore.collection("programHouseholds").doc("household-1"),
+      claimOf: (data) => householdEndpointClaim("household-1", data),
+      before, eventVersion: eventVersion as never}, 1000);
+
+  // The change's event lands first; the creation's event after it.
+  assert.equal(await deliver(record(phone), changed), "applied");
+  assert.equal(await deliver(undefined, created), "stale");
+  assert.equal(fake.getDoc(`programWhatsappEndpointIndex/program-1_${hash}`),
+    undefined);
+  const latest = fake.getDoc(
+    `programWhatsappEndpointIndex/program-1_${secondHash}`)!;
+  assert.equal(latest.householdId, "household-1");
+  // A retry of the same event leaves the routing as it is.
+  assert.equal(await deliver(record(phone), changed), "applied");
+  assert.equal(fake.getDoc(
+    `programWhatsappEndpointIndex/program-1_${secondHash}`)!.householdId,
+  "household-1");
+
+  // Deleted: a late write event claims nothing from its payload, and the
+  // delete event releases the number.
+  fake.deleteDoc(sourcePath);
+  assert.equal(await deliver(record(phone), changed), "applied");
+  assert.ok(fake.getDoc(
+    `programWhatsappEndpointIndex/program-1_${secondHash}`));
+  await deliver(record(second), null);
+  assert.equal(fake.getDoc(
+    `programWhatsappEndpointIndex/program-1_${secondHash}`), undefined);
+});
 
 test("households sort before guests and replays replace the same claimant",
   () => {
