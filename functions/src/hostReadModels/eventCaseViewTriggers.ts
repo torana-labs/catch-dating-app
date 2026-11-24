@@ -139,15 +139,11 @@ async function reconcileForWrite(
 export const onHostEventCaseViewCaseChanged = onDocumentWritten({
   ...options, document: "eventAssistanceCases/{documentId}",
 }, (event) => reconcileForWrite("eventAssistanceCases", event));
-export const onHostEventCaseViewAttendeeChanged = onDocumentWritten({
-  ...options, document: "eventAttendees/{documentId}",
-}, (event) => reconcileForWrite("eventAttendees", event));
 
 /**
  * An attendee's identity, generation, name or status: its cases' views.
- * dispatchEventAttendees (issue #2451) runs the same work; both run until the
- * old trigger retires, which is safe because it re-reads its sources,
- * so a retry, a replay or a second run converges.
+ * Served by dispatchEventAttendees (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
  */
 export const hostEventCaseViewAttendeeProjections = defineProjections(
   "eventAttendees", [{

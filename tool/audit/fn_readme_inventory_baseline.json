@@ -87,10 +87,6 @@
     },
     {
       "rule": "missingReadmeFunction",
-      "function": "onBookingPaymentWritten"
-    },
-    {
-      "rule": "missingReadmeFunction",
       "function": "overrideEventSuccessGroups"
     },
     {

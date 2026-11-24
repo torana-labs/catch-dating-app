@@ -13,7 +13,6 @@
   "read": "any account with live access to the programme gets it by id through its programAccessViews document, while not deleted; never listed",
   "write": "server only; written from the programme",
   "exportedFunctions": [
-    "onProgramWorkSummaryChanged",
     "dispatchOrganizerPrograms"
   ],
   "migrationNotes": [
