@@ -2,7 +2,6 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 
 export const participantSignalFactsCollection = "participantSignalFacts";
-export const participantMetricCountersCollection = "participantMetricCounters";
 
 export type ParticipantSignalType =
   | "outgoing_like"
@@ -46,12 +45,10 @@ export interface ParticipantSignalFactInput {
 
 interface ParticipantSignalDeps {
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  increment: (value: number) => FirebaseFirestore.FieldValue;
 }
 
 const defaultDeps: ParticipantSignalDeps = {
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
-  increment: (value) => admin.firestore.FieldValue.increment(value),
 };
 
 /**
@@ -90,7 +87,7 @@ export async function recordParticipantSignalFactsBestEffort(
 }
 
 /**
- * Writes signal facts and updates materialized per-user counters idempotently.
+ * Writes signal facts idempotently.
  * @param {FirebaseFirestore.Firestore} db Firestore instance.
  * @param {ParticipantSignalFactInput[]} facts Facts to write.
  * @param {ParticipantSignalDeps} deps Injectable Firestore helpers.
@@ -142,32 +139,7 @@ export function participantSignalFactData(
 }
 
 /**
- * Builds the merge payload for the participant counter materialization.
- * @param {ParticipantSignalFactInput} fact Fact input.
- * @param {FirebaseFirestore.Timestamp | FirebaseFirestore.FieldValue} now
- * Shared server timestamp for this write.
- * @param {Function} increment Firestore increment helper.
- * @return {Record<string, unknown>} Firestore merge payload.
- */
-export function participantCounterPatch(
-  fact: ParticipantSignalFactInput,
-  now: FirebaseFirestore.Timestamp | FirebaseFirestore.FieldValue,
-  increment: (value: number) => FirebaseFirestore.FieldValue
-): Record<string, unknown> {
-  return {
-    uid: fact.uid,
-    updatedAt: now,
-    counters: {
-      [fact.type]: increment(fact.value ?? 1),
-    },
-    lastSeenByType: {
-      [fact.type]: fact.occurredAt ?? now,
-    },
-  };
-}
-
-/**
- * Records one idempotent signal fact and matching counter patch.
+ * Records one idempotent signal fact.
  * @param {FirebaseFirestore.Firestore} db Firestore instance.
  * @param {ParticipantSignalFactInput} fact Fact to record.
  * @param {ParticipantSignalDeps} deps Injectable Firestore helpers.
@@ -179,18 +151,12 @@ async function recordParticipantSignalFact(
 ): Promise<void> {
   const now = deps.serverTimestamp();
   const factRef = db.collection(participantSignalFactsCollection).doc(fact.id);
-  const counterRef = db
-    .collection(participantMetricCountersCollection)
-    .doc(fact.uid);
 
   await db.runTransaction(async (tx) => {
     const existing = await tx.get(factRef);
     if (existing.exists) return;
 
     tx.create(factRef, participantSignalFactData(fact, now));
-    tx.set(counterRef, participantCounterPatch(fact, now, deps.increment), {
-      merge: true,
-    });
   });
 }
 
