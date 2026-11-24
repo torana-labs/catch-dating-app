@@ -1,0 +1,183 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_guest_profiles.schema.json",
+  "title": "EventGuestProfileDocument",
+  "description": "A guest's dating profile as the other guests of one event see it, at eventGuestProfiles/{eventId}__{uid} (#2493, FIX-8). Owner decision OQ-1: the sensitive answers are for guests who share an event, never for organisers. Rules cannot ask whether two people share any event without an event id, so the event id is in the path: a reader gets the copy only while both their booking and the subject's are signedUp or attended. The booking writers write it when a booking becomes signedUp or attended, syncPublicProfile rewrites the copies of the guest's live bookings, and account deletion deletes them.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventGuestProfiles",
+  "x-firestore-path": "eventGuestProfiles/{copyId}",
+  "x-document-id-field": "copyId",
+  "x-owner": "writeCatchBookingRoster (booking writers) and syncPublicProfile, in their transactions",
+  "x-source": "users/{uid}",
+  "required": [
+    "eventId",
+    "uid",
+    "name",
+    "age",
+    "gender",
+    "profilePrompts",
+    "profilePhotos",
+    "activityPreferences"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "age": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/age",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "gender": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/gender",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "synthetic": {
+      "type": "boolean",
+      "description": "Internal demo seed marker used for cleanup and diagnostics."
+    },
+    "seedPrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed prefix used for cleanup and diagnostics."
+    },
+    "scenario": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed scenario name used for cleanup and diagnostics."
+    },
+    "demoOps": {
+      "type": "boolean",
+      "description": "Internal demo-operations marker used for cleanup and diagnostics."
+    },
+    "demoOpsId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Internal demo-operations id used for cleanup and diagnostics."
+    },
+    "demoOpsCommand": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    },
+    "profilePrompts": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "$ref": "../embedded/profile_prompt_answer.schema.json"
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "profilePhotos": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "$ref": "../embedded/profile_photo.schema.json"
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "city": {
+      "anyOf": [
+        {
+          "$ref": "../shared/profile_common.schema.json#/definitions/marketId"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "trigger-owned"
+    },
+    "height": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/heightCm",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "occupation": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/nullableShortText",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "company": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/nullableShortText",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "education": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/educationLevel",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "religion": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/religion",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "languages": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/profile_common.schema.json#/definitions/language"
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "relationshipGoal": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/relationshipGoal",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "drinking": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/drinkingHabit",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "smoking": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/smokingHabit",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "workout": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/workoutFrequency",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "diet": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/dietaryPreference",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "children": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/childrenStatus",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "activityPreferences": {
+      "$ref": "../embedded/activity_preferences.schema.json",
+      "x-catch-ownership": "trigger-owned"
+    }
+  },
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "x-legacy-tolerated-fields": [
+    "bio"
+  ],
+  "x-hidden-fields": [
+    "phoneNumber",
+    "email",
+    "instagramHandle",
+    "latitude",
+    "longitude",
+    "interestedInGenders",
+    "preferences"
+  ]
+}
