@@ -12,5 +12,4 @@ export {
 export {
   recordOrganizerAnalyticsEvent,
 } from "./organizerAnalyticsEvents";
-export {getOrganizerTrackingSettings, setOrganizerTrackingSettings}
-  from "./organizerTrackingSettings";
+export {setOrganizerTrackingSettings} from "./organizerTrackingSettings";

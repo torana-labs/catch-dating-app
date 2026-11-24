@@ -1,11 +1,10 @@
 import * as admin from "firebase-admin";
-import {onCall, HttpsError, type CallableRequest} from
+import {HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
 import {effectiveCommercialTerms, readCommercialTerms} from
   "../commercialTerms/resolver";
 import {growthFactsCollection} from "../growth/organizerGrowthFacts";
 import {requireAuth} from "../shared/auth";
-import {appCheckCallableOptions} from "../shared/callableOptions";
 import {isOrganizerOwner} from "../shared/organizerHosts";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
@@ -98,5 +97,3 @@ export async function getOrganizerBillingStatusHandler(
   return result;
 }
 
-export const getOrganizerBillingStatus = onCall(appCheckCallableOptions,
-  (request) => getOrganizerBillingStatusHandler(request));

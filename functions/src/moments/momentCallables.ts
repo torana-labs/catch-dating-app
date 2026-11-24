@@ -20,10 +20,6 @@ import {
 import type {ProgramAccess} from "../shared/programAuthority";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
-  validateListOrganizerMomentsCallablePayload,
-} from
-  "../shared/generated/validators/listOrganizerMomentsInput";
-import {
   validateOrganizerMomentActionCallablePayload,
 } from
   "../shared/generated/validators/organizerMomentActionInput";
@@ -35,12 +31,6 @@ import {
   validateUpsertOrganizerMomentCallablePayload,
 } from
   "../shared/generated/validators/upsertOrganizerMomentInput";
-import type {
-  ListOrganizerMomentsCallablePayload,
-} from "../shared/generated/listOrganizerMomentsCallablePayload";
-import type {
-  ListOrganizerMomentsCallableResponse,
-} from "../shared/generated/listOrganizerMomentsCallableResponse";
 import type {
   OrganizerMomentActionCallablePayload,
 } from "../shared/generated/organizerMomentActionCallablePayload";
@@ -551,29 +541,6 @@ async function runHandler(
   });
 }
 
-async function listHandler(
-  request: CallableRequest<unknown>,
-): Promise<ListOrganizerMomentsCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<ListOrganizerMomentsCallablePayload>(
-    request, validateListOrganizerMomentsCallablePayload);
-  const deps = fullDeps();
-  await checkRateLimit(deps.firestore(), actorUid, "listOrganizerMoments", {
-    maxRequests: 120, windowMs: 60 * 1000,
-  });
-  const result = await listOrganizerMomentsHandler(deps, {
-    actorUid,
-    scope: scopeFromWire(data.scope),
-  });
-  const response: ListOrganizerMomentsCallableResponse = {
-    moments: result.moments.map(momentToWire),
-    plans: result.plans.map((plan) => ({...plan, anchor: {...plan.anchor}})),
-    ...(result.senderConnectionId !== undefined ?
-      {senderConnectionId: result.senderConnectionId} : {}),
-  };
-  return response;
-}
-
 export const upsertOrganizerMoment = onCall(
   appCheckCallableOptionsWithLimits(momentCallableLimits),
   (request) => upsertHandler(request)
@@ -596,8 +563,4 @@ export const resumeOrganizerMoment = onCall(
 export const runOrganizerMoment = onCall(
   appCheckCallableOptionsWithLimits(momentCallableLimits),
   (request) => runHandler(request)
-);
-export const listOrganizerMoments = onCall(
-  appCheckCallableOptionsWithLimits(momentCallableLimits),
-  (request) => listHandler(request)
 );
