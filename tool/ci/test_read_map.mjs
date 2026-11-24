@@ -12,12 +12,14 @@
 // everything else (the flutter tool). Each log is parsed as soon as its test
 // finishes and deleted, so a shard holds one log at a time (up to ~60 MB).
 //
-// The selector does not read the output. A later report compares it with the
-// selector's always-run set; removing a test from that set needs a clean
-// shadow week and sign-off.
+// The selector does not read the output. With --also, the selector's
+// always-run set (flutter_test_selection.dart --probes-only) is traced too,
+// so tests that read only through an imported helper get a map; the
+// read-map selection shadow (read_map_selection_shadow.mjs) compares the two.
+// Removing a test from that set needs a clean shadow week and sign-off.
 //
 // Usage (Linux, strace installed, from the repo root after flutter pub get):
-//   node tool/ci/test_read_map.mjs --shard <i> --shards <n> --out <file.jsonl>
+//   node tool/ci/test_read_map.mjs --shard <i> --shards <n> --out <file.jsonl> [--also <probes.json>]
 import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
 import fs from "node:fs";
@@ -108,6 +110,18 @@ export function fileReadingTests(files, read) {
     .filter((file) => readsFiles.test(read(file))).sort();
 }
 
+/**
+ * The tests to trace: the file-reading tests, plus the selector's always-run
+ * set (`flutter_test_selection.dart --probes-only`), which also holds tests
+ * that read only through a helper they import. Sorted, each once, root and
+ * app-package test files only.
+ */
+export function testsToTrace(files, read, alwaysRun = []) {
+  const tracked = new Set(files);
+  const extra = alwaysRun.filter((test) => tracked.has(test) && packageOf(test) != null && test.endsWith("_test.dart"));
+  return [...new Set([...fileReadingTests(files, read), ...extra])].sort();
+}
+
 /** The package directory a test runs from: "." or apps/<app>, else null. */
 export function packageOf(test) {
   if (test.startsWith("test/")) return ".";
@@ -136,21 +150,23 @@ function parseArgs(argv) {
   const args = {};
   for (let index = 0; index < argv.length; index += 2) {
     const [flag, value] = [argv[index], argv[index + 1]];
-    assert.ok(["--shard", "--shards", "--out"].includes(flag), `Unknown argument: ${flag}`);
+    assert.ok(["--shard", "--shards", "--out", "--also"].includes(flag), `Unknown argument: ${flag}`);
     assert.ok(value, `${flag} needs a value`);
     args[flag.slice(2)] = value;
   }
   assert.ok(args.out, "--out is required");
-  return {shard: Number(args.shard ?? 0), shards: Number(args.shards ?? 1), out: args.out};
+  return {shard: Number(args.shard ?? 0), shards: Number(args.shards ?? 1), out: args.out, also: args.also ?? null};
 }
 
 function main() {
-  const {shard, shards, out} = parseArgs(process.argv.slice(2));
+  const {shard, shards, out, also} = parseArgs(process.argv.slice(2));
   const root = process.cwd();
   const listed = spawnSync("git", ["ls-files", "test", "apps"], {encoding: "utf8", maxBuffer: 32 * 1024 * 1024});
   assert.equal(listed.status, 0, listed.stderr);
-  const tests = shardOf(fileReadingTests(listed.stdout.split("\n").filter(Boolean),
-    (file) => fs.readFileSync(path.join(root, file), "utf8")), shard, shards);
+  // --also takes the selector's --probes-only output: its always-run tests are traced too.
+  const alwaysRun = also ? JSON.parse(fs.readFileSync(also, "utf8")).probesRetained.map((entry) => entry.test) : [];
+  const tests = shardOf(testsToTrace(listed.stdout.split("\n").filter(Boolean),
+    (file) => fs.readFileSync(path.join(root, file), "utf8"), alwaysRun), shard, shards);
   console.log(`Read map shard ${shard}/${shards}: ${tests.length} file-reading test files`);
   const log = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "read-map-")), "strace.log");
   fs.writeFileSync(out, "");
