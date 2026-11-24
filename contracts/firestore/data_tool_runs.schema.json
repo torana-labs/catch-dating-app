@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/data_tool_runs.schema.json",
+  "title": "DataToolRunDocument",
+  "description": "Server-only record of one applied run of a backfill or migration tool under tool/data/ (FIX-7), at dataToolRuns/{runId}: which tool, at which commit, against which project, what it counted and when. Written by the tool itself through tool/data/lib/run_record.mjs with the Admin SDK; dry runs write nothing. It holds counts and a migration or scope name, never document data or personal data. Deleted 365 days after the run starts.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "dataToolRuns",
+  "x-firestore-path": "dataToolRuns/{runId}",
+  "x-owner": "data tools (tool/data/lib/run_record.mjs)",
+  "required": [
+    "schemaVersion",
+    "runId",
+    "tool",
+    "scope",
+    "projectId",
+    "commitSha",
+    "commitDirty",
+    "status",
+    "counts",
+    "failure",
+    "startedAt",
+    "finishedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "runId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,80}_[0-9]{13}_[0-9a-f]{8}$",
+      "description": "The document id: the tool's file name, the start time in milliseconds and eight random hex digits.",
+      "x-catch-ownership": "server-only"
+    },
+    "tool": {
+      "type": "string",
+      "pattern": "^tool/data/[A-Za-z0-9_./-]+\\.mjs$",
+      "description": "The tool's path in the repository.",
+      "x-catch-ownership": "server-only"
+    },
+    "scope": {
+      "type": ["string", "null"],
+      "maxLength": 500,
+      "description": "What the run covered, such as the migration names; null when the tool has no selector.",
+      "x-catch-ownership": "server-only"
+    },
+    "projectId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "The Firebase project the run wrote to.",
+      "x-catch-ownership": "server-only"
+    },
+    "commitSha": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{40}$",
+      "description": "The commit the tool ran from; null when Git was unavailable.",
+      "x-catch-ownership": "server-only"
+    },
+    "commitDirty": {
+      "type": ["boolean", "null"],
+      "description": "Whether tracked files differed from that commit; null when Git was unavailable.",
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["running", "succeeded", "failed"],
+      "description": "running until the apply phase ends; a run that dies midway stays running.",
+      "x-catch-ownership": "server-only"
+    },
+    "counts": {
+      "type": "object",
+      "maxProperties": 200,
+      "propertyNames": {
+        "pattern": "^[A-Za-z0-9_.:-]{1,120}$"
+      },
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "description": "What the run counted, such as documents created per migration; on failure, the counts reached so far.",
+      "x-catch-ownership": "server-only"
+    },
+    "failure": {
+      "type": ["string", "null"],
+      "maxLength": 500,
+      "description": "The error's name and first message line when the run failed.",
+      "x-catch-ownership": "server-only"
+    },
+    "startedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "finishedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "365 days after the run starts; the collection's TTL policy deletes it then.",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}
