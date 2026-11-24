@@ -446,6 +446,7 @@ jobs:
       full: ${{ needs.plan.outputs.full == 'true' }}
       commit_window: ${{ needs.plan.outputs.commit_window == 'true' }}
       marketing_checks_in_react: ${{ needs.plan.outputs.marketing == 'true' }}
+      visual_report: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.full) }}
 
   contracts:
     needs: [plan]

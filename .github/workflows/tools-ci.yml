@@ -22,6 +22,11 @@ on:
         required: false
         type: boolean
         default: false
+      visual_report:
+        description: Run the report-only Storybook visual comparison; CI sets it for its nightly, scheduled or dispatched with full.
+        required: false
+        type: boolean
+        default: false
   workflow_dispatch:
     inputs:
       base_sha:
@@ -229,12 +234,17 @@ jobs:
           COMMIT_WINDOW: ${{ inputs.commit_window || false }}
           MODE: ${{ inputs.mode }}
           MARKETING_CHECKS_IN_REACT: ${{ inputs.marketing_checks_in_react }}
+          VISUAL_REPORT: ${{ inputs.visual_report }}
           INVENTORY_MATERIALIZED: ${{ needs.preflight.outputs.repository_view != 'index' }}
         run: |
           set -euo pipefail
           shared_flags=()
           if [[ "$MARKETING_CHECKS_IN_REACT" == "true" ]]; then
             shared_flags=(--marketing-checks-in-react)
+          fi
+          # The visual report only reports; it runs in the CI nightly alone (#2426).
+          if [[ "${VISUAL_REPORT:-}" != "true" ]]; then
+            shared_flags+=(--defer-visual-report)
           fi
           if [[ "$INVENTORY_MATERIALIZED" == "true" ]]; then
             shared_flags+=(--generated-inventories-materialized)
@@ -369,12 +379,17 @@ jobs:
         env:
           CATEGORIES: ${{ matrix.categories }}
           MARKETING_CHECKS_IN_REACT: ${{ inputs.marketing_checks_in_react }}
+          VISUAL_REPORT: ${{ inputs.visual_report }}
           INVENTORY_MATERIALIZED: "true"
         run: |
           set -euo pipefail
           shared_flags=()
           if [[ "$MARKETING_CHECKS_IN_REACT" == "true" ]]; then
             shared_flags=(--marketing-checks-in-react)
+          fi
+          # The visual report only reports; it runs in the CI nightly alone (#2426).
+          if [[ "${VISUAL_REPORT:-}" != "true" ]]; then
+            shared_flags+=(--defer-visual-report)
           fi
           if [[ "$INVENTORY_MATERIALIZED" == "true" ]]; then
             shared_flags+=(--generated-inventories-materialized)
