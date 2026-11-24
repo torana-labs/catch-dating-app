@@ -143,78 +143,28 @@ service firebase.storage {
         );
     }
 
+    // Organiser media: the organiser's owner and managers, by the same
+    // accessGrants/organizer__{organizerId}__{uid} document Firestore rules
+    // and requireOrganizerManager read (#2474 step 3). Every command that
+    // changes an organiser's owner or managers writes it in that change's
+    // transaction.
     function canWriteOrganizerMedia(organizerId) {
       return isSignedIn()
         && firestore.exists(
           /databases/(default)/documents/organizers/$(organizerId)
         )
-        && (
-          (
-            firestore.get(
-              /databases/(default)/documents/organizers/$(organizerId)
-            ).data.keys().hasAny(['hostUserId'])
-            && firestore.get(
-              /databases/(default)/documents/organizers/$(organizerId)
-            ).data.hostUserId == request.auth.uid
-          )
-          || (
-            firestore.get(
-              /databases/(default)/documents/organizers/$(organizerId)
-            ).data.keys().hasAny(['ownerUserId'])
-            && firestore.get(
-              /databases/(default)/documents/organizers/$(organizerId)
-            ).data.ownerUserId == request.auth.uid
-          )
-          || (
-            firestore.get(
-              /databases/(default)/documents/organizers/$(organizerId)
-            ).data.keys().hasAny(['hostUserIds'])
-            &&
-            firestore.get(
-              /databases/(default)/documents/organizers/$(organizerId)
-            ).data.hostUserIds is list
-            && firestore.get(
-              /databases/(default)/documents/organizers/$(organizerId)
-            ).data.hostUserIds.hasAny([request.auth.uid])
-          )
-          || hasActiveOrganizerTeamMembership(organizerId)
-        );
-    }
-
-    function hasActiveOrganizerTeamMembership(organizerId) {
-      return isSignedIn()
         && firestore.exists(
-          /databases/(default)/documents/organizerTeamMemberships/$(
-            organizerId + '_' + request.auth.uid
-          )
+          /databases/(default)/documents/accessGrants/$(
+            'organizer__' + organizerId + '__' + request.auth.uid)
         )
         && firestore.get(
-          /databases/(default)/documents/organizerTeamMemberships/$(
-            organizerId + '_' + request.auth.uid
-          )
-        ).data.organizerId == organizerId
-        && firestore.get(
-          /databases/(default)/documents/organizerTeamMemberships/$(
-            organizerId + '_' + request.auth.uid
-          )
-        ).data.uid == request.auth.uid
-        && firestore.get(
-          /databases/(default)/documents/organizerTeamMemberships/$(
-            organizerId + '_' + request.auth.uid
-          )
+          /databases/(default)/documents/accessGrants/$(
+            'organizer__' + organizerId + '__' + request.auth.uid)
         ).data.status == 'active'
-        && (
-          firestore.get(
-            /databases/(default)/documents/organizerTeamMemberships/$(
-              organizerId + '_' + request.auth.uid
-            )
-          ).data.role == 'owner'
-          || firestore.get(
-            /databases/(default)/documents/organizerTeamMemberships/$(
-              organizerId + '_' + request.auth.uid
-            )
-          ).data.role == 'manager'
-        );
+        && firestore.get(
+          /databases/(default)/documents/accessGrants/$(
+            'organizer__' + organizerId + '__' + request.auth.uid)
+        ).data.role in ['owner', 'manager'];
     }
 
     function canWriteEventMedia(eventId) {

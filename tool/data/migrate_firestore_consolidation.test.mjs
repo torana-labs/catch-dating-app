@@ -1069,6 +1069,38 @@ test("program-access-views-organizer-managers adds manager views and the flag on
   assert.equal(again.totals.conflicts, 0);
 });
 
+test("access-grants-organizers grants every holder the manager fields name, never a team edge alone", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "access-grants-organizers");
+  const db = fakeDb({
+    "organizers/o1": {hostUserId: "legacy-1", ownerUserId: "owner-1",
+      hostUserIds: ["owner-1", "mgr-1"], hostProfiles: [{uid: "shown-only"}]},
+    "organizers/o2": {hostUserId: "host-2", hostUserIds: []},
+    "organizers/o3": {hostUserId: null, ownerUserId: null, hostUserIds: []},
+    "organizerTeamMemberships/o1_team-only": {organizerId: "o1", uid: "team-only",
+      role: "manager", status: "active"},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.steps[0].toCreate.length, 4);
+  assert.equal(plan.totals.conflicts, 0);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["accessGrants/organizer__o1__owner-1"].role, "owner");
+  assert.equal(db.data["accessGrants/organizer__o1__legacy-1"].role, "manager");
+  assert.equal(db.data["accessGrants/organizer__o1__mgr-1"].role, "manager");
+  assert.equal(db.data["accessGrants/organizer__o2__host-2"].role, "owner");
+  assert.equal(db.data["accessGrants/organizer__o1__team-only"], undefined);
+  assert.equal(db.data["accessGrants/organizer__o1__shown-only"], undefined);
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0, "a rerun writes nothing");
+  assert.equal(again.totals.conflicts, 0);
+  // A role that drifted from the fields is refreshed once.
+  db.data["accessGrants/organizer__o1__mgr-1"] = {
+    ...db.data["accessGrants/organizer__o1__mgr-1"], role: "owner"};
+  const repair = await planMigration(db, migration);
+  assert.equal(repair.steps[1].toFill.length, 1);
+  await applyMigrationPlan(db, repair);
+  assert.equal(db.data["accessGrants/organizer__o1__mgr-1"].role, "manager");
+});
+
 test("access-grants-events grants each event staff member once, permissions ending at the operator window", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "access-grants-events");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});

@@ -20,8 +20,6 @@ export {
   grantProgramStaff,
   revokeProgramStaff,
 } from "./programStaff";
-export {onProgramAccessViewOrganizerChanged} from
-  "./programAccessViewTriggers";
 export {
   onProgramPickupPointViewChanged,
   onProgramFunctionViewChanged,
