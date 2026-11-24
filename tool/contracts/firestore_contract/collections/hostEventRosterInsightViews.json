@@ -17,7 +17,9 @@
     "onHostRosterInsightAttendeeChanged",
     "dispatchEventAttendees",
     "onHostRosterInsightEdgeChanged",
+    "dispatchOrganizerContactEventEdges",
     "onHostRosterInsightContactChanged",
+    "dispatchOrganizerContacts",
     "onHostRosterInsightTraitsChanged",
     "onHostRosterInsightBookingPaymentChanged"
   ],

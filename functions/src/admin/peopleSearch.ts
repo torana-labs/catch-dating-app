@@ -11,6 +11,7 @@ import {validateCallableWithAjv} from "../shared/validation";
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import {writeAdminAuditLog} from "../platform/adminAudit";
 import {requireAdminRole} from "../platform/adminAuth";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 /**
  * People search for ops: by name, phone or user id. Firestore cannot search
@@ -194,3 +195,21 @@ function normalizePayload(value: unknown): unknown {
 
 export const adminSearchPeople = onCall(appCheckCallableOptions,
   (request) => adminSearchPeopleHandler(request));
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const usersProjections = defineProjections("users", [
+  {
+    id: "userWrittenIndexPeople", kind: "projection",
+    when: () => true,
+    run: async (change) => {
+      const {documentId} = change;
+      await syncPeopleIndexFromSource(admin.firestore(), documentId,
+        new Date());
+    },
+  },
+]);

@@ -15,6 +15,7 @@
   "exportedFunctions": [
     "onProgramWhatsappThreadViewThreadChanged",
     "onProgramWhatsappThreadViewHouseholdChanged",
+    "dispatchProgramHouseholds",
     "onProgramWhatsappThreadViewProgramChanged",
     "dispatchOrganizerPrograms"
   ],

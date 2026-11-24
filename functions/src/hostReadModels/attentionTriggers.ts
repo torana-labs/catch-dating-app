@@ -251,3 +251,35 @@ export const sweepOrganizerAttention = onSchedule({
     logger.info("Host Today attention sweep evaluated organizers.", report);
   }
 });
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const organizerApplicationsProjections = defineProjections(
+  "organizerApplications", [
+    {
+      id: "organizerAttentionApplicationChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after, documentId} = change;
+        await reconcileForChange("organizerApplications", documentId, before,
+          after);
+      },
+    },
+  ]);
+
+export const operationWorkItemsProjections = defineProjections(
+  "operationWorkItems", [
+    {
+      id: "organizerAttentionDeliveryReviewChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after, documentId} = change;
+        await reconcileForChange("operationWorkItems", documentId, before,
+          after);
+      },
+    },
+  ]);

@@ -20,6 +20,7 @@
     "onOrganizerProgramFunctionChanged",
     "onOrganizerProgramPickupPointChanged",
     "onOrganizerProgramHotelChanged",
+    "dispatchProgramHotels",
     "onOrganizerProgramGuestCountChanged",
     "onOrganizerProgramTravelLegCountChanged",
     "reconcileOrganizerProgramCountsSweep"

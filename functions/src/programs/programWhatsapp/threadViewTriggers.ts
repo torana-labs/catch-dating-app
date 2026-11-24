@@ -85,3 +85,30 @@ export const programWhatsappThreadProgramProjections = defineProjections(
       !(unchanged(before, after, ["organizerId", "householdSideLabels"])),
     run: (change, ctx) => reconcileProgramThreadRows(ctx.db, change.documentId),
   }]);
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const programHouseholdsProjections = defineProjections(
+  "programHouseholds", [
+    {
+      id: "programWhatsappThreadViewHouseholdChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after, documentId} = change;
+        if (unchanged(before, after, ["programId", "organizerId", "label",
+          "primaryContactName", "memberGuestIds", "side"])) return;
+        const db = admin.firestore();
+        const programIds = new Set([before?.programId, after?.programId]
+          .filter((id): id is string => typeof id === "string" &&
+            id.length > 0));
+        for (const programId of programIds) {
+          await reconcileProgramWhatsappThreadView(db,
+            programWhatsappThreadId(programId, documentId));
+        }
+      },
+    },
+  ]);

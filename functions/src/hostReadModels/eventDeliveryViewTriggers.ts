@@ -234,3 +234,22 @@ export const hostEventDeliveryViewProjections = defineProjections(
     run: (change) => reconcileForChange("organizers", change.documentId,
       change.before, change.after),
   }]);
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const operationWorkItemsProjections = defineProjections(
+  "operationWorkItems", [
+    {
+      id: "hostEventDeliveryViewWorkItemChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after, documentId} = change;
+        await reconcileForChange("operationWorkItems", documentId, before,
+          after);
+      },
+    },
+  ]);

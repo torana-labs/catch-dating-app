@@ -136,3 +136,11 @@ export {getProgramAttendanceReport} from
 export {getProgramStakeholderCounts} from
   "./stakeholderCountsView";
 export {manageProgramLodging} from "./programLodgingApi";
+export {dispatchProgramGuests} from "./dispatch/programGuests.generated";
+export {dispatchProgramHotels} from "./dispatch/programHotels.generated";
+export {dispatchProgramHouseholds} from
+  "./dispatch/programHouseholds.generated";
+export {dispatchProgramStaffGrants} from
+  "./dispatch/programStaffGrants.generated";
+export {dispatchProgramTravelLegs} from
+  "./dispatch/programTravelLegs.generated";

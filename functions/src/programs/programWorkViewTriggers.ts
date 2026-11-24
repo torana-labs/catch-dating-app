@@ -63,3 +63,21 @@ export const onProgramFunctionViewChanged = onDocumentWritten({
   ...options, document: "programFunctions/{functionId}",
 }, (event) => reconcileResource("function", event.params.functionId,
   event.data?.before.data(), event.data?.after.data()));
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const programHotelsProjections = defineProjections("programHotels", [
+  {
+    id: "programHotelViewChanged", kind: "projection",
+    when: () => true,
+    run: async (change) => {
+      const {before, after, documentId} = change;
+      await reconcileResource("hotel", documentId,
+        before, after);
+    },
+  },
+]);

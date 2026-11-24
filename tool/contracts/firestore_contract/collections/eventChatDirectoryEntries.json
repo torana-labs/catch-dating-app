@@ -20,6 +20,7 @@
     "onEventChatDirectoryRoomWritten",
     "dispatchEvents",
     "onEventChatDirectoryUserWritten",
+    "dispatchUsers",
     "requestAccountDeletion"
   ],
   "migrationNotes": [

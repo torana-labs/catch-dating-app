@@ -119,3 +119,22 @@ export const onOrganizerProgramHotelChanged = onDocumentWritten({
     "address", "receptionContact", "active", "revision"])) return;
   await reconcilePrograms(before, after);
 });
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const programHotelsProjections = defineProjections("programHotels", [
+  {
+    id: "organizerProgramHotelChanged", kind: "projection",
+    when: () => true,
+    run: async (change) => {
+      const {before, after} = change;
+      if (unchanged(before, after, ["programId", "organizerId", "name",
+        "address", "receptionContact", "active", "revision"])) return;
+      await reconcilePrograms(before, after);
+    },
+  },
+]);

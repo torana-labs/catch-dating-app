@@ -23,6 +23,7 @@
     "onHostMovementViewGuestChanged",
     "onHostMovementViewMembershipChanged",
     "onHostMovementViewWorkItemChanged",
+    "dispatchOperationWorkItems",
     "onHostMovementViewStaffGrantChanged",
     "dispatchOrganizers"
   ],

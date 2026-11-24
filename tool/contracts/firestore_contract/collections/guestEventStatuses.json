@@ -19,6 +19,7 @@
     "onGuestEventStatusPaymentWritten",
     "dispatchGuestPayments",
     "onGuestEventStatusApplicationWritten",
+    "dispatchOrganizerApplications",
     "onGuestEventStatusOfferRecipientWritten",
     "dispatchEvents",
     "requestAccountDeletion"

@@ -14,6 +14,7 @@
   "write": "server only; written from organizerFormShareLinks and organizerForms and deleted when the form or its last link is gone",
   "exportedFunctions": [
     "onHostFormEditorViewFormChanged",
+    "dispatchOrganizerForms",
     "onHostFormSourceViewLinkChanged"
   ],
   "migrationNotes": [

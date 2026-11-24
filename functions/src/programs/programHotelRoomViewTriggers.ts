@@ -167,3 +167,92 @@ export const programHotelRoomProgramProjections = defineProjections(
     run: (change, ctx) =>
       reconcileProgramHotelBoards(ctx.db, change.documentId),
   }]);
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const programGuestsProjections = defineProjections("programGuests", [
+  {
+    id: "programHotelRoomGuestChanged", kind: "projection",
+    when: () => true,
+    run: async (change) => {
+      const {before, after, documentId} = change;
+      const programId = after?.programId ?? before?.programId;
+      if (typeof programId !== "string" || !programId ||
+          unchanged(before, after, ["displayName", "groupIds",
+            "organizerId"])) {
+        return;
+      }
+      const db = admin.firestore();
+      const guestId = documentId;
+      // One equality filter each keeps these off the composite index list; the
+      // programme is checked on each row.
+      const [stays, legs] = await Promise.all([
+        db.collection("programStays").where("guestId", "==", guestId)
+          .limit(fanoutLimit).get(),
+        db.collection("programTravelLegs").where("guestId", "==", guestId)
+          .limit(fanoutLimit).get(),
+      ]);
+      const pairs = new Map<string, [string, string]>();
+      for (const doc of stays.docs) {
+        const hotelId = doc.data().hotelId;
+        if (doc.data().programId === programId && typeof hotelId === "string" &&
+            hotelId) pairs.set(hotelId, [programId, hotelId]);
+      }
+      for (const doc of legs.docs) {
+        const leg = doc.data();
+        if (leg.programId === programId && leg.kind === "inbound" &&
+            typeof leg.destinationHotelId === "string" &&
+            leg.destinationHotelId) {
+          pairs.set(leg.destinationHotelId, [programId,
+            leg.destinationHotelId]);
+        }
+      }
+      await reconcileAll([...pairs.values()]);
+    },
+  },
+]);
+
+export const programHotelsProjections = defineProjections("programHotels", [
+  {
+    id: "programHotelRoomHotelChanged", kind: "projection",
+    when: () => true,
+    run: async (change) => {
+      const {before, after, documentId} = change;
+      if (unchanged(before, after, ["programId", "organizerId",
+        "name"])) return;
+      const programIds = new Set([before?.programId, after?.programId].filter(
+        (id): id is string => typeof id === "string" && id.length > 0));
+      await reconcileAll([...programIds].map((programId) =>
+        [programId, documentId]));
+    },
+  },
+]);
+
+export const programTravelLegsProjections = defineProjections(
+  "programTravelLegs", [
+    {
+      id: "programHotelRoomLegChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after} = change;
+        const routes = (data: Data) => data?.kind === "inbound" &&
+        typeof data.destinationHotelId === "string" && data.destinationHotelId;
+        if (!routes(before) && !routes(after)) return;
+        const shape = (data: Data) => data === undefined ? null : {
+          programId: data.programId ?? null,
+          organizerId: data.organizerId ?? null,
+          kind: data.kind ?? null, guestId: data.guestId ?? null,
+          destinationHotelId: data.destinationHotelId ?? null,
+          noShow: data.readiness === "noShow"};
+        if (isDeepStrictEqual(shape(before), shape(after))) return;
+        const inbound = (data: Data) =>
+          data?.kind === "inbound" ? data : undefined;
+        await reconcileAll(boards(inbound(before), inbound(after),
+          "destinationHotelId"));
+      },
+    },
+  ]);

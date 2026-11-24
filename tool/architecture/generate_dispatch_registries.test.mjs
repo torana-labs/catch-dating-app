@@ -74,6 +74,17 @@ test("generates one registry per source from the contexts' sets, in path order",
   ].join("\n"));
 });
 
+test("sets that share a name across files are imported under short aliases", () => {
+  const {outputs} = planDispatchRegistries({config, files: files({
+    "functions/src/hostReadModels/organizerViews.ts":
+      'export const publicOrganizerProjections = defineProjections("organizers", []);\n',
+  })});
+  const text = outputs.get("functions/src/organizers/dispatch/organizers.generated.ts");
+  assert.match(text, /import \{\n  publicOrganizerProjections as publicOrganizer2,\n\} from "\.\.\/publicOrganizerProjection";/u);
+  assert.match(text, /\n    publicOrganizer2,\n/u);
+  assert.ok(text.split("\n").every((line) => line.length <= 80));
+});
+
 test("a set for an unlisted source or a malformed call fails", () => {
   const {errors} = planDispatchRegistries({config, files: files({
     "functions/src/programs/programViews.ts":

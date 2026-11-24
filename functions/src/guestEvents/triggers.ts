@@ -338,3 +338,43 @@ export const onEventGuestEntryFormWritten = onDocumentWritten({
     value !== null));
   for (const eventId of events) await refreshEventGuestEntry(db, eventId);
 });
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const organizerApplicationsProjections = defineProjections(
+  "organizerApplications", [
+    {
+      id: "guestEventStatusApplicationWritten", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after} = change;
+        await refreshPairs(guestEventStatusPairs(before, after,
+          "targetId", "linkedUid", ["reviewStatus", "latestResponseId",
+            "source",
+            "organizerId", "targetKind", "submittedAt"]));
+      },
+    },
+  ]);
+
+export const organizerFormsProjections = defineProjections("organizerForms", [
+  {
+    id: "eventGuestEntryFormWritten", kind: "projection",
+    when: () => true,
+    run: async (change) => {
+      const {before, after} = change;
+      if (![before?.purpose, after?.purpose].includes("application")) return;
+      if (before && after && !changed(before, after, ["status",
+        "activeVersionId", "publicFormId", "defaultTargetId",
+        "defaultTargetKind", "purpose", "organizerId"])) return;
+      const db = admin.firestore();
+      const events = new Set([id(before, "defaultTargetId"),
+        id(after, "defaultTargetId")].filter((value): value is string =>
+        value !== null));
+      for (const eventId of events) await refreshEventGuestEntry(db, eventId);
+    },
+  },
+]);

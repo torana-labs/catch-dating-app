@@ -153,3 +153,14 @@ export {
   onHostMovementViewWorkItemChanged,
   onHostMovementViewStaffGrantChanged,
 } from "./movementViewTriggers";
+export {dispatchOperationWorkItems} from
+  "./dispatch/operationWorkItems.generated";
+export {dispatchOrganizerApplications} from
+  "./dispatch/organizerApplications.generated";
+export {dispatchOrganizerContactEventEdges} from
+  "./dispatch/organizerContactEventEdges.generated";
+export {dispatchOrganizerContacts} from
+  "./dispatch/organizerContacts.generated";
+export {dispatchOrganizerFormResponses} from
+  "./dispatch/organizerFormResponses.generated";
+export {dispatchOrganizerForms} from "./dispatch/organizerForms.generated";
