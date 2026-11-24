@@ -17,6 +17,8 @@ import {endAccountHostMemberships} from
 import {safetyRetainUntil} from "./safetyPolicy";
 import {retainSafetyRecordsForDeletedAccount} from "./safetyRetention";
 import {queueEventDataCleanup} from "./accountDeletionEventData";
+import {queueOrganizerRecordCleanup} from "./accountDeletionOrganizerRecords";
+import {queueSupportRecordCleanup} from "./accountDeletionSupportRecords";
 
 type StorageBucket = ReturnType<ReturnType<typeof admin.storage>["bucket"]>;
 
@@ -103,6 +105,7 @@ export async function requestAccountDeletionHandler(
     now,
     writer,
     afterCommit,
+    bucket: deps.storageBucket(),
   });
   await removeOrganizerHostIdentity(db, uid);
   await retainSafetyRecordsForDeletedAccount(db, uid, Date.now());
@@ -231,8 +234,9 @@ async function queueRelationshipCleanup(params: {
   now: FirebaseFirestore.FieldValue;
   writer: BatchQueue;
   afterCommit: BatchQueue;
+  bucket: StorageBucket;
 }) {
-  const {db, uid, now, writer, afterCommit} = params;
+  const {db, uid, now, writer, afterCommit, bucket} = params;
   // Release pair holds while their persisted UID identity proof is current.
   await queueCrossPathsPairHoldCleanup(db, uid, writer);
   // The seat ledger, participation and linked attendee identity update
@@ -256,6 +260,9 @@ async function queueRelationshipCleanup(params: {
     queueNotificationCleanup(db, uid, writer),
     queueEventBroadcastCleanup(db, uid, writer),
     queueContactPermissionCleanup(db, uid, writer),
+    queueOrganizerRecordCleanup({db, uid, writer, bucket,
+      nowMillis: Date.now()}),
+    queueSupportRecordCleanup({db, uid, writer}),
     queueAccessCleanup(db, uid, writer),
     queueHostAnalyticsSnapshotCleanup(db, uid, writer),
     queueParticipantPrivateStateCleanup(db, uid, writer),

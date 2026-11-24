@@ -28,6 +28,10 @@ import {
 import {isOrganizerManager} from "../shared/organizerHosts";
 import {loadHostRegistrationAnalytics} from "./hostRegistrationAnalytics";
 import {
+  DEFAULT_GROUP_SIZE_FLOOR,
+  readGroupSizeFloor,
+} from "./guestDataVisibility";
+import {
   defaultHostAnalyticsBigQuerySource,
   HostAnalyticsBigQuerySource,
   HostAnalyticsLinkRow,
@@ -286,8 +290,10 @@ export function resolveAnalyticsRange(
 export function buildHostAnalyticsFromRecords(
   records: AnalyticsRecords,
   range: AnalyticsRange,
-  now: Date
+  now: Date,
+  options: {groupSizeFloor?: number} = {}
 ): HostAnalyticsCallableResponse {
+  const groupSizeFloor = options.groupSizeFloor ?? DEFAULT_GROUP_SIZE_FLOOR;
   const rows = records.martRows.filter((row) =>
     dailyRowInRange(row, range)
   );
@@ -308,6 +314,10 @@ export function buildHostAnalyticsFromRecords(
     records.events,
     records.operationalAttendees ?? []
   );
+  const withheldEventIds = withholdSmallGroupDatingCounts(
+    eventMetrics,
+    groupSizeFloor
+  );
   // Event-report links target native management. External listing observations
   // remain in presence totals, but must not produce an unsupported route.
   const nativeEventIds = new Set(records.events.map((event) => event.id));
@@ -323,6 +333,7 @@ export function buildHostAnalyticsFromRecords(
     [],
     range.timezone
   );
+  withholdSmallGroupDatingCounts(previousEventMetrics, groupSizeFloor);
   const previousTotals = summarizeEventMetrics(previousEventMetrics);
   const previousDiscovery = summarizeDiscovery(previousRows);
   const previousReviews = summarizeReviews(previousRows);
@@ -478,7 +489,7 @@ export function buildHostAnalyticsFromRecords(
         totals.matches,
         "count",
         sourceStatus,
-        null,
+        datingCountCaption(groupSizeFloor),
         previousTotals.matches
       ),
       metricCard(
@@ -487,11 +498,11 @@ export function buildHostAnalyticsFromRecords(
         totals.chats,
         "count",
         sourceStatus,
-        null,
+        datingCountCaption(groupSizeFloor),
         previousTotals.chats
       ),
     ],
-    trend: buildTrend(rows, range),
+    trend: buildTrend(rows, range, withheldEventIds),
     topEvents: topEvents.map((event) => ({
       eventId: event.eventId,
       organizerId: event.organizerId,
@@ -533,6 +544,9 @@ export function buildHostAnalyticsFromRecords(
         records.events,
         records.operationalAttendees ?? []
       ),
+      ...(groupSizeFloor > 0 ?
+        [datingCountFloorRow(groupSizeFloor, withheldEventIds.size)] :
+        []),
       ...(records.linkRows === null ? [linkClicksUnavailable] : []),
     ],
   };
@@ -557,6 +571,8 @@ async function loadHostAnalytics(
     if (cached !== null) return cached;
   }
   const events = await resolveEvents(db, payload, organizers, range, scope);
+  // Admin is the platform, not an organiser, so it reads unfloored counts.
+  const groupSizeFloor = scope === "host" ? await readGroupSizeFloor(db) : 0;
   const [martRows, operationalAttendees, registrationAnalytics, linkRows,
     followRead] =
     await Promise.all([
@@ -602,7 +618,8 @@ async function loadHostAnalytics(
       follows: followRead?.follows ?? null,
       followsTruncated: followRead?.truncated ?? false},
     range,
-    now
+    now,
+    {groupSizeFloor}
   );
   response.summaryCards.push(...registrationAnalytics.summaryCards);
   response.dataQuality.push(...registrationAnalytics.dataQuality);
@@ -1168,6 +1185,71 @@ function emptyAttendeeSources(): Record<
   };
 }
 
+/**
+ * Zeroes the dating counts of every event whose group is below the floor
+ * (FIX-21), so they reach no per-event row, total or trend. The group is
+ * the guests who came, from the mart or the operational roster, whichever
+ * is larger. Mutates the accumulators.
+ * @param {EventMetricAccumulator[]} events Per-event metrics.
+ * @param {number} floor Smallest group whose counts an organiser may see;
+ * 0 applies no floor.
+ * @return {Set<string>} Ids of the events whose counts were withheld.
+ */
+function withholdSmallGroupDatingCounts(
+  events: EventMetricAccumulator[],
+  floor: number
+): Set<string> {
+  const withheld = new Set<string>();
+  if (floor <= 0) return withheld;
+  for (const event of events) {
+    const groupSize = Math.max(
+      event.checkedInCount,
+      event.operationalCheckedInCount
+    );
+    if (groupSize >= floor) continue;
+    event.mutualMatchCount = 0;
+    event.chatStartedCount = 0;
+    withheld.add(event.eventId);
+  }
+  return withheld;
+}
+
+/**
+ * Caption for a dating-count card under the group-size floor.
+ * @param {number} floor Group-size floor; 0 means none.
+ * @return {string | null} Caption, or null when no floor applies.
+ */
+function datingCountCaption(floor: number): string | null {
+  return floor > 0 ?
+    `Counts only events where at least ${floor} guests came.` :
+    null;
+}
+
+/**
+ * Data-quality row that explains withheld dating counts.
+ * @param {number} floor Group-size floor.
+ * @param {number} withheldCount Events whose counts were withheld.
+ * @return {object} Data-quality row.
+ */
+function datingCountFloorRow(
+  floor: number,
+  withheldCount: number
+): HostAnalyticsCallableResponse["dataQuality"][number] {
+  return {
+    id: "dating-count-group-floor",
+    state: withheldCount > 0 ? "partial" : "ok",
+    detail: withheldCount > 0 ?
+      `Connections and chats leave out ${withheldCount} ` +
+        `event${withheldCount === 1 ? "" : "s"} where fewer than ${floor} ` +
+        "guests came, to protect guests' privacy." :
+      `Connections and chats count only events where at least ${floor} ` +
+        "guests came.",
+    owner: "Guest privacy",
+    runbook: "docs/data_contracts.md",
+    nextAction: "No action; small groups never show dating counts.",
+  };
+}
+
 function summarizeEventMetrics(events: EventMetricAccumulator[]) {
   return events.reduce((sum, event) => ({
     booked: sum.booked + event.bookedCount,
@@ -1315,7 +1397,8 @@ function summarizeLinks(
 
 function buildTrend(
   rows: HostAnalyticsMartRow[],
-  range: AnalyticsRange
+  range: AnalyticsRange,
+  withheldEventIds: ReadonlySet<string> = new Set()
 ): HostAnalyticsCallableResponse["trend"] {
   const buckets = trendBuckets(range);
   for (const row of rows) {
@@ -1330,8 +1413,12 @@ function buildTrend(
     bucket.metrics.checkoutDropoff += intValue(row.checkoutDropoffCount);
     bucket.metrics.demand += intValue(row.demandCount);
     bucket.metrics.reviews += intValue(row.reviewCount);
-    bucket.metrics.matches += intValue(row.mutualMatchCount);
-    bucket.metrics.chats += intValue(row.chatStartedCount);
+    // Rows without an event carry no dating counts; a withheld event's rows
+    // add nothing, so a trend bucket never reveals a small group's counts.
+    if (row.eventId && !withheldEventIds.has(row.eventId)) {
+      bucket.metrics.matches += intValue(row.mutualMatchCount);
+      bucket.metrics.chats += intValue(row.chatStartedCount);
+    }
     bucket.metrics.eventSaves += intValue(row.eventSaves);
     bucket.metrics.listingViews += intValue(row.listingViews);
     bucket.metrics.eventViews += intValue(row.eventViews);
