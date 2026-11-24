@@ -157,7 +157,12 @@ function applyUpdate(target: FakeData, patch: FakeData,
 }
 
 export class FakeSnapshot {
-  constructor(readonly ref: FakeDocRef, private readonly value?: FakeData) {}
+  /** The document's update time, as stale-event guards compare it. */
+  readonly updateTime: Timestamp | undefined;
+  constructor(readonly ref: FakeDocRef, private readonly value?: FakeData) {
+    this.updateTime = value === undefined ? undefined :
+      ref.firestore.updateTimeOf(ref.path);
+  }
   get id(): string {
     return this.ref.id;
   }
@@ -360,6 +365,8 @@ export class FakeBatch {
 
 export class FakeFirestore {
   private readonly docs = new Map<string, FakeData>();
+  private readonly updateTimes = new Map<string, Timestamp>();
+  private writeCount = 0;
   private tail: Promise<unknown> = Promise.resolve();
   private nextId = 0;
   /** Commit time for server timestamps; tests may replace it. */
@@ -369,7 +376,9 @@ export class FakeFirestore {
 
   constructor(seed: Record<string, FakeData | undefined> = {}) {
     for (const [path, data] of Object.entries(seed)) {
-      if (data !== undefined) this.docs.set(path, clone(data));
+      if (data === undefined) continue;
+      this.docs.set(path, clone(data));
+      this.touch(path);
     }
   }
 
@@ -410,9 +419,18 @@ export class FakeFirestore {
   /** Seeds or replaces a document directly, outside any transaction. */
   put(path: string, data: FakeData): void {
     this.docs.set(path, clone(data));
+    this.touch(path);
   }
   remove(path: string): void {
     this.docs.delete(path);
+  }
+  /** The document's update time; every write moves it forward. */
+  updateTimeOf(path: string): Timestamp | undefined {
+    return this.docs.has(path) ? this.updateTimes.get(path) : undefined;
+  }
+  private touch(path: string): void {
+    this.writeCount += 1;
+    this.updateTimes.set(path, new Timestamp(this.writeCount, 0));
   }
   paths(prefix = ""): string[] {
     return [...this.docs.keys()].filter((path) => path.startsWith(prefix))
@@ -466,7 +484,10 @@ export class FakeFirestore {
     }
     for (const [path, data] of staged) {
       if (data === undefined) this.docs.delete(path);
-      else this.docs.set(path, data);
+      else {
+        this.docs.set(path, data);
+        this.touch(path);
+      }
     }
   }
 
