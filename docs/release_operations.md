@@ -676,6 +676,28 @@ decision, 22 Nov 2026; evidence in
 
 The job takes no plan selection, and uploads `semantic-timings-<run>-<attempt>` for the budget report.
 
+### Tool buckets
+
+The full Tools matrix (control-plane changes, the nightly, a full dispatch)
+runs every active tool in six jobs, `Tool checks (bucket-1)` to
+`(bucket-6)`. `tool/ci/tool_buckets.mjs` (manifest `ci:tool-buckets`) assigns
+each tool to exactly one bucket by longest-first balancing over the measured
+seconds in `tool/ci/tool_bucket_timings.json`. A tool the file does not list
+yet counts as its `defaultSeconds`. Each bucket installs the browser only when
+the CI requirements of its tools need it, by the same projection the affected
+job uses.
+
+- See the split: `node tool/ci/tool_buckets.mjs plan`.
+- One bucket's tools or setup: `ids --bucket <n>`, `setup --bucket <n>`.
+- Refresh the timings after the buckets drift (the test fails when bucket
+  loads differ by more than a minute): save each bucket job's log from a recent
+  full-matrix run as `<run-id>-<job>.log`, then run
+  `node tool/ci/tool_buckets.mjs regenerate --runs <run-id,...> <log>...`.
+  Logs from several runs are averaged per tool.
+
+Bucket names carry no meaning: no ruleset, Required CI need or test pins a
+tool to a named bucket, so a regenerated split changes only which job runs it.
+
 ### Selected Check Contracts
 
 The graph selects obligations; selection is not execution evidence. Selector-control

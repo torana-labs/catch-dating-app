@@ -987,16 +987,13 @@ test("tools fanout selects exactly one affected or full execution path", () => {
     tools,
     /strategy:\s*\n\s+fail-fast:\s+false\s*\n\s+matrix:/,
   );
-  for (const bucket of [
-    "core-audit",
-    "lint-scanners",
-    "contracts-data",
-    "platform-env",
-    "marketing-design",
-    "organizer-intake",
-  ]) {
-    assert.match(tools, new RegExp(`name: ${bucket}`));
+  // The full matrix runs computed, time-balanced buckets (tool/ci/tool_buckets.mjs).
+  for (let bucket = 1; bucket <= 6; bucket += 1) {
+    assert.match(tools, new RegExp(`- \\{name: bucket-${bucket}, bucket: ${bucket}\\}`));
   }
+  assert.match(tools, /node tool\/ci\/tool_buckets\.mjs ids --bucket "\$BUCKET"/u);
+  assert.match(tools, /node tool\/run\.mjs check "\$\{tool_ids\[@\]\}" "\$\{shared_flags\[@\]\}"/u);
+  assert.doesNotMatch(tools, /--category "\$category"/u);
 });
 
 test("fast structural ratchets block dependency-heavy full tool buckets", () => {
@@ -1041,10 +1038,9 @@ test("fast structural ratchets block dependency-heavy full tool buckets", () => 
   assert.ok(fullBuckets, "tool-buckets job must remain present");
   assert.match(fullBuckets, /- preflight\s*\n\s+- fast-gates/u);
   assert.match(fullBuckets, /needs\.fast-gates\.result == 'success'/u);
-  assert.match(
-    fullBuckets,
-    /timeout-minutes: \$\{\{ \(matrix\.name == 'lint-scanners' \|\| matrix\.name == 'marketing-design'\) && 45 \|\| 30 \}\}/u,
-  );
+  assert.match(fullBuckets, /timeout-minutes: 45/u);
+  assert.match(fullBuckets,
+    /if: \$\{\{ contains\(fromJSON\(steps\.bucket\.outputs\.setup\), 'playwright'\) \}\}\n\s+run: npx playwright install chromium/u);
   assert.doesNotMatch(fullBuckets, /playwright install --with-deps/u);
   assert.match(fullBuckets, /uses: \.\/\.github\/actions\/install-ripgrep/u);
   assert.doesNotMatch(fullBuckets, /apt-get/u);
@@ -1088,8 +1084,8 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   assert.equal(tools.match(/MARKETING_CHECKS_IN_REACT: \$\{\{ inputs.marketing_checks_in_react \}\}/gu)?.length, 3);
   assert.match(namedStep(tools, "Check affected tools"), /--check "\$\{shared_flags\[@\]\}"/u);
   const bucket = namedStep(tools, "Check tool categories");
-  assert.match(bucket, /category_flags\+=\(--category "\$category"\)/u);
-  assert.match(bucket, /node tool\/run\.mjs check "\$\{category_flags\[@\]\}" "\$\{shared_flags\[@\]\}"/u);
+  assert.match(bucket, /mapfile -t tool_ids < "\$RUNNER_TEMP\/bucket-tools\.txt"/u);
+  assert.match(bucket, /node tool\/run\.mjs check "\$\{tool_ids\[@\]\}" "\$\{shared_flags\[@\]\}"/u);
   assert.equal(bucket.match(/node tool\/run\.mjs check/gu)?.length, 1);
   for (const [name, command] of [
     ["Build marketing website", "npm run web:marketing:build"],
@@ -1971,6 +1967,7 @@ test("Tools check shells request inventory producer proofs and no capture proof"
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "capture-tool-flags-"));
   context.after(() => fs.rmSync(root, {recursive: true, force: true}));
   fs.writeFileSync(path.join(root, "node"), `#!${process.execPath}\nconsole.log(JSON.stringify({args:process.argv.slice(2),binding:process.env.CAPTURE_BINDING}));\n`, {mode: 0o755});
+  fs.writeFileSync(path.join(root, "bucket-tools.txt"), "design:parity-gate\nmarketing:website-build\n");
   for (const name of ["Check affected tools", "Check tool categories"]) {
     const step = extractSteps(source).find(s => s.name === name);
     const declaration = namedStep(source, name);
@@ -1984,10 +1981,13 @@ test("Tools check shells request inventory producer proofs and no capture proof"
       const result = spawnSync("bash", ["-c", step.run], {encoding: "utf8", env: {
         ...process.env, PATH: `${root}${path.delimiter}${process.env.PATH}`,
         INVENTORY_MATERIALIZED: inventory, MARKETING_CHECKS_IN_REACT: "true",
-        BASE_SHA: "base", SOURCE_SHA: "source", MODE: "pr", COMMIT_WINDOW: "false", CATEGORIES: "marketing ui-capture design",
+        BASE_SHA: "base", SOURCE_SHA: "source", MODE: "pr", COMMIT_WINDOW: "false", RUNNER_TEMP: root,
       }});
       assert.equal(result.status, 0, result.stderr);
       const actual = JSON.parse(result.stdout);
+      if (name === "Check tool categories") {
+        assert.deepEqual(actual.args.slice(0, 4), ["tool/run.mjs", "check", "design:parity-gate", "marketing:website-build"]);
+      }
       assert.equal(actual.args.includes("--generated-inventories-materialized"), inventory === "true");
       assert.ok(actual.args.includes("--marketing-checks-in-react"));
       // Outside the nightly (VISUAL_REPORT unset here) the visual report is deferred.
