@@ -51,24 +51,10 @@ async function reconcileProgramSetupView(db: FirebaseFirestore.Firestore,
     programId);
 }
 
-/** A programme's settings, dates, status, branding or retention dates. */
-export const onOrganizerProgramViewChanged = onDocumentWritten({
-  ...options, document: "organizerPrograms/{programId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (unchanged(before, after, ["organizerId", "createdBy", "kind", "title",
-    "timezone", "status", "startsAt", "endsAt", "capabilities",
-    "transportSettings", "branding", "archivedAt", "anonymizeAt",
-    "anonymizedAt", "revision"])) return;
-  await reconcileProgramSetupView(admin.firestore(), event.params.programId);
-});
-
 /**
  * A programme's settings, dates, status, branding or retention dates.
- * dispatchOrganizerPrograms (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by dispatchOrganizerPrograms (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
  */
 export const organizerProgramViewProjections = defineProjections(
   "organizerPrograms", [{

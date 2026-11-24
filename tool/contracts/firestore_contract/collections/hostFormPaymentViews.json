@@ -13,7 +13,6 @@
   "read": "current organizer managers get and list (organizerId and formId equality, optionally status) while their account is not deleted",
   "write": "server only; rewritten from each guestPayments document whose purpose is form, and deleted with it",
   "exportedFunctions": [
-    "onHostFormPaymentViewPaymentChanged",
     "dispatchGuestPayments"
   ],
   "migrationNotes": [

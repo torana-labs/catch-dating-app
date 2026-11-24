@@ -13,7 +13,6 @@
   "read": "get by programme id for the programme owner and the coordinator duty (programAccessViews), as requireSettingsAccess admits them, while not deleted; never listed",
   "write": "server only; written from organizerPrograms, programAssistantSettings and programStaffGrants",
   "exportedFunctions": [
-    "onProgramSettingViewProgramChanged",
     "dispatchOrganizerPrograms",
     "onProgramSettingViewSettingsChanged",
     "onProgramSettingViewGrantChanged"

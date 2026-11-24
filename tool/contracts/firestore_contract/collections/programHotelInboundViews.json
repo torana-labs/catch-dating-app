@@ -16,7 +16,6 @@
     "onProgramHotelInboundLegChanged",
     "onProgramHotelInboundPartyChanged",
     "onProgramTripGuestChanged",
-    "onProgramHotelInboundSettingsChanged",
     "dispatchOrganizerPrograms"
   ],
   "migrationNotes": [
