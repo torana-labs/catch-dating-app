@@ -192,3 +192,71 @@ export const onHostResponseContactOriginChanged = onDocumentWritten({
     }
   }
 });
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const organizerApplicationsProjections = defineProjections(
+  "organizerApplications", [
+    {
+      id: "hostApplicationSummaryChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, documentId} = change;
+        const db = admin.firestore();
+        await reconcileApplicationSummary(db, documentId);
+        const oldId = before?.latestResponseId;
+        // Old data is only a routing hint. Every projection rereads current
+        // sources.
+        if (typeof oldId === "string") {
+          await reconcileResponseSummary(db, "response", oldId);
+        }
+      },
+    },
+  ]);
+
+export const organizerFormsProjections = defineProjections("organizerForms", [
+  {
+    id: "hostFormSummaryChanged", kind: "projection",
+    when: () => true,
+    run: async (change) => {
+      const {before, after, documentId} = change;
+      const db = admin.firestore();
+      await reconcileSimpleSummary(db, "forms", documentId);
+      if (before?.title !== after?.title ||
+          before?.organizerId !==
+            after?.organizerId) {
+        await refreshFormResponseSummaries(db, "formId", documentId);
+      }
+    },
+  },
+]);
+
+export const organizerFormResponsesProjections = defineProjections(
+  "organizerFormResponses", [
+    {
+      id: "hostResponseSummaryChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {documentId} = change;
+        await reconcileResponseSummary(
+          admin.firestore(), "response", documentId);
+      },
+    },
+  ]);
+
+export const organizerContactsProjections = defineProjections(
+  "organizerContacts", [
+    {
+      id: "hostContactSummaryChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {documentId} = change;
+        await reconcileContactSummary(
+          admin.firestore(), documentId);
+      },
+    },
+  ]);

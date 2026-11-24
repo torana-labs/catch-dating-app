@@ -15,7 +15,8 @@
   "exportedFunctions": [
     "dispatchEvents",
     "dispatchOrganizers",
-    "onEventGuestEntryFormWritten"
+    "onEventGuestEntryFormWritten",
+    "dispatchOrganizerForms"
   ],
   "migrationNotes": [
     "Replaced the getEventViewerState guest surface for the website event page (#1337); that callable is retired. Backfilled by the guest-event-read-models migration."

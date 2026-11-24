@@ -15,6 +15,7 @@
   "exportedFunctions": [
     "onHostWhatsappThreadViewThreadChanged",
     "onHostWhatsappThreadViewContactChanged",
+    "dispatchOrganizerContacts",
     "requestAccountDeletion"
   ],
   "migrationNotes": [
