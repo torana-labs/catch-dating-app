@@ -1,4 +1,3 @@
-import {bookingPrivateFactsRef} from "../shared/bookingPrivateFacts";
 import {createHash} from "crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventBookingDocument} from
@@ -289,7 +288,8 @@ export async function deleteAccountEventParticipations(params: {
           deletedAt: now}, {merge: true});
       }
       // The booking cohort (sexual orientation) goes with the account.
-      tx.delete(bookingPrivateFactsRef(db, `${eventId}_${uid}`));
+      tx.delete(db.collection("eventBookingPrivateFacts")
+        .doc(`${eventId}_${uid}`));
     });
   }
 }
