@@ -3,9 +3,11 @@ import test from "node:test";
 import * as admin from "firebase-admin";
 import type {OrganizerContactEventEdgeDocument} from
   "../shared/generated/firestoreAdminTypes";
+import {FakeFirestore} from "../shared/testing/fakeFirestore";
 import {
   attributionTransitions,
   isReferralCredit,
+  projectEventInviteAttributionEvent,
 } from "./eventInviteAttributionProjection";
 
 test("registration and check-in transitions credit and reverse once", () => {
@@ -26,6 +28,50 @@ test("registration and check-in transitions credit and reverse once", () => {
     {factKind: "registration", operation: "reversal"},
     {factKind: "checkIn", operation: "reversal"},
   ]);
+});
+
+test("registration events in any order end at the edge's latest state " +
+  "(#2472)", async () => {
+  const project = async (order: "inOrder" | "reversed") => {
+    const fake = new FakeFirestore({
+      "eventInviteLinks/link-1": {eventId: "event-1",
+        organizerId: "organizer-1", linkKind: "hostChannel",
+        verifiedRegistrationCount: 0},
+    });
+    const deps = {firestore: () =>
+      fake as unknown as FirebaseFirestore.Firestore,
+    timestamp: () => admin.firestore.Timestamp.fromMillis(5_000)};
+    const registeredEdge = edge({registered: true});
+    const cancelledEdge = edge({registered: false, cancelled: true,
+      status: "cancelled"});
+    const stored = (value: OrganizerContactEventEdgeDocument) =>
+      value as unknown as Record<string, unknown>;
+    // The edge is registered, then cancelled; both writes have landed.
+    fake.put("organizerContactEventEdges/edge-1", stored(cancelledEdge));
+    const created = () => projectEventInviteAttributionEvent("edge-1",
+      undefined, undefined, deps);
+    const cancelled = () => projectEventInviteAttributionEvent("edge-1",
+      registeredEdge, undefined, deps);
+    if (order === "inOrder") {
+      // The creation's event ran while the edge was still registered.
+      fake.put("organizerContactEventEdges/edge-1", stored(registeredEdge));
+      await created();
+      fake.put("organizerContactEventEdges/edge-1", stored(cancelledEdge));
+      await cancelled();
+    } else {
+      await cancelled();
+      await created();
+    }
+    return {
+      attributions: fake.paths("eventInviteAttributions/")
+        .map((path) => fake.get(path)?.operation).sort(),
+      count: fake.get("eventInviteLinks/link-1")?.verifiedRegistrationCount,
+    };
+  };
+  // In order: credited, then reversed. Out of order: never credited.
+  assert.deepEqual(await project("inOrder"),
+    {attributions: ["credit", "reversal"], count: 0});
+  assert.deepEqual(await project("reversed"), {attributions: [], count: 0});
 });
 
 test("a direct recipient is not credited for their own registration", () => {
