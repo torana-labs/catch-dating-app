@@ -35,6 +35,5 @@
       ],
       "instruction": "A tool under tool/data/ that writes to Firestore wraps its apply phase in withRunRecord from tool/data/lib/run_record.mjs, so dataToolRuns holds the tool, commit, project, counts and times of every applied run. Dry runs write nothing. Remove a legacy tool from the check's list when it adopts the helper."
     }
-  ],
-  "queueGate": "always"
+  ]
 }
