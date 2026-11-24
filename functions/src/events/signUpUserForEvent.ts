@@ -25,6 +25,7 @@ import {
   eventParticipationPatch,
   eventBookingsByStatusInTransaction,
 } from "../shared/relationshipDocuments";
+import {writeBookingCohort} from "../shared/bookingPrivateFacts";
 import {
   activityNotificationId,
   eventActivityNotificationCopy,
@@ -65,6 +66,8 @@ import {
   type EventBookingCountersPatch,
   updateEventBookingCounters,
 } from "../domain/events/eventDocumentWrites";
+import {readEventWithCohortCounts} from
+  "../domain/events/eventCohortCounts";
 
 /**
  * Core sign-up business logic — shared by signUpForFreeEvent (free events),
@@ -149,13 +152,8 @@ export async function signUpUserForEvent(
       throw new HttpsError("not-found", "User profile not found.");
     }
 
-    const event = requireDoc<EventDocument>(
-
-      eventSnap,
-
-      "EventDocument"
-
-    );
+    const event = await readEventWithCohortCounts(tx, db, eventId,
+      requireDoc<EventDocument>(eventSnap, "EventDocument"));
     const pairHoldSnap = pairHoldRef ? await tx.get(pairHoldRef) : null;
     const pairHold = pairHoldSnap?.exists ?
       requireDoc<CrossPathsPairHoldDocument>(
@@ -490,7 +488,6 @@ export async function signUpUserForEvent(
         uid: userId,
         status: "signedUp",
         genderAtSignup: gender,
-        cohortAtSignup: cohortId,
         paymentId,
       }),
       ...(membership ? {communityMembershipAtSignup: {
@@ -503,6 +500,8 @@ export async function signUpUserForEvent(
       ...inviteAttributionWriteFields(attribution.write),
     };
     tx.set(participationRef, participationWrite, {merge: true});
+    writeBookingCohort({db, tx, eventId, uid: userId,
+      cohortAtSignup: cohortId});
     writeCatchBookingRoster({db, tx, slot: rosterSlot,
       booking: participationAfterPatch(participationSnap.data(),
         participationWrite), now: admin.firestore.Timestamp.now()});

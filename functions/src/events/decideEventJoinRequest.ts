@@ -38,6 +38,7 @@ import {
   eventBookingsByStatusInTransaction,
   participantUids,
 } from "../shared/relationshipDocuments";
+import {readBookingCohort} from "../shared/bookingPrivateFacts";
 import {
   releaseUserEventScheduleInTransaction,
 } from "./scheduleConflicts";
@@ -55,6 +56,8 @@ import {
 import {signUpUserForEvent} from "./signUpUserForEvent";
 import {requireEventTimeRange} from "./configuredEvent";
 import {updateEventBookingCounters} from "../domain/events/eventDocumentWrites";
+import {readEventWithCohortCounts} from
+  "../domain/events/eventCohortCounts";
 
 interface DecideEventJoinRequestDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -136,13 +139,8 @@ export async function decideEventJoinRequestHandler(
       throw new HttpsError("not-found", "User profile not found.");
     }
 
-    const event = requireDoc<EventDocument>(
-
-      eventSnap,
-
-      "EventDocument"
-
-    );
+    const event = await readEventWithCohortCounts(tx, db, eventId,
+      requireDoc<EventDocument>(eventSnap, "EventDocument"));
     const requester = requireDoc<UserProfileDocument>(
       requesterSnap,
       "UserProfileDocument (join request)"
@@ -174,7 +172,6 @@ export async function decideEventJoinRequestHandler(
     const participation = participationSnap.exists ?
       participationSnap.data() as {
         status?: string;
-        cohortAtSignup?: string;
       } :
       null;
 
@@ -195,7 +192,8 @@ export async function decideEventJoinRequestHandler(
     }
     const scheduledEvent = requireEventTimeRange(event);
 
-    const cohortId = participation.cohortAtSignup ?? cohortIdForUser(requester);
+    const cohortId = await readBookingCohort({db, tx, eventId, uid: userId,
+      booking: participation}) ?? cohortIdForUser(requester);
     const decidedAt = deps.serverTimestamp();
 
     if (decision === "decline") {
@@ -215,7 +213,6 @@ export async function decideEventJoinRequestHandler(
           uid: userId,
           status: "cancelled",
           genderAtSignup: requester.gender,
-          cohortAtSignup: cohortId,
         }),
         hostApprovalStatus: "declined",
         hostApprovalDecidedAt: decidedAt,

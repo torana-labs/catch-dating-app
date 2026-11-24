@@ -124,8 +124,6 @@ export async function createPrivateEventSetup(params: {
       checkedInCount: 0,
       waitlistedCount: 0,
       genderCounts: {},
-      cohortCounts: {},
-      waitlistedCohortCounts: {},
       ...(params.series ? {seriesId: params.series.seriesId,
         seriesIndex: params.series.seriesIndex} : {}),
       ...defaultBookingQuestions(defaultsSnap.data()),

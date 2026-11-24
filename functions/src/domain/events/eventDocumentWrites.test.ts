@@ -48,17 +48,31 @@ test("booking counters stage one update with the patch as given", () => {
     discoveryHasOpenSpots: true,
     updatedAt: now,
   });
+  // Cohort totals go to the server-only eventCohortCounts, and the event's
+  // copy of each map written is removed (#2493).
   assert.deepEqual(h.fakeTx.pending(), [{kind: "update",
     path: "events/event-1", data: {
       bookedCount: 4,
       checkedInCount: increment,
       [womanCount]: increment,
-      cohortCounts: {open: 3},
-      waitlistedCohortCounts: {},
+      cohortCounts: FieldValue.delete(),
+      waitlistedCohortCounts: FieldValue.delete(),
       crossPathsPairConfirmedCount: increment,
       discoveryHasOpenSpots: true,
       updatedAt: now,
+    }}, {kind: "merge", path: "eventCohortCounts/event-1", data: {
+      eventId: "event-1",
+      cohortCounts: {open: 3},
+      waitlistedCohortCounts: {},
+      updatedAt: FieldValue.serverTimestamp(),
     }}]);
+});
+
+test("cohort totals are written whole, never by dotted path", () => {
+  const h = harness();
+  assert.throws(() => updateEventBookingCounters(h.tx, h.eventRef,
+    {"cohortCounts.open": 1} as never), EventDocumentWriteError);
+  assert.deepEqual(h.fakeTx.pending(), []);
 });
 
 test("booking counters refuse a field outside the allowlist", () => {
@@ -93,11 +107,15 @@ test("pair-hold counters allow only the pair-hold fields", () => {
   assert.deepEqual(h.fakeTx.pending(), [{kind: "update",
     path: "events/event-1", data: {
       crossPathsPairHeldCount: 0,
+      crossPathsPairHeldCohortCounts: FieldValue.delete(),
+    }}, {kind: "merge", path: "eventCohortCounts/event-1", data: {
+      eventId: "event-1",
       crossPathsPairHeldCohortCounts: {open: 0},
+      updatedAt: FieldValue.serverTimestamp(),
     }}]);
   assert.throws(() => updateEventPairHoldCounters(h.tx, h.eventRef,
     {bookedCount: 2} as never), /pair-hold counters write may not change/u);
-  assert.equal(h.fakeTx.pending().length, 1);
+  assert.equal(h.fakeTx.pending().length, 2);
 });
 
 test("organizer summary writes only organizerSummary", () => {

@@ -3282,6 +3282,33 @@ decisions. It also removes the chats that exist only because of a deck-era
 like, and the signal facts and counters derived from them. Its runbook is in
 `docs/release_operations.md`.
 
+### Booking cohorts stay server-only
+
+A booking cohort (`menInterestedInWomen`, `womenInterestedInMen`,
+`queerOrOpen`, `nonBinaryOrOther`) encodes the guest's gender and who they
+are interested in: their sexual orientation. Organiser managers read
+`eventBookings`, its legacy mirror `eventParticipations` and
+`eventWaitlistOffers`, so none of them stores a cohort (#2493). The cohort a
+booking was counted under (`cohortAtSignup`) and the cohort a live waitlist
+offer reserves (`cohortAtOffer`) live in the server-only
+`eventBookingPrivateFacts/{eventId}_{uid}`, written by
+`functions/src/shared/bookingPrivateFacts.ts` beside the booking or offer in
+the same transaction and deleted at account deletion. The event's totals
+by cohort (`cohortCounts`, `waitlistedCohortCounts`,
+`crossPathsPairHeldCohortCounts`) can point to one guest on a small event, so
+they live in the server-only `eventCohortCounts/{eventId}`, never on
+`events/{eventId}`: `updateEventBookingCounters` and
+`updateEventPairHoldCounters` write each map there and remove the event's
+copy in the same write, and admission logic reads them through
+`functions/src/domain/events/eventCohortCounts.ts`. Organisers keep only what
+the admission policy needs: gender totals stay on the event. Every booking write
+removes a cohort an older write left on the booking, and every offer write
+removes one left on the offer. `tool/data/move_booking_cohorts.mjs` and
+`tool/data/move_event_cohort_counts.mjs` move the copies older writes left. The Host ops CSV has no cohort column, and an
+organiser's hosts in an event chat never receive a guest's sensitive
+mini-profile answers (gender, age, relationship goal, drinking, smoking,
+children), even when the guest shared them with the other guests.
+
 ### Standalone Host Operational Attendees
 
 `eventAttendees` is the Host operations roster. It complements rather than
@@ -4150,7 +4177,7 @@ to private-profile fields or another organizer's records.
 | Canonical organizer | `organizers/{organizerId}` | Readable only by the organizer's hosts, owner and active `organizerTeamMemberships` members (#1221). Lists return only the reader's own organizers. Never a guest read path. |
 | Public organizer projection | `publicOrganizers/{organizerId}` | Server-derived allowlist of `organizers/{organizerId}` (#1221). Guest-facing reads use it: anyone may get one by id, and lists return only discoverable rows. Organizers whose website page is published have one too, with `publicPagePath`, which the website account page reads for names and links. The apps fall back to it when a canonical read is denied. Contact details, host defaults, provenance, intake, admin search, ownership and claim stay on the canonical document. |
 | Portable application prefill | `participantIntakeProfiles/{uid}` | Participant-private, reviewed values for lower-friction future applications. It neither overwrites `users` nor becomes organizer-visible merely by existing. |
-| Organizer application snapshot | `organizerApplicationResponses/{responseId}` plus `participantOrganizerDataGrants/{grantId}` | Exact questions answered for one application and the exact question/field grant receipt. This is the only application-field slice available to that organizer. |
+| Organizer application snapshot | `organizerApplicationResponses/{responseId}` for imported applications; the submitted `organizerFormResponses/{responseId}` and its immutable `organizerFormVersions` for generic forms | The exact questions answered for one application and the per-question consent recorded with them. This is the only application-field slice available to that organizer. No separate grant document exists: the participant application flow that wrote `participantOrganizerDataGrants` was retired in #1679. |
 | Organizer CRM/customer history | `organizerContacts` and its organizer-scoped event, note, trait, campaign, and commerce projections | Facts the organizer acquired through its own events and workflows. It must not be hydrated from private `users` fields merely because an identity link exists. |
 | Platform reconciliation | Server-side joins across the preceding stores | Catch may resolve the same authenticated person across organizers, but employee-facing reads must remain purpose-scoped, role-gated, masked where possible, and audited. There is no universal raw-PII client projection. |
 
@@ -5835,8 +5862,8 @@ reviewed again before every submission. Authentication proves ownership of the
 private suggestions; it grants the organizer nothing. Portable intake is
 separate from `users/{uid}` and cannot overwrite an existing Consumer profile.
 An organizer receives only the exact
-fields and purpose recorded by
-`participantOrganizerDataGrants/{grantId}` for that application/response; a
+fields and purpose recorded with that application's response (the snapshot
+and its per-question consent; there is no separate grant document); a
 global phone or email
 identity never implies cross-organizer visibility. Organizer-proprietary
 questions such as a preferred cocktail remain in that organizer's application

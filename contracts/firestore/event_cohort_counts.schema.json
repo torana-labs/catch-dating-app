@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_cohort_counts.schema.json",
+  "title": "EventCohortCountsDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "description": "Server-only booking totals by cohort for one event, at eventCohortCounts/{eventId}. A cohort (menInterestedInWomen, womenInterestedInMen, queerOrOpen, nonBinaryOrOther) encodes gender and who a guest is interested in, and on a small event a per-cohort total can point to one person's orientation. Organisers read events/{eventId}, so the totals the admission policy needs live here (#2493). Gender totals stay on the event. No client and no organiser reads it.",
+  "x-firestore-collection": "eventCohortCounts",
+  "x-firestore-path": "eventCohortCounts/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "events-owned counter writes (functions/src/domain/events/eventDocumentWrites.ts), in the transaction of each booking, waitlist, offer or pair-hold command",
+  "required": [
+    "eventId",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "cohortCounts": {
+      "type": "object",
+      "description": "Booked places by cohort.",
+      "additionalProperties": {
+        "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "waitlistedCohortCounts": {
+      "type": "object",
+      "description": "Waitlisted guests by cohort.",
+      "additionalProperties": {
+        "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "crossPathsPairHeldCohortCounts": {
+      "type": "object",
+      "description": "Cross Paths pair holds by the requester's cohort.",
+      "additionalProperties": {
+        "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}
