@@ -32,10 +32,13 @@ function copyDataValue<T>(value: T): T {
 
 class FakeDocSnapshot {
   private readonly value: FakeData | undefined;
+  /** The document's update time, as stale-event guards compare it. */
+  readonly updateTime: {seconds: number; nanoseconds: number} | undefined;
   constructor(readonly id: string,
     readonly ref: FakeDocRef,
     value: FakeData | undefined) {
     this.value = copyDataValue(value);
+    this.updateTime = ref.firestore.updateTimeOf(ref.path);
   }
   get exists() {
     return this.value !== undefined;
@@ -184,6 +187,7 @@ export class FakeFirestore {
   readonly docs: Map<string, FakeData>;
   private autoCounter = 0;
   private version = 0;
+  private readonly updateTimes = new Map<string, number>();
   transactionCommits = 0;
   beforeCommit?: () => Promise<void>;
   nextAutoId(): string {
@@ -209,6 +213,13 @@ export class FakeFirestore {
   setDoc(path: string, data: FakeData) {
     this.docs.set(path, copyDataValue(data));
     this.version++;
+    this.updateTimes.set(path, this.version);
+  }
+  /** The document's update time; every write moves it forward. */
+  updateTimeOf(path: string) {
+    const version = this.updateTimes.get(path);
+    return version === undefined || !this.docs.has(path) ? undefined :
+      {seconds: version, nanoseconds: 0};
   }
   createDoc(path: string, data: FakeData) {
     if (this.docs.has(path)) {
@@ -225,6 +236,7 @@ export class FakeFirestore {
     }
     this.docs.set(path, next);
     this.version++;
+    this.updateTimes.set(path, this.version);
   }
   deleteDoc(path: string) {
     if (!this.docs.delete(path)) {

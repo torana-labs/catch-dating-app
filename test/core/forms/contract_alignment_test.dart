@@ -7,12 +7,11 @@ import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../organizers/organizers_test_helpers.dart';
 
 void main() {
   final l10n = AppLocalizationsEn();

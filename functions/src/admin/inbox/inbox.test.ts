@@ -8,8 +8,15 @@ import {BRAND} from "../../shared/generated/brand";
 import {schemaErrorMessages} from "../../shared/generated/schemaValidationRuntime";
 import type {AdminListInboxItemsCallableResponse} from "../../shared/generated/adminListInboxItemsCallableResponse";
 import type {AdminGetInboxItemCallableResponse} from "../../shared/generated/adminGetInboxItemCallableResponse";
-import {ListingEventFacts, projectInboxSource, projectListingEvent} from "./model";
-import {syncInboxProjection, syncInboxSource} from "./store";
+import {
+  INBOX_ITEMS_COLLECTION,
+  ListingEventFacts,
+  inboxItemId,
+  projectInboxSource,
+  projectListingEvent,
+  sourceCollections,
+} from "./model";
+import {syncInboxProjection, syncInboxSource, syncInboxSourceFromStore} from "./store";
 import {
   adminGetInboxItemHandler,
   adminListInboxItemsHandler,
@@ -357,6 +364,42 @@ test("a sales associate reads only what they nominated", async () => {
   const own = await adminGetInboxItemHandler(h.request({itemId: "supply-req-1"}, {salesStaff: true}, "riya"), h.deps);
   assert.equal(own.canWork, false);
   await assert.rejects(adminGetInboxItemHandler(h.request({itemId: "supply-req-1"}, {salesStaff: true}, "karan"), h.deps), /not found/);
+});
+
+test("a trigger projects the stored source, and a stale delivery leaves the newer item (#2472)", async () => {
+  const {db, firestore} = harness();
+  const context = async () => ({organizerName: "Brindle Club", organizerCity: "in-mh-mumbai", personName: "Meher"});
+  const sourcePath = `${sourceCollections.supplyIntakeRequest}/req-1`;
+  const itemPath = `${INBOX_ITEMS_COLLECTION}/${inboxItemId("supplyIntakeRequest", "req-1")}`;
+  const sync = (version: ReturnType<typeof db.updateTimeOf> | null) =>
+    syncInboxSourceFromStore(firestore, "supplyIntakeRequest", "req-1", version as never, now, context);
+  const renamed = (name: string) => {
+    const doc = nomination("req-1");
+    return {...doc, request: {...doc.request, seed: {...doc.request.seed, name}}};
+  };
+  db.write(sourcePath, renamed("Moonmoth"));
+  const first = db.updateTimeOf(sourcePath);
+  db.write(sourcePath, renamed("Moonmoth Social"));
+  const second = db.updateTimeOf(sourcePath);
+
+  // The newer write's event lands first; the older one's after it.
+  const newer = await sync(second);
+  assert.equal(newer.result.outcome, "written");
+  assert.equal((newer.data?.request as {seed: {name: string}}).seed.name, "Moonmoth Social");
+  const stale = await sync(first);
+  assert.deepEqual(stale, {result: {itemId: inboxItemId("supplyIntakeRequest", "req-1"), outcome: "skipped", addedSteps: 0},
+    data: undefined});
+  assert.equal(db.read(itemPath)?.title, "Moonmoth Social");
+
+  // A delete event removes the item; a late write event for a gone source
+  // projects nothing from its payload.
+  db.remove(sourcePath);
+  await sync(null);
+  const removed = db.read(itemPath);
+  await sync(second);
+  assert.deepEqual(db.read(itemPath), removed);
+  assert.equal(removed?.title, "Moonmoth Social");
+  assert.notEqual(removed?.status, "waiting");
 });
 
 test("the nightly reconcile projects every source and the people index, and a rerun changes nothing", async () => {

@@ -7,12 +7,11 @@ import 'package:catch_dating_app/pages/organizer/organizer_detail_view_model.dar
 import 'package:catch_dating_app/pages/organizer/widgets/organizer_detail_body.dart';
 import 'package:catch_dating_app/pages/organizer/widgets/organizer_host_section.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'organizers_test_helpers.dart';
 
 void main() {
   testWidgets('loading preview uses the consumer initial-club fallback', (

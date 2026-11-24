@@ -10,13 +10,14 @@ import 'package:catch_dating_app/events/presentation/saved_events_state.dart';
 import 'package:catch_dating_app/pages/event/tiles/event_tile_data.dart';
 import 'package:catch_platform/routing/route_contract.dart' as app_router;
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart'
+    as organizer_test;
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../organizers/organizers_test_helpers.dart' as organizer_test;
 import 'events_test_helpers.dart';
 
 void main() {

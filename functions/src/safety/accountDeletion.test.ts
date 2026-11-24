@@ -17,8 +17,17 @@ import {
   requestAccountDeletionHandler,
   storagePathFromDownloadUrl,
 } from "./accountDeletion";
+import {createAccountDeletionHarness as createHarness, deleteRunnerOne,
+  type FakeDocumentData} from "./accountDeletionTestHarness";
 import {withEventSeatLedgers} from
   "../events/seatAuthority/eventSeatLedgerTestSupport";
+
+/** The harness with every seeded event's seat ledger. */
+function createAccountDeletionHarness(
+  params: Parameters<typeof createHarness>[0]
+) {
+  return createHarness({...params, seedSupport: withEventSeatLedgers});
+}
 
 test(
   "storagePathFromDownloadUrl extracts Firebase Storage object paths",
@@ -359,18 +368,12 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
       "crossPathsShowcaseEligibility/runner-1"
     )
   );
-  assert.ok(
-    harness.setWrites.some((write) =>
-      write.path === "organizerFollows/club-1_runner-1" &&
-      write.data.status === "inactive"
-    )
-  );
-  assert.ok(
-    harness.updateWrites.some((write) =>
-      write.path === "organizers/club-1" &&
-      write.data.followerCount !== undefined
-    )
-  );
+  // The follow edge is deleted; syncOrganizerFollowerStats recounts.
+  assert.ok(harness.deletedPublicDocs.includes(
+    "organizerFollows/club-1_runner-1"));
+  assert.ok(!harness.updateWrites.some((write) =>
+    write.path === "organizers/club-1" &&
+    write.data.followerCount !== undefined));
   assert.ok(
     harness.updateWrites.some((write) =>
       write.path === "organizerContacts/contact-1" &&
@@ -786,219 +789,6 @@ test("the users tombstone replaces the profile with a fixed key set (#2443)",
       now as unknown as FirebaseFirestore.FieldValue));
   });
 
-type FakeDocumentData = Record<string, unknown>;
-
-interface FakeDocumentReference {
-  id: string;
-  path: string;
-  collectionPath: string;
-  docId: string;
-  ref: FakeDocumentReference;
-  data: () => FakeDocumentData | undefined;
-  get: () => Promise<{
-    exists: boolean;
-    data: () => FakeDocumentData | undefined;
-  }>;
-  set: (data: FakeDocumentData, options?: {merge: boolean}) => Promise<void>;
-}
-
-interface SetWrite {
-  path: string;
-  data: FakeDocumentData;
-  options?: {merge: boolean};
-}
-
-interface UpdateWrite {
-  path: string;
-  data: FakeDocumentData;
-}
-
-function createAccountDeletionHarness(params: {
-  seed: Record<string, FakeDocumentData>;
-  now: unknown;
-  beforeTransaction?: () => void;
-}) {
-  const setWrites: SetWrite[] = [];
-  const updateWrites: UpdateWrite[] = [];
-  const deletedPublicDocs: string[] = [];
-  const deletedAuthUsers: string[] = [];
-  const deletedStorageFiles: string[] = [];
-  let commits = 0;
-  // Every event has its seat ledger. Tests change the seed in place.
-  const seed = Object.assign(params.seed, withEventSeatLedgers(params.seed));
-
-  const docFor = (
-    collectionPath: string,
-    docId: string
-  ): FakeDocumentReference => {
-    const path = `${collectionPath}/${docId}`;
-    const ref = {
-      id: docId,
-      path,
-      collectionPath,
-      docId,
-      data: () => seed[path],
-      get: async () => ({
-        exists: seed[path] !== undefined,
-        data: () => seed[path],
-      }),
-      set: async (data: FakeDocumentData, options?: {merge: boolean}) => {
-        setWrites.push({path, data, options});
-        seed[path] = options?.merge ? {...seed[path], ...data} : data;
-      },
-    } as FakeDocumentReference;
-    ref.ref = ref;
-    return ref;
-  };
-
-  const queryFor = (
-    collectionPath: string,
-    docs: FakeDocumentReference[] = allDocs(collectionPath)
-  ) => ({
-    where: (field: string, op: string, value: unknown) => {
-      assert.ok(op === "==" || op === "array-contains");
-      return queryFor(
-        collectionPath,
-        docs.filter((doc) => {
-          const fieldValue = seed[doc.path]?.[field];
-          if (op === "array-contains") {
-            return Array.isArray(fieldValue) && fieldValue.includes(value);
-          }
-          return fieldValue === value;
-        })
-      );
-    },
-    get: async () => ({
-      docs,
-      forEach: (callback: (doc: FakeDocumentReference) => void) => {
-        docs.forEach(callback);
-      },
-    }),
-    limit: (count: number) => queryFor(collectionPath,
-      docs.slice(0, count)),
-  });
-
-  const allDocs = (collectionPath: string): FakeDocumentReference[] =>
-    Object.keys(seed)
-      .filter((path) => path.startsWith(`${collectionPath}/`))
-      .filter((path) => {
-        const rest = path.substring(collectionPath.length + 1);
-        return !rest.includes("/");
-      })
-      .map((path) => {
-        const segments = path.split("/");
-        return docFor(collectionPath, segments[segments.length - 1]);
-      });
-
-  const collectionGroupDocs = (collectionId: string): FakeDocumentReference[] =>
-    Object.keys(seed)
-      .filter((path) => {
-        const segments = path.split("/");
-        return segments.length >= 2 &&
-          segments[segments.length - 2] === collectionId;
-      })
-      .map((path) => {
-        const segments = path.split("/");
-        return docFor(
-          segments.slice(0, segments.length - 1).join("/"),
-          segments[segments.length - 1]
-        );
-      });
-
-  const firestore = {
-    collection: (collectionPath: string) => ({
-      doc: (docId: string) => ({
-        ...docFor(collectionPath, docId),
-        collection: (subcollectionPath: string) => queryFor(
-          `${collectionPath}/${docId}/${subcollectionPath}`
-        ),
-      }),
-      where: queryFor(collectionPath).where,
-      get: queryFor(collectionPath).get,
-    }),
-    collectionGroup: (collectionId: string) =>
-      queryFor(collectionId, collectionGroupDocs(collectionId)),
-    runTransaction: async <T>(callback: (
-      tx: FirebaseFirestore.Transaction) => Promise<T>): Promise<T> => {
-      params.beforeTransaction?.();
-      const pending: Array<() => void> = [];
-      const tx = {
-        get: async (source: {get: () => Promise<unknown>}) => {
-          assert.equal(pending.length, 0, "transaction reads precede writes");
-          return source.get();
-        },
-        set: (ref: FakeDocumentReference, data: FakeDocumentData,
-          options?: {merge: boolean}) => pending.push(() => {
-          setWrites.push({path: ref.path, data, options});
-          seed[ref.path] = options?.merge ? {...seed[ref.path], ...data} : data;
-        }),
-        update: (ref: FakeDocumentReference, data: FakeDocumentData) =>
-          pending.push(() => {
-            assert.ok(seed[ref.path]);
-            updateWrites.push({path: ref.path, data});
-            seed[ref.path] = {...seed[ref.path], ...data};
-          }),
-        create: (ref: FakeDocumentReference, data: FakeDocumentData) =>
-          pending.push(() => {
-            assert.equal(seed[ref.path], undefined);
-            setWrites.push({path: ref.path, data});
-            seed[ref.path] = data;
-          }),
-      } as unknown as FirebaseFirestore.Transaction;
-      const result = await callback(tx);
-      pending.forEach((write) => write());
-      return result;
-    },
-    batch: () => ({
-      set: (
-        ref: FakeDocumentReference,
-        data: FakeDocumentData,
-        options?: {merge: boolean}
-      ) => setWrites.push({path: ref.path, data, options}),
-      update: (
-        ref: FakeDocumentReference,
-        data: FakeDocumentData
-      ) => updateWrites.push({path: ref.path, data}),
-      delete: (ref: FakeDocumentReference) => deletedPublicDocs.push(ref.path),
-      commit: async () => {
-        commits += 1;
-      },
-    }),
-  } as unknown as FirebaseFirestore.Firestore;
-
-  const auth = {
-    deleteUser: async (uid: string) => {
-      deletedAuthUsers.push(uid);
-    },
-  } as unknown as admin.auth.Auth;
-
-  const storageBucket = {
-    file: (path: string) => ({
-      delete: async () => {
-        deletedStorageFiles.push(path);
-      },
-    }),
-  } as unknown as ReturnType<ReturnType<typeof admin.storage>["bucket"]>;
-
-  return {
-    deps: {
-      auth: () => auth,
-      firestore: () => firestore,
-      storageBucket: () => storageBucket,
-      serverTimestamp: () => params.now as FirebaseFirestore.FieldValue,
-    },
-    setWrites,
-    updateWrites,
-    deletedPublicDocs,
-    deletedAuthUsers,
-    deletedStorageFiles,
-    rows: seed,
-    get commits() {
-      return commits;
-    },
-  };
-}
-
 function hasOwn(data: FakeDocumentData, field: string): boolean {
   return Object.prototype.hasOwnProperty.call(data, field);
 }
@@ -1080,8 +870,12 @@ function readySeatSeed(options: {host?: boolean; catchMirror?: boolean;
 }
 
 test("ready account deletion releases the last seat exactly once", async () => {
-  const h = createAccountDeletionHarness({seed: readySeatSeed({
-    catchMirror: true, status: "attended"}), now: {kind: "serverTimestamp"}});
+  const seed = readySeatSeed({catchMirror: true, status: "attended"});
+  // The booking cohort (sexual orientation) goes with the account (#2493).
+  seed["eventBookingPrivateFacts/event1_runner1"] = {eventId: "event1",
+    uid: "runner1", cohortAtSignup: "queerOrOpen"};
+  const h = createAccountDeletionHarness({seed,
+    now: {kind: "serverTimestamp"}});
   const command = {db: h.deps.firestore(), uid: "runner1",
     now: admin.firestore.FieldValue.serverTimestamp(),
     nowMillis: 1000};
@@ -1099,6 +893,7 @@ test("ready account deletion releases the last seat exactly once", async () => {
     "event1", "runner1")}`].state, "revoked");
   assert.equal(h.rows["eventBookings/event1_runner1"].status,
     "deleted");
+  assert.equal(h.rows["eventBookingPrivateFacts/event1_runner1"], undefined);
   assert.equal(Object.keys(h.rows).filter((path) =>
     path.startsWith("eventSeatRequestReceipts/")).length, 1);
   await deleteAccountEventParticipations(command);
@@ -1370,16 +1165,6 @@ test("full account deletion releases its pair hold before retiring UID proof",
   });
 
 /** Runs a full deletion of runner-1 over the seed and returns the harness. */
-async function deleteRunnerOne(seed: Record<string, FakeDocumentData>) {
-  const harness = createAccountDeletionHarness({
-    seed: {"users/runner-1": {name: "Asha"}, ...seed},
-    now: {kind: "serverTimestamp"},
-  });
-  await requestAccountDeletionHandler({auth: {uid: "runner-1"}} as
-    Parameters<typeof requestAccountDeletionHandler>[0], harness.deps);
-  return harness;
-}
-
 test("deletion deletes the account's access grants only (#2474)",
   async () => {
     const harness = await deleteRunnerOne({

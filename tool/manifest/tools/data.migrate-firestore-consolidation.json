@@ -6,16 +6,19 @@
   "surface": "remote-write",
   "guard": "apply-and-prod-flag",
   "status": "active",
-  "description": "Copies documents from retired collections into their November 2026 consolidation replacements; never deletes or overwrites.",
+  "description": "Copies documents from retired collections into their November 2026 consolidation replacements; never deletes or overwrites; each applied run leaves a dataToolRuns record.",
   "checks": [
     "node --check tool/data/migrate_firestore_consolidation.mjs",
-    "npm --prefix functions run build && node --test tool/data/migrate_firestore_consolidation.test.mjs"
+    "npm --prefix functions run build && node --test tool/data/migrate_firestore_consolidation.test.mjs tool/data/migrate_firestore_consolidation_run_record.test.mjs"
   ],
   "impactPaths": [
     "tool/data/migrate_firestore_consolidation.test.mjs",
     "tool/data/lib/firestore_consolidation_migrations.mjs",
     "tool/data/lib/copy_forward.mjs",
-    "functions/src/events/eventPolicy.ts"
+    "functions/src/events/eventPolicy.ts",
+    "tool/data/migrate_firestore_consolidation_run_record.test.mjs",
+    "tool/data/lib/run_record.mjs",
+    "tool/data/lib/run_record_test_support.mjs"
   ],
   "role": "generator",
   "runbook": "docs/data_contracts.md#organizer-communication-preferences-and-crm"
