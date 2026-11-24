@@ -56,6 +56,34 @@ should be repairable from edge/source documents.
 | HTTP Function | External web/client POST endpoint. | CORS, validation, rate limiting, server writes. |
 | Server/Admin Only | No client write surface. | Firestore rules deny client writes. |
 
+### Callable authorisation policy
+
+Every callable states who may call it (STR-10, #2532). Build it with
+`callable(spec)` or `callableWithLimits(limits, spec)` from
+`functions/src/platform/callables/callable.ts`. The spec's `policy` and `input`
+validator are required, and the policies are in `policies.ts`:
+
+| Policy | Admits |
+|---|---|
+| `signedIn` | Any signed-in account; the handler owns further checks. |
+| `adminRoles(roles)` | A Catch admin with one of the listed role claims. |
+| `organizerManager(select)` | An owner or manager of the organiser named in the payload. |
+| `publicCallable(reason)` | Anyone; the reason says why the endpoint is open. |
+| `customPolicy(name, …)` | A named check with no shared policy yet (inside a transaction, a guest secret, a signed link). |
+
+The wrapper runs the policy's request check before validating the payload, then
+the payload check, then the handler. Rate limits stay literal `checkRateLimit`
+calls inside the handler.
+
+#### Phase: every callable uses callable()
+
+`audit:callable-policy` (a merge-queue gate) lists every callable still built
+with a raw `onCall` by export name, in `tool/audit/callable_policy_baseline.json`.
+A new raw callable fails, and so does a listed name that is converted or gone,
+so the list only shrinks. The phase ends when the list is empty. Callables are
+converted one context at a time: admin callables first, then organiser-manager,
+then signed-in guest, then public ones.
+
 ## Product commands
 
 `contracts/commands/catalog.json` lists the commands that the website try-it
