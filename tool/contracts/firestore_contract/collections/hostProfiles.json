@@ -7,7 +7,7 @@
   "owner": "professional host identity owned by the authenticated host; seeded and projected by organizer/profile functions",
   "writerContext": "organizers",
   "read": "public",
-  "write": "authenticated owner direct create/update; server functions may seed and project host display data",
+  "write": "authenticated owner direct create/update of displayName, roleTitle, bio, status and timestamps; verified, linkedOrganizerIds and avatarUrl are server-owned; server functions may seed and project host display data",
   "exportedFunctions": [
     "syncHostProfile",
     "requestAccountDeletion"
@@ -18,7 +18,8 @@
       "type": "directCreateOrUpdate",
       "owner": "authenticated owner",
       "rulesMustContain": [
-        "isValidHostProfile"
+        "isValidHostProfile",
+        "hostProfileServerOwnedFields"
       ]
     },
     {
