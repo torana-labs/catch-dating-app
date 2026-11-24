@@ -17,7 +17,6 @@
     "onEventChatDirectoryParticipationWritten",
     "onEventChatDirectoryAttendeeWritten",
     "onEventChatDirectoryRoomWritten",
-    "onEventChatDirectoryEventWritten",
     "dispatchEvents",
     "onEventChatDirectoryUserWritten",
     "requestAccountDeletion"

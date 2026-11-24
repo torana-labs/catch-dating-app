@@ -2741,8 +2741,8 @@ private events.
 Everyone else reads `publicEvents/{eventId}`
 ([schema](../contracts/firestore/public_events.schema.json)), which
 `reconcilePublicEvent` (`functions/src/events/publicEventProjection.ts`)
-rewrites from the `onEventGuestEntryEventWritten` trigger on every event
-write. It copies an allowlist of event fields under the same names, so the
+rewrites from the `eventGuestEntries` projection of `dispatchEvents` on every
+event write. It copies an allowlist of event fields under the same names, so the
 apps decode it with the same `Event` model, and applies the host's settings on
 the server:
 
@@ -6740,9 +6740,10 @@ Two triggers keep it current, each rereading its source inside a transaction
 and writing only `organizerSummary`, and only when it differs (no `updatedAt`,
 no other field), so a summary write cannot start another one:
 
-- the event trigger (`syncOrganizerNextEvent`) writes it when the event is
-  created, its `organizerId` changes, or the summary is missing; it skips every
-  other event write, booking counters included;
+- the events dispatcher's `organizerNextEvent` projection (`dispatchEvents`)
+  writes it when the event is created, its `organizerId` changes, or the
+  summary is missing; it skips every other event write, booking counters
+  included;
 - the organizer dispatcher's `publicOrganizer` projection
   (`dispatchOrganizers`) rewrites it when a change to the public projection
   alters a field the summary holds, or when the organizer write itself moves

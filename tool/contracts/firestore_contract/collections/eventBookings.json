@@ -22,7 +22,6 @@
     "fetchSwipeCandidates",
     "requestAccountDeletion",
     "onHostRequestViewParticipationWritten",
-    "onHostRequestViewEventWritten",
     "dispatchEvents",
     "onHostRequestViewProfileWritten",
     "onHostRequestViewContactSummaryWritten",

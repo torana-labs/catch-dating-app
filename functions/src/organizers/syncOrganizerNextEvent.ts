@@ -1,4 +1,3 @@
-import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import type {
   EventDocument,
@@ -115,17 +114,10 @@ export async function syncOrganizerNextEventWrite(eventId: string,
   await syncOrganizerNextEventHandler(before, after);
 }
 
-export const syncOrganizerNextEvent = onDocumentWritten(
-  {document: "events/{eventId}", retry: true},
-  (event) => syncOrganizerNextEventWrite(event.params.eventId,
-    event.data?.before.data() as EventDocument | undefined,
-    event.data?.after.data() as EventDocument | undefined));
-
 /**
  * An event write: its organizer summary and next-event projection.
- * The events dispatcher (issue #2451) runs the same work; both run until
- * the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const organizerNextEventProjections = defineProjections("events", [{
   id: "organizerNextEvent", kind: "projection",

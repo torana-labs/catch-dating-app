@@ -14,7 +14,6 @@
   "write": "server only; written by every committed evaluation and deleted with the organizer",
   "exportedFunctions": [
     "dispatchOrganizers",
-    "onOrganizerAttentionEventChanged",
     "dispatchEvents",
     "onOrganizerAttentionParticipationChanged",
     "onOrganizerAttentionAssistanceCaseChanged",

@@ -7,7 +7,6 @@ export {
   onGuestEventStatusPaymentWritten,
   onGuestEventStatusApplicationWritten,
   onGuestEventStatusOfferRecipientWritten,
-  onEventGuestEntryEventWritten,
   onEventGuestEntryFormWritten,
   onSavedEventCardCreated,
 } from "./triggers";

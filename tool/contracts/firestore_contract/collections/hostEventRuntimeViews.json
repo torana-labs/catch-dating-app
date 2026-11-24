@@ -13,7 +13,6 @@
   "read": "current organizer managers get their own organizer's views by id; nobody lists the collection",
   "write": "server only; one per event with an eventFormat and an endTime, deleted with the event",
   "exportedFunctions": [
-    "onHostGuestViewEventChanged",
     "dispatchEvents",
     "onHostGuestViewPlanChanged",
     "onHostGuestViewAttendeeChanged",

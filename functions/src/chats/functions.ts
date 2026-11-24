@@ -11,8 +11,10 @@ export {listEventChatParticipants} from "./listEventChatParticipants";
 export {listEventChatMessages} from "./listEventChatMessages";
 export {getEventChatProfileSharing, updateEventChatProfileSharing,
   getEventChatProfile} from "./eventChatProfiles";
-export {onEventChatDirectoryMembershipWritten,
+export {
+  onEventChatDirectoryMembershipWritten,
   onEventChatDirectoryParticipationWritten,
-  onEventChatDirectoryAttendeeWritten, onEventChatDirectoryRoomWritten,
-  onEventChatDirectoryEventWritten, onEventChatDirectoryUserWritten} from
-  "./eventChatDirectory";
+  onEventChatDirectoryAttendeeWritten,
+  onEventChatDirectoryRoomWritten,
+  onEventChatDirectoryUserWritten,
+} from "./eventChatDirectory";

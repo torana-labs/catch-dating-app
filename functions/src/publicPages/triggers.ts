@@ -104,16 +104,10 @@ async function rebuildForEventWrite(eventId: string, before: Raw,
   await rebuildAll(ids, "event");
 }
 
-export const onPublicPageEventWritten = onDocumentWritten({
-  ...options, document: "events/{eventId}",
-}, (event) => rebuildForEventWrite(event.params.eventId,
-  event.data?.before.data() as Raw, event.data?.after.data() as Raw));
-
 /**
  * An event write that changes its public page contribution.
- * The events dispatcher (issue #2451) runs the same work; both run until
- * the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const publicPageEventProjections = defineProjections("events", [{
   id: "publicPages", kind: "projection", timeoutSeconds: 300,

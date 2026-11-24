@@ -9,7 +9,6 @@ export {
 } from "./organizerConversations";
 export {syncOrganizerFollowerStats} from
   "./syncOrganizerFollowerStats";
-export {syncOrganizerNextEvent} from "./syncOrganizerNextEvent";
 export {syncExternalEventVisibility} from
   "./externalEventVisibility";
 export {updateOrganizer} from "./mutateOrganizer";

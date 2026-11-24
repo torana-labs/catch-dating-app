@@ -142,15 +142,11 @@ export const onHostEventCaseViewCaseChanged = onDocumentWritten({
 export const onHostEventCaseViewAttendeeChanged = onDocumentWritten({
   ...options, document: "eventAttendees/{documentId}",
 }, (event) => reconcileForWrite("eventAttendees", event));
-export const onHostEventCaseViewEventChanged = onDocumentWritten({
-  ...options, document: "events/{documentId}",
-}, (event) => reconcileForWrite("events", event));
 
 /**
  * An event's organizer, status or end: its open case views.
- * The events dispatcher (issue #2451) runs the same work; both run until
- * the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const hostEventCaseViewEventProjections = defineProjections("events", [{
   id: "hostEventCaseView", kind: "projection",

@@ -13,7 +13,6 @@
   "read": "current managers of an active organizer get their event's document; a view not written yet reads as missing; nobody lists the collection",
   "write": "server only; written by every evaluation that changes it and deleted with the event or its setupRevision",
   "exportedFunctions": [
-    "onHostEventSetupViewEventChanged",
     "dispatchEvents",
     "onHostEventSetupViewPreferencesChanged",
     "dispatchOrganizers",

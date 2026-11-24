@@ -14,7 +14,6 @@
   "write": "server only; rewritten from the event, its waitlisted participations, public profiles, contacts and contact summaries, and deleted when nobody waits or the event is not active or over",
   "exportedFunctions": [
     "onHostRequestViewParticipationWritten",
-    "onHostRequestViewEventWritten",
     "dispatchEvents",
     "onHostRequestViewProfileWritten",
     "onHostRequestViewContactSummaryWritten",

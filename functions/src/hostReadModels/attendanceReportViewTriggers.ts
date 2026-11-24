@@ -89,21 +89,10 @@ export const onHostEventAttendanceReportDispositionWritten =
     }
   });
 
-/** An event cancelled, moved or deleted. */
-export const onHostEventAttendanceReportEventWritten = onDocumentWritten({
-  ...options, document: "events/{eventId}",
-}, async (event) => {
-  if (!attendanceReportEventChanged(event.data?.before.data(),
-    event.data?.after.data())) return;
-  await reconcileHostEventAttendanceReport(admin.firestore(),
-    event.params.eventId);
-});
-
 /**
  * An event cancelled, moved or deleted: its attendance report view.
- * The events dispatcher (issue #2451) runs the same work; both run until
- * the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const hostAttendanceReportEventProjections = defineProjections(
   "events", [{

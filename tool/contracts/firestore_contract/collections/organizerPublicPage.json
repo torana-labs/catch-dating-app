@@ -14,7 +14,6 @@
   "write": "server only; rebuilt from published organizer, event, imported event and review sources by functions/src/publicPages",
   "exportedFunctions": [
     "dispatchOrganizers",
-    "onPublicPageEventWritten",
     "dispatchEvents",
     "onPublicPageExternalEventWritten",
     "onPublicPageReviewWritten",

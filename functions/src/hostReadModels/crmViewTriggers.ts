@@ -68,21 +68,10 @@ export const onHostAudienceSourceViewVersionChanged = onDocumentWritten({
   await audienceSources(before, after);
 });
 
-/** An event made, renamed, moved or deleted; other event writes skip. */
-export const onHostAudienceSourceViewEventChanged = onDocumentWritten({
-  ...options, document: "events/{eventId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (same(before, after, ["organizerId", "name"])) return;
-  await audienceSources(before, after);
-});
-
 /**
  * An event made, renamed, moved or deleted: its organizers' sources.
- * The events dispatcher (issue #2451) runs the same work; both run until
- * the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const hostAudienceSourceEventProjections = defineProjections("events", [{
   id: "hostAudienceSourceView", kind: "projection",

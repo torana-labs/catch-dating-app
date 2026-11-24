@@ -21,7 +21,6 @@
     "markEventAttendance",
     "selfCheckInAttendance",
     "onHostRequestViewParticipationWritten",
-    "onHostRequestViewEventWritten",
     "dispatchEvents",
     "onHostRequestViewProfileWritten",
     "onHostRequestViewContactSummaryWritten",

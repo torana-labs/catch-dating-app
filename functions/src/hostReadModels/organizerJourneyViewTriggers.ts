@@ -126,16 +126,10 @@ export const onHostOrganizerJourneyViewIntakeChanged = onDocumentWritten({
   ...options, document: "supplyIntakeRequests/{documentId}",
 }, (event) => reconcileForWrite("supplyIntakeRequests", event));
 
-/** The organizer's earliest event is its first-event step. */
-export const onHostOrganizerJourneyViewEventChanged = onDocumentWritten({
-  ...options, document: "events/{documentId}",
-}, (event) => reconcileForWrite("events", event));
-
 /**
  * An event write: its organizer's journey steps.
- * The events dispatcher (issue #2451) runs the same work; both run until
- * the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const hostOrganizerJourneyViewEventProjections = defineProjections(
   "events", [{

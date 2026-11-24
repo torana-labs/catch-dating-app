@@ -12,7 +12,6 @@
   "exportedFunctions": [
     "syncPublicProfile",
     "onHostRequestViewParticipationWritten",
-    "onHostRequestViewEventWritten",
     "dispatchEvents",
     "onHostRequestViewProfileWritten",
     "onHostRequestViewContactSummaryWritten",

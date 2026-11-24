@@ -17,7 +17,6 @@
     "onHostContactDetailViewTraitsWritten",
     "onHostContactDetailViewEdgeWritten",
     "onHostContactDetailViewPaymentWritten",
-    "onHostContactDetailViewEventWritten",
     "dispatchEvents",
     "onHostContactDetailViewMergeReceiptWritten"
   ],
