@@ -9,7 +9,9 @@ status: active
 Catch manages selected Firebase and Google Cloud settings with Terraform in
 `infra/`. A change is a pull request: CI shows the plan, a reviewer approves,
 and GitHub Actions applies the exact plan that was reviewed. Nobody applies
-from a laptop, and no service-account key exists.
+from a laptop, and no service-account key exists. The one exception is
+`infra/billing`, which the owner applies because it acts on the billing
+account (see [Billing budget and export](#billing-budget-and-export)).
 
 This is phase 1. It is deliberately narrow: it fixes phone sign-in and App
 Check for Play-installed Android builds by registering the Play App Signing
@@ -19,7 +21,9 @@ Google holds, and Firebase knew only the upload-key fingerprints.
 ## What is managed
 
 One Terraform root module, `infra/firebase`, with one state, covers dev
-and prod.
+and prod. A second root, `infra/billing`, holds the billing budget and the
+billing export dataset under its own state prefix; CI neither plans nor
+applies it.
 
 | Resource | Apps | Managed fields |
 |---|---|---|
@@ -369,6 +373,43 @@ The apply identity creates the bucket and its IAM with the
 its custom role, and the plan identity reads bucket metadata; rerun
 `infra/bootstrap/bootstrap.sh` once so the roles carry them before the first
 plan that includes the bucket.
+
+## Billing budget and export
+
+`infra/billing` (FIX-17) is a separate root module with its own state
+(`gs://catch-dating-app-64e51-terraform-state`, prefix `billing`). It holds:
+
+- **Monthly budget**: `google_billing_budget.monthly` on the billing account
+  that pays for `catch-dating-app-64e51`, for every project on that account.
+  The ceiling is ₹2,000 a month, net of credits. Emails go out at 50%, 90% and
+  100% of actual spend to the billing account's administrators and users
+  (the default budget recipients). A budget only alerts; it never caps or
+  stops a service. The billing account id is read from the project, so it
+  stays out of this public repository. The amount is in INR, so the billing
+  account must bill in INR.
+- **Billing export dataset**: `billing_export` in `catch-dating-app-64e51`
+  (`asia-south1`). Google has no API to switch the export on, so after the
+  first apply the owner selects this dataset once under **Billing → Billing
+  export → BigQuery export → Standard usage cost**.
+
+Both resources have `prevent_destroy`. The budget lives on the billing
+account, and the CI plan and apply identities deliberately hold no billing
+account role, so the owner applies this root with their own credentials. You
+need Billing Account Administrator (or Billing Account Costs Manager) on the
+account and Owner on the project:
+
+```sh
+gcloud auth application-default login
+terraform -chdir=infra/billing init
+terraform -chdir=infra/billing fmt -check
+terraform -chdir=infra/billing validate
+terraform -chdir=infra/billing plan -out=billing.tfplan
+terraform -chdir=infra/billing apply billing.tfplan
+```
+
+Commit the `.terraform.lock.hcl` that the first `init` writes. To change the
+ceiling or the thresholds, edit `locals` in `infra/billing/budget.tf` in a PR,
+then run the same plan and apply.
 
 ## What stays elsewhere
 

@@ -23,11 +23,10 @@ import 'package:catch_dating_app/pages/organizer/organizer_host_contact_controll
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
-
-import 'organizers_test_helpers.dart';
 
 part 'organizers_controller_media_reliability_tests.dart';
 

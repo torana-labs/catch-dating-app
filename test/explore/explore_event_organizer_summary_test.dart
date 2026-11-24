@@ -9,12 +9,12 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/explore/explore.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:catch_test_support/event_organizer_summary_fixture.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart' as event_test;
-import '../organizers/organizers_test_helpers.dart';
 
 /// Explore reads each event's organizer from the summary the event carries.
 /// None of these containers overrides an organizer provider, so a lookup by
