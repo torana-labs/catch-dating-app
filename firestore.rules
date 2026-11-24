@@ -948,6 +948,12 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Run records of backfill and migration tools (FIX-7): one per applied
+    // run, written by the tool with the Admin SDK; TTL deletes it.
+    match /dataToolRuns/{runId} {
+      allow read, write: if false;
+    }
+
     // Durable business-workflow state. Trusted operations workers use the
     // Admin SDK; browser and mobile clients never access these records directly.
     match /eventAssistanceSmsSenders/{senderId} {

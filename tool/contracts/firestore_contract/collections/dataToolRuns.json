@@ -1,0 +1,16 @@
+{
+  "id": "dataToolRuns",
+  "path": "dataToolRuns/{runId}",
+  "rulesMatch": "/dataToolRuns/{runId}",
+  "typescriptInterface": "DataToolRunDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "data tools (tool/data/lib/run_record.mjs)",
+  "writerContext": "platform",
+  "read": "server only; operators read it with the Admin SDK or the console",
+  "write": "server only: a backfill or migration tool under tool/data/ writes one record per applied run with the Admin SDK; deleted by the expiresAt TTL policy after 365 days",
+  "exportedFunctions": [],
+  "migrationNotes": [
+    "FIX-7. New with tool/data/lib/run_record.mjs; the first writer is tool/data/migrate_firestore_consolidation.mjs. Dry runs write nothing."
+  ]
+}
