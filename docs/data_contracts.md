@@ -7817,11 +7817,7 @@ The generic opportunity mutation requires fresh Admin Owner authority before
 receipt replay and at transaction execution; stage history retains its finance
 proof. Loss and reopening require a reason, and reopening needs a dated next step.
 
-`salesIntakeLinks` joins the exact reviewed Supply Intake candidate generation and
-curation decision to its private organizer Sales companion. Explicit identity
-selection precedes linking; retry can complete the private join after Intake
-succeeded without overwriting an existing account or publishing the organizer.
-Imports retain every reviewed cohort/source-row relationship and union cohort IDs
+Sales imports retain every reviewed cohort/source-row relationship and union cohort IDs
 once per account, fenced by the preview's account revision. Unresolved identities
 remain in offline review; neither import nor an assistant invents canonical IDs.
 
