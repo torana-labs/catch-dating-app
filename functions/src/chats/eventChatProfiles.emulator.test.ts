@@ -44,6 +44,7 @@ test(
     const person = `person-${suffix}`;
     const host = `host-${suffix}`;
     const stranger = `other-${suffix}`;
+    const peer = `peer-${suffix}`;
     const responseId = `response-${suffix}`;
     const versionId = `version-${suffix}`;
     const formId = `form-${suffix}`;
@@ -129,9 +130,10 @@ test(
         status: "open",
         revision: 1,
       });
-      for (const uid of [person, host]) {
+      for (const uid of [person, host, peer]) {
         await put("users", uid, {
-          displayName: uid === person ? "Sara" : "Host",
+          displayName: uid === person ? "Sara" : uid === peer ? "Asha" :
+            "Host",
           profileComplete: false,
           profileClaimedAt: now,
           profileRevision: 1,
@@ -168,6 +170,12 @@ test(
           status: "signedUp",
         },
       );
+      await put("eventBookings", `${eventId}_${peer}`, {
+        uid: peer,
+        eventId,
+        organizerId,
+        status: "signedUp",
+      });
       const response = await put("organizerFormResponses", responseId, {
         responseId,
         respondentUid: person,
@@ -307,7 +315,10 @@ test(
           const visible = await read();
           assert.equal(visible.displayName, preview.preview?.displayName);
           assert.equal(visible.introduction, preview.preview?.introduction);
-          assert.deepEqual(visible.coreFields, preview.preview?.coreFields);
+          // The organiser's host never receives a sensitive answer (#2493).
+          assert.deepEqual(visible.coreFields,
+            preview.preview?.coreFields.filter((field) =>
+              field.fieldId !== "age"));
           assert.deepEqual(visible.cardFields, preview.preview?.cardFields);
           await change("mute", 1);
           const muted = await read();
@@ -380,10 +391,16 @@ test(
             true,
           ]);
           revision = results[0].revision;
-          const visible = await read();
+          const visible = await read(peer);
           assert.ok(validProfile(visible));
           assert.deepEqual(visible.coreFields, [
             {fieldId: "age", value: 32},
+            {fieldId: "occupation", value: "Founder"},
+          ]);
+          // The organiser's host in the same chat gets no sensitive answer:
+          // age (and gender, relationship goal, drinking, smoking and
+          // children) are for the other guests only (#2493).
+          assert.deepEqual((await read()).coreFields, [
             {fieldId: "occupation", value: "Founder"},
           ]);
           assert.deepEqual(visible.cardFields, [
