@@ -29,7 +29,7 @@ export const DIRECT_SALES_COLLECTIONS = [
   "hostPilotEventReviews", "hostOrganizerActivations",
   "salesPartnerAssignments", "salesTasks", "salesOpportunities", "salesActivities",
   "salesEvidence", "salesEvidenceProposals", "salesInboundIntents",
-  "salesContactRelationships", "salesSuppressionDecisions", "salesIntakeLinks",
+  "salesContactRelationships", "salesSuppressionDecisions",
   "salesImportRows", "salesImportCompensations",
   "salesImportHistoryRows", "salesImportHistoryRecords",
   "salesIntelligenceAssessments", "salesIntelligenceClauses",
