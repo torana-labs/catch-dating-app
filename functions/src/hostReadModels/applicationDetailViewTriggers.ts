@@ -8,6 +8,7 @@ import {
   reconcileHostApplicationDetailView,
   reconcileHostApplicationDetailViewsForApplicant,
 } from "./applicationDetailViewStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type Data = FirebaseFirestore.DocumentData | undefined;
 const options = {retry: true};
@@ -136,3 +137,37 @@ export const onHostApplicationDetailViewMembershipWritten =
         uid);
     }
   });
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const organizerApplicationsProjections = defineProjections(
+  "organizerApplications", [
+    {
+      id: "hostApplicationDetailViewApplicationWritten", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {documentId} = change;
+        await reconcileHostApplicationDetailView(admin.firestore(),
+          documentId);
+      },
+    },
+  ]);
+
+export const organizerFormResponsesProjections = defineProjections(
+  "organizerFormResponses", [
+    {
+      id: "hostApplicationDetailViewFormResponseWritten", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after, documentId} = change;
+        if (!applicationDetailFormResponseChanged(before,
+          after)) return;
+        await reconcileHostApplicationDetailView(admin.firestore(),
+          genericFormApplicationId(documentId));
+      },
+    },
+  ]);

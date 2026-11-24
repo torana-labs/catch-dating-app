@@ -174,3 +174,83 @@ export const onProgramVendorViewChanged = onDocumentWritten({
       event.params.vendorId);
   }
 });
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const programStaffGrantsProjections = defineProjections(
+  "programStaffGrants", [
+    {
+      id: "programArrivalStaffLabelChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after} = change;
+        const programId = after?.programId ?? before?.programId;
+        const uid = after?.uid ?? before?.uid;
+        if (typeof programId !== "string" || typeof uid !== "string" ||
+          unchanged(before, after, ["displayName"])) return;
+        const db = admin.firestore();
+        await reconcileLegs(db, legsOf(db, programId)
+          .where("claimedByUid", "==", uid), {arrivals: true});
+      },
+    },
+  ]);
+
+export const programGuestsProjections = defineProjections("programGuests", [
+  {
+    id: "programArrivalGuestChanged", kind: "projection",
+    when: () => true,
+    run: async (change) => {
+      const {before, after, documentId} = change;
+      const programId = after?.programId ?? before?.programId;
+      if (typeof programId !== "string" || !programId ||
+          unchanged(before, after, ["displayName"])) return;
+      const db = admin.firestore();
+      await reconcileLegs(db, legsOf(db, programId)
+        .where("guestId", "==", documentId));
+    },
+  },
+]);
+
+export const programHotelsProjections = defineProjections("programHotels", [
+  {
+    id: "programArrivalHotelChanged", kind: "projection",
+    when: () => true,
+    run: async (change) => {
+      const {before, after, documentId} = change;
+      const programId = after?.programId ?? before?.programId;
+      if (typeof programId !== "string" || !programId ||
+          unchanged(before, after, ["name"])) return;
+      const db = admin.firestore();
+      await reconcileLegs(db, legsOf(db, programId)
+        .where("destinationHotelId", "==", documentId),
+      {arrivals: true});
+    },
+  },
+]);
+
+export const programTravelLegsProjections = defineProjections(
+  "programTravelLegs", [
+    {
+      id: "programArrivalLegChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after, documentId} = change;
+        const db = admin.firestore();
+        const legId = documentId;
+        await reconcileProgramArrivalView(db, legId);
+        await reconcileProgramDepartureView(db, legId);
+        const partyFields = ["kind", "readiness", "partyId", "guestId"];
+        if (unchanged(before, after, partyFields)) return;
+        const partyIds = new Set([before?.partyId, after?.partyId].filter(
+          (id): id is string => typeof id === "string" && id.length > 0));
+        for (const partyId of partyIds) {
+          await reconcileLegs(db, db.collection("programTravelLegs")
+            .where("partyId", "==", partyId), {arrivals: true});
+        }
+      },
+    },
+  ]);

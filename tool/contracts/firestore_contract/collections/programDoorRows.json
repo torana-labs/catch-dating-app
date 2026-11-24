@@ -16,7 +16,9 @@
     "onProgramDoorFunctionChanged",
     "onProgramDoorJoinChanged",
     "onProgramDoorGuestChanged",
-    "onProgramDoorHouseholdChanged"
+    "dispatchProgramGuests",
+    "onProgramDoorHouseholdChanged",
+    "dispatchProgramHouseholds"
   ],
   "migrationNotes": [
     "Display name, RSVP and attendance state, party size, household label and response note only; never a phone number, email or other contact field. An allGuests function has a row for every programme guest. The program-door-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone.",

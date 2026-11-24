@@ -6,6 +6,7 @@ import {
   reconcileTravelAlerts,
   reconcileTravelCounts,
 } from "./programLiveBoardViews";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true};
 
@@ -59,3 +60,31 @@ export const onProgramAlertResolutionChanged = onDocumentWritten({
   await reconcileAlertResolution(admin.firestore(), data.programId,
     data.alertId);
 });
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const programTravelLegsProjections = defineProjections(
+  "programTravelLegs", [
+    {
+      id: "programAlertLegChanged", kind: "projection",
+      when: () => true,
+      run: async (change) => {
+        const {before, after, documentId} = change;
+        const db = admin.firestore();
+        const programId = after?.programId ?? before?.programId;
+        if (typeof programId !== "string" || !programId) return;
+        const watched = (data: Data) => [data?.kind, data?.flightStatus,
+          data?.readiness, data?.flightNumber];
+        if (before && after &&
+          JSON.stringify(watched(before)) === JSON.stringify(watched(after))) {
+          return;
+        }
+        await reconcileTravelAlerts(db, programId, documentId);
+        await reconcileTravelCounts(db, programId);
+      },
+    },
+  ]);

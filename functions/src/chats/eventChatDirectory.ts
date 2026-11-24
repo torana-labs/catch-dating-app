@@ -250,3 +250,25 @@ export const onEventChatDirectoryUserWritten = onDocumentWritten({
   await refreshEventChatDirectoryEntriesFor(admin.firestore(), "uid",
     event.params.documentId);
 });
+
+/**
+ * Dispatcher specs for the triggers above (issue #2451). Each runs its
+ * trigger's body with the dispatch change in place of the event; the
+ * bodies re-read their sources, so both running is safe until the old
+ * triggers retire and these become the only copy.
+ */
+export const usersProjections = defineProjections("users", [
+  {
+    id: "eventChatDirectoryUserWritten", kind: "projection",
+    when: () => true,
+    run: async (change) => {
+      const {before, after, documentId} = change;
+      if (before && after && !changed(before, after,
+        ["displayName", "profileComplete", "profileClaimedAt", "deleted"])) {
+        return;
+      }
+      await refreshEventChatDirectoryEntriesFor(admin.firestore(), "uid",
+        documentId);
+    },
+  },
+]);

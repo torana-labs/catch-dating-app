@@ -16,6 +16,7 @@
   "exportedFunctions": [
     "onProgramPickupPointViewChanged",
     "onProgramHotelViewChanged",
+    "dispatchProgramHotels",
     "onProgramFunctionViewChanged"
   ],
   "migrationNotes": [
