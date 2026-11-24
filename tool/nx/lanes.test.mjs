@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import test from "node:test";
 import {laneForTask, queueOnlyLanes, selectNxLanes} from "./lanes.mjs";
 import {compare} from "./shadow_plan.mjs";
@@ -7,6 +8,12 @@ const select = (input) => {
   const {lanes, unmappedTasks} = selectNxLanes(input);
   return {lanes: [...lanes].sort(), unmappedTasks};
 };
+
+test("Nx is asked for the affected tasks without their dependencies", () => {
+  // A website-only change must not run Admin because the website build needs @catch/web-ui:build.
+  assert.match(fs.readFileSync(new URL("./lanes.mjs", import.meta.url), "utf8"),
+    /"nx", "affected", "-t", \.\.\.targets, [^\n]*"--excludeTaskDependencies"/u);
+});
 
 test("each Nx task selects its lane, and a task with no lane is reported", () => {
   assert.deepEqual(select({nxTasks: ["@catch/catch-admin:test", "lane-docs:lane", "mystery:build", "catch_kernel:test"],
