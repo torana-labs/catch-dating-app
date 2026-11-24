@@ -16,7 +16,6 @@
     "onGuestEventStatusParticipationWritten",
     "dispatchEventAttendees",
     "dispatchGuestPayments",
-    "onGuestEventStatusApplicationWritten",
     "dispatchOrganizerApplications",
     "onGuestEventStatusOfferRecipientWritten",
     "dispatchEvents",

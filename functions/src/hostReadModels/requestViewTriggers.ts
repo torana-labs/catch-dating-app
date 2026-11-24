@@ -129,22 +129,9 @@ export function requestViewPeopleForContact(before: Data,
     organizerId: string} => person !== null);
 }
 
-/** Linking or unlinking an account moves its attended count. */
-export const onHostRequestViewContactWritten = onDocumentWritten({
-  ...options, document: "organizerContacts/{contactId}",
-}, async (event) => {
-  const db = admin.firestore();
-  for (const {uid, organizerId} of requestViewPeopleForContact(
-    event.data?.before.data(), event.data?.after.data())) {
-    await reconcileHostEventRequestViewsForPerson(db, uid, organizerId);
-  }
-});
-
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const organizerContactsProjections = defineProjections(
   "organizerContacts", [

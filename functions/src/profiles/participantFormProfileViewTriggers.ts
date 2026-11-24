@@ -13,16 +13,6 @@ export const onParticipantFormProfileViewProposalChanged = onDocumentWritten(
   (event) => reconcileParticipantFormProfileView(admin.firestore(),
     event.params.responseId));
 
-/** Withdrawal or a status change makes a response's review unavailable. */
-export const onParticipantFormProfileViewResponseChanged = onDocumentWritten(
-  {...options, document: "organizerFormResponses/{responseId}"},
-  async (event) => {
-    if (!responseWriteChangesReview(event.data?.before.data(),
-      event.data?.after.data())) return;
-    await reconcileParticipantFormProfileView(admin.firestore(),
-      event.params.responseId);
-  });
-
 /** A claim's organizer-card choice changes the row's card selection. */
 export const onParticipantFormProfileViewCardChanged = onDocumentWritten(
   {...options, document: "participantOrganizerCards/{responseId}"},
@@ -36,10 +26,8 @@ export const onParticipantIntakeProfileViewChanged = onDocumentWritten(
     event.params.uid));
 
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const organizerFormResponsesProjections = defineProjections(
   "organizerFormResponses", [

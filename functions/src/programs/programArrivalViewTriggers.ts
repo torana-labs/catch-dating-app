@@ -36,26 +36,6 @@ async function reconcileLegs(db: FirebaseFirestore.Firestore,
 const legsOf = (db: FirebaseFirestore.Firestore, programId: string) =>
   db.collection("programTravelLegs").where("programId", "==", programId);
 
-/** A journey's own row, and its party's rows when membership moves. */
-export const onProgramArrivalLegChanged = onDocumentWritten({
-  ...options, document: "programTravelLegs/{legId}",
-}, async (event) => {
-  const db = admin.firestore();
-  const legId = event.params.legId;
-  await reconcileProgramArrivalView(db, legId);
-  await reconcileProgramDepartureView(db, legId);
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  const partyFields = ["kind", "readiness", "partyId", "guestId"];
-  if (unchanged(before, after, partyFields)) return;
-  const partyIds = new Set([before?.partyId, after?.partyId].filter(
-    (id): id is string => typeof id === "string" && id.length > 0));
-  for (const partyId of partyIds) {
-    await reconcileLegs(db, db.collection("programTravelLegs")
-      .where("partyId", "==", partyId), {arrivals: true});
-  }
-});
-
 /** A party's label or members: the rows of its journeys. */
 export const onProgramArrivalPartyChanged = onDocumentWritten({
   ...options, document: "programTravelParties/{partyId}",
@@ -66,50 +46,6 @@ export const onProgramArrivalPartyChanged = onDocumentWritten({
   await reconcileLegs(admin.firestore(), admin.firestore()
     .collection("programTravelLegs")
     .where("partyId", "==", event.params.partyId));
-});
-
-/** A guest's name: the rows of their journeys. */
-export const onProgramArrivalGuestChanged = onDocumentWritten({
-  ...options, document: "programGuests/{guestId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  const programId = after?.programId ?? before?.programId;
-  if (typeof programId !== "string" || !programId ||
-      unchanged(before, after, ["displayName"])) return;
-  const db = admin.firestore();
-  await reconcileLegs(db, legsOf(db, programId)
-    .where("guestId", "==", event.params.guestId));
-});
-
-/** A hotel's name: the arrivals rows heading to it. */
-export const onProgramArrivalHotelChanged = onDocumentWritten({
-  ...options, document: "programHotels/{hotelId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  const programId = after?.programId ?? before?.programId;
-  if (typeof programId !== "string" || !programId ||
-      unchanged(before, after, ["name"])) return;
-  const db = admin.firestore();
-  await reconcileLegs(db, legsOf(db, programId)
-    .where("destinationHotelId", "==", event.params.hotelId),
-  {arrivals: true});
-});
-
-/** A staff member's display name: the rows of the journeys they claimed. */
-export const onProgramArrivalStaffLabelChanged = onDocumentWritten({
-  ...options, document: "programStaffGrants/{grantId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  const programId = after?.programId ?? before?.programId;
-  const uid = after?.uid ?? before?.uid;
-  if (typeof programId !== "string" || typeof uid !== "string" ||
-      unchanged(before, after, ["displayName"])) return;
-  const db = admin.firestore();
-  await reconcileLegs(db, legsOf(db, programId)
-    .where("claimedByUid", "==", uid), {arrivals: true});
 });
 
 /** A stay's room or status: the departures row of that guest at that hotel. */
@@ -176,10 +112,8 @@ export const onProgramVendorViewChanged = onDocumentWritten({
 });
 
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const programStaffGrantsProjections = defineProjections(
   "programStaffGrants", [

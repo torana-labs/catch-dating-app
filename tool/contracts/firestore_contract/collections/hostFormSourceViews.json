@@ -13,7 +13,6 @@
   "read": "current organizer managers get one form's view by id, as getOrganizerFormAnalytics admitted them (requireOrganizerManager); a form with no links has no view and reads as missing; nobody lists the collection",
   "write": "server only; written from organizerFormShareLinks and organizerForms and deleted when the form or its last link is gone",
   "exportedFunctions": [
-    "onHostFormEditorViewFormChanged",
     "dispatchOrganizerForms",
     "onHostFormSourceViewLinkChanged"
   ],

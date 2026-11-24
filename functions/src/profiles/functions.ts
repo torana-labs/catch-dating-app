@@ -8,11 +8,11 @@ export {
 export {getParticipantFormPhoto} from "./formProfilePhotoPreview";
 export {listParticipantActivity} from "./participantActivity";
 export {claimParticipantFormProfile} from "./claimFormProfile";
-export {onParticipantFormProfileViewProposalChanged,
-  onParticipantFormProfileViewResponseChanged,
+export {
+  onParticipantFormProfileViewProposalChanged,
   onParticipantFormProfileViewCardChanged,
-  onParticipantIntakeProfileViewChanged}
-  from "./participantFormProfileViewTriggers";
+  onParticipantIntakeProfileViewChanged,
+} from "./participantFormProfileViewTriggers";
 export {updateUserProfile} from "./updateUserProfile";
 export {
   generateProfilePhotoThumbnail,

@@ -23,20 +23,6 @@ export const onProgramTripViewChanged = onDocumentWritten({
 }, (event) => reconcileProgramTripView(admin.firestore(),
   event.params.tripId));
 
-/** A journey's readiness, hotel or timing: its hotel inbound row. */
-export const onProgramHotelInboundLegChanged = onDocumentWritten({
-  ...options, document: "programTravelLegs/{legId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (unchanged(before, after, ["kind", "readiness", "destinationHotelId",
-    "partyId", "guestId", "passengers", "flightNumber", "flightStatus",
-    "scheduledArrivalAt", "estimatedArrivalAt", "actualArrivalAt",
-    "manualCurbAt", "readyAt", "international"])) return;
-  await reconcileProgramHotelInboundView(admin.firestore(),
-    event.params.legId);
-});
-
 /** A party's label or members: its journeys' hotel inbound rows. */
 export const onProgramHotelInboundPartyChanged = onDocumentWritten({
   ...options, document: "programTravelParties/{partyId}",
@@ -49,34 +35,6 @@ export const onProgramHotelInboundPartyChanged = onDocumentWritten({
     .where("partyId", "==", event.params.partyId).limit(fanoutLimit).get();
   for (const doc of legs.docs) {
     await reconcileProgramHotelInboundView(db, doc.id);
-  }
-});
-
-/**
- * A guest's name: the hotel inbound rows of their journeys and the trips
- * whose legacy manifests name them.
- */
-export const onProgramTripGuestChanged = onDocumentWritten({
-  ...options, document: "programGuests/{guestId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  const programId = after?.programId ?? before?.programId;
-  if (typeof programId !== "string" || !programId ||
-      unchanged(before, after, ["displayName"])) return;
-  const db = admin.firestore();
-  // One equality filter keeps this off the composite index list; the
-  // programme is checked on each journey.
-  const legs = await db.collection("programTravelLegs")
-    .where("guestId", "==", event.params.guestId).limit(fanoutLimit).get();
-  for (const leg of legs.docs) {
-    if (leg.data().programId !== programId) continue;
-    await reconcileProgramHotelInboundView(db, leg.id);
-    const trips = await db.collection("transportTrips")
-      .where("legIds", "array-contains", leg.id).limit(20).get();
-    for (const trip of trips.docs) {
-      await reconcileProgramTripView(db, trip.id);
-    }
   }
 });
 
@@ -117,10 +75,8 @@ export const programHotelInboundSettingsProjections = defineProjections(
   }]);
 
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const programGuestsProjections = defineProjections("programGuests", [
   {

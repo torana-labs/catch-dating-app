@@ -36,16 +36,6 @@ async function audienceSources(before: Data, after: Data): Promise<void> {
   }
 }
 
-/** A form made, renamed, published or deleted: its organizer's sources. */
-export const onHostAudienceSourceViewFormChanged = onDocumentWritten({
-  ...options, document: "organizerForms/{formId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (same(before, after, ["organizerId", "title", "activeVersionId"])) return;
-  await audienceSources(before, after);
-});
-
 /** An imported application form made, renamed or deleted. */
 export const onHostAudienceSourceViewApplicationFormChanged =
   onDocumentWritten({
@@ -137,40 +127,6 @@ const shownContactFields = ["displayName", "displayNameOverride",
 const eligibilityFields = ["organizerId", "deletedAt", "hiddenAt",
   "identityState"];
 
-/**
- * A contact appearing, hidden, merged or deleted: every pair it may stand
- * in. A shown field changing: only its current pairs.
- */
-export const onHostMergeCandidateViewContactChanged = onDocumentWritten({
-  ...options, document: "organizerContacts/{contactId}",
-}, async (event) => {
-  const db = admin.firestore();
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  const eligibilitySame = same(before, after, eligibilityFields);
-  if (eligibilitySame && same(before, after, shownContactFields)) return;
-  for (const organizerId of organizerIds(before, after)) {
-    await reconcileContactMergeCandidates(db, organizerId,
-      event.params.contactId, eligibilitySame);
-  }
-});
-
-/** A contact's event history changing: the shared events of its pairs. */
-export const onHostMergeCandidateViewEdgeChanged = onDocumentWritten({
-  ...options, document: "organizerContactEventEdges/{edgeId}",
-}, async (event) => {
-  const db = admin.firestore();
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (same(before, after, ["organizerId", "contactId", "eventId"])) return;
-  for (const data of [before, after]) {
-    if (typeof data?.organizerId !== "string" ||
-        typeof data.contactId !== "string") continue;
-    await reconcileContactMergeCandidates(db, data.organizerId,
-      data.contactId, true);
-  }
-});
-
 /** A pair marked as different people or shown again. */
 export const onHostMergeCandidateViewDecisionChanged = onDocumentWritten({
   ...options, document: "organizerContactMergeReviewDecisions/{decisionId}",
@@ -187,10 +143,8 @@ export const onHostMergeCandidateViewDecisionChanged = onDocumentWritten({
 });
 
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const organizerFormsProjections = defineProjections("organizerForms", [
   {
