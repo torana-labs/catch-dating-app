@@ -245,6 +245,21 @@
         "prefsShowOnMap": {
           "type": "boolean"
         },
+        "prefsHideReligion": {
+          "type": "boolean"
+        },
+        "prefsHideRelationshipGoal": {
+          "type": "boolean"
+        },
+        "prefsHideDrinking": {
+          "type": "boolean"
+        },
+        "prefsHideSmoking": {
+          "type": "boolean"
+        },
+        "prefsHideChildren": {
+          "type": "boolean"
+        },
         "prefsShowInCrossPaths": {
           "type": "boolean"
         },

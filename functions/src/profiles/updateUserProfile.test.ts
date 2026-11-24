@@ -175,6 +175,8 @@ test("updateUserProfileHandler validates and applies profile patches",
             },
           },
           prefsWeeklyDigest: true,
+          prefsHideReligion: false,
+          prefsHideDrinking: true,
         },
       }),
       h.deps
@@ -226,6 +228,8 @@ test("updateUserProfileHandler validates and applies profile patches",
         },
       },
       prefsWeeklyDigest: true,
+      prefsHideReligion: false,
+      prefsHideDrinking: true,
     });
   }
 );
