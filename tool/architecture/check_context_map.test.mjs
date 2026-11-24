@@ -159,13 +159,19 @@ test("checkMoveTargets allows only the screen-move destinations", () => {
     ["lib/i/", "packages/catch_test_support/lib/design_fixtures/"],
     ["lib/j/", "packages/catch_ui/lib/j/"],
     ["lib/k/", "lib/routing/k/"],
+    ["test/l/", "apps/host/test/l/"],
+    ["integration_test/m/", "apps/host/integration_test/m/"],
+    ["lib/n/", "apps/host/test/n/"],
+    ["test/o/", "apps/kiosk/test/o/"],
   ];
   const fixture = loadContextMap(JSON.stringify({...base, legacy: [...base.legacy,
     ...targets.map(([path, moveTo]) => ({path, layer: "app", moveTo, group: "g"}))]}));
   const findings = checkMoveTargets({map: fixture, files: ["apps/host/pubspec.yaml"]});
-  assert.deepEqual(findings.map((finding) => finding.reason.split(" ")[0]),
-    ["lib/b/", "lib/d/", "lib/f/", "lib/g/", "lib/j/", "lib/k/"]);
+  assert.deepEqual(findings.map((finding) => finding.reason.split(" ")[0]).sort(),
+    ["lib/b/", "lib/d/", "lib/f/", "lib/g/", "lib/j/", "lib/k/", "lib/n/", "test/o/"]);
   assert.ok(findings.every((finding) => finding.rule === "moveToInvalid"));
   assert.match(findings.find((f) => f.reason.startsWith("lib/d/")).reason, /Widgetbook corpus source/u);
   assert.match(findings.find((f) => f.reason.startsWith("lib/b/")).reason, /apps\/kiosk has no pubspec/u);
+  assert.match(findings.find((f) => f.reason.startsWith("lib/n/")).reason, /only a root test file may move into an app's test/u);
+  assert.match(findings.find((f) => f.reason.startsWith("test/o/")).reason, /apps\/kiosk has no pubspec/u);
 });

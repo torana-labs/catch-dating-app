@@ -99,7 +99,8 @@ function checkMoveFields(entry) {
 
 // Where a moveTo may point: an app package's lib/, a shared page, a
 // context's actions/ or data/ folder, or the platform and test-support
-// packages. Never the Widgetbook corpus sources lib/pages/startup/ and
+// packages. A root test file (test/ or integration_test/) may also move into
+// an app package's test/ or integration_test/ folder. Never the Widgetbook corpus sources lib/pages/startup/ and
 // lib/contexts/*/parts/, which a mechanical move cannot enter without new
 // golden baselines.
 export function checkMoveTargets({map, files}) {
@@ -109,7 +110,7 @@ export function checkMoveTargets({map, files}) {
   const findings = [];
   for (const entry of map.legacy) {
     if (entry.moveTo == null) continue;
-    const reason = moveTargetProblem(entry.moveTo, map, appPackages);
+    const reason = moveTargetProblem(entry.moveTo, map, appPackages, entry.path);
     if (reason == null) continue;
     findings.push({
       rule: "moveToInvalid",
@@ -121,10 +122,17 @@ export function checkMoveTargets({map, files}) {
   return findings;
 }
 
-function moveTargetProblem(target, map, appPackages) {
+function moveTargetProblem(target, map, appPackages, source) {
   const app = /^apps\/([^/]+)\/lib\/./u.exec(target);
   if (app != null) {
     return appPackages.has(app[1]) ? null : `apps/${app[1]} has no pubspec.yaml`;
+  }
+  const appTest = /^apps\/([^/]+)\/(?:test|integration_test)\/./u.exec(target);
+  if (appTest != null) {
+    if (!/^(?:test|integration_test)\//u.test(source)) {
+      return "only a root test file may move into an app's test/ or integration_test/ folder";
+    }
+    return appPackages.has(appTest[1]) ? null : `apps/${appTest[1]} has no pubspec.yaml`;
   }
   if (target.startsWith(map.roots.pages)) {
     if (target.startsWith(`${map.roots.pages}startup/`)) {
@@ -141,7 +149,8 @@ function moveTargetProblem(target, map, appPackages) {
   }
   if (/^packages\/(?:platform|catch_test_support)\/lib\/./u.test(target)) return null;
   return "a moveTo must sit under apps/<app>/lib/, lib/pages/, " +
-    "lib/contexts/<context>/(actions|data)/ or packages/(platform|catch_test_support)/lib/";
+    "lib/contexts/<context>/(actions|data)/ or packages/(platform|catch_test_support)/lib/, " +
+    "or, for a root test file, apps/<app>/(test|integration_test)/";
 }
 
 // Returns where a lib/ path sits: {layer, context, legacy}. Target roots win;
