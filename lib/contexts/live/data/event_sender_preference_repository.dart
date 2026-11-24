@@ -111,31 +111,18 @@ class EventSenderPreferenceRepository {
     Map<String, Object?> input,
     T Function(Object?) decode,
   ) {
-    final callable = switch ((scope.channel, action)) {
-      (EventSenderChannel.sms, _PreferenceAction.list) =>
-        'listEventSmsPreferences',
-      (EventSenderChannel.sms, _PreferenceAction.read) =>
-        'getEventAssistanceSmsPreference',
-      (EventSenderChannel.sms, _PreferenceAction.write) =>
-        'setEventAssistanceSmsPreference',
-      (EventSenderChannel.whatsapp, _PreferenceAction.list) =>
-        'listEventWhatsappPreferences',
-      (EventSenderChannel.whatsapp, _PreferenceAction.read) =>
-        'getEventWhatsappPreference',
-      (EventSenderChannel.whatsapp, _PreferenceAction.write) =>
-        'setEventWhatsappPreference',
-      (EventSenderChannel.rcs, _PreferenceAction.list) =>
-        'listEventRcsPreferences',
-      (EventSenderChannel.rcs, _PreferenceAction.read) =>
-        'getEventRcsPreference',
-      (EventSenderChannel.rcs, _PreferenceAction.write) =>
-        'setEventRcsPreference',
+    // One callable per action for every channel (issue #2494); the channel
+    // travels with the channel's own request.
+    final callable = switch (action) {
+      _PreferenceAction.list => 'listEventMessagePreferences',
+      _PreferenceAction.read => 'getEventMessagePreference',
+      _PreferenceAction.write => 'setEventMessagePreference',
     };
     return withBackendErrorContext(
       () async {
-        final response = await _functions
-            .httpsCallable(callable)
-            .call<Object?>(input);
+        final response = await _functions.httpsCallable(callable).call<Object?>(
+          {'channel': scope.channel.name, 'request': input},
+        );
         return decode(response.data);
       },
       context: BackendErrorContext(

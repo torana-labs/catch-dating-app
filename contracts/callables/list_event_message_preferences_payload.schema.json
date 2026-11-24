@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "https://catch.app/contracts/callables/list_event_message_preferences_payload.schema.json",
+  "title": "ListEventMessagePreferencesCallablePayload",
+  "description": "List the senders the verified guest can review on one channel for one event. One callable for SMS, RCS and WhatsApp (issue #2494 step 2); it replaced the three per-channel callables.",
+  "required": [
+    "channel",
+    "request"
+  ],
+  "properties": {
+    "channel": {
+      "type": "string",
+      "enum": [
+        "sms",
+        "rcs",
+        "whatsapp"
+      ]
+    },
+    "request": {
+      "description": "The channel's own request, unchanged from its former per-channel callable.",
+      "anyOf": [
+        {
+          "$ref": "./list_event_sms_preferences_payload.schema.json"
+        },
+        {
+          "$ref": "./list_event_rcs_preferences_payload.schema.json"
+        },
+        {
+          "$ref": "./list_event_whatsapp_preferences_payload.schema.json"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "channel": {
+            "const": "sms"
+          }
+        },
+        "required": [
+          "channel"
+        ]
+      },
+      "then": {
+        "properties": {
+          "request": {
+            "$ref": "./list_event_sms_preferences_payload.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "channel": {
+            "const": "rcs"
+          }
+        },
+        "required": [
+          "channel"
+        ]
+      },
+      "then": {
+        "properties": {
+          "request": {
+            "$ref": "./list_event_rcs_preferences_payload.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "channel": {
+            "const": "whatsapp"
+          }
+        },
+        "required": [
+          "channel"
+        ]
+      },
+      "then": {
+        "properties": {
+          "request": {
+            "$ref": "./list_event_whatsapp_preferences_payload.schema.json"
+          }
+        }
+      }
+    }
+  ]
+}

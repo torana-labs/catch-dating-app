@@ -20,10 +20,10 @@ void main() {
     () async {
       functions.response = smsResponse();
       final view = await repository.fetch(smsScope());
-      expect(functions.calls.single.name, 'getEventAssistanceSmsPreference');
+      expect(functions.calls.single.name, 'getEventMessagePreference');
       expect(functions.calls.single.input, {
-        'eventId': 'event-1',
-        'attendeeId': 'attendee-1',
+        'channel': 'sms',
+        'request': {'eventId': 'event-1', 'attendeeId': 'attendee-1'},
       });
       final change = view.prepareChange(
         requestId: 'one',
@@ -45,8 +45,11 @@ void main() {
       );
       expect(functions.calls[1].name, functions.calls[2].name);
       expect(functions.calls[1].input, functions.calls[2].input);
-      expect(functions.calls.last.name, 'setEventAssistanceSmsPreference');
-      expect(functions.calls.last.input, change.toJson());
+      expect(functions.calls.last.name, 'setEventMessagePreference');
+      expect(functions.calls.last.input, {
+        'channel': 'sms',
+        'request': change.toJson(),
+      });
     },
   );
 
