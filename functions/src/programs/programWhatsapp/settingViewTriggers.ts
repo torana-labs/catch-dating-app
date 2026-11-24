@@ -5,6 +5,7 @@ import {
   reconcileProgramAssistantSettingView,
   reconcileProgramSenderView,
 } from "./settingViews";
+import {defineProjections} from "../../platform/dispatch/runtime";
 
 const options = {retry: true};
 
@@ -15,6 +16,13 @@ const same = (before: Data, after: Data, fields: string[]) =>
   fields.every((field) =>
     JSON.stringify(before[field] ?? null) ===
       JSON.stringify(after[field] ?? null));
+
+/** A programme's sender and assistant settings views. */
+async function reconcileProgramSettingViews(db: FirebaseFirestore.Firestore,
+  programId: string): Promise<void> {
+  await reconcileProgramSenderView(db, programId);
+  await reconcileProgramAssistantSettingView(db, programId);
+}
 
 /**
  * A programme appearing, vanishing, moving organizer or binding another
@@ -28,10 +36,23 @@ export const onProgramSettingViewProgramChanged = onDocumentWritten({
   if (same(before, after, ["organizerId", "whatsappSenderConnectionId"])) {
     return;
   }
-  const db = admin.firestore();
-  await reconcileProgramSenderView(db, event.params.programId);
-  await reconcileProgramAssistantSettingView(db, event.params.programId);
+  await reconcileProgramSettingViews(admin.firestore(), event.params.programId);
 });
+
+/**
+ * A programme's organizer or WhatsApp number: its settings views.
+ * dispatchOrganizerPrograms (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const programSettingViewProgramProjections = defineProjections(
+  "organizerPrograms", [{
+    id: "programSettingView", kind: "projection",
+    when: ({before, after}) =>
+      !(same(before, after, ["organizerId", "whatsappSenderConnectionId"])),
+    run: (change, ctx) =>
+      reconcileProgramSettingViews(ctx.db, change.documentId),
+  }]);
 
 /** A settings save: that programme's assistant settings view. */
 export const onProgramSettingViewSettingsChanged = onDocumentWritten({

@@ -2,6 +2,8 @@
 // (read by functions/scripts/functionExports.cjs).
 
 // Private programs (weddings/corporate offsites) and arrivals transport.
+export {dispatchOrganizerPrograms} from
+  "./dispatch/organizerPrograms.generated";
 export {
   createOrganizerProgram,
   updateOrganizerProgram,

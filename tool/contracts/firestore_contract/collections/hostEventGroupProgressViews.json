@@ -19,6 +19,7 @@
     "onHostMovementViewRosterChanged",
     "onHostMovementViewCheckpointChanged",
     "onHostMovementViewAttendeeChanged",
+    "dispatchEventAttendees",
     "onHostMovementViewGuestChanged",
     "onHostMovementViewMembershipChanged",
     "onHostMovementViewWorkItemChanged",

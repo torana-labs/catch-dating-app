@@ -142,6 +142,20 @@ export const hostEventSetupViewProjections = defineProjections("organizers", [{
 export const onHostEventSetupViewAttendeeChanged = onDocumentWritten({
   ...options, document: "eventAttendees/{documentId}",
 }, (event) => reconcileForWrite("eventAttendees", event));
+
+/**
+ * An attendee write: its event's setup view.
+ * dispatchEventAttendees (issue #2451) runs the same work; both run until the
+ * old trigger retires, which is safe because it re-reads its sources,
+ * so a retry, a replay or a second run converges.
+ */
+export const hostEventSetupViewAttendeeProjections = defineProjections(
+  "eventAttendees", [{
+    id: "hostEventSetupView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange("eventAttendees", change.documentId,
+      change.before, change.after),
+  }]);
 export const onHostEventSetupViewAttendeeImportChanged = onDocumentWritten({
   ...options, document: "eventAttendeeImports/{documentId}",
 }, (event) => reconcileForWrite("eventAttendeeImports", event));
@@ -157,6 +171,20 @@ export const onHostEventSetupViewEventOfferChanged = onDocumentWritten({
 export const onHostEventSetupViewGuestPaymentChanged = onDocumentWritten({
   ...options, document: `${GUEST_PAYMENTS}/{documentId}`,
 }, (event) => reconcileForWrite(GUEST_PAYMENTS, event));
+
+/**
+ * A guest payment of any purpose: its event's setup view.
+ * dispatchGuestPayments (issue #2451) runs the same work; both run until the
+ * old trigger retires, which is safe because it re-reads its sources,
+ * so a retry, a replay or a second run converges.
+ */
+export const hostEventSetupViewPaymentProjections = defineProjections(
+  "guestPayments", [{
+    id: "hostEventSetupView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange(GUEST_PAYMENTS, change.documentId,
+      change.before, change.after),
+  }]);
 export const onHostEventSetupViewMomentChanged = onDocumentWritten({
   ...options, document: "organizerMoments/{documentId}",
 }, (event) => reconcileForWrite("organizerMoments", event));

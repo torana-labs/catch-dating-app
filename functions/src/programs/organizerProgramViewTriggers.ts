@@ -4,6 +4,7 @@ import {isDeepStrictEqual} from "node:util";
 import {recountOrganizerProgram} from "./organizerProgramCounts";
 import {reconcileOrganizerProgramView as rewriteView} from
   "./organizerProgramViews";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true};
 
@@ -43,6 +44,13 @@ async function reconcilePrograms(before: Data, after: Data): Promise<void> {
   }
 }
 
+/** The programme's own setup view. */
+async function reconcileProgramSetupView(db: FirebaseFirestore.Firestore,
+  programId: string): Promise<void> {
+  await reconcileOrganizerProgramView(db,
+    programId);
+}
+
 /** A programme's settings, dates, status, branding or retention dates. */
 export const onOrganizerProgramViewChanged = onDocumentWritten({
   ...options, document: "organizerPrograms/{programId}",
@@ -53,9 +61,25 @@ export const onOrganizerProgramViewChanged = onDocumentWritten({
     "timezone", "status", "startsAt", "endsAt", "capabilities",
     "transportSettings", "branding", "archivedAt", "anonymizeAt",
     "anonymizedAt", "revision"])) return;
-  await reconcileOrganizerProgramView(admin.firestore(),
-    event.params.programId);
+  await reconcileProgramSetupView(admin.firestore(), event.params.programId);
 });
+
+/**
+ * A programme's settings, dates, status, branding or retention dates.
+ * dispatchOrganizerPrograms (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const organizerProgramViewProjections = defineProjections(
+  "organizerPrograms", [{
+    id: "organizerProgramView", kind: "projection",
+    when: ({before, after}) =>
+      !(unchanged(before, after, ["organizerId", "createdBy", "kind", "title",
+        "timezone", "status", "startsAt", "endsAt", "capabilities",
+        "transportSettings", "branding", "archivedAt", "anonymizeAt",
+        "anonymizedAt", "revision"])),
+    run: (change, ctx) => reconcileProgramSetupView(ctx.db, change.documentId),
+  }]);
 
 /**
  * A function's setup fields. Its expected and checked-in counts are not in

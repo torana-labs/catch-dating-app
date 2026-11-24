@@ -6,6 +6,7 @@ import {
   reconcileProgramDepartureView,
   reconcileProgramVendorView,
 } from "./programArrivalViews";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true};
 const fanoutLimit = 600;
@@ -137,6 +138,13 @@ export const onProgramDepartureStayChanged = onDocumentWritten({
   }
 });
 
+/** Every inbound journey's arrival view in a programme. */
+async function reconcileProgramArrivalCurbTimes(db: FirebaseFirestore.Firestore,
+  programId: string): Promise<void> {
+  await reconcileLegs(db, legsOf(db, programId)
+    .where("kind", "==", "inbound"), {arrivals: true});
+}
+
 /** The programme's transport settings: every journey's curb time. */
 export const onProgramArrivalSettingsChanged = onDocumentWritten({
   ...options, document: "organizerPrograms/{programId}",
@@ -144,10 +152,24 @@ export const onProgramArrivalSettingsChanged = onDocumentWritten({
   const before = event.data?.before.data();
   const after = event.data?.after.data();
   if (!after || unchanged(before, after, ["transportSettings"])) return;
-  const db = admin.firestore();
-  await reconcileLegs(db, legsOf(db, event.params.programId)
-    .where("kind", "==", "inbound"), {arrivals: true});
+  await reconcileProgramArrivalCurbTimes(admin.firestore(),
+    event.params.programId);
 });
+
+/**
+ * The programme's transport settings: every journey's curb time.
+ * dispatchOrganizerPrograms (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const programArrivalSettingsProjections = defineProjections(
+  "organizerPrograms", [{
+    id: "programArrivalView", kind: "projection",
+    when: ({before, after}) =>
+      !(!after || unchanged(before, after, ["transportSettings"])),
+    run: (change, ctx) =>
+      reconcileProgramArrivalCurbTimes(ctx.db, change.documentId),
+  }]);
 
 /** A vendor's name, active flag or bound programmes: its programme views. */
 export const onProgramVendorViewChanged = onDocumentWritten({

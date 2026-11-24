@@ -19,6 +19,7 @@
     "onEventInviteLinkWritten",
     "onEventParticipationWritten",
     "onBookingPaymentWritten",
+    "dispatchGuestPayments",
     "onEventWaitlistOfferWritten",
     "onSwipeCreated",
     "onMessageCreated"

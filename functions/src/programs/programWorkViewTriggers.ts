@@ -5,6 +5,7 @@ import {
   reconcileProgramWorkSummary,
 } from "./programWorkViews";
 import type {ProgramResourceKind} from "./programWorkViews";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true};
 
@@ -13,6 +14,20 @@ export const onProgramWorkSummaryChanged = onDocumentWritten({
   ...options, document: "organizerPrograms/{programId}",
 }, (event) => reconcileProgramWorkSummary(admin.firestore(),
   event.params.programId));
+
+/**
+ * A programme's title, zone, status, capabilities or vehicle classes.
+ * dispatchOrganizerPrograms (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const programWorkSummaryProjections = defineProjections(
+  "organizerPrograms", [{
+    id: "programWorkSummary", kind: "projection",
+    when: () => true,
+    run: (change, ctx) => reconcileProgramWorkSummary(ctx.db,
+      change.documentId),
+  }]);
 
 /**
  * Reconciles the view of the source that changed, and the old view when the

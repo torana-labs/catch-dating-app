@@ -16,6 +16,7 @@
     "dispatchEvents",
     "onHostGuestViewPlanChanged",
     "onHostGuestViewAttendeeChanged",
+    "dispatchEventAttendees",
     "onHostGuestViewGuestChanged",
     "onHostGuestViewMembershipChanged",
     "dispatchOrganizers",

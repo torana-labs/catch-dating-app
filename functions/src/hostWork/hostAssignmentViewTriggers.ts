@@ -37,6 +37,17 @@ export const onHostAssignmentProgramGrantChanged = onDocumentWritten({
   }
 });
 
+/** Every staff row of a programme. */
+async function reconcileProgramStaffRows(db: FirebaseFirestore.Firestore,
+  programId: string): Promise<void> {
+  const grants = await db.collection("programStaffGrants")
+    .where("programId", "==", programId).limit(fanoutLimit).get();
+  for (const grant of grants.docs) {
+    const uid = grant.data().uid;
+    if (text(uid)) await reconcileProgramAssignmentView(db, uid, programId);
+  }
+}
+
 /**
  * A programme's title, status, organizer or owner: every staff row of it.
  * Other programme writes leave the rows alone.
@@ -48,15 +59,23 @@ export const onHostAssignmentProgramChanged = onDocumentWritten({
   const after = event.data?.after.data();
   if (unchanged(before, after, ["title", "status", "organizerId",
     "createdBy"])) return;
-  const db = admin.firestore();
-  const programId = event.params.programId;
-  const grants = await db.collection("programStaffGrants")
-    .where("programId", "==", programId).limit(fanoutLimit).get();
-  for (const grant of grants.docs) {
-    const uid = grant.data().uid;
-    if (text(uid)) await reconcileProgramAssignmentView(db, uid, programId);
-  }
+  await reconcileProgramStaffRows(admin.firestore(), event.params.programId);
 });
+
+/**
+ * A programme's title, status, organizer or owner.
+ * dispatchOrganizerPrograms (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostAssignmentProgramProjections = defineProjections(
+  "organizerPrograms", [{
+    id: "hostAssignmentView", kind: "projection",
+    when: ({before, after}) =>
+      !(unchanged(before, after, ["title", "status", "organizerId",
+        "createdBy"])),
+    run: (change, ctx) => reconcileProgramStaffRows(ctx.db, change.documentId),
+  }]);
 
 /** An event grant, renewal or revocation: that account's row. */
 export const onHostAssignmentEventGrantChanged = onDocumentWritten({

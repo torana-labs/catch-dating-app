@@ -208,6 +208,20 @@ export const onEventChatDirectoryAttendeeWritten = onDocumentWritten({
 }, (event) => refreshPairs(eventChatDirectoryPairs(...versions(event),
   "linkedUid", ["status", "organizerId"])));
 
+/**
+ * A linked guest's roster row: their chat directory row.
+ * dispatchEventAttendees (issue #2451) runs the same work; both run until the
+ * old trigger retires, which is safe because it re-reads its sources,
+ * so a retry, a replay or a second run converges.
+ */
+export const eventChatDirectoryAttendeeProjections = defineProjections(
+  "eventAttendees", [{
+    id: "eventChatDirectory", kind: "projection",
+    when: () => true,
+    run: (change) => refreshPairs(eventChatDirectoryPairs(change.before,
+      change.after, "linkedUid", ["status", "organizerId"])),
+  }]);
+
 export const onEventChatDirectoryRoomWritten = onDocumentWritten({
   ...options, document: "eventChatRooms/{documentId}",
 }, async (event) => {

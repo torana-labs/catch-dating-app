@@ -77,6 +77,24 @@ export const onHostEventAttendanceReportAttendeeWritten = onDocumentWritten({
   }
 });
 
+/**
+ * A guest booked, checked in, undone, cancelled or moved.
+ * dispatchEventAttendees (issue #2451) runs the same work; both run until the
+ * old trigger retires, which is safe because it re-reads its sources,
+ * so a retry, a replay or a second run converges.
+ */
+export const hostAttendanceReportAttendeeProjections = defineProjections(
+  "eventAttendees", [{
+    id: "hostAttendanceReport", kind: "projection",
+    when: () => true,
+    run: async (change, ctx) => {
+      for (const eventId of attendanceReportEventsForAttendee(
+        change.before, change.after)) {
+        await reconcileHostEventAttendanceReport(ctx.db, eventId);
+      }
+    },
+  }]);
+
 /** A no-show recorded or cleared at close-out. */
 export const onHostEventAttendanceReportDispositionWritten =
   onDocumentWritten({

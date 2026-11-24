@@ -16,6 +16,7 @@
     "onEventChatDirectoryMembershipWritten",
     "onEventChatDirectoryParticipationWritten",
     "onEventChatDirectoryAttendeeWritten",
+    "dispatchEventAttendees",
     "onEventChatDirectoryRoomWritten",
     "dispatchEvents",
     "onEventChatDirectoryUserWritten",

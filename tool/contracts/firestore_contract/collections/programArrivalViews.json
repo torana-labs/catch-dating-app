@@ -19,7 +19,8 @@
     "onProgramArrivalGuestChanged",
     "onProgramArrivalHotelChanged",
     "onProgramArrivalStaffLabelChanged",
-    "onProgramArrivalSettingsChanged"
+    "onProgramArrivalSettingsChanged",
+    "dispatchOrganizerPrograms"
   ],
   "migrationNotes": [
     "Exactly the roster row the retired getProgramArrivalsRoster callable returned, plus the claimant's account id in place of claimedByMe and the pickup and hotel keys rules match; never a phone number. Only expected, ready and disrupted inbound journeys have a view. The program-arrival-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."

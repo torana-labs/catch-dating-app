@@ -1,9 +1,21 @@
 {
   "description": "Source collections served by one dispatcher each (issue #2451; runtime functions/src/platform/dispatch/runtime.ts). Each source names the document path its trigger watches and the area whose functions.ts re-exports dispatch<Source>, which decides its deploy codebase. tool/architecture/generate_dispatch_registries.mjs writes functions/src/<area>/dispatch/<source>.generated.ts from the defineProjections sets that name the source; --check fails when a registry is stale or not re-exported.",
   "sources": {
+    "eventAttendees": {
+      "document": "eventAttendees/{attendeeId}",
+      "area": "events"
+    },
     "events": {
       "document": "events/{eventId}",
       "area": "events"
+    },
+    "guestPayments": {
+      "document": "guestPayments/{paymentId}",
+      "area": "payments"
+    },
+    "organizerPrograms": {
+      "document": "organizerPrograms/{programId}",
+      "area": "programs"
     },
     "organizers": {
       "document": "organizers/{organizerId}",

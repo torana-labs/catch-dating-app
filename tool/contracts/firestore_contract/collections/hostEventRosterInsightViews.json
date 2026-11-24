@@ -15,6 +15,7 @@
   "exportedFunctions": [
     "dispatchEvents",
     "onHostRosterInsightAttendeeChanged",
+    "dispatchEventAttendees",
     "onHostRosterInsightEdgeChanged",
     "onHostRosterInsightContactChanged",
     "onHostRosterInsightTraitsChanged",
