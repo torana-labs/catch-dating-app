@@ -13,10 +13,14 @@ import {validateEventSuccessGuestHistoryDocument} from
  * written. A guest's unit is found the way the Host scoreboard names
  * units: score formats by the guest's team or table assignment (or their
  * arrival group), rank formats by the guest's pair in each rotation round.
- * Guests read only their own document; only this trigger writes.
+ * Only this trigger writes. No screen reads it yet (#2501), so clients have
+ * no access and each row expires a year after its last projection
+ * (FIX-14, #2450).
  */
 
 export const GUEST_HISTORY = "eventSuccessGuestHistory";
+/** TTL on expiresAt: a year after the night's standings last changed. */
+export const GUEST_HISTORY_TTL_MILLIS = 365 * 24 * 60 * 60 * 1000;
 const MAX_SOURCE_DOCS = 1000;
 
 type GuestStanding = EventSuccessGuestHistoryDocument["rounds"][number];
@@ -153,6 +157,8 @@ export function guestHistoryFor(
     rounds,
     finalStanding: rounds.length === 0 ? null : rounds[rounds.length - 1],
     updatedAtMs: nowMillis,
+    expiresAt: admin.firestore.Timestamp.fromMillis(
+      nowMillis + GUEST_HISTORY_TTL_MILLIS) as never,
   };
 }
 
