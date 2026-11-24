@@ -18,6 +18,7 @@ import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import {createRequire} from "node:module";
 import path from "node:path";
+import {isToolsManifestPath, toolsManifestFrom, toolsManifestToolPath} from "../lib/tools_manifest.mjs";
 
 // The YAML parser loads on first use, not at import: the website release
 // scripts import this module through select_lanes.mjs and run without npm ci
@@ -33,15 +34,15 @@ export const ciWorkflow = ".github/workflows/ci.yml";
 // the selector entry points import or load, selects every lane.
 export const selectorFiles = [ciWorkflow, "nx.json", "firebase.json", "tool/ci/toolchain.env",
   "tool/harness.mjs", "tool/harness/component_graph.json",
-  "tool/repository_root_manifest.json", "tool/ci/main_push_base.mjs", "tool/ci/required_ci_floor.mjs"];
+  "tool/repository_root_manifest.json", "tool/ci/main_push_base.mjs", "tool/ci/main_push_queue_proof.mjs",
+  "tool/ci/main_macos_selection.mjs", "tool/ci/required_ci_floor.mjs"];
 export const selectorPrefixes = ["tool/harness/", "tool/nx/"];
-// tool/tools_manifest.json is data the planner loads, but it selects by
-// semantic diff (manifest_diff.mjs), not every lane.
-export const manifestFile = "tool/tools_manifest.json";
+// The tools manifest (tool/lib/tools_manifest.mjs) is data the planner loads,
+// but it selects by semantic diff (manifest_diff.mjs), not every lane.
 // The scripts the plan job selects with.
 export const selectorEntries = ["tool/harness.mjs", "tool/harness/compare_selectors.mjs",
   "tool/harness/verify_local.mjs", "tool/nx/select_lanes.mjs", "tool/ci/main_push_base.mjs",
-  "tool/ci/required_ci_floor.mjs"];
+  "tool/ci/main_push_queue_proof.mjs", "tool/ci/main_macos_selection.mjs", "tool/ci/required_ci_floor.mjs"];
 
 // CI configuration ci.yml never executes or reads, each with the reason. Every
 // tracked .github/** and tool/ci/** file must be a selector, be reached by a
@@ -64,6 +65,8 @@ export const notCalledByCi = {
   ".github/workflows/brand-config-publish.yml": "deploy: push to main and dispatch",
   ".github/workflows/capture-freshness-ci.yml": "reusable workflow with no caller",
   ".github/workflows/ci-metrics.yml": "maintenance: weekly schedule and dispatch, report-only",
+  ".github/workflows/proof-reuse-daily.yml": "maintenance: daily schedule, after main push CI (workflow_run, once a day) and dispatch, report-only",
+  ".github/workflows/cron-watchdog.yml": "maintenance: hourly schedule, after main CI (workflow_run) and dispatch; dispatches only missed dev-only runs",
   ".github/workflows/functions-drift.yml": "maintenance: weekly schedule and dispatch, report-only, read-only on dev",
   ".github/workflows/city-interest-backfill.yml": "operations: dispatch only",
   ".github/workflows/data-validation.yml": "operations: schedule and dispatch",
@@ -90,12 +93,16 @@ export const notCalledByCi = {
   ".github/workflows/pr-text-guard.yml": "its own pull_request trigger runs it from the base commit",
   ".github/workflows/release-readiness.yml": "release: dispatch only",
   ".github/workflows/store-listing.yml": "release: dispatch only",
+  ".github/workflows/test-read-map.yml": "maintenance: nightly schedule, after main push CI (workflow_run, once a day) and dispatch, shadow read map, selects nothing",
   ".github/workflows/ui-capture-render.yml": "maintenance: dispatch only",
   ".github/workflows/website-next-preview.yml": "deploy: dispatch only",
   ".github/workflows/website-next-promote.yml": "deploy: dispatch only",
   ".github/workflows/website-production-observability.yml": "operations: schedule and dispatch",
   ".github/workflows/website-release.yml": "deploy: after main CI (workflow_run), schedule and dispatch",
   ".github/workflows/widgetbook-golden-baselines.yml": "maintenance: dispatch only",
+  "tool/ci/fixtures/proof-reuse-daily/input.json": "test data read only by proof_reuse_report.test.mjs",
+  "tool/ci/fixtures/proof-reuse-daily/proof-reuse-daily-2026-11-22.json":
+    "test data read only by proof_reuse_report.test.mjs and the queue entry timings reader's tests",
 };
 
 // Variable command targets the scan cannot read, with the files they name.
@@ -143,8 +150,7 @@ function createScanner(root, files) {
     .map((file) => [JSON.parse(read(file)).name, path.posix.dirname(file)]));
 
   let tools = null;
-  const manifestTools = () => (tools ??= exists("tool/tools_manifest.json")
-    ? JSON.parse(read("tool/tools_manifest.json")).tools ?? [] : []);
+  const manifestTools = () => (tools ??= toolsManifestFrom({read, list: () => [...files], fallback: {}}).tools ?? []);
   const unquote = (value) => value?.replace(/^["']|["']$/gu, "").replace(/^\$\{?\w+\}?\//u, "");
   const resolve = (ref, baseDir) => {
     for (const candidate of [path.posix.normalize(path.posix.join(baseDir, ref)), path.posix.normalize(ref)]) {
@@ -192,7 +198,7 @@ function createScanner(root, files) {
         if (!any && !ids.includes(tool.id)) continue;
         if (tool.path && exists(tool.path)) out.refs.add(tool.path);
         for (const command of [tool.command, ...(tool.checks ?? [])]) {
-          if (typeof command === "string") shellRefs(command, ".", `tool/tools_manifest.json#${tool.id}`, out);
+          if (typeof command === "string") shellRefs(command, ".", `${toolsManifestToolPath(tool.id)}#${tool.id}`, out);
         }
       }
     }
@@ -376,7 +382,7 @@ export function workflowCallers({root = process.cwd(), lanes: laneNames, files =
 
   const selectorReach = closure(selectorEntries.filter((file) => files.has(file)), (file) => scanner.loadsOf(file));
   const selectors = new Set([...selectorFiles, ...selectorReach.files]);
-  selectors.delete(manifestFile);
+  for (const file of [...selectors]) if (isToolsManifestPath(file)) selectors.delete(file);
   return {lanes, ungated, jobsOf, jobLanes: jobLanesById, idLanes, anyIdLanes, selectors, unresolved};
 }
 
@@ -404,7 +410,7 @@ export function callerLanes(changedFiles, {graph, allLanes, manifestChange}) {
   const selected = new Set();
   for (const file of changedFiles) {
     if (isSelector(file, graph)) return new Set(allLanes);
-    if (file === manifestFile) {
+    if (isToolsManifestPath(file)) {
       const lanes = manifestLanes(manifestChange, {graph, allLanes});
       if (lanes.size === allLanes.length) return lanes;
       for (const lane of lanes) selected.add(lane);
@@ -441,7 +447,7 @@ export const isClassified = (file, graph) => isSelector(file, graph) || graph.la
   || graph.ungated?.has(file) || file in notCalledByCi;
 
 /**
- * The lanes a tools_manifest.json edit selects: Tools and policy, which run
+ * The lanes a tools manifest edit selects: Tools and policy, which run
  * the changed checks and validate the manifest, plus every lane whose jobs run
  * a changed or removed entry by name, or run any entry. A change the diff does
  * not recognise, or a missing diff (history unreadable), selects every lane.

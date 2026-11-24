@@ -1,0 +1,225 @@
+{
+  "date": "2026-11-22",
+  "repository": "owner/repo",
+  "generatedAt": "2026-11-23T03:41:00.000Z",
+  "source": {
+    "workflowRunId": 9000,
+    "sha": "1111111111111111111111111111111111111111"
+  },
+  "runs": [
+    {
+      "id": 502,
+      "run_attempt": 1,
+      "created_at": "2026-11-22T14:05:00Z",
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/owner/repo/actions/runs/502"
+    },
+    {
+      "id": 501,
+      "run_attempt": 2,
+      "created_at": "2026-11-22T09:00:00Z",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/owner/repo/actions/runs/501"
+    },
+    {
+      "id": 504,
+      "run_attempt": 1,
+      "created_at": "2026-11-22T18:30:00Z",
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/owner/repo/actions/runs/504"
+    },
+    {
+      "id": 503,
+      "run_attempt": 1,
+      "created_at": "2026-11-22T23:59:30Z",
+      "status": "completed",
+      "conclusion": "cancelled"
+    },
+    {
+      "id": 499,
+      "run_attempt": 1,
+      "created_at": "2026-11-21T23:59:59Z",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "reports": {
+    "501": {
+      "pr": "41",
+      "head": "aaaa",
+      "lanes": [
+        {
+          "lane": "contracts",
+          "job": "Contracts",
+          "class": "eligible",
+          "keysMatch": true,
+          "prResult": "success",
+          "verdict": "would_reuse",
+          "reason": "keys_match",
+          "real": "success",
+          "outcome": "hit"
+        },
+        {
+          "lane": "flutter",
+          "job": "Flutter",
+          "class": "pr_subset",
+          "keysMatch": true,
+          "prResult": "success",
+          "verdict": "would_run",
+          "reason": "pr_subset",
+          "real": "success",
+          "outcome": "ran"
+        },
+        {
+          "lane": "operations",
+          "job": "Operations",
+          "class": "eligible",
+          "keysMatch": false,
+          "prResult": "success",
+          "verdict": "would_run",
+          "reason": "keys_differ",
+          "real": "success",
+          "outcome": "ran"
+        }
+      ]
+    },
+    "502": {
+      "pr": "42",
+      "head": "bbbb",
+      "lanes": [
+        {
+          "lane": "contracts",
+          "job": "Contracts",
+          "class": "eligible",
+          "keysMatch": true,
+          "prResult": "success",
+          "verdict": "would_reuse",
+          "reason": "keys_match",
+          "real": "failure",
+          "outcome": "miss"
+        },
+        {
+          "lane": "flutter",
+          "job": "Flutter",
+          "class": "pr_subset",
+          "keysMatch": true,
+          "prResult": "success",
+          "verdict": "would_run",
+          "reason": "pr_subset",
+          "real": "failure",
+          "outcome": "ran"
+        },
+        {
+          "lane": "operations",
+          "job": "Operations",
+          "class": "eligible",
+          "keysMatch": true,
+          "prResult": "skipped",
+          "verdict": "would_run",
+          "reason": "pr_not_passed",
+          "real": "skipped",
+          "outcome": "ran"
+        }
+      ]
+    },
+    "504": {
+      "pr": "44",
+      "head": "dddd",
+      "lanes": [
+        {
+          "lane": "contracts",
+          "job": "Contracts",
+          "class": "eligible",
+          "keysMatch": true,
+          "prResult": "success",
+          "verdict": "would_reuse_unchecked",
+          "reason": "keys_match_unchecked",
+          "real": "success",
+          "outcome": "hit_unchecked"
+        },
+        {
+          "lane": "operations",
+          "job": "Operations",
+          "class": "eligible",
+          "keysMatch": true,
+          "prResult": "success",
+          "verdict": "would_reuse_unchecked",
+          "reason": "keys_match_unchecked",
+          "real": "failure",
+          "outcome": "miss_unchecked"
+        }
+      ]
+    }
+  },
+  "jobs": {
+    "501": [
+      {
+        "name": "Contracts",
+        "conclusion": "success",
+        "started_at": "2026-11-22T09:01:00Z",
+        "completed_at": "2026-11-22T09:05:00Z"
+      },
+      {
+        "name": "Flutter / Analyze",
+        "conclusion": "success",
+        "started_at": "2026-11-22T09:01:00Z",
+        "completed_at": "2026-11-22T09:11:00Z"
+      },
+      {
+        "name": "Flutter / Test (1)",
+        "conclusion": "success",
+        "started_at": "2026-11-22T09:01:00Z",
+        "completed_at": "2026-11-22T09:21:00.400Z"
+      },
+      {
+        "name": "Flutter / Skipped",
+        "conclusion": "skipped",
+        "started_at": "2026-11-22T09:01:00Z",
+        "completed_at": "2026-11-22T09:01:00Z"
+      },
+      {
+        "name": "Flutterish",
+        "conclusion": "success",
+        "started_at": "2026-11-22T09:01:00Z",
+        "completed_at": "2026-11-22T09:31:00Z"
+      },
+      {
+        "name": "Operations",
+        "conclusion": "success",
+        "started_at": "2026-11-22T09:01:00Z",
+        "completed_at": "2026-11-22T09:03:00Z"
+      }
+    ],
+    "502": [
+      {
+        "name": "Contracts",
+        "conclusion": "failure",
+        "started_at": "2026-11-22T14:06:00Z",
+        "completed_at": "2026-11-22T14:09:30Z"
+      },
+      {
+        "name": "Flutter / Test (1)",
+        "conclusion": "failure",
+        "started_at": "2026-11-22T14:06:00Z",
+        "completed_at": "2026-11-22T14:16:00Z"
+      }
+    ],
+    "504": [
+      {
+        "name": "Contracts",
+        "conclusion": "success",
+        "started_at": "2026-11-22T18:31:00Z",
+        "completed_at": "2026-11-22T18:34:00Z"
+      },
+      {
+        "name": "Operations",
+        "conclusion": "failure",
+        "started_at": "2026-11-22T18:31:00Z",
+        "completed_at": "2026-11-22T18:32:30Z"
+      }
+    ]
+  }
+}

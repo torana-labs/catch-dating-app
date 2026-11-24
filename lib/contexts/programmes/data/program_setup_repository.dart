@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_guest_directory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/organizer_program_views.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_platform/errors/app_exception.dart';
@@ -17,23 +18,7 @@ class ProgramSetupRepository {
 
   final FirebaseFunctions _functions;
 
-  Future<List<OrganizerProgramListRow>> listPrograms(String organizerId) =>
-      _call(
-        name: 'listOrganizerPrograms',
-        payload: ListOrganizerProgramsCallableRequest(
-          organizerId: organizerId,
-        ).toJson(),
-        action: 'load your programs',
-        parse: (value) {
-          final map = requiredMap(value, 'organizer programs');
-          return mapList(
-            map['programs'],
-            'programs',
-          ).map(OrganizerProgramListRow.fromMap).toList(growable: false);
-        },
-      );
-
-  /// `archiveProgram`: starts the 14-day anonymization grace window; the
+  /// `archiveProgram`: starts the 60-day anonymization grace window; the
   /// program keeps reading but every mutation surface rejects writes.
   Future<ProgramMutationResult> archiveProgram({
     required String programId,
@@ -220,21 +205,42 @@ class ProgramSetupRepository {
     parse: OrganizerProgramDetail.fromCallableData,
   );
 
-  /// `listProgramGuests`: one page of guests plus the household, function and
-  /// group projections the RSVP grid renders.
-  Future<ProgramGuestListPage> listGuests(
-    String programId, {
-    int? limit,
-    String? cursor,
-  }) => _call(
-    name: 'listProgramGuests',
-    payload: ListProgramGuestsCallableRequest(
-      programId: programId,
-      limit: limit,
-      cursor: cursor,
-    ).toJson(),
-    action: 'load program guests',
-    parse: ProgramGuestListPage.fromCallableData,
+  /// `listProgramGuestGroups`: every group in the programme, including those
+  /// with no members, in the server's order (dimension, sort order, label).
+  /// The server returns the whole inventory in one response (capped at 500),
+  /// so there is no page to follow.
+  Future<List<ProgramGuestGroupRow>> listGuestGroups(String programId) => _call(
+    name: 'listProgramGuestGroups',
+    payload: ProgramIdCallableRequest(programId: programId).toJson(),
+    action: 'load program groups',
+    parse: (value) {
+      final map = requiredMap(value, 'program groups');
+      return mapList(
+        map['groups'],
+        'groups',
+      ).map(ProgramGuestGroupRow.fromMap).toList(growable: false);
+    },
+  );
+
+  /// `listProgramHouseholds`: every household in the programme, including
+  /// those with no members, in label order (the server returns them
+  /// unordered, in one response capped at 500).
+  Future<List<ProgramHouseholdRow>> listHouseholds(String programId) => _call(
+    name: 'listProgramHouseholds',
+    payload: ProgramIdCallableRequest(programId: programId).toJson(),
+    action: 'load program households',
+    parse: (value) {
+      final map = requiredMap(value, 'program households');
+      final households = mapList(
+        map['households'],
+        'households',
+      ).map(ProgramHouseholdRow.fromMap).toList();
+      households.sort((a, b) {
+        final byLabel = a.label.compareTo(b.label);
+        return byLabel != 0 ? byLabel : a.householdId.compareTo(b.householdId);
+      });
+      return List.unmodifiable(households);
+    },
   );
 
   Future<ProgramMutationResult> upsertFunction({
@@ -640,6 +646,28 @@ Future<OrganizerProgramDetail> organizerProgramDetail(
   return organizerProgramDetailFromView(view, counts);
 }
 
+/// The programme's first guest page with its households, function rows and
+/// groups, from the trigger-kept guest directory (#2306) rather than the
+/// `listProgramGuests` callable. It follows the live rows, so a guest or RSVP
+/// write shows once its trigger rewrites the row.
 @riverpod
 Future<ProgramGuestListPage> programGuestList(Ref ref, String programId) =>
-    ref.watch(programSetupRepositoryProvider).listGuests(programId);
+    ref.watch(programGuestDirectoryStreamProvider(programId).future);
+
+/// Every guest group in the programme, empty ones included, for the guest
+/// editor's picker and the groups section. Coordinator-only on the server
+/// (`programCoordinator` or manager), like the group writes.
+@riverpod
+Future<List<ProgramGuestGroupRow>> programGuestGroupList(
+  Ref ref,
+  String programId,
+) => ref.watch(programSetupRepositoryProvider).listGuestGroups(programId);
+
+/// Every household in the programme, empty ones included, for the guest
+/// editor's picker. The first guest page only names households with a member
+/// on that page.
+@riverpod
+Future<List<ProgramHouseholdRow>> programHouseholdList(
+  Ref ref,
+  String programId,
+) => ref.watch(programSetupRepositoryProvider).listHouseholds(programId);

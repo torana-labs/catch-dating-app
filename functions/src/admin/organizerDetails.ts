@@ -24,20 +24,20 @@ import {
   validateAdminUpdateOrganizerDetailsCallablePayload,
 } from "../shared/generated/validators/adminUpdateOrganizerDetailsInput";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {requireAdminRole} from "./adminAuth";
-import {setAdminAuditLogInTransaction} from "./adminAudit";
+import {requireAdminRole} from "../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
   readOrganizerRouteReservationStatus,
   requireValidOrganizerCanonicalPath,
   reserveOrganizerCanonicalRoute,
   type OrganizerRouteReservationStatus,
-} from "./organizerPublishingGuards";
+} from "../domain/organizers/organizerPublishingGuards";
 import {
   buildOrganizerAdminSearchProjection,
   organizerWithAdminFieldsForSearch,
   organizerAdminSearchQueryTokens,
-} from "./organizerAdminSearch";
+} from "../domain/organizers/organizerAdminSearch";
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import {assertOrganizerPublicContent} from
   "../organizers/organizerPublicContent";
@@ -46,7 +46,7 @@ import {
   storedOwnerLinks,
   type OwnerLinkInput,
 } from "../organizers/organizerLinks";
-import {adminOrganizerWomenLed} from "../organizers/womenLed";
+import {adminOrganizerWomenLed} from "../domain/events/womenLed";
 
 const organizerDetailsRoles = ["admin", "adminOwner", "support"] as const;
 

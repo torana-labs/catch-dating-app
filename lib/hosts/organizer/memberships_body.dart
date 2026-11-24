@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_admin.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_plan.dart';
 import 'package:catch_dating_app/contexts/payments/parts/host_membership_plan_row.dart';
-import 'package:catch_dating_app/host_memberships/presentation/host_membership_copy.dart';
 import 'package:catch_dating_app/hosts/organizer/memberships_state.dart';
+import 'package:catch_dating_app/pages/memberships/host_membership_copy.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';

@@ -3,10 +3,12 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/organizers/actions/organizer_follow_controller.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_signup_source.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_photo_policy.dart';
@@ -15,10 +17,9 @@ import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen_state.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_follow_controller.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_host_contact_controller.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_detail_screen_state.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_detail_view_model.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_host_contact_controller.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/errors/app_exception.dart';
@@ -808,9 +809,14 @@ void main() {
               area: 'Bandra',
               description: 'Easy social club',
               organizerType: OrganizerType.eventProducer,
+              signupSource: OrganizerSignupSource.googleSearch,
             );
 
         expect(fakeRepository.lastCreateCall, isNotNull);
+        expect(
+          fakeRepository.lastCreateCall!.signupSource,
+          OrganizerSignupSource.googleSearch,
+        );
         expect(
           fakeRepository.lastCreateCall!.organizerId,
           fakeRepository.generatedId,

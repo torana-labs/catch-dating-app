@@ -1,6 +1,5 @@
 import {assertPublicEventAge} from "../../profiles/eventProfileRequirements";
 import {createHash} from "node:crypto";
-import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {PublicEventPaymentDocument as Payment} from
   "../../shared/generated/firestoreAdminTypes";
@@ -10,16 +9,14 @@ import type {PaymentRoutingSnapshot} from "../../payments/paymentRouting";
 import {assertRazorpayCollectionRoutingCurrent} from
   "../../payments/razorpayCollectionRouting";
 import {assertPaymentRouteSnapshot} from "../../payments/paymentRouting";
-import {canonicalJson} from "../eventSetupPreferences/resolve";
-import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
+import {canonicalJson} from
+  "../../domain/formats/eventSetupPreferences/resolve";
 import {
   FirestoreSeatTransaction,
   assertCurrentReadySeatSnapshot,
 } from "../seatAuthority/firestoreAdapter";
-import {
-  CHECKOUT_HOLD_MILLIS,
-  heldSeatCount,
-} from "../seatAuthority/seatAuthority";
+import {heldSeatCount} from "../seatAuthority/seatAuthority";
+import {CHECKOUT_HOLD_MILLIS} from "../../domain/payments/checkoutHold";
 import {
   prepareCheckoutHold,
   applyCheckoutHold,
@@ -36,14 +33,16 @@ import {
   publicBookingPlaces,
   publicGuestNames,
   assertReviewedPublicQuote,
-  registrationUnavailable,
   type PublicCheckoutQuote,
 } from "./policy";
+import {registrationUnavailable} from
+  "../../domain/events/publicRegistrationTerms";
 import {
   PUBLIC_PAYMENT_COLLECTION,
+  openPublicEventPayment,
   publicPaymentId,
   parsePublicPayment,
-} from "./paymentLedger";
+} from "../../domain/payments/publicEventPayments";
 import {assertAccountMayBook} from "../../safety/accountStanding";
 import {publicHostMembershipQuoteTerms} from
   "../../hostMemberships/publicCheckout";
@@ -134,10 +133,7 @@ export async function reservePublicPayment(input: {
         nowMillis}), places);
     assertReviewedPublicQuote(reviewedQuote, quote);
     const organizerId = event.organizerId!;
-    if (
-      nowMillis + CHECKOUT_HOLD_MILLIS >= quote.startTimeMillis ||
-      (await readSeatMigrationWriterFence({db, tx, eventId})) !== "ready"
-    ) {
+    if (nowMillis + CHECKOUT_HOLD_MILLIS >= quote.startTimeMillis) {
       registrationUnavailable("Checkout is closed for this event.");
     }
     const identity = await preparePublicGuestIdentity({
@@ -208,7 +204,8 @@ export async function reservePublicPayment(input: {
       },
       {nowMillis},
     );
-    const placesLeft = ledger.capacity - roster.totalBooked;
+    const placesLeft = ledger.capacity === null ? Number.POSITIVE_INFINITY :
+      ledger.capacity - roster.totalBooked;
     if (placesLeft <= 0) {
       registrationUnavailable("This event is now full.");
     }
@@ -235,9 +232,8 @@ export async function reservePublicPayment(input: {
       },
       resolveIdentity: async () => identity.identity,
     });
-    const now = Timestamp.fromMillis(nowMillis);
-    const payment: Payment = {
-      purpose: "publicEvent",
+    // The payment validates before any write; the transaction commits all.
+    const payment = openPublicEventPayment(tx, paymentRef, {
       eventId,
       organizerId,
       recipientUid: uid,
@@ -261,28 +257,9 @@ export async function reservePublicPayment(input: {
         guestUnitAmountPaise: quote.guestUnitAmountPaise} : {}),
       ...(guestNames.length > 0 ? {guestNames} : {}),
       currency: quote.currency,
-      receipt: paymentId,
-      status: "creatingOrder",
-      providerOrderId: null,
-      providerPaymentId: null,
-      providerRefundId: null,
-      refundedAmountPaise: 0,
-      admissionReceiptId: null,
-      reservationReleased: false,
-      leaseUntil: null,
-      createdAt: now,
-      updatedAt: now,
-      capturedAt: null,
-      admittedAt: null,
-      checkoutExpiresAt: Timestamp.fromMillis(
-        nowMillis + CHECKOUT_HOLD_MILLIS,
-      ),
-      lastErrorCode: null,
-    };
-    parsePublicPayment(payment, paymentId);
+    }, nowMillis);
     identity.apply();
     applyCheckoutHold(seats, hold);
-    tx.create(paymentRef, payment);
     return {paymentId, payment, replayed: false};
   });
 }

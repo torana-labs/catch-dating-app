@@ -2,13 +2,13 @@ import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart'
 import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_summary_reads.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_kernel/read_model_family.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../test_pump_helpers.dart';
 
 class _UnusedFunctions extends Fake implements FirebaseFunctions {}
 
@@ -74,7 +74,11 @@ void main() {
           HostFormsRepository(
             _UnusedFunctions(),
             summaries: HostFormSummaryReads(
-              HostSummaryReader(db, actorId: () => 'host'),
+              ScopedReadModelReader(
+                db,
+                family: hostReadModels,
+                actorId: () => 'host',
+              ),
             ),
           ),
         ),

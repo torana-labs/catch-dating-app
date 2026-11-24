@@ -84,7 +84,7 @@ final class HostLiveRoomMapProvider
   }
 }
 
-String _$hostLiveRoomMapHash() => r'22bae245f234f1f1a4e2b9905f8ceb1f3d4de1a8';
+String _$hostLiveRoomMapHash() => r'0f9d65ee0469d54c639a45ad00581af69a4e623c';
 
 /// The seat map for [event], or null when the night has no saved layout or
 /// it is still read. It reads the plan, the selected layout, the group and

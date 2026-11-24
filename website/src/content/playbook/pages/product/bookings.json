@@ -283,7 +283,7 @@
       "storeBadges": "host",
       "media": {
         "kind": "capture",
-        "slot": "guest-explore"
+        "slot": "host-create-first-event"
       }
     }
   ]

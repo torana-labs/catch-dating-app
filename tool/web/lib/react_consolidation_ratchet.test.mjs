@@ -11,6 +11,7 @@ import {
   mergeBaseCssBudgets, pageCssBudgets, parseConsolidationBaseline, previousConsolidationBaseline,
   strandedByRetirementCeiling, strandedDifferences,
 } from "./react_consolidation_ratchet.mjs";
+import {loadToolsManifest} from "../../lib/tools_manifest.mjs";
 
 const empty = () => ({
   version: 1, owner: "web_surface_architecture",
@@ -36,7 +37,7 @@ const probes = [
   ["a baseline-only edit still selects the registered enforcing check", () => {
     const root = fileURLToPath(new URL("../../../", import.meta.url));
     const read = (file) => JSON.parse(fs.readFileSync(path.join(root, file), "utf8"));
-    const manifest = read("tool/tools_manifest.json");
+    const manifest = loadToolsManifest({root});
     const plan = planAffectedToolChecks({changedPaths: [baselinePath], manifest,
       componentGraph: read("tool/harness/component_graph.json")});
     assert.ok(plan.full || plan.toolIds.includes("web:shared-ui-adoption"));

@@ -7,11 +7,11 @@ import 'package:catch_dating_app/hosts/people/messages_state.dart';
 import 'package:catch_dating_app/hosts/people/saved_group_body.dart';
 import 'package:catch_dating_app/hosts/people/saved_group_state.dart';
 import 'package:catch_dating_app/hosts/people/widgets/people_tab_bar.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../test_pump_helpers.dart';
 import 'people_fixtures.dart';
 import 'people_test_pump.dart';
 
@@ -203,5 +203,44 @@ void main() {
     expect(find.byKey(const ValueKey('host-group-name')), findsOneWidget);
     expect(find.text('once'), findsOneWidget);
     expect(find.textContaining('people match'), findsNothing);
+  });
+
+  testWidgets('a hand-picked group lists its people with Show more', (
+    tester,
+  ) async {
+    var more = 0;
+    final opened = <String>[];
+    await pumpPeopleBody(
+      tester,
+      HostSavedGroupBody(
+        state: HostSavedGroupState(
+          status: HostSavedGroupStatus.ready,
+          audience: handPickedGroupAudience(40),
+          members: const [
+            (contactId: 'p0', displayName: 'Aanya Sharma'),
+            (contactId: 'p1', displayName: null),
+          ],
+          moreMembers: true,
+        ),
+        atLeast: 1,
+        onAtLeast: (_) {},
+        onOpenPerson: (person) => opened.add(person.contactId),
+        onRetry: () {},
+        onMoreMembers: () => more++,
+      ),
+    );
+
+    expect(find.text('Picked by hand'), findsOneWidget);
+    expect(find.text('40 people'), findsOneWidget);
+    expect(find.text('No longer in your contacts'), findsOneWidget);
+    expect(find.textContaining('people match'), findsNothing);
+
+    await tester.tap(find.text('Aanya Sharma'));
+    expect(opened, ['p0']);
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('host-group-members-more')),
+    );
+    await tester.tap(find.byKey(const ValueKey('host-group-members-more')));
+    expect(more, 1);
   });
 }

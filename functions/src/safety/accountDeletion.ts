@@ -103,56 +103,9 @@ export async function requestAccountDeletionHandler(
   await removeOrganizerHostIdentity(db, uid);
   await retainSafetyRecordsForDeletedAccount(db, uid, Date.now());
 
-  writer.set(db.collection("users").doc(uid), {
-    deleted: true,
-    deletedAt: now,
-    email: "",
-    name: "Deleted user",
-    firstName: "",
-    lastName: "",
-    displayName: "Deleted user",
-    dateOfBirth: admin.firestore.Timestamp.fromMillis(0),
-    profilePrompts: [],
-    gender: "other",
-    phoneNumber: "",
-    profileComplete: false,
-    profilePhotos: [],
-    city: admin.firestore.FieldValue.delete(),
-    interestedInGenders: [],
-    minAgePreference: 18,
-    maxAgePreference: 99,
-    height: admin.firestore.FieldValue.delete(),
-    occupation: admin.firestore.FieldValue.delete(),
-    company: admin.firestore.FieldValue.delete(),
-    education: admin.firestore.FieldValue.delete(),
-    religion: admin.firestore.FieldValue.delete(),
-    languages: [],
-    relationshipGoal: admin.firestore.FieldValue.delete(),
-    drinking: admin.firestore.FieldValue.delete(),
-    smoking: admin.firestore.FieldValue.delete(),
-    workout: admin.firestore.FieldValue.delete(),
-    diet: admin.firestore.FieldValue.delete(),
-    children: admin.firestore.FieldValue.delete(),
-    activityPreferences: {
-      running: {
-        paceMinSecsPerKm: 300,
-        paceMaxSecsPerKm: 420,
-        preferredDistances: [],
-        runningReasons: [],
-        preferredRunTimes: [],
-        version: 1,
-      },
-    },
-    paceMinSecsPerKm: admin.firestore.FieldValue.delete(),
-    paceMaxSecsPerKm: admin.firestore.FieldValue.delete(),
-    preferredDistances: admin.firestore.FieldValue.delete(),
-    runningReasons: admin.firestore.FieldValue.delete(),
-    preferredRunTimes: admin.firestore.FieldValue.delete(),
-    runPreferencesVersion: admin.firestore.FieldValue.delete(),
-    prefsShowInCrossPaths: admin.firestore.FieldValue.delete(),
-    prefsCrossPathsInvitations: admin.firestore.FieldValue.delete(),
-    fcmToken: admin.firestore.FieldValue.delete(),
-  }, {merge: true});
+  // Replacement write: every field not in the tombstone is gone, including
+  // any field added to the profile later.
+  writer.set(db.collection("users").doc(uid), deletedUserProfileTombstone(now));
 
   await writer.commit();
 
@@ -167,6 +120,40 @@ export async function requestAccountDeletionHandler(
   await deleteAuthUserIfPresent(deps.auth(), uid);
 
   return {deleted: true};
+}
+
+/**
+ * The fixed shape of `users/{uid}` after account deletion. Readers need only
+ * `deleted`/`deletedAt` (every server gate and audience builder), a
+ * non-personal display name for staff inboxes and the people index, and the
+ * three fields the app's profile model requires (`name`, `phoneNumber`,
+ * `profileComplete`) so a listener that fires before sign-out still parses.
+ */
+export const DELETED_USER_PROFILE_KEYS = [
+  "deleted",
+  "deletedAt",
+  "name",
+  "displayName",
+  "phoneNumber",
+  "profileComplete",
+] as const;
+
+/**
+ * Builds the account-deletion tombstone for `users/{uid}`.
+ * @param {FirebaseFirestore.FieldValue} now Server timestamp sentinel.
+ * @return {Record<string, unknown>} The full replacement document.
+ */
+export function deletedUserProfileTombstone(
+  now: FirebaseFirestore.FieldValue
+): Record<(typeof DELETED_USER_PROFILE_KEYS)[number], unknown> {
+  return {
+    deleted: true,
+    deletedAt: now,
+    name: "Deleted user",
+    displayName: "Deleted user",
+    phoneNumber: "",
+    profileComplete: false,
+  };
 }
 
 /** Removes personal Host projections and preserves shared business records. */
@@ -242,7 +229,7 @@ async function queueRelationshipCleanup(params: {
   const {db, uid, now, writer} = params;
   // Release pair holds while their persisted UID identity proof is current.
   await queueCrossPathsPairHoldCleanup(db, uid, writer);
-  // The migration fence, participation and linked attendee identity update
+  // The seat ledger, participation and linked attendee identity update
   // share one transaction, including attendee-only imported seats.
   await deleteAccountEventParticipations({db, uid, now,
     nowMillis: Date.now()});
@@ -262,9 +249,11 @@ async function queueRelationshipCleanup(params: {
     queuePaymentCleanup(db, uid, now, writer),
     queueNotificationCleanup(db, uid, writer),
     queueEventBroadcastCleanup(db, uid, writer),
-    queueOrganizerCommunicationPreferenceCleanup(db, uid, writer),
+    queueContactPermissionCleanup(db, uid, writer),
+    queueAccessCleanup(db, uid, writer),
     queueHostAnalyticsSnapshotCleanup(db, uid, writer),
     queueParticipantPrivateStateCleanup(db, uid, writer),
+    queueEventSuccessCleanup(db, uid, writer),
     queueBlockCleanup(db, uid, writer),
     queueReportCleanup(db, uid, now, writer),
   ]);
@@ -315,27 +304,53 @@ async function queueOrganizerAudienceIdentityCleanup(
   threadViews.forEach((view) => writer.update(view.ref, {linkedUid: null}));
 }
 
-/** Deletes permission evidence and redacts retained contact provenance. */
-async function queueOrganizerCommunicationPreferenceCleanup(
+/**
+ * Deletes the account's contact consent (issue #2460) and redacts retained
+ * contact provenance: its users/{uid}/contactPermissions documents, its
+ * contactPermissionReceipts (whether to keep them anonymised awaits counsel,
+ * OQ-C2) and its guestMessagingPermissions rows.
+ */
+async function queueContactPermissionCleanup(
   db: FirebaseFirestore.Firestore,
   uid: string,
   writer: BatchQueue
 ) {
-  const [preferences, receipts, origins, catchReceipts] = await Promise.all([
-    db.collection("organizerCommunicationPreferences")
-      .where("uid", "==", uid).get(),
-    db.collection("organizerCommunicationPermissionReceipts")
-      .where("uid", "==", uid).get(),
-    db.collection("organizerContactOrigins")
-      .where("actorUid", "==", uid).get(),
-    db.collection("catchCommunicationPermissionReceipts")
-      .where("uid", "==", uid).get(),
-  ]);
-  preferences.forEach((doc) => writer.delete(doc.ref));
-  receipts.forEach((doc) => writer.delete(doc.ref));
-  catchReceipts.forEach((doc) => writer.delete(doc.ref));
-  writer.delete(db.collection("catchCommunicationPreferences").doc(uid));
+  const [origins, permissions, permissionReceipts, guestRows] =
+    await Promise.all([
+      db.collection("organizerContactOrigins")
+        .where("actorUid", "==", uid).get(),
+      db.collection("users").doc(uid).collection("contactPermissions").get(),
+      db.collection("contactPermissionReceipts")
+        .where("uid", "==", uid).get(),
+      db.collection("guestMessagingPermissions")
+        .where("uid", "==", uid).get(),
+    ]);
+  permissions.forEach((doc) => writer.delete(doc.ref));
+  permissionReceipts.forEach((doc) => writer.delete(doc.ref));
+  guestRows.forEach((doc) => writer.delete(doc.ref));
   origins.forEach((doc) => writer.update(doc.ref, {actorUid: null}));
+}
+
+/**
+ * Ends the account's authority to act (issue #2474, decision 7): deletes its
+ * accessGrants documents and revokes its active organizer team edges with
+ * the status and fields removeOrganizerManager writes.
+ */
+async function queueAccessCleanup(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  writer: BatchQueue
+) {
+  const [grants, memberships] = await Promise.all([
+    db.collection("accessGrants").where("uid", "==", uid).get(),
+    db.collection("organizerTeamMemberships")
+      .where("uid", "==", uid).where("status", "==", "active").get(),
+  ]);
+  grants.forEach((doc) => writer.delete(doc.ref));
+  memberships.forEach((doc) => writer.set(doc.ref, {
+    status: "removed",
+    removedAt: admin.firestore.FieldValue.serverTimestamp(),
+  }, {merge: true}));
 }
 
 /** Releases and deletes pair reservations that expose the deleted account. */
@@ -400,6 +415,53 @@ async function queueParticipantPrivateStateCleanup(
     removedAt: admin.firestore.FieldValue.serverTimestamp(),
     reactionCounts: {like: 0, love: 0, laugh: 0, wow: 0, sad: 0, thanks: 0},
   }));
+}
+
+/**
+ * Erases the account's derived event and dating data (#2444). Its own signal
+ * facts, metric counters, event feedback, compatibility answers, conversation
+ * graphs and runtime identities are deleted. Other people's records lose the
+ * account: their signal facts naming it as peer are deleted too (the fact id
+ * carries the peer's uid), while their running counters keep the anonymous
+ * total, and their conversation graphs drop it from selectedUids. Scorecard
+ * triggers recompute the host aggregates from what remains.
+ */
+async function queueEventSuccessCleanup(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  writer: BatchQueue
+) {
+  const [ownFacts, peerFacts, feedback, compatibility, ownGraphs,
+    peerGraphs, runtime] = await Promise.all([
+    db.collection("participantSignalFacts").where("uid", "==", uid).get(),
+    db.collection("participantSignalFacts").where("peerUid", "==", uid).get(),
+    db.collection("eventSuccessFeedback").where("uid", "==", uid).get(),
+    db.collection("eventSuccessCompatibilityResponses")
+      .where("uid", "==", uid).get(),
+    db.collection("eventSuccessConversationGraphs")
+      .where("uid", "==", uid).get(),
+    db.collection("eventSuccessConversationGraphs")
+      .where("selectedUids", "array-contains", uid).get(),
+    db.collection("eventRuntimeParticipants").where("uid", "==", uid).get(),
+  ]);
+  const deleted = new Set<string>();
+  for (const records of [ownFacts, peerFacts, feedback, compatibility,
+    ownGraphs, runtime]) {
+    records.forEach((doc) => {
+      if (deleted.has(doc.ref.path)) return;
+      deleted.add(doc.ref.path);
+      writer.delete(doc.ref);
+    });
+  }
+  peerGraphs.forEach((doc) => {
+    if (deleted.has(doc.ref.path)) return;
+    const selectedUids = doc.data().selectedUids;
+    writer.update(doc.ref, {
+      selectedUids: Array.isArray(selectedUids) ?
+        selectedUids.filter((selected: unknown) => selected !== uid) : [],
+    });
+  });
+  writer.delete(db.collection("participantMetricCounters").doc(uid));
 }
 
 /**

@@ -1,0 +1,32 @@
+{
+  "id": "hostEventCheckpointViews",
+  "path": "hostEventCheckpointViews/{checkpointViewId}",
+  "rulesMatch": "/hostEventCheckpointViews/{checkpointViewId}",
+  "typescriptInterface": "HostEventCheckpointViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers read live movement views and nothing else"
+  ],
+  "owner": "Live movement view evaluator: hostReadModels movement view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get their own organizer's views by id; nobody lists the collection",
+  "write": "server only; one per roster whose destination is a checkpoint, frozen 24 hours after the event ends",
+  "exportedFunctions": [
+    "dispatchEvents",
+    "onHostMovementViewPlanChanged",
+    "onHostMovementViewProgressChanged",
+    "onHostMovementViewRosterChanged",
+    "onHostMovementViewCheckpointChanged",
+    "dispatchEventAttendees",
+    "onHostMovementViewGuestChanged",
+    "onHostMovementViewMembershipChanged",
+    "onHostMovementViewWorkItemChanged",
+    "onHostMovementViewStaffGrantChanged",
+    "dispatchOrganizers"
+  ],
+  "migrationNotes": [
+    "request.state, request.ownerAvailability and the reporter choices follow the app clock through request.dueAt, ownerValidUntilMillis and each reporter's validUntil.",
+    "accountability carries each member's checkpoint-scoped accountability view; the resolve command fences on its sourceHash."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "design:host-section-composition",
+  "category": "design",
+  "path": "tool/design/check_host_section_composition.mjs",
+  "command": "node --test test/tool/host_section_composition_test.mjs",
+  "surface": "local-read",
+  "status": "internal",
+  "role": "finder",
+  "description": "Source guard imported by design:component-contracts; rejects generic operational card and local empty-state anatomy on migrated Host surfaces.",
+  "checks": [
+    "node --check tool/design/check_host_section_composition.mjs",
+    "node --test test/tool/host_section_composition_test.mjs"
+  ]
+}

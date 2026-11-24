@@ -1,0 +1,30 @@
+{
+  "id": "hostEventAccountabilityViews",
+  "path": "hostEventAccountabilityViews/{accountabilityViewId}",
+  "rulesMatch": "/hostEventAccountabilityViews/{accountabilityViewId}",
+  "typescriptInterface": "HostEventAccountabilityViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers read live guest and settings views and nothing else"
+  ],
+  "owner": "Live guest and settings view evaluator: hostReadModels guest view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get their own organizer's views by id ({eventId}_{attendeeId}); nobody lists the collection",
+  "write": "server only; one per attendee of an event whose format has the sweep primitive, deleted with the attendee, the event or the sweep",
+  "exportedFunctions": [
+    "dispatchEvents",
+    "onHostGuestViewPlanChanged",
+    "dispatchEventAttendees",
+    "onHostGuestViewGuestChanged",
+    "onHostGuestViewMembershipChanged",
+    "dispatchOrganizers",
+    "onHostGuestViewStaffGrantChanged",
+    "onHostGuestViewSettingChanged",
+    "onHostGuestViewRuntimeChanged"
+  ],
+  "migrationNotes": [
+    "The checkpoint-scoped accountability lives on hostEventCheckpointViews; this view is the event-wide sweep review.",
+    "A missing document or sourceCoverage invalidSource with its incompleteSource means the phone shows the unavailable state."
+  ]
+}

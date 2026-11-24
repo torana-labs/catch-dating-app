@@ -188,7 +188,7 @@ receipts, since either can resend an already contacted guest.
 | Program logistics editors (pickup points, hotels) | **in review** (#474) — workspace Logistics section |
 | Entitlements (`organizerEntitlements`, SKU catalog, limits enforcement) | **in review** — rebased onto current main and re-verified (#455) |
 | Attendance report / export per function | **built** (#460) — `/host/work/:programId/attendance` + CSV export |
-| Retention / anonymization on archive | **built in source** — dedicated archive/unarchive callables, 14-day grace, deleted-account and organizer/revision fences, resumable anonymization journal and scheduled sweep |
+| Retention / anonymization on archive | **built in source** — dedicated archive/unarchive callables, 60-day grace, deleted-account and organizer/revision fences, resumable anonymization journal and scheduled sweep |
 
 ---
 
@@ -252,7 +252,7 @@ list at verify time (#453); the prod delivery cursor is caught up through
 | R8 | `stakeholderViewer` counts API + read surface | **in review #458** — counts-only contract answers 5.4 (headcounts only, no PII) | merge |
 | R9 | Entitlements merge + Plan screen + limits in callables | **in review #455** (rebased, re-verified) | merge |
 | R10 | `recipientSource: programSelection` + form-automation → triggered-moment migration | **in review #478** — programSelection dispatcher on main; companion-Moment + durable-intent handoff in review | merge |
-| R11 | Reconciliation/export, per-function attendance report, retention | **implemented** — reconciliation/export/attendance merged (#460, #471); retention follows the approved policy (14d grace, keep `contactId`, indefinite anonymized retention): `archiveProgram`/`unarchiveProgram` callables, archived mutation fencing, chunked idempotent anonymize worker with journaled cursor resume, daily sweep | Source complete; release admission and deployment remain release-owned. |
+| R11 | Reconciliation/export, per-function attendance report, retention | **implemented** — reconciliation/export/attendance merged (#460, #471); retention follows the approved policy (60-day grace, keep `contactId`, indefinite anonymized retention): `archiveProgram`/`unarchiveProgram` callables, archived mutation fencing, chunked idempotent anonymize worker with journaled cursor resume, daily sweep | Source complete; release admission and deployment remain release-owned. |
 | R12 | `verifyFirebaseDelivery` dormant-list fix | **merged #453** | — |
 
 Merge-ready now (no ordering dependency): R9's entitlements PR (#455).

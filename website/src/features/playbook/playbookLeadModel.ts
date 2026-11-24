@@ -46,7 +46,9 @@ export const playbookGuideFormats: Readonly<Record<string, WebsiteLeadGuideForma
  * WhatsApp; its organisation and what they run are optional to the intake.
  * A referral needs the person's name and the host's name, link and how they
  * know them; the intake credits it to the signed-in referrer it reads from
- * the request, never from the form.
+ * the request, never from the form. An app link request (Text me the link)
+ * is not one of these: the shared capture in features/marketing draws it
+ * (./playbookLeadForms.ts).
  */
 const kindFields = {
   guide: {needs: [], may: ["name"]},

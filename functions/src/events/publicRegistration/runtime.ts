@@ -8,7 +8,7 @@ import {PublicPaymentProcessor} from "./paymentProcessor";
 import {
   PUBLIC_PAYMENT_COLLECTION,
   parsePublicPayment,
-} from "./paymentLedger";
+} from "../../domain/payments/publicEventPayments";
 
 export async function publicPaymentExecutionFor(
   input: {

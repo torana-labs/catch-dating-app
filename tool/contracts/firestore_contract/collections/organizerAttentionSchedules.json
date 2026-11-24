@@ -1,0 +1,34 @@
+{
+  "id": "organizerAttentionSchedules",
+  "path": "organizerAttentionSchedules/{organizerId}",
+  "rulesMatch": "/organizerAttentionSchedules/{organizerId}",
+  "typescriptInterface": "OrganizerAttentionScheduleDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers get their organizer attention schedule and nothing else"
+  ],
+  "owner": "Host Today attention evaluator: hostReadModels attention triggers and sweepOrganizerAttention",
+  "writerContext": "host",
+  "read": "current organizer managers get their own organizer's document; nobody lists the collection",
+  "write": "server only; written by every committed evaluation and deleted with the organizer",
+  "exportedFunctions": [
+    "dispatchOrganizers",
+    "dispatchEvents",
+    "onOrganizerAttentionParticipationChanged",
+    "onOrganizerAttentionAssistanceCaseChanged",
+    "onOrganizerAttentionDeliveryReviewChanged",
+    "onOrganizerAttentionApplicationChanged",
+    "onOrganizerAttentionProviderSyncChanged",
+    "onOrganizerAttentionAutomationRuleChanged",
+    "onOrganizerAttentionAutomationRunChanged",
+    "onOrganizerAttentionMomentSendChanged",
+    "onOrganizerAttentionEventOfferChanged",
+    "onOrganizerAttentionPaymentAccountChanged",
+    "sweepOrganizerAttention"
+  ],
+  "migrationNotes": [
+    "nextEvaluationAt is the earliest time an item can become due, change urgency or expire with no source write, clamped to between one minute and one day, so every organizer with anything loaded is re-evaluated at least daily.",
+    "A missing document, or sourceCoverage overCap or invalidSource with its incompleteSource, means the client must not claim a complete queue."
+  ]
+}

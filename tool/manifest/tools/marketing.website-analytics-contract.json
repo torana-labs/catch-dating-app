@@ -1,0 +1,14 @@
+{
+  "id": "marketing:website-analytics-contract",
+  "category": "marketing",
+  "path": "website/scripts/analyticsContract.test.mjs",
+  "command": "node --experimental-strip-types --test website/scripts/analyticsContract.test.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates website copy-version event tagging and unset, essential-only, and accepted consent presentation states.",
+  "checks": [
+    "node --check website/scripts/analyticsContract.test.mjs",
+    "node --experimental-strip-types --test website/scripts/analyticsContract.test.mjs"
+  ],
+  "role": "gate"
+}

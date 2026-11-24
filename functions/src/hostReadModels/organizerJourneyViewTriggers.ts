@@ -6,13 +6,15 @@ import {
   FirestoreEvent,
   onDocumentWritten,
 } from "firebase-functions/v2/firestore";
-import {catchEventTitle, timestampMillis} from "../admin/recordsDirectory";
+import {timestampMillis} from "../shared/dates";
+import {catchEventTitle} from "../shared/eventLabels";
 import type {
   EventDocument,
   OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {organizerManagerUserIds} from "../shared/organizerHosts";
 import {reconcileOrganizerJourneyViews} from "./organizerJourneyViewStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 
@@ -81,21 +83,38 @@ export function resolveJourneyViewOrganizerIds(source: JourneyViewSource,
 
 const options = {retry: true};
 
-async function reconcileForWrite(source: JourneyViewSource,
-  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
-    {documentId: string}>): Promise<void> {
+async function reconcileForChange(source: JourneyViewSource,
+  documentId: string,
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): Promise<void> {
   const organizerIds = resolveJourneyViewOrganizerIds(source,
-    event.params.documentId, event.data?.before.data(),
-    event.data?.after.data());
+    documentId, before,
+    after);
   for (const organizerId of organizerIds) {
     await reconcileOrganizerJourneyViews(admin.firestore(), organizerId);
   }
 }
 
-/** Name, listing, claim and managers: who reads a journey and its steps. */
-export const onHostOrganizerJourneyViewOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{documentId}",
-}, (event) => reconcileForWrite("organizers", event));
+async function reconcileForWrite(
+  source: JourneyViewSource,
+  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
+    {documentId: string}>
+): Promise<void> {
+  await reconcileForChange(source, event.params.documentId,
+    event.data?.before.data(), event.data?.after.data());
+}
+
+/**
+ * Name, listing, claim and managers: who reads a journey and its steps.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostOrganizerJourneyViewProjections = defineProjections(
+  "organizers", [{
+    id: "hostOrganizerJourneyView", kind: "projection", when: () => true,
+    run: (change) => reconcileForChange("organizers", change.documentId,
+      change.before, change.after),
+  }]);
 
 /** A claim request adds, decides or withdraws its requester's steps. */
 export const onHostOrganizerJourneyViewClaimChanged = onDocumentWritten({
@@ -107,10 +126,18 @@ export const onHostOrganizerJourneyViewIntakeChanged = onDocumentWritten({
   ...options, document: "supplyIntakeRequests/{documentId}",
 }, (event) => reconcileForWrite("supplyIntakeRequests", event));
 
-/** The organizer's earliest event is its first-event step. */
-export const onHostOrganizerJourneyViewEventChanged = onDocumentWritten({
-  ...options, document: "events/{documentId}",
-}, (event) => reconcileForWrite("events", event));
+/**
+ * An event write: its organizer's journey steps.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostOrganizerJourneyViewEventProjections = defineProjections(
+  "events", [{
+    id: "hostOrganizerJourneyView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange("events", change.documentId,
+      change.before, change.after),
+  }]);
 
 /** The first paid booking milestone. */
 export const onHostOrganizerJourneyViewGrowthChanged = onDocumentWritten({

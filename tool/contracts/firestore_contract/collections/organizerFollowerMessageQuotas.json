@@ -1,0 +1,19 @@
+{
+  "id": "organizerFollowerMessageQuotas",
+  "path": "organizerFollowerMessageQuotas/{quotaId}",
+  "rulesMatch": "/organizerFollowerMessageQuotas/{quotaId}",
+  "typescriptInterface": "OrganizerFollowerMessageQuotaDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps organizer insights and follower message quotas server-only"
+  ],
+  "owner": "website owner view Message followers",
+  "writerContext": "insights",
+  "read": "server only; usage count copied into hostOrganizerOwnerViews",
+  "write": "server only; manageOrganizerOwnerPage transaction",
+  "exportedFunctions": [
+    "manageOrganizerOwnerPage",
+    "onHostOrganizerOwnerViewQuotaChanged"
+  ]
+}

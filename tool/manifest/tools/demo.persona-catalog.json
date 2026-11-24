@@ -1,0 +1,24 @@
+{
+  "id": "demo:persona-catalog",
+  "category": "demo",
+  "path": "tool/demo/demo_persona_catalog.mjs",
+  "command": "node tool/demo/demo_persona_catalog.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates and summarizes sales-demo persona catalogs.",
+  "checks": [
+    "node --check tool/demo/demo_persona_catalog.mjs",
+    "node --test tool/demo/demo_persona_catalog.test.mjs"
+  ],
+  "impactPaths": [
+    "contracts/**/*.json",
+    "tool/contracts/generate_schema_contracts.mjs"
+  ],
+  "role": "generator",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

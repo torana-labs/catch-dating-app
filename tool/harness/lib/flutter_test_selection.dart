@@ -1,17 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math' as math;
 
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 
 import 'flutter_test_reads.dart';
+import 'flutter_test_shards.dart';
 
-bool _testFile(String name) =>
-    name.startsWith('test/') &&
-    name.endsWith('_test.dart') &&
-    !name.startsWith('test/goldens/') &&
-    !name.startsWith('test/integration/');
+export 'flutter_test_shards.dart';
+
+part 'flutter_test_inputs.dart';
+
+bool _testFile(String name) => testPackage(name) != null;
 
 const _componentGraph = 'tool/harness/component_graph.json';
 
@@ -62,19 +62,9 @@ bool needsUiLintSmoke({
   }
 }
 
-/// Test files per shard. Measured on hosted runners: a shard's test step takes
-/// about 35 s plus 2.4 s per file, and each shard also pays about 85 s of setup
-/// and its own runner-queue wait, so 110 files keep the step near five minutes
-/// without paying for idle shards.
-const filesPerShard = 110;
-
-/// How many shards [files] selected test files run in: one per
-/// [filesPerShard] files, at least one when any test is selected, at most four.
-int shardCount(int files) =>
-    files <= 0 ? 0 : math.min(4, (files + filesPerShard - 1) ~/ filesPerShard);
-
-/// Only narrows root unit/widget tests. Native, package, golden, integration,
-/// analysis and contract gates retain their independent owners.
+/// Only narrows the root and app-package unit and widget tests the shards run
+/// ([testPackage]). Native, other package, golden, integration, analysis and
+/// contract gates retain their independent owners.
 ///
 /// [generatedBefore] and [generatedAfter] hold the untracked Dart the schema
 /// contract generator emits at base and head. With both, a contract or
@@ -105,7 +95,7 @@ Map<String, Object> selectFlutterTests({
     after = {...after, ...generatedAfter};
   }
   final all = after.keys.where(_testFile).toList()..sort();
-  if (all.isEmpty) throw StateError('No root Flutter tests exist.');
+  if (all.isEmpty) throw StateError('No shard Flutter tests exist.');
   Map<String, Object> result(List<String> files, String reason) => {
     'mode': files.length == all.length ? 'full' : 'affected',
     'reason': reason,
@@ -173,7 +163,11 @@ Map<String, Object> selectFlutterTests({
           : <String>{};
       // A dart:io file with bounded reads selects the tests that reach it
       // only when a changed path is one it can read.
-      final reads = {...newGraph.reads(current), ...oldGraph.reads(previous)};
+      final package = testPackage(test)!;
+      final reads = {
+        ...newGraph.reads(current, package),
+        ...oldGraph.reads(previous, package),
+      };
       final impactedChanges = {
         ...{
           ...current,
@@ -185,7 +179,9 @@ Map<String, Object> selectFlutterTests({
       final impacted = !before.containsKey(test) || impactedChanges.isNotEmpty;
       if (impacted ||
           current.contains(_Imports.fileSystemProbe) ||
-          previous.contains(_Imports.fileSystemProbe)) {
+          previous.contains(_Imports.fileSystemProbe) ||
+          newGraph.readsElsewhere(current, package) ||
+          oldGraph.readsElsewhere(previous, package)) {
         selected.add(test);
       }
     }
@@ -211,154 +207,27 @@ Map<String, Object> selectFlutterTests({
   }
 }
 
-const _globalInputNames = {
-  '.metadata',
-  'analysis_options.yaml',
-  'build.yaml',
-  'dart_test.yaml',
-  'l10n.yaml',
-  'pubspec.lock',
-  'pubspec.yaml',
-  'pubspec_overrides.yaml',
-};
-
-// The Flutter CI job pins the SDK and runs the selected files.
-const _globalInputPaths = {
-  '.github/workflows/flutter-ci.yml',
-  'tool/ci/toolchain.env',
-};
-// The schema generator's outputs aren't tracked. Without its rendered output
-// at both commits, these reach every test that imports one, and no import
-// graph can show which. With it, they are probe-only like the rest of
-// contracts/ and tool/, and the changed outputs need import proof instead.
-bool _generatedContractInput(String name) =>
-    (name.startsWith('contracts/') && name.endsWith('.json')) ||
-    const {
-      'tool/contracts/generate_schema_contracts.mjs',
-      'tool/contracts/lib/schema_specs.mjs',
-      'tool/contracts/schema_spec_exceptions.json',
-      'tool/contracts/schema_spec_order.json',
-    }.contains(name);
-
-bool _untrackedGeneratedDart(String name) =>
-    name.startsWith('packages/platform/lib/schema_contracts/generated/') ||
-    RegExp(r'^lib/contexts/[^/]+/data/generated/').hasMatch(name);
-
-const _globalInputDirectories = [
-  '.github/actions/load-toolchain/',
-  '.github/actions/setup-flutter/',
-];
-
-bool _globalTestInput(String name) =>
-    _globalInputNames.contains(name.split('/').last) ||
-    name.endsWith('.arb') ||
-    _globalInputPaths.contains(name) ||
-    _globalInputDirectories.any(name.startsWith);
-
-// Surfaces outside the root package: backend, web, design, docs, tooling,
-// infrastructure and CI sources, the JavaScript-only packages, other Flutter
-// packages and apps, and golden/integration suites with their own gates. A root test reaches a Dart file here through the
-// import graph, or reads a file here from disk as a filesystem probe. Any
-// other path, including test fixtures, assets, native folders and new
-// top-level roots, still needs import proof or keeps the full suite.
-const _probeOnlyDirectories = [
-  '.github/',
-  'admin/',
-  'analytics/',
-  'apps/',
-  'artifacts/',
-  'contracts/',
-  'copy/',
-  'design/',
-  'docs/',
-  'extensions/',
-  'fastlane/',
-  'firebase/',
-  'functions/',
-  'infra/',
-  'integration_test/',
-  'operations/',
-  'packages/brand/',
-  // The package job ("Catch UI, Consumer & Host package tests") owns these
-  // suites, and the macOS goldens lane owns packages/catch_ui/test/goldens.
-  // A root test that imports one still reaches it through the import graph.
-  'packages/catch_ui/test/',
-  'packages/kernel/test/',
-  'packages/web-config/',
-  'packages/web-ui/',
-  'test/goldens/',
-  'test/integration/',
-  'tool/',
-  'website/',
-  'widgetbook/',
-];
-const _probeOnlyFiles = {
-  '.editorconfig',
-  '.env.example',
-  '.firebaserc',
-  '.gitignore',
-  'Gemfile',
-  'Gemfile.lock',
-  'firebase.json',
-  'firestore.indexes.json',
-  'firestore.rules',
-  'package-lock.json',
-  'package.json',
-  'storage.rules',
-};
-
-bool _probeOnlyInput(String name) =>
-    (name.endsWith('.md') &&
-        !RegExp(r'(^|/)(assets|test|integration_test)/').hasMatch(name)) ||
-    _probeOnlyFiles.contains(name) ||
-    _probeOnlyDirectories.any(name.startsWith);
-
-/// Whether any manifest's top-level `flutter:` section may bundle [name] as
-/// an asset, font or shader. This scans tokens conservatively rather than
-/// parsing YAML: every value is a possible file or directory relative to its
-/// manifest, and escapes, anchors or aliases make the manifest opaque.
-bool _possiblyBundled(String name, Map<String, String> tree) {
-  for (final MapEntry(key: manifest, value: source) in tree.entries) {
-    if (manifest != 'pubspec.yaml' && !manifest.endsWith('/pubspec.yaml')) {
-      continue;
-    }
-    final root = manifest.substring(0, manifest.length - 'pubspec.yaml'.length);
-    final section = StringBuffer();
-    var inside = false;
-    for (final line in source.split('\n')) {
-      if (line.isNotEmpty && !line.startsWith(RegExp(r'[\s#]'))) {
-        inside = line.startsWith('flutter:');
-        if (inside) section.writeln(line.substring('flutter:'.length));
-      } else if (inside) {
-        section.writeln(line);
-      }
-    }
-    final text = section.toString().replaceAll(
-      RegExp(r'(^|\s)#.*$', multiLine: true),
-      ' ',
-    );
-    if (RegExp(r'[\\*&]').hasMatch(text)) return true;
-    tokens:
-    for (var token in text.split(RegExp(r'''[\s,\[\]{}'"]+'''))) {
-      if (token.startsWith('-')) token = token.substring(1);
-      if (token.isEmpty || token.endsWith(':')) continue;
-      if (token.startsWith('/')) return true;
-      final segments = <String>[];
-      for (final segment in '$root$token'.split('/')) {
-        if (segment == '..') {
-          if (segments.isEmpty) continue tokens; // Outside the repository.
-          segments.removeLast();
-        } else if (segment.isNotEmpty && segment != '.') {
-          segments.add(segment);
-        }
-      }
-      final target = segments.join('/');
-      if (target.isEmpty || name == target || name.startsWith('$target/')) {
-        return true;
-      }
-    }
-  }
-  return false;
+/// The tests [selectFlutterTests] keeps on every change because their file
+/// reads cannot be bounded, by repository path, with why: `probe` (the import
+/// closure reaches a filesystem probe) or `reads_elsewhere` (a reader's
+/// relative reads were bounded for another package's working directory).
+/// Descriptive only: selection never consults it. Generated contract Dart is
+/// an opaque leaf here, as it is when the generated outputs are not rendered.
+Map<String, String> retainedProbes({
+  required Map<String, String> files,
+  Set<String>? paths,
+}) {
+  final graph = _Imports(files, paths: paths ?? files.keys.toSet());
+  final tests = files.keys.where(_testFile).toList()..sort();
+  return {
+    for (final test in tests)
+      if (graph.testClosure(test) case final closure
+          when closure.contains(_Imports.fileSystemProbe) ||
+              graph.readsElsewhere(closure, testPackage(test)!))
+        test: closure.contains(_Imports.fileSystemProbe)
+            ? 'probe'
+            : 'reads_elsewhere',
+  };
 }
 
 class _Imports {
@@ -397,13 +266,32 @@ class _Imports {
   /// Every tracked path, against which declared reads must resolve.
   final Set<String> paths;
 
-  /// The bounded reads of each `dart:io` file reached so far.
+  /// The bounded reads of each file-reading file reached so far, as
+  /// repository paths.
   final readsOf = <String, Set<String>>{};
 
-  /// The paths the `dart:io` files in [closure] can read.
-  Set<String> reads(Set<String> closure) => {
-    for (final name in closure) ...?readsOf[name],
+  /// The working directory of the test run whose file reads each of
+  /// [readsOf] was bounded for: its package directory ([readsPackage]), or
+  /// [anyReadsPackage] when it reads only repository paths.
+  final readsPackageOf = <String, String>{};
+
+  /// The paths the file-reading files in [closure] can read when
+  /// [package]'s tests run them.
+  Set<String> reads(Set<String> closure, String package) => {
+    for (final name in closure)
+      if (_readsFrom(name, package)) ...?readsOf[name],
   };
+
+  /// Whether a file-reading file in [closure] had its relative reads bounded
+  /// for another package's working directory, so [package]'s tests would
+  /// read other paths: such a test is a filesystem probe.
+  bool readsElsewhere(Set<String> closure, String package) => closure.any(
+    (name) => readsOf.containsKey(name) && !_readsFrom(name, package),
+  );
+
+  bool _readsFrom(String name, String package) =>
+      readsPackageOf[name] == package ||
+      readsPackageOf[name] == anyReadsPackage;
 
   Set<String> closure(String start) {
     final visited = <String>{};
@@ -419,16 +307,19 @@ class _Imports {
   }
 
   /// `flutter test` wraps a test in a `flutter_test_config.dart` from its
-  /// directory or an ancestor. Every ancestor config counts as an import.
+  /// directory or an ancestor up to its package directory. Every such config
+  /// counts as an import.
   Set<String> testClosure(String test) {
     final result = closure(test);
+    final package = testPackage(test);
+    final root = package == null || package == '.' ? '' : '$package/';
     var directory = test;
-    while (directory.contains('/')) {
+    while (directory.length > root.length && directory.contains('/')) {
       directory = directory.substring(0, directory.lastIndexOf('/'));
       final config = '$directory/flutter_test_config.dart';
       if (files.containsKey(config)) result.addAll(closure(config));
     }
-    if (files.containsKey('flutter_test_config.dart')) {
+    if (root.isEmpty && files.containsKey('flutter_test_config.dart')) {
       result.addAll(closure('flutter_test_config.dart'));
     }
     return result;
@@ -446,25 +337,15 @@ class _Imports {
       throw StateError('Cannot parse Dart module: $name');
     }
     final dependencies = <String>{};
+    // Whether the file can read files: through dart:io, or by repository
+    // path through repoFile and repoDirectory.
+    var readsFiles = false;
     void add(StringLiteral literal) {
       final value = literal.stringValue;
       if (value == null) throw StateError('Nonliteral Dart URI in $name');
       final uri = Uri.parse(value);
       if (uri.scheme == 'dart') {
-        if (value == 'dart:io' &&
-            (name.startsWith('test/') || name.startsWith('tool/'))) {
-          final bounded = fileReads(
-            name: name,
-            source: source,
-            unit: parsed.unit,
-            paths: paths,
-          );
-          if (bounded == null) {
-            dependencies.add(fileSystemProbe);
-          } else {
-            readsOf[name] = bounded;
-          }
-        }
+        if (value == 'dart:io') readsFiles = true;
         return;
       }
       String target;
@@ -486,6 +367,7 @@ class _Imports {
         if (opaqueGenerated && _untrackedGeneratedDart(target)) return;
         throw StateError('Missing local Dart module: $target');
       }
+      if (target == repoFileLibrary) readsFiles = true;
       dependencies.add(target);
     }
 
@@ -497,6 +379,29 @@ class _Imports {
             add(conditional.uri);
           }
         }
+      }
+    }
+    final package = readsPackage(name);
+    if (readsFiles && package != null && name != repoFileLibrary) {
+      // Relative paths resolve against the test run's working directory, its
+      // package directory; a shared helper's working directory is unknown.
+      final bounded = fileReads(
+        name: name,
+        source: source,
+        unit: parsed.unit,
+        paths: paths,
+        workingDirectory: switch (package) {
+          '.' => '',
+          anyReadsPackage => null,
+          _ => package,
+        },
+      );
+      if (bounded == null) {
+        dependencies.add(fileSystemProbe);
+      } else {
+        readsOf[name] = bounded.paths;
+        // Repository-path reads are the same from every package directory.
+        readsPackageOf[name] = bounded.relative ? package : anyReadsPackage;
       }
     }
     return dependencies;
@@ -663,9 +568,43 @@ Future<void> main(List<String> arguments) async {
       '--commit-window',
       '--output',
       '--github-output',
+      '--probes-only',
     ].contains(key),
   )) {
     throw ArgumentError('Unknown option');
+  }
+  if (!['true', 'false'].contains(args['--probes-only'] ?? 'false')) {
+    throw ArgumentError('Invalid --probes-only');
+  }
+  // Reports the always-run set at one commit and selects nothing: no plan,
+  // shards or GitHub output are written.
+  if (args['--probes-only'] == 'true') {
+    final head = args['--head'] ?? '';
+    if (!RegExp(r'^[0-9a-f]{40}$').hasMatch(head)) {
+      throw ArgumentError('Exact Git SHAs required');
+    }
+    _git(['cat-file', '-e', '$head^{commit}']);
+    final output = args['--output'];
+    if (output == null) throw ArgumentError('--output is required');
+    final paths =
+        (_git(['ls-tree', '-r', '--name-only', '-z', head]).stdout as String)
+            .split('\u0000')
+            .where((name) => name.isNotEmpty)
+            .toSet();
+    final probes = retainedProbes(files: await _tree(head), paths: paths);
+    File(output).parent.createSync(recursive: true);
+    File(output).writeAsStringSync(
+      '${const JsonEncoder.withIndent('  ').convert({
+        'sourceSha': head,
+        'probesRetained': [
+          for (final entry in probes.entries) {'test': entry.key, 'why': entry.value},
+        ],
+      })}\n',
+    );
+    stdout.writeln(
+      jsonEncode({'sourceSha': head, 'probesRetained': probes.length}),
+    );
+    return;
   }
   final base = args['--base'] ?? '';
   final head = args['--head'] ?? '';
@@ -740,16 +679,9 @@ Future<void> main(List<String> arguments) async {
   plan['ordinaryDocuments'] = ordinaryDocuments.toList()..sort();
   plan['commitWindow'] = commitWindow;
   final files = plan['files']! as List<String>;
-  final count = shardCount(files.length);
-  final shards = List.generate(
-    count,
-    (index) => {
-      'shard_index': index,
-      'shard_label': index + 1,
-      'shard_total': count,
-      'files': [for (var i = index; i < files.length; i += count) files[i]],
-    },
-  );
+  final shards = planShards(files);
+  final count = shards.length;
+  plan['selectedByPackage'] = packageCounts(files);
   final output = args['--output'];
   if (output == null) throw ArgumentError('--output is required');
   File(output).parent.createSync(recursive: true);

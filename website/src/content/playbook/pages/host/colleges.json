@@ -33,14 +33,7 @@
         "label": "Running an alumni network across cities? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "chip": {
-        "title": "Screening night",
-        "rows": [
-          {"label": "Booked", "value": "212"},
-          {"label": "Checked in", "value": "198"},
-          {"label": "First years", "value": "81"}
-        ]
-      },
+      "fragments": ["host-form-responses-new"],
       "media": {"kind": "capture", "slot": "host-form-responses"}
     },
     {
@@ -89,7 +82,7 @@
         {"time": "7:00 PM", "title": "Three hundred in, no queue", "body": "Everyone scans in on their own phone. Volunteers check off anyone without one."},
         {"time": "Next morning", "title": "Who came, for next time", "body": "First years, regulars and followers, in your records for the next event and the next committee."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-colleges"}
     },
     {
       "type": "checklist",
@@ -148,12 +141,12 @@
       "ground": "coral",
       "kicker": "Your next event",
       "title": "Pack the hall. Keep the list.",
-      "lead": "Start the free trial, or leave your number and we’ll send the society setup guide on WhatsApp.",
+      "lead": "Start the free trial, or leave your number and a person from our team will message you on WhatsApp to help you set up.",
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
-      "leadForm": {"id": "society_setup_guide", "requestKind": "guide", "format": "colleges", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
-      "media": {"kind": "capture", "slot": "guest-explore"}
+      "leadForm": {"id": "society_setup_guide", "requestKind": "guide", "format": "colleges", "label": "Your WhatsApp number", "submitLabel": "Message me"},
+      "media": {"kind": "capture", "slot": "host-create-colleges"}
     }
   ]
 }

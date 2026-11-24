@@ -6,7 +6,7 @@ import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {
   EventDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   EventRuntimeParticipantDocument,
   EventSuccessAssignmentDocument,
   EventSuccessPlanDocument,
@@ -46,10 +46,9 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {assignmentConstraintPairKey} from "./assignmentConstraints";
-import {
-  organizerEventSuccessLayoutDocumentId,
-  publicEventSuccessLayout,
-} from "./spatialLayout";
+import {organizerEventSuccessLayoutDocumentId} from
+  "../domain/formats/layoutDocumentId";
+import {publicEventSuccessLayout} from "./spatialLayout";
 import {
   confirmedSpatialUnitId,
   destinationPeerUid,
@@ -491,14 +490,14 @@ async function requireSpatialReader(
     if (isEventOrganizerManager(organizer, event, uid)) return;
   }
   const [participationSnap, runtimeSnap] = await Promise.all([
-    db.collection("eventParticipations")
+    db.collection("eventBookings")
       .doc(eventParticipationId(eventId, uid)).get(),
     db.collection("eventRuntimeParticipants").doc(`${eventId}_${uid}`).get(),
   ]);
   const participation = participationSnap.exists ?
-    requireDoc<EventParticipationDocument>(
+    requireDoc<EventBookingDocument>(
       participationSnap,
-      "EventParticipationDocument"
+      "EventBookingDocument"
     ) : null;
   const runtime = runtimeSnap.exists ?
     requireDoc<EventRuntimeParticipantDocument>(

@@ -2,10 +2,10 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/admin_get_organizer_overview_response.schema.json",
   "title": "AdminGetOrganizerOverviewCallableResponse",
-  "description": "The Overview tab of an Admin organizer page: its facts, who owns it in Sales, its terms and payments, its journey from nomination to claim, its next events from Catch and from the platforms Catch imports, and where it came from (its acquisition channel and first nominator, from organizerGrowthFacts). The journey is read from the records each step left (the intake request, the approval, claim requests, ownership and events), oldest first; nextStep names what the organizer is waiting on.",
+  "description": "The Overview tab of an Admin organizer page: its facts, who owns it in Sales, its terms and payments, its journey from nomination to claim, its next events from Catch and from the platforms Catch imports, and where it came from (its acquisition channel and first nominator, from organizerGrowthFacts, and, separately, what the owner said in Catch Host setup). The journey is read from the records each step left (the intake request, the approval, claim requests, ownership and events), oldest first; nextStep names what the organizer is waiting on.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["generatedAt", "organizer", "salesOwner", "nextAction", "nextTask", "terms", "payments", "pendingClaim", "growth", "journey", "nextStep", "upcomingEvents", "upcomingEventCount"],
+  "required": ["generatedAt", "organizer", "salesOwner", "nextAction", "nextTask", "terms", "payments", "pendingClaim", "growth", "signupSource", "journey", "nextStep", "upcomingEvents", "upcomingEventCount"],
   "definitions": {
     "instant": {"type": ["string", "null"], "format": "date-time"},
     "name": {"type": ["string", "null"], "maxLength": 200},
@@ -152,6 +152,21 @@
               ]
             },
             "firstPaidBookingAt": {"$ref": "#/definitions/instant"}
+          }
+        }
+      ]
+    },
+    "signupSource": {
+      "description": "What the owner said when Catch Host setup asked how they heard about Catch, from organizers/{organizerId}.signupSource. Self-reported, shown apart from growth's derived channel. Null when they skipped it or were never asked.",
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source", "answeredAt"],
+          "properties": {
+            "source": {"$ref": "../shared/event_common.schema.json#/definitions/organizerSignupSource"},
+            "answeredAt": {"$ref": "#/definitions/instant"}
           }
         }
       ]

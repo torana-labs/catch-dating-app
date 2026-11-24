@@ -1,0 +1,21 @@
+{
+  "id": "organizerContactTraits",
+  "path": "organizerContactTraits/{contactId}",
+  "rulesMatch": "/organizerContactTraits/{contactId}",
+  "typescriptInterface": "OrganizerContactTraitDocument",
+  "dartModel": null,
+  "owner": "organizer audience projection",
+  "writerContext": "organizers",
+  "read": "server only; purpose-built CRM callables expose safe fields",
+  "write": "server only",
+  "exportedFunctions": [
+    "onEventAttendeeAudienceProjected",
+    "onContactPermissionAudienceProjected",
+    "onOrganizerContactEventEdgeInviteAttributed",
+    "listOrganizerContacts",
+    "getOrganizerContactDetail"
+  ],
+  "migrationNotes": [
+    "Traits are rebuildable and exclude Event Success compatibility, safety, dating and demographic inputs."
+  ]
+}

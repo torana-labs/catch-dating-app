@@ -1,0 +1,17 @@
+{
+  "id": "matches",
+  "path": "matches/{matchId}",
+  "rulesMatch": "/matches/{matchId}",
+  "typescriptInterface": "MatchDocument",
+  "dartModel": "lib/contexts/connections/domain/match.dart",
+  "rulesTestFile": "functions/test/rules/chat_and_match_writes.rules.test.cjs",
+  "owner": "matching triggers own lifecycle; participants may reset only their unread count",
+  "writerContext": "connections",
+  "read": "participants only",
+  "write": "server create/delete/status; participant unread reset only",
+  "exportedFunctions": [
+    "onSwipeCreated",
+    "onMatchCreated",
+    "onMessageCreated"
+  ]
+}

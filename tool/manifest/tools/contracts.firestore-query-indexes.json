@@ -1,0 +1,41 @@
+{
+  "id": "contracts:firestore-query-indexes",
+  "category": "contracts",
+  "path": "tool/contracts/check_firestore_query_indexes.mjs",
+  "command": "node tool/contracts/check_firestore_query_indexes.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Checks repository-owned composite Firestore query contracts against firestore.indexes.json, rejects uncontracted composite query builders, and blocks duplicate composite definitions and non-deployable single-field plus __name__ pseudo-composites.",
+  "impactPaths": [
+    "firestore.indexes.json",
+    "lib/**/data/**/*repository*.dart",
+    "packages/platform/lib/**/data/**/*repository*.dart",
+    "functions/src/programs/**/*.ts",
+    "functions/src/transport/**/*.ts"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "checks": [
+    "node --check tool/contracts/check_firestore_query_indexes.mjs",
+    "node --test tool/contracts/check_firestore_query_indexes.test.mjs",
+    "node tool/contracts/check_firestore_query_indexes.mjs"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "FIRESTORE-INDEX-PARITY-001",
+      "title": "Composite Firestore queries stay synchronized with deployable index configuration",
+      "appliesTo": [
+        "lib/**/data/**",
+        "firestore.indexes.json",
+        "tool/contracts/check_firestore_query_indexes.mjs"
+      ],
+      "instruction": "Every repository-owned composite query builder declares its ordered firestore-index contract beside the query. The checked index configuration must contain every declared contract, retired collection indexes must not survive renames, duplicate composite definitions and non-deployable single-field plus __name__ pseudo-composites must be rejected, and the parity gate must run before deploy."
+    }
+  ],
+  "queueGate": "always"
+}

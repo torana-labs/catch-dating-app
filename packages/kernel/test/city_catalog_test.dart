@@ -1,6 +1,7 @@
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_kernel/city_data.dart';
 import 'package:catch_kernel/country_markets.dart';
+import 'package:catch_kernel/location_coordinate.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -102,6 +103,51 @@ void main() {
         isNull,
       );
       expect(minorCurrencyAmountInputText(1999, currencyCode: 'USD'), '19.99');
+    });
+  });
+
+  group('city selection', () {
+    const pune = CityData(
+      name: 'pune',
+      marketId: 'in-mh-pune',
+      cityId: 'in-mh-pune',
+      slug: 'pune',
+      label: 'Pune',
+      latitude: 18.5204,
+      longitude: 73.8567,
+      profileSelectable: true,
+      exploreVisible: true,
+    );
+    const hidden = CityData(
+      name: 'hidden',
+      marketId: 'in-xx-hidden',
+      cityId: 'in-xx-hidden',
+      slug: 'hidden',
+      label: 'Hidden',
+      latitude: 18.52,
+      longitude: 73.85,
+    );
+
+    test('configuredCityData keeps the cities a profile or Explore shows', () {
+      expect(
+        configuredCityData({
+          'cities': [pune.toJson(), hidden.toJson()],
+        }),
+        [pune],
+      );
+      expect(configuredCityData(null), isNull);
+      expect(configuredCityData({'cities': <Object>[]}), isNull);
+    });
+
+    test('nearestCityData picks the closest city, or none', () {
+      final mumbai = launchedDefaultCityData.firstWhere(
+        (city) => city.slug == 'mumbai',
+      );
+      expect(
+        nearestCityData(const LocationCoordinate(18.6, 73.9), [mumbai, pune]),
+        pune,
+      );
+      expect(nearestCityData(const LocationCoordinate(0, 0), const []), isNull);
     });
   });
 }

@@ -1,0 +1,11 @@
+{
+  "id": "discoverySettings",
+  "path": "discoverySettings/{settingsId}",
+  "rulesMatch": "/discoverySettings/{settingsId}",
+  "typescriptInterface": "DiscoverySettingsDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Admin discovery settings callables",
+  "writerContext": "discovery",
+  "read": "server only",
+  "write": "server only"
+}

@@ -4,7 +4,7 @@ import {isHttpsError} from "../shared/testUtils";
 import {
   defaultUnitOutcomeFor,
   eventSuccessPrimitivesFor,
-} from "./formatPrimitives";
+} from "../domain/formats/formatPrimitives";
 import {resolveUnitOutcomeUpdate} from "./unitOutcomes";
 
 test("binds all four reviewed formats to their unit outcomes", () => {

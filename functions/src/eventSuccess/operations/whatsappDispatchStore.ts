@@ -9,7 +9,8 @@ import {operationContentHash} from "../../operations/durableActions";
 import {FirestoreMessageOutbox, PrepareDispatchResource} from
   "./firestoreMessageOutbox";
 import {readEventAssistanceMessageGate} from "./guestMessageGate";
-import type {GuestLinkSigningKeys} from "./guestLinkTokens";
+import type {GuestLinkSigningKeys} from
+  "../../platform/guestLinkSigningKeys";
 import {Grant, guestCollections, parseGrant,
   requireDocumentId} from "./guestRecords";
 import type {MessageRecord, OutboxFacts} from "./messageOutbox";

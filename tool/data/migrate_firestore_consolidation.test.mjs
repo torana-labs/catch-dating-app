@@ -144,11 +144,11 @@ test("catch-booking-roster gives every booking one roster row and links it", asy
   const migration = MIGRATIONS.find((entry) => entry.name === "catch-booking-roster");
   const created = {_seconds: 1786625400, _nanoseconds: 0};
   const db = fakeDb({
-    "eventParticipations/e1_new": {eventId: "e1", organizerId: "o1", uid: "new",
+    "eventBookings/e1_new": {eventId: "e1", organizerId: "o1", uid: "new",
       status: "signedUp", createdAt: created, updatedAt: created, signedUpAt: created,
       waitlistedAt: null, attendedAt: null, cancelledAt: null, deletedAt: null,
       genderAtSignup: "woman", paymentId: "pay_1"},
-    "eventParticipations/e1_linked": {eventId: "e1", organizerId: "o1", uid: "linked",
+    "eventBookings/e1_linked": {eventId: "e1", organizerId: "o1", uid: "linked",
       status: "attended", createdAt: created, updatedAt: created, signedUpAt: created,
       waitlistedAt: null, attendedAt: created, cancelledAt: null, deletedAt: null,
       genderAtSignup: null, paymentId: null, hostApprovalStatus: "approved"},
@@ -156,7 +156,7 @@ test("catch-booking-roster gives every booking one roster row and links it", asy
       source: "catchBooking", linkedUid: "linked", status: "checkedIn"},
     "eventAttendees/att_host": {eventId: "e1", organizerId: "o1",
       source: "hostImport", linkedUid: null, status: "registered"},
-    "eventParticipations/e1_pointed": {eventId: "e1", organizerId: "o1", uid: "pointed",
+    "eventBookings/e1_pointed": {eventId: "e1", organizerId: "o1", uid: "pointed",
       status: "signedUp", createdAt: created, updatedAt: created, signedUpAt: created,
       waitlistedAt: null, attendedAt: null, cancelledAt: null, deletedAt: null,
       genderAtSignup: null, paymentId: null},
@@ -174,13 +174,13 @@ test("catch-booking-roster gives every booking one roster row and links it", asy
   assert.equal(newRow.displayName, "Asha");
   assert.equal(newRow.status, "registered");
   assert.equal(newRow.booking, undefined);
-  assert.equal(db.data["eventParticipations/e1_new"].attendeeId, newPath.split("/")[1]);
+  assert.equal(db.data["eventBookings/e1_new"].attendeeId, newPath.split("/")[1]);
   assert.equal(db.data["eventAttendees/att_existing"].status, "checkedIn");
   assert.equal(db.data["eventAttendees/att_existing"].booking, undefined);
-  assert.equal(db.data["eventParticipations/e1_linked"].attendeeId, "att_existing");
-  assert.equal(db.data["eventParticipations/e1_pointed"].attendeeId, "att_pointed");
+  assert.equal(db.data["eventBookings/e1_linked"].attendeeId, "att_existing");
+  assert.equal(db.data["eventBookings/e1_pointed"].attendeeId, "att_pointed");
   assert.equal(db.data["eventAttendees/att_host"].linkedUid, null);
-  assert.ok(db.data["eventParticipations/e1_new"]);
+  assert.ok(db.data["eventBookings/e1_new"]);
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
@@ -212,9 +212,9 @@ test("event-chat-directory creates each row once from its first source", async (
   const migration = MIGRATIONS.find((entry) => entry.name === "event-chat-directory");
   const db = fakeDb({
     "eventChatMemberships/m1": {eventId: "e1", uid: "a"},
-    "eventParticipations/e1_a": {eventId: "e1", uid: "a", status: "signedUp"},
-    "eventParticipations/e2_a": {eventId: "e2", uid: "a", status: "signedUp"},
-    "eventParticipations/e3_a": {eventId: "e3", uid: "a", status: "cancelled"},
+    "eventBookings/e1_a": {eventId: "e1", uid: "a", status: "signedUp"},
+    "eventBookings/e2_a": {eventId: "e2", uid: "a", status: "signedUp"},
+    "eventBookings/e3_a": {eventId: "e3", uid: "a", status: "cancelled"},
     "eventAttendees/r1": {eventId: "e2", linkedUid: "a"},
     "eventAttendees/r2": {eventId: "e4", linkedUid: "b"},
     "eventAttendees/r3": {eventId: "e5", linkedUid: null},
@@ -249,12 +249,42 @@ test("booking-payments copies in-app payments into the ledger once", async () =>
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
+test("event-bookings copies every legacy booking once and replaces none", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "event-bookings");
+  const db = fakeDb({
+    "eventParticipations/e1_a": {eventId: "e1", uid: "a", status: "signedUp", attendeeId: "e1_a"},
+    "eventParticipations/e1_b": {eventId: "e1", uid: "b", status: "cancelled"},
+    "eventParticipations/e2_c": {eventId: "e2", uid: "c", status: "waitlisted"},
+    "eventBookings/e1_b": {eventId: "e1", uid: "b", status: "cancelled"},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 2);
+  assert.equal(plan.totals.alreadyCopied, 1);
+  await applyMigrationPlan(db, plan);
+  assert.deepEqual(db.data["eventBookings/e1_a"], db.data["eventParticipations/e1_a"]);
+  assert.deepEqual(db.data["eventBookings/e2_c"], db.data["eventParticipations/e2_c"]);
+  assert.ok(db.data["eventParticipations/e1_a"]);
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
+test("event-bookings refuses to overwrite a booking that moved on", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "event-bookings");
+  const db = fakeDb({
+    "eventParticipations/e1_a": {eventId: "e1", uid: "a", status: "signedUp"},
+    "eventBookings/e1_a": {eventId: "e1", uid: "a", status: "cancelled"},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.conflicts, 1);
+  await assert.rejects(applyMigrationPlan(db, plan), /already exist with different data/u);
+  assert.equal(db.data["eventBookings/e1_a"].status, "cancelled");
+});
+
 test("guest-event-read-models creates each entry and row once from its first record", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "guest-event-read-models");
   const db = fakeDb({
     "events/e1": {publicationState: "published"},
     "events/e2": {publicationState: "private"},
-    "eventParticipations/e1_a": {eventId: "e1", uid: "a", status: "signedUp"},
+    "eventBookings/e1_a": {eventId: "e1", uid: "a", status: "signedUp"},
     "eventAttendees/r1": {eventId: "e1", linkedUid: "a"},
     "eventAttendees/r2": {eventId: "e1", linkedUid: "b"},
     "eventAttendees/r3": {eventId: "e1", linkedUid: "b"},
@@ -286,7 +316,7 @@ test("guest-event-read-models creates each entry and row once from its first rec
 test("guest-event-cards only fills what is missing and never replaces", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "guest-event-cards");
   const db = fakeDb({
-    "eventParticipations/e1_a": {eventId: "e1", uid: "a", status: "waitlisted"},
+    "eventBookings/e1_a": {eventId: "e1", uid: "a", status: "waitlisted"},
     "guestEventStatuses/e2_b": {eventId: "e2", uid: "b",
       participationStatus: "signedUp", eventCard: {eventId: "e2"}},
     "savedEvents/c_e3": {uid: "c", eventId: "e3", eventCard: {eventId: "e3"}},
@@ -295,7 +325,7 @@ test("guest-event-cards only fills what is missing and never replaces", async ()
   const [create, statusFill, savedFill] = migration.steps;
   // A waitlisted booking now creates its row, from the booking itself.
   assert.equal(await create.targetId("e1_a",
-    db.data["eventParticipations/e1_a"], db), "e1_a");
+    db.data["eventBookings/e1_a"], db), "e1_a");
   // Complete rows and edges, and edges whose event is gone, are left alone
   // without reading anything else.
   assert.equal(await statusFill.fill(db.data["guestEventStatuses/e2_b"],
@@ -430,10 +460,10 @@ test("host-event-request-views creates each coming event's view once", async () 
     "events/e1": event(),
     "events/e2": event(),
     "events/e3": event({status: "cancelled"}),
-    "eventParticipations/e1_u1": {eventId: "e1", organizerId: "o1", uid: "u1",
+    "eventBookings/e1_u1": {eventId: "e1", organizerId: "o1", uid: "u1",
       status: "waitlisted", waitlistedAt: Timestamp.fromMillis(100),
       createdAt: Timestamp.fromMillis(100)},
-    "eventParticipations/e3_u1": {eventId: "e3", organizerId: "o1", uid: "u1",
+    "eventBookings/e3_u1": {eventId: "e3", organizerId: "o1", uid: "u1",
       status: "waitlisted", waitlistedAt: Timestamp.fromMillis(100),
       createdAt: Timestamp.fromMillis(100)},
     "publicProfiles/u1": {name: "Zoya"},
@@ -448,7 +478,7 @@ test("host-event-request-views creates each coming event's view once", async () 
   assert.deepEqual(view.rows.map((row) => [row.uid, row.kind, row.waitlistPosition, row.name]),
     [["u1", "waitlist", 1, "Zoya"]]);
   // Sources are untouched and a second run is a no-op.
-  assert.equal(store.docs["eventParticipations/e1_u1"].status, "waitlisted");
+  assert.equal(store.docs["eventBookings/e1_u1"].status, "waitlisted");
   const again = await planMigration(db, migration);
   assert.deepEqual(again.totals, {scanned: 3, toCreate: 0, alreadyCopied: 1, conflicts: 0, skipped: 2});
 });
@@ -521,31 +551,6 @@ test("host-application-detail-views creates each application's view once", async
   assert.equal(view.detail.revision, 1);
   const again = await planMigration(db, migration);
   assert.deepEqual(again.totals, {scanned: 2, toCreate: 0, alreadyCopied: 1, conflicts: 0, skipped: 1});
-});
-
-test("guest-messaging-permissions creates each missing row once", async () => {
-  const migration = MIGRATIONS.find((entry) => entry.name === "guest-messaging-permissions");
-  const unknown = {status: "unknown", evidenceStatus: "none", currentReceiptId: null,
-    termsVersion: null, source: null, sourceEventId: null, updatedAt: null};
-  const db = fakeDb({
-    "catchCommunicationPreferences/u1": {uid: "u1", whatsapp: unknown},
-    "catchCommunicationPreferences/mismatch": {uid: "u2", whatsapp: unknown},
-    "catchCommunicationPreferences/u3": {uid: "u3", whatsapp: unknown},
-    "guestMessagingPermissions/catchpref_u3": {uid: "u3", scope: "catch",
-      organizerId: null, preference: {status: "unknown", receiptId: null, purposes: {}},
-      version: 1},
-  });
-  const plan = await planMigration(db, migration);
-  assert.deepEqual(plan.steps[0].scanned, 3);
-  assert.equal(plan.steps[0].toCreate.length, 1);
-  assert.equal(plan.steps[0].alreadyCopied, 1);
-  assert.equal(plan.steps[0].skipped.length, 1);
-  await applyMigrationPlan(db, plan);
-  assert.deepEqual(db.data["guestMessagingPermissions/catchpref_u1"], {uid: "u1",
-    scope: "catch", organizerId: null,
-    preference: {status: "unknown", receiptId: null, purposes: {}}, version: 1});
-  assert.deepEqual(db.data["catchCommunicationPreferences/u1"], {uid: "u1", whatsapp: unknown});
-  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
 test("participant-form-profile-views creates only available rows, once", async () => {
@@ -691,7 +696,10 @@ test("program-staff-views creates each staff row once, without the full phone nu
 
 test("screen-read view migrations create each board, work-list row and moment row once, without contacts", async () => {
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
-  const later = Math.floor((Date.now() + 86_400_000) / 1000) * 1000;
+  // A fixed, far-future expiry: the grants stay active whatever today is, and
+  // the copied views never carry a clock-derived number that could contain one
+  // of the contact strings asserted absent below.
+  const later = Date.parse("2099-01-15T09:30:00Z");
   const db = fakeDb({
     "organizers/o1": {name: "Sharma Weddings", phone: "+919800000000"},
     "organizerPrograms/p1": {organizerId: "o1", createdBy: "owner-1", status: "active",
@@ -701,7 +709,7 @@ test("screen-read view migrations create each board, work-list row and moment ro
     "programHotels/h9": {programId: "p9", organizerId: "o1", name: "Elsewhere"},
     "programRoomBlocks/b1": {programId: "p1", organizerId: "o1", hotelId: "h1", label: "General",
       roomType: null, totalRooms: 2, assignedCount: 0, heldForGroupIds: [],
-      startsAt: at(1_800_600_000_000), endsAt: at(1_800_900_000_000), notes: "rate 777"},
+      startsAt: at(1_800_600_000_000), endsAt: at(1_800_900_000_000), notes: "rate card corporate-rate"},
     "programStays/s1": {programId: "p1", organizerId: "o1", guestId: "g1", hotelId: "h1",
       roomBlockId: "b1", roomLabel: "301", startsAt: null, endsAt: null, status: "confirmed",
       roomReadyAt: null, hotelArrivedAt: null, notes: "call mum", revision: 3},
@@ -754,7 +762,9 @@ test("screen-read view migrations create each board, work-list row and moment ro
   assert.equal(db.data["organizerMomentViews/auto1"], undefined);
   const copied = JSON.stringify(Object.fromEntries(Object.entries(db.data).filter(
     ([key]) => /^(programHotelRoomViews|hostAssignmentViews|organizerMomentViews)\//.test(key))));
-  for (const secret of ["9800000000", "9811111111", "9822222222", "777", "mum", "0001"]) {
+  const secrets = ["9800000000", "9811111111", "9822222222", "corporate-rate", "mum", "0001"];
+  for (const secret of secrets) {
+    assert.equal(String(later).includes(secret), false, `fixture expiry contains ${secret}`);
     assert.equal(copied.includes(secret), false, secret);
   }
   assert.equal(db.data["programStays/s1"].notes, "call mum");
@@ -1024,6 +1034,68 @@ test("program-access-views-organizer-managers adds manager views and the flag on
   assert.equal(again.totals.conflicts, 0);
 });
 
+test("access-grants-programs grants each owner and staff member once, then agrees with the views", async () => {
+  const views = MIGRATIONS.find((entry) => entry.name === "program-access-views");
+  const migration = MIGRATIONS.find((entry) => entry.name === "access-grants-programs");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const later = Math.floor((Date.now() + 86_400_000) / 1000) * 1000;
+  const grant = (uid, overrides = {}) => ({organizerId: "o1", programId: "p1", uid,
+    displayName: "Arjun", phoneLastFour: "0001", status: "active", createdBy: "owner-1",
+    duties: [{duty: "guestRelations", pickupPointIds: [], hotelIds: [], expiresAtMillis: later}],
+    expiresAt: at(later), updatedAt: at(7), revokedBy: null, revokedAt: null, revision: 2,
+    ...overrides});
+  const db = fakeDb({
+    "organizers/o1": {hostUserId: "owner-1", ownerUserId: "owner-1",
+      hostUserIds: ["owner-1", "host-2"], hostProfiles: []},
+    "organizerPrograms/p1": {organizerId: "o1", createdBy: "owner-1", status: "active",
+      createdAt: at(3)},
+    "organizerPrograms/p2": {organizerId: "o1", status: "active"},
+    "programStaffGrants/p1__desk-1": grant("desk-1"),
+    "programStaffGrants/p1__revoked-1": grant("revoked-1", {status: "revoked",
+      revokedBy: "owner-1", revokedAt: at(5)}),
+    "programStaffGrants/p9__orphan-1": {...grant("orphan-1"), programId: "p9"},
+  });
+  // The views as the triggers wrote them before the transactional writers.
+  await applyMigrationPlan(db, await planMigration(db, views));
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.steps[0].toCreate.length, 1, "the owner");
+  assert.equal(plan.steps[1].toCreate.length, 2, "two staff grants");
+  assert.equal(plan.totals.conflicts, 0);
+  await applyMigrationPlan(db, plan);
+  const owner = db.data["accessGrants/program__p1__owner-1"];
+  assert.equal(owner.role, "owner");
+  assert.equal(owner.grantedBy, null);
+  assert.deepEqual(owner.reach.programAll, {});
+  const desk = db.data["accessGrants/program__p1__desk-1"];
+  assert.equal(desk.role, "staff");
+  assert.equal(desk.status, "active");
+  assert.equal(desk.grantedBy, "owner-1");
+  assert.deepEqual(desk.reach.programAll, {guestRelations: later});
+  // The access document's reach is the view's maps, with no manager flag.
+  const view = db.data["programAccessViews/p1__desk-1"];
+  for (const key of Object.keys(desk.reach)) {
+    assert.deepEqual(desk.reach[key], view[key], key);
+  }
+  assert.equal("organizerManager" in desk, false);
+  assert.equal(JSON.stringify(desk).includes("Arjun"), false);
+  assert.equal(db.data["accessGrants/program__p1__revoked-1"].status, "inactive");
+  // An organizer manager with no grant has no access document (setup only).
+  assert.equal(db.data["accessGrants/program__p1__host-2"], undefined);
+  assert.equal(db.data["accessGrants/program__p9__orphan-1"], undefined);
+  // A rerun writes nothing: access documents and views agree with sources.
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0, "a rerun writes nothing");
+  assert.equal(again.totals.conflicts, 0);
+  // A stale access document is repaired by the refresh step, once.
+  db.data["accessGrants/program__p1__desk-1"] = {...desk, status: "active",
+    reach: {...desk.reach, programAll: {guestRelations: later + 1}}};
+  const repair = await planMigration(db, migration);
+  assert.equal(repair.steps[2].toFill.length, 1);
+  await applyMigrationPlan(db, repair);
+  assert.deepEqual(db.data["accessGrants/program__p1__desk-1"].reach.programAll,
+    {guestRelations: later});
+});
+
 test("program-door-views creates headers, roster rows and journal views once, without contacts", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "program-door-views");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
@@ -1060,6 +1132,239 @@ test("program-door-views creates headers, roster rows and journal views once, wi
     assert.equal(copied.includes(secret), false, secret);
   }
   assert.equal(db.data["programGuests/g1"].phoneE164, "+919900000000");
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
+test("program-guest-directory-views creates each row once, contacts only from assertions", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "program-guest-directory-views");
+  const {seedWorkspaceFieldAssertions} = createFunctionsRequire()(
+    "./lib/workspaces/workspaceFieldFixture.js");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const later = Math.floor((Date.now() + 86_400_000) / 1000) * 1000;
+  const guest = (name, overrides = {}) => ({programId: "p1", organizerId: "o1",
+    displayName: name, householdId: null, contactId: null, phoneE164: "+919900000000",
+    email: null, externalReference: null, groupIds: [], invitationStatus: "invited",
+    rsvpStatus: "pending", source: "manual", revision: 2, ...overrides});
+  const db = fakeDb({
+    ...seedWorkspaceFieldAssertions({
+      "organizerPrograms/p1": {organizerId: "o1", createdBy: "owner-1", status: "active"},
+      "programGuests/g1": guest("Rohan", {householdId: "hh1", groupIds: ["grp1"]}),
+      "programHouseholds/hh1": {programId: "p1", organizerId: "o1", label: "Sharma",
+        primaryContactName: "Household contact", primaryPhoneE164: "+919911111111",
+        primaryEmail: null, memberGuestIds: ["g1"], deliveryPreference: "none", revision: 3},
+    }),
+    // No assertion backs this guest's name, so the callable never showed it.
+    "programGuests/g2": guest("Unbacked"),
+    "programGuestGroups/grp1": {programId: "p1", organizerId: "o1", label: "Bride side",
+      dimension: "side", sortOrder: 1, memberCount: 1, hotelId: null, revision: 4},
+    "programFunctionGuests/f1_g1": {programId: "p1", organizerId: "o1", functionId: "f1",
+      guestId: "g1", invited: true, rsvpStatus: "attending", attendanceStatus: "expected",
+      partySize: 2, responseNote: "private-note-marker"},
+    "programStaffGrants/p1__desk-1": {organizerId: "o1", programId: "p1", uid: "desk-1",
+      displayName: "Arjun", phoneLastFour: "0001", status: "active", createdBy: "owner-1",
+      duties: [{duty: "guestRelations", pickupPointIds: [], hotelIds: [], expiresAtMillis: later}],
+      expiresAt: at(later), revokedBy: null, revokedAt: null, revision: 2},
+  });
+  // A view written before programAll existed.
+  db.data["programAccessViews/p1__desk-1"] = {programId: "p1", uid: "desk-1", stale: true};
+  const plan = await planMigration(db, migration);
+  // g1, hh1 and grp1 get rows; g2 none; the stale access view is rewritten.
+  assert.equal(plan.totals.toCreate, 3 + 1);
+  await applyMigrationPlan(db, plan);
+  const row = db.data["programGuestDirectoryViews/guest__g1"];
+  assert.equal(row.guest.displayName, "Rohan");
+  assert.equal(row.guest.phoneE164, "+919900000000");
+  assert.deepEqual(row.guest.functions, [{functionId: "f1", invited: true,
+    rsvpStatus: "attending", attendanceStatus: "expected", partySize: 2}]);
+  assert.equal(db.data["programGuestDirectoryViews/guest__g2"], undefined);
+  assert.deepEqual(db.data["programGuestDirectoryViews/household__hh1"].household,
+    {label: "Sharma", memberGuestIds: ["g1"], revision: 3});
+  assert.equal(db.data["programGuestDirectoryViews/group__grp1"].group.memberCount, 1);
+  assert.deepEqual(db.data["programAccessViews/p1__desk-1"].programAll,
+    {guestRelations: later});
+  const copied = JSON.stringify(Object.fromEntries(Object.entries(db.data).filter(
+    ([key]) => key.startsWith("programGuestDirectoryViews/"))));
+  for (const secret of ["9911111111", "Household contact", "private-note-marker", "wfa_"]) {
+    assert.equal(copied.includes(secret), false, secret);
+  }
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
+test("program-setting-views creates each programme's sender and settings views once, nothing secret", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "program-setting-views");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const later = Math.floor((Date.now() + 86_400_000) / 1000) * 1000;
+  const db = fakeDb({
+    "organizerPrograms/p1": {organizerId: "o1", createdBy: "owner-1", status: "active",
+      whatsappSenderConnectionId: "conn-1"},
+    "organizerPrograms/p2": {organizerId: "o1", createdBy: "owner-1", status: "active"},
+    "organizerSenderConnections/conn-1": {organizerId: "o1", channel: "whatsapp",
+      provider: "metaCloudApi", status: "active", wabaId: "1111", phoneNumberId: "2222",
+      secretVersionResource: "projects/p/secrets/s/versions/1",
+      displayPhoneNumber: "+91 98765 00000", verifiedName: "Aditi & Kabir"},
+    "programAssistantSettings/p1": {programId: "p1", organizerId: "o1", enabled: true,
+      languages: ["hi"], replyWithin: "hour", escalationStaffUids: [], neverDoes: [],
+      tone: "warm", dailyTokenBudget: 1000, answerTopics: [], attachmentReads: [],
+      updatedByUid: "owner-1", updatedAtMillis: 5, revision: 3,
+      lastRequestId: "req-1", lastRequestHash: "hash-marker"},
+    "programStaffGrants/p1__desk-1": {programId: "p1", organizerId: "o1", uid: "desk-1",
+      displayName: "Arjun", phoneLastFour: "0001", status: "active",
+      expiresAt: at(later), revokedAt: null},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 4);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["programSenderViews/p1"].sender.boundToProgramme, true);
+  assert.equal(db.data["programSenderViews/p2"].sender.boundToProgramme, false);
+  assert.equal(db.data["programSenderViews/p2"].organizerActiveConnectionId, "conn-1");
+  assert.equal(db.data["programAssistantSettingViews/p1"].revision, 3);
+  assert.deepEqual(db.data["programAssistantSettingViews/p1"].staff,
+    [{uid: "desk-1", displayName: "Arjun", expiresAtMillis: later}]);
+  assert.equal(db.data["programAssistantSettingViews/p2"].usesDefaults, true);
+  const copied = JSON.stringify(Object.fromEntries(Object.entries(db.data).filter(
+    ([key]) => key.startsWith("programSenderViews/") ||
+      key.startsWith("programAssistantSettingViews/"))));
+  for (const secret of ["1111", "2222", "projects/p/secrets", "hash-marker", "req-1", "0001"]) {
+    assert.equal(copied.includes(secret), false, secret);
+  }
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
+test("host-organizer-account-views creates each organizer's views once, nothing internal", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-organizer-account-views");
+  const {platformTermsDocument} = createFunctionsRequire()("./lib/commercialTerms/testFixture.js");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const db = fakeDb({
+    "organizers/o1": {ownerUserId: "owner-1", hostUserId: "owner-1", description: "Sunday runs",
+      ownerLinks: [], organizerPhotos: []},
+    "commercialTerms/platform": platformTermsDocument(),
+    "organizerGrowthFacts/o1": {milestones: {firstEventAt: at(1_000_000), firstPaidBookingAt: null}},
+    "organizerBillingPlans/o1": {plan: "toolsOnly", status: "active", startsAtMillis: 5,
+      endsAtMillis: null, paymentLinkId: "plink-marker"},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 2);
+  await applyMigrationPlan(db, plan);
+  const billing = db.data["hostOrganizerBillingViews/o1"];
+  assert.deepEqual(billing.trial, {days: 30, anchor: "firstEvent", startsAtMillis: 1_000_000,
+    endsAtMillis: 1_000_000 + 30 * 86_400_000});
+  assert.deepEqual(billing.plan, {plan: "toolsOnly", status: "active", startsAtMillis: 5, endsAtMillis: null});
+  assert.equal(db.data["hostOrganizerOwnerViews/o1"].ownerUid, "owner-1");
+  assert.equal(db.data["hostOrganizerOwnerViews/o1"].about, "Sunday runs");
+  const copied = JSON.stringify([billing, db.data["hostOrganizerOwnerViews/o1"]]);
+  for (const secret of ["plink-marker", "feeMinor", "rateBasisPoints"]) {
+    assert.equal(copied.includes(secret), false, secret);
+  }
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
+test("host-form-views creates each form, version and funnel view once, no token", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-form-views");
+  const load = createFunctionsRequire();
+  const {AudienceTestStore} = load("./lib/organizers/organizerAudienceTestStore.js");
+  const forms = load("./lib/organizers/organizerForms.js");
+  const {Timestamp} = load("firebase-admin/firestore");
+  const store = new AudienceTestStore({
+    "organizers/o1": {ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
+  });
+  const deps = {firestore: () => store.asFirestore(), checkRateLimit: async () => undefined,
+    timestamp: () => Timestamp.fromMillis(1_790_000_000_000),
+    publicFormId: () => "public_form_12345678901234567890"};
+  const request = (data) => ({auth: {uid: "host-1", token: {}}, data: {organizerId: "o1", ...data}});
+  const created = await forms.createOrganizerFormHandler(request({templateId: "quiz-team-night",
+    requestId: "create-1", title: null, defaultTargetKind: "organizer", defaultTargetId: null}), deps);
+  const formId = created.form.formId;
+  const published = await forms.publishOrganizerFormHandler(request({formId, expectedRevision: 1}), deps);
+  const versionId = published.activeVersionId;
+  const db = fakeDb({...store.docs,
+    "organizerFormShareLinks/link-1": {organizerId: "o1", formId,
+      publicFormId: "public_form_12345678901234567890", label: "Poster", source: "manual",
+      tokenHash: "f".repeat(64), createdByUid: "host-1", createdAt: Timestamp.fromMillis(5),
+      openCount: 3, startCount: 2, submissionCount: 1},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 3);
+  await applyMigrationPlan(db, plan);
+  const editor = db.data[`hostFormEditorViews/${formId}`];
+  assert.equal(editor.organizerId, "o1");
+  assert.equal(editor.form.status, "published");
+  assert.equal(editor.form.draftRevision, 1);
+  const analytics = db.data[`hostFormAnalyticsViews/${versionId}`];
+  assert.equal(analytics.formVersion, 1);
+  assert.equal(analytics.opens, 0);
+  assert.deepEqual(db.data[`hostFormSourceViews/${formId}`].sources, [{sourceLinkId: "link-1",
+    label: "Poster", opens: 3, starts: 2, submissions: 1}]);
+  assert.equal(JSON.stringify(db.data[`hostFormSourceViews/${formId}`]).includes("f".repeat(64)), false);
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
+test("host-crm-views creates each organizer's sources and each pair once, nothing secret", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-crm-views");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const contact = (id, extra = {}) => ({organizerId: "o1", contactId: id, displayName: `Guest ${id}`,
+    displayNameOverride: null, phoneE164: null, email: null, linkedUid: id === "c1" ? "uid-secret" : null,
+    primarySource: "hostImport", revision: 1, deletedAt: null, hiddenAt: null, identityState: "active", ...extra});
+  const db = fakeDb({
+    "organizers/o1": {ownerUserId: "host-1", hostUserIds: ["host-1"]},
+    "organizerForms/f1": {organizerId: "o1", title: "Supper club", activeVersionId: null},
+    "events/e1": {organizerId: "o1", name: "Lantern walk"},
+    "organizerContactTagVocabularies/o1": {organizerId: "o1", tags: [{tagId: "a".repeat(32),
+      label: "Regular", normalizedLabel: "regular", createdByUid: "creator-secret", createdAt: at(1)}],
+    updatedAt: at(1)},
+    "organizerContacts/c1": contact("c1"),
+    "organizerContacts/c2": contact("c2"),
+    "organizerContacts/c3": contact("c3"),
+    "organizerContactIdentityClaims/k1": {organizerId: "o1", kind: "phone", identityHash: "hash-secret",
+      state: "conflicted", verifiedContactId: "c1", conflictingContactIds: ["c2"], updatedAt: at(5)},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 2);
+  await applyMigrationPlan(db, plan);
+  const sources = db.data["hostAudienceSourceViews/o1"];
+  assert.deepEqual(sources.forms, [{formId: "f1", title: "Supper club"}]);
+  assert.deepEqual(sources.events, [{eventId: "e1", title: "Lantern walk"}]);
+  assert.deepEqual(sources.tags, [{tagId: "a".repeat(32), label: "Regular"}]);
+  const pairs = Object.entries(db.data).filter(([key]) => key.startsWith("hostContactMergeCandidateViews/"));
+  assert.equal(pairs.length, 1);
+  assert.deepEqual(pairs[0][1].contactIds, ["c1", "c2"]);
+  assert.deepEqual(pairs[0][1].matchKinds, ["sameVerifiedPhone"]);
+  const copied = JSON.stringify(Object.fromEntries(Object.entries(db.data).filter(([key]) =>
+    key.startsWith("hostAudienceSourceViews/") || key.startsWith("hostContactMergeCandidateViews/"))));
+  for (const secret of ["hash-secret", "uid-secret", "creator-secret"]) {
+    assert.equal(copied.includes(secret), false, secret);
+  }
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
+test("guest-roster-links writes roster links and missing guest rows once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "guest-roster-links");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const db = fakeDb({
+    "events/e1": {organizerId: "o1", status: "active", name: "Supper", startTime: at(1_790_000_000_000)},
+    "guestEventStatuses/e1_g1": {eventId: "e1", uid: "g1", organizerId: "o1", booking: "registered"},
+    "eventAttendees/a1": {eventId: "e1", organizerId: "o1", linkedUid: "g1", status: "registered",
+      phoneE164: "+919800000001"},
+    "eventAttendees/a2": {eventId: "e1", organizerId: "o1", linkedUid: "g2", status: "cancelled",
+      phoneE164: "+919800000002"},
+  });
+  const plan = await planMigration(db, migration);
+  await applyMigrationPlan(db, plan);
+  assert.deepEqual(db.data["guestEventStatuses/e1_g1"].rosterLink, {kind: "linked", attendeeId: "a1"});
+  assert.equal(db.data["guestEventStatuses/e1_g1"].booking, "registered");
+  assert.deepEqual(db.data["guestEventStatuses/e1_g2"].rosterLink, {kind: "linked", attendeeId: "a2"});
+  assert.equal(JSON.stringify(db.data["guestEventStatuses/e1_g2"]).includes("+9198"), false);
   const again = await planMigration(db, migration);
   assert.equal(again.totals.toCreate, 0);
   assert.equal(again.totals.conflicts, 0);
@@ -1379,8 +1684,8 @@ function fakeDb(seed) {
       limit: (value) => query(after, value, filters),
       startAfter: (doc) => query(doc.id, limit, filters),
       where: (field, op, value) => {
-        assert.equal(op, "==");
-        return query(after, limit, [...filters, [field, value]]);
+        assert.ok(op === "==" || op === "array-contains", op);
+        return query(after, limit, [...filters, [field, value, op]]);
       },
       async get() {
         const docs = Object.keys(data)
@@ -1388,8 +1693,11 @@ function fakeDb(seed) {
           .sort()
           .map((key) => ({id: key.split("/")[1], ref: docRef(key), data: () => clone(data[key])}))
           .filter((doc) => after === undefined || doc.id > after)
-          .filter((doc) => filters.every(([field, value]) => field.split(".")
-            .reduce((item, key) => item?.[key], doc.data()) === value))
+          .filter((doc) => filters.every(([field, value, op]) => {
+            const actual = field.split(".").reduce((item, key) => item?.[key], doc.data());
+            return op === "array-contains" ? Array.isArray(actual) && actual.includes(value) :
+              actual === value;
+          }))
           .slice(0, limit ?? Infinity);
         return {docs, empty: docs.length === 0};
       },

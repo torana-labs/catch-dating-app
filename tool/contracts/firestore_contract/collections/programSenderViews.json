@@ -1,0 +1,24 @@
+{
+  "id": "programSenderViews",
+  "path": "programSenderViews/{programId}",
+  "rulesMatch": "/programSenderViews/{programId}",
+  "dartModel": null,
+  "typescriptInterface": "ProgramSenderViewDocument",
+  "rulesTestFile": "functions/test/rules/program_whatsapp_setting_views.rules.test.cjs",
+  "rulesTestNames": [
+    "admits the owner and the communications duty to the sender view, by id only"
+  ],
+  "owner": "Programme read model projector: programWhatsapp settingViewTriggers",
+  "writerContext": "programmes",
+  "read": "get by programme id for the programme owner and the communications duty (programAccessViews; coordinators hold it), while not deleted; never listed",
+  "write": "server only; written from organizerPrograms and organizerSenderConnections",
+  "exportedFunctions": [
+    "dispatchOrganizerPrograms",
+    "onProgramSenderViewConnectionChanged"
+  ],
+  "migrationNotes": [
+    "Replaces the sender reads of listProgramWhatsappThreads (inbox header), getProgramAssistantSettings and listOrganizerMoments (new planned messages) for the Host app (#2306); the callables stay deployed for released Host builds and retire under #2174. organizerActiveConnectionId keeps listOrganizerMoments' choice (the organiser's first active sender), which can differ from a programme's bound number.",
+    "Display-safe by construction: the trigger copies the connection id, display number, verified name and status, never provider ids, the secret reference, test evidence or the connecting account. The program-setting-views copy-forward migration creates views for programmes that predate the triggers.",
+    "No personal data: the business number and verified name are the organiser's public WhatsApp identity."
+  ]
+}

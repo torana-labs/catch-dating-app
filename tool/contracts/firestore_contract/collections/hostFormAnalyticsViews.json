@@ -1,0 +1,23 @@
+{
+  "id": "hostFormAnalyticsViews",
+  "path": "hostFormAnalyticsViews/{versionId}",
+  "rulesMatch": "/hostFormAnalyticsViews/{versionId}",
+  "dartModel": null,
+  "typescriptInterface": "HostFormAnalyticsViewDocument",
+  "rulesTestFile": "functions/test/rules/host_form_views.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers get a version's analytics view and nothing else"
+  ],
+  "owner": "Host read model projector: hostReadModels form view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get one published version's view by id, as getOrganizerFormAnalytics admitted them (requireOrganizerManager); a view not written yet reads as missing; nobody lists the collection",
+  "write": "server only; written from organizerFormVersions and organizerFormAggregates and deleted when the version is",
+  "exportedFunctions": [
+    "onHostFormAnalyticsViewVersionChanged",
+    "onHostFormAnalyticsViewAggregateChanged"
+  ],
+  "migrationNotes": [
+    "Replaces getOrganizerFormAnalytics for the Host app (#2306), with hostFormSourceViews: the funnel and question aggregates exactly as the callable returned them for the version. The privacy threshold (5 submissions) is applied in the trigger, so a question below it, a sensitive question and free text keep only their response count.",
+    "Aggregates only: no answer, respondent or identity. The host-form-views copy-forward migration creates views for versions published before the triggers."
+  ]
+}

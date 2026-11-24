@@ -1,4 +1,5 @@
 import {CatchButton, CatchField, CatchGap, CatchLegacyText} from "@catch/web-ui";
+import {TermsLine} from "./TermsLine";
 import {optionalAccountFields} from "../../shared/contracts/generated/profileRequirements";
 import {accountCopy} from "../../content/account";
 import {Form} from "../../shared/ui/primitives";
@@ -70,7 +71,7 @@ export function renderAccountForm(account: WebsiteAccountController, {askBirthDa
       <CatchLegacyText as="p" color={account.status.tone === "is-error" ? "danger" : "ink2"} role="status" variant="bodyS">
         {account.status.message}
       </CatchLegacyText>
-      <CatchLegacyText as="p" color="ink2" variant="bodyS">{accountCopy.privacy}</CatchLegacyText>
+      <TermsLine />
     </CatchGap>
   </Form>;
 }

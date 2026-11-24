@@ -1,0 +1,13 @@
+import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/firebase/firebase_options_dev.dart';
+import 'package:catch_platform/firebase/firebase_options_prod.dart';
+import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
+
+class DefaultFirebaseOptions {
+  static FirebaseOptions get currentPlatform {
+    return switch (AppConfig.environment) {
+      AppEnvironment.dev => DefaultFirebaseOptionsDev.currentPlatform,
+      AppEnvironment.prod => DefaultFirebaseOptionsProd.currentPlatform,
+    };
+  }
+}

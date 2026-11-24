@@ -38,7 +38,7 @@
         "lead": {
           "type": "object",
           "additionalProperties": false,
-          "description": "The receipt for a website lead (requestKind requests only). leadId is stable for the request id and number, so a retry returns the same one; isNew is false on a retry. Staff reply on WhatsApp; nothing is sent automatically.",
+          "description": "The receipt for a website lead (requestKind requests only). leadId is stable for the request id and number, so a retry returns the same one; isNew is false on a retry. Staff reply on WhatsApp; an app_link lead may get the Host app link, and a guide, demo or venue lead the host lead welcome, automatically.",
           "required": [
             "leadId",
             "requestKind",
@@ -59,7 +59,8 @@
                 "story",
                 "referral",
                 "org_contact",
-                "city_alerts"
+                "city_alerts",
+                "app_link"
               ]
             },
             "isNew": {

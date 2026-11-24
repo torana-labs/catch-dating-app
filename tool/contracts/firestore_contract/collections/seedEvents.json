@@ -1,0 +1,12 @@
+{
+  "id": "seedEvents",
+  "path": "seedEvents/{manifestId}",
+  "rulesMatch": "/seedEvents/{manifestId}",
+  "owner": "demo data seeding tooling",
+  "writerContext": "ops",
+  "read": "server/admin only",
+  "write": "server/admin only",
+  "migrationNotes": [
+    "Tool-owned manifest used to delete prior synthetic seed data safely."
+  ]
+}

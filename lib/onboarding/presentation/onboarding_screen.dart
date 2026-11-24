@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_flow_state.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_gender_interest_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_instagram_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_name_dob_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_photos_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_profile_prompts_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_running_prefs_step.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_controller.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_step.dart';
+import 'package:catch_dating_app/pages/start/onboarding_welcome_body.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_ui/catch_ui.dart';

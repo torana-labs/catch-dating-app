@@ -1,0 +1,14 @@
+{
+  "id": "transportOperationReceipts",
+  "path": "transportOperationReceipts/{receiptId}",
+  "rulesMatch": "/transportOperationReceipts/{receiptId}",
+  "typescriptInterface": "TransportOperationReceiptDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "program transport mutation callables",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Idempotency receipts for offline-replayed transport mutations; same-id different-payload replays fail closed."
+  ]
+}

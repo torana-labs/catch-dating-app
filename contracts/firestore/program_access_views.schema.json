@@ -2,13 +2,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/program_access_views.schema.json",
   "title": "ProgramAccessViewDocument",
-  "description": "Server-maintained, rules-readable summary of one account's current authority over one program: the programme owner as manager, or a staff member's active duties with the owner-approval proof and every expiry already folded in, and whether the account manages the programme's organizer. Security rules read it with one get() to authorize direct reads of programme read models; the phone shows it as work access and gates the programme list and detail on it offline. Written by triggers on programStaffGrants, organizerPrograms and organizers. Holds ids, duty names and expiry instants only: no name, phone number or free text. Never the grant's identity fields and never mutation authority; commands re-check authority from the source documents.",
+  "description": "Server-maintained, rules-readable summary of one account's current authority over one program: the programme owner as manager, or a staff member's active duties with the owner-approval proof and every expiry already folded in, and whether the account manages the programme's organizer. Released Host builds show it as work access and gate the programme list and detail on it offline. Security rules no longer read it: they authorise from accessGrants, written beside it in the same transaction by every programme grant, owner and revocation command; a trigger on organizers keeps the organizer manager flag. Holds ids, duty names and expiry instants only: no name, phone number or free text. Never the grant's identity fields and never mutation authority; commands re-check authority from the source documents.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "programAccessViews",
   "x-firestore-path": "programAccessViews/{accessId}",
   "x-document-id-field": "accessId",
-  "x-owner": "Programme read model projector (programAccessViewTriggers)",
+  "x-owner": "Programme access writers (programAuthorityWrites, in each grant command's transaction; programAccessViewTriggers for the organizer manager flag)",
   "required": [
     "programId",
     "organizerId",
@@ -25,6 +25,7 @@
     "hotelScoped",
     "functionAll",
     "functionScoped",
+    "programAll",
     "workPickup",
     "workHotel",
     "workFunction",
@@ -114,6 +115,10 @@
       "$ref": "#/definitions/expiryMap",
       "description": "Key duty__functionId to the latest expiry of an assignment that names that function."
     },
+    "programAll": {
+      "$ref": "#/definitions/expiryMap",
+      "description": "Duty name to the latest expiry of one assignment that covers every pickup point, hotel and function at once, with the coordinator duty counted for every duty but programAdmin. pickupAll, hotelAll and functionAll cannot say this, because each can be raised by a different assignment. The guest directory rules read guestRelations here, as requireProgramGuestDirectoryAccess admits a whole-programme guest relations duty only. Views written before this field read as holding none."
+    },
     "workPickup": {
       "$ref": "#/definitions/expiryMap",
       "description": "The pickup points the work shell lists for this account, as the work-access callable resolves them: key \"*\" when some live operational duty covers every one, otherwise one key per named id; each value is the latest exclusive expiry of a duty reaching it. Hotel desk duties reach hotels only; programAdmin reaches none; functions come from door and guest-desk duties."
@@ -132,7 +137,7 @@
     },
     "tripRoutes": {
       "$ref": "#/definitions/expiryMap",
-      "description": "The transport trips the account's reconciliation viewer, transport dispatcher and coordinator assignments reach, as listProgramTrips resolves them: key pickup|hotel with the same meaning as arrivalRoutes (an id or * on each side; a trip with no hotel is ~ on that side, which only * reaches). Capped at 300 routes per assignment, failing closed."
+      "description": "The transport trips the account's reconciliation viewer, transport dispatcher and coordinator assignments reach, as the retired listProgramTrips callable resolved them: key pickup|hotel with the same meaning as arrivalRoutes (an id or * on each side; a trip with no hotel is ~ on that side, which only * reaches). Capped at 300 routes per assignment, failing closed."
     },
     "assignments": {
       "type": "array",

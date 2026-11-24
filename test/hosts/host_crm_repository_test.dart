@@ -18,7 +18,8 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audienc
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_kernel/read_model_family.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -62,7 +63,11 @@ HostContactsRepository _contacts(FirebaseFunctions functions) =>
     HostContactsRepository(
       functions,
       summaries: HostContactSummaryReads(
-        HostSummaryReader(FakeFirebaseFirestore(), actorId: () => 'host'),
+        ScopedReadModelReader(
+          FakeFirebaseFirestore(),
+          family: hostReadModels,
+          actorId: () => 'host',
+        ),
       ),
     );
 
@@ -106,72 +111,56 @@ void main() {
   });
 
   test(
-    'a default-order intersecting filter omits sort for rolling deploys',
+    'a query the directory cannot serve fails without calling a Function',
     () async {
       final functions = _TestFirebaseFunctions();
-      final callable =
-          functions.httpsCallable('listOrganizerContacts')
-              as _TestHttpsCallable;
-      callable.resultData = crmEmptyAudiencePageData();
       final repository = _contacts(functions);
 
-      await repository.listContacts('organizer-1', query: _intersecting());
-
-      final payload = callable.calls.single as Map<Object?, Object?>;
-      expect(payload['organizerId'], 'organizer-1');
-      expect(payload['limit'], 30);
-      expect(payload, isNot(contains('sort')));
+      await expectLater(
+        repository.listContacts('organizer-1', query: _intersecting()),
+        throwsArgumentError,
+      );
+      expect(functions.callables, isEmpty);
     },
   );
 
-  test(
-    'combined filters and search survive pagination and export serialization',
-    () async {
-      final functions = _TestFirebaseFunctions();
-      final listing =
-          functions.httpsCallable('listOrganizerContacts')
-              as _TestHttpsCallable;
-      final exporting =
-          functions.httpsCallable('exportOrganizerContacts')
-              as _TestHttpsCallable;
-      listing.resultData = crmEmptyAudiencePageData();
-      exporting.resultData = {
-        'csv': 'contact_id,display_name\n',
-        'fileName': 'audience.csv',
-        'rowCount': 0,
-        'truncated': false,
-        'generatedAtMillis': 1700000000000,
-        'sourceCoverage': 'exact',
-      };
-      final repository = _contacts(functions);
-      final query = HostAudienceQuery(
-        search: 'asha',
-        segments: const {
-          HostAudienceSegment.repeatAttendee,
-          HostAudienceSegment.firstTimeAttendee,
-          HostAudienceSegment.reliableAttendee,
-        },
-        manualTagIds: {'a' * 32, 'b' * 32},
-      );
-      await repository.listContacts(
-        'organizer-1',
-        query: query.copyWith(cursor: 'next'),
-      );
-      await repository.exportContacts('organizer-1', query: query);
-      final listPayload = listing.calls.single as Map;
-      final exportPayload = exporting.calls.single as Map;
-      for (final key in ['query', 'segmentIds', 'manualTagIds']) {
-        expect(exportPayload[key], listPayload[key]);
-      }
-      expect(listPayload['segmentIds'], [
-        'first_time_attendee',
-        'reliable_attendee',
-        'repeat_attendee',
-      ]);
-      expect(listPayload['cursor'], 'next');
-      expect(exportPayload.containsKey('cursor'), isFalse);
-    },
-  );
+  test('combined filters and search survive export serialization', () async {
+    final functions = _TestFirebaseFunctions();
+    final exporting =
+        functions.httpsCallable('exportOrganizerContacts')
+            as _TestHttpsCallable;
+    exporting.resultData = {
+      'csv': 'contact_id,display_name\n',
+      'fileName': 'audience.csv',
+      'rowCount': 0,
+      'truncated': false,
+      'generatedAtMillis': 1700000000000,
+      'sourceCoverage': 'exact',
+    };
+    final repository = _contacts(functions);
+    final query = HostAudienceQuery(
+      search: 'asha',
+      segments: const {
+        HostAudienceSegment.repeatAttendee,
+        HostAudienceSegment.firstTimeAttendee,
+        HostAudienceSegment.reliableAttendee,
+      },
+      manualTagIds: {'a' * 32, 'b' * 32},
+    );
+    await repository.exportContacts(
+      'organizer-1',
+      query: query.copyWith(cursor: 'next'),
+    );
+    final exportPayload = exporting.calls.single as Map;
+    expect(exportPayload['query'], 'asha');
+    expect(exportPayload['segmentIds'], [
+      'first_time_attendee',
+      'reliable_attendee',
+      'repeat_attendee',
+    ]);
+    expect(exportPayload['manualTagIds'], ['a' * 32, 'b' * 32]);
+    expect(exportPayload.containsKey('cursor'), isFalse);
+  });
 
   test('saved audience writes only the closed Customers definition', () async {
     final functions = _TestFirebaseFunctions();
@@ -181,8 +170,9 @@ void main() {
     callable.resultData = crmSavedAudienceData();
     final repository = HostSavedAudienceRepository(
       functions,
-      summaries: HostSummaryReader(
+      summaries: ScopedReadModelReader(
         FakeFirebaseFirestore(),
+        family: hostReadModels,
         actorId: () => 'host',
       ),
     );
@@ -399,22 +389,6 @@ void main() {
       );
     },
   );
-
-  test('an intersecting filter keeps non-default ordering explicit', () async {
-    final functions = _TestFirebaseFunctions();
-    final callable =
-        functions.httpsCallable('listOrganizerContacts') as _TestHttpsCallable;
-    callable.resultData = crmEmptyAudiencePageData();
-    final repository = _contacts(functions);
-
-    await repository.listContacts(
-      'organizer-1',
-      query: _intersecting(sort: HostAudienceSort.mostAttended),
-    );
-
-    final payload = callable.calls.single as Map<Object?, Object?>;
-    expect(payload['sort'], 'mostAttended');
-  });
 
   test(
     'manual contact creation sends identity details and initial note',

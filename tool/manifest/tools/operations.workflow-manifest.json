@@ -1,0 +1,30 @@
+{
+  "id": "operations:workflow-manifest",
+  "category": "operations",
+  "path": "operations/scripts/check-workflow-manifest.mjs",
+  "command": "node operations/scripts/check-workflow-manifest.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "role": "ratchet",
+  "alsoEnforces": [
+    "OPERATIONS-PLATFORM-001"
+  ],
+  "description": "Binds each durable workflow manifest to its live CLI commands, ordered stage and lifecycle contracts, source profiles, disabled capabilities, and platform capacity.",
+  "checks": [
+    "node --check operations/scripts/check-workflow-manifest.mjs",
+    "node --test operations/test/workflow-manifest.test.mjs",
+    "node operations/scripts/check-workflow-manifest.mjs"
+  ],
+  "impactPaths": [
+    "operations/test/workflow-manifest.test.mjs",
+    "operations/src/**"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "queueGate": "always"
+}

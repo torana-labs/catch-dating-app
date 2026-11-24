@@ -1,0 +1,10 @@
+{
+  "id": "organizer_posts",
+  "path": "organizers/{organizerId}/posts/{postId}",
+  "rulesMatch": "/organizers/{organizerId}/posts/{postId}",
+  "typescriptInterface": "OrganizerPostDocument",
+  "owner": "createOrganizerPost callable",
+  "writerContext": "organizers",
+  "read": "any signed-in user",
+  "write": "server only"
+}

@@ -8,7 +8,7 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import {eventOrganizerRef} from "../shared/eventOrganizers";
 import {isEventPubliclyAccessible} from "../events/eventPublicationAccess";
-import {eventWomenLed, organizerWomenLed} from "../organizers/womenLed";
+import {eventWomenLed, organizerWomenLed} from "../domain/events/womenLed";
 import {
   algoliaAppId,
   organizersIndexName,

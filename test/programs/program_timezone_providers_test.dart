@@ -6,6 +6,7 @@ import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_pref
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_create_journal.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_inventory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
@@ -37,6 +38,8 @@ ManagerEventSetupDefaults defaults({String? timezone}) =>
 class _Inventory extends Fake implements ProgramInventoryRepository {}
 
 class _Setup extends Fake implements ProgramSetupRepository {}
+
+class _Views extends Fake implements OrganizerProgramViewsRepository {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -145,6 +148,9 @@ void main() {
               uidProvider.overrideWithValue(const AsyncData('account')),
               programInventoryRepositoryProvider.overrideWithValue(
                 _Inventory(),
+              ),
+              organizerProgramViewsRepositoryProvider.overrideWithValue(
+                _Views(),
               ),
               programSetupRepositoryProvider.overrideWithValue(_Setup()),
               programTimezoneSuggestionProvider(scope).overrideWith((

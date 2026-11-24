@@ -59,7 +59,7 @@ The folders separate runtime code from its contracts and tooling:
 - `widgetbook/` previews Flutter components. `packages/catch_ui_lints/` implements
   analyzer rules; it is tooling, not another UI application.
 - `.github/workflows/` orchestrates CI and delivery. `tool/harness/` selects
-  affected lanes; `tool/tools_manifest.json` registers checks; the other `tool/`
+  affected lanes; `tool/manifest/` registers checks, one file per tool; the other `tool/`
   folders contain their implementations and bounded operational utilities.
 - `docs/` contains the owning architecture and operations documents linked above.
 

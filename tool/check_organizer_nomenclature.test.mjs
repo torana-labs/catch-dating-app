@@ -38,6 +38,20 @@ test("organizer nomenclature gate rejects legacy authority and generic copy", ()
     item.rule === "genericClubProductCopy"));
 });
 
+test("organizer nomenclature gate reads the Functions export list, not index.ts text", () => {
+  const root = fixtureRoot();
+  write(root, "functions/src/index.ts", [
+    "// createOrganizer is mentioned only in this comment.",
+    "export {createPublicClubReview} from \"./reviews/legacy\";",
+  ].join("\n"));
+  const findings = checkOrganizerNomenclature({root}).findings
+    .filter((item) => item.path === "functions/src/index.ts");
+  assert.ok(findings.some((item) => item.rule === "legacyAuthorityMarker" &&
+    item.detail.endsWith("createPublicClubReview")));
+  assert.ok(findings.some((item) => item.rule === "missingCanonicalMarker" &&
+    item.detail.endsWith(": createOrganizer")));
+});
+
 test("organizer nomenclature gate passes a canonical fixture", () => {
   const root = fixtureRoot();
   write(root, "contracts/firestore/organizers.schema.json", JSON.stringify({
@@ -63,9 +77,9 @@ test("organizer nomenclature gate passes a canonical fixture", () => {
       "adminUpdateOrganizerDetails",
     ]],
     ["functions/src/index.ts", [
-      "createOrganizer", "followOrganizer", "startOrganizerConversation",
-      "adminGetOrganizerDetails", "adminGetOrganizerClaimRequestDetails",
-      "adminSetOrganizerIndexStatus",
+      "export {createOrganizer, followOrganizer, startOrganizerConversation} from \"./organizers/callables\";",
+      "export {adminGetOrganizerDetails, adminGetOrganizerClaimRequestDetails,",
+      "  adminSetOrganizerIndexStatus} from \"./admin/organizers\";",
     ]],
     ["packages/platform/lib/analytics/app_analytics.dart", ["static const organizerId = 'organizer_id';"]],
     ["docs/migrations/clubs_to_organizers.md", ["organizerType"]],

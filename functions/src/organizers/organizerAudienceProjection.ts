@@ -2,15 +2,15 @@ import * as admin from "firebase-admin";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {isDeepStrictEqual} from "node:util";
 import {
-  effectiveOrganizerCommunicationStatus,
-  organizerCommunicationPreferenceId,
-} from
-  "../shared/organizerCommunicationPreferences";
+  contactPermissionRef,
+  contactPermissionStatus,
+  readContactPermission,
+  type ContactPermission,
+} from "../shared/contactPermissions";
 import type {
   EventAttendeeDocument,
   EventDocument,
   OrganizerAudienceSummaryDocument,
-  OrganizerCommunicationPreferenceDocument,
   OrganizerContactDocument,
   OrganizerContactEventEdgeDocument,
   OrganizerContactIdentityClaimDocument,
@@ -48,6 +48,11 @@ import {validateHostMembershipDocument} from
   "../shared/generated/validators/hostMembershipDocument";
 import {membershipIsEntitled} from "../hostMemberships/entitlement";
 import {hostMembershipId} from "../hostMemberships/ids";
+import {
+  isStaleSourceEvent,
+  SourceVersion,
+  sourceVersionOf,
+} from "../shared/sourceVersion";
 
 
 export interface AudienceProjectionDeps {
@@ -224,21 +229,17 @@ export async function projectEventAttendeeToOrganizerAudience(
   const eventSnap = await db.collection("events").doc(after.eventId).get();
   const event = eventSnap.data() as EventDocument | undefined;
   const existingContactRef = db.collection("organizerContacts").doc(contactId);
-  const preferenceRef = after.linkedUid === null ? null : db
-    .collection("organizerCommunicationPreferences")
-    .doc(organizerCommunicationPreferenceId(
-      after.organizerId,
-      after.linkedUid
-    ));
-  const [existingContactSnap, preferenceSnap, originSnap] = await Promise.all([
+  const sender = {kind: "organizer" as const, organizerId: after.organizerId};
+  const permissionRef = after.linkedUid === null ? null :
+    contactPermissionRef(db, after.linkedUid, sender);
+  const [existingContactSnap, permissionSnap, originSnap] = await Promise.all([
     existingContactRef.get(),
-    preferenceRef?.get() ?? Promise.resolve(null),
+    permissionRef?.get() ?? Promise.resolve(null),
     originRef.get(),
   ]);
   const existingContact = existingContactSnap.data() as
     OrganizerContactDocument | undefined;
-  const preference = preferenceSnap?.data() as
-    OrganizerCommunicationPreferenceDocument | undefined;
+  const permission = readContactPermission(permissionSnap?.data(), sender);
   const edge = organizerContactEventEdge({
     attendeeId,
     attendee: after,
@@ -256,7 +257,7 @@ export async function projectEventAttendeeToOrganizerAudience(
     existing: existingContact,
     edge,
     ambiguousCandidateContactIds: claimResolution.ambiguousContactIds,
-    preference,
+    permission,
     now,
   });
   const currentEvidenceIds = new Set(evidence.map((item) =>
@@ -292,12 +293,8 @@ export async function projectEventAttendeeToOrganizerAudience(
       // Preserve current manager fields and source endpoints.
       tx.update(existingContactRef, {
         ambiguousCandidateContactIds: claimResolution.ambiguousContactIds,
-        ...(preference ? {
-          whatsappStatus: effectiveOrganizerCommunicationStatus(
-            preference, "whatsapp"
-          ),
-          smsStatus: effectiveOrganizerCommunicationStatus(preference, "sms"),
-        } : {}),
+        ...(permission ? contactPermissionStatuses(permission,
+          current.phoneE164) : {}),
         revision: Math.max(current.revision + 1, now.toMillis()),
         updatedAt: now,
       });
@@ -488,40 +485,101 @@ export async function rebuildOrganizerContact(
   });
 }
 
-/** Applies organizer communication grants to every verified UID contact. */
-export async function projectOrganizerCommunicationPreference(
-  before: OrganizerCommunicationPreferenceDocument | undefined,
-  after: OrganizerCommunicationPreferenceDocument | undefined,
+/**
+ * The CRM statuses one contact gets from a person's contact permission for
+ * its organizer: the marketing answer at the contact's own phone, so only an
+ * effective grant for that number counts as opted in.
+ */
+export function contactPermissionStatuses(
+  permission: ContactPermission | null,
+  phoneE164: string | null): Pick<OrganizerContactDocument,
+    "whatsappStatus" | "smsStatus"> {
+  return {
+    whatsappStatus: contactPermissionStatus(permission, "whatsapp:marketing",
+      phoneE164),
+    smsStatus: contactPermissionStatus(permission, "sms:marketing",
+      phoneE164),
+  };
+}
+
+/**
+ * Writes one person's effective WhatsApp and SMS status onto each of their
+ * verified contacts for that organizer. The status never comes from a trigger
+ * payload: each contact's transaction re-reads the contact permission, so a
+ * late delivery of an older opt-in cannot overwrite a newer opt-out. An event
+ * older than the permission's current updateTime writes nothing; the newer
+ * event (retried until it succeeds) owns the status.
+ * @return {Promise<string[]>} Ids of the contacts it updated.
+ */
+export async function applyOrganizerCommunicationStatuses(params: {
+  organizerId: string;
+  uid: string;
+  eventVersion?: SourceVersion;
+}, deps: AudienceProjectionDeps = defaultDeps): Promise<string[]> {
+  const {organizerId, uid, eventVersion} = params;
+  const db = deps.firestore();
+  const sender = {kind: "organizer" as const, organizerId};
+  const permissionRef = contactPermissionRef(db, uid, sender);
+  const contactsSnap = await db.collection("organizerContacts")
+    .where("organizerId", "==", organizerId)
+    .where("linkedUid", "==", uid)
+    .get();
+  const updated: string[] = [];
+  for (const doc of contactsSnap.docs) {
+    const wrote = await db.runTransaction(async (tx) => {
+      const [permissionSnap, contactSnap] = await Promise.all([
+        tx.get(permissionRef), tx.get(doc.ref),
+      ]);
+      if (isStaleSourceEvent(permissionSnap, eventVersion)) return false;
+      const contact = contactSnap.data() as OrganizerContactDocument |
+        undefined;
+      if (!contact || contact.organizerId !== organizerId ||
+          contact.linkedUid !== uid) return false;
+      const permission = readContactPermission(permissionSnap.data(),
+        sender);
+      const now = deps.timestamp();
+      tx.update(doc.ref, {
+        ...contactPermissionStatuses(permission, contact.phoneE164),
+        revision: Math.max(contact.revision + 1, now.toMillis()),
+        updatedAt: now,
+      });
+      return true;
+    });
+    if (wrote) updated.push(doc.id);
+  }
+  return updated;
+}
+
+/**
+ * Applies a person's organizer contact permission to every verified UID
+ * contact, then rebuilds each updated contact. The payload only names the
+ * person and the sender; the status is re-read from the permission. Catch's
+ * own permission has no CRM contacts.
+ */
+export async function projectContactPermission(
+  uid: string,
+  senderKey: string,
+  before: ContactPermission | undefined,
+  after: ContactPermission | undefined,
+  eventVersion?: SourceVersion,
   projectionEventId?: string,
   deps: AudienceProjectionDeps = defaultDeps
 ): Promise<void> {
-  const preference = after ?? before;
-  if (!preference) return;
-  const db = deps.firestore();
-  const contactsSnap = await db.collection("organizerContacts")
-    .where("organizerId", "==", preference.organizerId)
-    .where("linkedUid", "==", preference.uid)
-    .get();
-  const now = deps.timestamp();
+  const permission = after ?? before;
+  if (!permission || permission.senderKind !== "organizer" ||
+      senderKey !== `organizer_${permission.senderId}`) return;
+  const organizerId = permission.senderId;
   const receiptBase = projectionEventId ??
-    `preference:${preference.organizerId}:${preference.uid}:` +
-      `${preference.updatedAt.toMillis()}`;
-  for (const doc of contactsSnap.docs) {
-    await doc.ref.update({
-      whatsappStatus: effectiveOrganizerCommunicationStatus(
-        after,
-        "whatsapp"
-      ),
-      smsStatus: effectiveOrganizerCommunicationStatus(after, "sms"),
-      revision: Math.max(
-        (doc.data() as OrganizerContactDocument).revision + 1,
-        now.toMillis()
-      ),
-      updatedAt: now,
-    });
+    `permission:${organizerId}:${uid}:${permission.updatedAt.toMillis()}`;
+  const updated = await applyOrganizerCommunicationStatuses({
+    organizerId,
+    uid,
+    eventVersion,
+  }, deps);
+  for (const contactId of updated) {
     await rebuildOrganizerContact(
-      doc.id,
-      `${receiptBase}|${doc.id}`,
+      contactId,
+      `${receiptBase}|${contactId}`,
       deps
     );
   }
@@ -654,7 +712,7 @@ function buildOrganizerContact(params: {
   existing?: OrganizerContactDocument;
   edge: OrganizerContactEventEdgeDocument;
   ambiguousCandidateContactIds: string[];
-  preference?: OrganizerCommunicationPreferenceDocument;
+  permission?: ContactPermission | null;
   now: FirebaseFirestore.Timestamp;
 }): OrganizerContactDocument {
   const {attendee, existing, edge, now} = params;
@@ -677,12 +735,11 @@ function buildOrganizerContact(params: {
     firstSeenAt: existing?.firstSeenAt ?? attendee.createdAt,
     lastSeenAt: attendee.updatedAt,
     sourceCount: existing?.sourceCount ?? 1,
-    whatsappStatus: params.preference ?
-      effectiveOrganizerCommunicationStatus(params.preference, "whatsapp") :
-      existing?.whatsappStatus ?? "unknown",
-    smsStatus: params.preference ?
-      effectiveOrganizerCommunicationStatus(params.preference, "sms") :
-      existing?.smsStatus ?? "unknown",
+    ...(params.permission ? contactPermissionStatuses(params.permission,
+      attendee.phoneE164 ?? existing?.phoneE164 ?? null) : {
+      whatsappStatus: existing?.whatsappStatus ?? "unknown",
+      smsStatus: existing?.smsStatus ?? "unknown",
+    }),
     revision: Math.max(existing?.revision ?? 0, now.toMillis(), 1),
     mergedIntoContactId: existing?.mergedIntoContactId ?? null,
     createdAt: existing?.createdAt ?? now,
@@ -746,15 +803,28 @@ export const onEventAttendeeAudienceProjected = onDocumentWritten(
   }
 );
 
-export const onOrganizerCommunicationPreferenceAudienceProjected =
+// Retried: the status is re-read from the contact permission in each
+// contact's transaction, stale events write nothing, and rebuild receipts
+// are keyed by the event id, so a rerun is idempotent. It replaced
+// onOrganizerCommunicationPreferenceAudienceProjected (issue #2460): a new
+// name, so the deploy deletes the old trigger and creates this one rather
+// than patching a live trigger's document filter.
+export const onContactPermissionAudienceProjected =
   onDocumentWritten(
-    "organizerCommunicationPreferences/{preferenceId}",
+    {document: "users/{uid}/contactPermissions/{senderKey}", retry: true},
     async (event) => {
       const before = event.data?.before.data() as
-        OrganizerCommunicationPreferenceDocument | undefined;
+        ContactPermission | undefined;
       const after = event.data?.after.data() as
-        OrganizerCommunicationPreferenceDocument | undefined;
-      await projectOrganizerCommunicationPreference(before, after, event.id);
+        ContactPermission | undefined;
+      await projectContactPermission(
+        event.params.uid,
+        event.params.senderKey,
+        before,
+        after,
+        sourceVersionOf(event.data?.after),
+        event.id
+      );
     }
   );
 

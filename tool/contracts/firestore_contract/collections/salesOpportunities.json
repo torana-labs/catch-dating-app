@@ -1,0 +1,11 @@
+{
+  "id": "salesOpportunities",
+  "path": "salesOpportunities/{opportunityId}",
+  "rulesMatch": "/salesOpportunities/{privateDocument=**}",
+  "typescriptInterface": "SalesOpportunityDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales opportunity service",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

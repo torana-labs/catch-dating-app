@@ -55,7 +55,7 @@ final class HostFormAutomationReadsProvider
 }
 
 String _$hostFormAutomationReadsHash() =>
-    r'41beb91f5013b9b8af32dbac986cdf20209a9885';
+    r'94bfd56e0466bc4386cbfcc6cdc6fd7cdfd6d1d6';
 
 /// The organizer's automation rules, or one form's, kept live.
 

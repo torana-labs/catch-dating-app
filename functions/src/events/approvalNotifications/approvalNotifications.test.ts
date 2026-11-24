@@ -462,7 +462,7 @@ test("signed WhatsApp failure unlocks one SMS fallback",
   async () => {
     const {createHash} = await import("node:crypto");
     const {whatsappStatusCorrelation} = await import(
-      "../../eventSuccess/operations/whatsappDeliveryProtocol.js"
+      "../../platform/delivery/whatsappDeliveryProtocol.js"
     );
     const {ApprovalWhatsappReceipts} = await import("./whatsappReceipts.js");
     const h = await fixture();
@@ -544,7 +544,7 @@ test("a later endpoint STOP suppresses SMS after WhatsApp technical failure",
       "../../shared/organizerWhatsappStops.js"
     );
     const {hashEndpoint} = await import(
-      "../../organizers/organizerCampaignModel.js"
+      "../../platform/delivery/endpointHash.js"
     );
     const h = await fixture();
     await h.optIn();
@@ -596,9 +596,6 @@ test("email acceptance completes submission without claiming inbox delivery",
 for (const channel of ["eventOperations", "sms", "marketing", "undated"]) {
   test(`current ${channel} withdrawal fences the appropriate approval route`,
     async () => {
-      const {organizerCommunicationPreferenceId} = await import(
-        "../../shared/organizerCommunicationPreferences.js"
-      );
       const h = await fixture();
       await h.optIn();
       const [id, emailId] = await h.enqueue();
@@ -614,15 +611,12 @@ for (const channel of ["eventOperations", "sms", "marketing", "undated"]) {
           },
         }),
       };
-      h.db.write(
-        "organizerCommunicationPreferences/" +
-          organizerCommunicationPreferenceId(org, uid),
-        channel === "sms" ? {sms: decision} : {
-          whatsappPurposes: {
-            [channel === "undated" ? "eventOperations" : channel]: decision,
-          },
-        },
-      );
+      const key = channel === "sms" ? "sms:marketing" :
+        channel === "undated" ? "whatsapp:eventOperations" :
+          `whatsapp:${channel}`;
+      h.db.write(`users/${uid}/contactPermissions/organizer_${org}`,
+        {senderKind: "organizer", senderId: org,
+          grants: {[key]: decision}, granted: []});
       h.outcome({kind: "accepted", providerMessageId: "provider2"});
       await h.worker.dispatch(id);
       await h.worker.dispatch(emailId);
@@ -634,18 +628,14 @@ for (const channel of ["eventOperations", "sms", "marketing", "undated"]) {
 
 test("a fresh explicit event choice can supersede an earlier withdrawal",
   async () => {
-    const {organizerCommunicationPreferenceId} = await import(
-      "../../shared/organizerCommunicationPreferences.js"
-    );
     const h = await fixture();
-    h.db.write(
-      "organizerCommunicationPreferences/" +
-        organizerCommunicationPreferenceId(org, uid),
-      {whatsappPurposes: {eventOperations: {
-        status: "optedOut",
-        updatedAt: {_seconds: Math.floor(h.clock() / 1000), _nanoseconds: 0},
-      }}},
-    );
+    h.db.write(`users/${uid}/contactPermissions/organizer_${org}`,
+      {senderKind: "organizer", senderId: org, granted: [],
+        grants: {"whatsapp:eventOperations": {
+          status: "optedOut",
+          updatedAt: {_seconds: Math.floor(h.clock() / 1000),
+            _nanoseconds: 0},
+        }}});
     h.tick();
     await h.optIn();
     const [id] = await h.enqueue();

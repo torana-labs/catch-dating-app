@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 
 /// The organizer's contact directory document: everyone's summary and the
 /// per-segment counts the triggers keep.
@@ -37,23 +37,28 @@ class HostContactDirectory {
 }
 
 /// The contact directory from `hostContactSummaries` and the organizer's
-/// directory document. Only an intersecting filter group (segments with
-/// tags) still needs the server's evaluation. A name search is a prefix
+/// directory document. It serves everyone, one segment or any of up to 20
+/// manual tags, with or without a name search. A name search is a prefix
 /// match on `searchName` and lists its matches by name, whatever the sort.
+///
+/// Two segments are not served: the server reads segments from different
+/// filter groups as "all of", and one `array-contains-any` can only read
+/// them as "any of". Segments with tags are not served either, because a
+/// query holds one `array-contains-any`.
 class HostContactSummaryReads {
   const HostContactSummaryReads(this.reader);
-  final HostSummaryReader reader;
+  final ScopedReadModelReader reader;
   static const marker = 'contactSummaryVersion';
 
   /// The directory document while it is listened to.
   Stream<HostContactDirectory> watchDirectory(String organizerId) => reader
-      .watchActivatedDirectory(organizerId, marker)
+      .watchActivatedReadiness(organizerId, marker)
       .map(HostContactDirectory.new);
 
   /// The exact count, or null when the directory cannot count this query.
   Future<int?> count(String organizerId, HostAudienceQuery query) async {
     if (!HostContactDirectory.countable(query)) return null;
-    final data = await reader.activatedDirectory(organizerId, marker);
+    final data = await reader.activatedReadiness(organizerId, marker);
     return HostContactDirectory(data).count(query);
   }
 
@@ -68,7 +73,7 @@ class HostContactSummaryReads {
     return reader
         .watchPages(
           collection: 'hostContactSummaries',
-          organizerId: organizerId,
+          scopeId: organizerId,
           orderField: spec.orderField,
           descending: spec.descending,
           pageSize: pageSize,
@@ -82,7 +87,7 @@ class HostContactSummaryReads {
   static bool supports(HostAudienceQuery query) {
     final segments = {...query.segments, ?query.segment};
     final tags = {...query.manualTagIds, ?query.manualTagId};
-    return segments.length <= 12 &&
+    return segments.length <= 1 &&
         tags.length <= 20 &&
         (segments.isEmpty || tags.isEmpty);
   }
@@ -100,10 +105,10 @@ class HostContactSummaryReads {
     required int limit,
   }) async {
     final spec = _ContactQuerySpec(query);
-    final directory = await reader.activatedDirectory(organizerId, marker);
+    final directory = await reader.activatedReadiness(organizerId, marker);
     final page = await reader.page(
       collection: 'hostContactSummaries',
-      organizerId: organizerId,
+      scopeId: organizerId,
       orderField: spec.orderField,
       descending: spec.descending,
       queryKey: spec.queryKey,

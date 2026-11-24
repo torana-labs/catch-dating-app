@@ -1,0 +1,11 @@
+{
+  "id": "marketingOpsDashboards",
+  "path": "marketingOpsDashboards/{dashboardId}",
+  "rulesMatch": "/marketingOpsDashboards/{privateDocument=**}",
+  "typescriptInterface": "MarketingOpsDashboardDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "adminCreateMarketingContentDraft and related Admin callables",
+  "writerContext": "admin",
+  "read": "server only",
+  "write": "server only"
+}

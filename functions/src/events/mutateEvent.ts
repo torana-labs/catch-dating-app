@@ -4,7 +4,8 @@ import {eventSuccessStructureDefaults} from
 import {normalizeEventItinerary, assertValidEventItinerary} from
   "./event_itinerary";
 import {eventDistanceLabel, eventTitleLabel} from "../shared/eventLabels";
-import {assertPublicRegistrationTerms} from "./publicRegistration/policy";
+import {assertPublicRegistrationTerms} from
+  "../domain/events/publicRegistrationTerms";
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import {randomBytes} from "crypto";
@@ -63,7 +64,7 @@ import {
 } from "../shared/notifications";
 import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {
-  eventParticipationsByStatusInTransaction,
+  eventBookingsByStatusInTransaction,
 } from "../shared/relationshipDocuments";
 import {
   assertValidEventTimeRange,
@@ -91,7 +92,7 @@ import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
 import {isOrganizerManager, isOrganizerOwner} from
   "../shared/organizerHosts";
 import {hostEventWomenLed, hostWomenLedRole, womenLedLocked} from
-  "../organizers/womenLed";
+  "../domain/events/womenLed";
 import {
   normalizeUploadedPhotosForFirestore,
 } from "../shared/uploadedPhotoNormalization";
@@ -111,9 +112,9 @@ import {
   isEventSuccessRotationSuitability,
   isEventSuccessUnitOutcome,
   ResolvedEventSuccessPrimitives,
-} from "../eventSuccess/formatPrimitives";
+} from "../domain/formats/formatPrimitives";
 import {organizerEventSuccessLayoutDocumentId} from
-  "../eventSuccess/spatialLayout";
+  "../domain/formats/layoutDocumentId";
 import {
   assertOrganizerEventVenueSource,
   organizerEventVenueDocumentId,
@@ -122,7 +123,9 @@ import {stageCancelledEventRefunds} from
   "../payments/legacyRefunds/recovery";
 import {validateEventPlanChangeDocument} from
   "../shared/generated/validators/eventPlanChangeDocument";
-import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
+import {createEventSeatLedgerInTransaction,
+  deleteEventSeatLedgerInTransaction, seatLedgerHoldsPlaces} from
+  "./seatAuthority/eventSeatLedgers";
 import {prepareEventMutationLedger} from "./eventPolicyMutation";
 import {EVENT_PLAN_CHANGES, eventPlanChangeFields,
   eventPlanChangeSourceId} from "./planChangeRecords";
@@ -417,6 +420,7 @@ export async function createEventHandler(
       endTimeMillis: data.endTimeMillis,
     });
     tx.create(eventRef, event);
+    createEventSeatLedgerInTransaction(tx, db, eventRef.id, event);
     if (inviteCode) {
       tx.create(privateAccessRef, {
         eventId: eventRef.id,
@@ -517,11 +521,10 @@ export async function updateEventHandler(
       privateAccessSnap,
       attendeeSnap,
       offerSnap,
-      seatMode,
     ] =
       await Promise.all([
         tx.get(organizerRef),
-        eventParticipationsByStatusInTransaction(tx, db, data.eventId, [
+        eventBookingsByStatusInTransaction(tx, db, data.eventId, [
           "signedUp",
           "waitlisted",
           "attended",
@@ -531,7 +534,6 @@ export async function updateEventHandler(
           .where("eventId", "==", data.eventId).limit(1)),
         tx.get(db.collection("organizerEventOffers")
           .where("eventId", "==", data.eventId).limit(1)),
-        readSeatMigrationWriterFence({db, tx, eventId: data.eventId}),
       ]);
     const organizer = assertCanMutateOrganizerEntity(
       organizerSnap,
@@ -582,10 +584,9 @@ export async function updateEventHandler(
       }),
     };
     const nextEvent = {...event, ...patch};
-    const seatState = seatMode === "ready" ?
-      await prepareEventMutationLedger(db, tx, data.eventId, event,
-        nextEvent) : null;
-    if (seatState && seatState.reserved > 0 &&
+    const seatState = await prepareEventMutationLedger(db, tx, data.eventId,
+      event, nextEvent);
+    if (seatState.reserved > 0 &&
         (scheduleChanged || policyChanged)) {
       throw new HttpsError("failed-precondition",
         "Events with reserved seats cannot change schedule or policy.");
@@ -642,7 +643,7 @@ export async function updateEventHandler(
       tx.create(db.collection(EVENT_PLAN_CHANGES)
         .doc(planChange.sourceId), planChange);
     }
-    if (seatState?.update) {
+    if (seatState.update) {
       tx.set(db.collection("eventSeatLedgers").doc(data.eventId),
         seatState.update);
     }
@@ -733,7 +734,7 @@ export async function cancelEventHandler(
     const [organizerSnap, participantEdges] =
       await Promise.all([
         tx.get(organizerRef),
-        eventParticipationsByStatusInTransaction(tx, db, data.eventId, [
+        eventBookingsByStatusInTransaction(tx, db, data.eventId, [
           "signedUp",
           "waitlisted",
         ]),
@@ -743,8 +744,6 @@ export async function cancelEventHandler(
       deletedUserSnap,
       hostUserId
     );
-
-    await readSeatMigrationWriterFence({db, tx, eventId: data.eventId});
 
     if (event.status === "cancelled") {
       return {event, organizerId, notifyParticipants: false};
@@ -855,11 +854,12 @@ export async function deleteEventHandler(
       attendeeSnap,
       offerSnap,
       admissionSnap,
-      seatMode,
+      ledgerSnap,
+      reservationSnap,
     ] = await Promise.all([
       tx.get(organizerRef),
       tx.get(deletedUserRef),
-      tx.get(db.collection("eventParticipations")
+      tx.get(db.collection("eventBookings")
         .where("eventId", "==", data.eventId)
         .limit(1)),
       tx.get(bookingPayments(db)
@@ -874,7 +874,9 @@ export async function deleteEventHandler(
         .where("eventId", "==", data.eventId).limit(1)),
       tx.get(db.collection("organizerFormAdmissions")
         .where("eventId", "==", data.eventId).limit(1)),
-      readSeatMigrationWriterFence({db, tx, eventId: data.eventId}),
+      tx.get(db.collection("eventSeatLedgers").doc(data.eventId)),
+      tx.get(db.collection("eventSeatReservations")
+        .where("eventId", "==", data.eventId).limit(1)),
     ]);
     assertCanMutateOrganizerEntity(
       organizerSnap,
@@ -885,7 +887,8 @@ export async function deleteEventHandler(
       !participationSnap.empty ||
       !paymentSnap.empty ||
       !reviewSnap.empty || !attendeeSnap.empty || !offerSnap.empty ||
-      !admissionSnap.empty || seatMode === "ready"
+      !admissionSnap.empty || !reservationSnap.empty ||
+      seatLedgerHoldsPlaces(ledgerSnap.data())
     ) {
       throw new HttpsError(
         "failed-precondition",
@@ -895,6 +898,7 @@ export async function deleteEventHandler(
     }
 
     tx.delete(eventRef);
+    deleteEventSeatLedgerInTransaction(tx, db, data.eventId);
     // The event's own setup state goes with it. Setup receipts stay: they
     // are keyed by request, not event, and replay protection must survive.
     tx.delete(db.collection("eventSetupPreferences").doc(data.eventId));
@@ -2186,12 +2190,12 @@ async function notifyEventParticipants(params: {
   try {
     const [signedUp, waitlisted] = await Promise.all([
       params.db
-        .collection("eventParticipations")
+        .collection("eventBookings")
         .where("eventId", "==", params.eventId)
         .where("status", "==", "signedUp")
         .get(),
       params.db
-        .collection("eventParticipations")
+        .collection("eventBookings")
         .where("eventId", "==", params.eventId)
         .where("status", "==", "waitlisted")
         .get(),

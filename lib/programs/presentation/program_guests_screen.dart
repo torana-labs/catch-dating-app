@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/programmes/data/program_guest_directory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
@@ -84,7 +85,8 @@ class ProgramGuestsScreen extends ConsumerWidget {
       builder: (context, detail) => CatchAsyncBoundary<ProgramGuestListPage>(
         retainDataOn: const {},
         value: guestsAsync,
-        onRetry: () => ref.invalidate(programGuestListProvider(programId)),
+        onRetry: () =>
+            ref.invalidate(programGuestDirectoryStreamProvider(programId)),
         loadingBuilder: (_) => CatchRouteScaffold(
           topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
             title: detail.program.title,
@@ -256,10 +258,17 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
     return index;
   }
 
-  void _refresh() {
-    ref.invalidate(programGuestListProvider(widget.programId));
+  /// Reads the programme detail again after a write; the guest page is a live
+  /// listener and follows the write on its own. A guest or group write also
+  /// reads the full group and household lists again, so a new empty group
+  /// shows at once and member counts follow the write.
+  void _refresh({bool inventory = false}) {
     if (widget.canManageGuests) {
       ref.invalidate(organizerProgramDetailProvider(widget.programId));
+      if (inventory) {
+        ref.invalidate(programGuestGroupListProvider(widget.programId));
+        ref.invalidate(programHouseholdListProvider(widget.programId));
+      }
     }
   }
 
@@ -343,6 +352,17 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
         .map((h) => h.householdId)
         .toList(growable: false);
     final unaffiliated = guestsByHousehold[null] ?? const [];
+    // The guest page names only the groups and households its own guests
+    // belong to, so a coordinator picks from the full lists, empty ones
+    // included. The page's lists stand in while those load or if they fail.
+    final groups = widget.canManageGuests
+        ? ref.watch(programGuestGroupListProvider(widget.programId)).value ??
+              page.groups
+        : page.groups;
+    final households = widget.canManageGuests
+        ? ref.watch(programHouseholdListProvider(widget.programId)).value ??
+              page.households
+        : page.households;
 
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
@@ -401,7 +421,11 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                   ? context.l10n.programsGuestsAddGuest
                   : null,
               onAction: widget.canManageGuests
-                  ? () => _addGuest(context)
+                  ? () => _addGuest(
+                      context,
+                      households: households,
+                      groups: groups,
+                    )
                   : null,
               children: [
                 if (page.guests.isNotEmpty) ...[
@@ -471,7 +495,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
           CatchSectionListItem(
             child: CatchSection.collection(
               title: context.l10n.programsGuestsGroupsTitle,
-              message: page.groups.isEmpty
+              message: groups.isEmpty
                   ? null
                   : context.l10n.programsGuestsGroupsSubtitle,
               emptyTitle: context.l10n.programsGuestsGroupsEmpty,
@@ -484,7 +508,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                   ? () => _addGroup(context)
                   : null,
               children: [
-                for (final group in page.groups)
+                for (final group in groups)
                   CatchFieldRow.standard(
                     leading: Icon(CatchIcons.people),
                     body: Column(
@@ -546,13 +570,15 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
     );
   }
 
-  Future<void> _addGuest(BuildContext context) async {
+  Future<void> _addGuest(
+    BuildContext context, {
+    required List<ProgramHouseholdRow> households,
+    required List<ProgramGuestGroupRow> groups,
+  }) async {
     final draft = await showDialog<ProgramGuestEditResult>(
       context: context,
-      builder: (_) => ProgramGuestEditDialog(
-        households: widget.guestPage.households,
-        groups: widget.guestPage.groups,
-      ),
+      builder: (_) =>
+          ProgramGuestEditDialog(households: households, groups: groups),
     );
     if (draft == null || !mounted) return;
     setState(() => _mutationError = null);
@@ -568,7 +594,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
             phoneE164: draft.phoneE164,
             email: draft.email,
           );
-      _refresh();
+      _refresh(inventory: true);
     } catch (error) {
       if (mounted) setState(() => _mutationError = error);
     }
@@ -601,7 +627,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
             hotelId: draft.hotelId == group?.hotelId ? null : draft.hotelId,
             clearHotel: group?.hotelId != null && draft.hotelId == null,
           );
-      _refresh();
+      _refresh(inventory: true);
     } catch (error) {
       if (mounted) setState(() => _mutationError = error);
     }
@@ -632,7 +658,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
             groupId: group.groupId,
             expectedRevision: group.revision,
           );
-      _refresh();
+      _refresh(inventory: true);
     } catch (error) {
       if (mounted) setState(() => _mutationError = error);
     }

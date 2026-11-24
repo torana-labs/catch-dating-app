@@ -123,6 +123,25 @@ export function cameFromLabel(growth: OrganizerOverview["growth"]): string {
   return channelLabels[growth.channel];
 }
 
+const signupSourceLabels: Record<NonNullable<
+  OrganizerOverview["signupSource"]>["source"], string> = {
+  metaAd: "Instagram or Facebook ad",
+  googleSearch: "Google search",
+  instagramPost: "Instagram post or reel",
+  friendOrHost: "A friend or another host",
+  teamOutreach: "Someone from Catch reached out",
+  other: "Somewhere else",
+};
+
+/**
+ * What the owner said in Catch Host setup about how they heard of Catch.
+ * Self-reported, so it sits beside "Came from" and never replaces it.
+ */
+export function signupSourceLabel(
+  signupSource: OrganizerOverview["signupSource"]): string {
+  return signupSource ? signupSourceLabels[signupSource.source] : "Not answered";
+}
+
 /**
  * Who earns nominator credit: the first nominator, unless they work for
  * Catch (sales associates earn none).

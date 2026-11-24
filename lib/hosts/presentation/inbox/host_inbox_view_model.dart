@@ -1,11 +1,10 @@
 // architecture: provider-free
-// ignore: catch_ui_lints/catch_arch_cross_feature_presentation_import -- the host inbox reuses the guest chat inbox until Inbox is redrawn under apps/host
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
 import 'package:flutter/foundation.dart';
 
 enum HostInboxAudienceSegment { booked, prospective }
@@ -59,8 +58,9 @@ class HostInboxThreadRowData {
 }
 
 /// The audience a program scope can prove belongs to it: guest contactIds
-/// from `listProgramGuests` plus the app uids those contacts are linked to on
-/// WhatsApp thread summaries. Nothing is inferred from phone numbers.
+/// from the programme guest directory plus the app uids those contacts are
+/// linked to on WhatsApp thread summaries. Nothing is inferred from phone
+/// numbers.
 @immutable
 class HostInboxProgramAudience {
   const HostInboxProgramAudience({

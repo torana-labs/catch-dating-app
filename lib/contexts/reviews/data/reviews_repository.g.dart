@@ -133,8 +133,16 @@ final class WatchReviewsForOrganizerFamily extends $Family
   String toString() => r'watchReviewsForOrganizerProvider';
 }
 
+/// The event's published reviews plus the signed-in viewer's own review of
+/// it, so an author whose review is pending or rejected still finds it on
+/// the event page and edits it instead of trying to write a second one.
+
 @ProviderFor(watchReviewsForEvent)
 final watchReviewsForEventProvider = WatchReviewsForEventFamily._();
+
+/// The event's published reviews plus the signed-in viewer's own review of
+/// it, so an author whose review is pending or rejected still finds it on
+/// the event page and edits it instead of trying to write a second one.
 
 final class WatchReviewsForEventProvider
     extends
@@ -144,6 +152,9 @@ final class WatchReviewsForEventProvider
           Stream<List<Review>>
         >
     with $FutureModifier<List<Review>>, $StreamProvider<List<Review>> {
+  /// The event's published reviews plus the signed-in viewer's own review of
+  /// it, so an author whose review is pending or rejected still finds it on
+  /// the event page and edits it instead of trying to write a second one.
   WatchReviewsForEventProvider._({
     required WatchReviewsForEventFamily super.from,
     required String super.argument,
@@ -189,7 +200,11 @@ final class WatchReviewsForEventProvider
 }
 
 String _$watchReviewsForEventHash() =>
-    r'433a7bcb93e2998aa1cd4e1e58ae6a4c758e30b0';
+    r'a3cac7fc8c4a771d63023a4c4a5e53df30081b50';
+
+/// The event's published reviews plus the signed-in viewer's own review of
+/// it, so an author whose review is pending or rejected still finds it on
+/// the event page and edits it instead of trying to write a second one.
 
 final class WatchReviewsForEventFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Review>>, String> {
@@ -201,6 +216,10 @@ final class WatchReviewsForEventFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The event's published reviews plus the signed-in viewer's own review of
+  /// it, so an author whose review is pending or rejected still finds it on
+  /// the event page and edits it instead of trying to write a second one.
 
   WatchReviewsForEventProvider call(String eventId) =>
       WatchReviewsForEventProvider._(argument: eventId, from: this);

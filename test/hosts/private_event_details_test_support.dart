@@ -38,15 +38,12 @@ class TestPrivateEventDetailsController {
   Future<void> load() => _notifier.load();
   Future<void> save(PrivateEventDetailsPatch patch) => _notifier.save(patch);
   Future<void> retryPending() => _notifier.retryPending();
-  Future<void> discardPending() => _notifier.discardPending();
   Future<void> addPhotos() => _notifier.addPhotos();
   void invalidateActor() => _notifier.invalidateActor();
 
   PrivateEventBasicSummary? get event => state.event;
   ManagerEventSetupDefaults? get defaults => state.defaults;
   PrivateEventDetailsUpdateRequest? get pending => state.pending;
-  PrivateSeatReconciliationProgress? get reconciliationProgress =>
-      state.reconciliationProgress;
   Object? get error => state.error;
   bool get loading => state.loading;
   bool get saving => state.saving;
@@ -54,7 +51,6 @@ class TestPrivateEventDetailsController {
   bool get actorAvailable => state.actorAvailable;
   bool get canEdit => state.canEdit;
   bool get canEditFormat => state.canEditFormat;
-  bool get canDiscardPending => state.canDiscardPending;
 
   set event(PrivateEventBasicSummary? value) =>
       state = state.copyWith(event: value);
@@ -62,8 +58,6 @@ class TestPrivateEventDetailsController {
       state = state.copyWith(defaults: value);
   set pending(PrivateEventDetailsUpdateRequest? value) =>
       state = state.copyWith(pending: value);
-  set reconciliationProgress(PrivateSeatReconciliationProgress? value) =>
-      state = state.copyWith(reconciliationProgress: value);
   void dispose() => container.dispose();
   PrivateEventDetailsState get snapshot => state;
 }
@@ -77,10 +71,6 @@ TestPrivateEventDetailsController createDetailsController({
   required WritePrivateEventDetails write,
   PrivateEventDetailsJournal journal = const PrivateEventDetailsJournal(),
   String? Function()? currentUserId,
-  Future<PrivateSeatReconciliationResult> Function(
-    PrivateEventDetailsUpdateRequest,
-  )?
-  reconcile,
   Future<List<UploadedPhoto>> Function(int)? pickAndUploadPhotos,
 }) {
   final notifier = _SeededDetailsController();
@@ -107,9 +97,6 @@ TestPrivateEventDetailsController createDetailsController({
           write: refreshingAfter(write, [eventFeed]),
           journal: journal,
           currentUserId: currentUserId,
-          reconcile: reconcile == null
-              ? null
-              : refreshingAfter(reconcile, [eventFeed]),
           pickAndUploadPhotos: pickAndUploadPhotos == null
               ? null
               : (_, position) => pickAndUploadPhotos(position),

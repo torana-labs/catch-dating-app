@@ -1,6 +1,6 @@
 import type {Firestore} from "firebase-admin/firestore";
 import type {MetaWhatsappProvider, OrganizerTokenStore} from
-  "../organizers/organizerWhatsappProvider";
+  "../platform/delivery/organizerWhatsappProvider";
 import type {ProgramDeliveryMessageIntent as MessageIntent} from
   "../shared/generated/programDeliveryMessageIntent";
 import {FirestoreDeliveryOutbox} from "../delivery/firestoreDeliveryOutbox";

@@ -1,0 +1,22 @@
+{
+  "id": "firebase:probe-chat-storage-rules",
+  "category": "firebase",
+  "path": "tool/firebase/probe_chat_storage_rules.mjs",
+  "command": "node tool/firebase/probe_chat_storage_rules.mjs --help",
+  "surface": "remote-destructive",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "description": "Runs an authenticated chat-image upload/delete canary through deployed Storage rules and removes its bounded fixture.",
+  "checks": [
+    "node --check tool/firebase/probe_chat_storage_rules.mjs",
+    "node --test tool/firebase/probe_chat_storage_rules.test.mjs"
+  ],
+  "role": "gate",
+  "alsoEnforces": [
+    "STORAGE-IAM-001"
+  ],
+  "runbook": "docs/release_operations.md#storage-rules-cross-service-readiness",
+  "impactPaths": [
+    "packages/command-client/**"
+  ]
+}

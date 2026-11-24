@@ -1,0 +1,16 @@
+{
+  "id": "eventAssistanceDeliveryRepairs",
+  "path": "eventAssistanceDeliveryRepairs/{receiptId}",
+  "rulesMatch": "/eventAssistanceDeliveryRepairs/{receiptId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted event-assistance host recovery",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "repairEventAssistanceDelivery"
+  ],
+  "migrationNotes": [
+    "Immutable reviewed manual handoffs. No provider evidence, receipt or consent can be inferred from a host action."
+  ]
+}

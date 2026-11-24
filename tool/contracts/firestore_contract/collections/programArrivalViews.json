@@ -1,0 +1,27 @@
+{
+  "id": "programArrivalViews",
+  "path": "programArrivalViews/{legId}",
+  "rulesMatch": "/programArrivalViews/{legId}",
+  "typescriptInterface": "ProgramArrivalViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/program_arrivals.rules.test.cjs",
+  "rulesTestNames": [
+    "reads a journey only where one assignment covers its pickup and hotel",
+    "lists one route's journeys, or every journey for the all-routes key"
+  ],
+  "owner": "Programme read model projector: programArrivalViewTriggers",
+  "writerContext": "programmes",
+  "read": "get and list where one airport greeter, dispatcher or coordinator assignment covers the journey's pickup point and hotel together (programAccessViews arrivalRoutes), and the programme owner, while not deleted; a scoped account lists one route at a time with a query naming programId and the pickup or hotel key",
+  "write": "server only; written from programTravelLegs, programTravelParties, programGuests, programHotels, programStaffGrants and the programme's transport settings",
+  "exportedFunctions": [
+    "onProgramArrivalLegChanged",
+    "onProgramArrivalPartyChanged",
+    "onProgramArrivalGuestChanged",
+    "onProgramArrivalHotelChanged",
+    "onProgramArrivalStaffLabelChanged",
+    "dispatchOrganizerPrograms"
+  ],
+  "migrationNotes": [
+    "Exactly the roster row the retired getProgramArrivalsRoster callable returned, plus the claimant's account id in place of claimedByMe and the pickup and hotel keys rules match; never a phone number. Only expected, ready and disrupted inbound journeys have a view. The program-arrival-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+  ]
+}

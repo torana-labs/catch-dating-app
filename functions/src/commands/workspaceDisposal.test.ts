@@ -137,11 +137,37 @@ test("deletion stops at its budget and carries on in a later run", async () => {
   assert.equal(db.read("events/draft-1"), undefined);
 });
 
-test("only private, active drafts without a seat ledger are disposable", () => {
+test("a draft's seat ledger and seat records go with it", async () => {
+  const {db} = harness();
+  seedDraft(db, "draft-1", 2);
+  db.write("eventSeatLedgers/draft-1", {eventId: "draft-1", capacity: null, occupied: 2, checkoutHeld: 0});
+  for (const collection of ["eventSeatReservations", "eventSeatRequestReceipts", "eventSeatIdentityAliases", "eventSeatVerifiedPhones"]) {
+    db.write(`${collection}/draft-1-guest`, {eventId: "draft-1"});
+    db.write(`${collection}/other-guest`, {eventId: "other-event"});
+  }
+  const result = await deleteTryItDrafts(db as unknown as FirebaseFirestore.Firestore, ["draft-1"]);
+  assert.equal(result.incomplete, false);
+  assert.equal(db.read("events/draft-1"), undefined);
+  assert.equal(db.read("eventSeatLedgers/draft-1"), undefined);
+  for (const collection of ["eventSeatReservations", "eventSeatRequestReceipts", "eventSeatIdentityAliases", "eventSeatVerifiedPhones"]) {
+    assert.equal(db.read(`${collection}/draft-1-guest`), undefined, collection);
+    assert.ok(db.read(`${collection}/other-guest`), collection);
+  }
+});
+
+test("a draft with a checkout in progress waits for the next run", async () => {
+  const {db} = harness();
+  seedDraft(db, "draft-1", 0);
+  db.write("eventSeatLedgers/draft-1", {eventId: "draft-1", capacity: 20, occupied: 0, checkoutHeld: 1});
+  await deleteTryItDrafts(db as unknown as FirebaseFirestore.Firestore, ["draft-1"]);
+  assert.ok(db.read("events/draft-1"));
+  assert.ok(db.read("eventSeatLedgers/draft-1"));
+});
+
+test("only private, active drafts are disposable", () => {
   assert.equal(isTryItDraft(draft), true);
   assert.equal(isTryItDraft({...draft, publicationState: "published"}), false);
   assert.equal(isTryItDraft({...draft, status: "cancelled"}), false);
-  assert.equal(isTryItDraft({...draft, seatMode: "ready"}), false);
 });
 
 // Try-it draft forms (tryItFormIds, from form.import-from-link).

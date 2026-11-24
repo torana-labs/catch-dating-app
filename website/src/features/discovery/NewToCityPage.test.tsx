@@ -8,7 +8,7 @@ import {NewToCityPage} from "./NewToCityPage";
 vi.mock("../../analytics", async (original) => ({...await original<typeof import("../../analytics")>(), trackMarketingEvent: vi.fn()}));
 afterEach(cleanup);
 
-const captures: CaptureSlots = Object.fromEntries(["guest-explore", "guest-checked-in"].map((id) => [id, {
+const captures: CaptureSlots = Object.fromEntries(["guest-checked-in", "guest-web-whats-on"].map((id) => [id, {
   id, device: "generic-phone", webPath: `/captures/${id}.png`, width: 804, height: 1748, alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Find a plan", pages: [],
 }]));
 
@@ -26,9 +26,10 @@ describe("New to the city page", {timeout: 20_000}, () => {
     expect(screen.queryByText(/came alone/iu)).toBeNull();
   });
 
-  it("shows a guest's phone after checking in beside the WhatsApp form, as the board does", () => {
+  it("shows the city's What's on page in Safari beside the WhatsApp form", () => {
     render(<MemoryRouter initialEntries={["/new-to-mumbai/"]}><NewToCityPage captures={captures} catalog={mumbaiDiscoveryCatalog} /></MemoryRouter>);
     const notify = screen.getByRole("region", {name: "Get newcomer-friendly plans on WhatsApp."});
-    expect(within(notify).getByRole("img", {name: "Screen guest-checked-in"})).toBeTruthy();
+    expect(within(notify).getByRole("img", {name: "Screen guest-web-whats-on"})).toBeTruthy();
+    expect(within(notify).queryByRole("img", {name: "Screen guest-checked-in"})).toBeNull();
   });
 });

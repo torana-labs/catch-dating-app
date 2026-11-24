@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/live/data/event_assistance_late_join_setting_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setting.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setting_result.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Map<String, Object?> lateJoinUiFixture(String name) =>
     (jsonDecode(
-              File(
+              repoFile(
                 'test/event_success/fixtures/late_join_settings.json',
               ).readAsStringSync(),
             )

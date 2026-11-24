@@ -102,8 +102,9 @@ class ProgramLiveFunction {
   final ProgramLivePhase phase;
 }
 
-/// `getProgramLiveBoard`: the function on now, tonight, travel counts and
-/// the alerts the caller may see.
+/// The live board: the function on now, tonight, travel counts and the
+/// alerts the caller may see, built from the read models by
+/// `programLiveBoardFromViews`.
 class ProgramLiveBoard {
   const ProgramLiveBoard({
     required this.programId,

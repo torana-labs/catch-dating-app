@@ -15,10 +15,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final _random = Random.secure();
 
-/// The guest assistant's settings (RbProgAssistant), from
-/// `getProgramAssistantSettings`. Each switch or chip saves at once through
-/// `updateProgramAssistantSettings`, fenced by the settings revision. The
-/// "Try it" preview belongs to the assistant itself (WhatsApp lane W2).
+/// The guest assistant's settings (RbProgAssistant), from the
+/// `programAssistantSettingViews` and `programSenderViews` read models. Each
+/// switch or chip saves at once through `updateProgramAssistantSettings`,
+/// fenced by the settings revision. The "Try it" preview belongs to the
+/// assistant itself (WhatsApp lane W2).
 class HostProgrammeAssistantScreen extends ConsumerStatefulWidget {
   const HostProgrammeAssistantScreen({super.key, required this.programId});
 

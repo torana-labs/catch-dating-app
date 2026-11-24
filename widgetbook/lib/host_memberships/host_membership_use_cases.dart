@@ -3,14 +3,14 @@ import 'package:catch_dating_app/contexts/payments/data/host_membership_reposito
 import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_plan.dart';
 import 'package:catch_dating_app/host_memberships/presentation/host_membership_badge.dart';
-import 'package:catch_dating_app/host_memberships/presentation/host_membership_plan_sheet.dart';
-import 'package:catch_dating_app/host_memberships/presentation/host_membership_plans_section.dart';
 import 'package:catch_dating_app/host_memberships/presentation/host_membership_profile_section.dart';
 import 'package:catch_dating_app/host_memberships/presentation/host_membership_section.dart';
-import 'package:catch_dating_app/host_memberships/presentation/host_membership_upsell_banner.dart';
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_screen.dart';
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_state.dart';
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_view_model.dart';
+import 'package:catch_dating_app/pages/memberships/host_membership_plan_sheet.dart';
+import 'package:catch_dating_app/pages/memberships/host_membership_plans_section.dart';
+import 'package:catch_dating_app/pages/memberships/host_membership_upsell_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

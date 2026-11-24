@@ -65,10 +65,6 @@ export function hashCanonical(value: unknown): string {
   return sha256(JSON.stringify(canonicalize(value)));
 }
 
-export function hashEndpoint(e164: string): string {
-  return sha256(e164);
-}
-
 export function emptyCampaignAudienceCounts(): CampaignAudienceCounts {
   return {
     total: 0,

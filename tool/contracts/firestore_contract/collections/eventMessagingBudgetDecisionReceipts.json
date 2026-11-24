@@ -1,0 +1,17 @@
+{
+  "id": "eventMessagingBudgetDecisionReceipts",
+  "path": "eventMessagingBudgetDecisionReceipts/{receiptId}",
+  "rulesMatch": "/eventMessagingBudgetDecisionReceipts/{receiptId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "adminDecideEventMessagingBudget callable",
+  "writerContext": "admin",
+  "read": "server/admin callable only",
+  "write": "server only",
+  "exportedFunctions": [
+    "adminDecideEventMessagingBudget"
+  ],
+  "migrationNotes": [
+    "Immutable request-hash receipt preserves exact replay after later scope decisions.",
+    "The receipt returns only decision identity and status and grants no spending authority."
+  ]
+}

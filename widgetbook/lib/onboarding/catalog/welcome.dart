@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
-import 'package:catch_dating_app/onboarding/presentation/start_welcome_route_screen.dart';
+import 'package:catch_dating_app/pages/start/onboarding_welcome_body.dart';
+import 'package:catch_dating_app/pages/start/start_welcome_route_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

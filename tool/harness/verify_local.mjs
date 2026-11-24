@@ -32,6 +32,7 @@ import process from "node:process";
 
 import {deriveTargetWorkflows, extractSteps, planCodegenFreshness, planSourcePreflight, workflowForTarget} from "./lib/workflow_steps.mjs";
 import {planAffectedToolChecks} from "../lib/tool_impact.mjs";
+import {loadToolsManifest} from "../lib/tools_manifest.mjs";
 
 const WORKFLOW_DIR = ".github/workflows";
 
@@ -231,7 +232,7 @@ function collectGates(targets, context) {
       const read = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
       const tools = planAffectedToolChecks({
         changedPaths: context.changedPaths ?? [],
-        manifest: read("tool/tools_manifest.json"),
+        manifest: loadToolsManifest({root: process.cwd()}),
         componentGraph: read("tool/harness/component_graph.json"),
         mode: context.mode ?? "pr",
         full: context.full ?? true,

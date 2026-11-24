@@ -1,25 +1,24 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:catch_dating_app/chats/presentation/event_chat_controller.dart';
-import 'package:catch_dating_app/chats/presentation/event_chat_participants_controller.dart';
-import 'package:catch_dating_app/chats/presentation/event_chat_participants_screen.dart';
-import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat_participant.dart';
+import 'package:catch_dating_app/pages/chat/event_chat_controller.dart';
+import 'package:catch_dating_app/pages/chat/event_chat_participants_controller.dart';
+import 'package:catch_dating_app/pages/chat/event_chat_participants_screen.dart';
+import 'package:catch_dating_app/pages/chat/event_chat_screen.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-
-import '../support/catch_test_fonts.dart';
-import '../test_pump_helpers.dart';
 
 EventChatParticipantsState fixture({bool empty = false, bool more = false}) =>
     EventChatParticipantsState(

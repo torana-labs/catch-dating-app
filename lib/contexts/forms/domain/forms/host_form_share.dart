@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/form_definition_fields.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_embed.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -9,12 +10,24 @@ class HostFormShareAssets {
     required this.embedSnippet,
   });
 
-  factory HostFormShareAssets.fromCallableData(Object? data) {
-    final map = formDefinitionRequiredMap(data, 'form share assets');
+  /// The share assets of a published form with [publicFormId] and [title]
+  /// on [site], with the embed frame [embedId] ([hostFormEmbedAssets]).
+  factory HostFormShareAssets.forPublicForm({
+    required Uri site,
+    required String publicFormId,
+    required String title,
+    required String embedId,
+  }) {
+    final canonical = hostFormPublicUrl(site, publicFormId);
+    final embed = hostFormEmbedAssets(
+      canonicalUrl: canonical,
+      title: title,
+      embedId: embedId,
+    );
     return HostFormShareAssets(
-      canonicalUrl: formDefinitionRequiredString(map, 'canonicalUrl'),
-      embedUrl: formDefinitionRequiredString(map, 'embedUrl'),
-      embedSnippet: formDefinitionRequiredString(map, 'embedSnippet'),
+      canonicalUrl: canonical.toString(),
+      embedUrl: embed.embedUrl,
+      embedSnippet: embed.embedSnippet,
     );
   }
 

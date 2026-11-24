@@ -1,0 +1,10 @@
+{
+  "id": "assistantGatewayBudgets",
+  "path": "assistantGatewayBudgets/{budgetId}",
+  "rulesMatch": "/assistantGatewayBudgets/{privateDocument=**}",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "sales assistant gateway server-only budget transaction",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

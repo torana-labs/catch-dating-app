@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
-import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/auth/presentation/auth_page_presentation.dart';
-import 'package:catch_dating_app/auth/presentation/auth_presentation_state.dart';
 import 'package:catch_dating_app/auth/presentation/host_auth_card.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_controller.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_input.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_presentation_state.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';

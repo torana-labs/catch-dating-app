@@ -15,14 +15,14 @@ export const hostExports = {
     tableId: "events",
     requiredInMart: true,
   },
-  "bq-host-event-participations": {
-    collectionPath: "eventParticipations",
-    tableId: "event_participations",
+  "bq-host-event-bookings": {
+    collectionPath: "eventBookings",
+    tableId: "event_bookings",
     requiredInMart: true,
   },
-  "bq-host-payments": {
-    collectionPath: "payments",
-    tableId: "payments",
+  "bq-host-guest-payments": {
+    collectionPath: "guestPayments",
+    tableId: "guest_payments",
     requiredInMart: true,
   },
   "bq-host-reviews": {
@@ -39,11 +39,6 @@ export const hostExports = {
     collectionPath: "eventInviteLinks",
     tableId: "event_invite_links",
     requiredInMart: true,
-  },
-  "bq-host-matches": {
-    collectionPath: "matches",
-    tableId: "matches",
-    requiredInMart: false,
   },
 };
 

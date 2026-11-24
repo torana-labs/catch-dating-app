@@ -5,7 +5,7 @@ import {signUpForFreeEventHandler} from "./signUpForFreeEvent";
 import type {HostMembershipContext} from
   "../hostMemberships/entitlementReader";
 import {publishedEventSetup, withStoredEventPolicy} from
-  "../shared/testing/eventSetupFixture";
+  "../domain/events/testing/eventSetupFixture";
 
 test(
   "signUpForFreeEventHandler books a free event through shared signer",
@@ -178,7 +178,7 @@ test(
       request("runner-1", {eventId: "event-1"}),
       deps({
         events: {"event-1": event},
-        eventParticipations: {
+        eventBookings: {
           "event-1_runner-1": {hostApprovalStatus: "approved"},
         },
         signUpCalls,
@@ -242,7 +242,7 @@ function deps({
     },
   },
   eventPrivateAccess = {},
-  eventParticipations = {},
+  eventBookings = {},
   signUpCalls = [],
   rateLimitCalls = [],
   onEventRead,
@@ -253,7 +253,7 @@ function deps({
   events?: Record<string, Record<string, unknown>>;
   users?: Record<string, Record<string, unknown>>;
   eventPrivateAccess?: Record<string, Record<string, unknown>>;
-  eventParticipations?: Record<string, Record<string, unknown>>;
+  eventBookings?: Record<string, Record<string, unknown>>;
   signUpCalls?: SignUpCall[];
   rateLimitCalls?: Array<{uid: string; action: string}>;
   onEventRead?: () => void;
@@ -269,7 +269,7 @@ function deps({
     "events",
     "users",
     "eventPrivateAccess",
-    "eventParticipations",
+    "eventBookings",
     "eventWaitlistOffers",
     "hostMembershipBenefitUses",
   ];
@@ -301,7 +301,7 @@ function deps({
                 users[id] :
                 path === "eventPrivateAccess" ?
                   eventPrivateAccess[id] :
-                  eventParticipations[id];
+                  eventBookings[id];
             return {
               exists: data !== undefined,
               data: () => data,

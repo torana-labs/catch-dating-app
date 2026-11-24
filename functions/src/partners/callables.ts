@@ -61,6 +61,9 @@ import {
 import {
   validateAdminRevokeSalesPartnerAccessCallablePayload,
 } from "../shared/generated/validators/adminRevokeSalesPartnerAccessInput";
+import {
+  validateAdminGetSalesPartnerAccessCallablePayload,
+} from "../shared/generated/validators/adminGetSalesPartnerAccessInput";
 import * as admin from "firebase-admin";
 import {
   CallableRequest,
@@ -71,11 +74,12 @@ import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {currentSalesEmployee} from "../admin/sales/callables";
-import {adminRolesFromToken} from "../admin/adminAuth";
+import {adminRolesFromToken} from "../platform/adminAuth";
 import type {PartnerActor, PartnerDeps} from "./model";
 import {
   assignPartner,
   decideAssignment,
+  getPartnerAccess,
   getPartnerWorkspace,
   nominateOrganizer,
   registerPartner,
@@ -178,6 +182,11 @@ export const adminRevokeSalesPartnerAccess = callable(
   "revoke", true, validateAdminRevokeSalesPartnerAccessCallablePayload,
   revokePartnerAccess,
   20,
+);
+export const adminGetSalesPartnerAccess = callable(
+  "access.get", true, validateAdminGetSalesPartnerAccessCallablePayload,
+  getPartnerAccess,
+  60,
 );
 
 export const updateSalesPartnerAssignment = callable(

@@ -4,6 +4,7 @@ import test from "node:test";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {FakeFirestore} from "../../operations/testFirestore";
 import {contractValidator} from "../../shared/contractTestValidators";
+import {BRAND} from "../../shared/generated/brand";
 import {schemaErrorMessages} from "../../shared/generated/schemaValidationRuntime";
 import type {AdminListInboxItemsCallableResponse} from "../../shared/generated/adminListInboxItemsCallableResponse";
 import type {AdminGetInboxItemCallableResponse} from "../../shared/generated/adminGetInboxItemCallableResponse";
@@ -133,6 +134,7 @@ function websiteLead(kind: string, overrides: Record<string, unknown> = {}) {
     referral: {referral: {hostName: "Lantern Lane Social", hostLink: "@lanternlane", relationship: "I go to their dinners"},
       referralCredit: {status: "missing_referrer_account", referrerUid: null, referrerRole: null}},
     city_alerts: {cityAlerts: {interests: ["runs", "nights_out"]}},
+    app_link: {appLink: {app: "host"}},
   };
   return {source: "website", status: "needs_identity_review", leadKind: kind, fullName: null, phone: "+919812345678",
     city: "mumbai", createdAt: "2026-10-31T10:00:00.000Z",
@@ -155,6 +157,10 @@ test("a website lead is its own type, says its kind and waits for a WhatsApp rep
   const alerts = projectInboxSource("salesInboundIntent", "lead-3", websiteLead("city_alerts"));
   assert.equal(alerts?.title, "New plans in their city");
   assert.equal(alerts?.subtitle, "WhatsApp +919812345678 · Runs, Nights out");
+  const appLink = projectInboxSource("salesInboundIntent", "lead-4", websiteLead("app_link"));
+  assert.equal(appLink?.title, "App link request");
+  assert.equal(appLink?.subtitle, `WhatsApp +919812345678 · Asked for the ${BRAND.stores.hostAppName} link on WhatsApp`);
+  assert.equal(appLink?.state.code, "reply_on_whatsapp");
   const linked = projectInboxSource("salesInboundIntent", "lead-2", websiteLead("referral", {status: "linked",
     organizerId: "org-1", linkedBy: "dev", linkedAt: "2026-11-01T10:00:00.000Z"}));
   assert.equal(linked?.lifecycle, "closed");
@@ -255,35 +261,6 @@ test("a dismissal holds across source writes until someone reopens it, and only 
 
   await h.sync("supplyIntakeRequest", "req-1", nomination("req-1"));
   await assert.rejects(update({action: "dismiss", note: "Not for us."}, "supply-req-1"), /Decide this item/);
-});
-
-test("a website instant draft waits for a WhatsApp reply from a person, who dismisses it once sent", async () => {
-  const h = harness();
-  const draft = (overrides: Record<string, unknown> = {}) => nomination("draft-1", {
-    request: {...nomination("draft-1").request, kind: "self_submission", seed: {name: null,
-      urls: ["https://lu.ma/moonmoth"], notes: null, categories: []},
-    submittedBy: {role: "organizer", uid: null, partnerId: null}, origin: {kind: "web_instant_draft", id: "web-1"}},
-    instantDraft: {schemaVersion: 1, draftId: "draft-1", accessTokenHash: "c".repeat(64), requestKind: "event_link",
-      entry: "event_page_tool", link: {url: "https://lu.ma/moonmoth", provider: "luma", support: "instant", reason: null},
-      whatsapp: {phone: "+919000000001", consentVersion: "instant-draft-whatsapp-v1", consentedAt: "2026-10-28T16:11:00.000Z",
-        purpose: "instant_draft_follow_up", verifiedByUid: "submitter-1"}, followUp: {channel: "whatsapp", mode: "staff_reply"},
-      outcome: null},
-    ...overrides});
-  const waiting = projectInboxSource("supplyIntakeRequest", "draft-1", draft())!;
-  assert.deepEqual([waiting.cameFrom, waiting.lifecycle, waiting.state.code, waiting.state.label],
-    ["Website draft tool", "open", "reply_on_whatsapp", "Reply on WhatsApp"]);
-  assert.deepEqual(waiting.journey.find((step) => step.stepId === "whatsapp-consent")?.detail, "+919000000001");
-  const saved = projectInboxSource("supplyIntakeRequest", "draft-1", draft({approval: {approvalId: "ap", organizerId: "org",
-    approvedByUid: "supply-instant-draft", approvedAt: "2026-10-28T16:14:00.000Z", materialHash: "d".repeat(64),
-    salesOwnerUid: "supply-instant-draft"}}))!;
-  assert.deepEqual([saved.lifecycle, saved.state.label], ["open", "Draft ready, reply on WhatsApp"]);
-  assert.ok(saved.journey.some((step) => step.title === "Saved as a private draft"));
-  assert.equal(saved.journey.some((step) => step.stepId === "published"), false, "a draft is never shown as published");
-
-  await h.sync("supplyIntakeRequest", "draft-1", draft());
-  const dismissed = await adminUpdateInboxItemHandler(h.request({itemId: "supply-draft-1", action: "dismiss",
-    assigneeUid: null, snoozedUntil: null, note: "Sent the draft link on WhatsApp."}), h.deps);
-  assert.deepEqual([dismissed.item.status, dismissed.item.state.code], ["done", "dismissed"]);
 });
 
 test("the inbox lists oldest first with real totals, a page at a time", async () => {

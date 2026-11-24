@@ -12,7 +12,7 @@ import type {DiscoveryFormatKey} from "./discoveryTypes";
 vi.mock("../../analytics", async (original) => ({...await original<typeof import("../../analytics")>(), trackMarketingEvent: vi.fn()}));
 afterEach(cleanup);
 
-const captures: CaptureSlots = Object.fromEntries(["guest-explore", "guest-checked-in"].map((id) => [id, {
+const captures: CaptureSlots = Object.fromEntries(["guest-explore", "guest-checked-in", "guest-web-whats-on"].map((id) => [id, {
   id, device: "generic-phone", webPath: `/captures/${id}.png`, width: 804, height: 1748, alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Find a plan", pages: [],
 }]));
 
@@ -55,7 +55,7 @@ describe("City format page", {timeout: 20_000}, () => {
     // The city's other indexed format pages, and the newcomers' page.
     const more = band("Other things to do");
     expect(within(more).getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/mumbai/nightlife/", "/new-to-mumbai/"]);
-    expect(within(band("Get new plans on WhatsApp.")).getByRole("button", {name: "Notify me"})).toBeTruthy();
+    expect(within(band("Get new plans on WhatsApp.")).getByRole("button", {name: "Get plans"})).toBeTruthy();
   });
 
   it("labels each unclaimed organiser's card in words with a report link carrying its id, and a claimed one with neither", () => {
@@ -100,10 +100,11 @@ describe("City format page", {timeout: 20_000}, () => {
       .toBe("/listings/request/?organizer=driftwood-bay-runners");
   });
 
-  it("shows the board's phones: a guest checked in by the first-time guide, and the app's Explore by the WhatsApp form", () => {
+  it("shows a guest checked in by the first-time guide, and the city's What's on page in Safari by the WhatsApp form", () => {
     render(<MemoryRouter initialEntries={["/mumbai/run-clubs/"]}><CityFormatPage captures={captures} catalog={mumbaiDiscoveryCatalog} format="runClubs" /></MemoryRouter>);
     expect(within(band("Joining a run club in Mumbai.")).getByRole("img", {name: "Screen guest-checked-in"})).toBeTruthy();
-    expect(within(band("Get new plans on WhatsApp.")).getByRole("img", {name: "Screen guest-explore"})).toBeTruthy();
+    expect(within(band("Get new plans on WhatsApp.")).getByRole("img", {name: "Screen guest-web-whats-on"})).toBeTruthy();
+    expect(screen.queryByRole("img", {name: "Screen guest-explore"})).toBeNull();
   });
 
   it("is the thin page below the bar: what is here so far and what else is on", () => {

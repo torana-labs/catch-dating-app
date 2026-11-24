@@ -1,11 +1,10 @@
 import 'package:catch_dating_app/contexts/insights/data/host_attention_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
 import 'package:catch_platform/schema_contracts/generated/host_attention_policies.g.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../test_pump_helpers.dart';
 
 void main() {
   group('catalog coverage', () {

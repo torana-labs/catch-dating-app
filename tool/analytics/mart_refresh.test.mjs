@@ -61,9 +61,9 @@ function fixture(mart, failure = null) {
   const fixtureSources = {
     organizers_raw_latest: "document_id STRING, data STRING",
     events_raw_latest: "document_id STRING, data STRING",
-    event_participations_raw_latest: "data STRING",
+    event_bookings_raw_latest: "data STRING",
     event_invite_links_raw_latest: "data STRING",
-    payments_raw_latest: "data STRING",
+    guest_payments_raw_latest: "data STRING",
     reviews_raw_latest: "data STRING",
     saved_events_raw_latest: "data STRING",
     event_success_scorecards_raw_latest: "document_id STRING, data STRING",
@@ -115,6 +115,15 @@ function fixture(mart, failure = null) {
       seed.push(`INSERT INTO fixture_reviews_raw_latest VALUES (
         JSON_SET(JSON '${data}', '$.createdAt._seconds', UNIX_SECONDS(CURRENT_TIMESTAMP()), '$.rating', 4).to_json_string());`);
     }
+    // guestPayments for the canonical event: a paid app booking (amountMinor),
+    // a captured website checkout and an admitted offer (amountPaise), an
+    // abandoned website checkout, and a form payment with no event.
+    seed.push(`INSERT INTO fixture_guest_payments_raw_latest VALUES
+      ('{"purpose":"booking","eventId":"canonical","status":"completed","amountMinor":50000}'),
+      ('{"purpose":"publicEvent","eventId":"canonical","status":"captured","amountPaise":30000}'),
+      ('{"purpose":"offer","eventId":"canonical","status":"admitted","amountPaise":20000}'),
+      ('{"purpose":"publicEvent","eventId":"canonical","status":"checkoutReady","amountPaise":30000}'),
+      ('{"purpose":"form","status":"captured","amountPaise":9000}');`);
     seed.push(`INSERT INTO fixture_organizers_raw_latest VALUES
       ('canonical', '{"name":"Canonical name"}'),
       ('unnamed', '{"name":null}');`);
@@ -132,7 +141,7 @@ function fixture(mart, failure = null) {
       (CURRENT_DATE('Asia/Kolkata'), 'canonical', NULL, 'linkClick', 'click-2', 'tickets', 'tiktok'),
       (CURRENT_DATE('Asia/Kolkata'), 'canonical', NULL, 'linkClick', 'click-3', NULL, 'direct');`);
   } else {
-    seed.push(`INSERT INTO fixture_event_participations_raw_latest VALUES (
+    seed.push(`INSERT INTO fixture_event_bookings_raw_latest VALUES (
       JSON_SET(JSON '{"uid":"member","status":"signedUp"}', '$.signedUpAt._seconds', UNIX_SECONDS(CURRENT_TIMESTAMP())).to_json_string());`);
   }
   if (failure === "insert") {
@@ -167,6 +176,10 @@ function fixture(mart, failure = null) {
     seed.push(`ASSERT (SELECT COUNT(*) FROM (SELECT organizer_id FROM ${table} WHERE organizer_id != 'history' GROUP BY organizer_id HAVING SUM(booked_count) = 2 AND SUM(review_count) = 1 AND SUM(listing_views) = IF(organizer_id = 'canonical', 1, 0))) = 3 AS 'metrics, deduplicated direct views, no GA4 counts';`);
     seed.push(`ASSERT (SELECT COUNT(*) FROM ${table} WHERE organizer_id != 'history') = 6 AS 'one row per organizer event date grain';`);
     seed.push(`ASSERT (SELECT COUNTIF(organizer_name = 'Canonical name') FROM ${table} WHERE organizer_id = 'canonical') = 2 AS 'dimension name';`);
+    seed.push(`ASSERT (SELECT SUM(gross_revenue_minor) FROM ${table} WHERE organizer_id = 'canonical') = 100000 AS 'revenue across booking, website and offer checkouts';`);
+    seed.push(`ASSERT (SELECT SUM(payment_completed_count) FROM ${table} WHERE organizer_id = 'canonical') = 3 AS 'paid checkouts';`);
+    seed.push(`ASSERT (SELECT SUM(checkout_started_count) FROM ${table} WHERE organizer_id = 'canonical') = 4 AS 'form payments have no event';`);
+    seed.push(`ASSERT (SELECT SUM(checkout_dropoff_count) FROM ${table} WHERE organizer_id = 'canonical') = 1 AS 'abandoned checkout';`);
     seed.push(`ASSERT (SELECT COUNTIF(organizer_name IS NULL) FROM ${table} WHERE organizer_id IN ('unnamed', 'orphan')) = 4 AS 'null and missing names preserve rows';`);
   } else if (!failure) {
     seed.push(`ASSERT (SELECT SUM(events_booked_count) FROM ${table} WHERE uid = 'member') = 1 AS 'user metrics preserved';`);
@@ -187,7 +200,7 @@ for (const mart of marts) {
     }, () => {
       // BigQuery's minimum billing per table exceeds these tiny fixtures'
       // physical bytes.
-      const maximumBytes = 268435456;
+      const maximumBytes = 536870912;
       const result = spawnSync("bq", [
         `--project_id=${process.env.CATCH_ANALYTICS_BQ_TEST_PROJECT}`,
         "--location=asia-south1", "--format=json", "--quiet", "query",

@@ -317,7 +317,9 @@ export function PublicPaidRegistrationView(c: CheckoutView) {
                     onPressed={() => void c.pay()} status={pending ? "loading" : "idle"} />
                 ) : null}
                 {!admission && (quote || payment?.checkout) ? (
-                  <CatchText as="p" tone="secondary" variant="body-small">{eventPageCopy.booking.securePayment}</CatchText>
+                  <>
+                    <CatchText as="p" tone="secondary" variant="body-small">{eventPageCopy.booking.securePayment}</CatchText>
+                  </>
                 ) : null}
                 {c.allowNewBookings && payment && ["expired", "refunded", "cancelled"].includes(payment.status) ? (
                   <CatchButton fullWidth label={copy.startAgain} onPressed={pending ? null : () => void c.startAgain()} />

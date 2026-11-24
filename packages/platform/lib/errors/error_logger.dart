@@ -244,9 +244,9 @@ class ErrorLogger {
 
 // ── Provider ─────────────────────────────────────────────────────────────────
 
-// keepalive: error logger is app infrastructure and must remain available for
-// providers even when no screen watches it. App bootstrap initializes this
-// container-owned instance before feature providers can emit failures.
+// keepalive: account-free: app infrastructure that providers log through even
+// when no screen watches it; app bootstrap initializes this container-owned
+// instance before any feature provider can emit a failure.
 @Riverpod(keepAlive: true)
 ErrorLogger errorLogger(Ref ref) => ErrorLogger();
 

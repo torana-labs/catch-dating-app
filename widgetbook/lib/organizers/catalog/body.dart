@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_read_only_preview.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_body.dart';
+import 'package:catch_dating_app/pages/organizer/widgets/organizer_detail_body.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

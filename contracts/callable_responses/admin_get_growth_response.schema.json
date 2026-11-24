@@ -5,7 +5,7 @@
   "description": "Growth for one range, computed from organizerGrowthFacts, organizer bills, nominator credit and costs. Cohorts group organizers by the India-time month they were listed; days are medians counted from listing. Ticket sales are what organizers sold into their own accounts, from their monthly bills. Catch earned is what organizers' bills came to (paid or not, excluding free months).",
   "type": "object",
   "additionalProperties": false,
-  "required": ["range", "generatedAtMillis", "summary", "cohorts", "claimDays", "salesByMonthOnCatch", "channels", "claimsByMonth", "adSpend", "nominators", "best"],
+  "required": ["range", "generatedAtMillis", "summary", "cohorts", "claimDays", "salesByMonthOnCatch", "channels", "signupSources", "claimsByMonth", "adSpend", "nominators", "best"],
   "definitions": {
     "channel": {"$ref": "../firestore/organizer_growth_facts.schema.json#/definitions/channel"},
     "month": {"type": "string", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"},
@@ -85,6 +85,28 @@
         }
       }
     },
+    "signupSources": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What organizers that set themselves up in the range said when Catch Host setup asked how they heard about Catch (organizers/{organizerId}.signupSource). Self-reported and separate from channels: an organizer keeps its derived channel whatever it answered.",
+      "required": ["rows", "unanswered"],
+      "properties": {
+        "rows": {
+          "type": "array", "maxItems": 6,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["source", "organizers", "paying"],
+            "properties": {
+              "source": {"$ref": "../shared/event_common.schema.json#/definitions/organizerSignupSource"},
+              "organizers": {"$ref": "#/definitions/count"},
+              "paying": {"$ref": "#/definitions/count"}
+            }
+          }
+        },
+        "unanswered": {"$ref": "#/definitions/count", "description": "Organizers that set themselves up in the range and skipped the question, or set up before it was asked."}
+      }
+    },
     "claimsByMonth": {
       "type": "array", "maxItems": 120,
       "items": {
@@ -95,10 +117,11 @@
     "adSpend": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["month", "metaMinor", "metaConnected", "googleConnected", "adClaims"],
+      "required": ["month", "metaMinor", "googleMinor", "metaConnected", "googleConnected", "adClaims"],
       "properties": {
         "month": {"$ref": "#/definitions/month"},
         "metaMinor": {"type": ["integer", "null"], "minimum": 0},
+        "googleMinor": {"type": ["integer", "null"], "minimum": 0},
         "metaConnected": {"type": "boolean"},
         "googleConnected": {"type": "boolean"},
         "adClaims": {"$ref": "#/definitions/count"}

@@ -1,16 +1,16 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import {assertUnpartitionedAdmission} from
-  "../organizerFormAdmission/admissionEligibility";
+  "../domain/events/admissionEligibility";
 import {eventParticipationId} from "../shared/relationshipDocuments";
-import {validateEventParticipationDocument} from
-  "../shared/generated/validators/eventParticipationDocument";
+import {validateEventBookingDocument} from
+  "../shared/generated/validators/eventBookingDocument";
 import {validateEventAttendeeDocument} from
   "../shared/generated/validators/eventAttendeeDocument";
 import {validateOrganizerApplicationDocument} from
   "../shared/generated/validators/organizerApplicationDocument";
 import type {EventAttendeeDocument, EventDocument,
-  EventParticipationDocument, GuestEventStatusDocument,
+  EventBookingDocument, GuestEventStatusDocument,
   OrganizerApplicationDocument} from "../shared/generated/firestoreAdminTypes";
 import {organizerApplicationAccess} from
   "../organizers/organizerApplicationAccess";
@@ -39,6 +39,23 @@ export const guestEventStatusId = (eventId: string, uid: string) =>
 export type GuestEventStatus = GuestEventStatusDocument;
 
 const closedPayment = ["expired", "failed", "cancelled", "refunded"];
+
+/**
+ * Which roster row is the guest's own, from the ids of the (at most two)
+ * eventAttendees rows whose linkedUid is the guest, exactly as
+ * getEventAssistanceParticipantContext resolves it. Only an active or
+ * cancelled event has a link.
+ * @param {unknown} eventStatus The event's status.
+ * @param {string[]} attendeeIds The linked rows' ids.
+ * @return {GuestEventStatus["rosterLink"]} The link, or null.
+ */
+export function guestRosterLink(eventStatus: unknown,
+  attendeeIds: string[]): NonNullable<GuestEventStatus["rosterLink"]> | null {
+  if (eventStatus !== "active" && eventStatus !== "cancelled") return null;
+  if (attendeeIds.length > 1) return {kind: "ambiguous"};
+  return attendeeIds.length === 1 ?
+    {kind: "linked", attendeeId: attendeeIds[0]} : null;
+}
 
 /**
  * One guest's status for one event from current authority, or null when they
@@ -83,7 +100,7 @@ export async function guestEventStatus(params: {
       tx.get(db.collection("organizerEventOfferRecipients")
         .where("recipientUid", "==", uid).where("eventId", "==", eventId)
         .limit(21)),
-      tx.get(db.collection("eventParticipations")
+      tx.get(db.collection("eventBookings")
         .doc(eventParticipationId(eventId, uid))),
       tx.get(db.collection(GUEST_PAYMENTS)
         .where("purpose", "==", "offer")
@@ -96,11 +113,16 @@ export async function guestEventStatus(params: {
     offerPaymentId: offerPayments.docs[0]?.id ?? null,
     offerGrantId: null, offerExpiresAtMillis: null, offerAdmissible: false,
     offerAmbiguous: false, applicationStatus: null,
-    participationStatus: null, eventCard: null,
+    participationStatus: null, rosterLink: null, eventCard: null,
     updatedAtMillis: nowMillis};
-  const participation = native.data() as EventParticipationDocument |
+  // Which roster row is the guest's own, as the participant context read
+  // resolves it: only the linked uid decides, and two rows are ambiguous
+  // rather than ranked. Names and phone guesses never match.
+  row.rosterLink = guestRosterLink(event.status,
+    attendees.docs.map((doc) => doc.id));
+  const participation = native.data() as EventBookingDocument |
     undefined;
-  if (participation && validateEventParticipationDocument(participation) &&
+  if (participation && validateEventBookingDocument(participation) &&
       participation.eventId === eventId && participation.uid === uid &&
       participation.organizerId === organizerId) {
     if (participation.status !== "deleted") {
@@ -214,7 +236,8 @@ function finish(row: GuestEventStatus, event: EventDocument):
   const empty = row.booking === "none" && !row.ambiguous &&
     row.publicPaymentId === null && row.offerPaymentId === null &&
     row.offerGrantId === null && !row.offerAmbiguous &&
-    row.applicationStatus === null && row.participationStatus === null;
+    row.applicationStatus === null && row.participationStatus === null &&
+    (row.rosterLink ?? null) === null;
   return empty ? null : row;
 }
 

@@ -20,7 +20,7 @@ import {
   type ListingEventReview,
   type StaffEventLocation,
 } from "../operations/supplyIntake/eventPublication";
-import {requireAdminRole} from "./adminAuth";
+import {requireAdminRole} from "../platform/adminAuth";
 
 // Reviewing and publishing imported events share the external-event roles.
 const listingEventRoles = ["admin", "adminOwner", "support"] as const;

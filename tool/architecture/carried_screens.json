@@ -1,0 +1,144 @@
+{
+  "description": "Files under apps/*/lib and lib/pages that keep the rules of the legacy path in from until their redraw: the Catch lints evaluate a carried file as that path, so its reasoned ignores and drawing stay legal. Only tool/architecture/move_screens.mjs adds entries, for moved files whose old path was not under a new root; the two screens that predate D24 carry their own path. catch_arch_stale_carry reports an entry whose file already meets the new-root rules, and the entry then goes. Keep entries sorted by path, one per line with a blank line between them, so parallel moves merge cleanly. See docs/app_architecture.md, Carried screens.",
+  "carried": [
+    {"path": "lib/pages/celebration/celebration_screen.dart", "from": "lib/pages/celebration/celebration_screen.dart"},
+
+    {"path": "lib/pages/chat/chat_screen.dart", "from": "lib/chats/presentation/chat_screen.dart"},
+
+    {"path": "lib/pages/chat/event_chat_participants_screen.dart", "from": "lib/chats/presentation/event_chat_participants_screen.dart"},
+
+    {"path": "lib/pages/chat/event_chat_screen.dart", "from": "lib/chats/presentation/event_chat_screen.dart"},
+
+    {"path": "lib/pages/chat/event_profile_screen.dart", "from": "lib/chats/presentation/event_profile_screen.dart"},
+
+    {"path": "lib/pages/chat/widgets/chat_event_context_header.dart", "from": "lib/chats/presentation/widgets/chat_event_context_header.dart"},
+
+    {"path": "lib/pages/chat/widgets/chat_input.dart", "from": "lib/chats/presentation/widgets/chat_input.dart"},
+
+    {"path": "lib/pages/chat/widgets/chat_message_list.dart", "from": "lib/chats/presentation/widgets/chat_message_list.dart"},
+
+    {"path": "lib/pages/chat/widgets/chat_share_card.dart", "from": "lib/chats/presentation/widgets/chat_share_card.dart"},
+
+    {"path": "lib/pages/chat/widgets/event_chat_message_tile.dart", "from": "lib/chats/presentation/widgets/event_chat_message_tile.dart"},
+
+    {"path": "lib/pages/chat/widgets/event_profile_answer_field.dart", "from": "lib/chats/presentation/widgets/event_profile_answer_field.dart"},
+
+    {"path": "lib/pages/chat/widgets/event_profile_editor_section.dart", "from": "lib/chats/presentation/widgets/event_profile_editor_section.dart"},
+
+    {"path": "lib/pages/chat/widgets/event_profile_identity_section.dart", "from": "lib/chats/presentation/widgets/event_profile_identity_section.dart"},
+
+    {"path": "lib/pages/chat/widgets/event_profile_photo_field.dart", "from": "lib/chats/presentation/widgets/event_profile_photo_field.dart"},
+
+    {"path": "lib/pages/chat/widgets/message_bubble.dart", "from": "lib/chats/presentation/widgets/message_bubble.dart"},
+
+    {"path": "lib/pages/chat/widgets/suvbot_dock.dart", "from": "lib/chats/presentation/widgets/suvbot_dock.dart"},
+
+    {"path": "lib/pages/check_in/event_check_in_qr_scanner.dart", "from": "lib/events/shared/event_check_in_qr_scanner.dart"},
+
+    {"path": "lib/pages/event/event_detail_screen.dart", "from": "lib/events/presentation/event_detail_screen.dart"},
+
+    {"path": "lib/pages/event/event_detail_screen_actions.dart", "from": "lib/events/presentation/event_detail_screen_actions.dart"},
+
+    {"path": "lib/pages/event/event_joined_celebration_screen.dart", "from": "lib/events/shared/event_joined_celebration_screen.dart"},
+
+    {"path": "lib/pages/event/event_share_card.dart", "from": "lib/events/shared/event_share_card.dart"},
+
+    {"path": "lib/pages/event/location/google_maps_coordinate_adapter.dart", "from": "lib/locations/shared/google_maps_coordinate_adapter.dart"},
+
+    {"path": "lib/pages/event/location/location_map.dart", "from": "lib/locations/shared/location_map.dart"},
+
+    {"path": "lib/pages/event/location/map_preview.dart", "from": "lib/locations/shared/map_preview.dart"},
+
+    {"path": "lib/pages/event/messages/event_assignment_feature_choices_page_body.dart", "from": "lib/event_success/presentation/event_assignment_feature_choices_page_body.dart"},
+
+    {"path": "lib/pages/event/messages/event_message_preference_section.dart", "from": "lib/event_success/presentation/event_message_preference_section.dart"},
+
+    {"path": "lib/pages/event/messages/event_message_preferences_sheet.dart", "from": "lib/event_success/presentation/event_message_preferences_sheet.dart"},
+
+    {"path": "lib/pages/event/tiles/event_date_rail_card.dart", "from": "lib/events/shared/event_tiles/event_date_rail_card.dart"},
+
+    {"path": "lib/pages/event/widgets/event_chat_entry_section.dart", "from": "lib/chats/presentation/widgets/event_chat_entry_section.dart"},
+
+    {"path": "lib/pages/event/widgets/event_detail_body.dart", "from": "lib/events/presentation/widgets/event_detail_body.dart"},
+
+    {"path": "lib/pages/event/widgets/event_detail_design_support.dart", "from": "lib/events/presentation/widgets/event_detail_design_support.dart"},
+
+    {"path": "lib/pages/event/widgets/event_detail_dock.dart", "from": "lib/events/presentation/widgets/event_detail_dock.dart"},
+
+    {"path": "lib/pages/event/widgets/event_detail_fact_list.dart", "from": "lib/events/presentation/widgets/event_detail_fact_list.dart"},
+
+    {"path": "lib/pages/event/widgets/event_detail_hero_top_bar.dart", "from": "lib/events/presentation/widgets/event_detail_hero_top_bar.dart"},
+
+    {"path": "lib/pages/event/widgets/event_detail_itinerary_row.dart", "from": "lib/events/presentation/widgets/event_detail_itinerary_row.dart"},
+
+    {"path": "lib/pages/event/widgets/event_detail_loading_skeleton.dart", "from": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart"},
+
+    {"path": "lib/pages/event/widgets/event_detail_overview_section.dart", "from": "lib/events/presentation/widgets/event_detail_overview_section.dart"},
+
+    {"path": "lib/pages/event/widgets/event_detail_route_section.dart", "from": "lib/events/presentation/widgets/event_detail_route_section.dart"},
+
+    {"path": "lib/pages/event/widgets/event_detail_social_section.dart", "from": "lib/events/presentation/widgets/event_detail_social_section.dart"},
+
+    {"path": "lib/pages/event/widgets/event_hype_avatar_row.dart", "from": "lib/events/presentation/widgets/event_hype_avatar_row.dart"},
+
+    {"path": "lib/pages/event/widgets/organizer_payment_method_sheet.dart", "from": "lib/events/presentation/widgets/organizer_payment_method_sheet.dart"},
+
+    {"path": "lib/pages/event/widgets/who_is_going_section.dart", "from": "lib/events/presentation/widgets/who_is_going_section.dart"},
+
+    {"path": "lib/pages/frame/app.dart", "from": "lib/app.dart"},
+
+    {"path": "lib/pages/frame/app_bootstrap.dart", "from": "lib/app_bootstrap.dart"},
+
+    {"path": "lib/pages/frame/consumer_bootstrap.dart", "from": "lib/consumer_bootstrap.dart"},
+
+    {"path": "lib/pages/frame/force_update/update_required_screen.dart", "from": "lib/force_update/presentation/update_required_screen.dart"},
+
+    {"path": "lib/pages/inbox/match_celebration_dialog.dart", "from": "lib/matches/shared/match_celebration_dialog.dart"},
+
+    {"path": "lib/pages/inbox/widgets/chats_list.dart", "from": "lib/chats/presentation/inbox/widgets/chats_list.dart"},
+
+    {"path": "lib/pages/inbox/widgets/chats_sliver_header.dart", "from": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart"},
+
+    {"path": "lib/pages/live_room/event_success_attendee_spatial_row.dart", "from": "lib/event_success/presentation/event_success_attendee_spatial_row.dart"},
+
+    {"path": "lib/pages/live_room/event_success_room_map.dart", "from": "lib/event_success/presentation/event_success_room_map.dart"},
+
+    {"path": "lib/pages/memberships/host_membership_plan_sheet.dart", "from": "lib/host_memberships/presentation/host_membership_plan_sheet.dart"},
+
+    {"path": "lib/pages/organizer/organizer_detail_screen.dart", "from": "lib/organizers/presentation/detail/organizer_detail_screen.dart"},
+
+    {"path": "lib/pages/organizer/organizer_host_identity_row.dart", "from": "lib/organizers/shared/organizer_host_identity_row.dart"},
+
+    {"path": "lib/pages/organizer/organizer_placeholder_cover.dart", "from": "lib/organizers/shared/organizer_placeholder_cover.dart"},
+
+    {"path": "lib/pages/organizer/widgets/organizer_contact_section.dart", "from": "lib/organizers/presentation/detail/widgets/organizer_contact_section.dart"},
+
+    {"path": "lib/pages/organizer/widgets/organizer_detail_body.dart", "from": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart"},
+
+    {"path": "lib/pages/organizer/widgets/organizer_detail_dock.dart", "from": "lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart"},
+
+    {"path": "lib/pages/organizer/widgets/organizer_hero_top_bar.dart", "from": "lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart"},
+
+    {"path": "lib/pages/organizer/widgets/organizer_host_section.dart", "from": "lib/organizers/presentation/detail/widgets/organizer_host_section.dart"},
+
+    {"path": "lib/pages/organizer/widgets/organizer_photo_rail.dart", "from": "lib/organizers/presentation/detail/widgets/organizer_photo_rail.dart"},
+
+    {"path": "lib/pages/organizer/widgets/organizer_schedule_section.dart", "from": "lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart"},
+
+    {"path": "lib/pages/organizer/widgets/organizer_share_card.dart", "from": "lib/organizers/presentation/detail/widgets/organizer_share_card.dart"},
+
+    {"path": "lib/pages/reviews/reviews_section.dart", "from": "lib/reviews/shared/reviews_section.dart"},
+
+    {"path": "lib/pages/reviews/star_rating_row.dart", "from": "lib/reviews/shared/star_rating_row.dart"},
+
+    {"path": "lib/pages/reviews/write_review_sheet.dart", "from": "lib/reviews/shared/write_review_sheet.dart"},
+
+    {"path": "lib/pages/start/onboarding_welcome_body.dart", "from": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart"},
+
+    {"path": "lib/pages/start/start_welcome_route_screen.dart", "from": "lib/onboarding/presentation/start_welcome_route_screen.dart"},
+
+    {"path": "lib/pages/start/welcome_motion.dart", "from": "lib/onboarding/presentation/pages/welcome_motion.dart"},
+
+    {"path": "lib/pages/startup/splash_screen.dart", "from": "lib/pages/startup/splash_screen.dart"}
+  ]
+}

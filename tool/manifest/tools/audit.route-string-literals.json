@@ -1,0 +1,39 @@
+{
+  "id": "audit:route-string-literals",
+  "category": "audit",
+  "path": "tool/architecture/check_route_string_literals.mjs",
+  "command": "node tool/architecture/check_route_string_literals.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Checks production Dart navigation calls outside lib/routing avoid raw route path string literals.",
+  "checks": [
+    "node --test tool/architecture/check_route_string_literals.test.mjs",
+    "node --check tool/architecture/check_route_string_literals.mjs",
+    "node tool/architecture/check_route_string_literals.mjs"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "ROUTE-STRING-001",
+      "title": "Navigation outside routing config uses named routes or constants",
+      "appliesTo": [
+        "lib/**/presentation/**",
+        "apps/*/lib/**",
+        "lib/**/application/**",
+        "tool/architecture/check_route_string_literals.mjs"
+      ],
+      "instruction": "Production navigation outside lib/routing must use named routes, route constants, or typed route helpers instead of raw path string literals. Raw paths stay owned by route definitions and URL contract files."
+    }
+  ],
+  "impactPaths": [
+    "tool/architecture/check_route_string_literals.test.mjs",
+    "tool/architecture/check_route_string_literals.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "queueGate": "always"
+}

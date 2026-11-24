@@ -1,0 +1,11 @@
+{
+  "id": "salesIntelligenceClauses",
+  "path": "salesIntelligenceClauses/{clauseId}",
+  "rulesMatch": "/salesIntelligenceClauses/{privateDocument=**}",
+  "typescriptInterface": "SalesIntelligenceClauseDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales intelligence clause callable",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

@@ -12,10 +12,9 @@ import {
   configureEventRegistration,
   registrationReceiptRef,
 } from "./configure";
-import {
-  assertPublicRegistrationPolicy,
-  publicRegistrationMode,
-} from "./policy";
+import {assertPublicRegistrationPolicy} from "./policy";
+import {publicRegistrationMode} from
+  "../../domain/events/publicRegistrationTerms";
 
 test("paid opt-in is explicit, revision-checked and replay-safe", async () => {
   const h = await publicFixture();
@@ -68,32 +67,26 @@ test("paid opt-in is explicit, revision-checked and replay-safe", async () => {
   );
 });
 
-test("paid enablement needs a ready route and reconciled seats", async () => {
-  for (const missing of ["route", "seats"]) {
-    const h = await publicFixture();
-    if (missing === "seats") {
-      h.store.rows.delete(`eventSeatMigrationFences/${eventId}`);
-    }
-    await assert.rejects(
-      configureEventRegistration({
-        db: h.store.db(),
-        actorUid,
-        command: {
-          organizerId: org,
-          eventId,
-          requestId: "configure_public_1",
-          expectedRegistrationRevision: 1,
-          mode: "paid",
-        },
-        nowMillis: () => now,
-        ...(missing === "route" ? {} : {routing: h.routing}),
-      }),
-    );
-    assert.equal(
-      h.store.get(`events/${eventId}`)?.publicRegistrationRevision,
-      1,
-    );
-  }
+test("paid enablement needs a ready route", async () => {
+  const h = await publicFixture();
+  await assert.rejects(
+    configureEventRegistration({
+      db: h.store.db(),
+      actorUid,
+      command: {
+        organizerId: org,
+        eventId,
+        requestId: "configure_public_1",
+        expectedRegistrationRevision: 1,
+        mode: "paid",
+      },
+      nowMillis: () => now,
+    }),
+  );
+  assert.equal(
+    h.store.get(`events/${eventId}`)?.publicRegistrationRevision,
+    1,
+  );
 });
 
 test("external free opt-in and closing preserve event origin", async () => {

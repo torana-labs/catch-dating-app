@@ -1,10 +1,11 @@
 import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/form_definition_fields.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment_record.dart';
+import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_form_payment_reads.g.dart';
@@ -14,7 +15,7 @@ part 'host_form_payment_reads.g.dart';
 /// holds only the ledger row; rules authorize every read.
 class HostFormPaymentReads {
   const HostFormPaymentReads(this.reader);
-  final HostSummaryReader reader;
+  final ScopedReadModelReader reader;
 
   static const paymentViews = 'hostFormPaymentViews';
 
@@ -33,7 +34,7 @@ class HostFormPaymentReads {
     return reader
         .watchPages(
           collection: paymentViews,
-          organizerId: organizerId,
+          scopeId: organizerId,
           orderField: 'createdAtMillis',
           descending: true,
           pageSize: pageSize,
@@ -48,14 +49,16 @@ class HostFormPaymentReads {
   }
 }
 
-// keepalive: a stateless repository over account-free SDK singletons; the
-// reader checks the signed-in account on every read and rules authorize it.
+// keepalive: account-free: a stateless repository over account-free SDK
+// singletons; the reader checks the signed-in account on every read and rules
+// authorize it.
 @Riverpod(keepAlive: true)
 HostFormPaymentReads hostFormPaymentReads(Ref ref) {
   ref.watch(authenticatedSessionProvider);
   return HostFormPaymentReads(
-    HostSummaryReader(
+    ScopedReadModelReader(
       ref.watch(firebaseFirestoreProvider),
+      family: hostReadModels,
       actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
     ),
   );

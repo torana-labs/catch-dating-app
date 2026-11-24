@@ -35,6 +35,8 @@ import {listOrganizerFormResponsesHandler} from "./organizerFormOperations";
 import {AudienceTestStore} from "./organizerAudienceTestStore";
 import type {UpdateOrganizerFormDraftCallablePayload} from
   "../shared/generated/updateOrganizerFormDraftCallablePayload";
+import {withEventSeatLedgers} from
+  "../events/seatAuthority/eventSeatLedgerTestSupport";
 
 type Definition = UpdateOrganizerFormDraftCallablePayload["definition"];
 type Question = Definition["sections"][number]["questions"][number];
@@ -90,11 +92,12 @@ function pilotQuestions(rsvp: boolean): Question[] {
 }
 
 async function submittedPilot(rsvp: boolean) {
-  const store = new AudienceTestStore({"organizers/org-1": {
-    ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: [],
-    name: "Pilot organizer", imageUrl: null,
-  }, "events/event-1": {organizerId: "org-1", status: "published",
-    eventFormat: {activityKind: "singlesMixer"}}});
+  const store = new AudienceTestStore(withEventSeatLedgers({
+    "organizers/org-1": {
+      ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: [],
+      name: "Pilot organizer", imageUrl: null,
+    }, "events/event-1": {organizerId: "org-1", status: "active",
+      eventFormat: {activityKind: "singlesMixer"}}}));
   const deps = {firestore: () => store.asFirestore(), timestamp: () => now,
     checkRateLimit: async () => undefined, identitySecret: () =>
       "fixture-secret-".repeat(4),
@@ -236,7 +239,7 @@ for (const rsvp of [true, false]) {
       contact: contacts[0][1] as unknown as OrganizerContactDocument,
       trait: h.store.docs[`organizerContactTraits/${accepted.contactId}`] as
         unknown as OrganizerContactTraitDocument,
-      preference: null, channelState: null,
+      permission: null, channelState: null,
     }], now, []);
     assert.equal(eligibility[0].eligibility, "excluded");
     assert.equal(await formAdmissionContactId({db: h.store.asFirestore(),
@@ -248,6 +251,8 @@ for (const rsvp of [true, false]) {
       [accepted.contactId]);
     // A second event is a distinct admission, not a replay of the first.
     h.store.docs["events/event-2"] = {...h.store.docs["events/event-1"]};
+    h.store.docs["eventSeatLedgers/event-2"] = {
+      ...h.store.docs["eventSeatLedgers/event-1"], eventId: "event-2"};
     const secondInput = {...conversion, eventId: "event-2",
       requestId: "pilot-second"};
     const second = await convertOrganizerFormResponseHandler(

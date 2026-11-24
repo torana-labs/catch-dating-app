@@ -18,30 +18,12 @@ const manualQueueOwners = new Set([
   "lib/hosts/presentation/inbox/host_manual_send_list.dart",
   "lib/hosts/presentation/inbox/host_sends_workspace.dart",
 ]);
+// Contact consent (issue #2460) is read through
+// functions/src/shared/contactPermissions.ts and written only by
+// functions/src/messaging/contactPermissions.ts; account deletion erases it.
 const permissionCollectionReviewers = new Set([
-  // Rechecks organizer withdrawals inside the approval delivery transaction.
-  "functions/src/events/approvalNotifications/facts.ts",
-  "functions/src/events/eventAttendees.ts",
-  "functions/src/organizers/campaignDeliveryWorker.ts",
-  "functions/src/messaging/participantMessagingPreferences.ts",
-  // Projects the guest's own permission rows read-only, with the same reads
-  // and summary as participantMessagingPreferences (#1896).
-  "functions/src/messaging/guestMessagingPermissionStore.ts",
-  "functions/src/moments/momentWiring.ts",
-  "functions/src/organizers/automationDeliveryWorker.ts",
-  "functions/src/organizers/organizerFormMessagingConsent.ts",
-  "functions/src/organizers/organizerFormConsentPromotion.ts",
-  "functions/src/organizers/organizerAudienceProjection.ts",
-  "functions/src/organizers/organizerCampaignDispatcher.ts",
-  "functions/src/organizers/organizerCampaigns.ts",
-  "functions/src/organizers/organizerContacts.ts",
-  "functions/src/organizers/organizerSavedAudiences.ts",
-  "functions/src/organizers/organizerWhatsappWebhook.ts",
-  // Records the follower's reviewed WhatsApp permission (terms version checked)
-  // with the follow, by organizerCommunicationPreferenceId.
-  "functions/src/organizers/followOrganizerByPhone.ts",
-  // Rechecks each follower's preference and stop record before a WhatsApp send.
-  "functions/src/organizers/organizerFollowerWhatsappLeg.ts",
+  "functions/src/shared/contactPermissions.ts",
+  "functions/src/messaging/contactPermissions.ts",
   "functions/src/safety/accountDeletion.ts",
 ]);
 
@@ -192,8 +174,8 @@ export function scanPresentationFile({relativePath, source}) {
 export function scanBackendFile({relativePath, source}) {
   const findings = [];
   const permissionIndex = firstCollectionIndex(source, [
-    "organizerCommunicationPreferences",
-    "organizerCommunicationPermissionReceipts",
+    "contactPermissions",
+    "contactPermissionReceipts",
   ]);
   if (permissionIndex >= 0 &&
       !permissionCollectionReviewers.has(relativePath)) {
@@ -201,20 +183,9 @@ export function scanBackendFile({relativePath, source}) {
       relativePath,
       source,
       permissionIndex,
-      "Permission-authority collection access requires an explicit reviewed owner."
+      "Contact permission access goes through functions/src/shared/contactPermissions.ts (an explicit reviewed owner)."
     ));
   }
-  if (permissionIndex >= 0) {
-    const templateId = /collection\(\s*["']organizerCommunicationPreferences["']\s*\)[\s\S]{0,320}?\.doc\(\s*`/u
-      .exec(source);
-    if (templateId) findings.push(finding(
-      relativePath,
-      source,
-      templateId.index,
-      "Use organizerCommunicationPreferenceId; do not reconstruct preference ids."
-    ));
-  }
-
   for (const [collectionName, boundary] of collectionWriteOwners) {
     const mutations = collectionMutations(
       source,
@@ -412,7 +383,7 @@ function scanHostCrmCountCopy(root) {
 
 function scanApplicationRouteOwnership(root) {
   const routeContractPath = "packages/platform/lib/routing/route_contract.dart";
-  const routerPath = "lib/routing/go_router.dart";
+  const routerPath = "lib/routing/host_router.dart";
   const routeContractFile = path.join(root, routeContractPath);
   const routerFile = path.join(root, routerPath);
   if (!fs.existsSync(routeContractFile) || !fs.existsSync(routerFile)) {

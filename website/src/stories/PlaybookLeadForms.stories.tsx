@@ -14,6 +14,9 @@ import {PlaybookPage} from "../features/playbook/PlaybookPage";
 import type {ReferralAccountUser, ReferralOwnedOrganizer} from "../features/referral/referralAccountModel";
 import {provideReferralAccountDeps, type ReferralAccountDeps} from "../features/referral/useReferralAccountController";
 import {PageShell} from "../shared/site";
+import {walkthroughBookingCopy} from "@content/walkthroughBooking";
+import {provideWalkthroughDeps, type WalkthroughDeps} from "../features/walkthroughs/walkthroughClientContext";
+import {scriptedWalkthroughClient, walkthroughNoSlots} from "./fixtures/walkthroughBooking";
 
 const meta = {
   title: "Marketing Website/Playbook lead forms",
@@ -39,6 +42,18 @@ function PlaybookAt({width, page = runClubsPage}: {width: 390 | 1280; page?: typ
       </PageShell>
     </div>
   );
+}
+
+/**
+ * /host/walkthrough/ with its slot picker answered by the story: open times
+ * draw the picker; no open time draws the request form under a line saying so.
+ */
+function WalkthroughAt({width, times}: {width: 390 | 1280; times: "open" | "none"}) {
+  const [deps] = useState<WalkthroughDeps>(() => ({
+    client: scriptedWalkthroughClient(times === "none" ? {slots: [walkthroughNoSlots]} : {}).client,
+    timeZone: "Asia/Kolkata",
+  }));
+  return <>{provideWalkthroughDeps(deps, <PlaybookAt page={walkthroughPage} width={width} />)}</>;
 }
 
 /** A fictional host signed in on /refer/: their phone and the host page they own. */
@@ -86,7 +101,7 @@ async function sendGuide(canvasElement: HTMLElement) {
   await userEvent.click(form.getByRole("button", {name: guideForm.submitLabel}));
 }
 
-/** The run-clubs closing band at rest: the trial, the WhatsApp action, then the number and Send the guide. */
+/** The run-clubs closing band at rest: the trial, the WhatsApp action, then the number and Send me the guide. */
 export const GuideIdle1280: Story = {
   name: "/host/run-clubs/ setup guide form · 1280",
   render: () => <PlaybookAt width={1280} />,
@@ -134,27 +149,47 @@ export const GuideFailed390: Story = {
   render: () => <PlaybookAt width={390} />,
 };
 
-/** /host/walkthrough/ at rest: the indigo split, what the walkthrough covers, and the request form in the second column. */
+/** /host/walkthrough/ while times are open: the indigo split, what the walkthrough covers, and the slot picker in the second column. */
+export const WalkthroughPicker1280: Story = {
+  name: "/host/walkthrough/ slot picker · 1280",
+  render: () => <WalkthroughAt times="open" width={1280} />,
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    await expect(await canvas.findByRole("radiogroup", {name: walkthroughBookingCopy.day})).toBeInTheDocument();
+    await expect(canvas.queryByRole("form", {name: walkthroughForm.submitLabel})).toBeNull();
+  },
+};
+
+export const WalkthroughPicker390: Story = {
+  ...WalkthroughPicker1280,
+  name: "/host/walkthrough/ slot picker · 390",
+  render: () => <WalkthroughAt times="open" width={390} />,
+};
+
+/** /host/walkthrough/ with no open time: the line saying so, and the request form in the second column. */
 export const WalkthroughIdle1280: Story = {
   name: "/host/walkthrough/ walkthrough form · 1280",
-  render: () => <PlaybookAt page={walkthroughPage} width={1280} />,
+  render: () => <WalkthroughAt times="none" width={1280} />,
   play: async ({canvasElement}) => {
-    await expect(within(canvasElement).getByRole("form", {name: walkthroughForm.submitLabel})).toBeInTheDocument();
+    const canvas = within(canvasElement);
+    await expect(await canvas.findByText(walkthroughBookingCopy.problems.noSlots)).toBeInTheDocument();
+    await expect(canvas.getByRole("form", {name: walkthroughForm.submitLabel})).toBeInTheDocument();
   },
 };
 
 export const WalkthroughIdle390: Story = {
+  ...WalkthroughIdle1280,
   name: "/host/walkthrough/ walkthrough form · 390",
-  render: () => <PlaybookAt page={walkthroughPage} width={390} />,
+  render: () => <WalkthroughAt times="none" width={390} />,
 };
 
-/** Sent: a walkthrough lead with the time asked for, and the thanks in the form's place. */
+/** Sent, with no open time: a walkthrough lead with the time asked for, and the thanks in the form's place. */
 export const WalkthroughSent1280: Story = {
   name: "/host/walkthrough/ walkthrough form, sent · 1280",
   beforeEach: answerLeads("accepted"),
-  render: () => <PlaybookAt page={walkthroughPage} width={1280} />,
+  render: () => <WalkthroughAt times="none" width={1280} />,
   play: async ({canvasElement}) => {
-    const form = within(within(canvasElement).getByRole("form", {name: walkthroughForm.submitLabel}));
+    const form = within(await within(canvasElement).findByRole("form", {name: walkthroughForm.submitLabel}));
     const answers = ["Asha Rao", "Sunday Runners", "A run club, three chapters", "Tue 4pm"];
     for (const [index, field] of (walkthroughForm.fields ?? []).entries()) {
       await userEvent.type(form.getByRole("textbox", {name: new RegExp(field.label, "u")}), answers[index]);
@@ -169,7 +204,7 @@ export const WalkthroughSent1280: Story = {
 export const WalkthroughSent390: Story = {
   ...WalkthroughSent1280,
   name: "/host/walkthrough/ walkthrough form, sent · 390",
-  render: () => <PlaybookAt page={walkthroughPage} width={390} />,
+  render: () => <WalkthroughAt times="none" width={390} />,
 };
 
 /** /refer/ signed out: what credit needs, the sign-in button, and the referral form, which still sends. */

@@ -6,7 +6,7 @@ import {describe, expect, it} from "vitest";
 // The Flutter MapPreview is the reference (blueprint D11). These tests read its
 // fallback so the web preview shows the same glyph, label and inset.
 const read = (relative: string) => fs.readFileSync(fileURLToPath(new URL(relative, import.meta.url)), "utf8");
-const preview = read("../../../../lib/locations/shared/map_preview.dart");
+const preview = read("../../../../lib/pages/event/location/map_preview.dart");
 const icon = read("../../../catch_tokens/lib/src/primitives/catch_icon_size.dart");
 const insets = read("../../../catch_tokens/lib/src/semantic/catch_insets.dart");
 const css = read("./MapPreview.module.css");

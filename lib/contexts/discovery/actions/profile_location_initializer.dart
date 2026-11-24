@@ -1,0 +1,44 @@
+import 'package:catch_dating_app/contexts/discovery/data/city_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/profiles.dart';
+import 'package:catch_platform/device/device_location.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'profile_location_initializer.g.dart';
+
+/// Records the device location, and the nearest configured city, on a profile
+/// that has none. Discovery owns it because it turns a device position into a
+/// city; the profile write goes through the profiles repository. Route
+/// lifetime: the app root watches it for the app's whole life, so it still
+/// runs once per process; it reads account data, so it is never kept alive.
+@riverpod
+class ProfileLocationInitializer extends _$ProfileLocationInitializer {
+  bool _collected = false;
+
+  @override
+  Future<void> build() async {
+    // Watch so initialization resumes when the profile or passive device
+    // location stream produces its first usable value.
+    final userProfile = ref.watch(watchUserProfileProvider).asData?.value;
+    final deviceLocation = ref.watch(deviceLocationProvider).asData?.value;
+    if (userProfile == null || _collected) return;
+
+    if (userProfile.latitude != null && userProfile.longitude != null) {
+      _collected = true;
+      return;
+    }
+    if (deviceLocation == null) return;
+    _collected = true;
+
+    final nearest = await ref
+        .read(cityRepositoryProvider)
+        .nearestCity(deviceLocation.latitude, deviceLocation.longitude);
+    await ref
+        .read(userProfileRepositoryProvider)
+        .updateDetectedLocation(
+          uid: userProfile.uid,
+          latitude: deviceLocation.latitude,
+          longitude: deviceLocation.longitude,
+          city: userProfile.city == null ? nearest?.name : null,
+        );
+  }
+}

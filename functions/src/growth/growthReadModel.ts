@@ -11,14 +11,19 @@ import {monthOf, monthWindow, monthsBetween} from "../money/billComputation";
 /**
  * Growth, computed from what Catch records: organizer growth facts (channel,
  * first nominator, dated steps), monthly bills (ticket sales and what Catch
- * earned), nominator credit and ad spend.
+ * earned), nominator credit and ad spend, plus what organizers that set
+ * themselves up said about how they heard of Catch.
  */
 export type GrowthRange = Growth["range"];
 type Channel = OrganizerGrowthFactsDocument["channel"];
+export type SignupSource =
+  Growth["signupSources"]["rows"][number]["source"];
 
 const dayMillis = 24 * 60 * 60 * 1000;
 const channels: Channel[] = ["imported", "sales_associate", "partner", "guest",
   "organizer", "came_to_us", "ads"];
+const signupSourceOrder: SignupSource[] = ["metaAd", "googleSearch",
+  "instagramPost", "friendOrHost", "teamOutreach", "other"];
 
 export interface GrowthInput {
   range: GrowthRange;
@@ -29,6 +34,19 @@ export interface GrowthInput {
   costs: PlatformCostDocument[];
   organizerNames: Map<string, string>;
   personNames: Map<string, string>;
+  /** Self-reported setup answers by organizer id (organizers.signupSource). */
+  signupSources: Map<string, SignupSource>;
+}
+
+/**
+ * Whether the organizer set itself up (Catch Host or the website try-it),
+ * so setup could have asked how it heard about Catch.
+ * @param {OrganizerGrowthFactsDocument} facts Growth facts.
+ * @return {boolean} True for a self-created organizer.
+ */
+export function setItselfUp(facts: OrganizerGrowthFactsDocument): boolean {
+  return facts.channelSource.kind === "provenance" &&
+    facts.channelSource.originKind === "userCreated";
 }
 
 /**
@@ -217,6 +235,19 @@ export function buildGrowth(input: GrowthInput): Growth {
                 "Meta and Google ads";
   }
 
+  // Self-reported, so counted beside the channels and never folded in.
+  const answerOf = (facts: OrganizerGrowthFactsDocument) =>
+    input.signupSources.get(facts.organizerId);
+  const signupSources: Growth["signupSources"] = {
+    rows: signupSourceOrder.map((source) => {
+      const group = inRange.filter((facts) => answerOf(facts) === source);
+      return {source, organizers: group.length,
+        paying: group.filter((facts) => paying(facts.organizerId)).length};
+    }),
+    unanswered: inRange.filter((facts) => setItselfUp(facts) &&
+      !answerOf(facts)).length,
+  };
+
   const claimsMap = new Map<string, number>();
   for (const facts of input.facts) {
     const claimed = millis(facts.milestones.claimedAt);
@@ -227,6 +258,8 @@ export function buildGrowth(input: GrowthInput): Growth {
   const lastMonth = monthOf(monthWindow(currentMonth).startMillis - 1);
   const meta = input.costs.find((cost) => cost.month === lastMonth &&
     cost.category === "ads_meta");
+  const google = input.costs.find((cost) => cost.month === lastMonth &&
+    cost.category === "ads_google");
 
   const nominatorMap = new Map<string, OrganizerGrowthFactsDocument[]>();
   for (const facts of input.facts) {
@@ -306,9 +339,11 @@ export function buildGrowth(input: GrowthInput): Growth {
       sinceMonth: firstListed},
     cohorts, claimDays: buckets, salesByMonthOnCatch,
     channels: channelRows,
+    signupSources,
     claimsByMonth: [...claimsMap.entries()].sort(([a], [b]) =>
       a.localeCompare(b)).map(([month, count]) => ({month, count})),
     adSpend: {month: lastMonth, metaMinor: meta?.amountMinor ?? null,
+      googleMinor: google?.amountMinor ?? null,
       metaConnected: input.costs.some((cost) => cost.source === "meta_api"),
       googleConnected: input.costs.some((cost) =>
         cost.source === "google_ads_api"),

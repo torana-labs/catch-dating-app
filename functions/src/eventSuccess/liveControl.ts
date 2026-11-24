@@ -33,7 +33,7 @@ import {
 import {
   EventSuccessAccountability,
   eventSuccessPrimitivesFor,
-} from "./formatPrimitives";
+} from "../domain/formats/formatPrimitives";
 import {recheckAssignmentFeatureSnapshots} from
   "./assignmentFeatureConsent";
 import {buildAssignmentFeatureAudit} from "./assignmentFeatureAudit";

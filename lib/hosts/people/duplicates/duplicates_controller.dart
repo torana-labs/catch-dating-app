@@ -1,6 +1,9 @@
+import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_contact_merge.dart';
 import 'package:catch_dating_app/hosts/people/duplicates/duplicates_state.dart';
+import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -9,25 +12,37 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'duplicates_controller.g.dart';
 
-/// The duplicate review pages read so far for one organizer.
+/// The duplicate review pages opened so far for one organizer.
 @immutable
 class HostDuplicateReview {
   const HostDuplicateReview({
     required this.open,
     required this.marked,
-    required this.nextCursor,
-    required this.truncated,
+    required this.hasMore,
     this.loadingMore = false,
     this.loadMoreError,
   });
 
-  factory HostDuplicateReview.firstPage(HostContactMergeCandidatePage page) =>
-      HostDuplicateReview(
-        open: page.candidates,
-        marked: page.dismissedCandidates,
-        nextCursor: page.nextCursor,
-        truncated: page.truncated,
-      );
+  /// The pairs of the opened pages, split by their review decision.
+  factory HostDuplicateReview.fromPages(
+    LivePages<HostContactMergeCandidate> pages,
+  ) => HostDuplicateReview(
+    open: List.unmodifiable(
+      pages.items.where(
+        (pair) =>
+            pair.decisionState != HostContactMergeDecisionState.differentPeople,
+      ),
+    ),
+    marked: List.unmodifiable(
+      pages.items.where(
+        (pair) =>
+            pair.decisionState == HostContactMergeDecisionState.differentPeople,
+      ),
+    ),
+    hasMore: pages.hasMore,
+    loadingMore: pages.loadingMore,
+    loadMoreError: pages.nextPageError,
+  );
 
   /// Pairs waiting for a decision.
   final List<HostContactMergeCandidate> open;
@@ -35,83 +50,42 @@ class HostDuplicateReview {
   /// Pairs a teammate marked as different people.
   final List<HostContactMergeCandidate> marked;
 
-  /// The review's cursor to the next page; null on the last page.
-  final String? nextCursor;
-  final bool truncated;
+  /// Whether more pairs follow the opened pages.
+  final bool hasMore;
   final bool loadingMore;
 
   /// Why the next page failed; the pairs shown stay.
   final Object? loadMoreError;
 }
 
-/// The organizer's duplicate review, a page at a time. Each command
-/// refreshes it with [refreshHostDuplicates]; the people it names update
-/// through their own listeners.
+/// The organizer's duplicate review from `hostContactMergeCandidateViews`,
+/// a page at a time, every pair kept live: a merge, a decision or new
+/// evidence shows once its trigger rewrites the pair, so commands never
+/// refresh it.
 @riverpod
 class HostDuplicateReviewPages extends _$HostDuplicateReviewPages {
-  int _generation = 0;
+  LivePager<HostContactMergeCandidate>? _pager;
 
   @override
-  Future<HostDuplicateReview> build(String organizerId) async {
-    ++_generation;
-    ref.onDispose(() => ++_generation);
-    final page = await ref
-        .watch(hostContactsRepositoryProvider)
-        .listMergeCandidates(organizerId);
-    return HostDuplicateReview.firstPage(page);
-  }
-
-  /// Reads the next page with the review's cursor, or retries the one that
-  /// failed; the pairs shown stay meanwhile.
-  Future<void> loadMore() async {
-    final generation = _generation;
-    final current = catchAsyncStateFromAsyncValue(state).value;
-    final cursor = current?.nextCursor;
-    if (current == null || cursor == null || current.loadingMore) return;
-    state = AsyncData(_copy(current, loadingMore: true));
-    try {
-      final page = await ref
-          .read(hostContactsRepositoryProvider)
-          .listMergeCandidates(organizerId, cursor: cursor);
-      if (!ref.mounted || generation != _generation) return;
-      state = AsyncData(
-        HostDuplicateReview(
-          open: _byId(current.open, page.candidates),
-          marked: _byId(current.marked, page.dismissedCandidates),
-          nextCursor: page.nextCursor,
-          truncated: current.truncated || page.truncated,
-        ),
+  Stream<HostDuplicateReview> build(String organizerId) {
+    final uid = catchAsyncStateFromAsyncValue(ref.watch(uidProvider)).value;
+    if (uid == null || uid.isEmpty) {
+      _pager = null;
+      return Stream.error(
+        const SignInRequiredException('read the duplicate review'),
       );
-    } on Object catch (error) {
-      if (!ref.mounted || generation != _generation) return;
-      state = AsyncData(_copy(current, loadMoreError: error));
     }
+    final pager = ref
+        .watch(hostContactsRepositoryProvider)
+        .watchMergeCandidates(organizerId, readerUid: uid);
+    _pager = pager;
+    return pager.pages.map(HostDuplicateReview.fromPages);
   }
+
+  /// Opens the next page, or retries the one that failed; the pairs shown
+  /// stay meanwhile.
+  void loadMore() => _pager?.loadMore();
 }
-
-HostDuplicateReview _copy(
-  HostDuplicateReview review, {
-  bool loadingMore = false,
-  Object? loadMoreError,
-}) => HostDuplicateReview(
-  open: review.open,
-  marked: review.marked,
-  nextCursor: review.nextCursor,
-  truncated: review.truncated,
-  loadingMore: loadingMore,
-  loadMoreError: loadMoreError,
-);
-
-/// Keeps the first copy of each pair: a pair that moved between pages while
-/// the host read them shows once.
-List<HostContactMergeCandidate> _byId(
-  List<HostContactMergeCandidate> shown,
-  List<HostContactMergeCandidate> next,
-) => List.unmodifiable(
-  {
-    for (final pair in [...shown, ...next]) pair.candidateId: pair,
-  }.values,
-);
 
 /// The duplicate review page for one of its two lists.
 @riverpod
@@ -142,9 +116,8 @@ HostDuplicatesState hostDuplicatesController(
     },
     openCount: pages.open.length,
     markedCount: pages.marked.length,
-    atLeast: pages.nextCursor != null,
-    truncated: pages.truncated,
-    canLoadMore: pages.nextCursor != null,
+    atLeast: pages.hasMore,
+    canLoadMore: pages.hasMore,
     loadingMore: pages.loadingMore,
     loadMoreError: pages.loadMoreError,
   );
@@ -164,13 +137,12 @@ HostPeopleDuplicateSummary? hostPeopleDuplicateSummary(
   return HostPeopleDuplicateSummary(
     openCount: pages.open.length,
     markedCount: pages.marked.length,
-    atLeast: pages.nextCursor != null,
+    atLeast: pages.hasMore,
   );
 }
 
-/// Reads the duplicate review again: after a failure, and after every merge,
-/// undo, different-people or show-again command.
-void refreshHostDuplicates(WidgetRef ref, String organizerId) =>
+/// Opens the duplicate review again after it failed to load.
+void retryHostDuplicates(WidgetRef ref, String organizerId) =>
     ref.invalidate(hostDuplicateReviewPagesProvider(organizerId));
 
 /// The merge commands the People pages run: merge a pair, mark it as

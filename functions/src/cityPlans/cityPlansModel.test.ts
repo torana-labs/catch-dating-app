@@ -23,7 +23,7 @@ import {
   defaultDiscoveryRules,
   type DiscoveryRules,
 } from "../discovery/discoveryPolicy";
-import {discoveryFormats} from "./discoveryFormats";
+import {discoveryFormats} from "../domain/discovery/discoveryFormats";
 import {cityMarket, cityMarkets} from "./rebuild";
 import {contractFixture} from "../shared/contractFixtures";
 

@@ -1,14 +1,14 @@
 import {isDeepStrictEqual} from "node:util";
-import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import {logger} from "firebase-functions";
 import {validatePublicOrganizerDocument} from
   "../shared/generated/validators/publicOrganizerDocument";
-import {organizerWomenLed} from "./womenLed";
+import {organizerWomenLed} from "../domain/events/womenLed";
 import {
   organizerSummaryChanged,
   refreshOrganizerEventSummaries,
 } from "./eventOrganizerSummary";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 /**
  * Public organizer projection (#1221).
@@ -36,8 +36,12 @@ export const PUBLIC_ORGANIZER_FIELDS = [
 /**
  * Public fields computed from the canonical document rather than copied.
  * womenLed resolves organizers/{id}.womenLed, whose audit fields stay private.
+ * publicPagePath is the published website page's canonical path, so a
+ * guest's own lists (the website account page) can link the page without
+ * reading the canonical document.
  */
-export const PUBLIC_ORGANIZER_DERIVED_FIELDS = ["womenLed"] as const;
+export const PUBLIC_ORGANIZER_DERIVED_FIELDS =
+  ["womenLed", "publicPagePath"] as const;
 
 const COLLECTION = "publicOrganizers";
 
@@ -51,9 +55,23 @@ function hasHost(source: Source): boolean {
 }
 
 /**
- * Whether an organizer gets a public projection at all. Scraped, unclaimed
- * listings that the app hides have no host and no projection; the website
- * serves them from organizerPublicPages once they are published.
+ * The published website page's canonical path, or null while the page is
+ * not published.
+ * @param {Source} source The canonical organizer document.
+ * @return {string | null} The path.
+ */
+export function publishedPagePath(source: Source): string | null {
+  const page = source.publicPage as Source | undefined;
+  const path = page?.canonicalPath;
+  return page?.publishStatus === "published" && typeof path === "string" &&
+    path.length <= 240 && /^\/organizers\/(?:[a-z0-9-]+\/){1,2}$/u.test(path) ?
+    path : null;
+}
+
+/**
+ * Whether an organizer gets a public projection at all: the app shows it,
+ * it has a host, or its website page is published. A scraped, unclaimed
+ * listing that is neither shown nor published has none.
  * @param {Source | undefined} source The canonical organizer document.
  * @return {boolean} True when guests may read the organizer by id.
  */
@@ -62,7 +80,8 @@ export function publicOrganizerEligible(source: Source | undefined): boolean {
   if (source.status !== "active" && source.status !== "archived") {
     return false;
   }
-  return source.appVisibility === "discoverable" || hasHost(source);
+  return source.appVisibility === "discoverable" || hasHost(source) ||
+    publishedPagePath(source) !== null;
 }
 
 /**
@@ -77,6 +96,7 @@ export function projectPublicOrganizer(source: Source): Source {
   }
   // Derived, never copied: the declaration's audit fields stay private.
   projection.womenLed = organizerWomenLed(source);
+  projection.publicPagePath = publishedPagePath(source);
   return projection;
 }
 
@@ -146,18 +166,70 @@ export async function reconcilePublicOrganizer(organizerId: string,
 }
 
 /**
- * Keeps the projection current, and the organizerSummary on the organizer's
- * events that have not ended when the projection changes what it holds.
+ * Whether this organizer write moves the summary its events carry: the
+ * summary of the public projection before and after. It depends only on
+ * the write, so a retry of the same write asks again and refreshes again.
+ * @param {Source | undefined} before Organizer before.
+ * @param {Source | undefined} after Organizer after.
+ * @return {boolean} Whether the events' summary may be stale.
  */
-export const syncPublicOrganizer = onDocumentWritten(
-  {document: "organizers/{organizerId}", retry: true},
-  async (event) => {
-    const {summaryChanged} =
-      await reconcilePublicOrganizerDetailed(event.params.organizerId);
-    if (summaryChanged) {
-      await refreshOrganizerEventSummaries(event.params.organizerId);
-    }
-  });
+export function organizerWriteMovesSummary(before: Source | undefined,
+  after: Source | undefined): boolean {
+  const view = (source: Source | undefined) => {
+    if (!publicOrganizerEligible(source)) return undefined;
+    const projection = projectPublicOrganizer(source as Source);
+    return validatePublicOrganizerDocument(projection) ? projection :
+      undefined;
+  };
+  return organizerSummaryChanged(view(before), view(after));
+}
+
+export interface PublicOrganizerWriteDeps {
+  reconcile: (organizerId: string) =>
+    Promise<{summaryChanged: boolean}>;
+  refresh: (organizerId: string) => Promise<unknown>;
+}
+
+const liveWriteDeps: PublicOrganizerWriteDeps = {
+  reconcile: (organizerId) => reconcilePublicOrganizerDetailed(organizerId),
+  refresh: (organizerId) => refreshOrganizerEventSummaries(organizerId),
+};
+
+/**
+ * Keeps the projection current, and the organizerSummary on the
+ * organizer's events that have not ended when it may be stale: when this
+ * attempt changed the projection's summary, or when the write itself
+ * moves it. The second condition makes a retry converge: an attempt that
+ * wrote the projection and then failed part way through the events finds
+ * the projection unchanged on the retry, but the write still moves the
+ * summary, so the retry refreshes the events it missed. The refresh
+ * rewrites only events whose summary differs from the current projection.
+ * @param {string} organizerId Organizer id.
+ * @param {Source | undefined} before Organizer before.
+ * @param {Source | undefined} after Organizer after.
+ * @param {PublicOrganizerWriteDeps} deps Injectable steps.
+ * @return {Promise<void>} Resolves once both are current.
+ */
+export async function syncPublicOrganizerWrite(organizerId: string,
+  before: Source | undefined, after: Source | undefined,
+  deps: PublicOrganizerWriteDeps = liveWriteDeps): Promise<void> {
+  const {summaryChanged} = await deps.reconcile(organizerId);
+  if (summaryChanged || organizerWriteMovesSummary(before, after)) {
+    await deps.refresh(organizerId);
+  }
+}
+
+/**
+ * The public organizer projection and its events' summary.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const publicOrganizerProjections = defineProjections("organizers", [{
+  id: "publicOrganizer", kind: "projection", when: () => true,
+  run: (change) => syncPublicOrganizerWrite(change.documentId,
+    change.before as Source | undefined,
+    change.after as Source | undefined),
+}]);
 
 /**
  * Creates or refreshes the projection for every organizer. Dry run by

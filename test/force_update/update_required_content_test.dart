@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/force_update/presentation/update_required_keys.dart';
-import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
+import 'package:catch_dating_app/pages/frame/force_update/update_required_keys.dart';
+import 'package:catch_dating_app/pages/frame/force_update/update_required_screen.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

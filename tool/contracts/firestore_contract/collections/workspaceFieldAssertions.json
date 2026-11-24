@@ -1,0 +1,22 @@
+{
+  "id": "workspaceFieldAssertions",
+  "path": "workspaceFieldAssertions/{assertionId}",
+  "rulesMatch": "/workspaceFieldAssertions/{assertionId}",
+  "typescriptInterface": "WorkspaceFieldAssertionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/private_workspace_relationship_authority.rules.test.cjs",
+  "owner": "program guest/household field acquisition adapters",
+  "writerContext": "programmes",
+  "read": "server only; scoped callable projections",
+  "write": "server only",
+  "exportedFunctions": [
+    "upsertProgramGuest",
+    "upsertProgramHousehold",
+    "importProgramManifest",
+    "anonymizeDueProgramsSweep"
+  ],
+  "migrationNotes": [
+    "Immutable scoped field acquisition; selected guest/household fields are projections of exact source proofs.",
+    "Exact program retention deletes assertions; account linkage and actor identity grant no additional field access."
+  ]
+}

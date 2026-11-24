@@ -30,7 +30,7 @@ const schedule = (override = {}) => ({
 const inspectSchedule = (configs) => inspectHostSchedule(configs, "Fixture refresh", "SELECT 1;\n");
 
 test("one export per host collection, each with its own latest view", () => {
-  assert.equal(Object.keys(hostExports).length, 8);
+  assert.equal(Object.keys(hostExports).length, 7);
   assert.deepEqual(hostExports["bq-host-organizers"], {
     collectionPath: "organizers", tableId: "organizers", requiredInMart: true,
   });

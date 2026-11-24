@@ -5,7 +5,7 @@ import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import {isConfiguredEvent, isPublicConfiguredEvent,
   requireConfiguredEvent, requirePublicConfiguredEvent} from
   "./configuredEvent";
-import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
+import {publishedEventSetup} from "../domain/events/testing/eventSetupFixture";
 
 const time = (millis: number) => ({
   toMillis: () => millis,

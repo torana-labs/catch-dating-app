@@ -46,7 +46,7 @@ the host for help through the wingman request flow.
 ### Standalone Host Runtime Boundary
 
 Event Success must no longer infer that every human at an event has an
-`eventParticipations/{eventId_uid}` document. The Host runtime consumes the
+`eventBookings/{eventId_uid}` document. The Host runtime consumes the
 unified operational roster described in
 `docs/host_product.md#host-tooling-decisions`.
 
@@ -74,7 +74,7 @@ Consumer participation or public profile as the event identity.
 The 2026-08-11 Direction 3 bounded reference closes the first Host-only slice
 of this boundary. Canonical Host Manage Live derives checked-in and expected
 counts from `eventAttendees`, accepts an external-only roster with zero
-`eventParticipations` or profiles, and moves attendance work behind Guests.
+`eventBookings` or profiles, and moves attendance work behind Guests.
 The roster is still passed separately from the UID-keyed assignment and private
 companion data required by optional advanced cards; this does not claim the
 general attendee-id assignment migration is complete.
@@ -3693,7 +3693,7 @@ rather than embedded in event-type logic.
 | Attendee companion UI | `lib/event_success/presentation/event_success_companion_screen.dart` and `companion_parts/` |
 | Companion loading UI | `lib/event_success/presentation/companion/event_success_companion_loading_page_body.dart` (page, stage, and primary-action skeletons) |
 | Companion moment presentation | `lib/event_success/presentation/event_success_moment_presentation_state.dart` (localized copy, icons, and choreography projection) |
-| Shared Host/attendee room map | `lib/event_success/presentation/event_success_room_map.dart` |
+| Shared Host/attendee room map | `lib/pages/live_room/event_success_room_map.dart` |
 | Assignment overrides | `lib/event_success/presentation/assignments/` (override sheets and typed draft models) |
 | Live reveal UI | `lib/event_success/presentation/reveal/` (attendee surfaces, countdown, assignments, standings, and shared clock state) |
 | Backend generators/wingman callables | `functions/src/eventSuccess/` |
@@ -4002,7 +4002,7 @@ occurrence, not an in-place flag flip against shared inventory.
 | Collection | Identity and authority |
 |---|---|
 | `eventAttendees/{attendeeId}` | Host-visible event-scoped operational person, imported contact/source, attendance and optional `linkedUid`. |
-| `eventParticipations/{eventId_uid}` | Catch booking, payment, waitlist and Consumer-network lifecycle. It is optional for Event Success. |
+| `eventBookings/{eventId_uid}` (named `eventParticipations` until Nov 2026) | Catch booking, payment, waitlist and Consumer-network lifecycle. It is optional for Event Success. |
 | `eventRuntimeParticipants/{eventId_uid}` | Participant-private access, roster claim, disclosures, minimal runtime profile and readiness. |
 | `eventRuntimeDataRequests/{requestId}` | Server-only current missing-data request, fenced to one participant profile and event source. |
 | `commandReceipts/{command}_{id}` | Shared replay store; `requestRequiredData` entries make an exact command retry idempotent. Never a guest or Host read surface. |
@@ -4253,7 +4253,7 @@ without external verification.
 - A phone guest claims exactly one attendee or enters Host approval.
 - Sensitive fields are minimal, private, versioned and skippable when optional.
 - First Hello, compatibility, pods, rotations and wingman work for OTP-only
-  participants without `eventParticipations`, `users` or `publicProfiles`.
+  participants without `eventBookings`, `users` or `publicProfiles`.
 - Manual and venue-QR check-in work independently of First Hello.
 - Runtime refresh resumes the participant's safe moment.
 - Later Consumer login sees only explicitly saved, reviewable draft prefill.

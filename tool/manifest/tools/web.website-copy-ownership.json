@@ -1,0 +1,39 @@
+{
+  "id": "web:website-copy-ownership",
+  "category": "lint",
+  "path": "tool/web/check_website_copy_ownership.mjs",
+  "command": "node tool/web/check_website_copy_ownership.mjs --check",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Fails on user-visible marketing website strings outside website/src/content and the reasoned allowlist.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "checks": [
+    "node --check tool/web/check_website_copy_ownership.mjs",
+    "node tool/web/check_website_copy_ownership.mjs --self-test",
+    "node tool/web/check_website_copy_ownership.mjs --check --summary"
+  ],
+  "impactPaths": [
+    "tool/web/website_copy_allowlist.json"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "WEB-COPY-001",
+      "title": "Keep marketing-authored website copy in the content layer",
+      "appliesTo": [
+        "website/src/**",
+        "tool/web/check_website_copy_ownership.mjs",
+        "tool/web/website_copy_allowlist.json",
+        "website/package.json"
+      ],
+      "instruction": "User-visible marketing-authored strings belong under website/src/content, in page-specific content modules. Permanent technical exceptions require an exact-string allowlist entry with a reason."
+    }
+  ],
+  "queueGate": "always"
+}

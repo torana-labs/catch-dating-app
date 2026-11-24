@@ -79,7 +79,7 @@ service cloud.firestore {
       return blockerUid + '__' + blockedUid;
     }
 
-    function eventParticipationDocId(eventId, uid) {
+    function eventBookingDocId(eventId, uid) {
       return eventId + '_' + uid;
     }
 
@@ -191,42 +191,63 @@ service cloud.firestore {
       return programId + '__' + uid;
     }
 
-    // Programme authority for the signed-in account, read from the one
-    // programAccessViews document that mirrors requireProgramAccess: the
-    // programme owner as manager, or a staff member's duties with the owner's
-    // approval proof and every expiry folded into instants. A read model
-    // names its programme in a field the query or the document id fixes;
-    // these helpers then answer from the caller's own view. Pass the
-    // programme id the rule already trusts, never a field the client may
-    // choose freely. A deleted account holds no programme authority.
-    function programView(programId) {
-      return get(/databases/$(database)/documents/programAccessViews/$(programStaffGrantDocId(programId, request.auth.uid))).data;
+    function accessGrantDocId(scopeType, scopeId, uid) {
+      return scopeType + '__' + scopeId + '__' + uid;
     }
 
-    function programViewLive(view) {
-      return view.status == 'active'
-        && request.time.toMillis() >= view.activeFromMillis
-        && (view.expiresAtMillis == null
-          || request.time.toMillis() < view.expiresAtMillis);
+    // Programme authority for the signed-in account, read from its
+    // accessGrants/program__{programId}__{uid} document (#2474, FIX-10).
+    // createOrganizerProgram and the staff grant, claim and revoke commands
+    // write it in their own transaction, so a grant or revocation is in force
+    // the moment its command commits: no trigger-kept projection stands
+    // between a command and these helpers, and programAccessViews (still
+    // written beside it for released Host builds) authorises nothing. Role
+    // owner is the programme's creator and covers every duty and scope; staff
+    // hold the expiry instants in reach, which programAccessViewFor computes
+    // with the owner-approval proof and every expiry folded in, so rules only
+    // compare them with the request time. A read model names its programme in
+    // a field the query or the document id fixes; these helpers then answer
+    // from the caller's own grant. Pass the programme id the rule already
+    // trusts, never a field the client may choose freely. A deleted account
+    // holds no programme authority.
+    function programAccessPath(programId) {
+      return /databases/$(database)/documents/accessGrants/$(accessGrantDocId('program', programId, request.auth.uid));
     }
 
-    function hasProgramAccessView(programId) {
+    function programAccess(programId) {
+      return get(programAccessPath(programId)).data;
+    }
+
+    function programReach(programId) {
+      return programAccess(programId).reach;
+    }
+
+    function programAccessLive(access) {
+      return access.scopeType == 'program'
+        && access.uid == request.auth.uid
+        && access.status == 'active'
+        && request.time.toMillis() >= access.activeFromMillis
+        && (access.expiresAtMillis == null
+          || request.time.toMillis() < access.expiresAtMillis);
+    }
+
+    function hasProgramAccess(programId) {
       return isAuthed() && !isDeletedUser(request.auth.uid)
-        && exists(/databases/$(database)/documents/programAccessViews/$(programStaffGrantDocId(programId, request.auth.uid)))
-        && programViewLive(programView(programId));
+        && exists(programAccessPath(programId))
+        && programAccessLive(programAccess(programId));
     }
 
     function isProgramManager(programId) {
-      return hasProgramAccessView(programId)
-        && programView(programId).role == 'manager';
+      return hasProgramAccess(programId)
+        && programAccess(programId).role == 'owner';
     }
 
     // The duty is held in some scope. Coordinators hold every duty but
-    // programAdmin, as in the view.
+    // programAdmin, as in the grant's reach.
     function hasProgramDuty(programId, duty) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && programView(programId).duties.get(duty, 0) > request.time.toMillis());
+        || (hasProgramAccess(programId)
+          && programReach(programId).duties.get(duty, 0) > request.time.toMillis());
     }
 
     // The duty covers one pickup point, hotel or function: every one, or that
@@ -235,16 +256,16 @@ service cloud.firestore {
     // dimensions satisfied by the same assignment stays a callable.
     function programDutyCoversPickup(programId, duty, pickupPointId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && (programView(programId).pickupAll.get(duty, 0) > request.time.toMillis()
-            || programView(programId).pickupScoped.get(duty + '__' + pickupPointId, 0) > request.time.toMillis()));
+        || (hasProgramAccess(programId)
+          && (programReach(programId).pickupAll.get(duty, 0) > request.time.toMillis()
+            || programReach(programId).pickupScoped.get(duty + '__' + pickupPointId, 0) > request.time.toMillis()));
     }
 
     function programDutyCoversHotel(programId, duty, hotelId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && (programView(programId).hotelAll.get(duty, 0) > request.time.toMillis()
-            || programView(programId).hotelScoped.get(duty + '__' + hotelId, 0) > request.time.toMillis()));
+        || (hasProgramAccess(programId)
+          && (programReach(programId).hotelAll.get(duty, 0) > request.time.toMillis()
+            || programReach(programId).hotelScoped.get(duty + '__' + hotelId, 0) > request.time.toMillis()));
     }
 
     // What the work shell lists for the account: the pickup points, hotels
@@ -252,43 +273,43 @@ service cloud.firestore {
     // does. The key '*' stands for every one.
     function programWorkCoversPickup(programId, pickupPointId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && (programView(programId).workPickup.get('*', 0) > request.time.toMillis()
-            || programView(programId).workPickup.get(pickupPointId, 0) > request.time.toMillis()));
+        || (hasProgramAccess(programId)
+          && (programReach(programId).workPickup.get('*', 0) > request.time.toMillis()
+            || programReach(programId).workPickup.get(pickupPointId, 0) > request.time.toMillis()));
     }
 
     function programWorkCoversHotel(programId, hotelId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && (programView(programId).workHotel.get('*', 0) > request.time.toMillis()
-            || programView(programId).workHotel.get(hotelId, 0) > request.time.toMillis()));
+        || (hasProgramAccess(programId)
+          && (programReach(programId).workHotel.get('*', 0) > request.time.toMillis()
+            || programReach(programId).workHotel.get(hotelId, 0) > request.time.toMillis()));
     }
 
     function programWorkCoversFunction(programId, functionId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && (programView(programId).workFunction.get('*', 0) > request.time.toMillis()
-            || programView(programId).workFunction.get(functionId, 0) > request.time.toMillis()));
+        || (hasProgramAccess(programId)
+          && (programReach(programId).workFunction.get('*', 0) > request.time.toMillis()
+            || programReach(programId).workFunction.get(functionId, 0) > request.time.toMillis()));
     }
 
     // Every pickup point, hotel or function, for a listing query: the work
     // key '*' is live. A scoped account reads its named ids one by one.
     function programWorkListsAllPickups(programId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && programView(programId).workPickup.get('*', 0) > request.time.toMillis());
+        || (hasProgramAccess(programId)
+          && programReach(programId).workPickup.get('*', 0) > request.time.toMillis());
     }
 
     function programWorkListsAllHotels(programId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && programView(programId).workHotel.get('*', 0) > request.time.toMillis());
+        || (hasProgramAccess(programId)
+          && programReach(programId).workHotel.get('*', 0) > request.time.toMillis());
     }
 
     function programWorkListsAllFunctions(programId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && programView(programId).workFunction.get('*', 0) > request.time.toMillis());
+        || (hasProgramAccess(programId)
+          && programReach(programId).workFunction.get('*', 0) > request.time.toMillis());
     }
 
     // The door of one function: function check-in or function lead duty
@@ -303,17 +324,28 @@ service cloud.firestore {
       return hasProgramDuty(programId, 'programCoordinator');
     }
 
+    // The programme guest directory, as requireProgramGuestDirectoryAccess
+    // admits it: the owner, or a guest relations duty (coordinators hold it)
+    // from one assignment covering the whole programme. A view written before
+    // programAll existed holds none.
+    function programGuestDirectory(programId) {
+      return isProgramManager(programId)
+        || (hasProgramAccess(programId)
+          && programReach(programId).get('programAll', {})
+            .get('guestRelations', 0) > request.time.toMillis());
+    }
+
     // An arrivals journey: one airport greeter, dispatcher or coordinator
     // assignment covers its pickup point and hotel together. Each side of a
     // route is an id or '*'; a journey with no pickup point or hotel is '~',
     // which only '*' reaches.
     function programArrivalRoute(programId, pickupKey, hotelKey) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && (programView(programId).arrivalRoutes.get('*|*', 0) > request.time.toMillis()
-            || programView(programId).arrivalRoutes.get(pickupKey + '|*', 0) > request.time.toMillis()
-            || programView(programId).arrivalRoutes.get('*|' + hotelKey, 0) > request.time.toMillis()
-            || programView(programId).arrivalRoutes.get(pickupKey + '|' + hotelKey, 0) > request.time.toMillis()));
+        || (hasProgramAccess(programId)
+          && (programReach(programId).arrivalRoutes.get('*|*', 0) > request.time.toMillis()
+            || programReach(programId).arrivalRoutes.get(pickupKey + '|*', 0) > request.time.toMillis()
+            || programReach(programId).arrivalRoutes.get('*|' + hotelKey, 0) > request.time.toMillis()
+            || programReach(programId).arrivalRoutes.get(pickupKey + '|' + hotelKey, 0) > request.time.toMillis()));
     }
 
     // A transport trip: one reconciliation viewer, dispatcher or coordinator
@@ -321,45 +353,56 @@ service cloud.firestore {
     // id or '*' per side; a trip with no hotel is '~').
     function programTripRoute(programId, pickupKey, hotelKey) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && (programView(programId).tripRoutes.get('*|*', 0) > request.time.toMillis()
-            || programView(programId).tripRoutes.get(pickupKey + '|*', 0) > request.time.toMillis()
-            || programView(programId).tripRoutes.get('*|' + hotelKey, 0) > request.time.toMillis()
-            || programView(programId).tripRoutes.get(pickupKey + '|' + hotelKey, 0) > request.time.toMillis()));
+        || (hasProgramAccess(programId)
+          && (programReach(programId).tripRoutes.get('*|*', 0) > request.time.toMillis()
+            || programReach(programId).tripRoutes.get(pickupKey + '|*', 0) > request.time.toMillis()
+            || programReach(programId).tripRoutes.get('*|' + hotelKey, 0) > request.time.toMillis()
+            || programReach(programId).tripRoutes.get(pickupKey + '|' + hotelKey, 0) > request.time.toMillis()));
     }
 
     function programDutyCoversFunction(programId, duty, functionId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && (programView(programId).functionAll.get(duty, 0) > request.time.toMillis()
-            || programView(programId).functionScoped.get(duty + '__' + functionId, 0) > request.time.toMillis()));
+        || (hasProgramAccess(programId)
+          && (programReach(programId).functionAll.get(duty, 0) > request.time.toMillis()
+            || programReach(programId).functionScoped.get(duty + '__' + functionId, 0) > request.time.toMillis()));
+    }
+
+    // When a grant's event-wide permissions end, as eventOperatorExpiryMillis
+    // reads it for the callables: operatorExpiresAt (null grants none); a
+    // grant written before that field holds its expiresAt for a check-in
+    // operator and nothing for an event operator. Group duties keep
+    // expiresAt later and never extend it.
+    function eventOperatorExpiresAt(grant) {
+      return grant.keys().hasAny(['operatorExpiresAt'])
+        ? grant.operatorExpiresAt
+        : (grant.role == 'checkInOperator' ? grant.expiresAt : null);
     }
 
     function hasActiveEventOperatorGrant(eventId, permission) {
-      let grantId = eventStaffGrantDocId(eventId, request.auth.uid);
+      let grantPath = /databases/$(database)/documents/eventStaffGrants/$(
+        eventStaffGrantDocId(eventId, request.auth.uid));
       return isAuthed()
-        && exists(/databases/$(database)/documents/eventStaffGrants/$(grantId))
-        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.eventId == eventId
-        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.uid == request.auth.uid
-        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.organizerId == (
-          get(/databases/$(database)/documents/events/$(eventId)).data.keys().hasAny(['organizerId'])
-            ? get(/databases/$(database)/documents/events/$(eventId)).data.organizerId
-            : get(/databases/$(database)/documents/events/$(eventId)).data.organizerId
-        )
-        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.status == 'active'
-        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.expiresAt > request.time
-        && permission in get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.permissions;
+        && exists(grantPath)
+        && get(grantPath).data.eventId == eventId
+        && get(grantPath).data.uid == request.auth.uid
+        && get(grantPath).data.organizerId
+          == get(/databases/$(database)/documents/events/$(eventId)).data.organizerId
+        && get(grantPath).data.status == 'active'
+        && get(grantPath).data.expiresAt > request.time
+        && eventOperatorExpiresAt(get(grantPath).data) != null
+        && eventOperatorExpiresAt(get(grantPath).data) > request.time
+        && permission in get(grantPath).data.permissions;
     }
 
-    function hasEventParticipationStatus(eventId, uid, statuses) {
-      return exists(/databases/$(database)/documents/eventParticipations/$(eventParticipationDocId(eventId, uid)))
-        && get(/databases/$(database)/documents/eventParticipations/$(eventParticipationDocId(eventId, uid)))
+    function hasEventBookingStatus(eventId, uid, statuses) {
+      return exists(/databases/$(database)/documents/eventBookings/$(eventBookingDocId(eventId, uid)))
+        && get(/databases/$(database)/documents/eventBookings/$(eventBookingDocId(eventId, uid)))
         .data.status in statuses;
     }
 
     function hasAttendedEvent(eventId, uid) {
-      return exists(/databases/$(database)/documents/eventParticipations/$(eventParticipationDocId(eventId, uid)))
-        && get(/databases/$(database)/documents/eventParticipations/$(eventParticipationDocId(eventId, uid)))
+      return exists(/databases/$(database)/documents/eventBookings/$(eventBookingDocId(eventId, uid)))
+        && get(/databases/$(database)/documents/eventBookings/$(eventBookingDocId(eventId, uid)))
         .data.status == 'attended';
     }
 
@@ -372,7 +415,7 @@ service cloud.firestore {
     }
 
     function hasEventSuccessParticipantAccess(eventId, uid) {
-      return hasEventParticipationStatus(eventId, uid, [
+      return hasEventBookingStatus(eventId, uid, [
           'signedUp', 'attended'
         ])
         || hasReadyEventRuntimeParticipant(eventId, uid);
@@ -408,7 +451,7 @@ service cloud.firestore {
       return isAuthed()
         && (
           isOrganizerHostForEvent(eventId)
-          || hasEventParticipationStatus(eventId, request.auth.uid, [
+          || hasEventBookingStatus(eventId, request.auth.uid, [
             'signedUp', 'waitlisted', 'attended'
           ])
           || hasReadyEventRuntimeParticipant(eventId, request.auth.uid)
@@ -823,6 +866,16 @@ service cloud.firestore {
           && isValidPushInstallation(request.resource.data);
         allow delete: if isAuthed() && request.auth.uid == uid;
       }
+
+      // Who may message this guest, one document per sender (catch or
+      // organizer_{organizerId}). The guest reads their own by path; no
+      // organiser reads them directly, and only the server writes them.
+      match /contactPermissions/{senderKey} {
+        allow get, list: if isAuthed()
+          && request.auth.uid == uid
+          && !isDeletedUser(uid);
+        allow write: if false;
+      }
     }
 
     // Professional host identity. This is intentionally separate from
@@ -885,6 +938,13 @@ service cloud.firestore {
     // retries (callables, triggers, webhooks). Only Cloud Functions touch it;
     // a retry reads its own receipt in the command's transaction.
     match /commandReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    // Dead letters from the source dispatchers (issue #2451): one record per
+    // projection id and event id that still failed past the max age, for a
+    // reconcile tool. Only Cloud Functions write it; TTL deletes it.
+    match /dispatchDeadLetters/{deadLetterId} {
       allow read, write: if false;
     }
 
@@ -1250,6 +1310,12 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Backend-owned manifests of the paths each demo operation wrote, for
+    // cleanup and audit.
+    match /demoOpsEvents/{operationId} {
+      allow read, write: if false;
+    }
+
     // Server-owned durable activity timeline. Users can read their own timeline
     // and mark items as read, but cannot create, delete, or edit notification
     // content.
@@ -1399,9 +1465,10 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
 
-    // Public organizer projection (#1221). Synced by syncPublicOrganizer from
-    // an allowlist of organizers/{id} fields; contact details, host defaults,
-    // provenance, intake, admin search, ownership and claim never appear here.
+    // Public organizer projection (#1221). Synced by the publicOrganizer
+    // projection of dispatchOrganizers from an allowlist of organizers/{id}
+    // fields; contact details, host defaults, provenance, intake, admin
+    // search, ownership and claim never appear here.
     // Any single organizer resolves by id, so chats and deep links to hidden
     // organizers keep working; lists return only organizers the app shows.
     match /publicOrganizers/{organizerId} {
@@ -1490,31 +1557,16 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // Organizer-scoped WhatsApp/SMS grants are server-owned. Hosts receive
-    // only aggregate reachability counts; attendee self-service will use a
-    // callable rather than exposing this cross-organizer consent ledger.
-    // Catch platform permission is independent of organizer grants. All
-    // identity-bound decisions go through participant callables.
-    match /catchCommunicationPreferences/{uid} {
-      allow read, write: if false;
-    }
-    match /catchCommunicationPermissionReceipts/{receiptId} {
+    // The one append-only receipt log for contact permissions (Catch and
+    // every organizer). Legal evidence: no client and no organiser reads or
+    // writes it; every decision goes through a server consent writer.
+    match /contactPermissionReceipts/{receiptId} {
       allow read, write: if false;
     }
 
-    match /organizerCommunicationPreferences/{preferenceId} {
-      allow read, write: if false;
-    }
-
-    // Immutable participant permission evidence is server-only. Neither a
-    // manager nor a client may manufacture, rewrite, or delete consent history.
-    match /organizerCommunicationPermissionReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
-    // The guest's own messaging settings rows, projected from the preference
-    // and receipt ledgers. A row not written yet reads as missing. Withdrawals
-    // still go through the participant callable.
+    // The guest's own messaging settings rows, written with their contact
+    // permission until the guest build floor moves. A row not written yet
+    // reads as missing. Withdrawals still go through the participant callable.
     match /guestMessagingPermissions/{permissionId} {
       allow get: if (resource == null && isAuthed())
         || (isAuthed() && !isDeletedUser(request.auth.uid)
@@ -1584,6 +1636,31 @@ service cloud.firestore {
         || isHostSummaryManager(resource.data.organizerId);
       allow list, write: if false;
     }
+    // One form's editor (#2306): the summary, draft definition and
+    // validation issues getOrganizerFormEditor returned. The organizer's
+    // current managers get it by id, as requireOrganizerManager admitted
+    // them; saves stay on the draft callable, fenced by form.draftRevision.
+    // A view not written yet reads as missing.
+    match /hostFormEditorViews/{formId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
+    // One published version's funnel and question aggregates (#2306). The
+    // trigger applies the privacy threshold, so a question below it keeps
+    // only its count. Managers get it by version id.
+    match /hostFormAnalyticsViews/{versionId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
+    // One form's share-link counters (#2306), never a link token. Managers
+    // get it by form id; a form with no links has none.
+    match /hostFormSourceViews/{formId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
     match /hostResponseSummaries/{summaryId} {
       allow get, list: if isHostSummaryManager(resource.data.organizerId);
       allow write: if false;
@@ -1592,11 +1669,38 @@ service cloud.firestore {
       allow get, list: if isHostSummaryManager(resource.data.organizerId);
       allow write: if false;
     }
+    // One possible duplicate pair (#2306): the two contacts' names, phones
+    // and emails, the evidence and the review decision, as
+    // listOrganizerContactMergeCandidates returned them to the organizer's
+    // current managers. The trigger never copies identity hashes or linked
+    // uids. Merges and decisions stay on their revision-fenced callables.
+    match /hostContactMergeCandidateViews/{candidateId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    // What an organizer's audiences and automations can name (#2306): form
+    // titles, filterable question labels, event names and tag labels, as
+    // listOrganizerSavedAudiences returned them. Managers get it by id.
+    match /hostAudienceSourceViews/{organizerId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
     // One shown contact's traits, revenue and newest event rows for the Host
     // person page; the name, endpoints, tags and revision are on
     // hostContactSummaries. It holds no linked account, identity evidence or
     // payment id. A view not written yet reads as missing.
     match /hostContactDetailViews/{contactId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
+    // One event's attendance report exactly as getEventAttendanceReport
+    // returns it, for Host close-out. Only the organizer's current managers
+    // read it, by id; no-shows are recorded through recordEventNoShow.
+    match /hostEventAttendanceReports/{eventId} {
       allow get: if (resource == null && isAuthed())
         || isHostSummaryManager(resource.data.organizerId);
       allow list, write: if false;
@@ -1641,6 +1745,26 @@ service cloud.firestore {
     match /hostOrganizerBillViews/{billId} {
       allow get, list: if isHostSummaryOwner(resource.data.organizerId);
       allow write: if false;
+    }
+    // An organizer's billing status (#2306), as getOrganizerBillingStatus
+    // returned it: the trial's facts and the plan, never prices. Only its
+    // owner reads it, by the organizer's id.
+    match /hostOrganizerBillingViews/{organizerId} {
+      allow get: if isHostSummaryOwner(organizerId);
+      allow list, write: if false;
+    }
+    // An organizer's plan grants (#2306), as getOrganizerEntitlement
+    // returned them without admin internals; its owner and managers read it
+    // by the organizer's id, and a missing view reads as no grants.
+    match /hostOrganizerEntitlementViews/{organizerId} {
+      allow get: if isHostSummaryManager(organizerId);
+      allow list, write: if false;
+    }
+    // The facts of an organizer's website owner page (#2306): its owner and
+    // managers read them by the organizer's id.
+    match /hostOrganizerOwnerViews/{organizerId} {
+      allow get: if isHostSummaryManager(organizerId);
+      allow list, write: if false;
     }
     // How a page got here, one view per reader holding only that reader's
     // own claim. A current manager gets their view; someone whose claim is
@@ -2541,14 +2665,26 @@ service cloud.firestore {
       allow get: if isAuthed();
       allow list, write: if false;
     }
-    // One guest's own records about one event, for the website's event page.
-    // Triggers write it; only that guest gets it, and a guest with no row
-    // reads it as missing.
+    // One guest's own records about one event, for the website's event page
+    // and the Catch app's roster link. Triggers write it; only that guest
+    // gets it, and a guest with no row reads it as missing.
+    // The id is {eventId}_{uid}, so a get is authorised by the id the server
+    // chose, never by a field a trigger wrote: the part after the last
+    // underscore must be the caller. Auth uids hold no underscore; an id
+    // whose last part is not the caller is denied.
     // A guest lists only their own rows: the booking lists read the event
-    // card each row carries instead of joining events.
+    // card each row carries instead of joining events. A query cannot be
+    // checked against each document's id, so list stays on the uid field,
+    // which the trigger sets from that same id.
+    function isOwnGuestEventStatusId(statusId) {
+      let parts = statusId.split('_');
+      return parts.size() >= 2
+        && parts[0].size() > 0
+        && parts[parts.size() - 1] == request.auth.uid;
+    }
     match /guestEventStatuses/{statusId} {
       allow get: if isAuthed() && !isDeletedUser(request.auth.uid)
-        && (resource == null || resource.data.uid == request.auth.uid);
+        && isOwnGuestEventStatusId(statusId);
       allow list: if isAuthed() && !isDeletedUser(request.auth.uid)
         && resource.data.uid == request.auth.uid;
       allow write: if false;
@@ -2590,12 +2726,28 @@ service cloud.firestore {
       allow list, write: if false;
     }
 
-    // One account's current authority over one programme, written by
-    // triggers on the grant, the programme and the organizer. The account
-    // reads its own view by its derived id; it holds ids, duty names, expiry
-    // instants and the organizer manager flag only. A query naming the
-    // account's own uid (and the organizer) lists its own views, so the
-    // programme list can be gated offline; nobody lists another account's.
+    // One account's programme view for released Host builds, written beside
+    // its accessGrants document in each grant command's transaction (and by
+    // the organizer trigger for the organizer manager flag). No rule
+    // authorises through it. The account reads its own view by its derived
+    // id; a query naming the account's own uid (and the organizer) lists its
+    // own views, so the programme list can be gated offline; nobody lists
+    // another account's.
+    // One account's authority over one scope (#2474): the document the
+    // programme helpers above get() by id. An account gets its own document
+    // by its derived id and lists its own documents by a query naming its
+    // uid while it is not deleted; nobody reads another account's, and no
+    // client writes one.
+    match /accessGrants/{accessId} {
+      allow get: if isAuthed() && !isDeletedUser(request.auth.uid)
+        && resource.data.uid == request.auth.uid
+        && accessId == accessGrantDocId(resource.data.scopeType,
+          resource.data.scopeId, request.auth.uid);
+      allow list: if isAuthed() && !isDeletedUser(request.auth.uid)
+        && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
     match /programAccessViews/{accessId} {
       allow get: if isAuthed() && !isDeletedUser(request.auth.uid)
         && accessId == programStaffGrantDocId(resource.data.programId, request.auth.uid)
@@ -2608,7 +2760,7 @@ service cloud.firestore {
     // The work shell's programme header: any account with live access to the
     // programme reads it by id. Never listed.
     match /programWorkSummaries/{programId} {
-      allow get: if hasProgramAccessView(programId);
+      allow get: if hasProgramAccess(programId);
       allow list, write: if false;
     }
 
@@ -2662,7 +2814,7 @@ service cloud.firestore {
       allow get, list: if programFullReach(resource.data.programId)
         || (hasProgramDuty(resource.data.programId, 'functionLead')
           && resource.data.duty != null
-          && programView(resource.data.programId).duties.get(resource.data.duty, 0) > request.time.toMillis());
+          && programReach(resource.data.programId).duties.get(resource.data.duty, 0) > request.time.toMillis());
       allow write: if false;
     }
     match /programTravelCountViews/{programId} {
@@ -2725,6 +2877,34 @@ service cloud.firestore {
     match /programStaffViews/{viewId} {
       allow get, list: if hasProgramDuty(resource.data.programId,
         'programAdmin');
+      allow write: if false;
+    }
+
+    // A programme's display-safe WhatsApp sender (#2306): the connection id,
+    // display number, verified name and status the inbox header, the
+    // assistant settings and new planned messages show. The trigger never
+    // copies provider ids, the secret reference or test evidence. Read by id
+    // by the owner and the communications duty (coordinators hold it).
+    match /programSenderViews/{programId} {
+      allow get: if hasProgramDuty(programId, 'communications');
+      allow list, write: if false;
+    }
+
+    // A programme's assistant settings (#2306), with each escalation grant's
+    // expiry. Read by id by the owner and the coordinator duty, as
+    // requireSettingsAccess admits them; saving stays a command.
+    match /programAssistantSettingViews/{programId} {
+      allow get: if programFullReach(programId);
+      allow list, write: if false;
+    }
+
+    // The programme guest directory (#2306): one row per guest (its fields
+    // and function rows), household and group, listed by a query naming the
+    // programme and the kind. The trigger resolves names, phones and emails
+    // from the workspace field assertions, which stay server-only, and a
+    // guest whose name is not disclosable has no row.
+    match /programGuestDirectoryViews/{viewId} {
+      allow get, list: if programGuestDirectory(resource.data.programId);
       allow write: if false;
     }
 
@@ -2851,6 +3031,20 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // A guest's one Catch booking (named eventParticipations until Nov 2026).
+    // Server callables own every write.
+    match /eventBookings/{bookingId} {
+      allow read: if isAuthed()
+        && (
+          resource.data.uid == request.auth.uid
+          || isOrganizerHostForEvent(resource.data.eventId)
+        );
+      allow write: if false;
+    }
+
+    // TRANSITIONAL legacy mirror of eventBookings for released app builds,
+    // written only by onEventBookingMirroredToLegacy. Same readers as
+    // eventBookings; phase 2 of the rename removes this block.
     match /eventParticipations/{participationId} {
       allow read: if isAuthed()
         && (
@@ -2986,12 +3180,44 @@ service cloud.firestore {
         );
     }
 
+    // An active staff grant for the event, whatever its duties: staff open
+    // the event they work on in the Host app.
+    function hasActiveEventStaffGrant(eventId, organizerId) {
+      let grant = /databases/$(database)/documents/eventStaffGrants/$(
+        eventStaffGrantDocId(eventId, request.auth.uid));
+      return isAuthed()
+        && exists(grant)
+        && get(grant).data.eventId == eventId
+        && get(grant).data.uid == request.auth.uid
+        && get(grant).data.organizerId == organizerId
+        && get(grant).data.status == 'active'
+        && get(grant).data.expiresAt > request.time;
+    }
+
+    // The canonical event holds booking counts by gender and cohort, Cross
+    // Paths pair counts, admin search, demo markers, setup defaults, provider
+    // evidence and the runtime join id, and rules cannot hide single fields
+    // (#1666). So only the organizer's own hosts, owner and active team, and
+    // the event's staff, read it. Everyone else reads publicEvents/{eventId};
+    // the apps fall back to it when this read is denied.
+    function readsCanonicalEvent(organizerId) {
+      return organizerId is string
+        && (isHostSummaryManager(organizerId)
+          || (isAuthed() && !isDeletedUser(request.auth.uid)
+            && hasActiveOrganizerTeamMembership(organizerId)));
+    }
+
     match /events/{eventId} {
-      allow get: if isPublicEventData(resource.data)
+      allow get: if (isPublicEventData(resource.data)
+          && (readsCanonicalEvent(resource.data.get('organizerId', null))
+            || hasActiveEventStaffGrant(eventId,
+              resource.data.get('organizerId', null))))
         || canReadPrivateEvent(eventId, resource.data);
-      // Manager draft inventory uses its authorized callable.
-      // Client filtering and Remote Config cannot enforce draft privacy.
-      allow list: if resource.data.publicationState == 'published';
+      // Manager draft inventory uses its authorized callable. A list must
+      // name one organizer the reader manages, as the Host app's own queries
+      // do, so Firestore can prove it; guest lists use publicEvents.
+      allow list: if resource.data.publicationState == 'published'
+        && readsCanonicalEvent(resource.data.organizerId);
 
       // Event creation is callable-owned so host authority and server-owned
       // booking fields stay in one backend contract.
@@ -3004,6 +3230,20 @@ service cloud.firestore {
       // Event deletion needs backend cleanup/refunds before it can be safely
       // exposed.
       allow delete: if false;
+    }
+
+    // Public event copy (#1666). reconcilePublicEvent writes it from the
+    // events trigger with an allowlist of events/{eventId} fields and the
+    // host's settings applied: no gender, cohort or pair counts, internals or
+    // join id; no price while it is hidden; no checked-in or waitlisted count
+    // while the guest list is hidden. Only a published event has a copy.
+    // Any single copy resolves by id, so a link-only event works for people
+    // with its link; a list returns only listed events, so nobody can
+    // enumerate link-only ones. The copy always carries listing.
+    match /publicEvents/{eventId} {
+      allow get: if true;
+      allow list: if resource.data.listing == 'listed';
+      allow write: if false;
     }
 
     match /externalEvents/{eventId} {
@@ -3699,8 +3939,31 @@ service cloud.firestore {
     }
 
     // ── Reviews ───────────────────────────────────────────────────────────────
+    // A published review is readable by any signed-in user. A pending or
+    // rejected one (or one with no moderationStatus) is readable only by its
+    // author, so list queries must filter on moderationStatus == 'published'
+    // or on reviewerUserId == the caller. Catch staff read reviews through
+    // role-gated Admin SDK callables, never through these rules. An author may
+    // also get their own deterministic event review id ({eventId}~{uid})
+    // before it exists, so the app can watch "my review for this event".
+    function isReadableReview(data) {
+      return data.moderationStatus == 'published'
+        || data.reviewerUserId == request.auth.uid;
+    }
+
+    function isOwnEventReviewId(reviewId) {
+      let parts = reviewId.split('~');
+      return parts.size() == 2
+        && parts[0].size() > 0
+        && parts[1] == request.auth.uid;
+    }
+
     match /reviews/{reviewId} {
-      allow read: if isAuthed();
+      allow get: if isAuthed()
+        && (resource == null
+          ? isOwnEventReviewId(reviewId)
+          : isReadableReview(resource.data));
+      allow list: if isAuthed() && isReadableReview(resource.data);
       // Review create/update/delete is callable-owned so attendance checks,
       // public reviewer naming, and aggregate recomputation stay server-side.
       allow write: if false;
@@ -4018,18 +4281,6 @@ service cloud.firestore {
     match /eventSeatLedgers/{privateDocument=**} {
       allow read, write: if false;
     }
-    match /eventSeatMigrationFences/{privateDocument=**} {
-      allow read, write: if false;
-    }
-    match /eventSeatMigrationPlans/{privateDocument=**} {
-      allow read, write: if false;
-    }
-    match /eventSeatMigrationRuns/{privateDocument=**} {
-      allow read, write: if false;
-    }
-    match /eventSeatMigrationStages/{privateDocument=**} {
-      allow read, write: if false;
-    }
     match /eventSeatRequestReceipts/{privateDocument=**} {
       allow read, write: if false;
     }
@@ -4043,12 +4294,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /formCommunicationConsentIntents/{privateDocument=**} {
-      allow read, write: if false;
-    }
-    match /hostAcquisitionConsents/{privateDocument=**} {
-      allow read, write: if false;
-    }
-    match /hostAcquisitionDeliveries/{privateDocument=**} {
       allow read, write: if false;
     }
     match /hostOrganizerActivations/{privateDocument=**} {

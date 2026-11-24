@@ -35,7 +35,7 @@ import {
 import {
   eventParticipationId,
   eventParticipationPatch,
-  eventParticipationsByStatusInTransaction,
+  eventBookingsByStatusInTransaction,
   participantUids,
 } from "../shared/relationshipDocuments";
 import {
@@ -54,6 +54,7 @@ import {
 } from "./eventPayloadNormalization";
 import {signUpUserForEvent} from "./signUpUserForEvent";
 import {requireEventTimeRange} from "./configuredEvent";
+import {updateEventBookingCounters} from "../domain/events/eventDocumentWrites";
 
 interface DecideEventJoinRequestDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -104,7 +105,7 @@ export async function decideEventJoinRequestHandler(
 
   const eventRef = db.collection("events").doc(eventId);
   const participationRef = db
-    .collection("eventParticipations")
+    .collection("eventBookings")
     .doc(eventParticipationId(eventId, userId));
   const requesterRef = db.collection("users").doc(userId);
   const pushNotifications: FcmParams[] = [];
@@ -199,7 +200,7 @@ export async function decideEventJoinRequestHandler(
 
     if (decision === "decline") {
       const currentWaitlistedCount = event.waitlistedCount ?? 1;
-      tx.update(eventRef, {
+      updateEventBookingCounters(tx, eventRef, {
         waitlistedCount: Math.max(0, currentWaitlistedCount - 1),
         waitlistedCohortCounts: decrementCount(
           event.waitlistedCohortCounts ?? {},
@@ -244,7 +245,7 @@ export async function decideEventJoinRequestHandler(
     }
 
     const activeParticipations =
-      await eventParticipationsByStatusInTransaction(tx, db, eventId, [
+      await eventBookingsByStatusInTransaction(tx, db, eventId, [
         "signedUp",
         "attended",
       ]);

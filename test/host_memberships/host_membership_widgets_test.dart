@@ -1,16 +1,16 @@
 import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_event_facts.dart';
 import 'package:catch_dating_app/host_memberships/presentation/host_membership_badge.dart';
-import 'package:catch_dating_app/host_memberships/presentation/host_membership_plans_section.dart';
-import 'package:catch_dating_app/host_memberships/presentation/host_membership_upsell_banner.dart';
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_screen.dart';
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_state.dart';
+import 'package:catch_dating_app/pages/memberships/host_membership_plans_section.dart';
+import 'package:catch_dating_app/pages/memberships/host_membership_upsell_banner.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test_pump_helpers.dart';
 import 'host_membership_fixtures.dart';
 
 Widget _wrap(Widget child) => ProviderScope(

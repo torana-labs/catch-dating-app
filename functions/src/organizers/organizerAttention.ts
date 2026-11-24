@@ -11,7 +11,7 @@ import type {EventAssistanceCaseDocument} from
   "../shared/generated/eventAssistanceCaseDocument";
 import type {
   EventDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   HostPaymentAccountDocument,
   OrganizerApplicationDocument,
   OrganizerAttentionItemDocument,
@@ -126,11 +126,11 @@ export async function loadOrganizerAttentionSources(
       .orderBy("endTime")
       .orderBy(admin.firestore.FieldPath.documentId())
       .limit(maxAttentionSourceRows + 1)),
-    reader.getQuery(db.collection("eventParticipations")
+    reader.getQuery(db.collection("eventBookings")
       .where("organizerId", "==", organizerId)
       .where("hostApprovalStatus", "==", "pending")
       .limit(maxAttentionSourceRows + 1)),
-    reader.getQuery(db.collection("eventParticipations")
+    reader.getQuery(db.collection("eventBookings")
       .where("organizerId", "==", organizerId)
       .where("hostApprovalStatus", "==", "pending")
       .limit(maxAttentionSourceRows + 1)),
@@ -197,8 +197,8 @@ export async function loadOrganizerAttentionSources(
 
   assertBoundedSnapshot(canonicalEvents, "events");
   assertBoundedSnapshot(compatibilityEvents, "events");
-  assertBoundedSnapshot(canonicalJoinRequests, "eventParticipations");
-  assertBoundedSnapshot(compatibilityJoinRequests, "eventParticipations");
+  assertBoundedSnapshot(canonicalJoinRequests, "eventBookings");
+  assertBoundedSnapshot(compatibilityJoinRequests, "eventBookings");
   assertBoundedSnapshot(openPracticalCases, "eventAssistanceCases");
   assertBoundedSnapshot(deliveryReviewWorkItems, "operationWorkItems");
   assertBoundedSnapshot(applications, "organizerApplications");
@@ -216,7 +216,7 @@ export async function loadOrganizerAttentionSources(
   assertBoundedAttentionRows([...eventRows.values()], "events");
   const participationRows = new Map<
     string,
-    AttentionSourceRow<EventParticipationDocument>
+    AttentionSourceRow<EventBookingDocument>
   >();
   for (const snapshot of [
     canonicalJoinRequests,
@@ -225,13 +225,13 @@ export async function loadOrganizerAttentionSources(
     for (const doc of snapshot.docs) {
       participationRows.set(
         doc.id,
-        sourceRow<EventParticipationDocument>(doc, "eventParticipations")
+        sourceRow<EventBookingDocument>(doc, "eventBookings")
       );
     }
   }
   assertBoundedAttentionRows(
     [...participationRows.values()],
-    "eventParticipations"
+    "eventBookings"
   );
 
   const currentAutomationRules = automationRules.docs.map((doc) =>
@@ -261,7 +261,7 @@ export async function loadOrganizerAttentionSources(
       sourceRow<EventAssistanceCaseDocument>(doc, "eventAssistanceCases")),
     deliveryReviewWorkItems: deliveryReviewWorkItems.docs.map((doc) =>
       deliveryReviewSourceRow(doc, now.toMillis())),
-    eventParticipations: [...participationRows.values()],
+    eventBookings: [...participationRows.values()],
     applications: applications.docs.map((doc) =>
       sourceRow<OrganizerApplicationDocument>(doc, "organizerApplications")),
     providerSyncRuns: providerRuns.docs.map((doc) =>

@@ -272,22 +272,77 @@ fails; unaffected lanes are explicit skips, so path scoping never leaves a
 required check permanently pending. Required CI has no mandatory human backend
 source-review job. The merge queue reruns it on the exact combined source of
 each group before `main` moves, so a pull request result never needs to stay
-current with `main`. A `main` push whose exact commit already passed a
-successful merge-queue run re-runs no validation lane, source preflight
-included: it only plans and records the reused run ID in its summary.
+current with `main`. A `main` push whose exact commit the merge queue proved re-runs no
+validation lane, source preflight included: it only plans and records the
+reused run ID in its summary. The proof is the queue run's `Required CI` job
+(`tool/ci/main_push_queue_proof.mjs`): a `merge_group` run of `ci.yml` for
+exactly that commit, with exactly one `Required CI` job, succeeded, in the
+run's current attempt. The run's own conclusion is not required, because the
+queue merges on `Required CI` while reporting lanes may still be running.
 Marketing Website reads the queue run's Marketing and capture evidence,
 validating its own source when the queue run selected neither. App builds then
 run in nightly validation, and signed store builds come from
-[Mobile releases](#mobile-releases). Without a successful queue run of the same
-commit, `main` runs every selected lane.
+[Mobile releases](#mobile-releases). Without that proof for the same commit, `main`
+runs every selected lane.
+
+Proof reuse runs in shadow (Phase 1, 22 Nov 2026); it skips nothing and gates
+nothing, and the owner decides on reuse after a full week of shadow runs with
+no miss. On a ready pull request and in the merge queue, the `Compute
+proof-reuse keys` job (`tool/ci/proof_reuse_shadow.mjs`) hashes each lane's
+inputs at the head commit with `tool/nx/lane_key.mjs`: every file the lane's
+Nx tasks and ci.yml jobs read, its workflow and toolchain files, and the
+hasher's own version. A pull request records the keys once, as a `proof-keys`
+notice on that job. In a queue group the job then decides, per lane, whether
+the queued pull request's pass could have been reused. The pull request must
+come from this repository and change no workflow, composite action,
+`tool/ci/**` or `tool/nx/**` file. The lane must have passed in the pull
+request's latest `ci.yml` run for its current head, read from GitHub's job
+records, never from the notice or an artifact. Its key, recomputed by the
+group's own hasher at the pull request head, must equal both the recorded key
+and the key at the group head. A record made by another hasher version (a
+merge changed `lane_key.mjs`, `workflow_callers.mjs` or the other hasher
+sources since the pull request ran) cannot cross-check the key, but both keys
+are still recomputed by the group's hasher and the result still comes from
+job records, so a match is recorded separately as `would_reuse_unchecked`
+and compared the same way (RE, 23 Nov 2026); a record of the same version
+with a different key stays `hasher_mismatch`. Only `contracts` and
+`operations` can qualify:
+the other lanes narrow their tests on pull requests, run different steps there,
+or share a job, so a pull request pass does not prove their queue result; their
+keys are still compared and reported. The `Compare proof-reuse verdicts with
+the lanes` job joins each verdict with the lane's real queue result, writes the
+`proof-reuse-shadow-<run>-<attempt>` artifact and a summary table, and warns on
+a miss: a lane that would have been reused, checked or unchecked, but failed. Both jobs are
+`continue-on-error` and outside `Required CI`; any unknown means not eligible.
+
+`Proof reuse daily` (`.github/workflows/proof-reuse-daily.yml`,
+`tool/ci/proof_reuse_report.mjs`) runs once a day (see "Once-a-day reports"
+under the Test read map) and rolls up the previous
+UTC day's queue runs, bucketed by run creation time, into the
+`proof-reuse-daily-<date>` artifact (`proof-reuse-daily-<date>.json`, schema
+`proof-reuse-daily/1`, kept 90 days) and a summary table. `runs` counts the
+day's queue runs; `runsWithoutReport` lists those with no shadow report
+(cancelled or replaced groups among them); `perRun` holds each reported run's
+lane verdicts. Per lane, `savedSeconds` sums the runtime of the lane's jobs in
+runs where it would have been reused and passed, and `potentialSavedSeconds`
+does the same for narrowed lanes whose keys matched and that passed on the
+pull request, the evidence for running those lanes queue-equivalent on pull
+requests. The `unchecked*` fields (`wouldReuseUnchecked`, `uncheckedHits`,
+`uncheckedMisses`, `uncheckedSavedSeconds`) count `would_reuse_unchecked`
+verdicts apart from the checked ones, and each `misses` entry says whether it
+was `unchecked`. Times are runner time (summed job runtimes), not wall-clock.
+Each miss, checked or unchecked, is posted once to the open `Proof reuse shadow miss` issue, opened if
+none is open; close it once the miss is understood. To rebuild a day, run the
+workflow from the Actions tab with its `date` input (`YYYY-MM-DD`). The report
+is read-only on Actions and writes only that issue.
 
 `.github/workflows/ci.yml` is the orchestration owner. Its planner reads
 `tool/harness/component_graph.json`, fails closed for an unmapped or ambiguous
 path, and invokes reusable validation workflows only for affected targets.
 Pull requests, merge queues, main pushes, and nightly full validation use the
 explicit `pr`, `merge_group`, `main`, and `nightly` graph modes respectively.
-For `pr` and `merge_group`, `tool/nx/select_lanes.mjs` runs the lanes
-`nx affected` selects, and only those (design A). The planner's selection is a
+For `pr`, `merge_group` and `main`, `tool/nx/select_lanes.mjs` runs the lanes
+`nx affected` selects, and only those (design A; main from 22 Nov 2026). The planner's selection is a
 shadow. The plan summary lists each lane the planner would also run, with the
 `shadow_plan.mjs` rule that explains it, or UNEXPLAINED. The count of
 unexplained lanes is the `planner_unexplained` output and is also stored in the
@@ -302,8 +357,27 @@ apps. Every lane job reads only the change range, the final lanes and outputs
 pinned by `select_lanes.test.mjs`. `tool/nx/lane_coverage.test.mjs` replaces
 the planner's refusal of an unowned path. Every tracked file must be an input
 of a lane task, a selector, or listed in `noLaneReads` with why no lane reads
-it. Main, nightly, full and commit-window runs keep the planner's selection,
-and the main plan job never installs Nx. Only tasks the change affects
+it. A main push plans the commit window since the last main run that ran,
+and Nx reads that range as it reads a pull request's. A main push the merge
+queue already validated runs no lane: the plan job looks for that queue run
+before anything else, skips Install Nx when it finds it, and passes
+`--queue-verified` so `select_lanes.mjs` keeps the planner's plan without
+calling Nx. That path stays on the sparse planner checkout and costs nothing
+extra (about 24 s); a main push without it adds Install Nx (about 30 s) and
+the Nx query (about 10 s) to a run that executes lanes for about 20 minutes.
+On main the native app builds (`flutter_build_android`, `_ios`, `_web`) run
+only for a native build input (owner decision, 22 Nov 2026): native project
+folders, pubspec files and lockfiles, Gradle, CocoaPods and Xcode files, and
+native plugin code (`nativeBuildInputGlobs` in `shadow_plan.mjs`). A Dart-only
+app change relies on the merge queue's web smoke and the nightly full builds,
+so main runs neither; a build lane the CI caller graph selects (its workflow, a
+script it runs, a selector) still runs (`mainBuildLanes`). Main's builds upload
+nothing: release builds come from the mobile beta and production workflows.
+A `workflow_dispatch` with `base_sha` plans exactly like a main push. Nightly
+and full runs keep the planner's selection.
+Retry a `ci.yml` run with **Re-run all jobs**: every lane job requires the
+plan of its own attempt (`producer_attempt`), so **Re-run failed jobs** re-executes
+nothing and Required CI exits 64. Only tasks the change affects
 select a lane (`--excludeTaskDependencies`): the tasks they depend on do not,
 so a website-only change does not run Admin because the website builds
 `@catch/web-ui`. Nx inputs name what each task reads. Markdown is not an
@@ -350,7 +424,8 @@ or reads (`load-toolchain`, `setup-flutter`, `generate-contracts`) selects
 every lane, because every lane needs those jobs. Selector files select every
 lane with no narrowing: `ci.yml` and its `Required CI` job, `tool/harness.mjs`
 and `tool/harness/**`, `component_graph.json`, the `tool/nx/**` selection code,
-`tool/ci/main_push_base.mjs`, `tool/ci/required_ci_floor.mjs`, `nx.json`,
+`tool/ci/main_push_base.mjs`, `tool/ci/main_push_queue_proof.mjs`,
+`tool/ci/required_ci_floor.mjs`, `nx.json`,
 `tool/ci/toolchain.env` and every file the planner entry points import or
 load; tests in those directories are not selectors. Outside CI
 configuration, a tool script or module that a lane job executes selects that
@@ -360,7 +435,7 @@ every lane. Data files a script names, the app sources it names, and tool
 tests and fixtures keep their Nx inputs. This means a broken
 `tool/run.mjs` fails in the queue, in every lane that runs it, before main
 reuses the queue's result (#1831).
-`tool/tools_manifest.json` selects by semantic diff (`tool/nx/manifest_diff.mjs`)
+The tools manifest (`tool/manifest/`) selects by semantic diff (`tool/nx/manifest_diff.mjs`)
 in `pr` and `merge_group`, in both the planner and Nx: an edit runs Tools and
 policy, which run the changed checks and validate the manifest, plus every lane
 whose `ci.yml` jobs run a changed or removed entry by name (through reusable
@@ -443,26 +518,33 @@ A newer merge never cancels a main push run that has started (owner decision,
 12 Nov 2026). Main runs share one concurrency group without
 `cancel-in-progress`, so GitHub keeps the running run and one pending run, and
 a newer merge replaces only the pending one. A replaced run never starts, so
-the run that replaced it plans from the commit of the newest earlier main push
-run that ran, not from its own `before` commit
-(`tool/ci/main_push_base.mjs`). Every commit on main is then in some finished
-run's committed window. When that earlier run cannot be found, or its commit
-is not an ancestor of the head, the run validates everything in the nightly
-full mode. Pull requests and nightly runs retain their existing validation
+each run plans from the nearest earlier main push run that ran and whose commit
+is an ancestor of the head, nearest by commit history rather than by run order
+(`tool/ci/main_push_base.mjs`). GitHub can create a queue batch's push runs out
+of order, so a run for a later commit may exist before this one; such a run's
+window can start after this commit, so it is never trusted to cover it. Every
+commit on main is then in some finished run's committed window. When no earlier
+run that ran is an ancestor of the head, the run validates everything in the
+nightly full mode. Pull requests and nightly runs retain their existing validation
 flow.
 
-Root Flutter unit/widget tests are selected by
+Root and app-package Flutter unit/widget tests are selected by
 `tool/harness/lib/flutter_test_selection.dart` from the exact base and head Git
 objects. Dart's parser follows imports, exports, conditional imports and parts
 in both snapshots, so deleted or moved dependencies remain covered. Every
 ancestor `flutter_test_config.dart` counts as an import of the tests beneath it.
-A test that reaches a `dart:io` file under `test/` or `tool/` runs only when a
+A test that reaches a file-reading file under `test/`, `tool/`, an app
+package's `test/` or `packages/catch_test_support/lib/` runs only when a
 changed path is one that file can read, if those reads are bounded
-(`tool/harness/lib/flutter_test_reads.dart`). Reads are bounded when every
-path the file gives `File`, `Directory`, `Link` or `FileSystemEntity` is a
-string literal, a constant of the same file, or an interpolation or
-conditional of those, or when the file names its roots in a
-`// test-selection-reads:` comment (TESTS.md, "Filesystem reads"). A changed
+(`tool/harness/lib/flutter_test_reads.dart`). A file reads files when it
+imports `dart:io` or the `repoFile()` library of `packages/catch_test_support`.
+Reads are bounded when every path the file gives `File`, `Directory`, `Link`,
+`FileSystemEntity`, `repoFile` or `repoDirectory` is a string literal, a
+constant of the same file, or an interpolation or conditional of those, or
+when the file names its roots in a `// test-selection-reads:` comment
+(TESTS.md, "Filesystem reads"). `repoFile` paths are repository paths;
+other paths resolve against the test's package directory, so a shared
+test-support helper with one is a probe. A changed
 path such a test can read counts as covered, so a test fixture with a known
 reader no longer keeps the full suite. Any other `dart:io` file is a filesystem
 probe and its tests always run, as does a declared file that uses `Process`,
@@ -471,10 +553,17 @@ path outside its roots, or names a root that is not in the tree. Declared roots
 are trusted for computed paths, so the nightly full run is the backstop for a
 wrong declaration. Dart files anywhere in the repository are covered by the
 import graph.
-Paths outside the root package (backend, web, design, docs, tooling, CI,
-golden and integration suites, other packages' apps, the `packages/catch_ui`
-and `packages/kernel` test suites that the package-tests job runs, firebase
-configuration and Markdown outside test or asset directories) are probe-only.
+`dart run tool/harness/lib/flutter_test_selection.dart --probes-only true
+--head <sha> --output <file>` lists that always-run set at one commit, each
+test with `why`: `probe` (its imports reach a filesystem probe) or
+`reads_elsewhere` (a shared reader's relative reads were bounded for another
+package's directory). It selects nothing and writes no plan or shards; the
+nightly read-map shadow compares this set with what the tests actually read.
+Paths outside the packages the shards test (backend, web, design, docs,
+tooling, CI, golden and integration suites, the app packages' native folders,
+`integration_test/` and goldens, the `packages/catch_ui` and `packages/kernel`
+test suites that the package-tests job runs, firebase configuration and
+Markdown outside test or asset directories) are probe-only.
 A root test can only read them from disk, so the probes cover them without
 broadening the selection; a root test that imports one is still selected
 through the import graph.
@@ -504,11 +593,27 @@ binding any lane inputs or artifacts. Nightly and explicit full runs
 also execute every test. Native, package, golden, integration, analyzer and
 contract checks retain their separate owners.
 
-One job, "Catch UI, Consumer & Host package tests", runs the Kernel, Catch
-UI, Consumer and Host package suites and then the Widgetbook dependency
-resolution, golden inventory and web build, after one shared setup. The job
-keeps that name because `host-website.yml`'s queue validation looks it up. Each
-suite is its own step with `!cancelled()` and its own setup step's success in
+The selected tests include the app packages' own: every
+`apps/<app>/test/**_test.dart` outside `apps/<app>/test/goldens/`. An app's
+`lib/` and `test/` need import proof like the root package's, while its native
+folders, `integration_test/` and goldens stay probe-only. The plan records the
+package directory of each file. Each shard lists its files in groups, one per
+package, and runs each group's `flutter test` from that directory. Each group
+is its own run and pays a cold compile, so app-package tests fill the shards in
+order and root tests spread over the room left. A dart:io test file in an app
+package bounds its relative reads against that package's directory, and a test
+that reaches a reader bounded for another package always runs. A test config
+counts only up to the test's package directory. Coverage includes
+`catch_host_app` and `catch_consumer_app`.
+`tool/test/flutter_coverage_report.mjs --package-lcov <directory>` rebases each
+group's LCOV to repository paths, so an app's `lib/` stays apart from the
+root's.
+
+One job, "Kernel, Catch UI & Widgetbook package tests", runs the Kernel and
+Catch UI package suites and then the Widgetbook dependency resolution, golden
+inventory and web build, after one shared setup. `host-website.yml`'s queue
+validation looks up "Analyze & test", which passes only when every Flutter job
+did. Each suite is its own step with `!cancelled()` and its own setup step's success in
 its condition, so a failing suite never hides an independent one; any failure
 still fails the job, and a final step lists every suite's outcome in the job
 summary. On a pull request, each package suite and the Widgetbook steps run
@@ -530,6 +635,40 @@ head tree at run time) is classified as web-only, so a change there skips
 every suite unless a closure bundles or imports one of its files. A skipped suite leaves its job green with a
 "not affected: <reason>" summary, so the Required CI names are unchanged.
 Merge queue, main, nightly, manual and full runs execute every suite.
+
+### Semantic checks gate
+
+Whole-repo semantic checks block a merge only after a clean replay (owner
+decision, 22 Nov 2026; evidence in
+[plans/semantic_check_replay_report.md](plans/semantic_check_replay_report.md)).
+
+**Which checks are in the gate.**
+- A check is in the gate when its own manifest file, `tool/manifest/tools/<id>.json`, carries `"queueGate": "always"`. There is no shared list.
+- `"candidate"` marks a check still gathering history: it runs and reports, and never blocks.
+- Three checks joined the gate with a short but clean replay (21 to 27 commits, no failures) at the architecture sign-off (#2445): `audit:functions-contexts`, `contracts:client-write-contracts` and `contracts:bigquery-export-paths`. They also block in the functions and contracts lanes, which run them only when Nx selects the lane; the gate blocks every merge-queue entry, so a change to a file only the check reads (the context map, an export env file) cannot skip them.
+- `contracts:account-deletion-erasure` joined the gate with sign-off condition 3 (#2444): every registered collection whose schema holds a uid needs an entry in `functions/src/safety/accountDeletionErasure.json`. It also blocks in the contracts lane.
+- `node tool/ci/semantic_gates.mjs list --candidates` prints both.
+- `validateQueueGates` (`tool/lib/semantic_gates.mjs`, run by `meta:tool-manifest`) admits the field only on an active whole-repo check: local, non-generator, a repository script, no Flutter or browser setup.
+- `tool/lib/semantic_gates.test.mjs` pins the approved list. A gated check leaving the manifest, losing its field, or a new gate fails that test until the list changes on purpose.
+
+**How the runner works.**
+- `node tool/ci/semantic_gates.mjs run` runs each gate's manifest command, serially and all of them, even after a failure. It writes a step summary and, with `--timings <file>`, per-check timings.
+- It needs what the tools lane prepares: root and Functions dependencies, the schema contracts, and the Admin build modules.
+- A gate that also matches affected-tools still runs in the tools lane. That duplication goes in a later phase.
+
+**The budget.**
+- Every gate must stay under 10 s at p95.
+- `node tool/ci/semantic_gates.mjs budget --timings-dir <dir>` reads the newest nightly timings and lists any gate over budget, with the fix: speed it up, or drop its `queueGate` so affected-tools selects it only when its `impactPaths` change.
+- It is report-only: a slow check is not a broken `main`, so it posts a "Semantic gate over budget" issue instead of failing the nightly.
+- The nightly budget report is the `semantic-budget` job of `Main CI alert`: it keeps that one issue in step (opened, its body updated, closed once every gate is back within budget).
+
+**Where it runs and gates.** The `Semantic checks` job in `ci.yml` runs the gates (with `--candidates`) on:
+- every `merge_group` run. Required CI needs it, so a failed gate fails Required CI. Its "Require every selected lane" step also demands `success` in a merge-queue run, the nightly and a `main` push with no queue proof, so a skipped job cannot pass there either;
+- every non-draft pull request. It continues on error there, so an author sees a red job before queueing, but Required CI is not blocked;
+- the nightly, which provides the budget timings;
+- a `main` push with no merge-queue proof (a bypass or a stale proof), where it feeds Main CI alert like any other lane.
+
+The job takes no plan selection, and uploads `semantic-timings-<run>-<attempt>` for the budget report.
 
 ### Selected Check Contracts
 
@@ -566,7 +705,7 @@ Preserve these contracts when narrowing work:
 | App journeys and rendering; app platform | App source changes select visual/integration obligations | Independent Ubuntu headless journeys; macOS goldens, repeated Widgetbook rendering and native smoke remain separate required jobs | Fix the earliest behavior/render assertion; native dependency retry never retries a product assertion |
 | Generated schema freshness; backend platform | Generated schema bindings and backend package inputs select Contracts, including output-only edits | Contracts installs Functions generator dependencies and executes checked-source freshness commands | Run the named generator, inspect the diff and rerun freshness; a plan's codegen ID alone proves nothing |
 | Component/route/design source integrity; design system | Existing semantic checks and seeded dedupe probes remain blocking | Design parity retains component, route, screen, feature and preview contracts; focused similarity tests exercise reporting code | Repair the named source invariant; metadata checks do not establish live Figma or pixel parity |
-| Capture provenance and website image copies; marketing website | Website, shared React, capture-tool and capture-image inputs select capture freshness and full React validation. App inputs select neither: Marketing Website produces captures for that commit before it publishes | Pinned macOS canonical producer renders or validates exact-source captures; Linux consumers verify immutable artifact identity and import before builds; selected lane must succeed in finalization and Required CI | Repair the source or producer failure; never replace missing artifact proof with stale tracked images or restamped PNGs |
+| Capture provenance and website image copies; marketing website | Website, shared React, capture-tool and capture-image inputs select capture freshness and full React validation. App inputs select neither: Marketing Website produces captures for that commit before it publishes | Pinned macOS canonical producer renders or validates exact-source captures; Linux consumers verify immutable artifact identity and import before builds; selected lane must succeed in finalization and Required CI. The merge queue skips the macOS render; there the marketing lane builds with the tracked images only when the run's own jobs prove the render was deferred, and the main push and nightly render | Repair the source or producer failure; never replace missing artifact proof with stale tracked images or restamped PNGs outside that proven queue deferral |
 | Authored design decisions; design system | Todo decision edits select scoped index validation; counts/gaps derive from source registries | `check_comprehensive_todo_summary.mjs --summary` prints current counts without editing Markdown; P1 decision coverage remains checked | Add or repair the authored decision row; do not copy regenerated counts into prose |
 
 Whole-product widget similarity is advisory and has no product acceptance
@@ -669,7 +808,7 @@ from the exact committed input window; full runs and control changes retain all
 handoff checks. Ordinary unrelated app logic no longer regenerates the context
 pack. Failure or cancellation of the owning Tools lane still fails Required CI.
 
-Design parity source checks are explicit commands in `tool/tools_manifest.json`,
+Design parity source checks are explicit commands in the tools manifest (`tool/manifest/tools/`),
 shared by the local umbrella and the tool runner. Identical scanner commands run
 once within the Marketing/design tool bucket. Whole-product similarity and
 advisory migration reports remain explicit `--reports` output. These prove
@@ -723,9 +862,9 @@ The current workflows are:
 |---|---|
 | `.github/workflows/ci.yml` | Always-running impact planner, reusable-workflow fanout, scheduled full matrix, and stable required aggregate. |
 | `.github/workflows/flutter-ci.yml` | Reusable design parity, exhaustive root-and-nested-package analysis, fail-closed unit/widget test selection, and UI lint smoke checks. |
-| `.github/workflows/functions-ci.yml` | Functions lint/test plus Firestore contract check on Node 24. On a pull request, `npm test` runs only the node --test files the change can reach (`tool/impact/functions_unit_test_selection.mjs`, through `CATCH_UNIT_TEST_SELECTION`); a change outside `functions/` and `contracts/` reaches a test only when its import tree can read that path (`tool/lib/functions_test_reads.mjs`, `// test-selection-reads:` declarations), and a tree with an unbounded read keeps the broad top-level-folder rule. The merge queue, main and nightly run every discovered test; the nightly also keeps a JUnit report for the test selection miss report. |
+| `.github/workflows/functions-ci.yml` | Functions lint/test plus the Firestore contract check and the Functions context check (`audit:functions-contexts`) on Node 24. On a pull request, `npm test` runs only the node --test files the change can reach (`tool/impact/functions_unit_test_selection.mjs`, through `CATCH_UNIT_TEST_SELECTION`); a change outside `functions/` and `contracts/` reaches a test only when its import tree can read that path (`tool/lib/functions_test_reads.mjs`, `// test-selection-reads:` declarations), and a tree with an unbounded read keeps the broad top-level-folder rule. The merge queue, main and nightly run every discovered test; the nightly also keeps a JUnit report for the test selection miss report. |
 | `.github/workflows/firestore-rules-ci.yml` | One `Plan emulator shards` job runs the Firestore and Storage contract checks and chooses the strict emulator tests; then zero, one or three emulator shards run them. A pull request no strict test can reach starts no emulator, up to 15 selected tests run in one shard, and merge-queue, main and nightly runs always use three. npm, the Firebase CLI and the emulator jars are cached. |
-| `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
+| `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. It also runs the client-write contract, BigQuery export path, composite query index, read-limit and account deletion erasure checks (`contracts:client-write-contracts`, `contracts:bigquery-export-paths`, `contracts:firestore-query-indexes`, `contracts:firestore-read-limits`, `contracts:account-deletion-erasure`), which block Required CI with the lane. |
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
 | `.github/workflows/app-build-matrix.yml` | Reusable role/platform-selective dev web, Android debug APK, and parallel per-role iOS simulator build gates. Cheap app-structure ratchets run before any expensive compile. |
 | `.github/workflows/backend-deploy.yml` | The one backend path: dev on every backend-relevant merge, prod automatically after dev succeeds. See Deploy Backend. |
@@ -736,7 +875,7 @@ The current workflows are:
 | `.github/workflows/marketing-website.yml` | Validates marketing source and Storybook accessibility, calls the exact build/promote adapters on matching `main` pushes, then requires production 404 and launch-route postconditions. |
 | `.github/workflows/admin-website.yml` | Reuses the merge queue's Admin validation of the exact commit, or validates Admin source itself when the queue did not run it, then calls the exact build/promote adapters, which check live callable dependencies, for the production `admin` target. |
 | `.github/workflows/host-website.yml` | Validates the Host target, then reuses the merge queue's Flutter validation of the exact commit, or runs standalone roster tests and Host-owned Flutter analysis itself when the queue did not run it, then builds and promotes the independent production `host` target. |
-| `.github/workflows/release-readiness.yml` | Manual prod release gate. |
+| `.github/workflows/release-readiness.yml` | Manual prod release gate. Fails first while an open issue carries `release-block:mobile` (see Main CI alert). |
 | `.github/workflows/mobile-beta.yml` | Nightly (when app sources changed) and on-demand fastlane test builds: builds, verifies and uploads each app to TestFlight internal testers or the Play internal track in one job, with build provenance. See Mobile releases. |
 | `.github/workflows/mobile-production.yml` | Reviewer-gated fastlane promotion of a build testers already have: App Store review submission or a Play staged rollout, with no rebuild. See Mobile releases. |
 | `.github/workflows/store-listing.yml` | Manual fastlane download of the App Store and Play store listings into a reviewable artifact, or reviewer-gated upload of the committed listing in `fastlane/metadata/<role>/`. See Store listings. |
@@ -2369,6 +2508,106 @@ none of the last 30 nightly runs was green. Opening the issue notifies repositor
 runs change nothing. Fix forward on main; never close the issue by hand
 while main is still red.
 
+After each main push run, the alert also reports a commit main CI has not
+validated and will not until the next push (22 Nov 2026). GitHub can create a
+queue batch's push runs out of order, so an earlier commit's run can replace a
+later commit's pending run; that later commit's changes are then in no run's
+window. A main push run that was cancelled and whose commit no other main push
+run (finished other than cancelled, running or queued, created no more than 10
+minutes before it) has as an ancestor is reported once on the "Main CI is red"
+issue, with a hidden marker. A commit is reported at most twice across the
+open issue and those closed in the last 3 days: once, and once more if a green
+run of an earlier commit closed the issue before the commit was covered. When
+the issue is not open, it is opened owing
+`Required CI`, so the next green main push, whose run plans from the nearest
+earlier run that ran and so covers the commit, closes it. Runs older than 26
+hours are left to the nightly, and a commit whose ancestry the compare API
+cannot answer is logged, not reported. The report triggers nothing.
+
+The macOS goldens and the capture render no longer run in the merge queue, so
+main pushes and the nightly are where they fail. The alert workflow's
+`golden-policy` job (`tool/ci/golden_policy.mjs`, owner decision, 22 Nov 2026)
+keeps two more issues in step with those two jobs, beside "Main CI is red":
+
+- **"Golden or capture failure"**, labelled `release-block:mobile`, opens when
+  `visual-integration / macOS goldens & Widgetbook determinism` or
+  `capture-freshness / Render and validate canonical iPhone captures` fails on a
+  main push or the nightly: a render error, an assertion, stale generated code
+  or a failed capture render. Release Readiness fails while it is open, for
+  every app role (`tool/ci/release_block.mjs`, its first check, which also fails
+  when the issue list cannot be read). A baseline refresh is the wrong fix for a
+  failure, so nothing is dispatched. It closes itself on the next main run that
+  passes every job it still owes; a capture is also settled by a reuse of a
+  validated render of the same inputs. A skipped job settles nothing.
+- **"Golden baselines drifted"**, unlabelled and report only, opens when the
+  goldens job passes but some goldens differ from their baselines. Each suite
+  writes its own report (app, `catch_ui` package, Widgetbook), and the job
+  uploads them as the `golden-drift-<run>-<attempt>` artifact. Opening the
+  issue, and a suite that newly drifts, dispatches that suite's baseline
+  workflow (`package-golden-baselines.yml` or `widgetbook-golden-baselines.yml`)
+  from main with `ref` set to the drifted commit and `name_pattern` `.`; the
+  issue links the run. Those workflows only upload the changed baselines:
+  review the artifact and commit it. The app goldens (`test/goldens`) have no
+  baseline workflow; refresh them on macOS with `flutter test --concurrency=1
+  --update-goldens test/goldens`. The issue closes on the next main run whose
+  goldens pass with no drift. Drift blocks neither merges nor releases.
+
+Nothing is reverted automatically. The job needs `actions: write` only to
+dispatch those two dispatch-only workflows; the alert and selection-miss jobs
+keep their permissions.
+
+### Scheduled run watchdog
+
+GitHub drops or delays scheduled runs under load: the :30 Deploy backend
+schedule started 5-7 hours late on 17 and 18 Nov 2026, and a nightly that never
+ran looked the same as a quiet one. `Scheduled run watchdog`
+(`.github/workflows/cron-watchdog.yml`, driven by `tool/ci/cron_watchdog.mjs`)
+runs hourly at :47 (owner decision, 22 Nov 2026: "dev runs automatically, prod
+asks first"), and also after each push or nightly CI run of main itself
+completes (`workflow_run`; never a pull-request run). The
+hourly schedule depends on the scheduler it watches: no slot from 01:47 to 04:47
+UTC started on 23 Nov 2026, while main pushes kept running. For each watched
+schedule it takes the latest daily run whose grace period has passed (3 hours
+by default) and checks that a scheduled or dispatched run started after its
+cron time. A run from before the workflow reached main is not owed: if no
+commit on main touched the workflow file by that cron time, the check reads
+`not_scheduled_yet` and nothing is reported.
+
+| Workflow | Cron (UTC) | If no run started | Reported on |
+|---|---|---|---|
+| Firestore Data Validation (`data-validation.yml`) | 20:13 | Not dispatched: it uses prod, though read-only | "Scheduled run missed" |
+| Deploy backend (`backend-deploy.yml`) | 21:13 | Dispatched once for dev; prod is never dispatched | "Scheduled run missed" |
+| CI nightly (`ci.yml`) | 02:23 | Dispatched once with `full`; the night counts as unknown | "Main CI is red" |
+| Test read map (`test-read-map.yml`) | 03:41 (also after main push CI, once a day from 00:00) | Not dispatched: report-only shadow job | "Scheduled run missed" |
+| Proof reuse daily (`proof-reuse-daily.yml`) | 05:17 (also after main push CI, once a day from 02:00) | Not dispatched: report-only; dispatch it with that day's `date` | "Scheduled run missed" |
+
+Each missed run gets one comment on its issue (opened if none is open) naming
+the run, what was dispatched and, for a prod run, the command to run it, for
+example `gh workflow run backend-deploy.yml --repo <owner>/<repo> --ref main -f
+environment=prod`. Run a prod deploy only after checking the dev deploy
+succeeded. The comment carries a hidden marker. The watchdog reads markers from
+both issues, closed ones included, updated in the last 3 days, and never
+dispatches or reports a run that already has one, so each expected run is
+handled at most once, however many times the watchdog runs. Its concurrency
+group runs one check at a time, so two runs never read the markers before
+either writes.
+
+A nightly that never started counts as **unknown**, never green, and is
+reported on "Main CI is red" because it is about CI health. The recovery run
+the watchdog dispatches is a `workflow_dispatch` run, so the Main CI alert and
+the sprint floor's seven-day count still treat that night as missing. Missed
+deploy and validation runs go to their own issue so they never keep "Main CI is
+red" open. The watchdog has `contents: read`, `actions: write` and
+`issues: write`.
+
+To check it by hand, dispatch the workflow with `dry_run` on (the default): it
+prints what it would dispatch and post, and writes nothing. `assume_missing`
+treats one target's runs as absent and `now` evaluates as of a given time, both
+in dry runs only. `grace_hours` changes the grace period for one run; change the
+default in `tool/ci/cron_watchdog.mjs`. To watch another schedule, add it to
+`TARGETS` there; a test requires each entry's cron to match its workflow's own
+`schedule` and its dispatch inputs to exist.
+
 ### Weekly CI metrics
 
 CI efficiency is measured every week instead of reconstructed by hand (owner
@@ -2415,6 +2654,102 @@ fix the selector or add a `// test-selection-reads:` declaration. The report is 
 a separate workflow after the nightly, so it never changes the nightly's result,
 and it checks only test selection within the Functions lanes, not whether CI
 planned those lanes at all.
+
+### Test read map
+
+`Test read map` (`.github/workflows/test-read-map.yml`, driven by
+`tool/ci/test_read_map.mjs`) runs once a day and on dispatch, in
+shadow (RE decision, 22 Nov 2026). Each root or app-package Flutter test file
+that imports `dart:io` or `repoFile()` (`packages/catch_test_support`) runs in
+its own `flutter test`, from its package directory, under `strace -f` on
+Linux, four shards, read-only. A test that reads only through a helper it
+imports is not traced. The log is reduced to the repository paths each kind
+of process touched and deleted before the next test. The test runtime
+(`flutter_tester`) is where a test's own `dart:io` reads happen; its opened,
+listed (directory), probed (stat) and missing paths are kept in full. The
+compiler's reads (the import closure) are kept separately, and the flutter
+tool's only as a count. Golden-tagged tests are excluded as in the CI shards,
+so a file with only golden tests exits 79 and still has a map. The run
+uploads one sorted JSONL artifact, `test-read-map-<run id>`, kept 30 days,
+and the Scheduled run watchdog reports a night it never started (report-only),
+and summarises files, failures, tests whose runtime reads only fonts, shaders
+and the native assets manifest, and tests that list directories. Nothing
+consumes the map: it selects no tests and blocks nothing. Removing a test
+from the selector's always-run set needs a clean shadow week, the release
+engineer's sign-off and then the owner's.
+
+#### Read-map selection shadow
+
+Each trace shard first lists the selector's always-run set
+(`flutter_test_selection.dart --probes-only`) and traces those tests too, so a
+test that reads only through a helper it imports still gets a map. The combine
+job then runs `tool/ci/read_map_selection_shadow.mjs` (report-only, RE
+decision, 24 Nov 2026). For each always-run test it splits the runtime reads
+into font, asset and engine files (fonts, shaders, `NativeAssetsManifest.json`,
+asset folders), fixture and data files, and directory listings. The engine's
+`icudtl.dat` lookup, which every test makes, is ignored. A test is
+**enumerable** when it lists no directory and probes no missing path: it could
+be selected on exactly what it read. **Assets only** marks the enumerable tests
+that read nothing but font, asset and engine files. With the previous day's
+marker (`test-read-map-day-<day>`) as the base and the run's commit as the
+head, it also says whether reads alone would have selected each test for
+main's changes in between: a changed named or missing path, or a path under a
+listed directory. The step summary has the table, and
+`read-map-selection-shadow.json` and the always-run list ride in the
+`test-read-map-<run id>` artifact. Nothing selects on it.
+
+#### Once-a-day reports
+
+This repository's scheduled runs start 7.5-10.6 hours late, whatever the hour
+(RE, 24 Nov 2026), so the two report-only dailies, Test read map and Proof
+reuse daily, no longer depend on the scheduler. Each also runs on
+`workflow_run` when CI completes on main, for main's own push runs only (same
+repository, branch `main`), and keeps its cron (03:41 and 05:17 UTC) as a
+fallback. A gate job (`tool/ci/daily_once_gate.mjs`, reading the Actions
+artifacts API) lets a wake work only when the day's artifact does not exist
+yet:
+
+- Test read map: `test-read-map-day-<today>`, a marker holding the summary
+  that the combine job uploads (kept 3 days). It still traces current main.
+- Proof reuse daily: `proof-reuse-daily-<yesterday>`, and only from 02:00 UTC
+  (`--not-before-hour 2`), so the day it rolls up has finished its last queue
+  runs.
+
+A dispatch always runs. Every other wake that day finds the artifact and skips,
+and each workflow's concurrency group keeps two wakes from working at once.
+The Scheduled run watchdog counts a run of either workflow from that first
+working hour of the day, so a wake before the cron time is not a miss.
+
+### Semantic check replay
+
+Whole-repo semantic checks may block in the merge queue only after a clean
+replay (owner decision, 22 Nov 2026). `tool/ci/semantic_check_replay.mjs`
+produces that evidence; it is run by hand and changes no gating.
+
+- `inventory` lists the whole-repo checks. A check qualifies when it is an
+  active, local, non-generator tool whose manifest command runs a repository
+  script, not a unit-test file, and needs neither Flutter nor a browser.
+  `EXCLUDED` and `INCLUDED` in the script name the exceptions, each with a
+  reason. For each check it shows where a merge-queue CI run executes it: always
+  in the tools lane when affected-tools selects it, plus any lane workflow
+  step that runs its script. A check gates only when that lane is in
+  `Required CI`'s needs and the step does not continue on error.
+- `run --out <results.jsonl>` replays every check against the newest
+  `--commits` (default 200) first-parent commits of `--ref`, in scratch
+  worktrees under `--workdir` (never the caller's checkout). Each commit runs
+  with its own locked dependencies, its own schema contracts and Admin build
+  modules, and its own manifest command for each check. A failed check runs
+  again up to `--reruns` times, so a commit whose attempts disagree is a flake.
+  The run also records whether the queue's affected-tools selection, as of that
+  commit, would have run the check. Results append as JSON lines, so a stopped
+  run resumes where it left off.
+- `report --results <results.jsonl>` summarises each check: pass rate,
+  flakes, p50/p95 runtime, and failure incidents (consecutive failing commits,
+  with the commit that introduced each one and the one that fixed it). It also
+  counts the merges the queue would have blocked. Its verdict is `clean`,
+  `failing` (a person decides whether each failure was real), `flaky`, `slow`
+  (p95 over two minutes) or `insufficient` (fewer than 50 commits). Moving a
+  check into a gating lane is a separate, owner-approved change.
 
 ### Website release train
 
@@ -2464,7 +2799,12 @@ are checked exactly as before.
 
 The floor ends once main stays green for a week (owner decision, 14 Nov 2026):
 every completed main push and nightly CI run for 7 days concluded success,
-reporting lanes included, with at least 6 nightly runs in that window. The
+reporting lanes included, with at least 6 nightly runs in that window. A run
+whose only failures were the macOS goldens or the capture render, with the
+`Required CI` job that fails because of them, does not restart the week, and a
+"Main CI is red" issue that owes only those jobs does not hold it (owner
+decision, 22 Nov 2026): those failures block mobile releases instead, through
+the "Golden or capture failure" issue. The
 Main CI alert workflow checks this after each green main run
 (`decideFloorExit` in `tool/ci/main_red_alert.mjs`) and opens one issue,
 "Main CI green for 7 days: reporting lanes can block again", listing the
@@ -3109,7 +3449,7 @@ Organizer follower-update delivery uses the same backend-first boundary, but
 its durable retry scheduler is new and must be proved explicitly:
 
 1. Deploy the follower-delivery schemas, TTL policy, index, Firestore rules,
-   `createOrganizerPost`, `listOrganizerCampaigns`, and
+   `createOrganizerPost`, the `hostSendSummaries` triggers, and
    `dispatchPendingOrganizerFollowerUpdates` before releasing the matching Host
    client.
 2. In dev, then production, confirm the callable is reachable and
@@ -3493,9 +3833,15 @@ tool/analytics/deploy_host_analytics_bigquery.sh <env> --refresh-only
 BigQuery keeps deleted rows for its time-travel and fail-safe windows (7 days
 each by default) before they are gone for good.
 
-`participant_metric_counters_raw_changelog` holds per-user totals only. It has
-no peer ids and is not deleted. Firestore `eventSuccessScorecards` for past
-events keep aggregate counts until they are next refreshed.
+Firestore `eventSuccessScorecards` for past events keep aggregate counts until
+they are next refreshed.
+
+The `matches` and `participantMetricCounters` exports were removed because
+nothing reads them (FIX-5, #2447). Once the owner uninstalls `bq-host-matches`
+and drops `catch_analytics.matches_raw_changelog`, every exported chat row is
+gone, deck-era ones included, and the `matches` statements above no longer
+apply. The `Deck-era purge` workflow's `bigquery` mode cleans only the signal
+facts changelog; it accepts and ignores the manifest's `matches` ids.
 
 **Follow-ups.** Today's rules still accept deck-shaped decisions (passes,
 reaction fields, comments) from old app builds. Pick one of these:
@@ -3505,7 +3851,7 @@ reaction fields, comments) from old app builds. Pick one of these:
   `hasValidSwipeCreate` to the stored `swipes.schema.json` fields. So it
   belongs in a change that also removes `pass` and the reaction fields from
   `contracts/firestore/swipes.schema.json`, the `profileDecisions` operation
-  in `tool/contracts/firestore_contract.json`, the Dart `Swipe` model and the
+  in `tool/contracts/firestore_contract/collections/`, the Dart `Swipe` model and the
   rules tests. Ship it after the prod purge, so stored documents still
   validate until then.
 - **Raise `min_build_*`** in Remote Config to the first released build without
@@ -3576,10 +3922,12 @@ never to an artifact.
      `roles/bigquery.dataEditor` on exactly these tables:
      `catch_analytics.organizers_raw_changelog`, `events_raw_changelog`,
      `reviews_raw_changelog`, `saved_events_raw_changelog`,
-     `event_participations_raw_changelog`, `event_invite_links_raw_changelog`,
+     `event_bookings_raw_changelog`, `event_participations_raw_changelog`
+     (rows written before the 22 Nov 2026 export move),
+     `event_invite_links_raw_changelog`,
      `organizer_growth_events`, `host_analytics_events`, and
-     `catch_marketplace_metrics.event_success_scorecards_raw_changelog` and
-     `event_success_feedback_raw_changelog`; plus what the host mart refresh
+     `catch_marketplace_metrics.event_success_scorecards_raw_changelog`; plus
+     what the host mart refresh
      (`tool/analytics/deploy_host_analytics_bigquery.sh --refresh-only`)
      already needs on the mart tables.
 4. **Check the `prod-takedown` GitHub environment requires a reviewer** and
@@ -3885,10 +4233,14 @@ A smoke build can also emit a single canary event with
 ### BigQuery — two separate exports, do not conflate them
 
 - **Firestore → BigQuery**: configured in-repo. `firebase.json` declares the
-  Event Success, participant metric, and host analytics operational export
-  instances. Existing `bq-event-success-*` and `bq-participant-*` instances are
-  installed in all three projects; newly declared `bq-host-*` instances must be
-  deployed explicitly before host analytics marts can refresh from live data.
+  export instances that something reads: `bq-event-success-scorecards` (host
+  mart), `bq-participant-signal-facts` (user mart) and the `bq-host-*`
+  instances (host mart and Admin marketplace). An export with no SQL or code
+  reader is removed (FIX-5, #2447): `bq-event-success-feedback`,
+  `bq-participant-metric-counters` and `bq-host-matches`. Removing an instance
+  from source does not uninstall it; the owner runs `firebase ext:uninstall`
+  and drops its tables. Newly declared `bq-host-*` instances must be deployed
+  explicitly before host analytics marts can refresh from live data.
   Extension parameter changes are **not** part of the normal
   `deploy_firebase_targets.sh` target set — push them with an explicit
   `firebase deploy --only extensions` when changed.
@@ -3966,7 +4318,12 @@ Ubuntu headless journeys, macOS desktop/Widgetbook goldens (including the second
 determinism pass), and native macOS app-shell smoke. Goldens and native smoke
 use separate pinned macOS runners at the same workflow source; neither job
 waits for or substitutes for the other. Committed generated-source freshness
-remains required in the golden job. The smoke retains bounded infrastructure
+remains required in the golden job: it runs a full
+`dart run build_runner build --delete-conflicting-outputs` in the root,
+`apps/host` and `apps/consumer` (never `--build-filter`, which deletes tracked
+outputs outside its filter) and Widgetbook's directory build. Then no
+`*.g.dart` or `*.freezed.dart` may differ or be untracked. On drift it
+uploads the difference as a patch. The smoke retains bounded infrastructure
 retries, and every selected job must pass.
 
 The native macOS app-shell smoke is nightly-only: it runs on the daily schedule
@@ -3976,18 +4333,64 @@ main pushes (owner decision, 15 Nov 2026). In the 30 days before (16 Oct to
 analysis in the same run did not, and a runner cancellation on 2 Nov failed a
 merge-queue group on its own. A nightly smoke failure fails the scheduled run
 like any other nightly job, so the Main CI alert and the nightly issue still
-report it. Goldens and the Headless journeys keep running wherever the lane is
-selected. Pull requests also run the Headless journeys in the Flutter lane
+report it. The macOS goldens are out of the merge queue too (owner decision,
+22 Nov 2026): the 5 hosted macOS runners held queue groups past the 90-minute
+timeout on 18–19 Nov. They run on the nightly and on main pushes whose inputs
+select the visual lane. A main push the queue already validated runs only the
+goldens (`macos_only`), and only when a queue plan selected the lane: its own
+commit's, or that of any commit whose own push run was replaced before it ran.
+`tool/ci/main_macos_selection.mjs` takes the range from the same base the plan
+step uses (`main_push_base.mjs`) and reads each commit's own queue run plan
+(`main_push_queue_proof.mjs`), up to 30 commits (22 Nov 2026: 4d66cf5e6's run
+was replaced, and the next run read only its own plan). If any plan in the
+range cannot be read, the base is unknown, or the range is empty or longer,
+the goldens run; they are never skipped for that reason. A main or nightly golden failure fails the
+run, so the Main CI alert reports it. The Headless journeys keep running
+wherever the lane is selected, the queue included.
+The macOS capture render (`marketing-captures.yml`, job `export`) leaves the
+merge queue on the same decision; its Linux plan, Storybook build and reuse
+still run there. When a queue group needs a new render, the marketing lane's
+"Decide whether the capture render was deferred" step reads the run's own jobs.
+It builds with the tracked captures, skipping the import and the built-bytes
+check, only when capture freshness succeeded with no capture binding, its plan
+job succeeded, and both reuse and render were skipped. Anything else, an API
+error included, is not deferred, so a broken capture pipeline still fails the
+lane on the missing binding. A main push the queue validated renders the
+captures when a queue plan in that same range selected capture freshness or
+marketing, read the same way as the goldens and run if one cannot be read; the nightly
+renders too, and later queue groups reuse those renders. A plan that succeeds
+but emits a render value other than true or false would also read as deferred;
+the plan's own tests pin that value. Pull requests also run the Headless journeys in the Flutter lane
 (`flutter-ci.yml`, Linux), so a broken app-shell journey fails the PR instead
 of ejecting it from the merge queue. Golden pixel comparisons are report
 only: the job summary lists goldens beyond the 0.30% hosted-macOS raster
 tolerance (0.60% for the Widgetbook corpus) or without a baseline, and their
 images are retained as artifacts, while the comparator's known-good/known-bad
 tests keep that tolerance honest.
+The Storybook visual reports of the marketing and admin websites
+(`react-surface-validation.yml`, "Report marketing and shared web UI visual
+changes" and "Report admin visual changes") run only in the CI nightly (owner
+decision, 23 Nov 2026): ci.yml sets their `visual_report` input on a scheduled
+run and on the Scheduled run watchdog's `full` dispatch that replaces a missed
+one. The marketing report was the merge queue's last job in
+every run measured, a median 8.1 minutes after the next lane, and it only
+reports. They no longer run in the merge queue, on main pushes or in the
+website workflows' push runs, so a visual change is attributed to the
+nightly's commit range, not to a single merge; the nightly keeps the job
+summary and the `marketing-visual-diagnostics-<run>` and
+`admin-visual-diagnostics-<run>` artifacts. The Storybook accessibility gates,
+which render every story and fail on a story that cannot render, still run on
+pull requests and in the queue, and so do the Storybook builds, which Tools
+reuses there. Baseline capture is unchanged: dispatch the Marketing Website or
+Admin Website workflow with `update_visual_baselines`. `npm run check:admin --
+--nightly` runs the admin lane as the nightly does.
 
 Use `bash tool/test_app_shell_integration.sh <device> smoke` for the bounded
 native lane and `bash tool/test_app_shell_integration.sh <device> all` for every
-native suite. The main Flutter workflow separately analyzes and builds
+native suite. Each app package ships its own macOS runner, and the script runs
+each suite from the project that owns it: the Consumer suites from
+`apps/consumer`, the Host journeys from `apps/host`. The bounded native lane
+boots both runners: the Consumer smoke suite, then the Host journeys. The main Flutter workflow separately analyzes and builds
 `widgetbook/` for web, runs the unit/widget suite with LCOV, publishes the raw
 LCOV plus a handwritten feature-level Markdown summary, and deliberately does
 not impose a global coverage percentage threshold. These are repository

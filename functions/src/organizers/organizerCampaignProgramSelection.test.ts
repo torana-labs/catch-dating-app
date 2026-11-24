@@ -23,14 +23,13 @@ import {
 import {CampaignWhatsappDeliveryStore} from
   "./campaignWhatsappDeliveryStore";
 import {whatsappStatusCorrelation} from
-  "../eventSuccess/operations/whatsappDeliveryProtocol";
+  "../platform/delivery/whatsappDeliveryProtocol";
 import {whatsappEndpointHash} from
   "../eventSuccess/operations/whatsappReplyProtocol";
-import {MetaProviderError} from "./organizerWhatsappProvider";
-import {
-  hashEndpoint,
-  organizerCampaignFrequencyCapMillis,
-} from "./organizerCampaignModel";
+import {MetaProviderError} from
+  "../platform/delivery/organizerWhatsappProvider";
+import {organizerCampaignFrequencyCapMillis} from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {FakeFirestore} from "../shared/testing/programFirestore";
 
 const NOW = admin.firestore.Timestamp.fromMillis(1_800_000_000_000);

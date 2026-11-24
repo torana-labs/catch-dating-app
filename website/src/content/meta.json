@@ -154,6 +154,13 @@
       "twitterDescription": "Billing for organisers on Catch.",
       "robots": "noindex, follow"
     },
+    "walkthrough_manage": {
+      "title": "Your walkthrough | Catch",
+      "description": "See, move or cancel your walkthrough booking with Catch.",
+      "canonicalPath": "/start/walkthrough/manage/",
+      "twitterDescription": "Your walkthrough booking with Catch.",
+      "robots": "noindex, follow"
+    },
     "event_offer": {
       "title": "Your event invitation | Catch",
       "description": "Verify your phone to open your private event invitation and check your booking.",

@@ -587,6 +587,29 @@ test("Anthropic: oauth_bearer sends a federation token instead of x-api-key; unk
   assert.deepEqual(ANTHROPIC_MODELS.anthropic["claude-opus-5-5"].capabilities, ["json_schema"]);
 });
 
+for (const adaptiveModel of ["claude-opus-5-5", "claude-haiku-5-5"]) test(`Anthropic: ${adaptiveModel} omits disabled thinking, asks for low effort and skips thinking blocks`, async () => {
+  const p = nativeProviders.anthropic;
+  const adaptiveWire = (overrides = {}) => p.wire({model: adaptiveModel,
+    content: [{type: "thinking", thinking: "", signature: "synthetic"}, ...p.wire().content], ...overrides});
+  const f = fixture({modelId: adaptiveModel}, p.create, adaptiveWire);
+  const result = await f.provider.run(nativeRequest("anthropic", {modelId: adaptiveModel}));
+  const body = JSON.parse(f.calls[0].options.body);
+  assert.equal(body.thinking, undefined);
+  assert.equal(body.temperature, undefined);
+  assert.equal(body.output_config.effort, "low");
+  assert.deepEqual(body.output_config.format, {type: "json_schema", schema: nativeSchema});
+  assert.deepEqual(result.output, output);
+  for (const bad of [
+    adaptiveWire({content: [{type: "thinking", thinking: ""}]}),
+    adaptiveWire({content: [{type: "thinking", thinking: ""}, ...p.wire().content, ...p.wire().content]}),
+    adaptiveWire({content: [{type: "thinking", thinking: ""}, {type: "tool_use", input: "synthetic private tool"}]}),
+  ]) {
+    const g = fixture({modelId: adaptiveModel}, p.create, () => bad);
+    await assert.rejects(g.provider.run(nativeRequest("anthropic", {modelId: adaptiveModel})),
+      {code: "MODEL_PROVIDER_RESULT_INVALID"});
+  }
+});
+
 test("Anthropic: billed refusals, max_tokens, tool/thinking blocks and missing cache usage fail closed", async () => {
   const p = nativeProviders.anthropic;
   const badUsage = [{}, {input_tokens: 80, output_tokens: 20},

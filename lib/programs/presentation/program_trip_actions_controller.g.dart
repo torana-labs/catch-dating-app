@@ -51,7 +51,7 @@ final class ProgramTripActionsProvider
 }
 
 String _$programTripActionsHash() =>
-    r'8214eb65e406798d5677d1dc277e23d2ed23d1fc';
+    r'5a69f45b9a6ba73dee59bddf617851d39ed319eb';
 
 /// Trip-lifecycle mutations for the hotel desk and ledger surfaces.
 /// Widgets go through this controller rather than reaching into

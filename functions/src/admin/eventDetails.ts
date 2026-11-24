@@ -23,10 +23,14 @@ import {
   validateAdminUpdateEventDetailsCallablePayload,
 } from "../shared/generated/validators/adminUpdateEventDetailsInput";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {requireAdminRole} from "./adminAuth";
-import {setAdminAuditLogInTransaction} from "./adminAudit";
+import {requireAdminRole} from "../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {eventDiscoveryProjection} from "../events/eventDiscoveryProjection";
+import {
+  type EventAdminDetailsPatch,
+  updateEventAdminDetails,
+} from "../domain/events/eventDocumentWrites";
 import {isConfiguredEvent,
   type ConfiguredEventDocument} from "../events/configuredEvent";
 import {
@@ -43,7 +47,7 @@ import {
   crossPathsPilotMinimumEventLeadMillis,
 } from "../crossPaths/pilotPolicy";
 
-import {adminEventWomenLed} from "../organizers/womenLed";
+import {adminEventWomenLed} from "../domain/events/womenLed";
 import {HOST_PILOT_REVIEWS, HOST_ACTIVATIONS, nextPilotReview} from
   "../acquisition/pilotActivation";
 import type {HostPilotEventReviewDocument} from
@@ -406,7 +410,7 @@ export async function adminUpdateEventDetailsHandler(
     }
     const patch = mergeEventDetailsPatch(before, rawPatch);
     const nextEvent = eventWithAdminFieldsForSearch(before, patch);
-    const fullPatch: Record<string, unknown> = {
+    const fullPatch: EventAdminDetailsPatch = {
       ...patch,
       ...eventDiscoveryProjection({
         event: nextEvent,
@@ -422,7 +426,9 @@ export async function adminUpdateEventDetailsHandler(
       ),
     };
     if (reviewed) tx.set(reviewRef, reviewed);
-    if (Object.keys(rawPatch).length > 0) tx.update(eventRef, fullPatch);
+    if (Object.keys(rawPatch).length > 0) {
+      updateEventAdminDetails(tx, eventRef, fullPatch);
+    }
     setAdminAuditLogInTransaction(tx, db, adminContext, {
       action: "adminUpdateEventDetails",
       targetPath: eventRef.path,

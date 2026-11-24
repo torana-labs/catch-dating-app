@@ -469,44 +469,42 @@ The public website reads Firestore only on the server, through these layers:
   Raw documents never leave a repository.
 - A new public query uses equality filters only, or an index already deployed
   to production. Equality-only filters need no composite index.
-- A per-route assembler returns the same listing and event record the full
-  catalog would. `website/src/server/publicCatalog.test.ts` enforces that, and
-  that detail routes never read a whole events collection.
+- Public routes read only the public page read models (`organizerPublicPage`,
+  `eventPublicPage`, `cityPlans`), never `organizers`, `events`,
+  `externalEvents` or `reviews`. `website/src/server/publicCatalog.test.ts`
+  records every read and enforces that.
 
 | Route | Assembler | Reads |
 |---|---|---|
 | `/`, `/explore/`, `/cities/`, city pages (`/mumbai/`), `/api/home-catalog` | `assembleHomeCatalog` (`website/src/server/homeCatalog.ts`) | One `cityPlans` document get per market city; a city without a valid document is built from one `assemblePublicCatalog` read |
-| `/claim/`, sitemap, `/api/public-catalog` | `assemblePublicCatalog` | Published organizers, Catch events and external events, at most 400 each |
+| `/claim/`, sitemap, `/api/public-catalog` | `assemblePublicCatalog` | Every `organizerPublicPage` document, at most 400: each page's listing with its listed events |
 | `/organizers/<slug>/` and legacy aliases | `assembleOrganizerDetailCatalog` | One `organizerPublicPage` read by `path` (a second by `legacyPaths` for an alias) |
 | `/events/<id>/` | `assembleEventDetailCatalog` | One `eventPublicPage` document get |
 
-Organizer and event pages read Functions-maintained read models
-(`functions/src/publicPages`, CAT-250). Each document holds exactly what one
-page shows, built with a port of this reader's projectors (`publicReadPolicy`,
-`projectPublicOrganizer`, `projectLivePublicCatchEvent`, `publicExternalEvent`,
-`projectPublicReview`). The shared inputs and expected output in
-`contracts/fixtures/public_pages` hold the two to the same result:
-`website/src/server/publicPageParity.test.ts` writes the expected file and
-`functions/src/publicPages/parity.test.ts` must reproduce it. Catch is not a
-dating product (CAT-247), so the projectors keep that parity and dating framing
-(the `balanced` label, the `rotations` experience, the `singlesMixer` activity
-and the Event Success scorecard) is dropped where events are arranged for a
-page: by the read models, and on the website by the event repositories and the
+Every public route reads Functions-maintained read models
+(`functions/src/publicPages`, CAT-250), and publication is decided only where
+they are built. Each document holds exactly what one page shows, built by the
+public projectors there (`publicReadPolicy`, `projectPublicOrganizer`,
+`projectLivePublicCatchEvent`, `publicExternalEvent`, `projectPublicReview`).
+`functions/src/publicPages/projections.test.ts` holds their rules, and the
+golden output in `contracts/fixtures/public_pages` holds their result
+(`functions/src/publicPages/parity.test.ts`; rewrite it deliberately with
+`UPDATE_PUBLIC_PAGE_FIXTURES=1`). The website's live event list still projects
+`publicEvents` copies in the browser, and
+`website/src/server/publicCatchEventParity.test.ts` holds that
+projection to the same golden output. Catch is not a dating product (CAT-247),
+so dating framing (the `balanced` label, the `rotations` experience, the
+`singlesMixer` activity and the Event Success scorecard) is dropped where
+events are arranged for a page: by the read models, and on the website by the
 live event listing (`website/src/features/organizers/publicDatingFraming.ts`).
-`website/src/server/publicDatingFraming.test.ts` proves none of it leaves the
-server for an organiser, event or city read. Readers treat an event that ended
-after its page was built as past.
+The reader refuses a read model that carries it
+(`website/src/server/publicDatingFraming.test.ts`). Readers treat an event that
+ended after its page was built as past.
 
-Until every environment is backfilled, a page without a valid read model is
-assembled from its sources (`assembleOrganizerDetailFromSources`,
-`assembleEventDetailFromSources`) under the same publication rules, so a
-withdrawn page stays withdrawn either way. Those source reads are one to three
-path reads, that organizer's events (at most 200 per
-kind), three trust reads for recommendations and bounded reviews
-for an organizer page, and two document gets, the organizer plus a
-path-uniqueness read and bounded reviews for an event page.
+A page without a valid read model renders as not found and reads nothing
+else. Every environment is backfilled;
 `node functions/scripts/backfill-public-pages.cjs --project <id> --check`
-reports whether an environment still has pages without read models.
+reports whether one has pages out of date, and `--apply` rebuilds them.
 
 `assembleRouteCatalog` chooses the assembler from the path, and
 `resolvePublicRoute` is its only caller, so the proxy's status and redirect
@@ -579,12 +577,16 @@ window for withdrawals, or invalidate from the backend when a listing or event
 is published or withdrawn. The second needs backend Functions delivery.
 Neither is adopted.
 
-Browser code reaches callables through `website/src/firebase.ts`, one module
-of about 84 exports spanning forms, the event runtime, claims, reviews,
-messaging preferences and checkout. Splitting it into one service module per
-backend domain, with `firebase.ts` reduced to runtime bootstrap, needs a
-change to `tool/web/check_website_import_boundaries.mjs`, which today allows
-only `firebase.ts` to import the generated callable types.
+Browser code reaches callables through `website/src/firebase.ts`, which only
+re-exports one service module per backend domain under
+`website/src/services/firebase/`: `auth`, `account`, `forms`, `eventRuntime`,
+`events`, `claims`, `organizers`, `eventMessaging`, `programmes`, `tryIt` and
+`salesDemo`. Each calls Functions through the shared runtime in `runtime.ts`
+(the public and signed-in Firebase runtimes, the bounded App Check wait and
+`invokeWebsiteCallable`). `tool/web/check_website_import_boundaries.mjs` lets
+only those modules, `firebaseReadModels.ts`, `firebaseClaimAccountLinking.ts`
+and `firebaseConfig.ts` load the browser Firebase SDK, and only the domain
+modules import the generated callable types.
 
 ## Current Stack
 
@@ -663,7 +665,9 @@ only `firebase.ts` to import the generated callable types.
   updates while another surface refactor is dirty. Platform ownership is part
   of the contract because `system-ui` is intentionally stack-native: Darwin
   and Linux captures never compare against one another. React CI pins the
-  Linux capture to Ubuntu 24.04 and runs `--report`: changed, missing and stale
+  Linux capture to Ubuntu 24.04 and runs `--report` in the CI nightly only,
+  scheduled or re-run by the watchdog (owner decision, 23 Nov 2026; never in the
+  merge queue): changed, missing and stale
   baselines are listed in the job summary with actual plus diff images in the
   diagnostics artifact, and never fail the run, because the product is still
   changing visually on purpose. A ready story that cannot render still fails.
@@ -1674,6 +1678,14 @@ demos. Feature-owned callable adapters are included in the shared Admin
 validator and Operations catalog inventory; they must not bypass server-side
 current-role, revision or receipt checks. Sample mode is clearly identified and
 cannot approve commercial terms or issue real invitations.
+
+A host page's Referral partner row reads `adminGetSalesPartnerAccess`: the
+host's current reservation and the reserved partner's membership, with their
+revisions and no research, notes or next action. When nobody holds the host,
+the row offers it at the reservation's revision. When someone does, the row
+revokes this host only, or the partner's whole membership, through
+`adminRevokeSalesPartnerAccess` at the revision just read. Both are admin and
+owner only, and an unconfirmed revoke retries its frozen request.
 
 The marketing `/demo/:invitationId` route is a lazy transactional surface. Its
 fragment grant is removed after capture and retained only in page memory.

@@ -15,12 +15,22 @@ import {publicFixture, publicCapturedFixture, uid, now, eventId} from
 import {eventGuestEntry, refreshEventGuestEntry} from "./eventGuestEntry";
 import {guestEventStatus, guestEventStatusId, refreshGuestEventStatus} from
   "./guestEventStatus";
-import {eventTermsChanged, guestEventStatusPairs} from "./triggers";
+import {
+  eventTermsChanged,
+  guestEventStatusPairs,
+  refreshGuestEventStatusesForEvent,
+  refreshLinkedGuestStatusesForEvent,
+  rosterLinksOpened,
+} from "./triggers";
+import {readParticipantContext} from
+  "../eventSuccess/operations/participantContext";
 
 const validateEventGuestEntryDocument =
   contractValidator<EventGuestEntryDocument>("EventGuestEntryDocument");
 const validateGuestEventStatusDocument =
   contractValidator<GuestEventStatusDocument>("GuestEventStatusDocument");
+const validateEventAttendeeDocument =
+  contractValidator("EventAttendeeDocument");
 
 type Store = Awaited<ReturnType<typeof publicFixture>>["store"];
 
@@ -33,6 +43,37 @@ async function readEntry(store: Store, at = now) {
       JSON.stringify(validateEventGuestEntryDocument.errors));
   }
   return entry;
+}
+
+/**
+ * The test store answers queries only inside a transaction; the per-event
+ * refreshes page with plain query reads, so serve those through one. Every
+ * page here is a single short page, so ordering and cursors never matter.
+ */
+function pagingDb(store: Store): FirebaseFirestore.Firestore {
+  type Query = Record<string, unknown>;
+  const read = (query: Query) => store.db().runTransaction(async (tx) => {
+    const page = await tx.get(query as never) as unknown as
+      {docs: Array<{id: string; data: () => Record<string, unknown>}>};
+    return {...page, docs: page.docs.map((doc) => ({...doc,
+      get: (field: string) => doc.data()?.[field]}))};
+  });
+  const paged = (query: Query): Query => ({...query,
+    where: (...args: unknown[]) =>
+      paged((query.where as (...a: unknown[]) => Query)(...args)),
+    orderBy: (...args: unknown[]) =>
+      paged((query.orderBy as (...a: unknown[]) => Query)(...args)),
+    limit: (count: number) =>
+      paged({...(query.limit as (n: number) => Query)(count),
+        where: query.where, orderBy: query.orderBy, limit: query.limit}),
+    get: () => read(query)});
+  const db = store.db();
+  return new Proxy(db, {get: (target, prop) => prop === "collection" ?
+    (name: string) => {
+      const collection = target.collection(name) as unknown as Query;
+      return {...collection, where: (...args: unknown[]) =>
+        paged((collection.where as (...a: unknown[]) => Query)(...args))};
+    } : Reflect.get(target, prop, target)});
 }
 
 async function readStatus(store: Store, auth: Parameters<
@@ -111,7 +152,7 @@ test("a Catch booking registers the guest and shows the runtime",
     const h = await publicFixture();
     h.event.runtimeAccess = {enabled: true, publicRuntimeId: "runtime1",
       walkInPolicy: "deny", termsVersion: "v1"};
-    h.store.put(`eventParticipations/${eventParticipationId(eventId, uid)}`, {
+    h.store.put(`eventBookings/${eventParticipationId(eventId, uid)}`, {
       eventId, organizerId: h.event.organizerId, uid, status: "signedUp",
       createdAt: Timestamp.fromMillis(now - 2000),
       updatedAt: Timestamp.fromMillis(now - 1000),
@@ -126,7 +167,7 @@ test("a Catch booking registers the guest and shows the runtime",
 
 function putBooking(h: Awaited<ReturnType<typeof publicFixture>>,
   status: string) {
-  h.store.put(`eventParticipations/${eventParticipationId(eventId, uid)}`, {
+  h.store.put(`eventBookings/${eventParticipationId(eventId, uid)}`, {
     eventId, organizerId: h.event.organizerId, uid, status,
     createdAt: Timestamp.fromMillis(now - 2000),
     updatedAt: Timestamp.fromMillis(now - 1000),
@@ -158,6 +199,91 @@ test("waitlisted and cancelled Catch bookings keep a row for their lists",
     putBooking(h, "deleted");
     assert.equal(await readStatus(h.store, h.auth), null);
   });
+
+test("the roster link is the participant context: one linked row, or " +
+  "ambiguous, never a guess", async () => {
+  const h = await publicFixture();
+  const attendee = (id: string, linkedUid: string) => h.store.put(
+    `eventAttendees/${id}`, {eventId, organizerId: h.event.organizerId,
+      linkedUid, status: "cancelled", source: "hostImport",
+      displayName: "Guest", phoneE164: "+919800000001"});
+  const callable = async (who = uid) => (await readParticipantContext(
+    h.store.db(), who, eventId, () => now)).resolution;
+  assert.equal(await readStatus(h.store, h.auth), null);
+  assert.deepEqual(await callable(), {kind: "unlinked"});
+  attendee("row_own", uid);
+  attendee("row_other", "someone-else");
+  const linked = await readStatus(h.store, h.auth);
+  assert.deepEqual(linked?.rosterLink, {kind: "linked",
+    attendeeId: "row_own"});
+  // The callable resolves the same row; its source hash needs the stored
+  // documents' update times, which this test store does not keep.
+  assert.equal(JSON.stringify(linked).includes("row_other"), false);
+  assert.equal(JSON.stringify(linked).includes("+9198"), false);
+  attendee("row_twice", uid);
+  assert.deepEqual((await readStatus(h.store, h.auth))?.rosterLink,
+    {kind: "ambiguous"});
+  assert.deepEqual(await callable(), {kind: "ambiguous"});
+});
+
+test("going live gives a guest whose only record is a linked roster row " +
+  "their row and roster link", async () => {
+  const h = await publicFixture();
+  const db = h.store.db();
+  const draft = {...h.event, status: "draft"};
+  h.event.status = "draft";
+  const at = Timestamp.fromMillis(now - 1000);
+  const rosterRow = (linkedUid: string | null, status: string,
+    name: string) => {
+    const row = {eventId, organizerId: h.event.organizerId,
+      displayName: name, searchName: name.toLowerCase(), source: "hostImport",
+      status, linkedUid, phoneE164: linkedUid ? "+919800000001" : null,
+      email: null, externalReference: null, arrivalGroup: null,
+      ticketType: null, importId: null, sourceRowId: null, createdAt: at,
+      updatedAt: at, registeredAt: null, waitlistedAt: null,
+      checkedInAt: null, cancelledAt: status === "cancelled" ? at : null,
+      checkedInBy: null, linkedAt: linkedUid ? at : null};
+    assert.ok(validateEventAttendeeDocument(row),
+      JSON.stringify(validateEventAttendeeDocument.errors));
+    return row;
+  };
+  h.store.put("eventAttendees/row_own", rosterRow(uid, "cancelled", "Guest"));
+  h.store.put("eventAttendees/row_unlinked",
+    rosterRow(null, "registered", "Walk-in"));
+  // On a draft the cancelled row is no record of the guest's own.
+  assert.equal(await readStatus(h.store, h.auth), null);
+  assert.equal(await refreshGuestEventStatus(db, eventId, uid, now),
+    "removed");
+  // Draft to active: the existing rows alone would miss this guest.
+  h.event.status = "active";
+  assert.equal(rosterLinksOpened(draft, h.event), true);
+  const paging = pagingDb(h.store);
+  const refreshed = new Set<string>();
+  assert.equal(await refreshGuestEventStatusesForEvent(paging, eventId,
+    refreshed), 0);
+  assert.equal(await refreshLinkedGuestStatusesForEvent(paging, eventId,
+    refreshed), 1);
+  const row = h.store.get(`guestEventStatuses/${guestEventStatusId(eventId,
+    uid)}`) as GuestEventStatusDocument | undefined;
+  assert.deepEqual(row?.rosterLink, {kind: "linked", attendeeId: "row_own"});
+  assert.equal(JSON.stringify(row).includes("+9198"), false);
+  // A guest already rebuilt from their existing row is not rebuilt twice.
+  assert.equal(await refreshLinkedGuestStatusesForEvent(paging, eventId,
+    new Set([uid])), 0);
+  // Once the row exists, the existing-row pass rebuilds it and the roster
+  // pass skips that guest.
+  const again = new Set<string>();
+  assert.equal(await refreshGuestEventStatusesForEvent(paging, eventId,
+    again), 1);
+  assert.equal(await refreshLinkedGuestStatusesForEvent(paging, eventId,
+    again), 0);
+  // Only entering a state that carries links reaches the roster rows.
+  assert.equal(rosterLinksOpened(h.event, {...h.event, status: "cancelled"}),
+    false);
+  assert.equal(rosterLinksOpened(h.event, {...h.event, status: "completed"}),
+    false);
+  assert.equal(rosterLinksOpened(undefined, h.event), true);
+});
 
 test("a captured website payment admits; another account sees nothing",
   async () => {

@@ -1,0 +1,12 @@
+{
+  "id": "ui-capture:run",
+  "category": "ui-capture",
+  "path": "tool/ui_capture/run_captures.mjs",
+  "command": "node tool/ui_capture/run_captures.mjs",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Runs the Flutter UI capture harness and writes review PNG artifacts.",
+  "checks": [
+    "node --check tool/ui_capture/run_captures.mjs"
+  ]
+}

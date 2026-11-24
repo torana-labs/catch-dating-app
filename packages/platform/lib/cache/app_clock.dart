@@ -33,6 +33,7 @@ class AppClock {
       Timer.periodic(period, callback);
 }
 
-// keepalive: the clock is account-free infrastructure every screen shares.
+// keepalive: account-free: the clock is account-free infrastructure every
+// screen shares.
 @Riverpod(keepAlive: true)
 AppClock appClock(Ref ref) => const AppClock();

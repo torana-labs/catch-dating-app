@@ -6,7 +6,6 @@ import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import {onRequest} from "firebase-functions/v2/https";
 import type {
   OrganizerCampaignRecipientDocument,
-  OrganizerCommunicationPreferenceDocument,
   OrganizerContactChannelStateDocument,
   OrganizerContactDocument,
   OrganizerMessagingWebhookEventDocument,
@@ -16,18 +15,21 @@ import type {
 import {
   inboundStopPermissionReceipt,
   organizerCommunicationPermissionReceiptId,
-  organizerCommunicationPreferenceId,
-  unknownOrganizerCommunicationChannel,
 } from
   "../shared/organizerCommunicationPreferences";
 import {
   classifyMetaError,
-  hashEndpoint,
   isWhatsappStopCommand,
   nextCampaignRecipientStatus,
   organizerContactChannelStateId,
   verifyMetaWebhookSignature,
 } from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
+import {grantFromReceipt, nextContactPermission,
+  readContactPermissionState, writeContactPermissionState} from
+  "../messaging/contactPermissions";
+import {contactPermissionReceiptRef, organizerWhatsappKeys} from
+  "../shared/contactPermissions";
 import {metaWhatsappAppSecret} from "./organizerMessagingSetup";
 import {persistInboundWhatsappMessage} from "./organizerWhatsappThreads";
 import {prepareWhatsappStop} from "../shared/organizerWhatsappStops";
@@ -507,71 +509,41 @@ async function optOutPreference(params: {
   providerEventId: string;
   now: FirebaseFirestore.Timestamp;
 }): Promise<void> {
-  const ref = params.db.collection("organizerCommunicationPreferences")
-    .doc(organizerCommunicationPreferenceId(params.organizerId, params.uid));
+  const sender = {kind: "organizer" as const, organizerId: params.organizerId};
+  const receiptRef = contactPermissionReceiptRef(params.db,
+    organizerCommunicationPermissionReceiptId({
+      organizerId: params.organizerId,
+      uid: params.uid,
+      channel: "whatsapp",
+      decision: "optedOut",
+      source: "inboundStop",
+      sourceIdentity: params.providerEventId,
+    }));
   await params.db.runTransaction(async (tx) => {
-    const snap = await tx.get(ref);
-    const existing = snap.data() as
-      OrganizerCommunicationPreferenceDocument | undefined;
-    const receiptRef = params.db
-      .collection("organizerCommunicationPermissionReceipts")
-      .doc(organizerCommunicationPermissionReceiptId({
-        organizerId: params.organizerId,
-        uid: params.uid,
-        channel: "whatsapp",
-        decision: "optedOut",
-        source: "inboundStop",
-        sourceIdentity: params.providerEventId,
-      }));
     // A provider replay is the original STOP, even if a newer, explicit
     // purpose choice has since superseded it. Keep its original revokedAt.
     if ((await tx.get(receiptRef)).exists) return;
+    const contact = await readContactPermissionState(params.db, tx, {
+      uid: params.uid, sender});
+    const grants = contact.existing?.grants ?? {};
+    // Server ordering, including same-millisecond decisions, keeps the STOP
+    // after every answer it withdraws.
     const stopAt = admin.firestore.Timestamp.fromMillis(Math.max(
       params.now.toMillis(),
-      (existing?.whatsapp.updatedAt?.toMillis() ?? -1) + 1,
-      (existing?.whatsappPurposes?.eventOperations?.updatedAt?.toMillis() ??
-        -1) + 1,
-      (existing?.whatsappPurposes?.marketing?.updatedAt?.toMillis() ??
-        -1) + 1,
-    ));
+      ...organizerWhatsappKeys.map((key) =>
+        (grants[key]?.updatedAt.toMillis() ?? -1) + 1)));
     const receipt = inboundStopPermissionReceipt({
       organizerId: params.organizerId,
       uid: params.uid,
       providerEventId: params.providerEventId,
-      supersedesReceiptId: existing?.whatsapp.currentReceiptId ?? null,
+      supersedesReceiptId: grants["whatsapp:marketing"]?.receiptId ?? null,
       now: stopAt,
     });
-    tx.create(receiptRef, receipt.document);
-    tx.set(ref, {
-      organizerId: params.organizerId,
-      uid: params.uid,
-      whatsapp: {
-        status: "optedOut",
-        evidenceStatus: "complete",
-        currentReceiptId: receipt.id,
-        termsVersion: existing?.whatsapp.termsVersion ?? null,
-        source: "inboundStop",
-        sourceEventId: null,
-        updatedAt: stopAt,
-      },
-      whatsappPurposes: {
-        eventOperations: {
-          status: "optedOut", evidenceStatus: "complete",
-          currentReceiptId: receipt.id, termsVersion: null,
-          source: "inboundStop", sourceEventId: null,
-          updatedAt: stopAt,
-        },
-        marketing: {
-          status: "optedOut", evidenceStatus: "complete",
-          currentReceiptId: receipt.id, termsVersion: null,
-          source: "inboundStop", sourceEventId: null,
-          updatedAt: stopAt,
-        },
-      },
-      sms: existing?.sms ?? unknownOrganizerCommunicationChannel(),
-      createdAt: existing?.createdAt ?? stopAt,
-      updatedAt: stopAt,
-    }, {merge: false});
+    const withdrawal = grantFromReceipt(receipt.document, receipt.id, stopAt);
+    writeContactPermissionState(tx, contact, {
+      next: nextContactPermission(contact, Object.fromEntries(
+        organizerWhatsappKeys.map((key) => [key, withdrawal])), stopAt),
+      receipts: [{id: receipt.id, document: receipt.document}]});
   });
 }
 

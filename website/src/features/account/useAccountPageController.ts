@@ -24,8 +24,9 @@ export type AccountPass =
 const quiet: FormStatus = {message: "", tone: ""};
 
 /**
- * The /account/ page: one manageWebsiteAccount read of the signed-in UID's
- * own sections, the tab in the URL fragment, and each tab's write through
+ * The /account/ page: the signed-in UID's own plans, follows and reviews
+ * through listeners, their messaging permissions through one account read,
+ * the tab in the URL fragment, and each tab's write through
  * the existing command (follow, WhatsApp withdrawal, account completion).
  * A `?pass=<eventId>` link (the account menu's View pass) opens that plan's
  * pass once the plans arrive, and leaves the address without it.

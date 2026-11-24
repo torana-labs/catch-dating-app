@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_close_out.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_body.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_state.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_run_body.dart';
@@ -12,6 +11,7 @@ import 'package:catch_dating_app/hosts/live/formats/formats_sweep_body.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_sweep_controller.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_sweep_screen.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_sweep_state.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

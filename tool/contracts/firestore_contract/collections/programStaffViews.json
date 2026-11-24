@@ -1,0 +1,26 @@
+{
+  "id": "programStaffViews",
+  "path": "programStaffViews/{programId}__{uid}",
+  "rulesMatch": "/programStaffViews/{viewId}",
+  "typescriptInterface": "ProgramStaffViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/program_staff_views.rules.test.cjs",
+  "rulesTestNames": [
+    "lets administrators and the owner read the list, and no other duty",
+    "lists by a query naming the programme, and denies writes"
+  ],
+  "owner": "Programme access writers: programAuthorityWrites, in each grant command's transaction, and archive anonymization",
+  "writerContext": "programmes",
+  "read": "get and list (query naming programId) by accounts holding the programme administration duty and the programme owner, while not deleted; coordinators hold every duty but programAdmin and read nothing here",
+  "write": "server only; written in the transaction of the command that issues, claims or revokes a staff grant, and scrubbed in the anonymization batch that scrubs the grant",
+  "exportedFunctions": [
+    "grantProgramStaff",
+    "revokeProgramStaff",
+    "claimProgramStaffInvite",
+    "anonymizeDueProgramsSweep"
+  ],
+  "migrationNotes": [
+    "Exactly the member row the retired listProgramStaff callable returned, with its clock-dependent status replaced by the facts it derives from (revoked, owner approval, when live duties start and end). Display names and the last four phone digits are personal data scrubbed with the grant by archive anonymization, which rewrites the row in the batch that scrubs the grant. The program-staff-views copy-forward migration creates rows for grants that predate the triggers and leaves rows the triggers wrote alone.",
+    "Issue #2474 step 1: the grant commands write the row in their own transaction, so onProgramStaffViewGrantChanged and onProgramStaffViewProgramChanged are retired."
+  ]
+}

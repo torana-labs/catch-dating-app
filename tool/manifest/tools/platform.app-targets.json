@@ -1,0 +1,55 @@
+{
+  "id": "platform:app-targets",
+  "category": "platform",
+  "path": "tool/platform/check_app_targets.mjs",
+  "command": "node tool/platform/check_app_targets.mjs --check",
+  "surface": "local-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "description": "Validates the six Consumer/Host app targets across entrypoints, Firebase registrations, Apple schemes and entitlements, Android flavors and capabilities, deep links, force-update policy, and fastlane release ownership (Mobile Beta, Mobile Production, fastlane/Fastfile).",
+  "checks": [
+    "node --check tool/platform/resolve_app_target.mjs",
+    "node --check tool/platform/check_app_targets.mjs",
+    "bash tool/flutter_with_env.test.sh",
+    "node --test tool/platform/check_app_targets.test.mjs",
+    "node tool/platform/check_app_targets.mjs --check",
+    "bash -n tool/flutter_with_env.sh",
+    "bash -n tool/flutter_with_env.test.sh"
+  ],
+  "impactPaths": [
+    "tool/app_targets.json",
+    "tool/platform/check_app_targets.test.mjs",
+    "fastlane/Fastfile",
+    ".github/workflows/mobile-beta.yml",
+    ".github/workflows/mobile-production.yml",
+    "tool/flutter_with_env.test.sh"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "APP-TARGET-IDENTITY-001",
+      "title": "Installable app identity resolves from one checked target contract",
+      "appliesTo": [
+        "tool/app_targets.json",
+        "apps/*/lib/main*.dart",
+        "packages/platform/lib/app_config.dart",
+        "lib/routing/**",
+        "firebase/**",
+        "tool/firebase/client_callable_dependencies.json",
+        "tool/firebase/check_client_callable_dependencies.mjs",
+        "apps/*/ios/**",
+        "apps/*/macos/**",
+        "apps/*/android/**",
+        ".github/workflows/**",
+        "lib/pages/frame/force_update/**"
+      ],
+      "instruction": "Consumer and Host are separate installable products. Entrypoints, native ids and capabilities, Firebase registrations, links, force-update keys, routine release ownership, and enabled release-critical callable dependencies must match checked target contracts. A production client feature cannot be enabled until its callable export and live Firebase callable/IAM reachability pass the release preflight; temporary release exceptions require a stable debt id and explicit removal proof."
+    }
+  ],
+  "queueGate": "always"
+}

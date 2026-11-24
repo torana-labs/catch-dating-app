@@ -1,0 +1,19 @@
+{
+  "id": "cityInterest",
+  "path": "cityInterest/{cityKey}",
+  "rulesMatch": "/cityInterest/{cityKey}",
+  "typescriptInterface": "CityInterestDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps waitlist city interest counters and markers server-only"
+  ],
+  "owner": "website waitlist city interest (PR markets 5)",
+  "writerContext": "sales",
+  "read": "server only; adminGetCityInterest for admins",
+  "write": "server only; joinWaitlist and tool/data/backfill_city_interest.mjs",
+  "exportedFunctions": [
+    "joinWaitlist",
+    "adminGetCityInterest"
+  ]
+}

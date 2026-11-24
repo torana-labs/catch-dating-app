@@ -1,0 +1,29 @@
+{
+  "id": "design:rail-contracts",
+  "category": "design",
+  "path": "tool/design/check_rail_contracts.mjs",
+  "impactPaths": [
+    "tool/design/check_rail_contracts.test.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "command": "node tool/design/check_rail_contracts.mjs --summary",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Reports rail callers that manually zero divider/header/list chrome instead of using embedded defaults or fullBleed opt-in.",
+  "checks": [
+    "node --check tool/design/check_rail_contracts.mjs",
+    "node --test tool/design/check_rail_contracts.test.mjs",
+    "node tool/design/check_rail_contracts.mjs --summary --max 25 --fail-on high"
+  ],
+  "role": "finder",
+  "alsoEnforces": [
+    "DESIGN-PRIMITIVES-001",
+    "SCREEN-GUTTER-001",
+    "UI-LINT-001"
+  ]
+}

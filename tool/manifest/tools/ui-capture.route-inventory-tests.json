@@ -1,0 +1,13 @@
+{
+  "id": "ui-capture:route-inventory-tests",
+  "category": "test",
+  "path": "tool/ui_capture/check_route_inventory_test.mjs",
+  "command": "node --test tool/ui_capture/check_route_inventory_test.mjs",
+  "surface": "local-read",
+  "status": "internal",
+  "description": "Pins redirect-only route exceptions plus deterministic normalized presentation expressions and presentation targets.",
+  "checks": [
+    "node --test tool/ui_capture/check_route_inventory_test.mjs"
+  ],
+  "role": "gate"
+}

@@ -145,20 +145,6 @@
       ]
     },
     {
-      "collectionGroup": "hostAcquisitionDeliveries",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "nextAttemptAt",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
       "collectionGroup": "catchWhatsappReplyOperations",
       "queryScope": "COLLECTION",
       "fields": [
@@ -3659,6 +3645,20 @@
       ]
     },
     {
+      "collectionGroup": "eventBookings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "hostApprovalStatus",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "providerSyncRuns",
       "queryScope": "COLLECTION",
       "fields": [
@@ -4275,7 +4275,35 @@
       ]
     },
     {
+      "collectionGroup": "eventBookings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "eventParticipations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "eventId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventBookings",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -4325,20 +4353,20 @@
       ]
     },
     {
-      "collectionGroup": "clubs",
+      "collectionGroup": "eventBookings",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "locationMarketId",
+          "fieldPath": "eventId",
           "mode": "ASCENDING"
         },
         {
-          "fieldPath": "appVisibility",
+          "fieldPath": "status",
           "mode": "ASCENDING"
         },
         {
-          "fieldPath": "createdAt",
-          "mode": "DESCENDING"
+          "fieldPath": "waitlistedAt",
+          "mode": "ASCENDING"
         }
       ]
     },
@@ -4375,6 +4403,420 @@
         {
           "fieldPath": "rating",
           "mode": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "publicEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "discoveryMarketId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "listing",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discoveryActivityKind",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discoveryGeoCell",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startTime",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "publicEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "discoveryMarketId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "listing",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discoveryActivityKind",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startTime",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "publicEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "discoveryMarketId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "listing",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discoveryAvailability",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discoveryActivityKind",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discoveryGeoCell",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startTime",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "publicEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "discoveryMarketId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "listing",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discoveryAvailability",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discoveryActivityKind",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startTime",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "publicEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "discoveryMarketId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "listing",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discoveryAvailability",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discoveryGeoCell",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startTime",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "publicEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "discoveryMarketId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "listing",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discoveryAvailability",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startTime",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "publicEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "discoveryMarketId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "listing",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discoveryGeoCell",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startTime",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "publicEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "discoveryMarketId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "listing",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discoveryOpenCohorts",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "discoveryActivityKind",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discoveryGeoCell",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startTime",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "publicEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "discoveryMarketId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "listing",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discoveryOpenCohorts",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "discoveryActivityKind",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startTime",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "publicEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "discoveryMarketId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "listing",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discoveryOpenCohorts",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "discoveryGeoCell",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startTime",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "publicEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "discoveryMarketId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "listing",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discoveryOpenCohorts",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "startTime",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "publicEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "discoveryMarketId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "listing",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startTime",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "publicEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "listing",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startTime",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "publicEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "listing",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "endTime",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "publicEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "listing",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "endTime",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
         }
       ]
     },
@@ -4463,138 +4905,6 @@
         {
           "fieldPath": "status",
           "mode": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "clubs",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "locationMarketId",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "rating",
-          "mode": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "clubs",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "publicPage.citySlug",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "adminSearch.tokens",
-          "arrayConfig": "CONTAINS"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "clubs",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "publicPage.publishStatus",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "adminSearch.tokens",
-          "arrayConfig": "CONTAINS"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "clubs",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "appVisibility",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "adminSearch.tokens",
-          "arrayConfig": "CONTAINS"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "clubs",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "publicPage.citySlug",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "publicPage.publishStatus",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "adminSearch.tokens",
-          "arrayConfig": "CONTAINS"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "clubs",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "publicPage.citySlug",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "appVisibility",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "adminSearch.tokens",
-          "arrayConfig": "CONTAINS"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "clubs",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "publicPage.publishStatus",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "appVisibility",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "adminSearch.tokens",
-          "arrayConfig": "CONTAINS"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "clubs",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "publicPage.citySlug",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "publicPage.publishStatus",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "appVisibility",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "adminSearch.tokens",
-          "arrayConfig": "CONTAINS"
         }
       ]
     },
@@ -4726,6 +5036,42 @@
       "fields": [
         {
           "fieldPath": "eventId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "mode": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "reviews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "moderationStatus",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "mode": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "reviews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "eventId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "moderationStatus",
           "mode": "ASCENDING"
         },
         {
@@ -8043,6 +8389,20 @@
       ]
     },
     {
+      "collectionGroup": "contactPermissions",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "senderId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "granted",
+          "arrayConfig": "CONTAINS"
+        }
+      ]
+    },
+    {
       "collectionGroup": "guestMessagingPermissions",
       "queryScope": "COLLECTION",
       "fields": [
@@ -8056,6 +8416,28 @@
         },
         {
           "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "programGuestDirectoryViews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "programId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "kind",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "guest.displayName",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sourceId",
           "order": "ASCENDING"
         }
       ]
@@ -8190,6 +8572,46 @@
         },
         {
           "fieldPath": "startsAtMillis",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "organizerProgramViews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdBy",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startsAtMillis",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "hostContactMergeCandidateViews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "updatedAtMillis",
           "order": "DESCENDING"
         },
         {
@@ -8802,6 +9224,25 @@
     },
     {
       "collectionGroup": "commandReceipts",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "DESCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "arrayConfig": "CONTAINS",
+          "queryScope": "COLLECTION"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "dispatchDeadLetters",
       "fieldPath": "expiresAt",
       "ttl": true,
       "indexes": [

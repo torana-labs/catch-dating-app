@@ -1,0 +1,22 @@
+{
+  "id": "programWorkSummaries",
+  "path": "programWorkSummaries/{programId}",
+  "rulesMatch": "/programWorkSummaries/{programId}",
+  "typescriptInterface": "ProgramWorkSummaryDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/program_work_shell.rules.test.cjs",
+  "rulesTestNames": [
+    "lets any live account with access read the header, and no one else"
+  ],
+  "owner": "Programme read model projector: programWorkViewTriggers",
+  "writerContext": "programmes",
+  "read": "any account with live access to the programme gets it by id through its programAccessViews document, while not deleted; never listed",
+  "write": "server only; written from the programme",
+  "exportedFunctions": [
+    "dispatchOrganizerPrograms"
+  ],
+  "migrationNotes": [
+    "Exactly the programme fields getProgramWorkAccess returns: title, kind, zone, status, capabilities and vehicle classes. The program-work-views copy-forward migration creates summaries for programmes that predate the trigger.",
+    "The sender connection, entitlement, branding and request hash stay in organizerPrograms."
+  ]
+}

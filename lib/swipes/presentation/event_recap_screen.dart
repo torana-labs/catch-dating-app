@@ -9,14 +9,13 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_host_photos.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/actions/organizer_follow_controller.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_follow_controller.dart';
-import 'package:catch_dating_app/reviews/shared/star_rating_row.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/pages/reviews/star_rating_row.dart';
 import 'package:catch_dating_app/swipes/presentation/event_host_photo_viewer_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_host_photos_section.dart';
@@ -29,6 +28,7 @@ import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_platform/routing/onboarding_completion_location.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -251,7 +251,6 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
     ref.invalidate(watchEventProvider(intent.eventId));
     ref.invalidate(swipeCandidatesProvider(intent.eventId));
     ref.invalidate(uidProvider);
-    ref.invalidate(eventRecapViewModelProvider(intent.eventId));
   }
 
   void _retryRosterProfiles(Iterable<String> attendeeIds) {

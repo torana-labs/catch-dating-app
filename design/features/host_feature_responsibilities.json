@@ -277,7 +277,7 @@
               "lib/hosts/presentation/host_audience_view.dart",
               "lib/hosts/people/people_screen.dart",
               "lib/hosts/forms/forms_screen.dart",
-              "lib/routing/go_router.dart",
+              "lib/routing/host_router.dart",
               "lib/routing/shell/host_shell_screen.dart"
             ],
             "examples": []
@@ -391,7 +391,7 @@
             "answer": "Server callables enforce organizer authorization; selecting an organizer in the UI is not an authorization boundary. Saved-audience operations require an authenticated organizer manager. Participant-controlled communication permission, verified identity, and organizer suppression remain separate authorities. Audience hands a saved audience or eligible contact context to Inbox, which owns composition, sender setup and delivery. Membership alone does not grant permission to send. The People-to-Inbox segment shortcut requires a scoped eligible selection; a generic all-contacts view or live search is not a substitute for a saved audience.",
             "sourcePaths": [
               "functions/src/organizers/organizerSavedAudiences.ts",
-              "functions/src/shared/organizerCommunicationPreferences.ts",
+              "functions/src/shared/contactPermissions.ts",
               "lib/hosts/presentation/customers/host_customers_screen_state.dart",
               "lib/hosts/people/people_screen.dart",
               "tool/architecture/check_host_crm_boundaries.mjs"
@@ -668,13 +668,13 @@
         },
         {
           "id": "search_header",
-          "file": "lib/chats/presentation/inbox/chats_search_header_controller.dart",
+          "file": "lib/pages/inbox/chats_search_header_controller.dart",
           "symbol": "ChatsSearchHeaderController",
           "role": "Actions: toggle_search."
         },
         {
           "id": "search_query",
-          "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
+          "file": "lib/pages/inbox/chats_list_view_model.dart",
           "symbol": "ChatSearchQuery",
           "role": "Actions: search_inquiries."
         },
@@ -737,16 +737,11 @@
         "contracts/callable_responses/organizer_campaign_response.schema.json",
         "contracts/callable_responses/create_organizer_post_response.schema.json",
         "contracts/callable_responses/list_organizer_campaigns_response.schema.json",
-        "contracts/callable_responses/list_organizer_whatsapp_threads_response.schema.json",
-        "contracts/callable_responses/get_organizer_whatsapp_thread_response.schema.json",
         "contracts/callable_responses/organizer_messaging_setup_response.schema.json",
         "contracts/callable_responses/send_event_broadcast_response.schema.json",
         "contracts/callable_responses/send_organizer_whatsapp_reply_response.schema.json",
         "contracts/callables/complete_organizer_whatsapp_connection_payload.schema.json",
         "contracts/callables/create_organizer_post_payload.schema.json",
-        "contracts/callables/list_organizer_campaigns_payload.schema.json",
-        "contracts/callables/list_organizer_whatsapp_threads_payload.schema.json",
-        "contracts/callables/get_organizer_whatsapp_thread_payload.schema.json",
         "contracts/callables/organizer_campaign_action_payload.schema.json",
         "contracts/callables/send_organizer_whatsapp_test_payload.schema.json",
         "contracts/callables/send_event_broadcast_payload.schema.json",
@@ -758,7 +753,7 @@
         "contracts/callables/replan_organizer_manual_send_tasks_payload.schema.json",
         "contracts/firestore/organizers.schema.json",
         "contracts/firestore/event_broadcasts.schema.json",
-        "contracts/firestore/event_participations.schema.json",
+        "contracts/firestore/event_bookings.schema.json",
         "contracts/firestore/events.schema.json",
         "contracts/firestore/matches.schema.json",
         "contracts/firestore/organizer_campaign_recipients.schema.json",
@@ -917,7 +912,7 @@
         },
         {
           "id": "auth_controller",
-          "file": "lib/auth/presentation/auth_session_controller.dart",
+          "file": "lib/pages/account/auth_session_controller.dart",
           "symbol": "AuthSessionController",
           "role": "Actions: sign_out."
         },
@@ -945,7 +940,7 @@
         "contracts/firestore/host_payment_accounts.schema.json",
         "contracts/firestore/host_profiles.schema.json",
         "contracts/firestore/organizer_team_memberships.schema.json",
-        "contracts/firestore/organizer_communication_preferences.schema.json",
+        "contracts/firestore/contact_permissions.schema.json",
         "contracts/storage/organizer_logo_images.schema.json",
         "contracts/storage/organizer_photos.schema.json"
       ],

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -10,7 +11,7 @@ void main() {
     final violations = <String>[];
 
     for (final file
-        in Directory('test')
+        in repoDirectory('test')
             .listSync(recursive: true)
             .whereType<File>()
             .where((file) => file.path.endsWith('.dart'))) {

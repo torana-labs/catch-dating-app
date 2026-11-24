@@ -2,12 +2,14 @@ import type {PublicEventPaymentDocument as Payment} from
   "../../shared/generated/firestoreAdminTypes";
 import {validatePublicEventAdmissionReceiptDocument} from
   "../../shared/generated/validators/publicEventAdmissionReceiptDocument";
-import {canonicalJson} from "../eventSetupPreferences/resolve";
+import {canonicalJson} from
+  "../../domain/formats/eventSetupPreferences/resolve";
 import {
   PUBLIC_ADMISSION_COLLECTION,
   publicAdmissionId,
-} from "./paymentLedger";
-import {registrationUnavailable} from "./policy";
+} from "../../domain/payments/publicEventPayments";
+import {registrationUnavailable} from
+  "../../domain/events/publicRegistrationTerms";
 
 /** Immutable source-specific financial proof, not current seat authority. */
 export function assertPublicPaidAdmission(

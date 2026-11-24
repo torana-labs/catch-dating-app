@@ -5,8 +5,10 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audienc
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_filter_options.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_summary.dart';
+import 'package:catch_kernel/read_model_family.dart';
+import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -23,24 +25,39 @@ class HostSavedAudienceRepository {
   const HostSavedAudienceRepository(this._functions, {required this.summaries});
 
   /// The group directory read model (`hostGroupSummaries`, `hostGroupDetails`).
-  final HostSummaryReader summaries;
+  final ScopedReadModelReader summaries;
   static const groupMarker = 'groupSummaryVersion';
 
   final FirebaseFunctions _functions;
 
-  Future<HostSavedAudienceFilterOptions> savedAudienceFilterOptions(
+  /// What the organizer's audiences and automations can name, from its
+  /// `hostAudienceSourceViews` row while listened to (the filterOptions of
+  /// `listOrganizerSavedAudiences` are no longer read). An organizer whose
+  /// view the server has not written has nothing to name yet.
+  Stream<HostSavedAudienceFilterOptions> watchFilterOptions(
     String organizerId,
-  ) => callHostCrm(
-    _functions,
-    name: 'listOrganizerSavedAudiences',
-    payload: ListOrganizerSavedAudiencesCallableRequest(
-      organizerId: organizerId,
-      limit: 1,
-      includeFilterOptions: true,
-    ).toJson(),
-    action: 'load audience filter choices',
-    parse: HostSavedAudienceFilterOptions.fromCallableData,
-  );
+  ) => summaries
+      .watchDocument(
+        collection: 'hostAudienceSourceViews',
+        scopeId: organizerId,
+        id: organizerId,
+      )
+      .map((view) {
+        if (view == null) return const HostSavedAudienceFilterOptions.empty();
+        // Sources over the server's bounds fail as the callable did.
+        if (view['unavailableReason'] case final String reason) {
+          throw BackendOperationException(
+            code: 'resource-exhausted',
+            message: reason,
+            context: const BackendErrorContext(
+              service: BackendService.firestore,
+              action: 'watch audience filter choices',
+              resource: 'hostAudienceSourceViews',
+            ),
+          );
+        }
+        return HostSavedAudienceFilterOptions.fromMap(view);
+      });
 
   /// The first [limit] active groups by name (or most recently previewed)
   /// while they are listened to: a group saved, archived or previewed
@@ -53,7 +70,7 @@ class HostSavedAudienceRepository {
   }) => summaries
       .watchWindow(
         collection: 'hostGroupSummaries',
-        organizerId: organizerId,
+        scopeId: organizerId,
         orderField: byName ? 'searchName' : 'lastPreviewAtMillis',
         descending: !byName,
         limit: limit,
@@ -79,7 +96,7 @@ class HostSavedAudienceRepository {
   }) => summaries
       .watchDocument(
         collection: 'hostGroupDetails',
-        organizerId: organizerId,
+        scopeId: organizerId,
         id: audienceId,
         marker: groupMarker,
       )
@@ -93,11 +110,11 @@ class HostSavedAudienceRepository {
     required bool Function() isCurrent,
   }) async {
     if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
-    await summaries.activatedDirectory(organizerId, groupMarker);
+    await summaries.activatedReadiness(organizerId, groupMarker);
     if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
     final data = await summaries.document(
       collection: 'hostGroupDetails',
-      organizerId: organizerId,
+      scopeId: organizerId,
       id: audienceId,
     );
     if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
@@ -179,26 +196,38 @@ class HostSavedAudienceRepository {
   );
 }
 
-// keepalive: Reuse the callable client for the saved audience subdomain.
+// keepalive: account-free: Reuse the callable client for the saved audience
+// subdomain.
 @Riverpod(keepAlive: true)
 HostSavedAudienceRepository hostSavedAudienceRepository(Ref ref) {
   ref.watch(authenticatedSessionProvider);
   return HostSavedAudienceRepository(
     ref.watch(firebaseFunctionsProvider),
-    summaries: HostSummaryReader(
+    summaries: ScopedReadModelReader(
       ref.watch(firebaseFirestoreProvider),
+      family: hostReadModels,
       actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
     ),
   );
 }
 
+/// The organizer's audience sources, live.
 @riverpod
-Future<HostSavedAudienceFilterOptions> hostSavedAudienceFilterOptions(
+Stream<HostSavedAudienceFilterOptions> hostSavedAudienceFilterOptionsStream(
   Ref ref,
   String organizerId,
 ) => ref
     .watch(hostSavedAudienceRepositoryProvider)
-    .savedAudienceFilterOptions(organizerId);
+    .watchFilterOptions(organizerId);
+
+/// The organizer's audience sources, for the automation and audience
+/// editors.
+@riverpod
+Future<HostSavedAudienceFilterOptions> hostSavedAudienceFilterOptions(
+  Ref ref,
+  String organizerId,
+) =>
+    ref.watch(hostSavedAudienceFilterOptionsStreamProvider(organizerId).future);
 
 /// A selected group's definition, as a listener on `hostGroupDetails`.
 @riverpod

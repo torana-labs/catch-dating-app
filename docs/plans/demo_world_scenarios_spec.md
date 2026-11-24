@@ -22,7 +22,7 @@ selective rendering) are CAT-239, owned separately.
   - `tool/demo/demo_seed/scenarios/*.json` (seed worlds and capture stories);
   - Dart capture builders in `test/ui_captures/fixtures/`;
   - TypeScript Storybook fixtures in `website/src/stories/fixtures/`;
-  - Widgetbook fixtures in `lib/design_fixtures/`;
+  - Widgetbook fixtures in `packages/catch_test_support/lib/design_fixtures/`;
   - schema fixtures in `contracts/fixtures/`.
 
   Nothing is shared, so the same fictional event can show different details on

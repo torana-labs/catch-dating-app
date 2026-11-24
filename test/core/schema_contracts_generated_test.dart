@@ -1,13 +1,12 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_platform/schema_contracts/generated/event_assistance_kinds.g.dart'
     as schema_contracts;
 import 'package:catch_platform/schema_contracts/generated/profile_schema_contracts.g.dart';
+import 'package:catch_test_support/contract_schemas.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
-
-import '../support/contract_schemas.dart';
 
 void main() {
   test('generated event assistance catalog is exhaustive and typed', () {
@@ -262,7 +261,7 @@ void main() {
       'ExternalEventDocument',
       'EventPrivateAccessDocument',
       'EventInviteLinkDocument',
-      'EventParticipationDocument',
+      'EventBookingDocument',
       'EventWaitlistOfferDocument',
       'EventSuccessPlanDocument',
       'EventSuccessFeedbackDocument',
@@ -328,7 +327,7 @@ void main() {
       'firestore/external_events.schema.json',
       'firestore/event_private_access.schema.json',
       'firestore/event_invite_links.schema.json',
-      'firestore/event_participations.schema.json',
+      'firestore/event_bookings.schema.json',
       'firestore/event_waitlist_offers.schema.json',
       'firestore/event_success_plans.schema.json',
       'firestore/event_success_feedback.schema.json',
@@ -417,7 +416,7 @@ void main() {
         'valid/event_invite_link_doc.json',
       ),
       _SchemaFixtureCase.valid(
-        'EventParticipationDocument',
+        'EventBookingDocument',
         'valid/event_participation_doc.json',
       ),
       _SchemaFixtureCase.valid(
@@ -610,7 +609,7 @@ void main() {
 }
 
 Object? _readFixture(String path) {
-  return jsonDecode(File('contracts/fixtures/$path').readAsStringSync());
+  return jsonDecode(repoFile('contracts/fixtures/$path').readAsStringSync());
 }
 
 class _SchemaFixtureCase {

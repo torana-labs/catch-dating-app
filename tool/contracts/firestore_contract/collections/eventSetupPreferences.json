@@ -1,0 +1,20 @@
+{
+  "id": "eventSetupPreferences",
+  "path": "eventSetupPreferences/{eventId}",
+  "rulesMatch": "/eventSetupPreferences/{eventId}",
+  "typescriptInterface": "EventSetupPreferencesDocument",
+  "dartModel": "lib/contexts/forms/data/event_offer_configuration_reads.dart",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers get event setup preferences and nothing else"
+  ],
+  "owner": "private event setup operations",
+  "writerContext": "events",
+  "read": "current organizer managers get the document under rules for offer settings; an event without saved settings reads as missing; nobody lists the collection",
+  "write": "server only",
+  "exportedFunctions": [
+    "updatePrivateEventPreferences",
+    "configureEventOfferPreferences",
+    "onHostEventSetupViewPreferencesChanged"
+  ]
+}

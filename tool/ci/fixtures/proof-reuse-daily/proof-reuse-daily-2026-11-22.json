@@ -1,0 +1,215 @@
+{
+  "schema": "proof-reuse-daily/1",
+  "date": "2026-11-22",
+  "generatedAt": "2026-11-23T03:41:00.000Z",
+  "source": {
+    "workflowRunId": 9000,
+    "sha": "1111111111111111111111111111111111111111"
+  },
+  "runs": 4,
+  "runsWithVerdicts": 3,
+  "cancelledRuns": 1,
+  "runsWithoutReport": [
+    {
+      "run": 503,
+      "attempt": 1,
+      "conclusion": "cancelled"
+    }
+  ],
+  "lanes": {
+    "contracts": {
+      "class": "eligible",
+      "compared": 3,
+      "eligible": 3,
+      "wouldReuse": 2,
+      "hits": 1,
+      "misses": 1,
+      "wouldReuseUnchecked": 1,
+      "uncheckedHits": 1,
+      "uncheckedMisses": 0,
+      "uncheckedSavedSeconds": 180,
+      "keysMatchPassed": 3,
+      "savedSeconds": 240,
+      "potentialSavedSeconds": 0,
+      "potentialMisses": 0,
+      "reasons": {
+        "keys_match": 2,
+        "keys_match_unchecked": 1
+      }
+    },
+    "flutter": {
+      "class": "pr_subset",
+      "compared": 2,
+      "eligible": 0,
+      "wouldReuse": 0,
+      "hits": 0,
+      "misses": 0,
+      "wouldReuseUnchecked": 0,
+      "uncheckedHits": 0,
+      "uncheckedMisses": 0,
+      "uncheckedSavedSeconds": 0,
+      "keysMatchPassed": 2,
+      "savedSeconds": 0,
+      "potentialSavedSeconds": 1800,
+      "potentialMisses": 1,
+      "reasons": {
+        "pr_subset": 2
+      }
+    },
+    "operations": {
+      "class": "eligible",
+      "compared": 3,
+      "eligible": 3,
+      "wouldReuse": 0,
+      "hits": 0,
+      "misses": 0,
+      "wouldReuseUnchecked": 1,
+      "uncheckedHits": 0,
+      "uncheckedMisses": 1,
+      "uncheckedSavedSeconds": 0,
+      "keysMatchPassed": 1,
+      "savedSeconds": 0,
+      "potentialSavedSeconds": 0,
+      "potentialMisses": 0,
+      "reasons": {
+        "keys_differ": 1,
+        "pr_not_passed": 1,
+        "keys_match_unchecked": 1
+      }
+    }
+  },
+  "totals": {
+    "savedSeconds": 240,
+    "potentialSavedSeconds": 1800,
+    "misses": 1,
+    "potentialMisses": 1,
+    "uncheckedSavedSeconds": 180,
+    "uncheckedMisses": 1
+  },
+  "misses": [
+    {
+      "lane": "contracts",
+      "run": 502,
+      "attempt": 1,
+      "runUrl": "https://github.com/owner/repo/actions/runs/502",
+      "pr": 42,
+      "real": "failure",
+      "unchecked": false
+    },
+    {
+      "lane": "operations",
+      "run": 504,
+      "attempt": 1,
+      "runUrl": "https://github.com/owner/repo/actions/runs/504",
+      "pr": 44,
+      "real": "failure",
+      "unchecked": true
+    }
+  ],
+  "perRun": [
+    {
+      "run": 501,
+      "attempt": 2,
+      "pr": 41,
+      "createdAt": "2026-11-22T09:00:00Z",
+      "lanes": {
+        "contracts": {
+          "outcome": "hit",
+          "class": "eligible",
+          "reason": "keys_match",
+          "keysMatch": true,
+          "prResult": "success",
+          "real": "success",
+          "potential": false,
+          "realSeconds": 240
+        },
+        "flutter": {
+          "outcome": "ran",
+          "class": "pr_subset",
+          "reason": "pr_subset",
+          "keysMatch": true,
+          "prResult": "success",
+          "real": "success",
+          "potential": true,
+          "realSeconds": 1800
+        },
+        "operations": {
+          "outcome": "ran",
+          "class": "eligible",
+          "reason": "keys_differ",
+          "keysMatch": false,
+          "prResult": "success",
+          "real": "success",
+          "potential": false,
+          "realSeconds": 120
+        }
+      }
+    },
+    {
+      "run": 502,
+      "attempt": 1,
+      "pr": 42,
+      "createdAt": "2026-11-22T14:05:00Z",
+      "lanes": {
+        "contracts": {
+          "outcome": "miss",
+          "class": "eligible",
+          "reason": "keys_match",
+          "keysMatch": true,
+          "prResult": "success",
+          "real": "failure",
+          "potential": false,
+          "realSeconds": 210
+        },
+        "flutter": {
+          "outcome": "ran",
+          "class": "pr_subset",
+          "reason": "pr_subset",
+          "keysMatch": true,
+          "prResult": "success",
+          "real": "failure",
+          "potential": true,
+          "realSeconds": 600
+        },
+        "operations": {
+          "outcome": "ran",
+          "class": "eligible",
+          "reason": "pr_not_passed",
+          "keysMatch": true,
+          "prResult": "skipped",
+          "real": "skipped",
+          "potential": false,
+          "realSeconds": 0
+        }
+      }
+    },
+    {
+      "run": 504,
+      "attempt": 1,
+      "pr": 44,
+      "createdAt": "2026-11-22T18:30:00Z",
+      "lanes": {
+        "contracts": {
+          "outcome": "hit_unchecked",
+          "class": "eligible",
+          "reason": "keys_match_unchecked",
+          "keysMatch": true,
+          "prResult": "success",
+          "real": "success",
+          "potential": false,
+          "realSeconds": 180
+        },
+        "operations": {
+          "outcome": "miss_unchecked",
+          "class": "eligible",
+          "reason": "keys_match_unchecked",
+          "keysMatch": true,
+          "prResult": "success",
+          "real": "failure",
+          "potential": false,
+          "realSeconds": 90
+        }
+      }
+    }
+  ]
+}

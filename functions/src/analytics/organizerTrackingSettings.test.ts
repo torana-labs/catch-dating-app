@@ -3,10 +3,10 @@ import assert from "node:assert/strict";
 import {CallableRequest} from "firebase-functions/v2/https";
 import type {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
 import {getOrganizerTrackingSettingsHandler,
-  setOrganizerTrackingSettingsHandler,
-  readPublicOrganizerTrackingSettingsHandler, trackingConfigurationEligible,
-  trackingEventPolicyReason, TrackingSettingsDependencies} from
+  setOrganizerTrackingSettingsHandler, TrackingSettingsDependencies} from
   "./organizerTrackingSettings";
+import {organizerTrackingEventPolicyReason, trackingConfigurationEligible} from
+  "./organizerTrackingPublicationPolicy";
 
 function fixture() {
   const docs: Record<string, Record<string, unknown>> = {
@@ -49,7 +49,7 @@ function fixture() {
   }})};
   const deps: TrackingSettingsDependencies = {
     firestore: () => db as unknown as FirebaseFirestore.Firestore,
-    checkRateLimit: async () => undefined, checkIpRateLimit: () => true,
+    checkRateLimit: async () => undefined,
     now: () => 1000,
   };
   return {docs, deps, reads};
@@ -108,200 +108,17 @@ test("live enable and invalid/unclaimed writes blocked", async () => {
   await assert.rejects(setOrganizerTrackingSettingsHandler(request(command),
     deps), {code: "failed-precondition"});
 });
-test("public strips IDs; rejects foreign/private/suppressed", async () => {
-  const {deps, docs} = fixture();
-  docs["organizerTrackingSettings/org-1"] = {...command, enabled: true,
-    updatedByUid: "private"};
-  const payload = {organizerId: "org-1", eventId: "event-1"};
-  const result = await readPublicOrganizerTrackingSettingsHandler(request(
-    payload, ""), deps);
-  assert.equal(result.enabled, false); assert.equal(result.metaPixelId, null);
-  assert.equal(result.googleMeasurementId, null);
-  docs["events/event-1"].organizerId = "foreign";
-  await assert.rejects(readPublicOrganizerTrackingSettingsHandler(request(
-    payload), deps), {code: "permission-denied"});
-  docs["events/event-1"].organizerId = "org-1";
-  for (const state of ["private", "draft"]) {
-    docs["events/event-1"].publicationState = state;
-    await assert.rejects(readPublicOrganizerTrackingSettingsHandler(request(
-      payload), deps), {code: "failed-precondition"});
-  }
-  docs["organizers/org-1"].claim = {state: "suppressed"};
-  await assert.rejects(readPublicOrganizerTrackingSettingsHandler(request(
-    {organizerId: "org-1", eventId: null}), deps),
-  {code: "failed-precondition"});
-});
-test("sensitive/unknown classification and public rate limits", async () => {
-  assert.equal(trackingEventPolicyReason({}), "eventClassificationUnavailable");
-  assert.equal(trackingEventPolicyReason({eventFormat: {version: 1,
+
+test("event classification and tracking eligibility", () => {
+  assert.equal(organizerTrackingEventPolicyReason({}),
+    "eventClassificationUnavailable");
+  assert.equal(organizerTrackingEventPolicyReason({eventFormat: {version: 1,
     activityKind: "running", interactionModel: "freeFormMixer"}}),
   "sensitiveEvent");
   assert.equal(trackingConfigurationEligible({ownerUserId: "x",
     ownership: {state: "programmatic"},
     claim: {state: "unclaimed"}} as OrganizerDocument), false);
-  const {deps} = fixture();
-  await assert.rejects(readPublicOrganizerTrackingSettingsHandler(request(
-    {organizerId: "org-1", eventId: null}), {...deps, checkIpRateLimit: (
-  ) => false}), {code: "resource-exhausted"});
+  assert.equal(trackingConfigurationEligible({ownerUserId: "x",
+    ownership: {state: "userCreated"},
+    claim: {state: "unclaimed"}} as OrganizerDocument), true);
 });
-
-
-test("public sensitive/unknown/unclaimed and missing scopes", async () => {
-  const {deps, docs} = fixture();
-  const payload = {organizerId: "org-1", eventId: "event-1"};
-  docs["events/event-1"].eventFormat = {version: 1,
-    activityKind: "singlesMixer", interactionModel: "freeFormMixer"};
-  const sensitive = await readPublicOrganizerTrackingSettingsHandler(
-    request(payload, ""), deps);
-  assert.equal(sensitive.policyReason, "sensitiveEvent");
-  assert.equal(sensitive.enabled, false);
-  assert.equal(sensitive.metaPixelId, null);
-  delete docs["events/event-1"].eventFormat;
-  assert.equal((await readPublicOrganizerTrackingSettingsHandler(
-    request(payload, ""), deps)).policyReason,
-  "eventClassificationUnavailable");
-  await assert.rejects(readPublicOrganizerTrackingSettingsHandler(
-    request({...payload, eventId: "missing"}, ""), deps),
-  {code: "not-found"});
-  await assert.rejects(readPublicOrganizerTrackingSettingsHandler(
-    request({...payload, organizerId: "missing"}, ""), deps),
-  {code: "not-found"});
-  docs["organizers/org-1"].ownership = {state: "programmatic"};
-  docs["organizers/org-1"].claim = {state: "unclaimed"};
-  await assert.rejects(readPublicOrganizerTrackingSettingsHandler(
-    request(payload, ""), deps), {code: "failed-precondition"});
-});
-
-
-test("public external event stays excluded without canonical policy", async (
-) => {
-  const {deps, docs, reads} = fixture();
-  docs["externalEvents/external-1"] = {
-    canonicalHostId: "org-1", publicationStatus: "public", status: "active",
-    eventFormat: {version: 1, activityKind: "running",
-      interactionModel: "pacePods"},
-  };
-  docs["organizerTrackingSettings/org-1"] = {...command, enabled: true};
-  const payload = {organizerId: "org-1", eventId: "external-1"};
-  const result = await readPublicOrganizerTrackingSettingsHandler(
-    request(payload, ""), deps);
-  assert.deepEqual(result, {...payload, enabled: false, metaPixelId: null,
-    googleMeasurementId: null,
-    policyReason: "eventClassificationUnavailable",
-    profileTagsEligible: false});
-  assert.equal(reads.includes("organizerTrackingSettings/org-1"), false);
-  delete docs["externalEvents/external-1"].eventFormat;
-  assert.equal((await readPublicOrganizerTrackingSettingsHandler(
-    request(payload, ""), deps)).policyReason,
-  "eventClassificationUnavailable");
-});
-
-for (const [label, overrides, code] of [
-  ["foreign", {canonicalHostId: "foreign"}, "permission-denied"],
-  ["missing canonical host", {canonicalHostId: null}, "permission-denied"],
-  ["private", {publicationStatus: "private"}, "failed-precondition"],
-  ["draft", {publicationStatus: "draft"}, "failed-precondition"],
-  ["cancelled", {status: "cancelled"}, "failed-precondition"],
-] as const) {
-  test(`public external ${label} event is rejected`, async () => {
-    const {deps, docs} = fixture();
-    docs["externalEvents/external-1"] = {
-      canonicalHostId: "org-1", publicationStatus: "public", status: "active",
-      ...overrides,
-    };
-    await assert.rejects(readPublicOrganizerTrackingSettingsHandler(request(
-      {organizerId: "org-1", eventId: "external-1"}, ""), deps), {code});
-  });
-}
-
-test("public external event requires an existing claimed organizer", async (
-) => {
-  const {deps, docs} = fixture();
-  const payload = {organizerId: "org-1", eventId: "external-1"};
-  await assert.rejects(readPublicOrganizerTrackingSettingsHandler(
-    request(payload, ""), deps), {code: "not-found"});
-  docs["externalEvents/external-1"] = {
-    canonicalHostId: "org-1", publicationStatus: "public", status: "active",
-  };
-  docs["organizers/org-1"].ownership = {state: "programmatic"};
-  docs["organizers/org-1"].claim = {state: "unclaimed"};
-  await assert.rejects(readPublicOrganizerTrackingSettingsHandler(
-    request(payload, ""), deps), {code: "failed-precondition"});
-});
-
-for (const [label, overrides, code] of [
-  ["foreign", {organizerId: "foreign"},
-    "permission-denied"],
-  ["conflicting owner", {organizerId: "foreign"}, "permission-denied"],
-  ["private", {publicationState: "private"}, "failed-precondition"],
-  ["cancelled", {status: "cancelled"}, "failed-precondition"],
-] as const) {
-  test(`native ${label} event cannot fall back to public external`, async (
-  ) => {
-    const {deps, docs, reads} = fixture();
-    Object.assign(docs["events/event-1"], overrides);
-    docs["externalEvents/event-1"] = {
-      canonicalHostId: "org-1", publicationStatus: "public", status: "active",
-    };
-    await assert.rejects(readPublicOrganizerTrackingSettingsHandler(request(
-      {organizerId: "org-1", eventId: "event-1"}, ""), deps), {code});
-    assert.equal(reads.includes("externalEvents/event-1"), false);
-  });
-}
-
-test("native classification takes precedence over external identity", async (
-) => {
-  const {deps, docs, reads} = fixture();
-  docs["events/event-1"].eventFormat = {version: 1,
-    activityKind: "singlesMixer", interactionModel: "freeFormMixer"};
-  docs["externalEvents/event-1"] = {
-    canonicalHostId: "foreign", publicationStatus: "private",
-    status: "cancelled",
-  };
-  const result = await readPublicOrganizerTrackingSettingsHandler(request(
-    {organizerId: "org-1", eventId: "event-1"}, ""), deps);
-  assert.equal(result.policyReason, "sensitiveEvent");
-  assert.equal(result.enabled, false);
-  assert.equal(result.metaPixelId, null);
-  assert.equal(result.googleMeasurementId, null);
-  assert.equal(reads.includes("externalEvents/event-1"), false);
-});
-
-
-test("public organiser read says whether Catch's tags may run on the profile",
-  async () => {
-    const {deps, docs} = fixture();
-    const payload = {organizerId: "org-1", eventId: null};
-    const read = async () => (await readPublicOrganizerTrackingSettingsHandler(
-      request(payload, ""), deps)).profileTagsEligible;
-    assert.equal(await read(), true);
-    docs["events/event-2"] = {organizerId: "org-1",
-      publicationState: "published", status: "active",
-      eventFormat: {version: 1, activityKind: "singlesMixer",
-        interactionModel: "freeFormMixer"}};
-    assert.equal(await read(), false);
-    docs["events/event-2"].status = "cancelled";
-    assert.equal(await read(), true);
-    docs["externalEvents/external-1"] = {canonicalHostId: "org-1",
-      publicationStatus: "public", status: "active",
-      startTime: {toMillis: () => Date.now() + 86400000},
-      title: "Open session", description: "All welcome.",
-      activity: {version: 1, activityKind: "openActivity",
-        interactionModel: "openFormat", source: "heuristic"}};
-    assert.equal(await read(), false);
-    (docs["externalEvents/external-1"].activity as Record<string, unknown>)
-      .activityKind = "yoga";
-    assert.equal(await read(), true);
-  });
-
-test("event reads never claim profile eligibility; no class is revealed",
-  async () => {
-    const {deps} = fixture();
-    const result = await readPublicOrganizerTrackingSettingsHandler(request(
-      {organizerId: "org-1", eventId: "event-1"}, ""), deps);
-    assert.equal(result.profileTagsEligible, false);
-    assert.deepEqual(Object.keys(result).sort(), ["enabled", "eventId",
-      "googleMeasurementId", "metaPixelId", "organizerId", "policyReason",
-      "profileTagsEligible"]);
-    assert.equal(result.enabled, false);
-  });

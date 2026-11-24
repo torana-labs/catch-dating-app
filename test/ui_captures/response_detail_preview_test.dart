@@ -1,8 +1,10 @@
 import 'dart:io';
+
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../test_pump_helpers.dart';
+
 import 'catalog/screen_capture_catalog.dart';
 import 'support/capture_device.dart';
 import 'support/capture_pump.dart';

@@ -1,0 +1,152 @@
+import 'package:catch_dating_app/contexts/audience/data/read_models/host_contact_summary_reads.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
+import 'package:catch_kernel/read_model_family.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  test('pages have stable ties and never include another organizer', () async {
+    final db = FakeFirebaseFirestore();
+    final reader = ScopedReadModelReader(
+      db,
+      family: hostReadModels,
+      actorId: () => 'host',
+    );
+    for (final id in ['a', 'b', 'c']) {
+      await db.collection('hostContactSummaries').doc(id).set({
+        'organizerId': 'org',
+        'version': 1,
+        'lastSeenAtMillis': 10,
+      });
+    }
+    await db.collection('hostContactSummaries').doc('foreign').set({
+      'organizerId': 'other',
+      'version': 1,
+      'lastSeenAtMillis': 20,
+    });
+    final first = await reader.page(
+      collection: 'hostContactSummaries',
+      scopeId: 'org',
+      orderField: 'lastSeenAtMillis',
+      descending: true,
+      queryKey: 'all',
+      limit: 2,
+    );
+    expect(first.documents.length, 2);
+    expect(first.nextCursor, isNotNull);
+    // The fake SDK cannot cursor over FieldPath.documentId. The real SDK
+    // continuation (including ties) is exercised in firestore.rules.test.cjs.
+    expect(
+      ReadModelCursor.decode(
+        first.nextCursor,
+        ReadModelCursor.scope('host', 'org', 'hostContactSummaries', 'all'),
+      ),
+      [10, 'b'],
+    );
+    await expectLater(
+      reader.page(
+        collection: 'hostContactSummaries',
+        scopeId: 'other',
+        orderField: 'lastSeenAtMillis',
+        descending: true,
+        queryKey: 'all',
+        limit: 2,
+        cursor: first.nextCursor,
+      ),
+      throwsFormatException,
+    );
+    await expectLater(
+      reader.page(
+        collection: 'hostContactSummaries',
+        scopeId: 'org',
+        orderField: 'lastSeenAtMillis',
+        descending: true,
+        queryKey: 'new',
+        limit: 2,
+        cursor: first.nextCursor,
+      ),
+      throwsFormatException,
+    );
+  });
+
+  test('a read crossing an account switch never delivers its result', () async {
+    final db = FakeFirebaseFirestore();
+    var actor = 'first';
+    final reader = ScopedReadModelReader(
+      db,
+      family: hostReadModels,
+      actorId: () => actor,
+    );
+    final pending = reader.readiness('org');
+    actor = 'second';
+    await expectLater(pending, throwsStateError);
+  });
+
+  test(
+    'a directory without its marker fails instead of reading a Function',
+    () async {
+      final db = FakeFirebaseFirestore();
+      final reads = HostContactSummaryReads(
+        ScopedReadModelReader(
+          db,
+          family: hostReadModels,
+          actorId: () => 'host',
+        ),
+      );
+      await expectLater(
+        reads.list('org', query: const HostAudienceQuery(), limit: 30),
+        throwsStateError,
+      );
+      await expectLater(reads.watchDirectory('org'), emitsError(isStateError));
+      await db.collection('hostDirectorySummaries').doc('org').set({
+        'organizerId': 'org',
+        'contactSummaryVersion': 0,
+      });
+      await expectLater(
+        reads.count('org', const HostAudienceQuery()),
+        throwsStateError,
+      );
+      // A name search reads the directory too, so it needs the marker.
+      await expectLater(
+        reads.list(
+          'org',
+          query: const HostAudienceQuery(search: 'asha'),
+          limit: 30,
+        ),
+        throwsStateError,
+      );
+    },
+  );
+
+  test('the directory serves one segment, never segments with tags', () {
+    expect(
+      HostContactSummaryReads.supports(
+        const HostAudienceQuery(segment: HostAudienceSegment.newToOrganizer),
+      ),
+      isTrue,
+    );
+    expect(
+      HostContactSummaryReads.supports(
+        const HostAudienceQuery(
+          segment: HostAudienceSegment.newToOrganizer,
+          manualTagId: 'tag',
+        ),
+      ),
+      isFalse,
+    );
+    // Segments from different filter groups mean "all of" on the server; one
+    // array-contains-any can only read "any of".
+    expect(
+      HostContactSummaryReads.supports(
+        const HostAudienceQuery(
+          segments: {
+            HostAudienceSegment.regular,
+            HostAudienceSegment.whatsappReachable,
+          },
+        ),
+      ),
+      isFalse,
+    );
+  });
+}

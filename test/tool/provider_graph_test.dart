@@ -9,6 +9,7 @@ import '../../tool/architecture/provider_graph.dart';
 
 void main() {
   _appPackageProviderGraphTests();
+  _screenRootCrossFeatureTests();
   _cacheRuleTests();
   test(
     'provider graph resolves providers, consumers, aliases, and mutations',
@@ -803,6 +804,44 @@ int generatedOnly(Ref ref) => 1;
   );
 }
 
+void _screenRootCrossFeatureTests() {
+  test('screens under apps/*/lib and lib/pages compose other features '
+      'without a cross-feature-presentation candidate', () async {
+    final root = await _fixtureRoot('''
+@riverpod
+int eventViewModel(Ref ref) => 1;
+''', path: 'lib/events/presentation/event_view_model.dart');
+    addTearDown(() => root.delete(recursive: true));
+    for (final entry in const {
+      'apps/host/lib/today/today_view_model.dart': '''
+@riverpod
+int todayViewModel(Ref ref) => ref.watch(eventViewModelProvider);
+''',
+      'lib/pages/event/presentation/event_page_view_model.dart': '''
+@riverpod
+int eventPageViewModel(Ref ref) => ref.watch(eventViewModelProvider);
+''',
+      'lib/dashboard/presentation/dashboard_view_model.dart': '''
+@riverpod
+int dashboardViewModel(Ref ref) => ref.watch(eventViewModelProvider);
+''',
+    }.entries) {
+      final file = File('${root.path}/${entry.key}');
+      await file.parent.create(recursive: true);
+      await file.writeAsString(entry.value);
+    }
+
+    final graph = await buildProviderGraph(root);
+
+    expect(
+      graph.candidates
+          .where((c) => c.kind == 'cross-feature-presentation')
+          .map((c) => c.subject),
+      ['dashboardViewModelProvider -> eventViewModelProvider'],
+    );
+  });
+}
+
 void _cacheRuleTests() {
   const repository = r'''
 class EventsRepository {
@@ -866,9 +905,35 @@ $repository
 // keepalive: shared for every screen.
 @Riverpod(keepAlive: true)
 Stream<int> keptEvent(Ref ref) => ref.watch(eventsRepositoryProvider).watchEvent();
-// keepalive: account-free reference data every account shares.
+// keepalive: account-free: reference data every account shares.
 @Riverpod(keepAlive: true)
 Future<int> cities(Ref ref) => ref.watch(eventsRepositoryProvider).fetchEvent();
+// keepalive: session-root: the signed-in identity the router follows.
+@Riverpod(keepAlive: true)
+Stream<String?> uid(Ref ref) => ref.watch(authRepositoryProvider).uidChanges();
+// keepalive: session-root: claims to follow the account but reads none.
+@Riverpod(keepAlive: true)
+int pretender(Ref ref) => 1;
+// keepalive: account-free: search text kept across tabs.
+@Riverpod(keepAlive: true)
+class SearchText extends _\$SearchText {
+  String build() {
+    ref.listen(uidProvider, (_, _) => state = '');
+    return '';
+  }
+}
+// keepalive: account-free: an app-wide notice queue.
+@Riverpod(keepAlive: true)
+class Notices extends _\$Notices {
+  List<String> build() => const [];
+}
+@riverpod
+class Draft extends _\$Draft {
+  String build() {
+    ref.retainForCurrentSession();
+    return '';
+  }
+}
 @riverpod
 Future<int> inline(Ref ref) {
   ref.retain(CachePolicy(retain: Duration.zero, staleAfter: null));
@@ -923,6 +988,10 @@ int eventViewModel(Ref ref) => ref.watch(watchEventProvider).value ?? 0;
 
     expect(found, {
       'CACHE-LIFETIME-001 keptEventProvider keepAlive',
+      'KEEPALIVE-SCOPE-001 keptEventProvider no-scope',
+      'KEEPALIVE-SCOPE-001 pretenderProvider session-root-without-identity',
+      'KEEPALIVE-SCOPE-001 searchTextProvider account-state',
+      'KEEPALIVE-SCOPE-001 storageProvider no-scope',
       'CACHE-POLICY-001 inlineProvider policy:CachePolicy(retain: Duration.zero, staleAfter: null)',
       'CACHE-POLICY-001 inline inline-policy',
       'CACHE-ACCOUNT-001 unkeyedProvider no-session-key',
@@ -938,56 +1007,43 @@ int eventViewModel(Ref ref) => ref.watch(watchEventProvider).value ?? 0;
       graph.providers.singleWhere((p) => p.name == 'unkeyedProvider').lifetimes,
       ['timed'],
     );
+    expect(
+      graph.providers.singleWhere((p) => p.name == 'draftProvider').lifetimes,
+      ['session'],
+    );
   });
 
-  test('the cache baseline only shrinks', () async {
+  test('every cache finding fails the check', () async {
     final root = await _fixtureRoot('''
 final journalProvider = Provider<int>((ref) => 1);
 ''');
     addTearDown(() => root.delete(recursive: true));
-    final unlisted = await buildProviderGraph(root);
+    final failing = await buildProviderGraph(root);
     expect(
       providerGraphCheckFailures(
-        unlisted,
-      ).where((failure) => failure.startsWith('unlisted')).single,
+        failing,
+      ).where((failure) => failure.startsWith('cache finding')).single,
       startsWith(
-        'unlisted cache finding KEEPALIVE-MANUAL-001 '
+        'cache finding KEEPALIVE-MANUAL-001 '
         'lib/sample/data/fixture.dart#journalProvider no-keepalive-marker',
       ),
     );
-
-    await File(
-      '${root.path}/$cacheBaselinePath',
-    ).parent.create(recursive: true);
-    await writeCacheBaseline(root, unlisted.cacheFindings);
-    final listed = await buildProviderGraph(root);
-    expect(listed.unlistedCacheFindings, isEmpty);
-    expect(
-      providerGraphCheckFailures(listed),
-      isNot(contains(startsWith('unlisted'))),
-    );
+    expect(failing.isHealthy, isFalse);
 
     await _writeFixture(root, 'lib/sample/data/fixture.dart', '''
-final journalProvider = Provider<int>((ref) => 1);
-final anotherProvider = Provider<int>((ref) => 1);
-''');
-    final grown = await buildProviderGraph(root);
-    expect(grown.unlistedCacheFindings.single.symbol, 'anotherProvider');
-
-    await _writeFixture(root, 'lib/sample/data/fixture.dart', '''
-// keepalive: one journal per process.
+// keepalive: account-free: one journal per process.
 final journalProvider = Provider<int>((ref) => 1);
 ''');
     final fixed = await buildProviderGraph(root);
-    expect(fixed.unlistedCacheFindings, isEmpty);
-    expect(fixed.staleCacheBaselineEntries.single.symbol, 'journalProvider');
-    expect(fixed.health['unlistedCacheFindings'], isEmpty);
+    expect(fixed.cacheFindings, isEmpty);
+    expect(fixed.health['cacheFindings'], isEmpty);
   });
 
-  test('the CLI writes a reviewed cache baseline on request', () {
-    final options = parseProviderGraphCliOptions(['--write-cache-baseline']);
-    expect(options.writeCacheBaseline, isTrue);
-    expect(options.check, isFalse);
+  test('the CLI has no baseline to write', () {
+    expect(
+      () => parseProviderGraphCliOptions(['--write-cache-baseline']),
+      throwsFormatException,
+    );
   });
 }
 

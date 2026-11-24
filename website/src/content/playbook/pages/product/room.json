@@ -154,7 +154,7 @@
             {
               "time": "Sunday evening",
               "title": "The next run, already easier",
-              "body": "Runners get a feedback prompt after the finish, and your report shows who came for the first time and who came back."
+              "body": "Runners on the {{brand.name}} app get a feedback prompt after the finish, and your report shows who came for the first time and who came back."
             }
           ],
           "media": {"kind": "capture", "slot": "host-formats-pods"}
@@ -189,7 +189,7 @@
             {
               "time": "Next morning",
               "title": "Hear how it went",
-              "body": "Guests get a feedback prompt, and can say privately who they talked to. You see the totals, never who named whom."
+              "body": "Guests on the {{brand.name}} app get a feedback prompt, and can say privately who they talked to. You see the totals, never who named whom."
             }
           ],
           "media": {"kind": "capture", "slot": "host-formats-rules"}
@@ -450,7 +450,7 @@
       ],
       "media": {
         "kind": "capture",
-        "slot": "host-today"
+        "slot": "host-create-first-event"
       }
     }
   ]

@@ -12,7 +12,9 @@ import {
   sendCrossPathsInvitationHandler,
 } from "./invitations";
 import {crossPathsProfileFingerprint} from "./showcaseEligibility";
-import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
+import {publishedEventSetup} from "../domain/events/testing/eventSetupFixture";
+import {withEventSeatLedgers} from
+  "../events/seatAuthority/eventSeatLedgerTestSupport";
 
 type FakeData = Record<string, unknown>;
 type Filter = {field: string; op: string; value: unknown};
@@ -157,7 +159,7 @@ const eventStartMillis = nowMillis + 24 * 60 * 60 * 1000;
 function harness(overrides: Record<string, FakeData | undefined> = {}) {
   const senderProfile = profile("sender", "man");
   const recipientProfile = profile("recipient", "woman");
-  const firestore = new FakeFirestore({
+  const firestore = new FakeFirestore(withEventSeatLedgers({
     "users/sender": user("man", ["woman"]),
     "users/recipient": user("woman", ["man"]),
     "publicProfiles/sender": senderProfile,
@@ -165,12 +167,12 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
     "crossPathsShowcaseEligibility/sender": showcase(senderProfile),
     "crossPathsShowcaseEligibility/recipient": showcase(recipientProfile),
     "events/event-1": event(),
-    "eventParticipations/event-1_sender": participation("sender"),
-    "eventParticipations/event-1_recipient": participation("recipient"),
+    "eventBookings/event-1_sender": participation("sender"),
+    "eventBookings/event-1_recipient": participation("recipient"),
     "eventCrossPathsConsents/event-1_sender": consent("sender"),
     "eventCrossPathsConsents/event-1_recipient": consent("recipient"),
     ...overrides,
-  });
+  }));
   const rateLimitCalls: string[] = [];
   return {
     firestore,
@@ -285,7 +287,7 @@ test(
   async () => {
     const cases: Record<string, FakeData | undefined>[] = [
       {"eventCrossPathsConsents/event-1_sender": undefined},
-      {"eventParticipations/event-1_recipient": undefined},
+      {"eventBookings/event-1_recipient": undefined},
       {"crossPathsShowcaseEligibility/recipient": undefined},
       {"blocks/sender__recipient": {
         blockerUserId: "sender",
@@ -396,7 +398,7 @@ test("pending invitation cannot be accepted after unpublication", async () => {
 test("accepting an unbooked request reserves a companion spot without booking",
   async () => {
     const h = harness({
-      "eventParticipations/event-1_sender": undefined,
+      "eventBookings/event-1_sender": undefined,
       "eventCrossPathsConsents/event-1_sender": undefined,
     });
     const sent = await sendCrossPathsInvitationHandler(
@@ -424,7 +426,7 @@ test("accepting an unbooked request reserves a companion spot without booking",
       "held"
     );
     assert.equal(
-      h.firestore.read("eventParticipations/event-1_sender"),
+      h.firestore.read("eventBookings/event-1_sender"),
       undefined
     );
   });
@@ -644,12 +646,10 @@ function readyPairHarness() {
   const source = event();
   const policy = deriveEventSeatPolicy(source);
   return harness({
-    "eventParticipations/event-1_sender": undefined,
+    "eventBookings/event-1_sender": undefined,
     "eventCrossPathsConsents/event-1_sender": undefined,
-    "eventSeatMigrationFences/event-1": {eventId: "event-1",
-      migrationRevision: 1, state: "ready"},
     "eventSeatLedgers/event-1": {eventId: "event-1", capacity: policy.capacity,
-      occupied: policy.capacity - 1, revision: 1, capacityRevision: 1,
+      occupied: (policy.capacity ?? 1) - 1, revision: 1, capacityRevision: 1,
       migrationRevision: 1, state: "ready", policyHash: policy.policyHash,
       policyVersion: policy.policyVersion},
   });
@@ -688,18 +688,14 @@ test("ready pair acceptance and repeated cancellation update one held seat",
     assert.equal(ledger().revision, 3);
   });
 
-test("pair acceptance respects checkout inventory and locked migration",
+test("pair acceptance respects checkout inventory and a revoked ledger",
   async () => {
-    for (const locked of [false, true]) {
+    for (const revoked of [false, true]) {
       const h = readyPairHarness();
-      if (locked) {
-        h.firestore.write("eventSeatMigrationFences/event-1",
-          {eventId: "event-1", migrationRevision: 1, state: "locked"});
-      } else {
-        h.firestore.write("eventSeatLedgers/event-1", {
-          ...h.firestore.read("eventSeatLedgers/event-1"), checkoutHeld: 1});
-      }
-      await assert.rejects(acceptPair(h), locked ? /locked/u : /full/u);
+      h.firestore.write("eventSeatLedgers/event-1", {
+        ...h.firestore.read("eventSeatLedgers/event-1"),
+        ...(revoked ? {state: "revoked"} : {checkoutHeld: 1})});
+      await assert.rejects(acceptPair(h), revoked ? Error : /full/u);
       assert.equal(h.firestore.collectionRows("crossPathsPairHolds").length, 0);
       assert.equal(h.firestore.collectionRows("eventSeatReservations").length,
         0);

@@ -3,7 +3,8 @@ import {
   applySeatPlan, assertReadySeatState, CanonicalSeatIdentity,
   prepareSeatCommand,
   PreparedSeatPlan, SeatAuthorityError, SeatCommand, SeatLedger,
-  SeatReceipt, SeatReservation, SeatResult, SeatTransaction,
+  SeatCapacity, SeatReceipt, SeatReservation, SeatResult, SeatTransaction,
+  validSeatCapacity,
 } from "./seatAuthority";
 import {applySeatBatch, prepareSeatBatch, PreparedSeatBatch,
   SeatBatchCommand, SeatBatchResult} from "./seatBatch";
@@ -15,6 +16,11 @@ const receiptCollection = "eventSeatRequestReceipts";
 function id(eventId: string, key: string): string {
   return createHash("sha256").update(`${eventId}\u001f${key}`)
     .digest("hex");
+}
+
+/** The `eventSeatReservations` document id of one canonical identity. */
+export function seatReservationDocId(eventId: string, key: string): string {
+  return id(eventId, key);
 }
 
 function object(value: unknown): value is Record<string, unknown> {
@@ -79,7 +85,7 @@ export interface SeatIdentityAuthority<Subject> {
 export interface FirestoreSeatPreparation {
   plan: PreparedSeatPlan;
   seatTransaction: FirestoreSeatTransaction;
-  eventCapacity: number;
+  eventCapacity: SeatCapacity;
   eventCapacityRevision: number;
   eventPolicyHash: string;
   eventPolicyVersion: SeatLedger["policyVersion"];
@@ -95,24 +101,29 @@ function canonical(value: unknown): unknown {
   return value;
 }
 
-/** Source-owned policy projection for migration and transactional reads. */
+/** Source-owned policy projection for transactional seat reads.
+ *
+ * `capacity` is the event's `capacityLimit`, or null while none is set.
+ * `policyHash` covers the capacity and the admission policy together;
+ * `termsHash` covers the admission policy alone, so a capacity-only edit is
+ * told apart from an admission policy change. `termsConfigured` is false
+ * until the host sets a capacity or an admission policy: a new event's
+ * ledger starts with no limit and no terms.
+ */
 export function deriveEventSeatPolicy(value: unknown): {
   organizerId: string;
-  capacity: number;
+  capacity: SeatCapacity;
   policyHash: string;
+  termsHash: string;
+  termsConfigured: boolean;
   policyVersion: SeatLedger["policyVersion"];
   status: "active" | "cancelled";
 } {
+  const capacity = object(value) ? value.capacityLimit ?? null : null;
   if (!object(value) ||
-      (typeof value.organizerId !== "string" ||
-        value.organizerId.length === 0) &&
-        (typeof value.organizerId !== "string" ||
-          value.organizerId.length === 0) ||
-      typeof value.organizerId === "string" &&
-        value.organizerId.length > 0 &&
-        value.organizerId !== value.organizerId ||
-      !Number.isSafeInteger(value.capacityLimit) ||
-      Number(value.capacityLimit) < 1 ||
+      typeof value.organizerId !== "string" ||
+      value.organizerId.length === 0 ||
+      !validSeatCapacity(capacity) ||
       !["active", "cancelled"].includes(String(value.status))) {
     throw new SeatAuthorityError("unavailable",
       "Event capacity or revision is not configured.");
@@ -124,7 +135,7 @@ export function deriveEventSeatPolicy(value: unknown): {
     if (!object(policy) ||
         policy.version !== 1 && policy.version !== 2 ||
         !object(policy.admission) ||
-        policy.admission.capacityLimit !== value.capacityLimit) {
+        (policy.admission.capacityLimit ?? null) !== capacity) {
       throw new SeatAuthorityError("unavailable",
         "Event capacity policy is malformed or disagrees with the event.");
     }
@@ -132,13 +143,16 @@ export function deriveEventSeatPolicy(value: unknown): {
     admissionPolicy = policy.admission;
   }
   const policyHash = createHash("sha256").update(JSON.stringify(canonical({
-    capacity: value.capacityLimit, policyVersion, admissionPolicy,
+    capacity, policyVersion, admissionPolicy,
   }))).digest("hex");
-  return {organizerId: typeof value.organizerId === "string" &&
-    value.organizerId.length > 0 ? value.organizerId : String(
-      value.organizerId),
-  capacity: value.capacityLimit as number, policyHash, policyVersion,
-  status: value.status as "active" | "cancelled"};
+  const terms = object(admissionPolicy) ?
+    {...admissionPolicy, capacityLimit: undefined} : admissionPolicy;
+  const termsHash = createHash("sha256").update(JSON.stringify(canonical({
+    policyVersion, admissionPolicy: terms,
+  }))).digest("hex");
+  return {organizerId: value.organizerId, capacity, policyHash, termsHash,
+    termsConfigured: capacity !== null || admissionPolicy !== null,
+    policyVersion, status: value.status as "active" | "cancelled"};
 }
 
 /** Validate a retained seat in the caller's current transaction, with no
@@ -226,7 +240,7 @@ export function applyFirestoreSeat(prepared: FirestoreSeatPreparation):
 export interface FirestoreSeatBatchPreparation {
   plan: PreparedSeatBatch;
   seatTransaction: FirestoreSeatTransaction;
-  eventCapacity: number;
+  eventCapacity: SeatCapacity;
   eventPolicyHash: string;
 }
 

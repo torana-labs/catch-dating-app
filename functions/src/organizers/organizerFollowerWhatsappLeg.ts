@@ -2,7 +2,6 @@ import * as admin from "firebase-admin";
 import type {
   OrganizerCampaignDocument,
   OrganizerCampaignRecipientDocument,
-  OrganizerCommunicationPreferenceDocument,
   OrganizerFollowDocument,
   OrganizerMessageTemplateDocument,
   OrganizerPostDeliveryOperationDocument,
@@ -10,16 +9,16 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import type {CreateOrganizerPostCallableResponse} from
   "../shared/generated/createOrganizerPostCallableResponse";
-import {organizerCommunicationPreferenceId} from
-  "../shared/organizerCommunicationPreferences";
+import {contactPermissionRef, readContactPermission} from
+  "../shared/contactPermissions";
 import {WHATSAPP_ENDPOINT_STOPS, whatsappStopId} from
   "../shared/organizerWhatsappStops";
 import {organizerRelationshipId} from "../shared/relationshipDocuments";
 import {
   emptyCampaignAudienceCounts,
   hashCanonical,
-  hashEndpoint,
 } from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {
   effectiveFollowerWhatsappStatus,
   followerUpdateTemplateReady,
@@ -48,7 +47,6 @@ import {
 type Operation = OrganizerPostDeliveryOperationDocument;
 type Leg = NonNullable<Operation["whatsapp"]>;
 type Recipient = OrganizerCampaignRecipientDocument;
-type Preference = OrganizerCommunicationPreferenceDocument;
 type ExclusionReason = NonNullable<Recipient["exclusionReason"]>;
 type QueryRead = (query: FirebaseFirestore.Query) =>
   Promise<FirebaseFirestore.QuerySnapshot>;
@@ -223,25 +221,23 @@ export async function prepareFollowerWhatsappPage(params: {
       return {kind: "skipped"};
     }
     const endpointHash = hashEndpoint(phone);
-    const [preferenceSnap, stopSnap, blocked] = await Promise.all([
-      params.db.collection("organizerCommunicationPreferences").doc(
-        organizerCommunicationPreferenceId(params.operation.organizerId,
-          follow.uid)).get(),
+    const sender = {kind: "organizer" as const,
+      organizerId: params.operation.organizerId};
+    const [permissionSnap, stopSnap, blocked] = await Promise.all([
+      contactPermissionRef(params.db, follow.uid, sender).get(),
       params.db.collection(WHATSAPP_ENDPOINT_STOPS).doc(
         whatsappStopId(params.operation.organizerId, endpointHash)).get(),
       params.deps.hasBlockingRelationship(params.db,
         params.operation.authorUid, [follow.uid]),
     ]);
-    const preference = preferenceSnap.data() as Preference | undefined;
+    const permission = readContactPermission(permissionSnap.data(), sender);
     const stoppedAt = stopSnap.data()?.stoppedAt;
-    if (blocked || !preference ||
-        preference.organizerId !== params.operation.organizerId ||
-        preference.uid !== follow.uid ||
-        effectiveFollowerWhatsappStatus(preference, phone,
+    if (blocked || !permission ||
+        effectiveFollowerWhatsappStatus(permission, phone,
           typeof stoppedAt === "number" ? stoppedAt : null) !== "optedIn") {
       return {kind: "skipped"};
     }
-    const grant = preference.whatsappPurposes!.followerUpdates!;
+    const grant = permission.grants["whatsapp:followerUpdates"]!;
     const recipientId = followerWhatsappRecipientId(leg.campaignId,
       follow.uid);
     return {kind: "queued", recipientId, recipient: {
@@ -249,7 +245,7 @@ export async function prepareFollowerWhatsappPage(params: {
       campaignId: leg.campaignId,
       contactId: null,
       followerRecipient: {uid: follow.uid, postId: params.operation.postId,
-        permissionReceiptId: grant.currentReceiptId!},
+        permissionReceiptId: grant.receiptId!},
       channel: "whatsapp",
       eligibility: "eligible",
       exclusionReason: null,
@@ -396,23 +392,20 @@ export async function followerRecipientSuppression(params: {
         params.recipient.endpointHash) {
     return "invalidEndpoint";
   }
-  const [followSnap, preferenceSnap, stopSnap] = await Promise.all([
+  const sender = {kind: "organizer" as const,
+    organizerId: params.organizerId};
+  const [followSnap, permissionSnap, stopSnap] = await Promise.all([
     params.tx.get(params.db.collection("organizerFollows").doc(
       organizerRelationshipId(params.organizerId, follower.uid))),
-    params.tx.get(params.db.collection("organizerCommunicationPreferences")
-      .doc(organizerCommunicationPreferenceId(params.organizerId,
-        follower.uid))),
+    params.tx.get(contactPermissionRef(params.db, follower.uid, sender)),
     params.tx.get(params.db.collection(WHATSAPP_ENDPOINT_STOPS).doc(
       whatsappStopId(params.organizerId, params.recipient.endpointHash))),
   ]);
   if (followSnap.data()?.status !== "active") return "optedOut";
-  const preference = preferenceSnap.data() as Preference | undefined;
-  if (!preference || preference.organizerId !== params.organizerId ||
-      preference.uid !== follower.uid) {
-    return "unknownPermission";
-  }
+  const permission = readContactPermission(permissionSnap.data(), sender);
+  if (!permission) return "unknownPermission";
   const stoppedAt = stopSnap.data()?.stoppedAt;
-  const status = effectiveFollowerWhatsappStatus(preference,
+  const status = effectiveFollowerWhatsappStatus(permission,
     params.recipient.endpointE164,
     typeof stoppedAt === "number" ? stoppedAt : null);
   return status === "optedIn" ? null :

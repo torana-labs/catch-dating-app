@@ -144,7 +144,7 @@ test("repository findings are identical when docs and workflows are sparse omitt
       rootEntry("docs", {
         expectation: "tracked",
         kind: "curated-artifact",
-        consumer: "tool/tools_manifest.json",
+        consumer: "tool/manifest/manifest.json",
       }),
       rootEntry("tool", {expectation: "tracked"}),
     ],
@@ -155,7 +155,7 @@ test("repository findings are identical when docs and workflows are sparse omitt
     auditPolicies: [],
   };
   write(root, "tool/repository_root_manifest.json", `${JSON.stringify(manifest)}\n`);
-  write(root, "tool/tools_manifest.json", '{"tools":[]}\n');
+  write(root, "tool/manifest/manifest.json", '{"version":1}\n');
   write(root, ".github/workflows/ci.yml", "name: CI\n");
   write(root, "docs/readme.md", "[machine](/Users/example/private.md)\n");
   git(root, ["init", "-q"]);

@@ -5,7 +5,6 @@ import {
   createEventReviewHandler,
   createPublicOrganizerReviewHandler,
   deleteEventReviewHandler,
-  listPublicOrganizerReviewsHandler,
   setReviewResponseHandler,
   updateEventReviewHandler,
 } from "./mutateReview";
@@ -259,7 +258,7 @@ function baseDocs(overrides: Record<string, FakeData | undefined> = {}) {
       displayName: "Runner",
     },
     "events/event-1": {organizerId: "club-1"},
-    "eventParticipations/event-1_runner-1": {
+    "eventBookings/event-1_runner-1": {
       eventId: "event-1",
       organizerId: "club-1",
       uid: "runner-1",
@@ -469,14 +468,6 @@ test("ineligible canonical organizer rejects public reviews",
     }));
 
     await assert.rejects(
-      () => listPublicOrganizerReviewsHandler(
-        request(null, {organizerId: "club-1"}),
-        h.deps
-      ),
-      (error) => assertHttpsCode(error, "failed-precondition")
-    );
-
-    await assert.rejects(
       () => createPublicOrganizerReviewHandler(
         request(null, {
           organizerId: "club-1",
@@ -512,97 +503,9 @@ test("createPublicOrganizerReviewHandler rejects noncanonical paths",
     );
   });
 
-test("listPublicOrganizerReviewsHandler rejects unpublished pages",
-  async () => {
-    const h = harness(baseDocs({
-      "organizers/club-1": organizerDoc({
-        publishStatus: "suppressed",
-        robots: "noindex, follow",
-      }),
-    }));
-
-    await assert.rejects(
-      () => listPublicOrganizerReviewsHandler(
-        request(null, {organizerId: "club-1"}),
-        h.deps
-      ),
-      (error) => assertHttpsCode(error, "failed-precondition")
-    );
-  });
-
-test("listPublicOrganizerReviewsHandler returns only public published reviews",
-  async () => {
-    const h = harness(baseDocs({
-      "reviews/public-1": {
-        organizerId: "club-1",
-        eventId: null,
-        reviewerUserId: null,
-        reviewerName: "Anonymous reviewer",
-        rating: 4,
-        comment: "Good public review.",
-        verificationStatus: "unverified",
-        source: "publicListing",
-        moderationStatus: "published",
-        isAnonymous: true,
-        createdAt: {_seconds: 30, _nanoseconds: 0},
-      },
-      "reviews/verified-1": {
-        organizerId: "club-1",
-        eventId: "event-1",
-        reviewerUserId: "runner-1",
-        reviewerName: "Runner",
-        rating: 5,
-        comment: "Great Catch event.",
-        createdAt: {_seconds: 20, _nanoseconds: 0},
-      },
-      "reviews/pending-1": {
-        organizerId: "club-1",
-        eventId: null,
-        reviewerUserId: null,
-        reviewerName: "Pending",
-        rating: 3,
-        comment: "Pending review.",
-        moderationStatus: "pending",
-        createdAt: {_seconds: 40, _nanoseconds: 0},
-      },
-      "reviews/other-club": {
-        organizerId: "club-2",
-        reviewerName: "Other",
-        rating: 5,
-        comment: "Other club.",
-        createdAt: {_seconds: 50, _nanoseconds: 0},
-      },
-    }));
-
-    const result = await listPublicOrganizerReviewsHandler(
-      request(null, {organizerId: "club-1"}),
-      h.deps
-    );
-
-    assert.deepEqual(
-      result.reviews.map((review) => ({
-        id: review.id,
-        verificationStatus: review.verificationStatus,
-        source: review.source,
-      })),
-      [
-        {
-          id: "public-1",
-          verificationStatus: "unverified",
-          source: "publicListing",
-        },
-        {
-          id: "verified-1",
-          verificationStatus: "verified",
-          source: "catchEvent",
-        },
-      ]
-    );
-  });
-
 test("createEventReviewHandler rejects non-attendees", async () => {
   const h = harness(baseDocs({
-    "eventParticipations/event-1_runner-1": {
+    "eventBookings/event-1_runner-1": {
       eventId: "event-1",
       organizerId: "club-1",
       uid: "runner-1",

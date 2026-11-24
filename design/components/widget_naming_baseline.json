@@ -33,7 +33,7 @@
       ]
     },
     {
-      "file": "lib/events/shared/event_check_in_qr_scanner.dart",
+      "file": "lib/pages/check_in/event_check_in_qr_scanner.dart",
       "name": "EventCheckInQrScanner",
       "issues": [
         "noncanonical-feature-widget-file",

@@ -1,10 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/payments/data/host_organizer_bills_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_organizer_billing_status.dart';
 import 'package:catch_dating_app/contexts/payments/parts/host_organizer_bill_row.dart';
-import 'package:cloud_functions/cloud_functions.dart';
+import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -89,7 +90,7 @@ void main() {
   // Admin's test reads the same file, so the two surfaces can't drift apart on
   // money.
   group('the figures shared with Admin', () {
-    final file = File(
+    final file = repoFile(
       'test/contexts/payments/fixtures/organizer_kept_months.json',
     );
     final months =
@@ -169,7 +170,7 @@ void main() {
     await view('lantern_2026-09', '2026-09', 1);
     await view('lantern_2026-10', '2026-10', 2);
     await view('other_2026-11', '2026-11', 3, organizerId: 'other');
-    final repository = HostOrganizerBillsRepository(_NoFunctions(), db);
+    final repository = HostOrganizerBillsRepository(db);
     final bills = await repository.watch('lantern').first;
     expect(bills.map((bill) => bill.billId), [
       'lantern_2026-10',
@@ -192,6 +193,79 @@ void main() {
     expect(paid.first.canPay, isFalse);
   });
 
+  group('billing status from the owner view', () {
+    const day = Duration(days: 1);
+    final start = DateTime.utc(2026, 10, 1, 12);
+    Map<String, Object?> view({int? days = 30, bool started = true}) => {
+      'organizerId': 'lantern',
+      'trial': {
+        'days': days,
+        'anchor': started ? 'firstEvent' : null,
+        'startsAtMillis': started ? start.millisecondsSinceEpoch : null,
+        'endsAtMillis': started
+            ? start.add(day * (days ?? 0)).millisecondsSinceEpoch
+            : null,
+      },
+      'plan': {
+        'plan': 'toolsOnly',
+        'status': 'active',
+        'startsAtMillis': 5,
+        'endsAtMillis': null,
+      },
+      'version': 1,
+    };
+    HostOrganizerBillingStatus at(Map<String, Object?> data, DateTime now) =>
+        HostOrganizerBillingStatus.fromView(data, now);
+
+    test('works out the trial as the server did', () {
+      final active = at(
+        view(),
+        start.add(day * 18 + const Duration(seconds: 5)),
+      );
+      expect(active.trial.state, HostTrialState.active);
+      expect(active.trial.daysLeft, 12);
+      expect(active.plan.kind, HostPlanKind.toolsOnly);
+      expect(active.plan.state, HostPlanState.active);
+      expect(
+        at(view(), start.subtract(day)).trial.state,
+        HostTrialState.scheduled,
+      );
+      expect(at(view(), start.add(day * 30)).trial.state, HostTrialState.ended);
+      expect(
+        at(view(started: false), start).trial.state,
+        HostTrialState.notStarted,
+      );
+      expect(at(view(days: 0), start).trial.state, HostTrialState.none);
+      expect(
+        at(view(days: null, started: false), start).trial.state,
+        HostTrialState.unconfigured,
+      );
+    });
+
+    test('changes when the days left tick down', () {
+      final now = start.add(day * 18 + const Duration(hours: 1));
+      final trial = at(view(), now).trial;
+      final next = trial.nextChangeAfter(now)!;
+      expect(next.isAfter(now), isTrue);
+      expect(at(view(), next).trial.daysLeft, trial.daysLeft! - 1);
+    });
+
+    test('the owner reads it live from the view', () async {
+      final db = FakeFirebaseFirestore();
+      await db
+          .collection(HostOrganizerBillsRepository.billingViews)
+          .doc('lantern')
+          .set(view());
+      final repository = HostOrganizerBillsRepository(
+        db,
+        AppClock.custom(() => start.add(day * 2)),
+      );
+      final status = await repository.watchStatus('lantern').first;
+      expect(status.trial.state, HostTrialState.active);
+      expect(status.trial.daysLeft, 28);
+    });
+  });
+
   test('a bill view for another organizer is rejected', () async {
     final db = FakeFirebaseFirestore();
     await db.collection('hostOrganizerBillViews').doc('forged').set({
@@ -202,9 +276,7 @@ void main() {
       'bill': _bill(),
       'version': 1,
     });
-    final repository = HostOrganizerBillsRepository(_NoFunctions(), db);
+    final repository = HostOrganizerBillsRepository(db);
     await expectLater(repository.watch('lantern').first, throwsA(anything));
   });
 }
-
-class _NoFunctions extends Fake implements FirebaseFunctions {}

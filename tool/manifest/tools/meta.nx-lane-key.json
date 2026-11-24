@@ -1,0 +1,26 @@
+{
+  "id": "meta:nx-lane-key",
+  "category": "meta",
+  "path": "tool/nx/lane_key.mjs",
+  "command": "node --test tool/nx/lane_key.test.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Lane input keys for result reuse (design B): a hash of every file a CI lane reads (Nx task input patterns, caller-graph files, selectors) in one commit's tree, computed from git ls-tree so a consumer can recompute a producer's key. The test checks each lane's key covers every file Nx hashes for its tasks. lane_key_replay.mjs estimates per-lane reuse over history; nothing in CI uses keys yet.",
+  "checks": [
+    "node --check tool/nx/lane_key.mjs",
+    "node --test tool/nx/lane_key.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/nx/lane_key.test.mjs",
+    "tool/nx/lane_key_replay.mjs",
+    "nx.json",
+    "tool/nx/catch_projects.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  }
+}

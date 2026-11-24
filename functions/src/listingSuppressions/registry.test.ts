@@ -19,16 +19,13 @@ import {contractValidator} from "../shared/contractTestValidators";
 import {LISTING_SUPPRESSIONS, suppressionModule} from "./registry";
 import * as nominationsModule from "../operations/supplyIntake/nominations";
 import * as refreshModule from "../operations/supplyIntake/organizerEventRefresh";
-import * as triggersModule from "../operations/supplyIntake/triggers";
-import * as instantDraftRequestModule from "../instantDrafts/request";
-import * as instantDraftStatusModule from "../instantDrafts/status";
 import * as whatsappReceiptModule from "../catchMessaging/whatsappReceiptConsumer";
 import * as listingReadyModule from "../catchMessaging/listingReadyReply";
 import * as instagramWebhookModule from "../organizers/instagramClaimWebhook";
 import * as approvalModule from "../admin/organizerListingApproval";
 import * as createOrganizerModule from "../organizers/createOrganizer";
 import * as formImportModule from "../commands/importFormFromLink";
-import * as pageReadModule from "../commands/pageRead";
+import * as pageReadModule from "../domain/supply/pageRead";
 import * as eventImportModule from "../commands/importEventFromLink";
 import * as organizerImportModule from "../commands/importOrganizerFromLink";
 
@@ -245,12 +242,10 @@ test("listing approval refuses a listing whose built links match a case, and fai
 });
 
 test("every Function that reaches a suppression check binds the registry key", () => {
-  const modules = [nominationsModule, refreshModule, triggersModule, instantDraftRequestModule,
-    instantDraftStatusModule, whatsappReceiptModule, listingReadyModule, instagramWebhookModule, approvalModule,
+  const modules = [nominationsModule, refreshModule, whatsappReceiptModule, listingReadyModule, instagramWebhookModule, approvalModule,
     createOrganizerModule, formImportModule, eventImportModule, organizerImportModule];
   const exports = Object.assign({}, ...modules) as Record<string, {__endpoint?: {secretEnvironmentVariables?: Array<{key: string}>}}>;
   for (const name of ["adminNominateOrganizer", "onSalesInboundIntentForIntake", "adminRefreshOrganizerEvents",
-    "onSupplyIntakeRequestCreated", "recoverSupplyIntakeRequests", "requestInstantDraft", "getInstantDraft",
     "onCatchWhatsappWebhookEventCreated", "onMessageNominationListingReady", "instagramClaimWebhook",
     "adminApproveOrganizerListing", "createOrganizer", "importFormFromLink", "importEventFromLink",
     "importOrganizerFromLink"]) {

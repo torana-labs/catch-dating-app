@@ -1,0 +1,15 @@
+{
+  "id": "firebase:register-app-check-debug-token",
+  "category": "firebase",
+  "path": "tool/firebase/register_app_check_debug_token.mjs",
+  "command": "node tool/firebase/register_app_check_debug_token.mjs",
+  "surface": "remote-write",
+  "guard": "none",
+  "guardReason": "Registers the debug token with App Check by default; --dry-run is the opt-in preview.",
+  "status": "active",
+  "description": "Registers a known local Firebase App Check debug token for an explicit app id.",
+  "checks": [
+    "node --check tool/firebase/register_app_check_debug_token.mjs"
+  ],
+  "runbook": "tool/README.md#app-check-debug-tokens"
+}

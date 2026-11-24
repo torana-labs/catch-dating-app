@@ -1,13 +1,13 @@
 import type {WebsiteAccount} from "../../firebase";
+import type {AccountPlan} from "./accountRows";
+import type {AccountView} from "./useWebsiteAccountController";
 
+export type {AccountPlan} from "./accountRows";
 export const accountTabs = ["plans", "following", "reviews", "details", "messages", "privacy"] as const;
 export type AccountTab = (typeof accountTabs)[number];
-export type AccountPlan = NonNullable<WebsiteAccount["plans"]>[number];
-type AccountFollow = NonNullable<WebsiteAccount["follows"]>[number];
-type AccountReview = NonNullable<WebsiteAccount["reviews"]>[number];
 export type AccountMessages = NonNullable<WebsiteAccount["messages"]>[number];
 
-/** Every section the page reads in its one account request. */
+/** Every section the page reads: messages through the account read, the rest from listeners. */
 export const accountSections = ["plans", "following", "reviews", "messages"] as const;
 
 /** The tab named by the URL fragment (`#following`), or Plans. */
@@ -76,7 +76,7 @@ export function passPayload(eventId: string, ticketCode: string): string {
 }
 
 /** The download: exactly what the page read, as a readable JSON file. */
-export function accountExport(account: WebsiteAccount, exportedAt: Date): string {
+export function accountExport(account: AccountView, exportedAt: Date): string {
   return JSON.stringify({
     exportedAt: exportedAt.toISOString(),
     account: {uid: account.uid, name: account.displayName, phoneNumber: account.phoneNumber, dateOfBirth: account.dateOfBirth},

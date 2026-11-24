@@ -109,6 +109,22 @@ describe("organiser tags through the first-party transport", () => {
     expect(transport.admit).toHaveBeenLastCalledWith(null);
   });
 
+  it("reads the page read model's own projection, and a page without one has no tags", async () => {
+    const state = setup(listing.path);
+    setMarketingConsent("accepted");
+    const tracking = {enabled: false as const, metaPixelId: null, googleMeasurementId: null,
+      policyReason: "policyReviewRequired" as const, profileTagsEligible: true};
+    let stop = observeOrganizerProviders(listing, null, {tracking});
+    await waitFor(() => expect(transport.admit).toHaveBeenCalledWith(listing.path));
+    expect(transport.set.mock.calls.every(([set]) => set === null)).toBe(true);
+    stop();
+    transport.admit.mockClear();
+    stop = observeOrganizerProviders(listing, null, {tracking: null});
+    await Promise.resolve(); await Promise.resolve();
+    expect(transport.admit.mock.calls.every(([path]) => path === null)).toBe(true);
+    stop();
+  });
+
   it("keeps the profile closed when the server says no, the read fails or consent is essential", async () => {
     const state = setup(listing.path);
     setMarketingConsent("accepted");

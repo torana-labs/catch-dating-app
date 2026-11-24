@@ -1,0 +1,27 @@
+{
+  "id": "eventPublicPage",
+  "path": "eventPublicPage/{eventId}",
+  "rulesMatch": "/eventPublicPage/{eventId}",
+  "typescriptInterface": "EventPublicPageDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps public page read models and build markers server-only"
+  ],
+  "owner": "Public event page read model (CAT-250)",
+  "writerContext": "website",
+  "read": "server only; the website server reads one document per event page with the Admin SDK",
+  "write": "server only; rebuilt with its organizer's page by functions/src/publicPages",
+  "exportedFunctions": [
+    "dispatchOrganizers",
+    "dispatchEvents",
+    "onPublicPageExternalEventWritten",
+    "onPublicPageReviewWritten",
+    "refreshPublicPageFollowers",
+    "reconcilePublicPages"
+  ],
+  "migrationNotes": [
+    "Backfill with functions/scripts/backfill-public-pages.cjs before the website reads event routes from this collection.",
+    "An id published as both a Catch and an imported event has no page, as the website reader withholds it."
+  ]
+}

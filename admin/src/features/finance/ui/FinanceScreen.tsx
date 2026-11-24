@@ -38,6 +38,18 @@ const costNotes: Partial<Record<CostLine["category"], string>> = {
   sms: "Sign-in codes",
 };
 
+/** Where imported ad spend comes from; the import runs each morning. */
+const importedFrom: Partial<Record<CostLine["source"], string>> = {
+  meta_api: "From Meta each morning",
+  google_ads_api: "From Google Ads each morning",
+};
+
+function costSubtitle(line: CostLine): string | undefined {
+  const imported = importedFrom[line.source];
+  if (imported) return line.note ? `${imported} · ${line.note}` : imported;
+  return line.note ?? costNotes[line.category];
+}
+
 /** Costs entered by hand; ad spend comes from the ad platforms. */
 const editable = new Set<CostLine["category"]>(["whatsapp", "ai", "cloud", "sms", "other"]);
 
@@ -176,7 +188,7 @@ export function FinanceScreen({
             key={line.category}
             subtitle={line.category === "whatsapp" ?
               `${costs.whatsappMessages.toLocaleString("en-IN")} messages${costs.whatsappIsEstimate ? " · estimated until the invoice is entered" : ""}` :
-              line.note ?? costNotes[line.category] ?? (line.source === "meta_api" ? "From Meta" : undefined)}
+              costSubtitle(line)}
             title={costTitles[line.category]}
           />
         ))}

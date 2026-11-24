@@ -1,0 +1,26 @@
+{
+  "id": "hostAssignmentViews",
+  "path": "hostAssignmentViews/{uid}__{kind}_{scopeId}",
+  "rulesMatch": "/hostAssignmentViews/{viewId}",
+  "typescriptInterface": "HostAssignmentViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/host_screen_read_views.rules.test.cjs",
+  "rulesTestNames": [
+    "lets an account read only its own rows, by a query naming it"
+  ],
+  "owner": "Host work read model projector: hostAssignmentViewTriggers",
+  "writerContext": "host",
+  "read": "get and list (query naming uid) by the account the row names only, while not deleted",
+  "write": "server only; written from programStaffGrants, eventStaffGrants, organizerTeamMemberships, organizerPrograms, events and organizers",
+  "exportedFunctions": [
+    "onHostAssignmentProgramGrantChanged",
+    "dispatchOrganizerPrograms",
+    "onHostAssignmentEventGrantChanged",
+    "dispatchEvents",
+    "onHostAssignmentMembershipChanged",
+    "dispatchOrganizers"
+  ],
+  "migrationNotes": [
+    "What listMyHostAssignments returned for each grant or membership (title, organiser name, duties with scopes), with the facts its clock filtering used (status, approval instant, grant and duty expiries) so the phone drops expired rows itself. The host-assignment-views copy-forward migration creates rows for grants and memberships that predate the triggers and leaves rows the triggers wrote alone."
+  ]
+}

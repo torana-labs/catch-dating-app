@@ -9,10 +9,9 @@ import {
 } from "./publicReadPolicy";
 
 /**
- * The public imported-event projection. This mirrors publicExternalEvent in
- * website/src/server/publicExternalEvent.ts and
- * website/scripts/next/externalEventProjection.mjs; the shared parity
- * fixtures in contracts/fixtures/public_pages hold both to the same output.
+ * The public imported-event projection the page read models carry. The
+ * golden fixtures in contracts/fixtures/public_pages and
+ * projections.test.ts hold its output.
  */
 export type PublicExternalEvent =
   NonNullable<HostListing["externalEvents"]>[number];

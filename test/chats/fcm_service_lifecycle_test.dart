@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:catch_dating_app/notifications/presentation/foreground_notification_controller.dart';
-import 'package:catch_dating_app/routing/shell/app_shell.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/pages/frame/notifications/foreground_notification_controller.dart';
+import 'package:catch_dating_app/routing/shell/shell_chrome.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/firebase/push_installation_store.dart';
 import 'package:catch_platform/push/fcm_service.dart';
+import 'package:catch_test_support/repo_file.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
@@ -16,8 +18,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../test_pump_helpers.dart';
 
 class _Settings extends Fake implements NotificationSettings {}
 
@@ -112,7 +112,7 @@ void main() {
 
   final momentPayloads =
       jsonDecode(
-            File(
+            repoFile(
               'test/chats/fixtures/moment_push_payloads.json',
             ).readAsStringSync(),
           )
@@ -185,9 +185,21 @@ void main() {
     'shared shell initialization connects actual SDK stream to arrivals',
     () async {
       final container = ProviderContainer(
-        overrides: [fcmServiceProvider.overrideWithValue(service)],
+        overrides: [
+          fcmServiceProvider.overrideWithValue(service),
+          uidProvider.overrideWith((ref) => Stream.value('one')),
+        ],
       );
       addTearDown(container.dispose);
+      final signedIn = container.listen(uidProvider, (_, _) {});
+      addTearDown(signedIn.close);
+      await container.read(uidProvider.future);
+      // The shell listens to its initialization for as long as it is shown.
+      final shell = container.listen(
+        appShellFcmInitializationProvider('one', router),
+        (_, _) {},
+      );
+      addTearDown(shell.close);
       await container.read(
         appShellFcmInitializationProvider('one', router).future,
       );

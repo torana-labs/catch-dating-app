@@ -1,0 +1,11 @@
+{
+  "id": "hostPilotEventReviews",
+  "path": "hostPilotEventReviews/{eventId}",
+  "rulesMatch": "/hostPilotEventReviews/{privateDocument=**}",
+  "typescriptInterface": "HostPilotEventReviewDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Host acquisition reviewed pilot workflow",
+  "writerContext": "admin",
+  "read": "server only",
+  "write": "server only"
+}

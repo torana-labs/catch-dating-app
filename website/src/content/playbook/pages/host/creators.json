@@ -30,14 +30,7 @@
         }
       ],
       "aside": {"label": "Hosting for a brand? See {{brand.name}} for brands", "to": {"route": "host_brands"}},
-      "chip": {
-        "title": "Street food walk",
-        "rows": [
-          {"label": "From your bio link", "value": "61%"},
-          {"label": "Booked", "value": "19 of 25"},
-          {"label": "Members", "value": "8"}
-        ]
-      },
+      "fragments": ["guest-follow-host-followers", "guest-follow-host-follow"],
       "media": {"kind": "capture", "slot": "guest-follow-host"}
     },
     {
@@ -75,9 +68,9 @@
         {"time": "As they book", "title": "Bookings, or applications", "body": "Paid at booking. For small meetups, they apply and you choose."},
         {"time": "Day before", "title": "A note from you", "body": "Share where to meet and what to expect from your own WhatsApp or stories. App users also get a reminder 15 minutes before it starts."},
         {"time": "On the day", "title": "A door that’s quick", "body": "Everyone scans in. You see who’s new and who’s been to everything."},
-        {"time": "Next morning", "title": "Turn guests into regulars", "body": "Photos, reviews and the next meetup. Regulars who aren’t members get an invitation."}
+        {"time": "Next morning", "title": "Turn guests into regulars", "body": "Photos, reviews on your page and the next meetup. Your report shows who keeps coming back, so you know who to ask to join."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-creators"}
     },
     {
       "type": "checklist",
@@ -137,11 +130,11 @@
       "ground": "magenta",
       "kicker": "Your next meetup",
       "title": "Turn followers into regulars.",
-      "lead": "Start the free trial, or leave your number and we’ll send the creator setup guide on WhatsApp.",
+      "lead": "Start the free trial, or leave your number and a person from our team will message you on WhatsApp to help you set up.",
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
-      "leadForm": {"id": "creator_setup_guide", "requestKind": "guide", "format": "creators", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."}
+      "leadForm": {"id": "creator_setup_guide", "requestKind": "guide", "format": "creators", "label": "Your WhatsApp number", "submitLabel": "Message me"}
     }
   ]
 }

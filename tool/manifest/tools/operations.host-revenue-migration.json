@@ -1,0 +1,27 @@
+{
+  "id": "operations:host-revenue-migration",
+  "category": "operations",
+  "path": "operations/src/domains/host-revenue/migration-cli.mjs",
+  "command": "node operations/src/domains/host-revenue/migration-cli.mjs <subcommand> <private files...>",
+  "surface": "remote-write",
+  "guard": "none",
+  "guardReason": "Only the apply, compensation-apply and history-apply steps write, and each needs the approved review or preview hash as an argument plus CATCH_ADMIN ID and App Check tokens; the other steps write local private files.",
+  "status": "active",
+  "role": "operator",
+  "description": "Host revenue migration over private mapped-source and decision files: templates, freeze and review run locally; apply, compensation and history-apply call admin callables (CATCH_ADMIN_* tokens, App Check) only with the approved review or preview hash. Refuses to overwrite an existing private output.",
+  "checks": [
+    "node --check operations/src/domains/host-revenue/migration-cli.mjs",
+    "node --test operations/test/host-revenue-migration.test.mjs"
+  ],
+  "impactPaths": [
+    "operations/test/host-revenue-migration.test.mjs"
+  ],
+  "runbook": "docs/operations_platform.md#private-sales-qualification-and-outreach-drafts",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  }
+}

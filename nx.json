@@ -27,6 +27,7 @@
       "{workspaceRoot}/apps/**/*.dart",
       "{workspaceRoot}/apps/consumer/build.yaml",
       "{workspaceRoot}/apps/host/build.yaml",
+      "{workspaceRoot}/docs/backend_operation_catalog/functions/*.md",
       "{workspaceRoot}/docs/migrations/clubs_to_organizers.md",
       "{workspaceRoot}/extensions/**/*",
       "{workspaceRoot}/firebase.json",
@@ -220,7 +221,8 @@
                   "{workspaceRoot}/docs/agent_operating_model.md",
                   "{workspaceRoot}/docs/agent_skills/**/*",
                   "{workspaceRoot}/tool/README.md",
-                  "{workspaceRoot}/tool/tools_manifest.json",
+                  "{workspaceRoot}/tool/manifest/**/*",
+                  "{workspaceRoot}/tool/lib/tools_manifest.mjs",
                   "{workspaceRoot}/tool/run.mjs",
                   "{workspaceRoot}/tool/harness.mjs",
                   "{workspaceRoot}/tool/harness/**/*",
@@ -341,13 +343,14 @@
                   "{workspaceRoot}/docs/agent_operating_model.md",
                   "{workspaceRoot}/docs/app_architecture.md",
                   "{workspaceRoot}/lib/hosts/*/README.md",
+                  "{workspaceRoot}/apps/host/lib/**/README.md",
                   "{workspaceRoot}/copy/notifications_en.json",
                   "{workspaceRoot}/firestore.indexes.json",
                   "!{workspaceRoot}/tool/**/*.md",
                   "!{workspaceRoot}/analytics/**/*.md",
                   "!{workspaceRoot}/infra/**/*.md",
                   "!{workspaceRoot}/fastlane/**/*.md",
-                  "!{workspaceRoot}/apps/**/*.md",
+                  "!{workspaceRoot}/apps/*/ios/**/*.md",
                   "!{workspaceRoot}/firebase/**/*.md",
                   "!{workspaceRoot}/packages/**/*.md",
                   "!{workspaceRoot}/functions/**/*.md",
@@ -572,7 +575,7 @@
                   "{workspaceRoot}/packages/catch_ui/lib/**/*",
                   "{workspaceRoot}/packages/catch_tokens/lib/**/*",
                   "{workspaceRoot}/lib/contexts/events/parts/**/*",
-                  "{workspaceRoot}/lib/locations/shared/**/*",
+                  "{workspaceRoot}/lib/pages/event/location/**/*",
                   "{workspaceRoot}/widgetbook/lib/primitives/**/*"
                 ]
               }
@@ -605,7 +608,8 @@
                 "{workspaceRoot}/tool/audit/check_fn_readme_inventory.mjs",
                 "{workspaceRoot}/tool/audit/fn_readme_inventory_baseline.json",
                 "{workspaceRoot}/tool/run.mjs",
-                "{workspaceRoot}/tool/tools_manifest.json"
+                "{workspaceRoot}/tool/lib/tools_manifest.mjs",
+                "{workspaceRoot}/tool/manifest/**/*"
               ]
             }
           }

@@ -1,0 +1,239 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_bookings.schema.json",
+  "title": "EventBookingDocument",
+  "description": "A guest's one Catch booking for an event, stored at eventBookings/{eventId}_{uid}: its lifecycle, payment, host approval, waitlist offer and signup cohort. Readable by the guest and the event's hosts; written only by booking callables. Its roster row (attendeeId) is the Host's view of the same guest. Named eventParticipations until Nov 2026; while released apps still read that name, the transitional onEventBookingMirroredToLegacy trigger copies every booking write and delete to eventParticipations/{eventId}_{uid} with the same id and document (removed in phase 2 of the rename).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventBookings",
+  "x-firestore-path": "eventBookings/{bookingId}",
+  "x-document-id-field": "id",
+  "x-owner": "booking, waitlist, attendance, cancellation, and account-deletion callables",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "eventId",
+    "organizerId",
+    "uid",
+    "status",
+    "createdAt",
+    "updatedAt",
+    "signedUpAt",
+    "waitlistedAt",
+    "attendedAt",
+    "cancelledAt",
+    "deletedAt",
+    "genderAtSignup",
+    "paymentId"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "$ref": "../shared/event_common.schema.json#/definitions/eventParticipationStatus",
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "signedUpAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "waitlistedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "attendedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "cancelledAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "deletedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "genderAtSignup": {
+      "$ref": "../shared/event_common.schema.json#/definitions/genderAtSignup",
+      "x-catch-ownership": "callable-owned"
+    },
+    "cohortAtSignup": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "paymentId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "attendeeId": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The eventAttendees row that shows this booking on the Host roster. Written by the booking callable in the booking's own transaction.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "hostApprovalStatus": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "pending",
+        "approved",
+        "declined",
+        null
+      ],
+      "description": "Manual-approval request state for request-to-join events. Null for regular waitlist edges.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "hostApprovalDecidedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "hostApprovalDecidedBy": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "waitlistOfferStatus": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/eventWaitlistOfferStatus"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Mirror of the current waitlist offer state for cheap roster and attendee CTA reads.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "waitlistOfferedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "waitlistOfferExpiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "waitlistOfferAcceptedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "waitlistOfferId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
+    },
+    "inviteLinkId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Named host invite link that first attributed this participation, when present.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "inviteSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Host-facing source label copied from the invite link for durable reporting.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "inviteCapturedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "description": "Server time when invite attribution was first attached to the roster edge.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "synthetic": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
+    },
+    "seedPrefix": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"
+    },
+    "scenario": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"
+    },
+    "demoOps": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"
+    },
+    "demoOpsId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"
+    },
+    "demoOpsCommand": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
+    },
+    "communityMembershipAtSignup": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Historical pointer to the active community decision checked by the admission transaction; later revocation does not rewrite this booking evidence.",
+      "x-catch-ownership": "callable-owned",
+      "required": [
+        "membershipId",
+        "revision",
+        "decisionId"
+      ],
+      "properties": {
+        "membershipId": {
+          "type": "string",
+          "pattern": "^ocm_[a-f0-9]{64}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740990
+        },
+        "decisionId": {
+          "type": "string",
+          "pattern": "^ocmd_[a-f0-9]{64}$"
+        }
+      }
+    }
+  }
+}

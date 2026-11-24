@@ -1,7 +1,6 @@
-import {GUEST_PAYMENTS} from "../../payments/guestPayments";
-import {randomUUID} from "crypto";
 import {SeatLedger} from "../seatAuthority/seatAuthority";
 import {deriveEventSeatPolicy} from "../seatAuthority/firestoreAdapter";
+import {requireEventSeatLedger} from "../seatAuthority/eventSeatLedgers";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventDocument} from
   "../../shared/generated/firestoreAdminTypes";
@@ -10,8 +9,8 @@ import type {UpdatePrivateEventDetailsCallablePayload} from
 import {eventPolicyFromEvent, initialPolicyFromTerms, normalizePolicy} from
   "../eventPolicy";
 import {prepareEventMutationLedger} from "../eventPolicyMutation";
-import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
-import {canonicalJson} from "../eventSetupPreferences/resolve";
+import {canonicalJson} from
+  "../../domain/formats/eventSetupPreferences/resolve";
 
 export type PrivateAdmissionTerms = NonNullable<
   UpdatePrivateEventDetailsCallablePayload["details"]["admissionTerms"]
@@ -51,64 +50,32 @@ export async function preparePrivateListingTerms(params: {
   eventId: string;
   before: EventDocument;
   after: EventDocument;
-}): Promise<{ledger: SeatLedger | null;
-  fence?: Record<string, unknown>} | null> {
+}): Promise<{ledger: SeatLedger | null} | null> {
   const {db, tx, eventId, before, after} = params;
   const unchanged = canonicalJson([before.capacityLimit, before.priceInPaise,
     before.currency, before.eventPolicy, before.constraints]) ===
     canonicalJson([after.capacityLimit, after.priceInPaise,
       after.currency, after.eventPolicy, after.constraints]);
-  const mode = await readSeatMigrationWriterFence({db, tx, eventId});
-  if (mode === "ready") {
-    if (unchanged) return null;
-    const state = await prepareEventMutationLedger(db, tx, eventId,
-      before, after);
-    if (state.reserved > 0) {
-      throw new HttpsError("failed-precondition",
-        "Admission terms cannot change while places are reserved.");
-    }
-    return {ledger: state.update};
-  }
-  const markers = before as unknown as Record<string, unknown>;
-  if (markers.demoOps === true || markers.synthetic === true ||
-      typeof markers.seedPrefix === "string") {
+  await requireEventSeatLedger({db, tx, eventId});
+  if (unchanged) return null;
+  const state = await prepareEventMutationLedger(db, tx, eventId,
+    before, after);
+  // Reserved places keep their price and terms: only the capacity may
+  // move, or the event's first terms be set.
+  if (state.reserved > 0 &&
+      deriveEventSeatPolicy(before).termsConfigured &&
+      termsWithoutCapacity(before) !== termsWithoutCapacity(after)) {
     throw new HttpsError("failed-precondition",
-      "Demo events need their own seat reconciliation.");
+      "Admission terms cannot change while places are reserved.");
   }
-  const run = await tx.get(db.collection("eventSeatMigrationRuns")
-    .doc(eventId));
-  if (run.exists) {
-    throw new HttpsError("failed-precondition",
-      "Resume event seat reconciliation first.");
-  }
-  // Before the shared ledger exists, only a demonstrably empty source can
-  // change admission terms. Offers alone are not reserved places.
-  if (before.bookedCount !== 0 || before.checkedInCount !== 0 ||
-      before.waitlistedCount !== 0 ||
-      (before.crossPathsPairHeldCount ?? 0) !== 0 ||
-      (before.crossPathsPairConfirmedCount ?? 0) !== 0 ||
-      [before.genderCounts, before.cohortCounts,
-        before.waitlistedCohortCounts, before.crossPathsPairHeldCohortCounts]
-        .some((counts) => Object.values(counts ?? {}).some((n) => n !== 0))) {
-    throw new HttpsError("failed-precondition",
-      "Reconcile existing guests before changing admission terms.");
-  }
-  for (const collection of ["eventAttendees", "eventParticipations",
-    "eventWaitlistOffers", GUEST_PAYMENTS, "organizerContactOrigins",
-    "eventSeatReservations", "eventSeatIdentityAliases",
-    "eventAttendeeImports"]) {
-    const witness = await tx.get(db.collection(collection)
-      .where("eventId", "==", eventId).limit(1));
-    if (!witness.empty) {
-      throw new HttpsError("failed-precondition",
-        "Reconcile existing guest and payment records first.");
-    }
-  }
-  const policy = deriveEventSeatPolicy(after);
-  const ledger: SeatLedger = {eventId, capacity: policy.capacity,
-    occupied: 0, checkoutHeld: 0, revision: 1, capacityRevision: 1,
-    policyVersion: policy.policyVersion, policyHash: policy.policyHash,
-    migrationRevision: 1, state: "ready"};
-  return {ledger, fence: {eventId, organizerId: policy.organizerId,
-    migrationRevision: 1, token: randomUUID(), state: "ready"}};
+  return {ledger: state.update};
+}
+
+/** The listing terms an existing booking relies on, capacity left out. */
+function termsWithoutCapacity(event: EventDocument): string {
+  const policy = event.eventPolicy;
+  return canonicalJson([event.priceInPaise, event.currency,
+    policy ? {...policy, admission: {...policy.admission,
+      capacityLimit: undefined}} : null,
+    event.constraints]);
 }

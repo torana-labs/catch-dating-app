@@ -3,8 +3,8 @@
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {loadVerifiedRosterPhone, participationAfterPatch,
-  readCatchBookingRoster, writeCatchBookingRoster} from "./catchBookingRoster";
+import {prepareMarkBookingAttended} from
+  "../domain/bookings/bookingAttendance";
 import * as logger from "firebase-functions/logger";
 import {requireAuth} from "../shared/auth";
 import type {SelfCheckInAttendanceCallablePayload} from
@@ -17,10 +17,7 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import {appCheckCallableOptionsWithSecrets} from
   "../shared/callableOptions";
-import {
-  eventParticipationId,
-  eventParticipationPatch,
-} from "../shared/relationshipDocuments";
+import {eventParticipationId} from "../shared/relationshipDocuments";
 import {normalizeEventIdPayload} from "./eventPayloadNormalization";
 import {buildAttendanceSignalFact} from "../marketplace/signalBuilders";
 import {recordParticipantSignalFactsBestEffort} from
@@ -78,7 +75,7 @@ export async function selfCheckInAttendanceHandler(
     nowMillis: now.toMillis(),
   });
   const eventRef = db.collection("events").doc(eventId);
-  const participationRef = db.collection("eventParticipations")
+  const participationRef = db.collection("eventBookings")
     .doc(eventParticipationId(eventId, userId));
   const sessionRef = db.collection("eventVenueSessions")
     .doc(claims.sessionId);
@@ -95,13 +92,12 @@ export async function selfCheckInAttendanceHandler(
   let changed = false;
   await db.runTransaction(async (tx) => {
     const [eventSnap, participationSnap, sessionSnap, redemptionSnap,
-      rosterSlot] = await Promise.all([
+      attendance] = await Promise.all([
       tx.get(eventRef),
       tx.get(participationRef),
       tx.get(sessionRef),
       tx.get(redemptionRef),
-      readCatchBookingRoster({db, tx, eventId, uid: userId,
-        verifiedPhone: () => loadVerifiedRosterPhone(userId)}),
+      prepareMarkBookingAttended({db, tx, eventId, uid: userId}),
     ]);
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
@@ -117,9 +113,6 @@ export async function selfCheckInAttendanceHandler(
       participationSnap.data() as {
         status?: string;
         inviteLinkId?: string | null;
-        genderAtSignup?: string | null;
-        cohortAtSignup?: string | null;
-        paymentId?: string | null;
       } : null;
     if (
       participation?.status !== "signedUp" &&
@@ -142,23 +135,8 @@ export async function selfCheckInAttendanceHandler(
       now,
       retentionBaseMillis: now.toMillis(),
     }));
-    tx.update(eventRef, {
-      checkedInCount: admin.firestore.FieldValue.increment(1),
-    });
-    const attendance = eventParticipationPatch({
-      exists: participationSnap.exists,
-      eventId,
-      organizerId: event.organizerId,
-      uid: userId,
-      status: "attended",
-      genderAtSignup: participation.genderAtSignup ?? undefined,
-      cohortAtSignup: participation.cohortAtSignup ?? undefined,
-      paymentId: participation.paymentId ?? undefined,
-    });
-    tx.set(participationRef, attendance, {merge: true});
-    writeCatchBookingRoster({db, tx, slot: rosterSlot,
-      booking: participationAfterPatch(participationSnap.data(), attendance),
-      now: admin.firestore.Timestamp.now()});
+    attendance.apply({bookingSnap: participationSnap,
+      organizerId: event.organizerId});
     signalOrganizerId = event.organizerId;
     changed = true;
   });

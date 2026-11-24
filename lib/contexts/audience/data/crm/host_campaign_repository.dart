@@ -3,10 +3,11 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_crm_callable.da
 import 'package:catch_dating_app/contexts/audience/domain/crm/crm_response_fields.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_campaign.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
+import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -22,7 +23,7 @@ class HostCampaignRepository {
   static const draftStatuses = ['draft', 'previewed'];
 
   final FirebaseFunctions _functions;
-  final HostSummaryReader _summaries;
+  final ScopedReadModelReader _summaries;
 
   Future<HostCampaign> upsertCampaign(
     String organizerId,
@@ -59,7 +60,7 @@ class HostCampaignRepository {
   }) => _summaries
       .watchPages(
         collection: sendSummaries,
-        organizerId: organizerId,
+        scopeId: organizerId,
         orderField: 'activityAtMillis',
         descending: true,
         pageSize: pageSize,
@@ -75,7 +76,7 @@ class HostCampaignRepository {
   }) => _summaries
       .watchPages(
         collection: sendSummaries,
-        organizerId: organizerId,
+        scopeId: organizerId,
         orderField: 'activityAtMillis',
         descending: true,
         pageSize: pageSize,
@@ -143,14 +144,16 @@ class HostCampaignRepository {
   );
 }
 
-// keepalive: Reuse the callable client for the campaign subdomain.
+// keepalive: account-free: Reuse the callable client for the campaign
+// subdomain.
 @Riverpod(keepAlive: true)
 HostCampaignRepository hostCampaignRepository(Ref ref) {
   ref.watch(authenticatedSessionProvider);
   return HostCampaignRepository(
     ref.watch(firebaseFunctionsProvider),
-    summaries: HostSummaryReader(
+    summaries: ScopedReadModelReader(
       ref.watch(firebaseFirestoreProvider),
+      family: hostReadModels,
       actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
     ),
   );

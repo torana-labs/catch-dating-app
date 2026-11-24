@@ -31,8 +31,6 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
   assert.equal(result.enabled, false);
   assert.equal(path.basename(result.outputPath), ".env.catchdates-dev");
   assert.equal(fs.readFileSync(result.outputPath, "utf8"), [
-    'CATCH_HOST_OPERATOR_ALERTS_ENABLED="false"',
-    'CATCH_HOST_OPERATOR_ALERTS_SINCE=" "',
     'ALGOLIA_APPLICATION_ID="CATCHDEV01"',
     'RAZORPAY_PUBLIC_KEY_ID="rzp_test_example123"',
     'RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION=" "',
@@ -43,6 +41,10 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'CATCH_WHATSAPP_WEBHOOK_ENABLED="false"',
     'CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED="false"',
     'CATCH_WHATSAPP_REPLIES_ENABLED="false"',
+    'CATCH_WHATSAPP_HOST_APP_LINK_ENABLED="false"',
+    'CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED="false"',
+    'CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED="false"',
+    'CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED="false"',
     'CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY="false"',
     'CATCH_WHATSAPP_REPLY_ACTOR_UID=" "',
     'CATCH_WHATSAPP_REPLY_RECIPIENT_UID=" "',
@@ -77,6 +79,7 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'AD_CONVERSIONS_META_TEST_EVENT_CODE=" "',
     'AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT=" "',
     'AD_AUDIENCES_MODE="off"',
+    'AD_SPEND_IMPORT_MODE="off"',
     'META_LEADGEN_CREDENTIAL_VERSION=" "',
     'META_LEADGEN_PAGE_IDS=" "',
     "",
@@ -99,8 +102,6 @@ test("empty GitHub repository variables default Meta to disabled", () => {
   });
   assert.equal(result.enabled, false);
   assert.equal(fs.readFileSync(result.outputPath, "utf8"), [
-    'CATCH_HOST_OPERATOR_ALERTS_ENABLED="false"',
-    'CATCH_HOST_OPERATOR_ALERTS_SINCE=" "',
     'ALGOLIA_APPLICATION_ID="CATCHDEV01"',
     'RAZORPAY_PUBLIC_KEY_ID="rzp_test_example123"',
     'RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION=" "',
@@ -111,6 +112,10 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'CATCH_WHATSAPP_WEBHOOK_ENABLED="false"',
     'CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED="false"',
     'CATCH_WHATSAPP_REPLIES_ENABLED="false"',
+    'CATCH_WHATSAPP_HOST_APP_LINK_ENABLED="false"',
+    'CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED="false"',
+    'CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED="false"',
+    'CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED="false"',
     'CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY="false"',
     'CATCH_WHATSAPP_REPLY_ACTOR_UID=" "',
     'CATCH_WHATSAPP_REPLY_RECIPIENT_UID=" "',
@@ -145,6 +150,7 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'AD_CONVERSIONS_META_TEST_EVENT_CODE=" "',
     'AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT=" "',
     'AD_AUDIENCES_MODE="off"',
+    'AD_SPEND_IMPORT_MODE="off"',
     'META_LEADGEN_CREDENTIAL_VERSION=" "',
     'META_LEADGEN_PAGE_IDS=" "',
     "",
@@ -681,6 +687,92 @@ test("partial Catch reply scope and unpaired sender ids never overwrite config",
     CATCH_WHATSAPP_REPLIES_ENABLED: "true"});
 });
 
+test("support replies need only the sender credential and Graph version", () => {
+  const sender = {
+    CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION,
+    CATCH_WHATSAPP_REPLY_GRAPH_VERSION:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_GRAPH_VERSION,
+  };
+  const gates = {CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: "true",
+    CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: "true",
+    CATCH_WHATSAPP_REPLIES_ENABLED: "true"};
+  const result = prepareFunctionsParamsForDeploy({
+    functionsDir: fixture(), projectId: "catchdates-dev",
+    environment: {...publicIds, ...catchSender, ...sender, ...gates},
+  });
+  const contents = fs.readFileSync(result.outputPath, "utf8");
+  assert.match(contents, /^CATCH_WHATSAPP_REPLIES_ENABLED="true"$/m);
+  for (const [name, value] of Object.entries(sender)) {
+    assert.ok(contents.includes(`${name}=${JSON.stringify(value)}\n`));
+  }
+  assert.match(contents, /^CATCH_WHATSAPP_REPLY_RECIPIENT_E164=" "$/m);
+  // A trial field without the rest of the trial scope still fails closed.
+  for (const name of ["CATCH_WHATSAPP_REPLY_ACTOR_UID",
+    "CATCH_WHATSAPP_REPLY_RECIPIENT_UID", "CATCH_WHATSAPP_REPLY_RECIPIENT_E164",
+    "CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256"]) {
+    rejectsCatchConfig({...catchSender, ...sender, ...gates,
+      [name]: catchReplyScope[name]});
+  }
+  // Replies on without the sender pair fail closed.
+  for (const name of Object.keys(sender)) {
+    rejectsCatchConfig({...catchSender, ...sender, ...gates, [name]: " "});
+  }
+});
+
+test("the automatic host app link stays off by default and needs replies", () => {
+  const sender = {
+    CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION,
+    CATCH_WHATSAPP_REPLY_GRAPH_VERSION:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_GRAPH_VERSION,
+  };
+  const gates = {CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: "true",
+    CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: "true",
+    CATCH_WHATSAPP_REPLIES_ENABLED: "true"};
+  const generate = (environment) => fs.readFileSync(prepareFunctionsParamsForDeploy({
+    functionsDir: fixture(), projectId: "catchdates-dev",
+    environment: {...publicIds, ...catchSender, ...sender, ...environment},
+  }).outputPath, "utf8");
+  assert.match(generate(gates), /^CATCH_WHATSAPP_HOST_APP_LINK_ENABLED="false"$/m);
+  assert.match(generate({...gates, CATCH_WHATSAPP_HOST_APP_LINK_ENABLED: "true"}),
+    /^CATCH_WHATSAPP_HOST_APP_LINK_ENABLED="true"$/m);
+  rejectsCatchConfig({...catchSender, ...sender,
+    CATCH_WHATSAPP_HOST_APP_LINK_ENABLED: "true"});
+  rejectsCatchConfig({...catchSender, ...sender, ...gates,
+    CATCH_WHATSAPP_HOST_APP_LINK_ENABLED: "yes"});
+});
+
+test("the automatic welcome and walkthrough messages stay off by default and need replies", () => {
+  const sender = {
+    CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION,
+    CATCH_WHATSAPP_REPLY_GRAPH_VERSION:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_GRAPH_VERSION,
+  };
+  const gates = {CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: "true",
+    CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: "true",
+    CATCH_WHATSAPP_REPLIES_ENABLED: "true"};
+  const generate = (environment) => fs.readFileSync(prepareFunctionsParamsForDeploy({
+    functionsDir: fixture(), projectId: "catchdates-dev",
+    environment: {...publicIds, ...catchSender, ...sender, ...environment},
+  }).outputPath, "utf8");
+  const defaults = generate(gates);
+  for (const name of ["CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED",
+    "CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED", "CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED"]) {
+    assert.match(defaults, new RegExp(`^${name}="false"$`, "m"));
+  }
+  const on = generate({...gates, CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED: "true",
+    CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED: "true", CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED: "true"});
+  assert.match(on, /^CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED="true"$/m);
+  assert.match(on, /^CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED="true"$/m);
+  assert.match(on, /^CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED="true"$/m);
+  rejectsCatchConfig({...catchSender, ...sender, CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED: "true"});
+  rejectsCatchConfig({...catchSender, ...sender, CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED: "true"});
+  rejectsCatchConfig({...catchSender, ...sender, ...gates, CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED: "true"});
+  rejectsCatchConfig({...catchSender, ...sender, ...gates, CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED: "yes"});
+});
+
 test("malformed Catch scope rejects unsafe identities endpoints digests and versions", () => {
   const credential = catchReplyScope.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION;
   const invalid = {
@@ -736,15 +828,6 @@ test("verified materialization alone owns the canonical deployment digest marker
     for (const marker of ["", "c".repeat(64)]) assert.throws(() => prepareFunctionsParamsForDeploy({functionsDir, projectId,
       environment: {...publicIds, CATCH_DEPLOY_CONFIG_SHA256: marker}}), /reserved/);
   } finally { fs.rmSync(functionsDir, {recursive: true, force: true}); }
-});
-
-test("ordinary deployment cannot activate Host operator alerts", () => {
-  for (const config of [{CATCH_HOST_OPERATOR_ALERTS_ENABLED: "true"},
-    {CATCH_HOST_OPERATOR_ALERTS_SINCE: "2026-10-21T00:00:00Z"}]) {
-    assert.throws(() => prepareFunctionsParamsForDeploy({functionsDir: fixture(),
-      projectId: "catchdates-dev", environment: {...publicIds, ...config}}),
-    /separately reviewed runtime activation/);
-  }
 });
 
 test("the wedding assistant switches on only with an Anthropic federation rule and organization", () => {
@@ -842,6 +925,34 @@ test("the host customer list stays off unless live with the Meta token", () => {
   for (const value of ["on", "validate", "LIVE"]) {
     assert.throws(() => materialize({AD_AUDIENCES_MODE: value}),
       /AD_AUDIENCES_MODE must be off or live/);
+  }
+});
+
+test("the ad spend import stays off unless live with both ad credentials", () => {
+  const materialize = (config) => {
+    const functionsDir = fixture();
+    prepareFunctionsParamsForDeploy({functionsDir, projectId: "catchdates-dev",
+      environment: {...publicIds, ...config}});
+    return fs.readFileSync(path.join(functionsDir, ".env.catchdates-dev"), "utf8");
+  };
+  const token = "projects/catchdates-dev/secrets/CATCH_META_ADS_TOKEN/versions/2";
+  const account = "catch-ads-automation@catchdates-dev.iam.gserviceaccount.com";
+  assert.match(materialize({}), /^AD_SPEND_IMPORT_MODE="off"$/m);
+  assert.match(materialize({AD_SPEND_IMPORT_MODE: " "}), /^AD_SPEND_IMPORT_MODE="off"$/m);
+  // Independent of the conversion queue's mode, which stays off here.
+  const live = materialize({AD_SPEND_IMPORT_MODE: "live",
+    AD_CONVERSIONS_META_TOKEN_VERSION: token,
+    AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT: account});
+  assert.match(live, /^AD_SPEND_IMPORT_MODE="live"$/m);
+  assert.match(live, /^AD_CONVERSIONS_MODE="off"$/m);
+  for (const config of [{}, {AD_CONVERSIONS_META_TOKEN_VERSION: token},
+    {AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT: account}]) {
+    assert.throws(() => materialize({AD_SPEND_IMPORT_MODE: "live", ...config}),
+      /AD_SPEND_IMPORT_MODE live requires AD_CONVERSIONS_META_TOKEN_VERSION and AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT/);
+  }
+  for (const value of ["on", "validate", "LIVE"]) {
+    assert.throws(() => materialize({AD_SPEND_IMPORT_MODE: value}),
+      /AD_SPEND_IMPORT_MODE must be off or live/);
   }
 });
 

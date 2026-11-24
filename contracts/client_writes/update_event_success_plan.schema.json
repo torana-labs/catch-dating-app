@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/client_writes/update_event_success_plan.schema.json",
+  "title": "UpdateEventSuccessPlanClientWrite",
+  "description": "Client-owned Firestore update of a live event guide's setup fields before the event is live. Catch Host saves setup through saveEventSuccessPlanSetup since #2195 (19 Nov 2026); Host builds released before that still update directly, so the rule stays until their minimum version is raised.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "path",
+    "data"
+  ],
+  "properties": {
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "updatedAt"
+      ],
+      "properties": {
+        "playbookId": {
+          "$ref": "../firestore/event_success_plans.schema.json#/properties/playbookId"
+        },
+        "selectedModuleIds": {
+          "$ref": "../firestore/event_success_plans.schema.json#/properties/selectedModuleIds"
+        },
+        "targetAttendeeCount": {
+          "$ref": "../firestore/event_success_plans.schema.json#/properties/targetAttendeeCount"
+        },
+        "structureConfig": {
+          "$ref": "../firestore/event_success_plans.schema.json#/properties/structureConfig"
+        },
+        "hostGoal": {
+          "$ref": "../firestore/event_success_plans.schema.json#/properties/hostGoal"
+        },
+        "wingmanRequestsEnabled": {
+          "$ref": "../firestore/event_success_plans.schema.json#/properties/wingmanRequestsEnabled"
+        },
+        "contextualOpenersEnabled": {
+          "$ref": "../firestore/event_success_plans.schema.json#/properties/contextualOpenersEnabled"
+        },
+        "compatibilityAffectsRanking": {
+          "$ref": "../firestore/event_success_plans.schema.json#/properties/compatibilityAffectsRanking"
+        },
+        "questionnaireConfig": {
+          "$ref": "../firestore/event_success_plans.schema.json#/properties/questionnaireConfig"
+        },
+        "conversationGraphConsentMode": {
+          "$ref": "../firestore/event_success_plans.schema.json#/properties/conversationGraphConsentMode"
+        },
+        "attendeePrompt": {
+          "$ref": "../firestore/event_success_plans.schema.json#/properties/attendeePrompt"
+        },
+        "updatedAt": {
+          "$ref": "../firestore/event_success_plans.schema.json#/properties/updatedAt"
+        }
+      }
+    }
+  },
+  "x-firestore-operation": "update",
+  "x-firestore-path": "eventSuccessPlans/{eventId}",
+  "x-owner": "event host direct setup update (released Host builds before #2195)"
+}

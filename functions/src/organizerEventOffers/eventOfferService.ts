@@ -1,13 +1,13 @@
 import {createHash} from "node:crypto";
 import {snapshotOfferPaymentTerms} from
-  "../events/eventSetupPreferences/payment";
+  "../domain/formats/eventSetupPreferences/payment";
 import {eventPaymentTermsHash, validateEventPaymentTerms} from
-  "../events/eventSetupPreferences/resolve";
+  "../domain/formats/eventSetupPreferences/resolve";
 import {prepareOfferHandoff, PreparedOfferHandoff,
   ReviewedOfferHandoff} from "../organizerEventOfferHandoff/message";
 import type {EventPaymentTerms, OfferPaymentSnapshot,
   ResolvedEventPreferences} from
-  "../events/eventSetupPreferences/types";
+  "../domain/formats/eventSetupPreferences/types";
 import {
   applyEventOfferAction, CurrentOfferContext, EventOffer,
   EventOfferPaymentSnapshot, eventOfferId,
@@ -142,9 +142,6 @@ export interface OfferTransaction {
     Promise<OfferActionReceipt | null>;
   batchReceipt(organizerId: string, requestId: string, requestHash: string):
     Promise<OfferBatchReceiptLookup>;
-  listOffers(organizerId: string, eventId: string,
-    afterOfferId: string | null, limit: number):
-    Promise<EventOffer[]>;
   hasMergedContactOffer(organizerId: string, eventId: string,
     canonicalContactId: string): Promise<boolean>;
   putOffer(offer: EventOffer): void;
@@ -183,97 +180,6 @@ export interface OfferBatchPreview {
 export interface OfferBatchCommit extends OfferBatchInput {
   requestId: string;
   planDigest: string;
-}
-
-export interface OfferListItem {
-  offerId: string;
-  eventId: string;
-  contactId: string;
-  sourceKind: "application" | "formResponse";
-  sourceId: string;
-  status: EventOffer["status"];
-  effectiveStatus: EventOffer["status"];
-  paymentStatus: EventOffer["manualPayment"]["status"];
-  revision: number;
-  generation: number;
-  expiresAtMillis: number;
-}
-
-/** Manager-only detail for explicit reference review; never a public view. */
-export async function getEventOffer(params: {
-  repository: OfferRepository;
-  actor: OfferActor;
-  organizerId: string;
-  eventId: string;
-  contactId: string;
-}): Promise<{offer: EventOffer; effectiveStatus: EventOffer["status"]}> {
-  const {organizerId, eventId, contactId, actor} = params;
-  if (![organizerId, eventId, contactId, actor.uid].every(validId)) {
-    fail("invalid", "Invalid offer detail request.");
-  }
-  return params.repository.transaction(async (tx) => {
-    if (!await tx.managerAuthorized(organizerId, actor.uid)) {
-      fail("denied", "Current organizer manager authority is required.");
-    }
-    const event = await tx.event(eventId);
-    if (!event || event.organizerId !== organizerId) {
-      fail("denied", "Event is unavailable.");
-    }
-    const id = eventOfferId({organizerId, eventId, contactId});
-    const offer = await tx.offer(id);
-    if (!offer || offer.organizerId !== organizerId ||
-        offer.eventId !== eventId || offer.contactId !== contactId) {
-      fail("denied", "Offer is unavailable.");
-    }
-    return {offer, effectiveStatus: offer.status === "offered" &&
-      tx.nowMillis() >= offer.expiresAtMillis ? "expired" : offer.status};
-  });
-}
-
-export async function listEventOffers(params: {
-  repository: OfferRepository;
-  actor: OfferActor;
-  organizerId: string;
-  eventId: string;
-  afterOfferId?: string | null;
-  limit?: number;
-}): Promise<{items: OfferListItem[]; nextCursor: string | null}> {
-  const {organizerId, eventId, actor} = params;
-  const limit = params.limit ?? 50;
-  const cursor = params.afterOfferId ?? null;
-  if (!validId(organizerId) || !validId(eventId) ||
-      !validId(actor.uid) || cursor !== null && !validId(cursor) ||
-      !Number.isSafeInteger(limit) || limit < 1 || limit > 50) {
-    fail("invalid", "Invalid event offer list request.");
-  }
-  return params.repository.transaction(async (tx) => {
-    const nowMillis = tx.nowMillis();
-    if (!await tx.managerAuthorized(organizerId, actor.uid)) {
-      fail("denied", "Current organizer manager authority is required.");
-    }
-    const event = await tx.event(eventId);
-    if (!event || event.organizerId !== organizerId) {
-      fail("denied", "Event is unavailable.");
-    }
-    const offers = await tx.listOffers(organizerId, eventId, cursor,
-      limit + 1);
-    const page = offers.slice(0, limit);
-    for (const offer of page) {
-      if (offer.organizerId !== organizerId || offer.eventId !== eventId) {
-        fail("conflict", "Offer list contains a foreign event.");
-      }
-    }
-    return {items: page.map((offer) => ({offerId: offer.offerId,
-      eventId: offer.eventId, contactId: offer.contactId,
-      sourceKind: offer.sourceKind ?? "application",
-      sourceId: offer.applicationId, status: offer.status,
-      effectiveStatus: offer.status === "offered" &&
-        nowMillis >= offer.expiresAtMillis ? "expired" : offer.status,
-      paymentStatus: offer.manualPayment.status,
-      revision: offer.revision, generation: offer.generation,
-      expiresAtMillis: offer.expiresAtMillis})),
-    nextCursor: offers.length > limit ? page.at(-1)!.offerId : null};
-  });
 }
 
 const MAX_BATCH_ROWS = 25;

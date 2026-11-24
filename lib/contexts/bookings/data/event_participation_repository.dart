@@ -15,7 +15,7 @@ part 'event_participation_repository.g.dart';
 class EventParticipationRepository {
   const EventParticipationRepository(this._db);
 
-  static const _collectionPath = 'eventParticipations';
+  static const _collectionPath = 'eventBookings';
   static const _rosterVisibleStatuses = ['signedUp', 'waitlisted', 'attended'];
   static const _openBookingStatuses = ['signedUp', 'waitlisted'];
   static const _hostReportStatuses = [
@@ -39,7 +39,7 @@ class EventParticipationRepository {
   /// cancelled rows are history and grow forever, so they are not listened
   /// to; a row that leaves this set is read once by id
   /// ([fetchParticipation]) by whoever needs its new status.
-  // firestore-index: eventParticipations (uid:ASCENDING,status:ASCENDING)
+  // firestore-index: eventBookings (uid:ASCENDING,status:ASCENDING)
   Stream<List<EventParticipation>> watchParticipationsForUser({
     required String uid,
   }) => withBackendErrorStream(
@@ -142,8 +142,8 @@ class EventParticipationRepository {
   );
 }
 
-// keepalive: participation repository is shared by event detail, rosters, and
-// host operations.
+// keepalive: account-free: participation repository is shared by event detail,
+// rosters, and host operations.
 @Riverpod(keepAlive: true)
 EventParticipationRepository eventParticipationRepository(Ref ref) =>
     EventParticipationRepository(ref.watch(firebaseFirestoreProvider));

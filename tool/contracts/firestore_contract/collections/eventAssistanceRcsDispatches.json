@@ -1,0 +1,13 @@
+{
+  "id": "eventAssistanceRcsDispatches",
+  "path": "eventAssistanceRcsDispatches/{attemptId}",
+  "rulesMatch": "/eventAssistanceRcsDispatches/{attemptId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "event-service RCS dispatch",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Immutable claim evidence binds the exact payload, expiry, provider message ID, permission, capability observation and two budget debits. Acceptance or expiry alone does not prove non-delivery."
+  ]
+}

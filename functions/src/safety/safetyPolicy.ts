@@ -1,6 +1,6 @@
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
-import type {AdminContext} from "../admin/adminAuth";
+import type {AdminContext} from "../platform/adminAuth";
 import type {SafetySettingsDocument} from
   "../shared/generated/firestoreAdminTypes";
 

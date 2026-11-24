@@ -8,18 +8,24 @@ part of 'event_close_out_commands_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Close out the night through `setEventCloseOut`. It does not invalidate
-/// a read: the close-out listener delivers the saved choices.
+/// Close out the night through `setEventCloseOut`, and record a booked
+/// guest who did not come through `recordEventNoShow`. Neither invalidates
+/// a read: the close-out and attendance report listeners deliver the
+/// result.
 
 @ProviderFor(HostEventCloseOutCommands)
 final hostEventCloseOutCommandsProvider = HostEventCloseOutCommandsProvider._();
 
-/// Close out the night through `setEventCloseOut`. It does not invalidate
-/// a read: the close-out listener delivers the saved choices.
+/// Close out the night through `setEventCloseOut`, and record a booked
+/// guest who did not come through `recordEventNoShow`. Neither invalidates
+/// a read: the close-out and attendance report listeners deliver the
+/// result.
 final class HostEventCloseOutCommandsProvider
     extends $NotifierProvider<HostEventCloseOutCommands, void> {
-  /// Close out the night through `setEventCloseOut`. It does not invalidate
-  /// a read: the close-out listener delivers the saved choices.
+  /// Close out the night through `setEventCloseOut`, and record a booked
+  /// guest who did not come through `recordEventNoShow`. Neither invalidates
+  /// a read: the close-out and attendance report listeners deliver the
+  /// result.
   HostEventCloseOutCommandsProvider._()
     : super(
         from: null,
@@ -48,10 +54,12 @@ final class HostEventCloseOutCommandsProvider
 }
 
 String _$hostEventCloseOutCommandsHash() =>
-    r'e61d26fcb0000fad0819c76598f45fc5dc7f590f';
+    r'f490bc53877edb7d90e0302e5de0b5b2ef8de6af';
 
-/// Close out the night through `setEventCloseOut`. It does not invalidate
-/// a read: the close-out listener delivers the saved choices.
+/// Close out the night through `setEventCloseOut`, and record a booked
+/// guest who did not come through `recordEventNoShow`. Neither invalidates
+/// a read: the close-out and attendance report listeners deliver the
+/// result.
 
 abstract class _$HostEventCloseOutCommands extends $Notifier<void> {
   void build();

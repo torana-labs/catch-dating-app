@@ -71,7 +71,8 @@ final class CallableReadClient {
   }
 }
 
-// keepalive: a stateless client that holds no data or account state.
+// keepalive: account-free: a stateless client that holds no data or account
+// state.
 @Riverpod(keepAlive: true)
 CallableReadClient callableReadClient(Ref ref) =>
     CallableReadClient(clock: ref.watch(appClockProvider));

@@ -1,0 +1,49 @@
+{
+  "id": "agent:harness-v2",
+  "category": "agent",
+  "path": "tool/harness.mjs",
+  "command": "node tool/harness.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "impactPaths": [
+    ".gitignore",
+    "tool/check_repository_root_hygiene.test.mjs",
+    "tool/lib/path_glob.mjs",
+    "tool/lib/path_glob.test.mjs"
+  ],
+  "description": "Plans fail-closed CI, release, and deploy impact from the source-owned component graph and runs only explicitly allowlisted compile-codegen checks.",
+  "checks": [
+    "node --check tool/harness.mjs",
+    "node --check tool/harness/lib/component_graph.mjs",
+    "node --check tool/harness/lib/check_flutter_l10n_generated.mjs",
+    "node --test --test-timeout=300000 tool/harness/lib/git_changes.test.mjs tool/harness/lib/flutter_document_selection.test.mjs tool/harness/lib/flutter_contract_outputs.test.mjs tool/lib/path_glob.test.mjs tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs",
+    "node tool/harness.mjs validate"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "AGENT-HARNESS-001",
+      "title": "Use read-only impact planning for broad AI-assisted work",
+      "appliesTo": [
+        "AGENTS.md",
+        "CLAUDE.md",
+        "PROJECT_CONTEXT.md",
+        "docs/agent_operating_model.md",
+        "docs/agent_skills/**",
+        "tool/agent/**",
+        "tool/harness.mjs",
+        "tool/harness/**",
+        "tool/lib/repository_snapshot.mjs",
+        "tool/lib/repository_snapshot.test.mjs"
+      ],
+      "instruction": "For broad work, inspect the Git diff and use the read-only Catch planner to explain affected components and checks. Run the selected checks and preserve proof in Git and CI. Do not write registry receipts, readiness metrics, or regression ledgers."
+    }
+  ]
+}

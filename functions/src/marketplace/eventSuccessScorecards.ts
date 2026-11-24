@@ -1,4 +1,3 @@
-import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import {
   bookingPayments,
   isBookingPaymentData,
@@ -9,7 +8,7 @@ import type {
   BlockDocument,
   EventDocument,
   EventInviteLinkDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   EventSuccessConversationGraphDocument,
   EventWaitlistOfferDocument,
   MatchDocument,
@@ -24,6 +23,7 @@ import {buildFeedbackSignalFact} from "./signalBuilders";
 import {
   recordParticipantSignalFactsBestEffort,
 } from "./participantSignals";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const eventSuccessFeedbackCollection = "eventSuccessFeedback";
 const eventSuccessConversationGraphsCollection =
@@ -160,7 +160,7 @@ export async function refreshEventSuccessScorecard(
       .get(),
     db.collection("matches").where("eventIds", "array-contains", eventId).get(),
     db
-      .collection("eventParticipations")
+      .collection("eventBookings")
       .where("eventId", "==", eventId)
       .get(),
     db
@@ -186,7 +186,7 @@ export async function refreshEventSuccessScorecard(
     .map((doc) => doc.data() as MatchDocument)
     .filter(isDatingMatch);
   const participations = participationsSnap.docs.map(
-    (doc) => doc.data() as EventParticipationDocument
+    (doc) => doc.data() as EventBookingDocument
   );
   const waitlistOffers = waitlistOffersSnap.docs.map(
     (doc) => doc.data() as EventWaitlistOfferDocument
@@ -362,7 +362,7 @@ export function buildEventSuccessConversationGraphAggregate(
  */
 export function buildEventHostFunnelMetrics(params: {
   event: EventDocument;
-  participations: EventParticipationDocument[];
+  participations: EventBookingDocument[];
   waitlistOffers: EventWaitlistOfferDocument[];
   payments: PaymentDocument[];
   inviteLinks: EventInviteLinkDocument[];
@@ -465,7 +465,7 @@ async function loadRepeatAttendeeCount(params: {
   db: FirebaseFirestore.Firestore;
   event: EventDocument;
   eventId: string;
-  participations: EventParticipationDocument[];
+  participations: EventBookingDocument[];
 }): Promise<number> {
   const activeUids = Array.from(new Set(
     params.participations
@@ -488,12 +488,12 @@ async function loadRepeatAttendeeCount(params: {
   const repeatFlags = await Promise.all(
     activeUids.map(async (uid) => {
       const snap = await params.db
-        .collection("eventParticipations")
+        .collection("eventBookings")
         .where("uid", "==", uid)
         .where("status", "in", statuses)
         .get();
       return snap.docs.some((doc) => {
-        const participation = doc.data() as Partial<EventParticipationDocument>;
+        const participation = doc.data() as Partial<EventBookingDocument>;
         return participation.organizerId === organizerId &&
           participation.eventId !== params.eventId;
       });
@@ -575,26 +575,26 @@ export const onEventSuccessConversationGraphWritten = onDocumentWritten(
 
 /**
  * Handles roster writes that change demand, attendance, or invite attribution.
- * @param {EventParticipationDocument | undefined} before Previous doc.
- * @param {EventParticipationDocument | undefined} after New doc.
+ * @param {EventBookingDocument | undefined} before Previous doc.
+ * @param {EventBookingDocument | undefined} after New doc.
  * @param {EventSuccessScorecardDeps} deps Injectable Firebase dependencies.
  */
 export async function onEventParticipationWrittenHandler(
-  before: EventParticipationDocument | undefined,
-  after: EventParticipationDocument | undefined,
+  before: EventBookingDocument | undefined,
+  after: EventBookingDocument | undefined,
   deps: EventSuccessScorecardDeps = defaultDeps
 ): Promise<void> {
   await refreshScorecardsForEventIds(eventIdsFromDocs(before, after), deps);
 }
 
 export const onEventParticipationWritten = onDocumentWritten(
-  "eventParticipations/{participationId}",
+  "eventBookings/{participationId}",
   async (event) => {
     const before = event.data?.before.data() as
-      | EventParticipationDocument
+      | EventBookingDocument
       | undefined;
     const after = event.data?.after.data() as
-      | EventParticipationDocument
+      | EventBookingDocument
       | undefined;
     await onEventParticipationWrittenHandler(before, after);
   }
@@ -614,15 +614,19 @@ export async function onPaymentWrittenHandler(
   await refreshScorecardsForEventIds(eventIdsFromDocs(before, after), deps);
 }
 
-export const onBookingPaymentWritten = onDocumentWritten(
-  `${GUEST_PAYMENTS}/{paymentId}`,
-  async (event) => {
-    const before = event.data?.before.data() as PaymentDocument | undefined;
-    const after = event.data?.after.data() as PaymentDocument | undefined;
-    if (!isBookingPaymentData(after ?? before)) return;
-    await onPaymentWrittenHandler(before, after);
-  }
-);
+/**
+ * A booking payment: its events' success scorecards, recomputed.
+ * Served by dispatchGuestPayments (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
+ */
+export const eventSuccessScorecardPaymentProjections = defineProjections(
+  "guestPayments", [{
+    id: "eventSuccessScorecards", kind: "projection",
+    when: ({before, after}) => isBookingPaymentData(after ?? before),
+    run: (change) => onPaymentWrittenHandler(
+      change.before as PaymentDocument | undefined,
+      change.after as PaymentDocument | undefined),
+  }]);
 
 /**
  * Handles waitlist offer writes that change host curation funnel counts.
@@ -751,7 +755,7 @@ async function loadCatchAggregates(params: {
 async function updateInviteLinkConnectionCounters(params: {
   db: FirebaseFirestore.Firestore;
   eventId: string;
-  participations: EventParticipationDocument[];
+  participations: EventBookingDocument[];
   matches: MatchDocument[];
   catchAggregates: EventSuccessCatchAggregates;
   updatedAt: FirebaseFirestore.FieldValue;
@@ -933,12 +937,12 @@ function emptyFunnelMetrics(params: {
 
 /**
  * Counts participation docs by status.
- * @param {EventParticipationDocument[]} participations Participation docs.
+ * @param {EventBookingDocument[]} participations Participation docs.
  * @param {string[]} statuses Statuses to count.
  * @return {number} Count for the supplied statuses.
  */
 function countParticipations(
-  participations: EventParticipationDocument[],
+  participations: EventBookingDocument[],
   statuses: string[]
 ): number {
   const statusSet = new Set(statuses);

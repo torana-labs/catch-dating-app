@@ -1,7 +1,7 @@
 import * as admin from "firebase-admin";
 import {onCall, HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {journeyOf} from "../admin/organizerOverview";
+import {journeyOf} from "../domain/organizers/organizerJourneySteps";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {isOrganizerManager} from "../shared/organizerHosts";

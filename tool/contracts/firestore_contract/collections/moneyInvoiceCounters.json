@@ -1,0 +1,11 @@
+{
+  "id": "moneyInvoiceCounters",
+  "path": "moneyInvoiceCounters/{financialYear}",
+  "rulesMatch": "/moneyInvoiceCounters/{financialYear}",
+  "typescriptInterface": "MoneyInvoiceCounterDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Functions organizer billing (sending a bill)",
+  "writerContext": "payments",
+  "read": "server only",
+  "write": "server only"
+}

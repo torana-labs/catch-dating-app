@@ -25,7 +25,8 @@ import {EVENT_ASSISTANCE_MESSAGES} from "./firestoreMessageOutbox";
 import {deliveryWorkIds, hasAutomaticDelivery, readDeliveryWorkRecords} from
   "./deliveryWorkRecords";
 import {parseHostDelivery, projectHostDelivery} from "./hostDeliveryRecords";
-import {runAssistanceTransaction as transact} from "./transactionCallback";
+import {runAssistanceTransaction as transact} from
+  "../../platform/transactionCallback";
 
 export const DELIVERY_REPAIRS = "eventAssistanceDeliveryRepairs";
 

@@ -55,4 +55,34 @@ module.exports = [
       indent: ["error", 2],
     },
   },
+  {
+    // Replay receipts have one document shape and one TTL policy, owned by
+    // src/shared/commandReceipts.ts (docs/data_contracts.md, "Command
+    // receipts"). Production code reads and writes them only through its
+    // helpers (commandReceiptRef, readCommandReceipt, writeCommandReceipt,
+    // claimCommandReceipt), never by naming the collection or building the
+    // document itself.
+    files: ["src/**/*.ts"],
+    ignores: ["src/**/*.test.ts", "src/shared/commandReceipts.ts"],
+    rules: {
+      "no-restricted-syntax": ["error",
+        {
+          selector: "Literal[value='commandReceipts']",
+          message: "Use the src/shared/commandReceipts.ts helpers instead " +
+            "of naming the commandReceipts collection.",
+        },
+        {
+          selector: "TemplateElement[value.raw=/(^|\\/)commandReceipts\\//]",
+          message: "Use commandReceiptRef instead of building a " +
+            "commandReceipts path.",
+        },
+        {
+          selector: "ImportSpecifier[imported.name=/^(COMMAND_RECEIPTS|" +
+            "buildCommandReceipt)$/]",
+          message: "Write receipts with writeCommandReceipt or " +
+            "claimCommandReceipt and address them with commandReceiptRef.",
+        },
+      ],
+    },
+  },
 ];

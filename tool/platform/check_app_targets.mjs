@@ -622,9 +622,8 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
       target.projectRoot,
       "macos/Runner.xcodeproj/project.pbxproj",
     );
-    // Only the Consumer project ships the macOS runner that hosts the native
-    // app-shell smoke suite; a Consumer target without it is drift.
-    const hasMacosRunner = target.role === "consumer" || fs.existsSync(macosProjectPath);
+    // Each app project ships a macOS runner that hosts its own native
+    // integration journeys; a target without one is drift.
     validateTarget({
       root,
       manifest,
@@ -633,9 +632,9 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
       read,
       appleGenerator,
       appleConfigurations: parseAppleBuildConfigurations(appleProject),
-      macosConfigurations: hasMacosRunner && fs.existsSync(macosProjectPath)
-        ? parseAppleBuildConfigurations(fs.readFileSync(macosProjectPath, "utf8"))
-        : hasMacosRunner ? parseAppleBuildConfigurations("") : null,
+      macosConfigurations: parseAppleBuildConfigurations(
+        fs.existsSync(macosProjectPath) ? fs.readFileSync(macosProjectPath, "utf8") : "",
+      ),
     });
   }
 
@@ -763,40 +762,26 @@ function validateTarget({
     }
   }
 
-  validateAppleScheme({
-    root,
-    projectRoot: target.projectRoot,
-    target,
-    platform: "ios",
-    findings,
-  });
-  if (macosConfigurations) {
+  for (const [platform, configurations] of [
+    ["ios", appleConfigurations],
+    ["macos", macosConfigurations],
+  ]) {
     validateAppleScheme({
       root,
       projectRoot: target.projectRoot,
       target,
-      platform: "macos",
+      platform,
       findings,
     });
-  }
-
-  validateAppleTargetConfigurations({
-    manifest,
-    target,
-    platform: "ios",
-    configurations: appleConfigurations,
-    findings,
-  });
-  if (macosConfigurations) {
     validateAppleTargetConfigurations({
       manifest,
       target,
-      platform: "macos",
-      configurations: macosConfigurations,
+      platform,
+      configurations,
       findings,
     });
   }
-  for (const platform of macosConfigurations ? ["ios", "macos"] : ["ios"]) {
+  for (const platform of ["ios", "macos"]) {
     const iconPath = path.join(
       root,
       target.projectRoot,

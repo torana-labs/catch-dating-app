@@ -32,7 +32,7 @@ describe("AppLaunchNotice", () => {
       role: "member",
       city: first.label,
       cityId: first.id,
-      whatsapp: {phone: "+919876543210", launchNotice: true, notice: "appLaunch", newPlans: false, marketing: false, consentVersion: "app-launch-whatsapp-v2"},
+      whatsapp: {phone: "+919876543210", launchNotice: true, notice: "appLaunch", newPlans: false, marketing: false, consentVersion: "app-launch-whatsapp-v3"},
     });
     expect(body.citySource).toBeUndefined();
   });

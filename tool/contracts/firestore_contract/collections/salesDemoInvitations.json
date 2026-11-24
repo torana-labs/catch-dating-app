@@ -1,0 +1,10 @@
+{
+  "id": "salesDemoInvitations",
+  "path": "salesDemoInvitations/{invitationId}",
+  "rulesMatch": "/salesDemoInvitations/{privateDocument=**}",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "sales demo admin and trial callables",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

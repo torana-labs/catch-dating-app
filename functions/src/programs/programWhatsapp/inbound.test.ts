@@ -3,7 +3,7 @@ import test from "node:test";
 import {FakeFirestore} from "../../shared/testing/programFirestore";
 import {now} from "../../shared/testing/programFixtures";
 import {contractValidator} from "../../shared/contractTestValidators";
-import {hashEndpoint} from "../../organizers/organizerCampaignModel";
+import {hashEndpoint} from "../../platform/delivery/endpointHash";
 import {processOrganizerMessagingWebhookEvent} from
   "../../organizers/organizerWhatsappWebhook";
 import {routeProgramWhatsappInbound} from "./inbound";

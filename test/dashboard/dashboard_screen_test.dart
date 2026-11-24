@@ -31,7 +31,7 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty_
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_list.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/organizer_posts_home_section.dart';
-import 'package:catch_dating_app/events/shared/event_check_in_qr_scanner.dart';
+import 'package:catch_dating_app/pages/check_in/event_check_in_qr_scanner.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/app_config.dart';
@@ -39,6 +39,9 @@ import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/analytics_test_helpers.dart';
+import 'package:catch_test_support/dashboard_test_helpers.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -49,9 +52,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../events/events_test_helpers.dart';
 import '../organizers/organizers_test_helpers.dart' as organizer_test;
-import '../support/analytics_test_helpers.dart';
-import '../support/dashboard_test_helpers.dart';
-import '../test_pump_helpers.dart';
 
 part 'dashboard_full_home_shell_tests.dart';
 

@@ -1,0 +1,26 @@
+{
+  "id": "hostOrganizerOwnerViews",
+  "path": "hostOrganizerOwnerViews/{organizerId}",
+  "rulesMatch": "/hostOrganizerOwnerViews/{organizerId}",
+  "typescriptInterface": "HostOrganizerOwnerViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/host_organizer_account_views.rules.test.cjs",
+  "rulesTestNames": [
+    "lets the organizer's managers get its owner view"
+  ],
+  "owner": "Host read model projector: hostReadModels organizerAccountViewTriggers",
+  "writerContext": "host",
+  "read": "get by organizer id for the organizer's current owner and managers while their account is not deleted; never listed",
+  "write": "server only; written from organizers, organizerInsights, organizerFollowerMessageQuotas, organizerSenderConnections and organizerMessageTemplates",
+  "exportedFunctions": [
+    "dispatchOrganizers",
+    "onHostOrganizerOwnerViewInsightsChanged",
+    "onHostOrganizerOwnerViewQuotaChanged",
+    "onHostOrganizerOwnerViewSenderChanged",
+    "onHostOrganizerOwnerViewTemplateChanged"
+  ],
+  "migrationNotes": [
+    "Replaces getOrganizerOwnerView for the website owner page (#2306). The website works out the reader's role (owner when the view's ownerUid is theirs, else editor), the 30-day insights window and this month's follower allowance from the view and its clock. The callable was retired in Nov 2026 (#2174), a day after the website moved to this view. The host-organizer-account-views copy-forward migration creates views for organizers that predate the triggers.",
+    "No personal data beyond the organizer's public page fields; insights are aggregates."
+  ]
+}

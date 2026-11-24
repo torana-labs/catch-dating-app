@@ -50,6 +50,7 @@ class CatchFeedbackRules extends MultiAnalysisRule {
     if (!path.contains('/lib/') ||
         path.contains('/test/') ||
         path.contains('/integration_test/') ||
+        path.contains(_testSupportPackage) ||
         path.endsWith('.g.dart') ||
         path.endsWith('.freezed.dart')) {
       return;
@@ -77,7 +78,7 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
         element.enclosingElement.name == 'CatchNoticeOverlay' &&
         uri == 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart' &&
         !const {
-          '/lib/app.dart',
+          '/lib/pages/frame/app.dart',
           '/widgetbook/lib/primitives/catalog/feedback.dart',
         }.any(path.endsWith)) {
       rule.reportAtNode(

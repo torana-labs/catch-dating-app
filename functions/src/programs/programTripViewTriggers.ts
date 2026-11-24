@@ -5,6 +5,7 @@ import {
   reconcileProgramHotelInboundView,
   reconcileProgramTripView,
 } from "./programTripViews";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true};
 const fanoutLimit = 600;
@@ -79,20 +80,15 @@ export const onProgramTripGuestChanged = onDocumentWritten({
   }
 });
 
-/** The programme's transport settings: every inbound journey's curb time. */
-export const onProgramHotelInboundSettingsChanged = onDocumentWritten({
-  ...options, document: "organizerPrograms/{programId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (!after || unchanged(before, after, ["transportSettings"])) return;
-  const db = admin.firestore();
+/** Every inbound journey's hotel desk row in a programme. */
+async function reconcileProgramInboundCurbTimes(db: FirebaseFirestore.Firestore,
+  programId: string): Promise<void> {
   // The programme's journeys a page at a time (one equality filter keeps
   // this off the composite index list); inbound ones are rewritten.
   let last: FirebaseFirestore.QueryDocumentSnapshot | null = null;
   for (let page = 0; page < 6; page++) {
     let query: FirebaseFirestore.Query = db.collection("programTravelLegs")
-      .where("programId", "==", event.params.programId)
+      .where("programId", "==", programId)
       .orderBy(admin.firestore.FieldPath.documentId()).limit(fanoutLimit);
     if (last) query = query.startAfter(last);
     const snap = await query.get();
@@ -104,4 +100,18 @@ export const onProgramHotelInboundSettingsChanged = onDocumentWritten({
     if (snap.docs.length < fanoutLimit) break;
     last = snap.docs[snap.docs.length - 1];
   }
-});
+}
+
+/**
+ * The programme's transport settings: every inbound journey's curb time.
+ * Served by dispatchOrganizerPrograms (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
+ */
+export const programHotelInboundSettingsProjections = defineProjections(
+  "organizerPrograms", [{
+    id: "programHotelInboundView", kind: "projection",
+    when: ({before, after}) =>
+      !(!after || unchanged(before, after, ["transportSettings"])),
+    run: (change, ctx) =>
+      reconcileProgramInboundCurbTimes(ctx.db, change.documentId),
+  }]);

@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +12,9 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../test_pump_helpers.dart';
 import 'capture_asset_bundle.dart';
 import 'capture_device.dart';
+import 'capture_fragment.dart';
 
 class CaptureTheme {
   const CaptureTheme(this.name, this.brightness);
@@ -60,6 +62,7 @@ Future<List<CaptureArtifact>> captureCatchWidget(
   Future<void> Function(WidgetTester tester)? drive,
   Future<void> Function(WidgetTester tester)? cleanup,
   CaptureDevice device = CaptureDevice.reviewPhone,
+  CaptureFragment? fragment,
   double pixelRatio = 1.0,
   double textScale = 1.0,
   bool disableAnimations = false,
@@ -121,6 +124,9 @@ Future<List<CaptureArtifact>> captureCatchWidget(
       await _pumpCaptureFrame(tester);
     }
 
+    final crop = fragment == null
+        ? null
+        : await _fragmentRect(tester, boundaryKey, fragment);
     final file = _captureFile(
       outputDirectory: outputDirectory,
       id: id,
@@ -128,7 +134,12 @@ Future<List<CaptureArtifact>> captureCatchWidget(
       layout: outputLayout,
     );
     await tester.runAsync(
-      () => _writeBoundaryPng(boundaryKey, file, pixelRatio: pixelRatio),
+      () => _writeBoundaryPng(
+        boundaryKey,
+        file,
+        pixelRatio: pixelRatio,
+        crop: crop,
+      ),
     );
     artifacts.add(CaptureArtifact(id: id, theme: theme, file: file));
     if (cleanup != null) {
@@ -168,14 +179,50 @@ Future<void> _pumpCaptureFrame(WidgetTester tester) async {
   await pumpFeatureUiFor(tester, CatchMotion.base);
 }
 
+/// The fragment's box on the captured screen, in points, with its padding.
+/// A widget below the fold is scrolled into view first (only as far as it
+/// takes, so a visible widget stays put); one that still is not wholly on
+/// the screen fails the capture rather than cutting out half a widget.
+Future<Rect> _fragmentRect(
+  WidgetTester tester,
+  GlobalKey boundaryKey,
+  CaptureFragment fragment,
+) async {
+  final finder = fragment.find();
+  expect(finder, findsOneWidget, reason: 'A fragment cuts out one widget.');
+  await Scrollable.ensureVisible(
+    tester.element(finder),
+    alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+  );
+  await _pumpCaptureFrame(tester);
+  final boundary =
+      boundaryKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+  final box = tester.renderObject<RenderBox>(finder);
+  final screen = Offset.zero & boundary.size;
+  final widget = box.localToGlobal(Offset.zero, ancestor: boundary) & box.size;
+  if (widget.isEmpty || widget.intersect(screen).size != widget.size) {
+    throw StateError(
+      'The fragment ${widget.toString()} is not wholly on the screen $screen.',
+    );
+  }
+  return fragment.padding.inflateRect(widget).intersect(screen);
+}
+
 Future<void> _writeBoundaryPng(
   GlobalKey key,
   File file, {
   required double pixelRatio,
+  Rect? crop,
 }) async {
   final boundary =
       key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-  final image = await boundary.toImage(pixelRatio: pixelRatio);
+  var image = await boundary.toImage(pixelRatio: pixelRatio);
+  if (crop != null) {
+    final screen = Size(image.width.toDouble(), image.height.toDouble());
+    final source = _cropSource(crop, pixelRatio, screen);
+    image = await _cropImage(image, source);
+    await _writeFragmentRect(file, source, screen);
+  }
   final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
   image.dispose();
 
@@ -185,6 +232,51 @@ Future<void> _writeBoundaryPng(
 
   await file.create(recursive: true);
   await file.writeAsBytes(bytes.buffer.asUint8List(), flush: true);
+}
+
+/// [crop] (in points) in [screen] pixels, rounded out to whole pixels.
+Rect _cropSource(Rect crop, double pixelRatio, Size screen) => Rect.fromLTRB(
+  (crop.left * pixelRatio).floorToDouble(),
+  (crop.top * pixelRatio).floorToDouble(),
+  (crop.right * pixelRatio).ceilToDouble().clamp(0, screen.width),
+  (crop.bottom * pixelRatio).ceilToDouble().clamp(0, screen.height),
+);
+
+/// Cuts [source] (in pixels) out of [image].
+Future<ui.Image> _cropImage(ui.Image image, Rect source) async {
+  final recorder = ui.PictureRecorder();
+  Canvas(recorder).drawImageRect(
+    image,
+    source,
+    Offset.zero & source.size,
+    Paint()..filterQuality = FilterQuality.none,
+  );
+  final picture = recorder.endRecording();
+  final cropped = await picture.toImage(
+    source.width.toInt(),
+    source.height.toInt(),
+  );
+  picture.dispose();
+  image.dispose();
+  return cropped;
+}
+
+/// Writes where the cut-out sits on its screen, as shares of the screen
+/// (0 to 1), beside the PNG (`light.png` gets `light.fragment.json`). The
+/// exporter records it in the capture's provenance, and the website lays the
+/// cut-out over that spot of the screen.
+Future<void> _writeFragmentRect(File png, Rect source, Size screen) async {
+  double share(double value, double side) =>
+      double.parse((value / side).toStringAsFixed(5));
+  final rect = <String, double>{
+    'x': share(source.left, screen.width),
+    'y': share(source.top, screen.height),
+    'width': share(source.width, screen.width),
+    'height': share(source.height, screen.height),
+  };
+  final file = File(png.path.replaceFirst(RegExp(r'\.png$'), '.fragment.json'));
+  await file.create(recursive: true);
+  await file.writeAsString('${jsonEncode(rect)}\n', flush: true);
 }
 
 Widget _frame({

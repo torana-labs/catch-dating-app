@@ -1,0 +1,43 @@
+{
+  "id": "firebase:rules-deployment-drift",
+  "category": "firebase",
+  "path": "tool/firebase/check_rules_deployment_drift.mjs",
+  "command": "node tool/firebase/check_rules_deployment_drift.mjs --env dev",
+  "surface": "remote-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    ".github/workflows/_backend-deploy.yml",
+    "firebase.json",
+    "firestore.rules",
+    "storage.rules",
+    "tool/firebase/check_rules_deployment_drift.test.mjs"
+  ],
+  "description": "Compares normalized committed Firestore and Storage rules with every applicable active Firebase Rules release, skipping only when no read credential is available or the only one is a Claude Code cloud session's proxy gcloud token.",
+  "checks": [
+    "node --check tool/firebase/check_rules_deployment_drift.mjs",
+    "node --test tool/firebase/check_rules_deployment_drift.test.mjs",
+    "node tool/firebase/check_rules_deployment_drift.mjs --env dev"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "FIREBASE-RULES-DRIFT-001",
+      "title": "Keep active Firebase rules releases synchronized with committed rules",
+      "appliesTo": [
+        "firestore.rules",
+        "storage.rules",
+        "firebase.json",
+        "tool/firebase/check_rules_deployment_drift.mjs",
+        ".github/workflows/_backend-deploy.yml"
+      ],
+      "instruction": "Compare the active Firestore and Storage Rules releases with the exact committed sources after every Deploy backend run. Missing credentials may skip local or untrusted CI checks; present but insufficient credentials, missing releases, and normalized-content drift fail closed."
+    }
+  ],
+  "runbook": "docs/release_operations.md#firebase-rules-deployment-drift"
+}

@@ -8,7 +8,7 @@ import {
   validateCrossPathsShowcaseEligibilityDocument,
   validateEventCrossPathsConsentDocument,
   validateEventDocument,
-  validateEventParticipationDocument,
+  validateEventBookingDocument,
 } from "../contracts/generated/schema_contract_validators.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
@@ -181,7 +181,7 @@ export async function buildCrossPathsDemoPlan({
 
   let selection = null;
   for (const event of events) {
-    const participationSnapshot = await db.collection("eventParticipations")
+    const participationSnapshot = await db.collection("eventBookings")
       .where("eventId", "==", event.id)
       .get();
     const signedUpUids = participationSnapshot.docs
@@ -346,7 +346,7 @@ export function buildCrossPathsDemoDocuments({
         {phoneNumber: testPhone} : {}),
     },
   })), ...(organizerId ? users.map((user) => ({
-    path: `eventParticipations/${eventId}_${user.uid}`,
+    path: `eventBookings/${eventId}_${user.uid}`,
     data: {organizerId: organizerId},
   })) : [])];
 
@@ -725,12 +725,12 @@ function buildDedicatedCrossPathsEventDocs({
       paymentId: null,
     };
     assertValidSchemaPayload(
-      validateEventParticipationDocument,
+      validateEventBookingDocument,
       data,
-      `eventParticipations/${eventId}_${person.uid}`
+      `eventBookings/${eventId}_${person.uid}`
     );
     return {
-      path: `eventParticipations/${eventId}_${person.uid}`,
+      path: `eventBookings/${eventId}_${person.uid}`,
       data,
     };
   });

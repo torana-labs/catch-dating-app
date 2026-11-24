@@ -8,8 +8,8 @@ Durable business workflows do not belong here. Resumable workflow runs, work
 items, leases, budgets, agent decisions, and receipts live in `operations/` and
 are governed by `docs/operations_platform.md`; the retired organizer-intake and
 event-guide trees must not return. Stable workflow checks remain discoverable through
-`operations:boundaries` and `operations:workflow-manifest` in
-`tools_manifest.json`. `remote_ops_manifest.json` remains the separate inventory
+`operations:boundaries` and `operations:workflow-manifest` in the tools
+manifest (`manifest/`). `remote_ops_manifest.json` remains the separate inventory
 for commands that can touch external systems.
 
 ```sh
@@ -72,15 +72,15 @@ empty category can never count as a successful CI lane. Tools CI
 validates the complete category matrix before fanout. Ordinary tool changes run
 the exact active owner declared by `path` or `impactPaths`, its transitive
 `alsoCheckIds`, and the mandatory repository guards in
-`tools_manifest.json#ciImpact`. In CI each tool also owns every file its checks
+`manifest/manifest.json#ciImpact`. In CI each tool also owns every file its checks
 reach through static imports: `tool/impact/import_owners.mjs` derives them with
 the dependency-cruiser pinned in `tool/impact/` (`npm ci --prefix tool/impact`),
 and `affected-tools --import-owners <file>` reads that output. A path owned only
 through imports also runs `ciImpact.importOwnerCheckIds`, because imports cannot
 show files read as text. Shared helpers in `ciImpact.importGraphPaths` run the
-full matrix whenever the graph is absent or names no owner. An edit to
-`tool/tools_manifest.json` runs only the tools whose entries changed plus
-`ciImpact.manifestCheckIds`; a `ciImpact` edit, or a plan without a base
+full matrix whenever the graph is absent or names no owner. An edit to a
+tool's file in `tool/manifest/tools/` runs only the tools whose entries changed plus
+`ciImpact.manifestCheckIds`; a `ciImpact` edit (in `tool/manifest/manifest.json`), or a plan without a base
 revision, still runs the full matrix. Canonical Harness control-plane paths come from
 `component_graph.json#repo.harness`; the tool manifest declares only additional
 full-matrix paths. Terminal graph classifications override broad Harness
@@ -111,9 +111,17 @@ the full validation fallback.
 Graph checks, exact tool owners, and mandatory checks all expand through the
 same transitive `alsoCheckIds`; an unavailable required check fails planning.
 Identical check commands run once per invocation, preserving their first owner's
-order. When the required same-run React marketing lane owns validation, Tools
+order. A check written as `npm --prefix functions run build && <command>` runs
+the shared Functions build once per invocation, at the first check that needs
+it, then its own `<command>`; the build runs again only if `functions/src`, the
+Functions package files or `functions/lib` changed since (`SHARED_CHECK_PREREQUISITES`
+in `tool/lib/tool_impact.mjs`). A failed build fails every check that needs it.
+When the required same-run React marketing lane owns validation, Tools
 reuses its exact site build, Storybook build, accessibility gate, and visual
-comparisons. Postbuild, build-output, and Storybook configuration tests still run
+comparisons. The React lane runs the visual comparisons only in the CI nightly
+(owner decision, 23 Nov 2026), so in the merge queue the report-only
+`web:storybook-visuals` check is deferred to the nightly with them; a story
+that cannot render still fails the accessibility gate there. Postbuild, build-output, and Storybook configuration tests still run
 in Tools. Standalone tool checks keep their own builds and browser gates. This
 reuse requires the React caller to retain its normal deployable build; changed
 commands execute until their equivalence is verified.
@@ -197,7 +205,7 @@ skipped, failed or cancelled preflight. Full tests and analysis remain required.
 `docs:metadata` validates source-owned Markdown metadata. Its `--base` comparison
 also rejects surviving references to deleted or renamed documents: Markdown
 links and code spans, plus literal repository paths in any tracked
-non-Markdown text such as `tool/tools_manifest.json`,
+non-Markdown text such as the tools manifest's files,
 workflows, scripts and generated packs. For each document the change edits, it
 also rejects `path.md#heading` references whose heading the change removed;
 anchors that were already unresolved before the change are printed as
@@ -333,9 +341,9 @@ node tool/test/check_flutter_test_size.mjs --check
 `node tool/run.mjs check audit:flutter-source-size` enforces the architecture
 owner's 800-line handwritten source budget across `lib/`, `apps/*/lib/`, packages, and Widgetbook.
 The exact Field constructor facade has its approved 1,150-line ceiling; both
-ordinary debt and the facade can only shrink. `lib/routing/go_router.dart` is
-exempt from the line budget: the route inventory requires every `GoRoute` in
-that one file, so its length tracks route count rather than debt. Git comparison prevents manually
+ordinary debt and the facade can only shrink. `lib/routing/host_router.dart` is
+exempt from the line budget: the route inventory requires every Host `GoRoute`
+in that one file, so its length tracks route count rather than debt. Git comparison prevents manually
 adding new or split oversized files to the legacy baseline. The check uses Node
 and repository source directly, so it does not start a Flutter analyzer.
 
@@ -748,6 +756,137 @@ node tool/firebase/report_environment_parity.mjs
 node tool/firebase/report_environment_parity.mjs --surfaces remote-config,function-params --json
 node tool/firebase/report_environment_parity.mjs --policy-only
 ```
+
+## Dart Test Blast Radius
+
+`tool/architecture/dart_blast_radius.mjs` measures how far a change in `lib/`
+reaches into the Flutter tests. It reads the import, export and part directives
+of tracked Dart files (conditional URIs included, `package:` URIs mapped to each
+pubspec's `lib/`), takes each test file's closure, and reports the average
+number of `lib/` libraries a test reaches. Re-run it after each import-graph cut
+to see the effect. It approximates the selector in
+`tool/harness/lib/flutter_test_selection.dart` and does not replace it.
+Untracked generated files are missing, so its counts are lower bounds.
+
+```bash
+node tool/architecture/dart_blast_radius.mjs                       # average and top 20
+node tool/architecture/dart_blast_radius.mjs --reach lib/a.dart     # tests reaching a file
+node tool/architecture/dart_blast_radius.mjs --cut lib/a.dart:lib/b.dart --reach lib/c.dart
+node tool/architecture/dart_blast_radius.mjs --chokepoints          # about 30 s
+```
+
+`--cut` takes `<from>:<to>` and measures the graph with that edge removed, so
+you can price a cut before making it. `--chokepoints` ranks barrels (3+
+exports), widely imported files (25+ importers) and hubs (60+ imports) by the
+share of test-to-library reach lost if every edge into them is cut.
+
+## Merge-Queue Entry Timings
+
+`tool/ci/queue_entry_timings.mjs` measures where a merge-queue entry's time
+goes. It is report only: `fetch` reads GitHub with `gh api` and saves one JSON
+file, and `report` analyses that file offline.
+
+```bash
+node tool/ci/queue_entry_timings.mjs fetch --since 2026-11-15 --out build/ci/queue.json
+node tool/ci/queue_entry_timings.mjs report --data build/ci/queue.json --split 2026-11-22T15:41:00Z
+```
+
+`fetch` saves every `merge_group` run of `ci.yml` since the date, each run's
+jobs (`filter=all`), and each queued PR's timeline events
+(`added_to_merge_queue`, `removed_from_merge_queue`, `merged`). That is one API
+call per run and per PR, so a week of queue history takes a few minutes.
+`fetch` saves its progress every 25 calls and resumes from `--out` when the
+file exists. A completed run's jobs and a settled PR's timeline are reused, so a
+rerun fetches only new or unfinished entries. `--fresh` ignores the old file.
+
+For each run, `report` gives:
+
+- the wait from enqueue to the run existing;
+- the time to Required CI, which the queue merges on (the primary end point),
+  and the time to the last job, which can be off the path;
+- the critical-path job, meaning the last executed lane job before Required
+  CI. The proof-reuse shadow's jobs (`Compute proof-reuse keys` and `Compare
+  proof-reuse verdicts with the lanes`) run outside Required CI's needs, so they
+  are never the critical path; since #2380 the comparison runs after every lane
+  and would otherwise be "last" in many runs;
+- the longest runner wait, macOS and Linux apart;
+- the outcome, and any removal with its reason and actor.
+
+Outcomes come from the PR timeline. GitHub writes `removed_from_merge_queue`
+about a second before `merged` on every successful queue merge, so a removal
+followed by `merged` within 60 s counts as merged. A run whose PR got a later
+run on a new base, with no queue event in between, is `superseded`, because the
+queue regrouped it. Removal causes are counted by failing job; Required CI is
+left out, since it only aggregates the lanes.
+
+`--split` compares before and after a change; give it the change's `merged_at`,
+not its commit date, which a squash merge keeps from authoring. A period with fewer than
+10 runs is marked thin. Queue rebuilds come from the runs alone: a run is
+superseded when its PR gets a new run on another base before the old one
+finished. A dataset without timelines reports everything except the enqueue
+wait and removal causes, which show as "not measured", never as zero.
+
+### Proof-reuse shadow in the timings report
+
+`report --proof-reuse <dir>` adds the merge-queue proof-reuse shadow. It reads
+every `proof-reuse-daily-<date>.json` in the directory, the daily artifacts of
+the Proof reuse daily workflow (`tool/ci/proof_reuse_report.mjs`, schema
+`proof-reuse-daily/1`). It refuses any other schema, and a file whose name and
+date disagree. Download the artifacts into one directory and run:
+
+```bash
+node tool/ci/queue_entry_timings.mjs report --data build/ci/queue.json --proof-reuse build/ci/proof-reuse
+```
+
+Each day shows:
+
+- the runner time that hits saved against the potential (`pr_subset` lanes);
+- misses and potential misses;
+- the unchecked numbers (a hit or miss whose hasher record was stale);
+- cancelled runs and other runs without a report.
+
+Runner time is summed job runtime, not wall-clock. The report also shows the
+critical-path time that hits would have saved. For each run with a hit that
+`--data` has jobs for, it takes the last gating finish (Required CI and the
+shadow's own jobs excluded)
+minus the last finish of the jobs left once the reused lanes' jobs are removed,
+so a lane saves only when it finished last. Jobs that waited on a reused lane
+keep their real times, so the figure is a lower bound. Checked and unchecked
+hits are counted apart.
+
+A day whose `runs` is not `runsWithVerdicts` plus its runs without a report,
+or whose `cancelledRuns` differs from the cancelled runs it lists, is flagged
+`PROBLEM`. A run and attempt already counted on an earlier day is skipped.
+Without `--data`, only the proof-reuse section is printed, and every run with a
+hit counts as not in the dataset.
+
+## CI Network Retries
+
+`tool/ci/retry_on_match.mjs` reruns a CI command only when it failed with
+error text the call site names. It never retries on a non-zero exit alone,
+so a real compile or test failure fails at once. Each `--match` quotes a
+failure seen in a run, recorded next to the step. It makes up to 3 attempts,
+30 s and then 90 s apart, and keeps the command's own exit code.
+
+```bash
+node tool/ci/retry_on_match.mjs --match 'Received status code 429 from server' \
+  -- ./tool/flutter_with_env.sh dev build apk --debug
+```
+
+Current call sites: the two Android debug builds in
+`.github/workflows/app-build-matrix.yml` (Maven Central HTTP 429). The
+capture planner's `gh api` reads retry in
+`tool/marketing/lib/capture_seeds.mjs` itself.
+
+`tool/ci/prefetch_sqlite3_asset.mjs` covers a download no step can retry:
+the `sqlite3` package's build hook fetches its native library from GitHub
+during `flutter test`, and makes only one attempt. The tool downloads the
+locked version's library for the runner, retrying on network errors, 429 and
+5xx. It checks the file against the sha256 the package pins and writes it to
+`.dart_tool/hooks_runner/shared/sqlite3/build/download-<hash8>/`, where the
+hook reuses a verified copy (the package's `doc/hook.md`). Run it after
+`flutter pub get`. If the layout is not what it expects, it warns and the
+hook downloads as before.
 
 ## App Check Debug Tokens
 
@@ -1205,7 +1344,15 @@ ids, non-empty text, and exact generated output.
 ## Adding Or Moving A Tool
 
 1. Put the implementation in the narrowest matching category folder.
-2. Add or update the entry in `tool/tools_manifest.json`.
+2. Add or update the tool's own file, `tool/manifest/tools/<category>.<name>.json`
+   for the id `<category>:<name>` (the file name must match the id). The header,
+   `tool/manifest/manifest.json`, holds only `version`, `updated` and
+   `ciImpact`. Code that reads the manifest goes through
+   `tool/lib/tools_manifest.mjs` (`loadToolsManifest`, `toolsManifestAt`,
+   `isToolsManifestPath` and friends), never a file path; it combines the files
+   with tools sorted by id and fails closed on a misnamed, orphan or malformed
+   file. `node tool/lib/tools_manifest.mjs` prints the combined manifest, which
+   is never committed.
 3. Include at least one cheap `checks` command unless the tool is an interactive Flutter entrypoint.
 4. Declare `ciRequirements.repositoryView: index` only when sparse Git-index
    visibility is sound; otherwise CI uses a full repository checkout.
@@ -1276,9 +1423,27 @@ Name that check in the reason, and keep the evidence in the PR.
 ## Operator Runbooks
 
 Runbooks for live-system tools that have no section elsewhere. Each tool's
-`runbook` field in `tool/tools_manifest.json` points at its heading here. Every
+`runbook` field in its `tool/manifest/tools/` file points at its heading here. Every
 command below previews by default unless the section says otherwise; read the
 preview before adding `--apply`.
+
+### Ad audiences
+
+`node tool/ads/apply_ad_audiences.mjs [--apply] [--json]` (`ads:audiences`,
+guard `apply-flag`).
+
+- **What it does:** plans the retargeting audiences in `tool/ads/ad_audiences.json`:
+  Meta custom audiences (website visitors from the Pixel, the host lead form,
+  Instagram and Page engagement) and Google remarketing lists from the Google
+  tag. Only visitors who chose analytics and marketing in the cookie banner load
+  those tags, so only they join the website audiences.
+- **Apply:** `--apply` creates missing audiences, then attaches the Google lists
+  to the host search campaign for observation only (they never narrow who sees
+  the ads). It never changes or deletes an existing audience, so the Functions'
+  "Catch | Active hosts" list is untouched. Meta's prospecting exclusions are
+  named in `tool/ads/meta_campaigns.json` and applied by `ads:meta-campaigns`.
+- **Credentials:** the same as the two campaign scripts. Tokens are never logged.
+- **Check afterwards:** re-run without `--apply`; every audience should show `keep`.
 
 ### Google Ads campaigns
 
@@ -1288,12 +1453,23 @@ guard `apply-flag`).
 - **What it does:** plans the campaigns in `tool/ads/google_campaigns.json`.
   Locations come from the city catalog (`contracts/catalogs/markets.json`, each
   city's `ads` block). The default run reads the account and asks Google to
-  validate every create request without making anything.
-- **Apply:** `--apply` creates missing campaigns, always paused, and brings an
-  existing campaign's locations and negative keywords in line. It never changes
-  an existing campaign's ads, budget or bidding, and only touches names under
-  the policy's managed prefix. Enabling a campaign and any budget change after
-  launch are the owner's call in the Google Ads console.
+  validate every create and change request without making anything.
+- **Config:** each ad gets the campaign's `sharedHeadlines` plus its ad group's
+  `headlines` (15 at most, 30 characters each) and the `descriptions`.
+  `sitelinks` (link text up to 25 characters, `description1` and
+  `description2` up to 35, and a site `path`) and `callouts` (up to 25
+  characters) are campaign-level assets. Sitelink and ad URLs are the brand
+  package's web origin plus the path; the campaign's `finalUrlSuffix` adds the
+  UTM tags to all of them.
+- **Apply:** `--apply` creates missing campaigns, always paused, with their
+  sitelinks and callouts. For an existing campaign it brings locations and
+  negative keywords in line, sets each responsive search ad's headlines to the
+  file's, and creates and links any sitelink or callout the campaign lacks,
+  matched by its text, so a re-run adds nothing. It never changes an existing
+  campaign's status, budget or bidding, never edits or unlinks an asset already
+  on it, and only touches names under the policy's managed prefix. Enabling a
+  campaign and any budget change after launch are the owner's call in the
+  Google Ads console.
 - **Credentials:** `GOOGLE_ADS_ACCESS_TOKEN`, or gcloud impersonating the ads
   service account the script names. The token is never logged.
 - **Check afterwards:** re-run without `--apply`; every campaign should show
@@ -1318,17 +1494,18 @@ guard `apply-flag`).
 
 ### Firestore projection repairs
 
-These three recompute a denormalised projection from its source documents.
+These four recompute a denormalised projection from its source documents.
 Each takes `--env <dev|prod>` (or `--project <id>`), `--emulator` or
 `--emulator-host <host>`, `--json`, and writes only with `--apply` (guard
-`apply-flag`; none of them has a separate production flag, so name the
-environment explicitly).
+`apply-flag`; apart from the programme counts, none of them has a separate
+production flag, so name the environment explicitly).
 
 | Tool | Command | Recomputes |
 |---|---|---|
 | `data:repair-club-hosts` | `node tool/data/recompute_organizer_host_profiles.mjs` | Club host fields (`ownerUserId`, `hostUserIds`, `hostProfiles`, `profileImageUrl`) from `hostProfiles/{uid}`, keeping a club's existing host snapshot when no host profile exists yet. |
-| `data:repair-event-aggregates` | `node tool/data/recompute_event_aggregate_counts.mjs` | `events/{eventId}` counts from `eventParticipations`: `bookedCount` and `genderCounts` (signed up plus attended), `checkedInCount` (attended), `waitlistedCount`. |
+| `data:repair-event-aggregates` | `node tool/data/recompute_event_aggregate_counts.mjs` | `events/{eventId}` counts from `eventBookings`: `bookedCount` and `genderCounts` (signed up plus attended), `checkedInCount` (attended), `waitlistedCount`. |
 | `data:repair-organizer-follower-counts` | `node tool/data/recompute_organizer_follower_counts.mjs` | `organizers/{organizerId}.followerCount` from active `organizerFollows` edges. |
+| `data:repair-organizer-program-counts` | `node tool/data/recompute_organizer_program_counts.mjs` | `organizerProgramViews/{programId}` list counts (`guestCount`, `repliedGuestCount`, `flyingInCount` and their fences) from `programGuests` and `programTravelLegs`, with the nightly recount's compiled code (build Functions first). It is the counts' backfill, and the one tool here that also needs `--allow-prod` to write prod (guard `apply-and-prod-flag`). |
 
 - **Run order:** emulator or dev first, then the target environment without
   `--apply`. Read the summary of documents that would change, then re-run with

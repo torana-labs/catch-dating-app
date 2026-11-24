@@ -19,7 +19,7 @@ import {
 } from "../shared/uploadedPhotoNormalization";
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import {reserveOrganizerCanonicalRoute} from
-  "../admin/organizerPublishingGuards";
+  "../domain/organizers/organizerPublishingGuards";
 import {defaultOrganizerPublicSlug} from "./organizerIdentity";
 import {normalizeUpdateOrganizerPayload} from
   "./organizerPayloadNormalization";
@@ -27,7 +27,8 @@ import {
   deleteMediaStoragePaths,
   removedMediaStoragePaths,
 } from "../shared/mediaStorageLifecycle";
-import {hostOrganizerWomenLed, hostWomenLedRole} from "./womenLed";
+import {hostOrganizerWomenLed, hostWomenLedRole} from
+  "../domain/events/womenLed";
 
 interface OrganizerLifecycleDeps {
   firestore: () => FirebaseFirestore.Firestore;

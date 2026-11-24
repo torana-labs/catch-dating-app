@@ -47,13 +47,13 @@ import {
   metaWhatsappAppId,
   metaWhatsappAppSecret,
   metaWhatsappConfigId,
-  metaWhatsappGraphVersion,
   organizerWhatsappAccessTokens,
 } from "./organizerMessagingSetup";
 import {
   MetaWhatsappProvider,
   OrganizerTokenStore,
-} from "./organizerWhatsappProvider";
+  metaWhatsappGraphVersion,
+} from "../platform/delivery/organizerWhatsappProvider";
 
 const campaignLeaseMillis = 3 * 60 * 1000;
 const dispatchPageSize = 100;

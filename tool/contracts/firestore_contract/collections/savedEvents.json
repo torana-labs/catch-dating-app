@@ -1,0 +1,36 @@
+{
+  "id": "savedEvents",
+  "path": "savedEvents/{savedEventId}",
+  "rulesMatch": "/savedEvents/{savedEventId}",
+  "typescriptInterface": "SavedEventDocument",
+  "dartModel": "lib/contexts/discovery/domain/saved_event.dart",
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "authenticated owner",
+  "writerContext": "discovery",
+  "read": "owner only",
+  "write": "owner direct create/delete only; the guest event triggers write the eventCard field",
+  "exportedFunctions": [
+    "onSavedEventCardCreated",
+    "dispatchEvents"
+  ],
+  "operations": [
+    {
+      "id": "owner_save_run",
+      "type": "directCreate",
+      "owner": "authenticated owner",
+      "allowedFields": [
+        "uid",
+        "eventId",
+        "savedAt"
+      ]
+    },
+    {
+      "id": "owner_unsave_run",
+      "type": "directDelete",
+      "owner": "authenticated owner"
+    }
+  ],
+  "migrationNotes": [
+    "Owns saved-event state; users documents do not keep a saved-event projection. Current unsave is a hard delete."
+  ]
+}

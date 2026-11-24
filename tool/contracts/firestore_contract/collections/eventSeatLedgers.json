@@ -1,0 +1,11 @@
+{
+  "id": "eventSeatLedgers",
+  "path": "eventSeatLedgers/{eventId}",
+  "rulesMatch": "/eventSeatLedgers/{privateDocument=**}",
+  "typescriptInterface": "EventSeatLedgerDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Seat authority (functions/src/events/seatAuthority, seatIdentityAuthority)",
+  "writerContext": "bookings",
+  "read": "server only",
+  "write": "server only"
+}

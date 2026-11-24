@@ -156,13 +156,13 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
       selectedModuleIds: ["wingman_requests"],
       wingmanRequestsEnabled: true,
     },
-    "eventParticipations/event-1_runner-1": {
+    "eventBookings/event-1_runner-1": {
       eventId: "event-1",
       organizerId: "club-1",
       uid: "runner-1",
       status: "attended",
     },
-    "eventParticipations/event-1_runner-2": {
+    "eventBookings/event-1_runner-2": {
       eventId: "event-1",
       organizerId: "club-1",
       uid: "runner-2",
@@ -205,7 +205,7 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
 
 test("fetch wingman candidates filters eligibility and blocks", async () => {
   const {deps, rateLimitCalls} = harness({
-    "eventParticipations/event-1_runner-3": {
+    "eventBookings/event-1_runner-3": {
       eventId: "event-1",
       organizerId: "club-1",
       uid: "runner-3",
@@ -213,7 +213,7 @@ test("fetch wingman candidates filters eligibility and blocks", async () => {
       genderAtSignup: "woman",
       cohortAtSignup: "womenInterestedInMen",
     },
-    "eventParticipations/event-1_runner-4": {
+    "eventBookings/event-1_runner-4": {
       eventId: "event-1",
       organizerId: "club-1",
       uid: "runner-4",
@@ -255,8 +255,8 @@ test(
   "fetch wingman candidates includes external runtime attendees",
   async () => {
     const {deps} = harness({
-      "eventParticipations/event-1_runner-1": undefined,
-      "eventParticipations/event-1_runner-2": undefined,
+      "eventBookings/event-1_runner-1": undefined,
+      "eventBookings/event-1_runner-2": undefined,
       "users/runner-1": undefined,
       "publicProfiles/runner-2": undefined,
       "eventRuntimeParticipants/event-1_runner-1": runtimeParticipant({
@@ -302,8 +302,8 @@ test(
 
 test("wingman candidates work without dating-profile answers", async () => {
   const {deps} = harness({
-    "eventParticipations/event-1_runner-1": undefined,
-    "eventParticipations/event-1_runner-2": undefined,
+    "eventBookings/event-1_runner-1": undefined,
+    "eventBookings/event-1_runner-2": undefined,
     "users/runner-1": undefined,
     "publicProfiles/runner-2": undefined,
     "eventRuntimeParticipants/event-1_runner-1": runtimeParticipant({

@@ -74,13 +74,13 @@ test("migration lock remains admitted for automatic event retry",
     const deps = {now: () => 1000, cancel: async ({paymentId}: {
       paymentId: string}) => {
       if (paymentId === "payment0" && fail) {
-        throw new HttpsError("unavailable", "Waiting for seat migration");
+        throw new HttpsError("unavailable", "Waiting for the seat ledger");
       }
       h.rows.get(paymentId)!.status = "refundPending";
       return true;
     }};
     await assert.rejects(queueCancelledEventOfferRefunds({db: h.db,
-      eventId: "event1"}, deps), /Waiting for seat migration/u);
+      eventId: "event1"}, deps), /Waiting for the seat ledger/u);
     assert.equal(h.rows.get("payment0")!.status, "admitted");
     fail = false;
     assert.deepEqual(await queueCancelledEventOfferRefunds({db: h.db,

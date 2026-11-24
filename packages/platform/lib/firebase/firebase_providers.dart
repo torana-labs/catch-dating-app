@@ -10,27 +10,31 @@ part 'firebase_providers.g.dart';
 
 const firebaseFunctionsRegion = 'asia-south1';
 
-// keepalive: Firestore is an SDK singleton shared by all repositories.
+// keepalive: account-free: Firestore is an SDK singleton shared by all
+// repositories.
 @Riverpod(keepAlive: true)
 FirebaseFirestore firebaseFirestore(Ref ref) => FirebaseFirestore.instance;
 
-// keepalive: FirebaseAuth is the root auth singleton for session providers.
+// keepalive: account-free: FirebaseAuth is the root auth singleton for session
+// providers.
 @Riverpod(keepAlive: true)
 FirebaseAuth firebaseAuth(Ref ref) => FirebaseAuth.instance;
 
-// keepalive: FirebaseStorage is an SDK singleton shared by upload flows.
+// keepalive: account-free: FirebaseStorage is an SDK singleton shared by upload
+// flows.
 @Riverpod(keepAlive: true)
 FirebaseStorage firebaseStorage(Ref ref) => FirebaseStorage.instance;
 
-// keepalive: FirebaseFunctions is region-bound app infrastructure reused by
-// repository facades. Every call without its own options gets the app's
-// default callable timeout (DeadlineFirebaseFunctions).
+// keepalive: account-free: FirebaseFunctions is region-bound app infrastructure
+// reused by repository facades. Every call without its own options gets the
+// app's default callable timeout (DeadlineFirebaseFunctions).
 @Riverpod(keepAlive: true)
 FirebaseFunctions firebaseFunctions(Ref ref) => DeadlineFirebaseFunctions(
   FirebaseFunctions.instanceFor(region: firebaseFunctionsRegion),
 );
 
-// keepalive: Remote Config is fetched at app startup and read by global gates.
+// keepalive: account-free: Remote Config is fetched at app startup and read by
+// global gates.
 @Riverpod(keepAlive: true)
 FirebaseRemoteConfig firebaseRemoteConfig(Ref ref) =>
     FirebaseRemoteConfig.instance;

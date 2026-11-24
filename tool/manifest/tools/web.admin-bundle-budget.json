@@ -1,0 +1,30 @@
+{
+  "id": "web:admin-bundle-budget",
+  "category": "test",
+  "path": "admin/scripts/checkBundleBudget.mjs",
+  "command": "npm --workspace catch-admin run build",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Builds the admin production surface, then ratchets the generated Vite-manifest JavaScript entry and largest async chunk.",
+  "checks": [
+    "node --check admin/scripts/checkBundleBudget.mjs",
+    "node admin/scripts/checkBundleBudget.mjs --self-test",
+    "npm --workspace catch-admin run build"
+  ],
+  "role": "ratchet",
+  "rules": [
+    {
+      "id": "WEB-BUNDLE-001",
+      "title": "Admin route boundaries preserve production bundle budgets",
+      "appliesTo": [
+        "admin/src/**",
+        "admin/vite.config.ts",
+        "admin/bundle-budget.json",
+        "admin/scripts/checkBundleBudget.mjs",
+        "admin/package.json",
+        "packages/web-config/vite-react.ts"
+      ],
+      "instruction": "Keep data/query controllers behind lazy route boundaries and fail the production build when the JavaScript entry or largest async chunk exceeds the reviewed byte budget."
+    }
+  ]
+}

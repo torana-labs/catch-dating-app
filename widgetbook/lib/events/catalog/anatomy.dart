@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_fact_list.dart';
+import 'package:catch_dating_app/pages/event/event_detail_information_state.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_detail_fact_list.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';

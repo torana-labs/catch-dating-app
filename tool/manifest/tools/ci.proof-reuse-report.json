@@ -1,0 +1,22 @@
+{
+  "id": "ci:proof-reuse-report",
+  "category": "ci",
+  "path": "tool/ci/proof_reuse_report.mjs",
+  "command": "node tool/ci/proof_reuse_report.mjs",
+  "surface": "remote-read",
+  "status": "active",
+  "impactPaths": [
+    ".github/workflows/proof-reuse-daily.yml",
+    "tool/ci/fixtures/proof-reuse-daily/input.json",
+    "tool/ci/fixtures/proof-reuse-daily/proof-reuse-daily-2026-11-22.json",
+    "tool/ci/proof_reuse_report.mjs",
+    "tool/ci/proof_reuse_report.test.mjs"
+  ],
+  "description": "Daily roll-up of the proof-reuse shadow: reads one UTC day of merge queue proof-reuse-shadow reports and job records, writes proof-reuse-daily-<date>.json (schema proof-reuse-daily/1: per-lane hits, misses, saved and potential runner seconds) and posts each miss once to the Proof reuse shadow miss issue. Report-only.",
+  "checks": [
+    "node --check tool/ci/proof_reuse_report.mjs",
+    "node --test tool/ci/proof_reuse_report.test.mjs"
+  ],
+  "role": "finder",
+  "runbook": "docs/release_operations.md#required-pr-checks"
+}

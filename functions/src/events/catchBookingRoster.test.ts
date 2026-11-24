@@ -79,7 +79,7 @@ test("a first booking creates a uid-keyed row and links the booking to it",
     const rowId = eventAttendeeId("e1", "uid:u1");
     assert.equal(h.docs.get(`eventAttendees/${rowId}`)?.displayName, "Asha");
     assert.equal(h.docs.get(`eventAttendees/${rowId}`)?.status, "registered");
-    assert.equal(h.docs.get("eventParticipations/e1_u1")?.attendeeId, rowId);
+    assert.equal(h.docs.get("eventBookings/e1_u1")?.attendeeId, rowId);
     assert.equal("booking" in (h.docs.get(`eventAttendees/${rowId}`) ?? {}),
       false);
   });
@@ -88,7 +88,7 @@ test("the booking's link wins over every other key and is not rewritten",
   async () => {
     let phoneLoaded = false;
     const h = fakeDb({
-      "eventParticipations/e1_u1": {attendeeId: "att_pointer"},
+      "eventBookings/e1_u1": {attendeeId: "att_pointer"},
       "eventAttendees/att_pointer": {eventId: "e1", source: "catchBooking",
         linkedUid: "u1", status: "registered", partySize: 2},
     });
@@ -104,7 +104,7 @@ test("the booking's link wins over every other key and is not rewritten",
     // A merged write keeps Host-only fields such as party size.
     assert.equal(h.docs.get("eventAttendees/att_pointer")?.partySize, 2);
     assert.equal(h.writes.some((write) =>
-      write.path.startsWith("eventParticipations/")), false);
+      write.path.startsWith("eventBookings/")), false);
   });
 
 test("a row already linked to the account is reused", async () => {
@@ -137,7 +137,7 @@ test("a verified phone joins the row the organizer supplied", async () => {
   assert.equal(slot.attendeeRef.id, phoneRow);
 });
 
-test("under ready seats a Host row is left to the Host and gains the link",
+test("a Host row is left to the Host and gains the link",
   async () => {
     const h = fakeDb({
       "eventAttendees/guest": {eventId: "e1", source: "hostImport",
@@ -145,11 +145,11 @@ test("under ready seats a Host row is left to the Host and gains the link",
     });
     const slot = await readCatchBookingRoster({db: h.db, tx: h.tx,
       eventId: "e1", uid: "u1"});
-    writeCatchBookingRoster({db: h.db, tx: h.tx, slot, now, seatReady: true,
+    writeCatchBookingRoster({db: h.db, tx: h.tx, slot, now,
       booking: booking({status: "cancelled", cancelledAt: now})});
     const row = h.docs.get("eventAttendees/guest") as {status?: string};
     assert.equal(row.status, "registered");
     assert.equal(h.writes.some((write) =>
       write.path.startsWith("eventAttendees/")), false);
-    assert.equal(h.docs.get("eventParticipations/e1_u1")?.attendeeId, "guest");
+    assert.equal(h.docs.get("eventBookings/e1_u1")?.attendeeId, "guest");
   });

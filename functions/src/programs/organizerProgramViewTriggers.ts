@@ -1,9 +1,26 @@
 import * as admin from "firebase-admin";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {isDeepStrictEqual} from "node:util";
-import {reconcileOrganizerProgramView} from "./organizerProgramViews";
+import {recountOrganizerProgram} from "./organizerProgramCounts";
+import {reconcileOrganizerProgramView as rewriteView} from
+  "./organizerProgramViews";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true};
+
+/**
+ * Rewrites a programme's setup view and, when the view has no list counts
+ * yet (it was just created, or predates them), recounts it.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {string} programId The programme.
+ * @return {Promise<void>} Resolves once the view matches its sources.
+ */
+async function reconcileOrganizerProgramView(
+  db: FirebaseFirestore.Firestore, programId: string): Promise<void> {
+  if (await rewriteView(db, programId)) {
+    await recountOrganizerProgram(db, programId);
+  }
+}
 
 type Data = FirebaseFirestore.DocumentData | undefined;
 
@@ -27,19 +44,28 @@ async function reconcilePrograms(before: Data, after: Data): Promise<void> {
   }
 }
 
-/** A programme's settings, dates, status, branding or retention dates. */
-export const onOrganizerProgramViewChanged = onDocumentWritten({
-  ...options, document: "organizerPrograms/{programId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (unchanged(before, after, ["organizerId", "createdBy", "kind", "title",
-    "timezone", "status", "startsAt", "endsAt", "capabilities",
-    "transportSettings", "branding", "archivedAt", "anonymizeAt",
-    "anonymizedAt", "revision"])) return;
-  await reconcileOrganizerProgramView(admin.firestore(),
-    event.params.programId);
-});
+/** The programme's own setup view. */
+async function reconcileProgramSetupView(db: FirebaseFirestore.Firestore,
+  programId: string): Promise<void> {
+  await reconcileOrganizerProgramView(db,
+    programId);
+}
+
+/**
+ * A programme's settings, dates, status, branding or retention dates.
+ * Served by dispatchOrganizerPrograms (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
+ */
+export const organizerProgramViewProjections = defineProjections(
+  "organizerPrograms", [{
+    id: "organizerProgramView", kind: "projection",
+    when: ({before, after}) =>
+      !(unchanged(before, after, ["organizerId", "createdBy", "kind", "title",
+        "timezone", "status", "startsAt", "endsAt", "capabilities",
+        "transportSettings", "branding", "archivedAt", "anonymizeAt",
+        "anonymizedAt", "revision"])),
+    run: (change, ctx) => reconcileProgramSetupView(ctx.db, change.documentId),
+  }]);
 
 /**
  * A function's setup fields. Its expected and checked-in counts are not in

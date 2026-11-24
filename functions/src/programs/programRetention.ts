@@ -23,9 +23,15 @@ import {loadFlightProviderConfig} from "../transport/flightProviderConfig";
 import {deleteFlightSubscription} from "../transport/flightSubscriptions";
 import type {FetchImpl} from "../transport/aeroDataBox";
 import {programAssetPrefix} from "./programAssets";
+import {
+  programStaffView,
+  programStaffViewId,
+  programStaffViewsCollection,
+} from "./programStaffViews";
 import type {
   OrganizerProgramDocument,
   ProgramRetentionRunDocument,
+  ProgramStaffGrantDocument,
   ProgramStaffInviteDocument,
   ProgramTravelLegDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -44,9 +50,12 @@ import {
   validateUnarchiveProgramCallablePayload,
 } from "../shared/generated/validators/unarchiveProgramInput";
 
-/** Approved policy: archive grants a 14-day grace window before the
- *  identity scrub runs; unarchive is only possible inside it. */
-export const archiveGraceMillis = 14 * 24 * 60 * 60 * 1000;
+/** Approved policy (owner, 23 Nov 2026): archive grants a 60-day grace
+ *  window before the identity scrub runs; unarchive is only possible inside
+ *  it. Programmes run for months and post-event messages (photos, thanks)
+ *  can follow an early archive, so the window is longer than a one-off
+ *  event's would be. */
+export const archiveGraceMillis = 60 * 24 * 60 * 60 * 1000;
 const retentionRunLeaseMillis = 10 * 60_000;
 const retentionPageLimit = 300;
 const sweepProgramLimit = 25;
@@ -256,6 +265,32 @@ const retentionCollections = [
   "programAssistantBudgets",
 ] as const;
 
+/**
+ * Rewrites one staff list row from its scrubbed grant on the anonymization
+ * batch, so the name and phone digits leave both documents in one commit.
+ * @param {FirebaseFirestore.WriteBatch} batch The scrub batch.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {OrganizerProgramDocument} program The programme.
+ * @param {string} programId The programme document id.
+ * @param {ProgramStaffGrantDocument} grant The grant as scrubbed.
+ * @param {number} nowMillis The scrub time.
+ */
+function stageAnonymizedStaffView(batch: FirebaseFirestore.WriteBatch,
+  db: FirebaseFirestore.Firestore, program: OrganizerProgramDocument,
+  programId: string, grant: ProgramStaffGrantDocument,
+  nowMillis: number): void {
+  const ref = db.collection(programStaffViewsCollection)
+    .doc(programStaffViewId(programId, grant.uid));
+  let row = null;
+  try {
+    row = programStaffView(program, programId, grant, nowMillis);
+  } catch {
+    row = null; // A malformed grant keeps no row with its personal data.
+  }
+  if (row) batch.set(ref, row);
+  else batch.delete(ref);
+}
+
 function shortId(docId: string): string {
   return docId.replace(/[^A-Za-z0-9]/g, "").slice(0, 6) || "anon";
 }
@@ -396,8 +431,22 @@ export async function anonymizeProgram(
       return null;
     }
     const now = deps.now();
-    if (program.anonymizeAt &&
-        program.anonymizeAt.toMillis() > now.toMillis()) {
+    // The stored clock was set at archive time. A programme archived under a
+    // shorter earlier policy is held to the current grace: its clock moves
+    // out instead of the scrub running early.
+    const policyDueMillis = program.archivedAt ?
+      program.archivedAt.toMillis() + archiveGraceMillis : 0;
+    const storedDueMillis = program.anonymizeAt?.toMillis() ?? 0;
+    if (policyDueMillis > storedDueMillis &&
+        policyDueMillis > now.toMillis()) {
+      tx.update(programRef, {
+        anonymizeAt: admin.firestore.Timestamp.fromMillis(policyDueMillis),
+        updatedAt: now,
+        revision: nextRevision(program.revision, now),
+      });
+      return null;
+    }
+    if (storedDueMillis > now.toMillis()) {
       return null; // Archived but still inside the grace window.
     }
     const run = runSnap.data() as ProgramRetentionRunDocument | undefined;
@@ -505,6 +554,13 @@ export async function anonymizeProgram(
             batch.delete(doc.ref);
           } else {
             batch.update(doc.ref, fields);
+          }
+          if (collection === "programStaffGrants" && fields !== null) {
+            // The staff list row carries the same name and phone digits;
+            // it is scrubbed in the same commit as its grant (no trigger).
+            stageAnonymizedStaffView(batch, db, claimed.program, programId,
+              {...data, ...fields} as ProgramStaffGrantDocument,
+              deps.now().toMillis());
           }
           pending += 1;
         }

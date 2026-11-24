@@ -1,0 +1,23 @@
+{
+  "id": "publicFoundingHostOffers",
+  "path": "publicFoundingHostOffers/{marketId}",
+  "rulesMatch": "/publicFoundingHostOffers/{marketId}",
+  "typescriptInterface": "PublicFoundingHostOfferDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/founding_host_offers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets anyone read the public founding-host counts and nobody write them"
+  ],
+  "owner": "adminManageFoundingHostOffers and the founding place grant",
+  "writerContext": "payments",
+  "read": "public: anyone may get or list; counts only (cap, places left, status, deadline), no organizer, owner or staff identity",
+  "write": "server only; rewritten in the same transaction as every owner change and every place taken",
+  "exportedFunctions": [
+    "adminManageFoundingHostOffers",
+    "onFoundingHostOrganizerWritten",
+    "reconcileFoundingHostPlacesDaily"
+  ],
+  "migrationNotes": [
+    "New public projection for the website's founding-host strip; an absent document means the city has no offer and the strip stays hidden."
+  ]
+}

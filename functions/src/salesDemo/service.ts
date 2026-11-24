@@ -9,6 +9,7 @@ import {organizerFormTemplateCatalog} from
   "../shared/generated/catalogs/organizerFormTemplateCatalog";
 import {checkDemoSalesLinks, prepareDemoSalesActivity} from "./salesActivity";
 import {HttpsError} from "firebase-functions/v2/https";
+import {createAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {Timestamp} from "firebase-admin/firestore";
 import {
   classifyCommandReceiptData,
@@ -214,8 +215,7 @@ async function adminMutation(deps: DemoDeps, identity: Identity,
   await owner(deps, identity);
   const digest = material(action, target, input);
   const receiptRef = receiptRefFor(deps, identity.uid, stableRequestId);
-  const auditRef = deps.db.collection("adminAuditLogs")
-    .doc(`sales_demo_${receiptId(identity.uid, stableRequestId)}`);
+  const auditId = `sales_demo_${receiptId(identity.uid, stableRequestId)}`;
   // The receipt keeps no actor ids; the request hash binds the actor, so a
   // replay restores them from the caller.
   const withActor = (result: Record<string, unknown>) => ({...result,
@@ -240,15 +240,17 @@ async function adminMutation(deps: DemoDeps, identity: Identity,
       return withActor(saved);
     }
     const changed = await apply(tx);
-    const createdAt = deps.now().toISOString();
     writeReceipt(deps, tx, receiptRef, identity, action, target, digest,
       Object.fromEntries(Object.entries(changed.result)
         .filter(([field]) => !actorFields.includes(field))));
-    tx.create(auditRef, {actorUid: identity.uid, roles: ["adminOwner"],
-      action, targetPath: action.includes("blueprint") ?
-        `${BLUEPRINTS}/${target}` : `${INVITATIONS}/${target}`,
-      requestId: stableRequestId, beforeRevision: changed.beforeRevision,
-      afterRevision: changed.afterRevision, materialHash: digest, createdAt});
+    createAdminAuditLogInTransaction(tx, deps.db,
+      {uid: identity.uid, roles: ["adminOwner"]}, {
+        action, targetPath: action.includes("blueprint") ?
+          `${BLUEPRINTS}/${target}` : `${INVITATIONS}/${target}`,
+        requestId: stableRequestId,
+        before: {revision: changed.beforeRevision},
+        after: {revision: changed.afterRevision, materialHash: digest},
+      }, {docId: auditId});
     return changed.result;
   });
 }

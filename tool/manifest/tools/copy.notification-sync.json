@@ -1,0 +1,17 @@
+{
+  "id": "copy:notification-sync",
+  "category": "generator",
+  "path": "tool/copy/sync_notification_copy.mjs",
+  "command": "node tool/copy/sync_notification_copy.mjs",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Keeps Functions notification templates generated from the marketing-reviewable English catalog.",
+  "checks": [
+    "node --check tool/copy/sync_notification_copy.mjs",
+    "node tool/copy/sync_notification_copy.mjs"
+  ],
+  "role": "generator",
+  "alsoEnforces": [
+    "APP-COPY-001"
+  ]
+}

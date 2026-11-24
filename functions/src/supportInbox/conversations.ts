@@ -5,8 +5,18 @@ import type {
   SupportConversationDocument,
   SupportConversationMessageDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {catchSupportInboundText} from
+  "../catchMessaging/whatsappInboundContent";
 
 export const SUPPORT_CONVERSATIONS = "supportConversations";
+
+/** Ops and support run the inbox; the owner can too. */
+export const SUPPORT_ROLES = [
+  "admin",
+  "adminOwner",
+  "safetyReviewer",
+  "support",
+] as const;
 export const SUPPORT_SAVED_REPLIES = "supportSavedReplies";
 
 export type SupportChannel = SupportConversationDocument["channel"];
@@ -89,12 +99,12 @@ export function maskedContactLabel(
   return "Instagram";
 }
 
-function preview(text: string): string {
+export function preview(text: string): string {
   const flat = text.replace(/\s+/gu, " ").trim();
   return flat.length > 160 ? `${flat.slice(0, 157)}...` : flat;
 }
 
-async function accountFor(
+export async function accountFor(
   deps: SupportInboxDeps,
   channel: SupportChannel,
   address: string
@@ -132,6 +142,35 @@ export interface RecordMessageInput {
   sourceEventId: string | null;
   savedReplyId: string | null;
   deliveryState: Message["deliveryState"];
+  /**
+   * When the person sent an inbound message, by the provider's clock. It
+   * opens WhatsApp's 24-hour reply window, so it sets lastInboundAt.
+   */
+  occurredAtMillis?: number;
+  /**
+   * Catch's automatic acknowledgement: kept in the thread, but it neither
+   * stops the waiting clock nor replaces the list preview.
+   */
+  automatic?: boolean;
+  /** The WhatsApp message id of an outbound message sent from Catch. */
+  providerMessageId?: string | null;
+}
+
+export interface RecordMessageResult {
+  conversationId: string;
+  messageId: string;
+  /**
+   * An inbound WhatsApp message that is the person's first, or their first
+   * after 24 hours of silence: Catch acknowledges it once.
+   */
+  acknowledge: boolean;
+}
+
+/** One person's silence after which a new message is acknowledged again. */
+export const SUPPORT_ACKNOWLEDGE_AFTER_MS = 24 * 60 * 60 * 1000;
+
+function later(left: Timestamp | null, right: Timestamp): Timestamp {
+  return left && left.toMillis() >= right.toMillis() ? left : right;
 }
 
 /**
@@ -141,12 +180,12 @@ export interface RecordMessageInput {
  * the same source event is a no-op.
  * @param {SupportInboxDeps} deps Dependencies.
  * @param {RecordMessageInput} input Message.
- * @return {Promise<{conversationId: string; messageId: string}>} Ids.
+ * @return {Promise<RecordMessageResult>} Ids.
  */
 export async function recordSupportMessage(
   deps: SupportInboxDeps,
   input: RecordMessageInput
-): Promise<{conversationId: string; messageId: string}> {
+): Promise<RecordMessageResult> {
   const db = deps.firestore();
   const address = normalizeContactAddress(input.channel, input.contactAddress);
   const conversationId = supportConversationId(input.channel, address);
@@ -161,16 +200,18 @@ export async function recordSupportMessage(
   const account = existing.exists ? null :
     await accountFor(deps, input.channel, address);
   const text = input.text.trim().slice(0, 4000);
-  await db.runTransaction(async (tx) => {
+  const acknowledge = await db.runTransaction(async (tx) => {
     const [conversationSnap, messageSnap] = await Promise.all([
       tx.get(conversationRef),
       tx.get(messageRef),
     ]);
-    if (messageSnap.exists) return;
+    if (messageSnap.exists) {
+      return (messageSnap.data() as Message).acknowledge === true;
+    }
     const now = deps.now();
     const current = conversationSnap.data() as Conversation | undefined;
     const inbound = input.direction === "inbound";
-    const outbound = input.direction === "outbound";
+    const outbound = input.direction === "outbound" && !input.automatic;
     const base: Conversation = current ?? {
       schemaVersion: 1,
       conversationId,
@@ -200,12 +241,21 @@ export async function recordSupportMessage(
       messageCount: base.messageCount + 1,
       updatedAt: now,
     };
-    if (input.direction !== "note") {
+    if (input.direction !== "note" && !input.automatic) {
       next.lastMessageAt = now;
       next.lastMessagePreview = preview(text);
     }
+    let firstInWhile = false;
     if (inbound) {
-      next.lastInboundAt = now;
+      const occurredAt = input.occurredAtMillis !== undefined &&
+        Number.isSafeInteger(input.occurredAtMillis) &&
+        input.occurredAtMillis > 0 &&
+        input.occurredAtMillis <= now.toMillis() ?
+        Timestamp.fromMillis(input.occurredAtMillis) : now;
+      firstInWhile = input.channel === "whatsapp" &&
+        (base.lastInboundAt === null || occurredAt.toMillis() -
+          base.lastInboundAt.toMillis() >= SUPPORT_ACKNOWLEDGE_AFTER_MS);
+      next.lastInboundAt = later(base.lastInboundAt, occurredAt);
       next.waitingSince = base.waitingSince ?? now;
       next.status = "open";
     }
@@ -226,16 +276,20 @@ export async function recordSupportMessage(
       savedReplyId: input.savedReplyId,
       deliveryState: input.deliveryState,
       at: now,
+      ...(input.providerMessageId ?
+        {providerMessageId: input.providerMessageId} : {}),
+      ...(firstInWhile ? {acknowledge: true} : {}),
     } satisfies Message);
+    return firstInWhile;
   });
-  return {conversationId, messageId};
+  return {conversationId, messageId, acknowledge};
 }
 
 /**
  * Records a WhatsApp or Instagram message that was not a nomination.
  * @param {SupportInboxDeps} deps Dependencies.
  * @param {object} input Inbound message.
- * @return {Promise<void>} Done.
+ * @return {Promise<RecordMessageResult | null>} Ids, or null when empty.
  */
 export async function recordSupportInbound(
   deps: SupportInboxDeps,
@@ -244,10 +298,11 @@ export async function recordSupportInbound(
     contactAddress: string;
     text: string;
     sourceEventId: string;
+    occurredAtMillis?: number;
   }
-): Promise<void> {
-  if (!input.text.trim()) return;
-  await recordSupportMessage(deps, {
+): Promise<RecordMessageResult | null> {
+  if (!input.text.trim()) return null;
+  return recordSupportMessage(deps, {
     channel: input.channel,
     contactAddress: input.contactAddress,
     displayName: null,
@@ -257,14 +312,18 @@ export async function recordSupportInbound(
     sourceEventId: input.sourceEventId,
     savedReplyId: null,
     deliveryState: "received",
+    ...(input.occurredAtMillis !== undefined ?
+      {occurredAtMillis: input.occurredAtMillis} : {}),
   });
 }
 
 /**
- * Records an inbound WhatsApp text in the person's support conversation.
+ * Records an inbound WhatsApp message in the person's support conversation:
+ * the text, or a placeholder such as "[photo]" or "[voice note]" for any
+ * other type. Reactions and system notices are skipped.
  * @param {SupportInboxDeps} deps Dependencies.
  * @param {object} receipt Inbound WhatsApp receipt.
- * @return {Promise<void>} Done.
+ * @return {Promise<RecordMessageResult | null>} Ids, or null when skipped.
  */
 export async function recordWhatsappSupportReceipt(
   deps: SupportInboxDeps,
@@ -274,17 +333,21 @@ export async function recordWhatsappSupportReceipt(
     messageType?: string | null;
     participantId: string;
     text?: string | null;
+    providerTimestampSeconds?: string;
   }
-): Promise<void> {
-  if (receipt.eventKind !== "inbound" || receipt.messageType !== "text" ||
-      typeof receipt.text !== "string" ||
+): Promise<RecordMessageResult | null> {
+  const text = catchSupportInboundText(receipt);
+  if (receipt.eventKind !== "inbound" || text === null ||
       !/^[1-9][0-9]{6,14}$/u.test(receipt.participantId)) {
-    return;
+    return null;
   }
-  await recordSupportInbound(deps, {
+  const seconds = Number(receipt.providerTimestampSeconds);
+  return recordSupportInbound(deps, {
     channel: "whatsapp",
     contactAddress: `+${receipt.participantId}`,
-    text: receipt.text,
+    text,
     sourceEventId: receipt.eventId,
+    ...(Number.isSafeInteger(seconds) && seconds > 0 ?
+      {occurredAtMillis: seconds * 1000} : {}),
   });
 }

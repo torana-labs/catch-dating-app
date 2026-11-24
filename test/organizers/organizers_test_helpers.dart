@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_signup_source.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/image_upload_job.dart';
@@ -240,6 +241,7 @@ class FakeOrganizersRepository implements OrganizersRepository {
     String? phoneNumber,
     String? email,
     OrganizerHostDefaults? hostDefaults,
+    OrganizerSignupSource? signupSource,
   }) async {
     createOrganizerCallCount += 1;
     if (createError != null) {
@@ -263,6 +265,7 @@ class FakeOrganizersRepository implements OrganizersRepository {
       phoneNumber: phoneNumber,
       email: email,
       hostDefaults: hostDefaults ?? const OrganizerHostDefaults(),
+      signupSource: signupSource,
     );
     return resolvedOrganizerId;
   }
@@ -417,6 +420,7 @@ class CreateOrganizerCall {
     this.phoneNumber,
     this.email,
     this.hostDefaults = const OrganizerHostDefaults(),
+    this.signupSource,
   });
 
   final String organizerId;
@@ -431,6 +435,7 @@ class CreateOrganizerCall {
   final String? phoneNumber;
   final String? email;
   final OrganizerHostDefaults hostDefaults;
+  final OrganizerSignupSource? signupSource;
 }
 
 class FakeImageUploadRepository implements ImageUploadRepository {

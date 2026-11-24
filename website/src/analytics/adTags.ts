@@ -43,6 +43,11 @@ export interface CatchAdDestinationSet {
   readonly googleAds: string;
   readonly hostLeadConversion: string;
   readonly metaPixel: string;
+  /**
+   * The Microsoft Clarity project, loaded with Google Analytics under the
+   * analytics choice. Null loads no Clarity.
+   */
+  readonly clarityProject?: string | null;
 }
 
 /** Catch's own advertising destinations: account configuration, not secrets. */
@@ -55,6 +60,8 @@ const catchAdDestinations: CatchAdDestinationSet = Object.freeze({
   hostLeadConversion: "AW-18526407471/WgIECMue97odEK-WioJF",
   /** Meta Pixel / dataset. */
   metaPixel: "1844810253539672",
+  /** Microsoft Clarity project "Catch website" (masking set to Strict in the project). */
+  clarityProject: "zh6x16vddo",
 });
 
 /** gtag.js reads its own data layer, never the site's diagnostic `dataLayer`. */
@@ -62,12 +69,16 @@ const tagLayerName = "catchTagLayer";
 const googleTagSource = (googleAnalytics: string) =>
   `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(googleAnalytics)}&l=${tagLayerName}`;
 const metaPixelSource = "https://connect.facebook.net/en_US/fbevents.js";
+const claritySource = (project: string) => `https://www.clarity.ms/tag/${encodeURIComponent(project)}`;
+const clarityProjectPattern = /^[a-z0-9]{6,20}$/u;
+const clarityAnalytics = {ad_Storage: "denied", analytics_Storage: "granted"};
+const clarityDenied = {ad_Storage: "denied", analytics_Storage: "denied"};
 /** The banner promises cookies for up to 30 days. */
 const googleCookieOptions = {cookie_expires: 30 * 24 * 60 * 60, cookie_flags: "SameSite=Lax;Secure"};
 const checkoutsKey = "catch_ad_checkouts_v1";
 
-/** Website lead kinds that are a host enquiry (city alerts and referrals are not). */
-const hostLeadKinds: ReadonlySet<string> = new Set(["guide", "walkthrough", "demo", "venue", "story", "org_contact"]);
+/** Website lead kinds that are a host enquiry, a host app link request among them (city alerts and referrals are not). */
+const hostLeadKinds: ReadonlySet<string> = new Set(["guide", "walkthrough", "demo", "venue", "story", "org_contact", "app_link"]);
 
 const deniedConsent = {ad_storage: "denied", analytics_storage: "denied", ad_user_data: "denied", ad_personalization: "denied"};
 const analyticsConsent = {ad_storage: "denied", analytics_storage: "granted", ad_user_data: "denied", ad_personalization: "denied"};
@@ -78,6 +89,32 @@ const googleClick = /^[A-Za-z0-9_-]{10,512}$/u;
 const eventIdPattern = /^[A-Za-z0-9_:-]{1,180}$/u;
 const paymentIdPattern = /^pp_[a-f0-9]{32}$/u;
 const receiptPattern = /^[A-Za-z0-9_-]{8,128}$/u;
+/**
+ * Page filters a page may carry while a tag sends, with the values its page
+ * location keeps: the city on the homepage, and Explore's filters on Explore
+ * and the city pages (`/explore/`, `/mumbai/`). Explore's free-text search
+ * (`q`, null here) is allowed on the page but never leaves it. Any other key
+ * keeps every tag silent, as before.
+ */
+const citySlug = /^[a-z][a-z0-9-]{1,40}$/u;
+const homeFilters: Readonly<Record<string, RegExp | null>> = {city: citySlug};
+const exploreFilters: Readonly<Record<string, RegExp | null>> = {city: citySlug, format: /^[A-Za-z]{2,20}$/u,
+  when: /^(?:today|weekend|week)$/u, show: /^organisers$/u, q: null};
+function pageFilters(path: string): Readonly<Record<string, RegExp | null>> {
+  if (path === "/") return homeFilters;
+  return /^\/[a-z0-9][a-z0-9-]{0,80}\/$/u.test(path) ? exploreFilters : {};
+}
+/** The GA4 event names and closed parameter values `analyticsEvent` passes on. */
+const analyticsEventName = /^[a-z][a-z0-9_]{1,39}$/u;
+const analyticsParameterName = /^[a-z][a-z0-9_]{0,39}$/u;
+const analyticsTextValue = /^[A-Za-z0-9_:/.,-]{1,100}$/u;
+/** Website lead kinds that are a member or referral lead, and what GA4 and Meta call each. */
+const siteLeadKinds: Readonly<Record<string, {category: "member" | "referral"; audience: "guest" | "organizer";
+  metaEvent: "MemberLead" | "ReferralLead"}>> = {
+  member_waitlist: {category: "member", audience: "guest", metaEvent: "MemberLead"},
+  city_alerts: {category: "member", audience: "guest", metaEvent: "MemberLead"},
+  referral: {category: "referral", audience: "organizer", metaEvent: "ReferralLead"},
+};
 
 interface Fbq {
   (...args: unknown[]): void;
@@ -94,6 +131,7 @@ interface TagGlobals {
   catchOrganizerTagLayer?: unknown[];
   fbq?: Fbq;
   _fbq?: Fbq;
+  clarity?: ((...args: unknown[]) => void) & {q?: unknown[]};
 }
 
 /** A public event page's facts for `view_item` / `ViewContent`. */
@@ -196,7 +234,7 @@ const organizerScopePattern = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/u;
 const organizerConsent = {ad_storage: "denied", analytics_storage: "granted", ad_user_data: "denied", ad_personalization: "denied"};
 
 const adCookie = /^(?:_fbp|_fbc|_gcl_[a-z]+)$/u;
-const anyTagCookie = /^(?:_fbp|_fbc|_ga(?:_[A-Z0-9]+)?|_gcl_[a-z]+)$/u;
+const anyTagCookie = /^(?:_fbp|_fbc|_ga(?:_[A-Z0-9]+)?|_gcl_[a-z]+|_clck|_clsk)$/u;
 
 /** The tags' own first-party cookies on this site: the ad tags' only, or every tag's. */
 function clearTagCookies(pattern: RegExp = anyTagCookie) {
@@ -226,16 +264,41 @@ function writeCheckouts(ids: string[]) {
   } catch { /* Optional storage: the purchase is then sent by the server only. */ }
 }
 
-/** The fixed Catch origin, the public path and only reviewed campaign labels and Google click ids. */
+/** Whether a query key may be on the page while a tag sends: an ad platform key or one of the page's filters. */
+function queryKeyAllowed(path: string, key: string) {
+  return adQueryKey.test(key) || Object.hasOwn(pageFilters(path), key);
+}
+
+/**
+ * The fixed Catch origin, the public path, the page's reviewed filter values
+ * (`pageFilters`), and only reviewed campaign labels and Google click ids.
+ */
 function pageLocation(path: string, search: string) {
   const params = new URLSearchParams(search);
-  const kept = new URLSearchParams(approvedCampaignLabels(Object.fromEntries(params)));
+  const kept = new URLSearchParams();
+  for (const [key, pattern] of Object.entries(pageFilters(path))) {
+    const value = params.get(key);
+    if (pattern && value !== null && pattern.test(value)) kept.set(key, value);
+  }
+  for (const [key, value] of Object.entries(approvedCampaignLabels(Object.fromEntries(params)))) kept.set(key, value);
   for (const key of ["gclid", "gbraid", "wbraid"]) {
     const value = params.get(key);
     if (value && googleClick.test(value)) kept.set(key, value);
   }
   const query = kept.toString();
   return `${brand.web.origin}${path}${query ? `?${query}` : ""}`;
+}
+
+/**
+ * The title GA4 reports for a page. Event pages and organiser profiles get a
+ * fixed title for their kind, so an event's or organiser's name never leaves
+ * the page; every other public page reports its own title, which is site copy.
+ */
+function pageTitle(path: string) {
+  if (/^\/events\//u.test(path)) return `Event page | ${brand.name}`;
+  if (path.startsWith("/organizers/")) return `Organiser page | ${brand.name}`;
+  const title = String(document.title ?? "").replace(/\s+/gu, " ").trim().slice(0, 120);
+  return title || brand.name;
 }
 
 const rupees = (paise: number) => Math.round(paise) / 100;
@@ -260,7 +323,8 @@ export function createAdTags(options: AdTagOptions = {}) {
   const newId = options.newId ?? (() => `catch_${Date.now()}_${crypto.randomUUID()}`);
   const source = options.destinations ?? catchAdDestinations;
   const destinations: CatchAdDestinationSet = Object.freeze({googleAnalytics: source.googleAnalytics,
-    googleAds: source.googleAds, hostLeadConversion: source.hostLeadConversion, metaPixel: source.metaPixel});
+    googleAds: source.googleAds, hostLeadConversion: source.hostLeadConversion, metaPixel: source.metaPixel,
+    clarityProject: source.clarityProject && clarityProjectPattern.test(source.clarityProject) ? source.clarityProject : null});
   /** A Catch Meta event, sent to Catch's pixel only, never to any other pixel on the page. */
   const metaTrack = (event: string, parameters: Record<string, unknown>, eventID: string) =>
     fbq("trackSingle", destinations.metaPixel, event, parameters, {eventID});
@@ -268,6 +332,9 @@ export function createAdTags(options: AdTagOptions = {}) {
   let googleLoaded = false;
   let adsConfigured = false;
   let metaLoaded = false;
+  let clarityLoaded = false;
+  /** Whether Clarity is recording now: paused on a page no tag may send from. */
+  let clarityRecording = false;
   /** fbevents.js is one script per page, whichever set loaded it first. */
   let metaScriptAppended = false;
   const appendMetaScript = () => {
@@ -291,16 +358,16 @@ export function createAdTags(options: AdTagOptions = {}) {
     value?.version !== currentConsentVersion || value.analytics !== true ? "none" :
       value.marketing === true ? "marketing" : "analytics";
 
-  /** The current page when it may load or send: production host, public path, only ad query keys. */
-  function currentPage(): {location: string} | null {
+  /** The current page when it may load or send: production host, public path, only ad query keys and page filters. */
+  function currentPage(): {location: string; title: string} | null {
     if (typeof window === "undefined" || typeof document === "undefined") return null;
     const {hostname, pathname, search, hash} = window.location;
     if (!hostAllowed(hostname) || privateHolds > 0) return null;
     const profile = admittedProfile !== null && catchOrganizerProfilePage(pathname) === admittedProfile ? admittedProfile : null;
     const path = publicAdPage(pathname) ?? profile;
     if (!path || !/^(?:#[A-Za-z0-9_-]*)?$/u.test(hash)) return null;
-    for (const key of new URLSearchParams(search).keys()) if (!adQueryKey.test(key)) return null;
-    return {location: pageLocation(path, search)};
+    for (const key of new URLSearchParams(search).keys()) if (!queryKeyAllowed(path, key)) return null;
+    return {location: pageLocation(path, search), title: pageTitle(path)};
   }
 
   /** Google Analytics: always first, and the only tag an analytics-only choice loads. */
@@ -312,6 +379,44 @@ export function createAdTags(options: AdTagOptions = {}) {
       allow_ad_personalization_signals: false, ...googleCookieOptions});
     appendScript(googleTagSource(destinations.googleAnalytics));
     googleLoaded = true;
+    loadClarity();
+  }
+
+  function clarity(...args: unknown[]) {
+    globals().clarity?.(...args);
+  }
+
+  /**
+   * Microsoft Clarity, with Google Analytics and under the same choice:
+   * analytics storage granted, ad storage denied, and every form masked
+   * (`data-clarity-mask` on the site's form primitive). Nothing loads
+   * without a configured project.
+   */
+  function loadClarity() {
+    const project = destinations.clarityProject;
+    if (!project) return;
+    if (!clarityLoaded) {
+      const stub = globals().clarity ?? Object.assign(function (...args: unknown[]) {
+        (stub.q = stub.q ?? []).push(args);
+      }, {q: [] as unknown[]});
+      globals().clarity = stub;
+      clarity("consentv2", clarityAnalytics);
+      appendScript(claritySource(project));
+      clarityLoaded = true;
+      clarityRecording = true;
+      return;
+    }
+    clarity("consentv2", clarityAnalytics);
+    clarityRecording = true;
+  }
+
+  /** Pauses Clarity on a page no tag may send from (the owner view, a private path) and resumes it after. */
+  function syncClarityRecording() {
+    if (!clarityLoaded || level === "none") return;
+    const wanted = currentPage() !== null;
+    if (wanted === clarityRecording) return;
+    clarity(wanted ? "resume" : "pause");
+    clarityRecording = wanted;
   }
 
   /** The Google Ads tag and the Meta Pixel, under the marketing choice only. */
@@ -347,6 +452,10 @@ export function createAdTags(options: AdTagOptions = {}) {
     if (level !== "none") {
       if (googleLoaded) gtag("consent", "update", deniedConsent);
       if (metaLoaded && level === "marketing") fbq("consent", "revoke");
+      if (clarityLoaded) {
+        clarity("consentv2", clarityDenied);
+        clarity("consent", false);
+      }
     }
     level = "none";
     sent.clear();
@@ -361,6 +470,7 @@ export function createAdTags(options: AdTagOptions = {}) {
    */
   function sync(next: MeasurementConsent | null) {
     syncCatch(next);
+    syncClarityRecording();
     syncOrganizer();
   }
 
@@ -379,8 +489,11 @@ export function createAdTags(options: AdTagOptions = {}) {
       return;
     }
     if (!currentPage()) return;
+    const regranted = googleLoaded && level === "none";
     if (!googleLoaded) loadGoogle(wanted === "marketing" ? grantedConsent : analyticsConsent);
     else if (wanted === "analytics") gtag("consent", "update", analyticsConsent);
+    // A choice given again after a withdrawal grants Clarity again too.
+    if (regranted) loadClarity();
     if (wanted === "marketing") grantMarketing();
     level = wanted;
   }
@@ -389,7 +502,7 @@ export function createAdTags(options: AdTagOptions = {}) {
   function sending() {
     if (!googleLoaded || level === "none" || choiceLevel(consent) === "none") return null;
     const page = currentPage();
-    if (page) gtag("set", {page_location: page.location, page_title: brand.name});
+    if (page) gtag("set", {page_location: page.location, page_title: page.title});
     return page;
   }
 
@@ -632,6 +745,49 @@ export function createAdTags(options: AdTagOptions = {}) {
       if (marketingNow()) metaTrack("Purchase", {content_ids: [booking.eventId], content_type: "product", content_category: "guest",
         num_items: booking.places, value, currency: "INR"}, booking.paymentId);
       writeCheckouts(readCheckouts().filter((paymentId) => paymentId !== booking.paymentId));
+      return true;
+    },
+
+    /**
+     * One GA4 event under the analytics choice (and so under marketing too),
+     * to Google Analytics only: never the Google Ads tag or the Meta Pixel.
+     * The caller (`analytics.ts`) projects each event to a closed parameter
+     * set; this checks the shape again and sends nothing for anything else.
+     */
+    analyticsEvent(name: string, parameters: Record<string, string | number>): boolean {
+      if (!analyticsEventName.test(name) || !parameters || typeof parameters !== "object") return false;
+      const safe: Record<string, string | number> = {};
+      for (const [key, value] of Object.entries(parameters)) {
+        if (!analyticsParameterName.test(key) || key === "send_to") return false;
+        if (typeof value === "number" ? !Number.isFinite(value) : typeof value !== "string" || !analyticsTextValue.test(value)) {
+          return false;
+        }
+        safe[key] = value;
+      }
+      if (!sending()) return false;
+      gtag("event", name, {...safe, send_to: destinations.googleAnalytics});
+      return true;
+    },
+
+    /**
+     * A member or referral lead the intake accepted (`siteLeadKinds`). GA4
+     * gets `generate_lead` like a host enquiry, with its own category and
+     * audience. Under marketing Meta gets a custom `MemberLead` or
+     * `ReferralLead`, never the standard `Lead` the host campaigns optimise
+     * for. No contact data and no Google Ads conversion: these leads are not
+     * host enquiries, and a referral's number may not be the sender's.
+     */
+    siteLead(lead: {kind: string; leadId: string | null}): boolean {
+      const kind = Object.hasOwn(siteLeadKinds, lead?.kind) ? siteLeadKinds[lead.kind] : null;
+      if (!kind || !sending()) return false;
+      const id = lead.leadId && receiptPattern.test(lead.leadId) ? lead.leadId : newId();
+      if (!once(`lead:${id}`)) return false;
+      gtag("event", "generate_lead", {send_to: destinations.googleAnalytics, event_id: id,
+        content_category: kind.category, audience: kind.audience, lead_kind: lead.kind});
+      if (marketingNow()) {
+        fbq("trackSingleCustom", destinations.metaPixel, kind.metaEvent,
+          {content_category: kind.category, lead_kind: lead.kind}, {eventID: id});
+      }
       return true;
     },
 

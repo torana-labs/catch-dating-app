@@ -1,0 +1,11 @@
+{
+  "id": "hostOperatorAlerts",
+  "path": "hostOperatorAlerts/{alertId}",
+  "rulesMatch": "/hostOperatorAlerts/{privateDocument=**}",
+  "typescriptInterface": "HostOperatorAlertDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "Operator alert triggers (functions/src/hostAlerts)",
+  "writerContext": "host",
+  "read": "server only",
+  "write": "server only"
+}

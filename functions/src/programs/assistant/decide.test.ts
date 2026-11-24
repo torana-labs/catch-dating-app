@@ -5,7 +5,7 @@ import * as admin from "firebase-admin";
 import {FakeFirestore, type FakeData} from "../../shared/testing/programFirestore";
 import {baseSeed, now, request} from "../../shared/testing/programFixtures";
 import {contractValidator} from "../../shared/contractTestValidators";
-import {getProgramLiveBoardHandler} from "../programLiveBoard";
+import {readStaffAttentionAlertView} from "../programLiveBoardViews";
 import type {AssistantRequestBody} from "./prompt";
 import type {AssistantRuntime, ProviderResult} from "./provider";
 import {
@@ -200,13 +200,14 @@ test("media is passed to the planner with a holding reply, staff attention and a
   assert.ok(validateAlert(alert), JSON.stringify(validateAlert.errors));
   assert.equal(alert.assigneeUid, "manager-1");
   assert.equal(db.getDoc(`programWhatsappThreads/${THREAD}`)!.escalationReason, "media");
-  // The live board shows it, assigned to the planner.
-  const board = await getProgramLiveBoardHandler(request({programId: "program-1"}, "manager-1"),
-    {firestore: () => db as unknown as FirebaseFirestore.Firestore,
-      checkRateLimit: async () => undefined, now: () => now});
-  const shown = board.alerts.find((row) => row.alertId === `${runId}_communications`);
-  assert.equal(shown?.assignedToMe, true);
-  assert.equal(shown?.revision, 1);
+  // The live board's alert view shows it, assigned to the planner.
+  const shown = await db.runTransaction((tx) => readStaffAttentionAlertView(
+    db as unknown as FirebaseFirestore.Firestore,
+    tx as unknown as FirebaseFirestore.Transaction,
+    "program-1", runId, "communications", NOW));
+  assert.equal(shown?.view.alertId, `${runId}_communications`);
+  assert.equal(shown?.view.assigneeUid, "manager-1");
+  assert.equal(shown?.view.revision, 1);
 });
 
 test("distress is urgent and never reaches the model", async () => {

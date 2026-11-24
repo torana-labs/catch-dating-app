@@ -1,0 +1,11 @@
+{
+  "id": "programRetentionRuns",
+  "path": "programRetentionRuns/{programId}",
+  "rulesMatch": "/programRetentionRuns/{programId}",
+  "typescriptInterface": "ProgramRetentionRunDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "program retention sweep",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only"
+}

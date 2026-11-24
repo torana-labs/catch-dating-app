@@ -243,3 +243,100 @@ final class OrganizerProgramSummariesStreamFamily extends $Family
   @override
   String toString() => r'organizerProgramSummariesStreamProvider';
 }
+
+/// The organiser's programmes as list rows with their counts, live: the
+/// planner home and the Events tab.
+
+@ProviderFor(organizerProgramRowsStream)
+final organizerProgramRowsStreamProvider = OrganizerProgramRowsStreamFamily._();
+
+/// The organiser's programmes as list rows with their counts, live: the
+/// planner home and the Events tab.
+
+final class OrganizerProgramRowsStreamProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<OrganizerProgramListRow>>,
+          List<OrganizerProgramListRow>,
+          Stream<List<OrganizerProgramListRow>>
+        >
+    with
+        $FutureModifier<List<OrganizerProgramListRow>>,
+        $StreamProvider<List<OrganizerProgramListRow>> {
+  /// The organiser's programmes as list rows with their counts, live: the
+  /// planner home and the Events tab.
+  OrganizerProgramRowsStreamProvider._({
+    required OrganizerProgramRowsStreamFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'organizerProgramRowsStreamProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$organizerProgramRowsStreamHash();
+
+  @override
+  String toString() {
+    return r'organizerProgramRowsStreamProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<OrganizerProgramListRow>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<OrganizerProgramListRow>> create(Ref ref) {
+    final argument = this.argument as String;
+    return organizerProgramRowsStream(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is OrganizerProgramRowsStreamProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$organizerProgramRowsStreamHash() =>
+    r'1d00275dd357328aa3bd7cfd2b067551f2173be9';
+
+/// The organiser's programmes as list rows with their counts, live: the
+/// planner home and the Events tab.
+
+final class OrganizerProgramRowsStreamFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          Stream<List<OrganizerProgramListRow>>,
+          String
+        > {
+  OrganizerProgramRowsStreamFamily._()
+    : super(
+        retry: null,
+        name: r'organizerProgramRowsStreamProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The organiser's programmes as list rows with their counts, live: the
+  /// planner home and the Events tab.
+
+  OrganizerProgramRowsStreamProvider call(String organizerId) =>
+      OrganizerProgramRowsStreamProvider._(argument: organizerId, from: this);
+
+  @override
+  String toString() => r'organizerProgramRowsStreamProvider';
+}

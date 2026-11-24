@@ -6,8 +6,9 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_cont
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -70,5 +71,8 @@ void main() {
   );
 }
 
-HostSummaryReader _reader() =>
-    HostSummaryReader(FakeFirebaseFirestore(), actorId: () => 'host');
+ScopedReadModelReader _reader() => ScopedReadModelReader(
+  FakeFirebaseFirestore(),
+  family: hostReadModels,
+  actorId: () => 'host',
+);

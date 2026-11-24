@@ -65,7 +65,7 @@ export type SalesHostsModel = Pick<SalesHostsController,
   commercial: SalesHostCommercialModel | null;
   isAdminOwner: boolean;
   /** The partner-offer row, with its own controller; null for a sales associate. */
-  renderPartnerOffer: ((organizerId: string, organizerName: string) => ReactNode) | null;
+  renderPartnerAccess: ((organizerId: string, organizerName: string) => ReactNode) | null;
 };
 
 interface Row {
@@ -578,7 +578,7 @@ function HostPage({model, host, onBack, onOpenOrganizer, onOpenFit, onOpenPrivac
         <CatchSection title="More" dividers="none">
           <CatchIndexRow title="Edit host" titleVariant="bodyM" subtitle="Summary, next action, research and owner" onTap={() => setSheet({kind: "edit"})} />
           <CatchIndexRow title="Organizer page" titleVariant="bodyM" onTap={onOpenOrganizer} />
-          {model.renderPartnerOffer?.(host.account.organizerId, host.organizerSummary.name)}
+          {model.renderPartnerAccess?.(host.account.organizerId, host.organizerSummary.name)}
           <CatchIndexRow title="Account hold" titleVariant="bodyM" subtitle={holdLabels[host.account.suppressionStatus ?? "clear"]}
             trailing={model.canEditResearch ? <CatchButton label="Change" variant="secondary" size="sm" onPressed={() => setSheet({kind: "hold"})} /> : undefined} />
           {model.canEditResearch ? <CatchIndexRow title="Fit and outreach" titleVariant="bodyM" subtitle="Fit, reviewed wording and drafts to copy" onTap={onOpenFit} /> : null}

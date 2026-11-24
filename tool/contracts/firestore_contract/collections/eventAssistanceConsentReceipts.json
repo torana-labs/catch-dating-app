@@ -1,0 +1,22 @@
+{
+  "id": "eventAssistanceConsentReceipts",
+  "path": "eventAssistanceConsentReceipts/{receiptId}",
+  "rulesMatch": "/eventAssistanceConsentReceipts/{receiptId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted event-assistance messaging services (sms, rcs, whatsapp)",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "getEventRcsPreference",
+    "getEventRcsWithdrawal",
+    "setEventRcsPreference",
+    "withdrawEventRcs"
+  ],
+  "migrationNotes": [
+    "One collection for every channel since lane L1 (16 Nov 2026); each document carries channel and every query filters on it first.",
+    "Immutable exact-choice receipts written atomically with current SMS permission by verified participant callables. No direct client writes.",
+    "RCS consent remains separate from other channels. Verified participant callables write exact decision receipts and current permission atomically. Sender provisioning, dispatch and activation remain separate.",
+    "Explicit organizer sender and verified event recipient. Exact immutable decisions commit with permission revisions; announcement consent does not grant this purpose. No client collection access or automatic provider activation."
+  ]
+}

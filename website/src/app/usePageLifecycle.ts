@@ -1,6 +1,7 @@
 import {useEffect} from "react";
 import {
   initializeMarketingAnalytics,
+  startPageEngagementTracking,
   trackPageView,
 } from "../analytics";
 import type {PageKey, PageMeta} from "./pageMeta";
@@ -26,6 +27,8 @@ export function useMarketingAnalytics(page: PageKey, routeKey?: string) {
   useEffect(() => {
     initializeMarketingAnalytics();
     trackPageView(page, routeKey);
+    // One engagement visit per page view: scroll depth and section reading time.
+    return startPageEngagementTracking();
   }, [page, routeKey]);
 }
 

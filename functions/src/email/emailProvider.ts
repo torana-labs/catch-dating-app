@@ -1,7 +1,8 @@
 /** Provider-neutral email port. Workflows own consent, budgets and retries. */
 export interface TransactionalEmail {
   from: string;
-  to: string;
+  /** One address, or up to five that share one message (staff alerts). */
+  to: string | readonly string[];
   subject: string;
   text: string;
   html?: string;
@@ -26,8 +27,11 @@ export interface TransactionalEmailProvider {
 
 export function assertTransactionalEmail(message: TransactionalEmail): void {
   const address = /^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$/u;
-  if (![message.from, message.to].every((v) =>
-    typeof v === "string" && v.length <= 254 && address.test(v)) ||
+  const to = typeof message.to === "string" ? [message.to] : message.to;
+  if (!Array.isArray(to) || to.length < 1 || to.length > 5 ||
+      new Set(to).size !== to.length ||
+      ![message.from, ...to].every((v) =>
+        typeof v === "string" && v.length <= 254 && address.test(v)) ||
       typeof message.subject !== "string" || !message.subject.trim() ||
       message.subject.length > 200 || /[\r\n]/u.test(message.subject) ||
       typeof message.text !== "string" || !message.text.trim() ||

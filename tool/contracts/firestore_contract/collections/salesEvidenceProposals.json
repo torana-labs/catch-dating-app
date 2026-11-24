@@ -1,0 +1,10 @@
+{
+  "id": "salesEvidenceProposals",
+  "path": "salesEvidenceProposals/{proposalId}",
+  "rulesMatch": "/salesEvidenceProposals/{privateDocument=**}",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales evidence service",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

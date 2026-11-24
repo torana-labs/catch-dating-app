@@ -9,7 +9,7 @@ import {requireDocumentId} from "./guestRecords";
 import {readMessagePreferenceDiscovery, messagePreferenceClock} from
   "./messagePreferenceDiscovery";
 import {parseRcsPermission, rcsConsentCollections} from "./rcsConsent";
-import {runAssistanceTransaction} from "./transactionCallback";
+import {runAssistanceTransaction} from "../../platform/transactionCallback";
 
 const pageSize = 50;
 

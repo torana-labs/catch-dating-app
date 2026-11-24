@@ -33,14 +33,7 @@
         "label": "Running wellness sessions for a company? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "chip": {
-        "title": "Sunday sound bath",
-        "rows": [
-          {"label": "Booked", "value": "22"},
-          {"label": "Members, included", "value": "14"},
-          {"label": "First-timers", "value": "8"}
-        ]
-      },
+      "fragments": ["host-people-regular", "host-people-drifting"],
       "media": {"kind": "capture", "slot": "host-people"}
     },
     {
@@ -85,7 +78,7 @@
         {"time": "Week three", "title": "You see who keeps coming", "body": "{{brand.name}} lists everyone who’s been four or more times in 60 days and isn’t a member yet, ready for an invitation."},
         {"time": "Every month", "title": "They renew without a reminder", "body": "UPI Autopay renews the membership. If they stop coming for 30 days, they show up in a list for you to check in with."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-studios"}
     },
     {
       "type": "checklist",
@@ -147,12 +140,12 @@
       "ground": "magenta",
       "kicker": "Your next workshop",
       "title": "Bring them in once. Keep them for years.",
-      "lead": "Start the free trial, or leave your number and we’ll send the studio setup guide on WhatsApp.",
+      "lead": "Start the free trial, or leave your number and a person from our team will message you on WhatsApp to help you set up.",
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
-      "leadForm": {"id": "studio_setup_guide", "requestKind": "guide", "format": "studios", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
-      "media": {"kind": "capture", "slot": "guest-explore"}
+      "leadForm": {"id": "studio_setup_guide", "requestKind": "guide", "format": "studios", "label": "Your WhatsApp number", "submitLabel": "Message me"},
+      "media": {"kind": "capture", "slot": "host-create-studios"}
     }
   ]
 }

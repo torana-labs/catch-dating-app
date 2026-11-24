@@ -31,7 +31,7 @@
     {"names": ["copy"], "kind": "source", "expectation": "tracked", "owner": "content_system", "consumer": "docs/app_architecture.md", "recovery": "Restore from Git and run the owning copy generator."},
     {"names": ["design", "widgetbook"], "kind": "source", "expectation": "tracked", "owner": "design_system", "consumer": "docs/design_parity/README.md", "recovery": "Restore from Git and run the owning design or Widgetbook generator."},
     {"names": ["docs"], "kind": "documentation", "expectation": "tracked", "owner": "documentation", "consumer": "docs/README.md", "recovery": "Restore from Git and run the source-owned documentation checks."},
-    {"names": ["tool"], "kind": "source", "expectation": "tracked", "owner": "repository_tooling", "consumer": "tool/tools_manifest.json", "recovery": "Restore from Git and run the tool-manifest and focused tooling checks."},
+    {"names": ["tool"], "kind": "source", "expectation": "tracked", "owner": "repository_tooling", "consumer": "tool/manifest/manifest.json", "recovery": "Restore from Git and run the tool-manifest and focused tooling checks."},
     {"names": ["artifacts"], "kind": "curated-artifact", "expectation": "tracked", "owner": "design_system", "consumer": "artifacts/README.md", "recovery": "Regenerate from the source capture workflow documented in artifacts/README.md."},
     {"names": [".dart_tool", ".firebase", ".flutter-plugins-dependencies", "build", "coverage", "node_modules"], "kind": "generated-cache", "expectation": "ignored", "owner": "repository_tooling", "recovery": "Run flutter pub get, npm ci, or the relevant build command.", "cleanable": true, "scope": "all-regenerable"},
     {"names": [".nx"], "kind": "generated-cache", "expectation": "ignored", "owner": "repository_tooling", "recovery": "Run any nx command; it rebuilds the project graph and local task cache.", "cleanable": true, "scope": "all-regenerable"},
@@ -43,7 +43,7 @@
     {"pattern": "design/visual_baselines/**", "review": "aggregate", "kind": "generated_evidence", "owner": "design_system"},
     {"pattern": "apps/*/android/app/src/*/res/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
     {"pattern": "apps/*/ios/Runner/Assets.xcassets/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
-    {"pattern": "apps/consumer/macos/Runner/Assets.xcassets/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
+    {"pattern": "apps/*/macos/Runner/Assets.xcassets/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
     {"pattern": "apps/*/web/icons/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"}
   ],
   "patterns": [
@@ -67,6 +67,8 @@
     {"path": "apps/host/ios/.symlinks", "scope": "native", "reason": "Generated Host Flutter iOS links"},
     {"path": "apps/consumer/macos/Pods", "scope": "native", "reason": "Consumer macOS CocoaPods dependencies"},
     {"path": "apps/consumer/macos/Flutter/ephemeral", "scope": "native", "reason": "Generated Consumer Flutter macOS files"},
+    {"path": "apps/host/macos/Pods", "scope": "native", "reason": "Host macOS CocoaPods dependencies"},
+    {"path": "apps/host/macos/Flutter/ephemeral", "scope": "native", "reason": "Generated Host Flutter macOS files"},
     {"path": "apps/consumer/android/.gradle", "scope": "native", "reason": "Consumer Gradle project cache"},
     {"path": "apps/host/android/.gradle", "scope": "native", "reason": "Host Gradle project cache"},
     {"path": "node_modules", "scope": "node", "reason": "Root npm dependencies"},

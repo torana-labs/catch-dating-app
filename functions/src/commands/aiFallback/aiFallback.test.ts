@@ -39,7 +39,7 @@ function valid(validator: ReturnType<typeof contractValidator>, value: unknown, 
 const output = {mapping: {displayName: 0}, confidence: 0.7};
 
 function wire(overrides: Record<string, unknown> = {}) {
-  return {id: "msg_fixture_1", type: "message", model: "claude-opus-5-5", role: "assistant",
+  return {id: "msg_fixture_1", type: "message", model: "claude-haiku-5-5", role: "assistant",
     stop_reason: "end_turn", stop_details: null, stop_sequence: null,
     content: [{type: "text", text: JSON.stringify(output)}],
     usage: {input_tokens: 300, cache_read_input_tokens: 0, cache_creation_input_tokens: 0, output_tokens: 40},
@@ -123,11 +123,11 @@ test("a paid read uses the federation token, settles priced cost, counts the rea
   assert.equal(calls[0].url, "https://api.anthropic.com/v1/messages");
   assert.equal(calls[0].headers.Authorization, "Bearer fixture-federation-token");
   assert.equal(calls[0].headers["x-api-key"], undefined);
-  assert.equal(calls[0].body.model, "claude-opus-5-5");
+  assert.equal(calls[0].body.model, "claude-haiku-5-5");
   const month = monthOf(db);
   valid(validate.usage, month, "month");
-  // 300 input tokens at $4/M and 40 output at $20/M = 1,200 + 800 micros.
-  assert.equal(month.spentMicros, 2_000);
+  // 300 input tokens at $0.10/M and 40 output at $0.50/M = 30 + 20 micros.
+  assert.equal(month.spentMicros, 50);
   assert.equal(month.reservedMicros, 0);
   assert.equal(month.paidReads, 1);
   const day = db.read(`aiFallbackUsage/${readerDayDocId("visitor-1", NOW)}`) as Record<string, unknown>;
@@ -137,7 +137,7 @@ test("a paid read uses the federation token, settles priced cost, counts the rea
   const [row] = auditRows(db);
   valid(validate.audit, row, "audit");
   assert.deepEqual({...row, createdAt: null}, {schemaVersion: 1, commandId: "guests.import-list",
-    task: "guest-column-mapping", outcome: "paid", inputTokens: 300, outputTokens: 40, costMicros: 2_000,
+    task: "guest-column-mapping", outcome: "paid", inputTokens: 300, outputTokens: 40, costMicros: 50,
     monthKey: "2026-11", createdAt: null});
   const [cached] = inCollection(db, "aiFallbackResults");
   valid(validate.results, cached, "result cache");
@@ -149,7 +149,7 @@ test("apply after preview replays the cached read: no second call, read or charg
   const again = await runAiFallback(request(), deps);
   assert.deepEqual(again, {status: "read", output, cacheHit: true});
   assert.equal(calls.length, 1);
-  assert.equal(monthOf(db).spentMicros, 2_000);
+  assert.equal(monthOf(db).spentMicros, 50);
   assert.equal((db.read(`aiFallbackUsage/${readerDayDocId("visitor-1", NOW)}`) as {reads: number}).reads, 1);
   assert.equal(auditRows(db).length, 1);
 });
@@ -173,7 +173,7 @@ test("a failed call that may have been billed keeps its whole reservation", asyn
   assert.equal(calls.length, 1);
   const month = monthOf(db);
   assert.equal(month.reservedMicros, 0);
-  assert.ok(month.spentMicros > 2_000, "the worst case stays charged");
+  assert.ok(month.spentMicros > 50, "the worst case stays charged");
   assert.equal(month.paidReads, 0);
   assert.equal(auditRows(db)[0].outcome, "failed");
 });

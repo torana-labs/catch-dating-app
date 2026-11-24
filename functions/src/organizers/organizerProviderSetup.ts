@@ -3,6 +3,11 @@ import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
+import {
+  type EventBookingCountersPatch,
+  updateEventBookingCounters,
+  updateEventProviderOrigin,
+} from "../domain/events/eventDocumentWrites";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
 import type {ConnectOrganizerLumaProviderCallablePayload} from
@@ -47,8 +52,6 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {eventAttendeeId, normalizeRosterPhone} from
   "../events/eventAttendees";
-import {readSeatMigrationWriterFence} from
-  "../events/seatMigrationPaged";
 import {prepareProviderSeatChanges} from "./organizerProviderSeats";
 import {organizerProviderCatalog} from "./organizerProviderCatalog";
 import {
@@ -204,15 +207,13 @@ export async function connectOrganizerLumaProviderHandler(
   const batch = db.batch();
   batch.set(connectionRef, connection);
   batch.set(mappingRef, mapping);
-  batch.update(db.collection("events").doc(data.eventId), {
-    eventOrigin: {
-      ...event.eventOrigin,
-      rosterAuthority: "providerSync",
-      externalEventId: externalEvent.id,
-      adapterVersion: "luma-public-api-v1",
-      connectedAt: now,
-      connectedBy: actorUid,
-    },
+  updateEventProviderOrigin(batch, db.collection("events").doc(data.eventId), {
+    ...event.eventOrigin,
+    rosterAuthority: "providerSync",
+    externalEventId: externalEvent.id,
+    adapterVersion: "luma-public-api-v1",
+    connectedAt: now,
+    connectedBy: actorUid,
   });
   try {
     await batch.commit();
@@ -536,13 +537,11 @@ export async function disconnectOrganizerProviderHandler(
     revision: admin.firestore.FieldValue.increment(1),
   });
   const event = await requireScopedEvent(db, data.organizerId, data.eventId);
-  batch.update(db.collection("events").doc(data.eventId), {
-    eventOrigin: {
-      ...event.eventOrigin,
-      rosterAuthority: "hostImport",
-      connectedAt: null,
-      connectedBy: null,
-    },
+  updateEventProviderOrigin(batch, db.collection("events").doc(data.eventId), {
+    ...event.eventOrigin,
+    rosterAuthority: "hostImport",
+    connectedAt: null,
+    connectedBy: null,
   });
   await batch.commit();
   return providerSetupResponse(db, data.organizerId, data.eventId);
@@ -631,8 +630,6 @@ export async function reconcileLumaGuests(params: {
       throw new HttpsError("failed-precondition",
         "The current provider sync authority changed.");
     }
-    const seatMode = await readSeatMigrationWriterFence({db: params.db,
-      tx, eventId});
     const existingSnap = await tx.get(params.db.collection("eventAttendees")
       .where("eventId", "==", eventId).limit(501));
     if (existingSnap.docs.length > 500) {
@@ -658,8 +655,6 @@ export async function reconcileLumaGuests(params: {
         "Provider guest identity needs reconciliation.");
     }
     const byPhone = uniqueIndex(existing, (row) => row.data.phoneE164);
-    const byEmail = uniqueIndex(existing,
-      (row) => row.data.email?.toLowerCase());
     const usedIds = new Set<string>();
     const writes: Array<{
     id: string;
@@ -675,8 +670,7 @@ export async function reconcileLumaGuests(params: {
       const phone = phoneResult.issue ? null : phoneResult.value;
       const email = guest.email?.toLowerCase() ?? null;
       const matched = byGuestId.get(guest.id) ??
-      (phone ? byPhone.get(phone) : undefined) ??
-      (seatMode === "legacy" && email ? byEmail.get(email) : undefined);
+        (phone ? byPhone.get(phone) : undefined);
       const id = matched?.id ?? eventAttendeeId(eventId, `luma:${guest.id}`);
       if (usedIds.has(id)) {
         skippedCount += 1;
@@ -700,10 +694,9 @@ export async function reconcileLumaGuests(params: {
       });
     }
 
-    const seatResult = seatMode === "ready" ?
-      await prepareProviderSeatChanges({db: params.db, tx, event,
-        eventId, organizerId: params.run.organizerId,
-        runId: runRef.id, nowMillis: params.now.toMillis(), writes}) : null;
+    const seatResult = await prepareProviderSeatChanges({db: params.db, tx,
+      event, eventId, organizerId: params.run.organizerId,
+      runId: runRef.id, nowMillis: params.now.toMillis(), writes});
     for (const write of writes) {
       tx.set(params.db.collection("eventAttendees").doc(write.id),
         write.document);
@@ -711,17 +704,15 @@ export async function reconcileLumaGuests(params: {
     const checkedInDelta = writes.reduce((sum, write) =>
       sum + (!write.wasCheckedIn && write.document.status === "checkedIn" ?
         1 : 0), 0);
-    if (checkedInDelta > 0 || seatResult !== null &&
-      seatResult.seatDelta !== 0) {
-      const eventPatch: Record<string, unknown> = {};
+    if (checkedInDelta > 0 || seatResult.seatDelta !== 0) {
+      const eventPatch: EventBookingCountersPatch = {};
       if (checkedInDelta > 0) {
         eventPatch.checkedInCount = admin.firestore.FieldValue.increment(
           checkedInDelta);
       }
-      if (seatResult) {
-        eventPatch.bookedCount = seatResult.occupiedAfter;
-      }
-      tx.update(params.db.collection("events").doc(eventId), eventPatch);
+      eventPatch.bookedCount = seatResult.occupiedAfter;
+      updateEventBookingCounters(tx, params.db.collection("events")
+        .doc(eventId), eventPatch);
     }
     const counts = {
       pageCount: params.pageCount,

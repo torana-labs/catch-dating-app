@@ -1,0 +1,34 @@
+{
+  "id": "design:host-event-field-contracts",
+  "category": "design",
+  "path": "tool/design/check_host_event_field_contracts.mjs",
+  "command": "node tool/design/check_host_event_field_contracts.mjs --check",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Enforces collapsed event create/edit disclosures and activity-palette accents on ActivityKind, EventInteractionModel, and PaceLevel Host choice fields.",
+  "checks": [
+    "node --check tool/design/check_host_event_field_contracts.mjs",
+    "node --test tool/design/check_host_event_field_contracts.test.mjs",
+    "node tool/design/check_host_event_field_contracts.mjs --check"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "DESIGN-PRIMITIVES-001",
+      "title": "Prefer shared design primitives over repeated local shells",
+      "appliesTo": [
+        "lib/**/presentation/**",
+        "lib/contexts/*/parts/**",
+        "lib/pages/**",
+        "packages/catch_ui/lib/**",
+        "packages/platform/lib/riverpod_ui/**"
+      ],
+      "instruction": "Before creating local card, sheet, empty-state, rail, row, badge, skeleton, or section UI, check docs/widget_catalog.md and the existing Catch* primitives under packages/catch_ui/lib/src for an owner. Do not duplicate an existing primitive shell; extend the primitive or propose a variant through catalog review. Section titles have one owner: top-level groups route through CatchSection, contained card titles route through CatchSection.contained or a documented content primitive, and nested shared widgets must expose a content-only mode instead of repeating the parent section title. Underline tab/scope rails route through CatchPageTabBar or CatchChoiceInput.segmented; production code must not compose CatchChoiceButton directly because that forks divider, indicator, ink, and trailing-action alignment behavior."
+    }
+  ],
+  "alsoEnforces": [
+    "DESIGN-TOKENS-001",
+    "UI-LINT-001"
+  ],
+  "queueGate": "always"
+}

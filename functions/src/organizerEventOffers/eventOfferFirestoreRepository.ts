@@ -1,23 +1,22 @@
 import {createHash} from "node:crypto";
 import type {EventPaymentTerms} from
-  "../events/eventSetupPreferences/types";
+  "../domain/formats/eventSetupPreferences/types";
 import {eventPaymentTermsHash, validateEventPaymentTerms} from
-  "../events/eventSetupPreferences/resolve";
-import * as admin from "firebase-admin";
+  "../domain/formats/eventSetupPreferences/resolve";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {
   EventDocument, OrganizerApplicationDocument,
   OrganizerContactDocument, OrganizerContactOriginDocument,
   OrganizerFormResponseDocument, OrganizerFormVersionDocument,
   OrganizerFormConversionReceiptDocument,
-  OrganizerCommunicationPreferenceDocument,
   OrganizerContactChannelStateDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {effectiveOrganizerWhatsappPurposeStatus,
-  organizerCommunicationPreferenceId} from
-  "../shared/organizerCommunicationPreferences";
-import {organizerContactChannelStateId, hashEndpoint} from
-  "../organizers/organizerCampaignModel";
+import {contactPermissionRef, contactPermissionStatus,
+  readContactPermission} from "../shared/contactPermissions";
+import {
+  organizerContactChannelStateId,
+} from "../organizers/organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {whatsappStopId} from "../shared/organizerWhatsappStops";
 import {resolveIndividualCommunicationPlan} from
   "../communications/organizerCommunicationPlan";
@@ -41,10 +40,9 @@ import {
   OfferTransaction,
 } from "./eventOfferService";
 import {
-  buildCommandReceipt,
   classifyCommandReceiptData,
-  COMMAND_RECEIPTS,
-  commandReceiptId,
+  commandReceiptRef,
+  writeCommandReceipt,
 } from "../shared/commandReceipts";
 
 /**
@@ -67,15 +65,16 @@ const collections = {
 export const OFFER_ACTION_RECEIPT_COMMAND = "mutateEventOffer";
 export const OFFER_BATCH_RECEIPT_COMMAND = "commitEventOffers";
 
-export function offerActionReceiptId(offerId: string,
-  requestId: string): string {
-  return commandReceiptId(OFFER_ACTION_RECEIPT_COMMAND,
+export function offerActionReceiptRef(db: FirebaseFirestore.Firestore,
+  offerId: string, requestId: string): FirebaseFirestore.DocumentReference {
+  return commandReceiptRef(db, OFFER_ACTION_RECEIPT_COMMAND,
     key(offerId, requestId));
 }
 
-export function offerBatchReceiptId(organizerId: string,
-  requestId: string): string {
-  return commandReceiptId(OFFER_BATCH_RECEIPT_COMMAND,
+export function offerBatchReceiptRef(db: FirebaseFirestore.Firestore,
+  organizerId: string, requestId: string
+): FirebaseFirestore.DocumentReference {
+  return commandReceiptRef(db, OFFER_BATCH_RECEIPT_COMMAND,
     key(organizerId, requestId));
 }
 
@@ -262,6 +261,8 @@ export class FirestoreEventOfferRepository implements OfferRepository {
       const read = async (collection: string, id: string) =>
         (await firestoreTx.get(this.db.collection(collection).doc(id)))
           .data();
+      const readRef = async (ref: FirebaseFirestore.DocumentReference) =>
+        (await firestoreTx.get(ref)).data();
       const readPreferences = async (eventId: string) => {
         const data = await read("eventSetupPreferences", eventId);
         if (!data) return null;
@@ -448,7 +449,7 @@ export class FirestoreEventOfferRepository implements OfferRepository {
         eventPaymentTerms: async (eventId) =>
           (await readPreferences(eventId))?.paymentTerms ?? null,
         eventPreferences: readPreferences,
-        handoffPresentation: async (offer, sourceResponseId) => {
+        handoffPresentation: async (offer) => {
           const [eventData, contactData] = await Promise.all([
             read("events", offer.eventId),
             read("organizerContacts", offer.contactId),
@@ -462,10 +463,11 @@ export class FirestoreEventOfferRepository implements OfferRepository {
               "Offer event or contact is unavailable.");
           }
           const phone = contact.phoneE164;
-          const [preferenceData, channelData, stopData] = await Promise.all([
-            contact.linkedUid ? read("organizerCommunicationPreferences",
-              organizerCommunicationPreferenceId(offer.organizerId,
-                contact.linkedUid)) : Promise.resolve(undefined),
+          const sender = {kind: "organizer" as const,
+            organizerId: offer.organizerId};
+          const [permissionData, channelData, stopData] = await Promise.all([
+            contact.linkedUid ? readRef(contactPermissionRef(this.db,
+              contact.linkedUid, sender)) : Promise.resolve(undefined),
             read("organizerContactChannelStates",
               organizerContactChannelStateId(offer.organizerId,
                 offer.contactId)),
@@ -473,12 +475,10 @@ export class FirestoreEventOfferRepository implements OfferRepository {
               whatsappStopId(offer.organizerId, hashEndpoint(phone))) :
               Promise.resolve(undefined),
           ]);
-          const preference = preferenceData as
-            OrganizerCommunicationPreferenceDocument | undefined;
+          const permission = readContactPermission(permissionData, sender);
           const channel = channelData as
             OrganizerContactChannelStateDocument | undefined;
-          if (preference && (preference.organizerId !== offer.organizerId ||
-              preference.uid !== contact.linkedUid)) {
+          if (permissionData && !permission) {
             throw new OfferDomainError("conflict",
               "Stored contact permission has a foreign owner.");
           }
@@ -487,8 +487,8 @@ export class FirestoreEventOfferRepository implements OfferRepository {
             throw new OfferDomainError("conflict",
               "Stored contact channel has a foreign owner.");
           }
-          const purposeStatus = effectiveOrganizerWhatsappPurposeStatus(
-            preference, "eventOperations", phone, sourceResponseId);
+          const purposeStatus = contactPermissionStatus(permission,
+            "whatsapp:eventOperations", phone);
           const optedOut = contact.whatsappStatus === "optedOut" ||
             purposeStatus === "optedOut";
           const suppressed = channel?.adminSuppressed === true ||
@@ -539,8 +539,8 @@ export class FirestoreEventOfferRepository implements OfferRepository {
           return data ? parseStoredEventOffer(data, offerId) : null;
         },
         actionReceipt: async (offerId, requestId) => {
-          const data = await read(COMMAND_RECEIPTS,
-            offerActionReceiptId(offerId, requestId));
+          const data = await readRef(
+            offerActionReceiptRef(this.db, offerId, requestId));
           // The domain compares the action hash and fences the stored
           // revision against the live offer; this read only drops a receipt
           // past expiresAt, so it classifies against the stored hash.
@@ -555,24 +555,13 @@ export class FirestoreEventOfferRepository implements OfferRepository {
         },
         batchReceipt: async (organizerId, requestId,
           requestHash): Promise<OfferBatchReceiptLookup> => {
-          const data = await read(COMMAND_RECEIPTS,
-            offerBatchReceiptId(organizerId, requestId));
+          const data = await readRef(
+            offerBatchReceiptRef(this.db, organizerId, requestId));
           const lookup = classifyCommandReceiptData(data, {
             command: OFFER_BATCH_RECEIPT_COMMAND, requestHash,
             nowMillis: this.serverClock()});
           if (lookup.kind !== "replay") return lookup;
           return {kind: "replay", results: storedBatchResults(lookup.result)};
-        },
-        listOffers: async (organizerId, eventId, afterOfferId, limit) => {
-          let query = this.db.collection(collections.offers)
-            .where("organizerId", "==", organizerId)
-            .where("eventId", "==", eventId)
-            .orderBy(admin.firestore.FieldPath.documentId())
-            .limit(limit);
-          if (afterOfferId) query = query.startAfter(afterOfferId);
-          const snapshot = await firestoreTx.get(query);
-          return snapshot.docs.map((doc) =>
-            parseStoredEventOffer(doc.data(), doc.id));
         },
         hasMergedContactOffer: async (organizerId, eventId,
           canonicalContactId) => {
@@ -626,22 +615,20 @@ export class FirestoreEventOfferRepository implements OfferRepository {
       }
       const nowMillis = this.serverClock();
       for (const receipt of actionReceipts) {
-        firestoreTx.set(this.db.collection(COMMAND_RECEIPTS).doc(
-          offerActionReceiptId(receipt.offerId, receipt.requestId)),
-        buildCommandReceipt({
+        writeCommandReceipt(firestoreTx, offerActionReceiptRef(this.db,
+          receipt.offerId, receipt.requestId), {
           command: OFFER_ACTION_RECEIPT_COMMAND, retention: "request",
           requestHash: receipt.requestHash,
           result: {resultingGeneration: receipt.resultingGeneration,
             resultingRevision: receipt.resultingRevision},
-          nowMillis}));
+          nowMillis});
       }
       for (const receipt of batchReceipts) {
-        firestoreTx.set(this.db.collection(COMMAND_RECEIPTS).doc(
-          offerBatchReceiptId(receipt.organizerId, receipt.requestId)),
-        buildCommandReceipt({
+        writeCommandReceipt(firestoreTx, offerBatchReceiptRef(this.db,
+          receipt.organizerId, receipt.requestId), {
           command: OFFER_BATCH_RECEIPT_COMMAND, retention: "request",
           requestHash: receipt.requestHash,
-          result: offerBatchReceiptResult(receipt.results), nowMillis}));
+          result: offerBatchReceiptResult(receipt.results), nowMillis});
       }
       for (const entry of audits) {
         firestoreTx.create(this.db.collection(collections.audit)

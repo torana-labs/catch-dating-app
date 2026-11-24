@@ -1,4 +1,8 @@
 import type {StoredTryItWorkspace} from "./workspace";
+import {deleteTryItDraftEvent} from "../domain/events/eventDocumentWrites";
+import {deleteEventSeatLedgerInTransaction, eventSeatRecordCollections,
+  seatLedgerHasHolds} from "../events/seatAuthority/eventSeatLedgers";
+import type {SeatLedger} from "../events/seatAuthority/seatAuthority";
 
 // Removing a try-it workspace's guest data before its organizer goes (owner
 // decision on #2061, 19 Nov 2026, question 1 (a)). A due workspace whose
@@ -33,10 +37,9 @@ const EVENT_SCOPED: Array<{collection: string; field: string;
     {collection: "eventAttendeeImports", field: "eventId"},
     {collection: "hostRosterIntakeSessions", field: "draft.eventId",
       subcollections: ["receipts"]},
+    ...eventSeatRecordCollections.map((collection) =>
+      ({collection, field: "eventId"})),
   ];
-
-/** An event's own setup state, keyed by the event id (as deleteEvent). */
-const EVENT_KEYED = ["eventSetupPreferences", "eventPrivateAccess"];
 
 /**
  * Organizer-scoped contact records (each carries organizerId). The audience
@@ -88,13 +91,12 @@ export async function readWorkspaceEvents(
 }
 
 /**
- * A try-it draft is still disposable while it is private and active and
- * has no seat ledger (seat-ready events hold seat records of their own).
+ * A try-it draft is still disposable while it is private and active. Its
+ * seat ledger and seat records go with it.
  * @return {boolean} Whether the event can go with the workspace.
  */
 export function isTryItDraft(event: Record<string, unknown>): boolean {
-  return event.publicationState === "private" &&
-    event.status === "active" && event.seatMode !== "ready";
+  return event.publicationState === "private" && event.status === "active";
 }
 
 export type WorkspaceForms =
@@ -193,18 +195,22 @@ export async function deleteTryItDrafts(db: FirebaseFirestore.Firestore,
         return {deleted, guestsDeleted, incomplete: true};
       }
     }
-    await db.runTransaction(async (tx) => {
+    // The draft goes with its event-keyed setup state (as deleteEvent).
+    const draftDocuments = await db.runTransaction(async (tx) => {
       const eventRef = db.collection("events").doc(eventId);
-      const event = (await tx.get(eventRef)).data();
+      const [event, ledger] = await Promise.all([
+        tx.get(eventRef).then((snap) => snap.data()),
+        tx.get(db.collection("eventSeatLedgers").doc(eventId))
+          .then((snap) => snap.data() as SeatLedger | undefined),
+      ]);
       // A draft published since the sweep looked is left for the next run,
-      // which keeps the workspace.
-      if (event && !isTryItDraft(event)) return;
-      tx.delete(eventRef);
-      for (const collection of EVENT_KEYED) {
-        tx.delete(db.collection(collection).doc(eventId));
-      }
+      // which keeps the workspace, as is one with a checkout in progress.
+      if (event && !isTryItDraft(event)) return 0;
+      if (ledger && seatLedgerHasHolds(ledger)) return 0;
+      return deleteTryItDraftEvent(tx, db, eventId) +
+        deleteEventSeatLedgerInTransaction(tx, db, eventId);
     });
-    deleted += 1 + EVENT_KEYED.length;
+    deleted += draftDocuments;
   }
   return {deleted, guestsDeleted, incomplete: false};
 }

@@ -120,7 +120,7 @@ test("checked-in heartbeat is server-owned and returns policy", async () => {
     organizerId: "club-1",
     status: "active",
   });
-  firestore.docs.set("eventParticipations/event-1_guest-1", {
+  firestore.docs.set("eventBookings/event-1_guest-1", {
     eventId: "event-1",
     organizerId: "club-1",
     uid: "guest-1",

@@ -1,0 +1,11 @@
+{
+  "id": "eventChatRooms",
+  "path": "eventChatRooms/{eventId}",
+  "rulesMatch": "/eventChatRooms/{eventId}",
+  "typescriptInterface": "EventChatRoomDocument",
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "event chat access callables",
+  "writerContext": "messaging",
+  "read": "server only",
+  "write": "server only"
+}

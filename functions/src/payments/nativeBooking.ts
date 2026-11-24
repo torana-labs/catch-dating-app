@@ -92,7 +92,7 @@ export async function stageRejectedNativeBooking(input: {
   const ref = bookingPaymentRef(db, booking.paymentId);
   return db.runTransaction(async (tx) => {
     const [snapshot, participation] = await Promise.all([tx.get(ref),
-      tx.get(db.collection("eventParticipations").doc(
+      tx.get(db.collection("eventBookings").doc(
         eventParticipationId(booking.eventId, booking.userId)))]);
     const existing = snapshot.data();
     if (existing?.status === "completed" && !existing.signUpFailed) {

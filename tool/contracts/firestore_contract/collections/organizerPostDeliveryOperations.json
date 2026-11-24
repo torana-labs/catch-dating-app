@@ -1,0 +1,39 @@
+{
+  "id": "organizerPostDeliveryOperations",
+  "path": "organizerPostDeliveryOperations/{postId}",
+  "rulesMatch": "/organizerPostDeliveryOperations/{postId}",
+  "typescriptInterface": "OrganizerPostDeliveryOperationDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "createOrganizerPost callable and dispatchPendingOrganizerFollowerUpdates scheduler",
+  "writerContext": "organizers",
+  "read": "server/admin only; organizer managers receive sanitized delivery counts through callables",
+  "write": "server only",
+  "exportedFunctions": [
+    "createOrganizerPost",
+    "dispatchPendingOrganizerFollowerUpdates",
+    "onHostSendFollowerDeliveryChanged"
+  ],
+  "operations": [
+    {
+      "id": "host_create_organizer_post",
+      "type": "callable",
+      "owner": "authenticated organizer manager",
+      "function": "createOrganizerPost",
+      "payloadSchemaRef": "contracts/callables/create_organizer_post_payload.schema.json",
+      "rulesTestNames": [
+        "keeps organizer follower delivery receipts server-only"
+      ]
+    },
+    {
+      "id": "dispatch_pending_organizer_follower_updates",
+      "type": "scheduled",
+      "owner": "backend scheduler",
+      "function": "dispatchPendingOrganizerFollowerUpdates"
+    }
+  ],
+  "migrationNotes": [
+    "The operation is the durable lease and aggregate retry boundary; post creation and operation creation are atomic.",
+    "Legacy posts without an operation report delivery status unknown rather than inferred success."
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "organizerReferrals",
+  "path": "organizerReferrals/{referredOrganizerId}",
+  "rulesMatch": "/organizerReferrals/{referredOrganizerId}",
+  "typescriptInterface": "OrganizerReferralDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "rulesTestNames": [
+    "denies every client read and write on organizerReferrals"
+  ],
+  "owner": "Functions host referrals (functions/src/money/organizerReferrals.ts)",
+  "writerContext": "payments",
+  "read": "server only; the attach transaction, the bill paid transactions, and the cycle bill run and its recompute",
+  "write": "create-only when a referred organizer has an owner and its trial has not started, in the same transaction that raises its commercial terms override trial.days to at least 60; reward.status moves pending to earned in the transaction that marks the referred organizer's first bill paid, and earned to applied (or back, when a recomputed free bill has nothing left to waive) in the transaction that writes the referrer's free cycle bill",
+  "exportedFunctions": [
+    "onFoundingHostOrganizerWritten",
+    "generateOrganizerCycleBillsDaily",
+    "adminManageOrganizerBills",
+    "razorpayWebhook"
+  ],
+  "migrationNotes": [
+    "New collection (owner decision 19 Nov 2026), keyed by the referred organizer; no backfill: referrals attach from referral leads linked after this ships, or within the daily reconcile window for claims and links in the last three days."
+  ]
+}

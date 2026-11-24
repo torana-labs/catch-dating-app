@@ -1,0 +1,10 @@
+{
+  "id": "whatsappDispatches",
+  "path": "whatsappDispatches/{attemptId}",
+  "rulesMatch": "/whatsappDispatches/{attemptId}",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "trusted automation delivery workers; trusted campaign delivery workers; trusted approval notification delivery worker",
+  "writerContext": "platform",
+  "read": "server only",
+  "write": "server only"
+}

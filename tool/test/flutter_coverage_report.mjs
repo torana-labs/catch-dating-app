@@ -66,7 +66,7 @@ function parseLineHits(source) {
 
   return new Map([...byPath.entries()]
     .filter(([filePath]) => filePath === "lib" || filePath.startsWith("lib/") ||
-      filePath.startsWith("packages/platform/lib/")));
+      filePath.startsWith("packages/platform/lib/") || /^apps\/[^/]+\/lib\//u.test(filePath)));
 }
 
 // The report measures whether a line was hit, not invocation counts. Max keeps
@@ -75,8 +75,43 @@ export function mergeCoverageShards(sources, expectedShards) {
   if (!Number.isInteger(expectedShards) || expectedShards < 1 || sources.length !== expectedShards) {
     throw new Error(`Expected ${expectedShards} coverage shards; received ${sources.length}.`);
   }
+  return mergeLcov(sources);
+}
+
+/**
+ * Rewrites the relative `SF:` paths of an LCOV that `flutter test --coverage`
+ * wrote in [packageDirectory] (`.` or `apps/<app>`) to repository paths. Flutter
+ * writes them relative to the package it ran in, so an app's own `lib/a.dart`
+ * would otherwise read as the root package's.
+ */
+export function rebaseLcov(source, packageDirectory) {
+  if (packageDirectory !== "." && !/^apps\/[^/]+$/u.test(packageDirectory)) {
+    throw new Error(`Unsupported test package directory: ${packageDirectory}`);
+  }
+  return String(source).split(/\r?\n/u).map((line) => {
+    if (!line.startsWith("SF:")) return line;
+    const sourcePath = line.slice(3).replaceAll("\\", "/");
+    if (path.posix.isAbsolute(sourcePath) || /^[A-Za-z]:\//u.test(sourcePath)) return line;
+    const rebased = path.posix.normalize(path.posix.join(packageDirectory, sourcePath));
+    if (rebased === ".." || rebased.startsWith("../")) {
+      throw new Error(`LCOV source outside the repository: ${sourcePath} (from ${packageDirectory})`);
+    }
+    return `SF:${rebased}`;
+  }).join("\n");
+}
+
+/**
+ * One shard's LCOV from the `flutter test --coverage` run of each package
+ * group it ran: `[{packageDirectory, source}]`.
+ */
+export function combinePackageCoverage(runs) {
+  if (runs.length === 0) throw new Error("No package coverage to combine.");
+  return mergeLcov(runs.map(({packageDirectory, source}) => rebaseLcov(source, packageDirectory)));
+}
+
+function mergeLcov(sources) {
   for (const [index, source] of sources.entries()) {
-    if (typeof source !== "string") throw new Error(`Invalid coverage shard ${index}.`);
+    if (typeof source !== "string") throw new Error(`Invalid coverage input ${index}.`);
     parseLineHits(source); // Validate even when a test-only shard observes no lib/ lines.
   }
   return [...parseLineHits(sources.join("\n")).entries()]
@@ -164,7 +199,7 @@ function summarize(files) {
 }
 
 function normalizeSourcePath(sourcePath) {
-  const platform = sourcePath.replaceAll("\\", "/").match(/(?:^|\/)(packages\/platform\/lib\/.+)$/u);
+  const platform = sourcePath.replaceAll("\\", "/").match(/(?:^|\/)((?:packages\/platform|apps\/[^/]+)\/lib\/.+)$/u);
   if (platform) return platform[1];
   const normalized = sourcePath.replaceAll("\\", "/");
   const libIndex = normalized.lastIndexOf("/lib/");
@@ -174,6 +209,8 @@ function normalizeSourcePath(sourcePath) {
 
 function featureForPath(filePath) {
   if (filePath.startsWith("packages/platform/lib/")) return "platform";
+  const app = filePath.match(/^apps\/([^/]+)\/lib\/(.+)$/u);
+  if (app) return app[2].includes("/") ? `${app[1]}/${app[2].split("/", 1)[0]}` : `${app[1]} (app root)`;
   const relative = filePath.replace(/^lib\/?/u, "");
   if (!relative.includes("/")) return "(app root)";
   return relative.split("/", 1)[0];
@@ -219,6 +256,20 @@ export function readShardSources(directory, expectedShards) {
 
 function runCli(argv) {
   const args = parseArgs(argv);
+  if (args.packageLcov.length > 0) {
+    if (!args.output) throw new Error("--package-lcov requires --output.");
+    const runs = args.packageLcov.map((packageDirectory) => {
+      const lcov = path.resolve(fromRepo(), packageDirectory, "coverage/lcov.info");
+      if (!fs.existsSync(lcov)) throw new Error(`LCOV file not found: ${path.relative(fromRepo(), lcov)}`);
+      return {packageDirectory, source: fs.readFileSync(lcov, "utf8")};
+    });
+    const combined = combinePackageCoverage(runs);
+    const output = path.resolve(fromRepo(), args.output);
+    fs.mkdirSync(path.dirname(output), {recursive: true});
+    fs.writeFileSync(output, combined);
+    console.log(`Combined ${runs.length} package coverage runs into ${args.output}.`);
+    return;
+  }
   if (args.mergeShards) {
     if (!args.output) throw new Error("--merge-shards requires --output.");
     const directory = path.resolve(fromRepo(), args.mergeShards);
@@ -258,6 +309,7 @@ function parseArgs(argv) {
     output: null,
     mergeShards: null,
     expectedShards: null,
+    packageLcov: [],
   };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -266,6 +318,7 @@ function parseArgs(argv) {
     else if (arg === "--output") args.output = requireValue(argv, ++index, arg);
     else if (arg === "--merge-shards") args.mergeShards = requireValue(argv, ++index, arg);
     else if (arg === "--expected-shards") args.expectedShards = Number(requireValue(argv, ++index, arg));
+    else if (arg === "--package-lcov") args.packageLcov.push(requireValue(argv, ++index, arg));
     else if (arg === "--help" || arg === "-h") {
       printHelp();
       process.exit(0);
@@ -296,5 +349,9 @@ Options:
   --output <path>     Write the rendered report instead of stdout
   --merge-shards <directory>  Merge artifact subdirectories into LCOV at --output
   --expected-shards <count>   Required exact shard count when merging
+  --package-lcov <directory>  A package directory (. or apps/<app>) whose
+                              coverage/lcov.info joins one shard's LCOV at
+                              --output, its paths rebased to the repository;
+                              repeat once per package the shard ran
 `);
 }

@@ -1,4 +1,5 @@
-import {runAssistanceTransaction as transact} from "./transactionCallback";
+import {runAssistanceTransaction as transact} from
+  "../../platform/transactionCallback";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {DocumentSnapshot, Firestore} from
   "firebase-admin/firestore";

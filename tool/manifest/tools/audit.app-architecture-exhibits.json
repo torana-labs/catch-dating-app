@@ -1,0 +1,36 @@
+{
+  "id": "audit:app-architecture-exhibits",
+  "category": "audit",
+  "path": "tool/architecture/check_app_architecture_exhibits.mjs",
+  "command": "node tool/architecture/check_app_architecture_exhibits.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "role": "gate",
+  "rules": [
+    {
+      "id": "EXHIBIT-FRESHNESS-001",
+      "title": "Keep architecture exhibits fresh against the code they quote",
+      "appliesTo": [
+        "docs/app_architecture.md",
+        "tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "instruction": "Every architecture reference exhibit must declare an exhibit-freshness marker naming the exhibit and its owner, and remove stale code snippets when the reference implementation changes."
+    }
+  ],
+  "description": "Checks app architecture reference exhibits for freshness markers and stale code snippets.",
+  "checks": [
+    "node --check tool/architecture/check_app_architecture_exhibits.mjs",
+    "node --test tool/architecture/check_app_architecture_exhibits.test.mjs",
+    "node tool/architecture/check_app_architecture_exhibits.mjs"
+  ],
+  "impactPaths": [
+    "tool/architecture/check_app_architecture_exhibits.test.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "queueGate": "always"
+}

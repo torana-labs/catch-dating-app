@@ -1,17 +1,18 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/chats/presentation/event_chat_controller.dart';
-import 'package:catch_dating_app/chats/presentation/event_chat_participants_controller.dart';
-import 'package:catch_dating_app/chats/presentation/event_chat_participants_screen.dart';
-import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_preferences_route_screen.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/pages/chat/event_chat_controller.dart';
+import 'package:catch_dating_app/pages/chat/event_chat_participants_controller.dart';
+import 'package:catch_dating_app/pages/chat/event_chat_participants_screen.dart';
+import 'package:catch_dating_app/pages/chat/event_chat_screen.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
+import 'package:catch_dating_app/routing/host_router.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,7 +21,6 @@ import 'package:go_router/go_router.dart';
 
 import '../chats/event_chat_participants_widget_test.dart'
     show FixtureController, RoomFixtureController;
-import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('expanded Manage can open Guests twice and retain both drafts', (

@@ -1,0 +1,41 @@
+{
+  "id": "design:widget-pattern-families",
+  "category": "design",
+  "path": "tool/design/check_widget_pattern_families.mjs",
+  "command": "node tool/design/check_widget_pattern_families.mjs --check",
+  "surface": "local-read",
+  "status": "active",
+  "role": "gate",
+  "description": "Validates stable visual-pattern family decisions, explicit member dispositions, constructor-qualified convergence targets, and required Widgetbook or source evidence.",
+  "checks": [
+    "node --check tool/design/check_widget_pattern_families.mjs",
+    "node --test tool/design/check_widget_pattern_families.test.mjs",
+    "node tool/design/check_widget_pattern_families.mjs --check"
+  ],
+  "impactPaths": [
+    "widgetbook/lib/main.directories.g.dart"
+  ],
+  "rules": [
+    {
+      "id": "WIDGET-PATTERN-FAMILY-001",
+      "title": "Consolidate UI through reviewed pattern families, not raw similarity pairs",
+      "appliesTo": [
+        "lib/contexts/*/parts/**",
+        "apps/*/lib/**",
+        "lib/pages/**",
+        "lib/**/presentation/**",
+        "widgetbook/**",
+        "docs/design_parity/widget_consolidation/**",
+        "tool/design/widgetbook_compare_server.mjs"
+      ],
+      "instruction": "Generated similarity pairs and clusters are discovery evidence only. Assign candidates to a stable pattern family, render every available member side by side, choose the strongest visual/API reference, and record per-member canonical, repair, unify, register, or discard dispositions plus accepted visual deltas before creating a work order. Apply K/R/D rules only as post-decision implementation tactics, then rerender and prove the full family."
+    }
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "queueGate": "always"
+}

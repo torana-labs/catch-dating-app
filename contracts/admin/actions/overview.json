@@ -59,12 +59,14 @@
       "kind": "mutation",
       "risk": "critical",
       "roles": [
-        "support",
-        "adminOwner"
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
       ],
       "requestSchema": "contracts/callables/admin_send_catch_whatsapp_reply_payload.schema.json",
       "responseSchema": "contracts/callable_responses/admin_send_catch_whatsapp_reply_response.schema.json",
-      "summary": "Send one explicitly confirmed support reply within the separately authorized controlled scope; uncertain attempts remain consumed.",
+      "summary": "Send a WhatsApp message from Catch's number: a Support conversation reply inside the 24-hour window (support roles; idempotent on clientRequestId, never after STOP), the approved host_lead_follow_up template to a host lead from the Inbox (admin, owner and support; only when the person has not written in 24 hours and no follow-up went to the number in 7 days; idempotent on clientRequestId, never after STOP), or the controlled trial reply to one reviewed inbound message (support and owner, exact configured actor). Off unless CATCH_WHATSAPP_REPLIES_ENABLED; uncertain attempts remain consumed.",
       "example": {
         "purpose": "serviceSupport",
         "inboundEventId": "cwhe_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",

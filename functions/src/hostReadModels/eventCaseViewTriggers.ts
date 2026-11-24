@@ -16,6 +16,7 @@ import {
   sameFields,
   valueAt,
 } from "./support/fanout";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 
@@ -113,29 +114,64 @@ async function collect(ids: AsyncGenerator<string>): Promise<string[]> {
 const options = {retry: true, memory: "512MiB" as const};
 
 /** Re-evaluates every case view a source write can affect. */
-async function reconcileForWrite(
-  source: EventCaseViewSource,
-  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
-    {documentId: string}>
-): Promise<void> {
+async function reconcileForChange(source: EventCaseViewSource,
+  documentId: string,
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): Promise<void> {
   const db = admin.firestore();
   const caseIds = await resolveEventCaseViewIds(db, source,
-    event.params.documentId, event.data?.before.data(),
-    event.data?.after.data());
+    documentId, before,
+    after);
   for (const caseId of caseIds) {
     await reconcileEventCaseView(db, caseId);
   }
 }
 
+async function reconcileForWrite(
+  source: EventCaseViewSource,
+  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
+    {documentId: string}>
+): Promise<void> {
+  await reconcileForChange(source, event.params.documentId,
+    event.data?.before.data(), event.data?.after.data());
+}
+
 export const onHostEventCaseViewCaseChanged = onDocumentWritten({
   ...options, document: "eventAssistanceCases/{documentId}",
 }, (event) => reconcileForWrite("eventAssistanceCases", event));
-export const onHostEventCaseViewAttendeeChanged = onDocumentWritten({
-  ...options, document: "eventAttendees/{documentId}",
-}, (event) => reconcileForWrite("eventAttendees", event));
-export const onHostEventCaseViewEventChanged = onDocumentWritten({
-  ...options, document: "events/{documentId}",
-}, (event) => reconcileForWrite("events", event));
-export const onHostEventCaseViewOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{documentId}",
-}, (event) => reconcileForWrite("organizers", event));
+
+/**
+ * An attendee's identity, generation, name or status: its cases' views.
+ * Served by dispatchEventAttendees (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
+ */
+export const hostEventCaseViewAttendeeProjections = defineProjections(
+  "eventAttendees", [{
+    id: "hostEventCaseView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange("eventAttendees", change.documentId,
+      change.before, change.after),
+  }]);
+
+/**
+ * An event's organizer, status or end: its open case views.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostEventCaseViewEventProjections = defineProjections("events", [{
+  id: "hostEventCaseView", kind: "projection",
+  when: () => true,
+  run: (change) => reconcileForChange("events", change.documentId,
+    change.before, change.after),
+}]);
+
+/**
+ * An organizer's manager fields: its open case views.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostEventCaseViewProjections = defineProjections("organizers", [{
+  id: "hostEventCaseView", kind: "projection", when: () => true,
+  run: (change) => reconcileForChange("organizers", change.documentId,
+    change.before, change.after),
+}]);

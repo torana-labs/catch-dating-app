@@ -4,6 +4,7 @@ import {browserAttribution, catchAttributionKey, catchMeasurementMode, currentCo
   type CatchMeasurementMode} from "./analytics/catchMeasurement.ts";
 import {adTags, type AdBooking, type AdEventPageFacts, type AdHostLead, type OrganizerAdDestinations} from "./analytics/adTags.ts";
 import {isPrivateEventUpdatePath} from "./analytics/privateRoutes.ts";
+import {startEngagementTracking} from "./analytics/engagement.ts";
 import type {JoinWaitlistHTTPRequest} from "./shared/contracts/generated/joinWaitlistHttpRequest";
 import {brand} from "@catch/brand";
 
@@ -13,7 +14,7 @@ type FormVariant = "member" | "host";
 export const marketingContentVersion = "website_copy_v2" as const;
 
 export interface MarketingConsent extends MeasurementConsent {
-  version: 1 | 2 | 3 | 4 | 5 | 6;
+  version: 1 | 2 | 3 | 4 | 5 | 6 | 7;
   measurementMode?: CatchMeasurementMode;
   choice: ConsentChoice;
   analytics: boolean;
@@ -66,12 +67,13 @@ export function openMarketingConsentPreferences() {
   }
 }
 const legacyConsentStorageKey = "catch_marketing_consent_v1";
-// Earlier receipts: versions 2 to 4 predate the first-party tags, and version 5
-// predates the banner naming organisers' own tags (#2063). They are read for
-// display only, never grant marketing, load nothing, and the banner asks again.
-const previousConsentStorageKeys = ["catch_marketing_consent_v5", "catch_marketing_consent_v4", "catch_marketing_consent_v3",
-  "catch_marketing_consent_v2"];
-const consentStorageKey = "catch_marketing_consent_v6";
+// Earlier receipts: versions 2 to 4 predate the first-party tags, version 5
+// predates the banner naming organisers' own tags (#2063), and version 6
+// predates the banner naming Microsoft Clarity. They are read for display
+// only, never grant marketing, load nothing, and the banner asks again.
+const previousConsentStorageKeys = ["catch_marketing_consent_v6", "catch_marketing_consent_v5", "catch_marketing_consent_v4",
+  "catch_marketing_consent_v3", "catch_marketing_consent_v2"];
+const consentStorageKey = "catch_marketing_consent_v7";
 // The host-only acquisition contract has no transport; the first-party tags
 // are `adTags`, called directly below.
 const measurement = createCatchMeasurementController();
@@ -129,7 +131,7 @@ export function getMarketingConsent(): MarketingConsent | null {
   const previous = previousConsentStorageKeys.map((key) => readJson<MarketingConsent>(key)).find(Boolean);
   if (previous) {
     clearAttribution();
-    if (![2, 3, 4, 5].includes(previous.version) || !validConsent(previous)) return null;
+    if (![2, 3, 4, 5, 6].includes(previous.version) || !validConsent(previous)) return null;
     return {...previous, version: 2, choice: previous.analytics ? "analytics" : "essential", marketing: false};
   }
   const legacy = readJson<Omit<MarketingConsent, "version">>(legacyConsentStorageKey);
@@ -189,6 +191,19 @@ export function setMarketingConsent(choice: ConsentChoice) {
   return consent;
 }
 
+/**
+ * Scroll depth (25, 50, 75 and 90%) and per-section reading time for the
+ * current page visit, recorded like any other site event: kept on the local
+ * bus and, after the analytics choice, sent to Google Analytics. Returns the
+ * stop, which reports the reading time gathered so far.
+ */
+export function startPageEngagementTracking(): () => void {
+  if (typeof window === "undefined" || isPrivateEventUpdate()) return () => undefined;
+  return startEngagementTracking((event) => {
+    if (!isPrivateEventUpdate()) trackMarketingEvent(event.name, event.parameters);
+  });
+}
+
 export function trackPageView(pageName: string, visitKey?: string) {
   refreshMeasurementContext();
   if (isPrivateEventUpdate()) { lastPageKey = null; return; }
@@ -216,17 +231,35 @@ function refreshMeasurementContext() {
   adTags.sync(getMarketingConsent());
 }
 
+/** Whether the choice a submission started with is still the current one and allows analytics. */
+function submissionChoiceCurrent(submissionConsent: MarketingConsent | null) {
+  const current = getMarketingConsent();
+  return submissionConsent?.version === currentConsentVersion && submissionConsent.analytics === true &&
+    current?.version === currentConsentVersion && current.updatedAt === submissionConsent.updatedAt;
+}
+
 /**
- * A host enquiry from a website lead form was accepted. It reaches the ad
- * tags only under the marketing choice the submission started with, still
- * unchanged, and only for host lead kinds (`adTags.hostLead`).
+ * A host enquiry from a website lead form was accepted. It reaches the tags
+ * only under the choice the submission started with, still unchanged, and
+ * only for host lead kinds (`adTags.hostLead`): Google Analytics under the
+ * analytics choice, and the ad conversions with the number just typed only
+ * under marketing.
  */
 export function trackHostLeadAccepted(lead: AdHostLead, submissionConsent: MarketingConsent | null) {
   refreshMeasurementContext();
-  const current = getMarketingConsent();
-  if (submissionConsent?.version !== currentConsentVersion || !submissionConsent.marketing ||
-      current?.version !== currentConsentVersion || current.updatedAt !== submissionConsent.updatedAt) return false;
+  if (!submissionChoiceCurrent(submissionConsent)) return false;
   return adTags.hostLead(lead);
+}
+
+/**
+ * A member or referral lead was accepted (`adTags.siteLead`: a member
+ * waitlist sign-up, a city alert or a "Know a host" referral), under the same
+ * unchanged-choice rule as a host enquiry. It carries no contact data.
+ */
+export function trackSiteLeadAccepted(lead: {kind: string; leadId: string | null}, submissionConsent: MarketingConsent | null) {
+  refreshMeasurementContext();
+  if (!submissionChoiceCurrent(submissionConsent)) return false;
+  return adTags.siteLead(lead);
 }
 
 /**
@@ -313,22 +346,25 @@ export function trackAcceptedMarketingLead(eventId: string | undefined,
     eventId = hostLead.eventId;
     alreadyJoined = false;
   }
-  const current = getMarketingConsent();
-  if (!eventId || submissionConsent?.version !== currentConsentVersion || !submissionConsent.analytics ||
-      current?.version !== currentConsentVersion || current.updatedAt !== submissionConsent.updatedAt || alreadyJoined) return false;
-  return trackCatchAcquisitionEvent({name: "lead_accepted", eventId, form,
+  if (!eventId || !submissionChoiceCurrent(submissionConsent) || alreadyJoined) return false;
+  // A new member sign-up reaches Google Analytics (and, under marketing, Meta) as a member lead.
+  const tagged = form === "member_waitlist" ?
+    trackSiteLeadAccepted({kind: "member_waitlist", leadId: eventId}, submissionConsent) : false;
+  const measured = trackCatchAcquisitionEvent({name: "lead_accepted", eventId, form,
     receipt: {ok: true, alreadyJoined: false}});
+  return tagged || measured;
 }
 
 /**
  * The website lead forms' event names, one per step of a form's life: shown,
- * sent, accepted, refused. The forms are the short WhatsApp lead forms that
+ * first answered, sent, accepted, refused. The forms are the short WhatsApp lead forms that
  * post a typed lead to /api/join-waitlist (city alerts, "Know a host"
  * referrals and the playbook pages' forms). See "Primary web events" in
  * website/README.md; `npm run check:analytics-contract` pins the payloads.
  */
 const websiteLeadFormEvents = {
   viewed: "lead_form_viewed",
+  started: "lead_form_started",
   submitted: "lead_form_submitted",
   succeeded: "lead_form_succeeded",
   failed: "lead_form_failed",
@@ -337,7 +373,7 @@ type WebsiteLeadFormStage = keyof typeof websiteLeadFormEvents;
 type WebsiteLeadFormKind = NonNullable<JoinWaitlistHTTPRequest["requestKind"]>;
 // Exactly the contract's kinds: a kind added to or dropped from the contract fails typecheck here.
 const websiteLeadFormKinds: ReadonlySet<string> = new Set(Object.keys({
-  guide: true, walkthrough: true, demo: true, venue: true, story: true, referral: true, org_contact: true, city_alerts: true,
+  guide: true, walkthrough: true, demo: true, venue: true, story: true, referral: true, org_contact: true, city_alerts: true, app_link: true,
 } satisfies Record<WebsiteLeadFormKind, true>));
 /** Why a lead was not accepted, as the lead client names it; never the server's words. */
 type WebsiteLeadFormProblem = "invalid_phone" | "invalid" | "refresh" | "changed" | "busy" | "failed";
@@ -400,6 +436,102 @@ export function trackMarketingEvent(
     ...sanitizedParameters,
     content_version: marketingContentVersion,
   });
+  forwardToGoogleAnalytics(eventName, parameters);
+}
+
+/**
+ * Sends one diagnostic event on to Google Analytics after the analytics
+ * choice, through its closed projection (`googleAnalyticsProjection`); an
+ * event with no projection stays local. Returns whether it was sent.
+ */
+function forwardToGoogleAnalytics(eventName: string, parameters: Record<string, unknown>) {
+  if (getMarketingConsent()?.analytics !== true) return false;
+  const projected = googleAnalyticsProjection(eventName, parameters);
+  return projected ? adTags.analyticsEvent(eventName, projected) : false;
+}
+
+const analyticsSlug = /^[a-z0-9][a-z0-9_-]{0,79}$/u;
+const formatValue = /^[A-Za-z]{2,20}$/u;
+const slugOrNull = (value: unknown) => typeof value === "string" && analyticsSlug.test(value) ? value : null;
+const leadFormEventNames: ReadonlySet<string> = new Set(Object.values(websiteLeadFormEvents));
+/** Outbound hosts a CTA class names, matched exactly: a look-alike host is "external". */
+const outboundHostClasses: Readonly<Record<string, string>> = {
+  "apps.apple.com": "app_store", "play.google.com": "play_store",
+  "wa.me": "whatsapp", "whatsapp.com": "whatsapp", "www.whatsapp.com": "whatsapp", "api.whatsapp.com": "whatsapp",
+  "web.whatsapp.com": "whatsapp",
+};
+
+/** Where a CTA leads, as a class or a public path; never a query, a token or another site's address. */
+function ctaTarget(href: unknown): string | null {
+  if (typeof href !== "string") return null;
+  try {
+    const target = new URL(href, window.location.href);
+    if (target.protocol === "mailto:" || target.protocol === "tel:") return "contact";
+    if (target.origin === window.location.origin) {
+      if (target.pathname.startsWith("/organizers/")) return "organiser_page";
+      return publicAdPage(target.pathname) ?? "private_page";
+    }
+    return Object.hasOwn(outboundHostClasses, target.hostname) ? outboundHostClasses[target.hostname] : "external";
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The GA4 parameters each forwarded event may carry: fixed vocabularies and
+ * slugs only. No answers, names, numbers, free-text searches, organiser or
+ * club ids, and never gender, age, orientation or dating data. Anything that
+ * does not fit records nothing in Google Analytics.
+ */
+function googleAnalyticsProjection(eventName: string, p: Record<string, unknown>): Record<string, string | number> | null {
+  if (leadFormEventNames.has(eventName)) {
+    const kind = slugOrNull(p.lead_kind);
+    const formId = slugOrNull(p.form_id);
+    if (!kind || !formId) return null;
+    const problem = slugOrNull(p.problem);
+    return {lead_kind: kind, form_id: formId, ...(problem ? {problem} : {})};
+  }
+  switch (eventName) {
+    case "cta_click": {
+      const label = typeof p.cta_label === "string" ? p.cta_label.toLowerCase().replace(/[^a-z0-9]+/gu, "_")
+        .replace(/^_+|_+$/gu, "").slice(0, 80) : "";
+      const target = ctaTarget(p.cta_href);
+      return label && target ? {cta_label: label, cta_target: target} : null;
+    }
+    case "store_cta_click":
+    case "store_cta_pending": {
+      const placement = slugOrNull(p.placement);
+      if ((p.platform !== "ios" && p.platform !== "android") || !placement) return null;
+      return {platform: p.platform, placement, app: p.app === "host" ? "host" : "guest"};
+    }
+    case "city_alerts_submitted": {
+      const city = slugOrNull(p.city);
+      const interests = typeof p.interests === "string" ?
+        p.interests.split(",").filter((item) => formatValue.test(item)).slice(0, 8).join(",") : "";
+      return city ? {city, ...(interests ? {interests} : {})} : null;
+    }
+    case "weddings_apply_step":
+      return (p.step === 1 || p.step === 2) && (p.surface === "landing" || p.surface === "application") ?
+        {step: p.step, surface: p.surface} : null;
+    case "explore_filters_applied": {
+      const format = typeof p.format === "string" && formatValue.test(p.format) ? p.format : null;
+      const when = slugOrNull(p.when);
+      const city = slugOrNull(p.city);
+      if (!format || !when) return null;
+      return {format, when, view: p.view === "organisers" ? "organisers" : "plans",
+        has_query: p.has_query === true ? "yes" : "no", ...(city ? {city} : {})};
+    }
+    case "scroll_depth":
+      return [25, 50, 75, 90].includes(p.percent_scrolled as number) ? {percent_scrolled: p.percent_scrolled as number} : null;
+    case "section_read": {
+      const section = slugOrNull(p.section_id);
+      const seconds = Number(p.engaged_seconds);
+      return section && Number.isInteger(seconds) && seconds >= 1 && seconds <= 1800 ?
+        {section_id: section, engaged_seconds: seconds} : null;
+    }
+    default:
+      return null;
+  }
 }
 
 export function marketingCtaClickParameters(label: string, href: string) {

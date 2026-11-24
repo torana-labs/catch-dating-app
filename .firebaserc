@@ -25,17 +25,13 @@
   "etags": {
     "catchdates-dev": {
       "extensionInstances": {
-        "bq-event-success-feedback": "3449a4d7af6dbc195c053969e5945839f99131ceb7bf4e209fe975017119347f",
         "bq-event-success-scorecards": "5928b7b8e29e23eb3578e1264781c79cc1eaffd3fe7484c0aa5e3e6536f4f426",
-        "bq-participant-metric-counters": "886d0e31bcaa7e80ebd4db112736d73d847584e6ae523ec47bf06cdbe3b45c3d",
         "bq-participant-signal-facts": "0a40b847c4a451e894b5eb2496c6073884a329dcd7cb4a6b55e164af0cb8d38f"
       }
     },
     "catch-dating-app-64e51": {
       "extensionInstances": {
-        "bq-event-success-feedback": "6a1a5b8719d08d72b140b6d868183e670cdc141371966fa413f12c7f32eb2a5e",
         "bq-event-success-scorecards": "a2de1ab10047b6ee7129d8e42e334b5b04e9f528f08edab6ba4b8c87f0ac62d6",
-        "bq-participant-metric-counters": "3d93c62e2f0348d0e65af193ebbd7c70e71be7f2572a5902ba055e673f06cbbc",
         "bq-participant-signal-facts": "26e8bc72c02040914f3c19040e464105d8c2be0c0011da4a63467ba8a0a09667"
       }
     }

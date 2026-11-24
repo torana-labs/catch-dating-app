@@ -19,7 +19,6 @@
   organizerId:ASCENDING
 ) */
 import * as admin from "firebase-admin";
-import {FieldPath} from "firebase-admin/firestore";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
@@ -28,15 +27,14 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {checkInstanceRateLimit} from "../shared/instanceRateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {
-  activeProgramDuties,
   nextRevision,
   programStaffGrantId,
   programOwnerAuthorizationDeadline,
   requireProgramAccess,
   requireProgramMutable,
 } from "../shared/programAuthority";
-import type {ProgramAccess} from "../shared/programAuthority";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
+import {stageProgramAuthority} from "./programAuthorityWrites";
 import {normalizeRosterPhone} from "../events/eventAttendees";
 import {eventStaffDisplayName, resolveStaffAuthUser} from
   "../events/eventStaff";
@@ -54,14 +52,8 @@ import type {RevokeProgramStaffCallablePayload} from
   "../shared/generated/revokeProgramStaffCallablePayload";
 import type {ProgramAccessCallableResponse} from
   "../shared/generated/programAccessCallableResponse";
-import type {ProgramStaffListCallableResponse} from
-  "../shared/generated/programStaffListCallableResponse";
 import type {ProgramMutationCallableResponse} from
   "../shared/generated/programMutationCallableResponse";
-import type {ListProgramStaffCallablePayload} from
-  "../shared/generated/listProgramStaffCallablePayload";
-import {validateListProgramStaffCallablePayload} from
-  "../shared/generated/validators/listProgramStaffInput";
 import {
   validateProgramIdCallablePayload,
 } from "../shared/generated/validators/programIdInput";
@@ -255,24 +247,6 @@ async function loadWorkFunctions(params: {
   return resources;
 }
 
-export async function listProgramStaffHandler(
-  request: CallableRequest<unknown>,
-  deps: ProgramStaffDeps = defaultDeps
-): Promise<ProgramStaffListCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<ListProgramStaffCallablePayload>(
-    request, validateListProgramStaffCallablePayload, normalizePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listProgramStaff", {
-    maxRequests: 60, windowMs: 60 * 1000,
-  });
-  return db.runTransaction(async (tx) => {
-    const access = await requireProgramManager(db, data.programId, actorUid,
-      tx, deps.now());
-    return programStaffList(db, data, access, tx, deps.now);
-  });
-}
-
 export async function grantProgramStaffHandler(
   request: CallableRequest<unknown>,
   deps: ProgramStaffDeps = defaultDeps
@@ -383,6 +357,11 @@ export async function grantProgramStaffHandler(
       revision: nextRevision(current?.revision, committedAt),
     };
     tx.set(ref, document);
+    // The grant is in force for rules the moment it commits (FIX-10).
+    stageProgramAuthority(tx, db, {programId: data.programId,
+      program: fresh.program, uid: authUser.uid, grant: document,
+      organizer: fresh.organizer, nowMillis: committedAt.toMillis(),
+      updatedAt: committedAt});
     return {entityId: authUser.uid, revision: document.revision,
       alreadyApplied: false};
   });
@@ -423,68 +402,21 @@ export async function revokeProgramStaffHandler(
     const committedAt = deps.now();
     programAdministrationDeadline(access, committedAt.toMillis());
     const revision = nextRevision(grant.revision, committedAt);
-    tx.update(ref, {
-      status: "revoked",
+    const revoked = {
+      status: "revoked" as const,
       revokedBy: actorUid,
       revokedAt: committedAt,
       updatedAt: committedAt,
       revision,
-    });
+    };
+    tx.update(ref, revoked);
+    // The revocation is in force for rules the moment it commits (FIX-10).
+    stageProgramAuthority(tx, db, {programId: data.programId, program,
+      uid: data.uid, grant: {...grant, ...revoked},
+      organizer: access.organizer, nowMillis: committedAt.toMillis(),
+      updatedAt: committedAt});
     return {entityId: data.uid, revision, alreadyApplied: false};
   });
-}
-
-async function programStaffList(
-  db: FirebaseFirestore.Firestore,
-  data: ListProgramStaffCallablePayload,
-  access: ProgramAccess,
-  tx: FirebaseFirestore.Transaction,
-  now: () => FirebaseFirestore.Timestamp
-): Promise<ProgramStaffListCallableResponse> {
-  const limit = data.limit ?? 50;
-  let query = db.collection("programStaffGrants")
-    .where("programId", "==", data.programId)
-    .where("organizerId", "==", access.program.organizerId)
-    .orderBy(FieldPath.documentId())
-    .limit(limit + 1);
-  // Stable identity order survives grant renewal, revocation and deletion.
-  // The query reapplies current manager authorization and owner scope.
-  if (data.cursor) {
-    query = query.startAfter(programStaffGrantId(data.programId, data.cursor));
-  }
-  const snap = await tx.get(query);
-  const page = snap.docs.slice(0, limit);
-  const members = page.map((doc) => {
-    const member = doc.data() as ProgramStaffGrantDocument;
-    if (doc.id !== programStaffGrantId(data.programId, member.uid)) {
-      throw new HttpsError("failed-precondition",
-        "Staff identity bindings need repair before continuing.");
-    }
-    return member;
-  });
-  const currentMillis = now().toMillis();
-  // Reads and authority share the transaction; time is checked after paging.
-  programAdministrationDeadline(access, currentMillis);
-  return {
-    programId: data.programId,
-    nextCursor: snap.size > limit ? members[members.length - 1].uid : null,
-    members: members.map((member) => ({
-      uid: member.uid,
-      displayName: member.displayName,
-      phoneLastFour: member.phoneLastFour,
-      duties: member.duties.map((assignment) => ({...assignment,
-        expiresAtMillis: Number.isSafeInteger(assignment.expiresAtMillis) &&
-          assignment.expiresAtMillis > 0 ? assignment.expiresAtMillis : 1})),
-      status: member.status === "revoked" || member.revokedAt != null ||
-        member.revokedBy != null ? "revoked" :
-        programOwnerAuthorizationDeadline(access.program, member) === null ?
-          "approvalRequired" :
-          activeProgramDuties(member, currentMillis).length === 0 ?
-            "expired" : "active",
-      expiresAtMillis: staffTimestampMillis(member.expiresAt),
-      revision: member.revision,
-    })),
-  };
 }
 
 function normalizePayload(value: unknown): unknown {
@@ -504,10 +436,6 @@ function normalizePayload(value: unknown): unknown {
 export const getProgramWorkAccess = onCall(
   appCheckCallableOptionsWithLimits(staffCallableLimits),
   (request) => getProgramWorkAccessHandler(request)
-);
-export const listProgramStaff = onCall(
-  appCheckCallableOptionsWithLimits(staffCallableLimits),
-  (request) => listProgramStaffHandler(request)
 );
 export const grantProgramStaff = onCall(
   appCheckCallableOptionsWithLimits(staffCallableLimits),

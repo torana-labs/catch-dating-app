@@ -24,7 +24,7 @@ import {normalizeMarkEventAttendancePayload} from "./eventPayloadNormalization";
 import {
   eventSuccessGuestCueAllowed,
   eventSuccessPrimitivesFor,
-} from "../eventSuccess/formatPrimitives";
+} from "../domain/formats/formatPrimitives";
 import {buildAttendanceSignalFact} from "../marketplace/signalBuilders";
 import {
   recordParticipantSignalFactsBestEffort,
@@ -45,6 +45,7 @@ import {
 } from "../shared/notifications";
 import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {deferCompanionReadyCue} from "../eventSuccess/deferredGuestCues";
+import {updateEventBookingCounters} from "../domain/events/eventDocumentWrites";
 
 interface MarkEventAttendanceDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -136,7 +137,7 @@ export async function markEventAttendanceHandler(
   }
 
   const participationRef = db
-    .collection("eventParticipations")
+    .collection("eventBookings")
     .doc(eventParticipationId(eventId, userId));
 
   // Read the participation edge and apply the checkedInCount delta inside one
@@ -162,7 +163,7 @@ export async function markEventAttendanceHandler(
     const alreadyAttended = existingParticipation.status === "attended";
     const rosterSlot = await readCatchBookingRoster({db, tx, eventId,
       uid: userId, verifiedPhone: () => loadVerifiedRosterPhone(userId)});
-    tx.update(eventRef, {
+    updateEventBookingCounters(tx, eventRef, {
       checkedInCount: deps.increment(alreadyAttended ? -1 : 1),
     });
     const attendance = eventParticipationPatch({

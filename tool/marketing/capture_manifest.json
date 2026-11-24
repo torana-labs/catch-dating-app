@@ -77,6 +77,258 @@
       ]
     },
     {
+      "id": "host-live-tablet-colleges",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a college film screening",
+      "status": "active",
+      "device": "generic-tablet",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletColleges",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-colleges.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-tablet-colleges.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-colleges.png",
+      "alt": "Catch Host on a tablet during a college film screening, the run of show beside the room. Freshers' Film Screening: 271 in of 300 places",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-communities",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a book club meetup",
+      "status": "active",
+      "device": "generic-tablet",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletCommunities",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-communities.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-tablet-communities.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-communities.png",
+      "alt": "Catch Host on a tablet during a book club meetup, the run of show beside the room. Monthly Book Club: 19 in at four tables",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-creators",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a creator's meetup",
+      "status": "active",
+      "device": "generic-tablet",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletCreators",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-creators.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-tablet-creators.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-creators.png",
+      "alt": "Catch Host on a tablet during a creator's meetup, the run of show beside the room. Sketch and Coffee Meetup: 36 in of 40",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-facilities",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a pickleball social",
+      "status": "active",
+      "device": "generic-tablet",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletFacilities",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-facilities.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-tablet-facilities.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-facilities.png",
+      "alt": "Catch Host on a tablet during a pickleball social, the run of show beside the room. Thursday Pickleball Social: 29 in across eight courts",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-outdoors",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a sunrise trek",
+      "status": "active",
+      "device": "generic-tablet",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletOutdoors",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-outdoors.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-tablet-outdoors.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-outdoors.png",
+      "alt": "Catch Host on a tablet during a sunrise trek, the run of show beside the room. Sunday Sunrise Trek: 26 walkers in three pace groups",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-racket-sports",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a padel mixer",
+      "status": "active",
+      "device": "generic-tablet",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletRacketSports",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-racket-sports.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-tablet-racket-sports.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-racket-sports.png",
+      "alt": "Catch Host on a tablet during a padel mixer, the run of show beside the room. Friday Padel Mixer: 16 players on four courts",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-run-clubs",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a Sunday social run",
+      "status": "active",
+      "device": "generic-tablet",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletRunClubs",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-run-clubs.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-tablet-run-clubs.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-run-clubs.png",
+      "alt": "Catch Host on a tablet during a Sunday social run, the run of show beside the room. Sunday 6 AM Social Run: 48 runners in three pace groups",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-studios",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a sunrise yoga class",
+      "status": "active",
+      "device": "generic-tablet",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletStudios",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-studios.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-tablet-studios.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-studios.png",
+      "alt": "Catch Host on a tablet during a sunrise yoga class, the run of show beside the room. Saturday Sunrise Yoga: 18 in of 20 mats",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-supper-clubs",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a supper club dinner",
+      "status": "active",
+      "device": "generic-tablet",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletSupperClubs",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-supper-clubs.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-tablet-supper-clubs.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-supper-clubs.png",
+      "alt": "Catch Host on a tablet during a supper club dinner, the run of show beside the room. Supper for Twelve: everyone seated at two tables",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-teams",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a team social",
+      "status": "active",
+      "device": "generic-tablet",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletTeams",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-teams.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-tablet-teams.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-teams.png",
+      "alt": "Catch Host on a tablet during a team social, the run of show beside the room. Friday Team Social: 64 colleagues in mixed groups",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-venues",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during an open mic night",
+      "status": "active",
+      "device": "generic-tablet",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletVenues",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-venues.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-tablet-venues.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-venues.png",
+      "alt": "Catch Host on a tablet during an open mic night, the run of show beside the room. Thursday Open Mic: 51 in of 60",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-workshops",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a pottery workshop",
+      "status": "active",
+      "device": "generic-tablet",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletWorkshops",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-workshops.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-tablet-workshops.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-workshops.png",
+      "alt": "Catch Host on a tablet during a pottery workshop, the run of show beside the room. Pottery Basics Workshop: 11 at six wheels",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
       "id": "guest-explore",
       "kind": "app-capture",
       "audience": "guest",
@@ -96,8 +348,7 @@
       "caption": "Guests find tonight's plans in the Catch app.",
       "walkthroughStep": "Get found",
       "pages": [
-        "/",
-        "/mumbai/run-clubs/"
+        "/"
       ]
     },
     {
@@ -191,6 +442,50 @@
       ]
     },
     {
+      "id": "host-formats-pods-chatty",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host groups by pace, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-formats-pods",
+      "fixtureKey": "hostMarketingIndia.host.formatsPods.chattyPod",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-pods-chatty.png",
+      "websitePath": "website/public/assets/app-screenshots/host-formats-pods-chatty.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-pods-chatty.png",
+      "alt": "The Chatty pod card: around 7:30 a km, four runners",
+      "caption": "The Chatty pod card: around 7:30 a km, four runners",
+      "walkthroughStep": "Plan",
+      "pages": []
+    },
+    {
+      "id": "host-formats-pods-needs-pod",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host groups by pace, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-formats-pods",
+      "fixtureKey": "hostMarketingIndia.host.formatsPods.needsPod",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-pods-needs-pod.png",
+      "websitePath": "website/public/assets/app-screenshots/host-formats-pods-needs-pod.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-pods-needs-pod.png",
+      "alt": "Sameer Shah under Needs a pod, with Steady suggested",
+      "caption": "Sameer Shah under Needs a pod, with Steady suggested",
+      "walkthroughStep": "Plan",
+      "pages": []
+    },
+    {
       "id": "host-door-in",
       "kind": "app-capture",
       "audience": "host",
@@ -235,6 +530,50 @@
       "pages": [
         "/host/"
       ]
+    },
+    {
+      "id": "host-door-arriving-new-guest",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host door, arrivals, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-door-arriving",
+      "fixtureKey": "hostMarketingIndia.host.doorArriving.newGuest",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-door-arriving-new-guest.png",
+      "websitePath": "website/public/assets/app-screenshots/host-door-arriving-new-guest.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-door-arriving-new-guest.png",
+      "alt": "Dev Patel, new, paid ₹998 for a first night, with Check in",
+      "caption": "Dev Patel, new, paid ₹998 for a first night, with Check in",
+      "walkthroughStep": "Check in",
+      "pages": []
+    },
+    {
+      "id": "host-door-arriving-regular",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host door, arrivals, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-door-arriving",
+      "fixtureKey": "hostMarketingIndia.host.doorArriving.regularGuest",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-door-arriving-regular.png",
+      "websitePath": "website/public/assets/app-screenshots/host-door-arriving-regular.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-door-arriving-regular.png",
+      "alt": "Rhea Kapoor arriving, 5 nights with you, with Check in",
+      "caption": "Rhea Kapoor arriving, 5 nights with you, with Check in",
+      "walkthroughStep": "Check in",
+      "pages": []
     },
     {
       "id": "host-live-needs",
@@ -283,6 +622,50 @@
       ]
     },
     {
+      "id": "host-formats-rules-consent",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host seating and level rules, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-formats-rules",
+      "fixtureKey": "hostMarketingIndia.host.formatsRules.consent",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-rules-consent.png",
+      "websitePath": "website/public/assets/app-screenshots/host-formats-rules-consent.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-rules-consent.png",
+      "alt": "Consent: answers are used only for this event and never shown to other guests",
+      "caption": "Consent: answers are used only for this event and never shown to other guests",
+      "walkthroughStep": "Plan",
+      "pages": []
+    },
+    {
+      "id": "host-formats-rules-first-time",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host seating and level rules, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-formats-rules",
+      "fixtureKey": "hostMarketingIndia.host.formatsRules.firstTimeRule",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-rules-first-time.png",
+      "websitePath": "website/public/assets/app-screenshots/host-formats-rules-first-time.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-rules-first-time.png",
+      "alt": "Is this your first time with us? Spread evenly, 44 of 48 agreed",
+      "caption": "Is this your first time with us? Spread evenly, 44 of 48 agreed",
+      "walkthroughStep": "Plan",
+      "pages": []
+    },
+    {
       "id": "host-formats-mix",
       "kind": "app-capture",
       "audience": "host",
@@ -327,6 +710,72 @@
       "pages": [
         "/host/"
       ]
+    },
+    {
+      "id": "host-live-scores-team",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host scores, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-live-scores",
+      "fixtureKey": "hostMarketingIndia.host.liveScores.teamScore",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-scores-team.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-scores-team.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-scores-team.png",
+      "alt": "Quizzy Rascals, 41 so far, with the round's score stepper",
+      "caption": "Quizzy Rascals, 41 so far, with the round's score stepper",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-scores-standings",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host scores, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-live-scores",
+      "fixtureKey": "hostMarketingIndia.host.liveScores.standings",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-scores-standings.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-scores-standings.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-scores-standings.png",
+      "alt": "Standings if you save now: Quizzy Rascals 41, Harbour Lights 38, Vada Pav Theory 35",
+      "caption": "Standings if you save now: Quizzy Rascals 41, Harbour Lights 38, Vada Pav Theory 35",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-scores-third-team",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host scores, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-live-scores",
+      "fixtureKey": "hostMarketingIndia.host.liveScores.thirdTeamScore",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-scores-third-team.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-scores-third-team.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-scores-third-team.png",
+      "alt": "Vada Pav Theory, 35 so far, with the round's score stepper",
+      "caption": "Vada Pav Theory, 35 so far, with the round's score stepper",
+      "walkthroughStep": "Run the night",
+      "pages": []
     },
     {
       "id": "host-formats-courts-setup",
@@ -375,6 +824,50 @@
       ]
     },
     {
+      "id": "host-formats-courts-court",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host courts live, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-formats-courts",
+      "fixtureKey": "hostMarketingIndia.host.formatsCourts.courtRow",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-courts-court.png",
+      "websitePath": "website/public/assets/app-screenshots/host-formats-courts-court.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-courts-court.png",
+      "alt": "Court 1: Sam and Rhea, 9:40 left",
+      "caption": "Court 1: Sam and Rhea, 9:40 left",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-formats-courts-sitting-out",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host courts live, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-formats-courts",
+      "fixtureKey": "hostMarketingIndia.host.formatsCourts.sittingOut",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-courts-sitting-out.png",
+      "websitePath": "website/public/assets/app-screenshots/host-formats-courts-sitting-out.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-courts-sitting-out.png",
+      "alt": "Neel Shah sitting out this round, playing next",
+      "caption": "Neel Shah sitting out this round, playing next",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
       "id": "host-formats-crawl",
       "kind": "app-capture",
       "audience": "host",
@@ -421,6 +914,50 @@
       ]
     },
     {
+      "id": "host-formats-crawl-move-message",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host moving groups between stops, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-formats-crawl-move",
+      "fixtureKey": "hostMarketingIndia.host.formatsCrawlMove.groupMessage",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-crawl-move-message.png",
+      "websitePath": "website/public/assets/app-screenshots/host-formats-crawl-move-message.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-crawl-move-message.png",
+      "alt": "The message to the group: next stop Copperleaf, leaving in 10 minutes",
+      "caption": "The message to the group: next stop Copperleaf, leaving in 10 minutes",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-formats-crawl-move-map",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host moving groups between stops, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-formats-crawl-move",
+      "fixtureKey": "hostMarketingIndia.host.formatsCrawlMove.routeMap",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-crawl-move-map.png",
+      "websitePath": "website/public/assets/app-screenshots/host-formats-crawl-move-map.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-crawl-move-map.png",
+      "alt": "The map from Gearbox Tavern to the next stop, Copperleaf",
+      "caption": "The map from Gearbox Tavern to the next stop, Copperleaf",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
       "id": "guest-checked-in",
       "kind": "app-capture",
       "audience": "guest",
@@ -441,8 +978,7 @@
       "walkthroughStep": "Show up",
       "pages": [
         "/",
-        "/mumbai/run-clubs/",
-        "/new-to-mumbai/"
+        "/mumbai/run-clubs/"
       ]
     },
     {
@@ -551,6 +1087,50 @@
       "pages": []
     },
     {
+      "id": "guest-follow-host-followers",
+      "kind": "app-capture",
+      "audience": "guest",
+      "surface": "An organiser's page in the Catch app, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "guest-follow-host",
+      "fixtureKey": "hostMarketingIndia.guest.followHost.followers",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "followUp"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/guest-follow-host-followers.png",
+      "websitePath": "website/public/assets/app-screenshots/guest-follow-host-followers.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-follow-host-followers.png",
+      "alt": "186 followers",
+      "caption": "186 followers",
+      "walkthroughStep": "Follow",
+      "pages": []
+    },
+    {
+      "id": "guest-follow-host-follow",
+      "kind": "app-capture",
+      "audience": "guest",
+      "surface": "An organiser's page in the Catch app, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "guest-follow-host",
+      "fixtureKey": "hostMarketingIndia.guest.followHost.followButton",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "followUp"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/guest-follow-host-follow.png",
+      "websitePath": "website/public/assets/app-screenshots/guest-follow-host-follow.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-follow-host-follow.png",
+      "alt": "The Follow organizer button",
+      "caption": "The Follow organizer button",
+      "walkthroughStep": "Follow",
+      "pages": []
+    },
+    {
       "id": "host-create-first-event",
       "kind": "app-capture",
       "audience": "host",
@@ -572,6 +1152,195 @@
       "pages": [
         "/host/"
       ]
+    },
+    {
+      "id": "host-create-colleges",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a college society",
+      "status": "active",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.createColleges",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-create-colleges.png",
+      "websitePath": "website/public/assets/app-screenshots/host-create-colleges.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-colleges.png",
+      "alt": "Creating an event in Catch Host, step 1 of 4: Freshers' Film Screening as a film screening",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
+    },
+    {
+      "id": "host-create-communities",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a community",
+      "status": "active",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.createCommunities",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-create-communities.png",
+      "websitePath": "website/public/assets/app-screenshots/host-create-communities.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-communities.png",
+      "alt": "Creating an event in Catch Host, step 1 of 4: Monthly Book Club as a book club meetup",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
+    },
+    {
+      "id": "host-create-nightlife",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a nightlife host",
+      "status": "active",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.createNightlife",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-create-nightlife.png",
+      "websitePath": "website/public/assets/app-screenshots/host-create-nightlife.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-nightlife.png",
+      "alt": "Creating an event in Catch Host, step 1 of 4: Friday Bandra Pub Crawl as a bar crawl",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
+    },
+    {
+      "id": "host-create-racket-sports",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a racket sports host",
+      "status": "active",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.createRacketSports",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-create-racket-sports.png",
+      "websitePath": "website/public/assets/app-screenshots/host-create-racket-sports.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-racket-sports.png",
+      "alt": "Creating an event in Catch Host, step 1 of 4: Friday Pickleball Mixer as pickleball",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
+    },
+    {
+      "id": "host-create-run-clubs",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a run club",
+      "status": "active",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.createRunClubs",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-create-run-clubs.png",
+      "websitePath": "website/public/assets/app-screenshots/host-create-run-clubs.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-run-clubs.png",
+      "alt": "Creating an event in Catch Host, step 1 of 4: Sunday 6 AM Social Run as a social run",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
+    },
+    {
+      "id": "host-create-studios",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a studio",
+      "status": "active",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.createStudios",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-create-studios.png",
+      "websitePath": "website/public/assets/app-screenshots/host-create-studios.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-studios.png",
+      "alt": "Creating an event in Catch Host, step 1 of 4: Saturday Sunrise Yoga as yoga",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
+    },
+    {
+      "id": "host-create-supper-clubs",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a supper club",
+      "status": "active",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.createSupperClubs",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-create-supper-clubs.png",
+      "websitePath": "website/public/assets/app-screenshots/host-create-supper-clubs.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-supper-clubs.png",
+      "alt": "Creating an event in Catch Host, step 1 of 4: Supper for Twelve as a supper",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
+    },
+    {
+      "id": "host-create-teams",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a people team",
+      "status": "active",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.createTeams",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-create-teams.png",
+      "websitePath": "website/public/assets/app-screenshots/host-create-teams.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-teams.png",
+      "alt": "Creating an event in Catch Host, step 1 of 4: Friday Team Social as a team social",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
+    },
+    {
+      "id": "host-create-venues",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a venue",
+      "status": "active",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.createVenues",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-create-venues.png",
+      "websitePath": "website/public/assets/app-screenshots/host-create-venues.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-venues.png",
+      "alt": "Creating an event in Catch Host, step 1 of 4: Thursday Open Mic as an open mic",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
     },
     {
       "id": "host-demo-practice",
@@ -612,6 +1381,23 @@
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-form-responses.png",
       "alt": "A form's responses in Catch Host, sorted into new, in review, in, offered and waitlisted, with each person's pace and distance",
       "caption": "Every answer in one list, sorted by where each person is.",
+      "walkthroughStep": "Review",
+      "pages": []
+    },
+    {
+      "id": "host-form-responses-new",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "A form's responses in Catch Host, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-form-responses",
+      "fixtureKey": "hostAudience.forms.responses.newResponse",
+      "sourcePath": "artifacts/marketing/app-screenshots/host-form-responses-new.png",
+      "websitePath": "website/public/assets/app-screenshots/host-form-responses-new.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-form-responses-new.png",
+      "alt": "Tara Menon's new response: steady pace, 5 km, from Instagram",
+      "caption": "Tara Menon's new response: steady pace, 5 km, from Instagram",
       "walkthroughStep": "Review",
       "pages": []
     },
@@ -664,6 +1450,40 @@
       "pages": []
     },
     {
+      "id": "host-people-regular",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "The organiser's people in Catch Host, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-people",
+      "fixtureKey": "hostAudience.people.list.regular",
+      "sourcePath": "artifacts/marketing/app-screenshots/host-people-regular.png",
+      "websitePath": "website/public/assets/app-screenshots/host-people-regular.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-people-regular.png",
+      "alt": "Rhea Kapoor, a regular: 6 nights, last on Tue 20 Oct",
+      "caption": "Rhea Kapoor, a regular: 6 nights, last on Tue 20 Oct",
+      "walkthroughStep": "People",
+      "pages": []
+    },
+    {
+      "id": "host-people-drifting",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "The organiser's people in Catch Host, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-people",
+      "fixtureKey": "hostAudience.people.list.drifting",
+      "sourcePath": "artifacts/marketing/app-screenshots/host-people-drifting.png",
+      "websitePath": "website/public/assets/app-screenshots/host-people-drifting.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-people-drifting.png",
+      "alt": "Kabir Rao, drifting: 9 nights, last on Tue 25 Aug",
+      "caption": "Kabir Rao, drifting: 9 nights, last on Tue 25 Aug",
+      "walkthroughStep": "People",
+      "pages": []
+    },
+    {
       "id": "host-person",
       "kind": "app-capture",
       "audience": "host",
@@ -708,6 +1528,23 @@
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-event-share-links.png",
       "alt": "An event's share screen in Catch Host: the private link and a named link for each place it was shared, with how many opened and booked",
       "caption": "A link for each place you share, and who booked from it.",
+      "walkthroughStep": "Share",
+      "pages": []
+    },
+    {
+      "id": "host-event-share-links-whatsapp",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Invite links for an event in Catch Host, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-event-share-links",
+      "fixtureKey": "hostOperations.event.shareLinks.whatsappLink",
+      "sourcePath": "artifacts/marketing/app-screenshots/host-event-share-links-whatsapp.png",
+      "websitePath": "website/public/assets/app-screenshots/host-event-share-links-whatsapp.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-event-share-links-whatsapp.png",
+      "alt": "The Alumni WhatsApp invite link: 64 opened, 7 booked",
+      "caption": "The Alumni WhatsApp invite link: 64 opened, 7 booked",
       "walkthroughStep": "Share",
       "pages": []
     },
@@ -831,6 +1668,31 @@
       "pages": []
     },
     {
+      "id": "guest-web-whats-on",
+      "kind": "web-capture",
+      "audience": "guest",
+      "surface": "A city's What's on page in the browser",
+      "status": "active",
+      "device": "generic-phone",
+      "routeId": "visitor_discovery",
+      "story": {
+        "file": "website/src/stories/WebCapturesWhatsOn.stories.tsx",
+        "id": "marketing-website-web-captures-whats-on--mumbai-plans"
+      },
+      "address": "catchdates.com",
+      "sourcePath": "artifacts/marketing/app-screenshots/guest-web-whats-on.png",
+      "websitePath": "website/public/assets/app-screenshots/guest-web-whats-on.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-web-whats-on.png",
+      "alt": "Mumbai's What's on page open in Safari at catchdates.com: 11 plans, nearest first, with a Thursday pub quiz and a supper at the top",
+      "caption": "The city's plans for the next two weeks, on the website. Nothing to download.",
+      "walkthroughStep": "Get found",
+      "pages": [
+        "/",
+        "/mumbai/run-clubs/",
+        "/new-to-mumbai/"
+      ]
+    },
+    {
       "id": "wedding-rsvp",
       "kind": "web-capture",
       "audience": "guest",
@@ -875,6 +1737,27 @@
       "pages": [
         "/weddings/"
       ]
+    },
+    {
+      "id": "programme-itinerary",
+      "kind": "web-capture",
+      "audience": "guest",
+      "surface": "Guest itinerary link for a company offsite in the browser",
+      "status": "active",
+      "device": "generic-phone",
+      "routeId": "programme_itinerary",
+      "story": {
+        "file": "website/src/stories/WebCapturesProgramme.stories.tsx",
+        "id": "marketing-website-web-captures-programme-itinerary--offsite-itinerary"
+      },
+      "address": "catchdates.com",
+      "sourcePath": "artifacts/marketing/app-screenshots/programme-itinerary.png",
+      "websitePath": "website/public/assets/app-screenshots/programme-itinerary.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/programme-itinerary.png",
+      "alt": "A team's itinerary for a company offsite in Goa in a phone browser: their flight in, the resort and the welcome dinner",
+      "caption": "Each team's own itinerary: flights, rooms and sessions, in one link.",
+      "walkthroughStep": "Invite",
+      "pages": []
     },
     {
       "id": "wedding-whatsapp",

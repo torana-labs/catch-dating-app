@@ -64,3 +64,27 @@ OrganizerProgramSummary organizerProgramSummaryFromView(
   anonymizeAt: nullableDateTime(view['anonymizeAtMillis']),
   anonymizedAt: nullableDateTime(view['anonymizedAtMillis']),
 );
+
+/// One row of the organiser's programme list from its
+/// `organizerProgramViews` document, as `listOrganizerPrograms` returned it:
+/// the counts the server keeps on the view, the replied share derived from
+/// them (to three decimals, absent with no guests), and archive authority
+/// for the programme's creator, [uid], by its status. A view not counted yet
+/// has no counts, which the row shows as unknown rather than zero.
+OrganizerProgramListRow organizerProgramListRowFromView(
+  Map<Object?, Object?> view,
+  String uid,
+) {
+  final guests = view['guestCount'];
+  final replied = view['repliedGuestCount'];
+  final ownsIt = view['createdBy'] == uid;
+  final archived = view['status'] == 'archived';
+  return OrganizerProgramListRow.fromMap({
+    ...view,
+    'canArchive': ownsIt && !archived,
+    'canUnarchive': ownsIt && archived,
+    'repliedShare': guests is num && guests > 0 && replied is num
+        ? (replied / guests * 1000).round() / 1000
+        : null,
+  });
+}

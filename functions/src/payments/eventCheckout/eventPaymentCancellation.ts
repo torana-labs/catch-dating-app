@@ -3,6 +3,8 @@ import type {EventPaymentLedger, EventSeatPaymentState,
   EventPaymentAdmissionReader} from "./eventPaymentState";
 import {Timestamp} from "firebase-admin/firestore";
 import {readCatchBookingRoster} from "../../events/catchBookingRoster";
+import {updateEventBookingCounters} from
+  "../../domain/events/eventDocumentWrites";
 import type {EventDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -11,7 +13,6 @@ import {validateEventAttendeeDocument} from
 import {eventParticipationId} from "../../shared/relationshipDocuments";
 import {FirestoreSeatIdentityAuthority, SeatIdentityAuthorityError} from
   "../../events/seatIdentityAuthority";
-import {readSeatMigrationWriterFence} from "../../events/seatMigrationPaged";
 import {FirestoreSeatTransaction, assertCurrentReadySeatSnapshot} from
   "../../events/seatAuthority/firestoreAdapter";
 import {prepareSeatCommand, applySeatPlan, reservationPlaces,
@@ -88,7 +89,7 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
     if (!quote) unavailable();
     const [receipt, participationSnap] = await Promise.all([
       input.readAdmission({db, tx, payment, paymentId}),
-      tx.get(db.collection("eventParticipations")
+      tx.get(db.collection("eventBookings")
         .doc(eventParticipationId(eventId, recipientUid))),
     ]);
     if ((event.organizerId) !== organizerId ||
@@ -105,20 +106,6 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
         attendee.revenueAmountMinor !== payment.amountPaise) {
       unavailable();
     }
-    const fenceMode = await readSeatMigrationWriterFence({db, tx, eventId})
-      .catch(async (error) => {
-        if (error instanceof HttpsError &&
-            error.code === "failed-precondition") {
-          const fence = (await tx.get(db.collection("eventSeatMigrationFences")
-            .doc(eventId))).data();
-          if (fence?.eventId === eventId && fence.state === "locked") {
-            throw new HttpsError("unavailable",
-              "Paid cancellation is waiting for seat migration.");
-          }
-        }
-        throw error;
-      });
-    if (fenceMode !== "ready") unavailable();
     const identity = await new FirestoreSeatIdentityAuthority().resolve({
       db, tx, eventId, organizerId,
       subject: {kind: "importAttendee", attendeeId: receipt.attendeeId}});
@@ -166,7 +153,7 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
     const bridgedCounts = bridgedBooking && input.guest ?
       catchBookingCancellation({db, tx, rosterSlot: rosterSlot!,
         participationRef: db
-          .collection("eventParticipations")
+          .collection("eventBookings")
           .doc(eventParticipationId(eventId, recipientUid)),
         participation: participation!, event: event as EventDocument,
         eventId, uid: recipientUid}) : {};
@@ -174,7 +161,7 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
       applySeatPlan(seatTx, release);
       // A multi-place booking returns every place it held at once.
       const bookedCount = ledger.occupied - reservationPlaces(reservation);
-      tx.update(eventRef, {bookedCount, ...bridgedCounts});
+      updateEventBookingCounters(tx, eventRef, {bookedCount, ...bridgedCounts});
     }
     tx.update(attendeeRef, {status: "cancelled", cancelledAt: now,
       preCheckInStatus: null, updatedAt: now});

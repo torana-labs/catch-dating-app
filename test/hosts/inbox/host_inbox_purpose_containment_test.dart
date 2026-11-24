@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
@@ -10,6 +8,7 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_guest_directory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_catch_pages_controller.dart';
@@ -18,15 +17,18 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_program_aud
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
+import 'package:catch_dating_app/pages/chat/widgets/chat_input.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
+import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../events/events_test_helpers.dart';
-import '../../test_pump_helpers.dart';
 import 'host_inbox_test_fixtures.dart';
 
 class _Programs extends Fake implements ProgramSetupRepository {
@@ -38,33 +40,6 @@ class _Programs extends Fake implements ProgramSetupRepository {
   Future<OrganizerProgramDetail> getProgram(String programId) {
     reads.add(programId);
     return details.putIfAbsent(programId, Completer.new).future;
-  }
-
-  @override
-  Future<ProgramGuestListPage> listGuests(
-    String programId, {
-    int? limit,
-    String? cursor,
-  }) async {
-    guestReads.add(programId);
-    return ProgramGuestListPage(
-      programId: programId,
-      guests: const [
-        ProgramGuestRow(
-          guestId: 'shared-guest',
-          displayName: 'Same name',
-          contactId: 'contact',
-          groupIds: [],
-          invitationStatus: 'sent',
-          rsvpStatus: 'unknown',
-          revision: 1,
-        ),
-      ],
-      households: const [],
-      functionGuests: const [],
-      groups: const [],
-      nextCursor: 'truncated-guests',
-    );
   }
 
   void allow(String id, {String organizer = 'org'}) {
@@ -90,6 +65,37 @@ class _Programs extends Fake implements ProgramSetupRepository {
             counts: const {},
           ),
         );
+  }
+}
+
+/// The guest directory pages, recorded on [programs] beside its reads.
+class _Guests extends Fake implements ProgramGuestDirectoryRepository {
+  _Guests(this.programs);
+
+  final _Programs programs;
+
+  @override
+  Future<CursorPage<ProgramGuestRow, String>> guestPage(
+    String programId, {
+    int limit = ProgramGuestDirectoryRepository.pageSize,
+    String? cursor,
+  }) async {
+    programs.guestReads.add(programId);
+    return const CursorPage(
+      items: [
+        ProgramGuestRow(
+          guestId: 'shared-guest',
+          displayName: 'Same name',
+          contactId: 'contact',
+          groupIds: [],
+          invitationStatus: 'sent',
+          rsvpStatus: 'unknown',
+          revision: 1,
+        ),
+      ],
+      hasMore: true,
+      nextCursor: 'truncated-guests',
+    );
   }
 }
 
@@ -129,6 +135,9 @@ void main() {
       overrides: [
         uidProvider.overrideWithValue(const AsyncData('host')),
         programSetupRepositoryProvider.overrideWithValue(programs),
+        programGuestDirectoryRepositoryProvider.overrideWithValue(
+          _Guests(programs),
+        ),
         // The audience reads the exact programme's view; it arrives with the
         // pending detail, so late or denied programmes stay contained.
         organizerProgramViewStreamProvider.overrideWith(

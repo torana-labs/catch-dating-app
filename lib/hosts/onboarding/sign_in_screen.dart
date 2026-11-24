@@ -1,10 +1,11 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
-import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/hosts/onboarding/code_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/sign_in_body.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_controller.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_input.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/brand/live_brand.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
@@ -70,6 +71,13 @@ class _HostSignInScreenState extends ConsumerState<HostSignInScreen> {
     return ref.read(externalLinkControllerProvider).openCatchApp(brand: brand);
   }
 
+  /// Opens a legal page, or nothing when this build has no address for it.
+  VoidCallback? _opener(Uri? uri) => uri == null
+      ? null
+      : () => unawaited(
+          ref.read(externalLinkControllerProvider).openExternal(uri),
+        );
+
   @override
   Widget build(BuildContext context) {
     final step = ref.watch(authControllerProvider.select((s) => s.step));
@@ -113,6 +121,8 @@ class _HostSignInScreenState extends ConsumerState<HostSignInScreen> {
           },
           onSend: _send,
           onGetCatch: _getCatch,
+          onOpenTerms: _opener(AppConfig.termsUrl),
+          onOpenPrivacy: _opener(AppConfig.privacyPolicyUrl),
         ),
       ),
     );

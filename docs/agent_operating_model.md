@@ -34,7 +34,7 @@ deployment history. Catch adds only three repository-specific layers:
    through ordinary non-forced Git after verified acceptance.
 
 None of these layers schedules agents, runs a hidden command pipeline, owns
-product state, or replaces Git and CI. `tool/tools_manifest.json` gives existing
+product state, or replaces Git and CI. the tools manifest (`tool/manifest/`) gives existing
 commands stable ids and `node tool/run.mjs check <id...>` runs them; it is a
 command runner, not a second test framework. Exact-artifact delivery is owned by
 [`release_operations.md`](release_operations.md#exact-artifact-promotion-and-resume).
@@ -105,13 +105,21 @@ commit, not a downloaded/generated snapshot whose origin or completeness is
 unverified. If push is unavailable, retain the commit and report the exact
 publication barrier to the integration owner. Every ready PR runs CI without
 the queue-only macOS and app-build lanes, and the merge queue validates the
-combined source with every lane before `main` moves. When a task's PR is
-ready, its owner turns on auto-merge (`gh pr merge --auto` or the equivalent
-API call) in the same step that marks it ready: GitHub queues it once Required
-CI passes and the merge queue lands it after its own run, so no one clicks
-merge. A draft is the only hold: keep a PR in draft while it still waits on
-owner input, a live-provider gate or another PR, and say which. Do not turn on
-auto-merge for a PR you did not open unless its owner asks. A
+combined source with every lane before `main` moves. An agent session turns
+on squash auto-merge (`gh pr merge --auto --squash` or the equivalent API call)
+in the same step that opens the PR, not later (owner decision, 22 Nov 2026):
+GitHub queues it once Required CI passes and the merge queue lands it after its
+own run, so no one clicks merge, and a review that asks for changes still
+blocks it. Three exceptions open the PR without auto-merge, and the PR body
+says which applies:
+
+- the PR needs the owner's review or decision before it may merge;
+- the PR is a draft: keep it in draft while it still waits on owner input, a
+  live-provider gate or another PR, and say which;
+- the PR is stacked on another PR whose base has not merged yet; turn on
+  auto-merge once that base is on `main`.
+
+Do not turn on auto-merge for a PR you did not open unless its owner asks. A
 draft intentionally skips CI until it is marked ready: report the draft state as
 the blocker, give the integration owner the readiness action, and do not call
 the skipped lanes test failures. A disconnected
@@ -123,7 +131,7 @@ elapsed time, a stale status label, or an unverified command assumption.
 
 ## Enforcement Integrity
 
-A rule a tool enforces is written on that tool in `tool/tools_manifest.json`,
+A rule a tool enforces is written on that tool in its `tool/manifest/tools/` file,
 and the tool's tests prove it can fail. A rule no tool checks is a sentence in
 the document that owns its subject. Do not add a prose-only rule that claims
 deterministic enforcement.
@@ -406,7 +414,7 @@ Every pull request targets `main` and can merge on its own.
   force-push a branch that has a PR.
 - The integration owner sequences PRs that touch hot files (for example
   `nx.json`, `tool/nx/shadow_plan.mjs`, `tool/harness/component_graph.*` and
-  `tool/tools_manifest.json`), queueing one at a time. Merge `main` into such a
+  `tool/manifest/manifest.json`), queueing one at a time. Merge `main` into such a
   branch when the integration owner asks or right before it is enqueued.
 
 ### Ownership Rules
@@ -493,9 +501,10 @@ node tool/run.mjs check agent:context-pack
 `node tool/git/sweep_merged_worktrees.mjs --apply` is the routine cleanup and
 runs at the start of every session (AGENTS.md Starting Loop). It removes a
 linked worktree only when all of these hold: its HEAD is in `origin/main` or is
-the exact head of a merged PR, it has no modified or untracked files, it is not
-locked, no process runs inside it, its branch has no open PR, and it has been
-idle for six hours. It releases any guard claim with `finish --abandon`, then
+a commit of a merged PR (its final head or any earlier commit, since PRs often
+gain a merge-main or fixup commit after a checkout's last one), it has no
+modified or untracked files, it is not locked, no process runs inside it, its
+branch has no open PR, and it has been idle for six hours. It releases any guard claim with `finish --abandon`, then
 runs non-forced `git worktree remove`; ignored dependency and build folders go
 with the checkout, and branches, refs and stashes stay. Without `--apply` it
 only reports. Merged work meeting those conditions needs no further retirement
@@ -508,6 +517,10 @@ already in main. Second, sessions usually end once their PR is queued, before
 it merges, so their own closeout never runs. The sweep handles both. The app's
 "Auto-archive sessions when their pull request closes" setting also removes
 session worktrees once their PR merges.
+
+A process left running inside a worktree keeps it forever: the sweep never
+removes a checkout something is running in. Stop emulators, watchers and dev
+servers you started before the session ends.
 
 Retire accepted disposable worktrees while their context is fresh. Retained
 worktrees need an exact path, owner, reason and next action in the existing task
@@ -543,10 +556,11 @@ and connected task tooling, only within the user's authorized scope:
 
 1. Move work from **Ready for execution** into execution with an agreed outcome,
    scope, and acceptance criteria; use the guarded task worktree.
-2. When publication is authorized, open or update the PR, complete its required
-   reviews and CI gates against the exact head, and turn on auto-merge when it
-   is ready; obtain a separate merge approval only where branch protection or
-   the owner requires one. For a batch, retain each task's commit, acceptance criteria,
+2. When publication is authorized, open the PR with squash auto-merge on
+   (except a PR that needs the owner's review, a draft, or a PR stacked on an
+   unmerged base; see Execution Venue And Source Handoff), complete its required reviews and CI
+   gates against the exact head, and obtain a separate merge approval only
+   where branch protection or the owner requires one. For a batch, retain each task's commit, acceptance criteria,
    focused test results, and independent revert mapping in the existing PR/task
    tooling. If squash is required, map each task to its incorporated paths and
    behavior in the squash commit and record how to revert that task safely.
@@ -589,8 +603,14 @@ unmerged, dirty, squash-divergent or shared worktrees:
    `--head-sha` and the verified integrating `--accepted-sha`. The guard checks
    current live main, accepted-commit ancestry, all task paths after squash
    (including additions/deletions/modes), exact local recovery tip and live
-   remote preservation of unique commits. Any differing or empty unmerged task
-   delta is retained for integration review, not assumed equivalent. Dirty,
+   remote preservation of unique commits. A squash that also carries other
+   work main gained first is accepted only when replaying the task head onto
+   the accepted commit's parent, with a clean three-way merge, matches the
+   accepted commit on every task path. Each differing line then comes from
+   commits that are ancestors of the accepted commit and not in the task
+   branch; the report lists them as `mainDeltaCommits`. Any other differing
+   or empty unmerged task delta is retained for integration review, not
+   assumed equivalent. Dirty,
    untracked and ignored files, conflicting local claims, changed identity,
    locked worktrees and unavailable evidence block retirement.
 5. The task owner supplies `--by` and current `--clearance` evidence after the

@@ -1,3 +1,4 @@
+import {Timestamp} from "firebase-admin/firestore";
 import type {PaymentRoutingSnapshot} from "../paymentRouting";
 
 /** Financial state shared by event checkouts. Source-specific ledgers validate
@@ -81,4 +82,41 @@ export interface EventPaymentSettlement {
   completedAtMillis: number | null;
   releasedAtMillis: number | null;
   settledAtMillis: number | null;
+}
+
+/**
+ * Records, in the fulfilling transaction, that a captured event payment
+ * admitted its guest. A Razorpay Route payment then waits to settle to the
+ * organizer. guestPayments belongs to payments: bookings and offers call
+ * this instead of writing the payment themselves.
+ */
+export function markEventPaymentAdmitted(
+  tx: FirebaseFirestore.Transaction,
+  ref: FirebaseFirestore.DocumentReference,
+  input: {routing: PaymentRoutingSnapshot; admissionReceiptId: string;
+    nowMillis: number},
+): void {
+  const now = Timestamp.fromMillis(input.nowMillis);
+  const settlement: EventPaymentSettlement = {state: "waiting",
+    transferId: null, nextAttemptAtMillis: input.nowMillis,
+    leaseUntilMillis: 0, leaseId: null, authorizedAtMillis: null,
+    completedAtMillis: null, releasedAtMillis: null, settledAtMillis: null};
+  tx.update(ref, {status: "admitted",
+    admissionReceiptId: input.admissionReceiptId, admittedAt: now,
+    updatedAt: now, lastErrorCode: null,
+    ...(input.routing.selection.route === "razorpayRoute" ?
+      {settlement} : {})});
+}
+
+/**
+ * A captured payment whose held place was already released cannot admit:
+ * it waits for a refund instead.
+ */
+export function markEventPaymentRefundPending(
+  tx: FirebaseFirestore.Transaction,
+  ref: FirebaseFirestore.DocumentReference,
+  nowMillis: number,
+): void {
+  tx.update(ref, {status: "refundPending",
+    updatedAt: Timestamp.fromMillis(nowMillis)});
 }

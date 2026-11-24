@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/reviews/data/review_callable_adapters.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_platform/errors/app_exception.dart';
@@ -8,6 +9,7 @@ import 'package:catch_platform/firebase/firestore_converters.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart'
     show DeleteEventReviewCallableRequest, SetReviewResponseCallableRequest;
+import 'package:catch_platform/streams/combine_latest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -19,6 +21,11 @@ class ReviewsRepository {
 
   static const _collectionPath = 'reviews';
   static const _reviewIdSeparator = '~';
+
+  /// Firestore rules let other people read only published reviews, so every
+  /// organizer or event list filters on it; the author reads their own
+  /// pending or rejected reviews through the reviewer queries.
+  static const _publishedModerationStatus = 'published';
 
   final FirebaseFirestore _db;
   final FirebaseFunctions _functions;
@@ -37,6 +44,7 @@ class ReviewsRepository {
       withBackendErrorStream(
         () => _reviewsRef
             .where('organizerId', isEqualTo: organizerId)
+            .where('moderationStatus', isEqualTo: _publishedModerationStatus)
             .orderBy('createdAt', descending: true)
             .limit(ReadLimitPolicy.historyPage)
             .snapshots()
@@ -52,6 +60,7 @@ class ReviewsRepository {
       withBackendErrorStream(
         () => _reviewsRef
             .where('eventId', isEqualTo: eventId)
+            .where('moderationStatus', isEqualTo: _publishedModerationStatus)
             .orderBy('createdAt', descending: true)
             .limit(ReadLimitPolicy.historyPage)
             .snapshots()
@@ -85,6 +94,7 @@ class ReviewsRepository {
   }) => _fetchReviewsPage(
     _reviewsRef
         .where('organizerId', isEqualTo: organizerId)
+        .where('moderationStatus', isEqualTo: _publishedModerationStatus)
         .orderBy('createdAt', descending: true),
     startAfter: startAfter,
     limit: limit,
@@ -98,6 +108,7 @@ class ReviewsRepository {
   }) => _fetchReviewsPage(
     _reviewsRef
         .where('eventId', isEqualTo: eventId)
+        .where('moderationStatus', isEqualTo: _publishedModerationStatus)
         .orderBy('createdAt', descending: true),
     startAfter: startAfter,
     limit: limit,
@@ -281,9 +292,33 @@ ReviewsRepository reviewsRepository(Ref ref) => ReviewsRepository(
 Stream<List<Review>> watchReviewsForOrganizer(Ref ref, String organizerId) =>
     ref.watch(reviewsRepositoryProvider).watchReviewsForOrganizer(organizerId);
 
+/// The event's published reviews plus the signed-in viewer's own review of
+/// it, so an author whose review is pending or rejected still finds it on
+/// the event page and edits it instead of trying to write a second one.
 @riverpod
-Stream<List<Review>> watchReviewsForEvent(Ref ref, String eventId) =>
-    ref.watch(reviewsRepositoryProvider).watchReviewsForEvent(eventId);
+Stream<List<Review>> watchReviewsForEvent(Ref ref, String eventId) {
+  final repository = ref.watch(reviewsRepositoryProvider);
+  final published = repository.watchReviewsForEvent(eventId);
+  final viewerUid = ref.watch(uidProvider).value;
+  if (viewerUid == null) return published;
+  return combineLatest(
+    published,
+    repository.watchUserReviewForEvent(
+      eventId: eventId,
+      reviewerUserId: viewerUid,
+    ),
+    withOwnEventReview,
+  );
+}
+
+/// Adds [own] to the published [reviews] when the list does not already hold
+/// it, keeping the newest-first order.
+List<Review> withOwnEventReview(List<Review> reviews, Review? own) {
+  if (own == null || reviews.any((review) => review.id == own.id)) {
+    return reviews;
+  }
+  return [...reviews, own]..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+}
 
 @riverpod
 Stream<List<Review>> watchReviewsByUser(Ref ref, String reviewerUserId) =>

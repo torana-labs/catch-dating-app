@@ -1,0 +1,18 @@
+{
+  "id": "supplyIntakeUsage",
+  "path": "supplyIntakeUsage/{monthKey}",
+  "rulesMatch": "/supplyIntakeUsage/{monthKey}",
+  "typescriptInterface": "SupplyIntakeUsageDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps durable operations records server-owned"
+  ],
+  "owner": "trusted Supply Intake worker",
+  "writerContext": "supply",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "onSupplyIntakeRequestCreated"
+  ]
+}

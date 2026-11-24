@@ -10,7 +10,7 @@ import {
 test("append filter drops profile decisions and match artifacts without attended edges",
   async () => {
     const firestore = fakeFirestore({
-      eventParticipations: {
+      eventBookings: {
         run_1_new: {eventId: "run_1", uid: "new", status: "attended"},
         run_1_target: {eventId: "run_1", uid: "target", status: "signedUp"},
       },
@@ -37,7 +37,7 @@ test("append filter drops profile decisions and match artifacts without attended
     );
 
     assert.deepEqual(result.docs.map((doc) => doc.path).sort(), [
-      "eventParticipations/run_1_new",
+      "eventBookings/run_1_new",
       "notifications/new/items/run_reminder",
     ]);
     assert.deepEqual(result.skippedPaths.sort(), [
@@ -53,7 +53,7 @@ test("append filter drops profile decisions and match artifacts without attended
 test("append filter keeps swipe relationships when both users attended",
   async () => {
     const firestore = fakeFirestore({
-      eventParticipations: {
+      eventBookings: {
         run_1_target: {eventId: "run_1", uid: "target", status: "attended"},
       },
     });
@@ -71,7 +71,7 @@ test("append filter keeps swipe relationships when both users attended",
     );
 
     assert.deepEqual(result.docs.map((doc) => doc.path).sort(), [
-      "eventParticipations/run_1_new",
+      "eventBookings/run_1_new",
       "matches/new_target",
       "matches/new_target/messages/one",
       "profileDecisions/new/outgoing/target",
@@ -94,7 +94,7 @@ test("append normalization downgrades attended edges for future events",
     });
     const docs = [
       {
-        path: "eventParticipations/run_1_new",
+        path: "eventBookings/run_1_new",
         data: {
           eventId: "run_1",
           uid: "new",
@@ -191,7 +191,7 @@ test("thumbnailUrlForPhoto leaves non-Unsplash URLs usable", () => {
 
 function participationDoc(eventId, uid, status) {
   return {
-    path: `eventParticipations/${eventId}_${uid}`,
+    path: `eventBookings/${eventId}_${uid}`,
     data: {eventId, uid, status},
   };
 }

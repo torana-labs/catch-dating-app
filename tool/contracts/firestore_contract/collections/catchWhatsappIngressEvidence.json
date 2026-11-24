@@ -1,0 +1,11 @@
+{
+  "id": "catchWhatsappIngressEvidence",
+  "path": "catchWhatsappIngressEvidence/{eventId}",
+  "rulesMatch": "/catchWhatsappIngressEvidence/{privateDocument=**}",
+  "typescriptInterface": "CatchWhatsappIngressEvidenceDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Catch signed webhook ingress",
+  "writerContext": "messaging",
+  "read": "server only",
+  "write": "server only"
+}

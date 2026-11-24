@@ -1,0 +1,32 @@
+{
+  "id": "firebase:form-domain-operator",
+  "category": "firebase",
+  "path": "tool/firebase/form_domain_operator.mjs",
+  "command": "node tool/firebase/form_domain_operator.mjs",
+  "surface": "remote-write",
+  "guard": "apply-and-prod-flag",
+  "checkSafety": "local-readonly",
+  "status": "active",
+  "description": "Plans and explicitly applies client form-domain onboarding and rollback with exact project, reservation and manager authority.",
+  "checks": [
+    "node --check tool/firebase/form_domain_operator.mjs",
+    "node --test tool/firebase/form_domain_operator.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/firebase/form_domain_operator.test.mjs",
+    "functions/src/customDomains/domainRegistry.ts",
+    "functions/src/customDomains/domainPolicy.ts",
+    ".github/workflows/_backend-deploy.yml"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "alsoCheckIds": [
+    "firebase:form-domain-hosting",
+    "firebase:form-domain-origins"
+  ],
+  "runbook": "docs/release_operations.md#custom-form-domain-onboarding"
+}

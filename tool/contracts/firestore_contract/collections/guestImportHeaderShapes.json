@@ -1,0 +1,11 @@
+{
+  "id": "guestImportHeaderShapes",
+  "path": "guestImportHeaderShapes/{shapeHash}",
+  "rulesMatch": "/guestImportHeaderShapes/{privateDocument=**}",
+  "typescriptInterface": "GuestImportHeaderShapeDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "importGuestList",
+  "writerContext": "audience",
+  "read": "server only",
+  "write": "server only"
+}

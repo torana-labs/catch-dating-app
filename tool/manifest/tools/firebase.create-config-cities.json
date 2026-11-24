@@ -1,0 +1,14 @@
+{
+  "id": "firebase:create-config-cities",
+  "category": "firebase",
+  "path": "tool/firebase/create_config_cities.mjs",
+  "command": "node tool/firebase/create_config_cities.mjs",
+  "surface": "remote-write",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "description": "Writes config/cities with dry-run and prod guards.",
+  "checks": [
+    "node --check tool/firebase/create_config_cities.mjs"
+  ],
+  "runbook": "docs/data_contracts.md#market-catalog"
+}

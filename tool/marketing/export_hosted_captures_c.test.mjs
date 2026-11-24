@@ -41,8 +41,8 @@ test("earlier renders of the same inputs package on Linux without Flutter or the
 
 test("golden mutation fails publication even when canonical capture checks pass", t => {
   const f = fixture(t);
-  const dart = fs.readFileSync(path.join(path.dirname(f.calls), "bin/dart"), "utf8");
-  f.executable("dart", dart.split("\n").slice(1).join("\n") + "\nrequire('node:fs').writeFileSync('test/goldens/baseline.png','mutated');");
+  const flutter = fs.readFileSync(path.join(path.dirname(f.calls), "bin/flutter"), "utf8");
+  f.executable("flutter", flutter.split("\n").slice(1).join("\n") + "\nif (!process.argv.includes('--version')) require('node:fs').writeFileSync('test/goldens/baseline.png','mutated');");
   assert.throws(() => exportHostedCaptures(f.options), /changed source or goldens/);
   assert.ok(!fs.existsSync(f.options.outputDir));
 });
@@ -57,7 +57,8 @@ test("one corrupted capture rerenders alone while the other eleven retain origin
   const result = exportHostedCaptures(f.options);
   assert.equal(result.captures.filter(c => c.disposition === "rendered").length, 1);
   assert.equal(result.captures.filter(c => c.disposition === "reused").length, 11);
-  assert.equal(fs.readFileSync(f.calls, "utf8").trim().split("\n").length - before, 2);
+  // One render, copied: generic-phone screens have no framing step.
+  assert.equal(fs.readFileSync(f.calls, "utf8").trim().split("\n").length - before, 1);
 });
 
 
@@ -145,3 +146,20 @@ for (const [label, edit] of [
     assert.equal(plan.seedIds.length, h.manifest.captures.length - 1);
   });
 }
+
+
+test("a committed PNG stamped with another machine's font goes to the renderer, never into a mixed bundle", async t => {
+  const h = seedHarness(t);
+  const id = "host-today";
+  const capture = h.manifest.captures.find(c => c.id === id);
+  // The bundle's own render of these inputs, committed by hand as if made on a laptop with another font.
+  const committed = path.join(h.root, capture.sourcePath);
+  fs.copyFileSync(path.join(h.options.outputDir, capture.sourcePath), committed);
+  editProvenance(committed, record => ({...record, nativeFontSha256: "f".repeat(64)}));
+  fs.copyFileSync(committed, path.join(h.root, capture.websitePath));
+  preserveAndAdvance(h, "commit a local render");
+  const plan = await h.plan();
+  assert.ok(plan.renderIds.includes(id), "the laptop's font must not be reused beside the runner's seeds");
+  assert.ok(!plan.seedIds.includes(id));
+  assert.equal(plan.render, true);
+});

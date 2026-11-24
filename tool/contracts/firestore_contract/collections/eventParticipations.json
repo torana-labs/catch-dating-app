@@ -1,0 +1,18 @@
+{
+  "id": "eventParticipations",
+  "path": "eventParticipations/{participationId}",
+  "rulesMatch": "/eventParticipations/{participationId}",
+  "schemaContract": "contracts/firestore/event_bookings.schema.json",
+  "typescriptInterface": "EventBookingDocument",
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "onEventBookingMirroredToLegacy trigger (transitional legacy mirror of eventBookings)",
+  "writerContext": "bookings",
+  "read": "participant own edge or authorized event host only, exactly as eventBookings",
+  "write": "server only; the mirror trigger is the only writer",
+  "exportedFunctions": [
+    "onEventBookingMirroredToLegacy"
+  ],
+  "migrationNotes": [
+    "TRANSITIONAL. eventBookings was named eventParticipations until Nov 2026. Released Host 1.0.5 and guest beta builds still read this collection directly, so onEventBookingMirroredToLegacy copies every eventBookings write and delete here with the same id and document. Phase 2 deletes the trigger, this entry, its rules and indexes, and its documents once releases built on eventBookings are live and their minimum versions are raised."
+  ]
+}

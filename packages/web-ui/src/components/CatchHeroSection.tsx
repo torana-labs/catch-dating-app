@@ -1,11 +1,12 @@
 "use client";
 
-import {useId, type HTMLAttributes, type ReactNode} from "react";
+import {useId, type CSSProperties, type HTMLAttributes, type ReactNode} from "react";
 import {catchBandActions, catchBandColor, catchBandFootnoteMark, catchBandKickerAccent, type CatchBandAction, type CatchBandFootnote, type CatchBandLink} from "./catchBandParts";
 import type {CatchTextTone} from "./catchCoreVocabulary";
 import {CatchBandHeader, type CatchKickerAccent} from "./CatchBandHeader";
 import {CatchChip} from "./CatchChip";
 import {CatchDateTile, type CatchDateTileProps} from "./CatchDateTile";
+import {catchDeviceFrameVariables} from "./CatchDeviceFrame";
 import {CatchGroundProvider} from "./CatchGroundProvider";
 import {CatchHeroImage} from "./CatchHeroImage";
 import {CatchIcon} from "./CatchIcon";
@@ -25,17 +26,39 @@ export interface CatchHeroSectionProofItem {
 }
 
 /**
- * A small floating card over the media: a title with label-value rows (the
- * kit's .hchip), or the homepage's plan chip, a date square beside the title
- * and one line under it.
+ * The homepage's plan chip floating over the media (the kit's .hchip): a
+ * date square beside the title and one line under it.
  */
 export interface CatchHeroSectionAside {
   title: string;
-  rows?: readonly {label: string; value: string}[];
   /** The plan chip's date square; the month is read, not shown. */
   date?: Omit<CatchDateTileProps, "size">;
   /** One line under the title, such as "Lantern Lane Tavern · 6 left". */
   meta?: string;
+}
+
+/** A cut-out's place on the screen it was cut from: shares (0 to 1) of that screen. */
+export interface CatchHeroSectionFragmentRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * A cut-out of one widget from the media's own screen: a capture of the real
+ * app, cropped to that widget, so its names and numbers agree with the
+ * screen. It is lifted in place, over its own spot on the phone, so nothing
+ * shows twice. Never a drawn card.
+ */
+export interface CatchHeroSectionFragment {
+  /** The cut-out's image URL. */
+  src: string;
+  /** Its size in pixels. */
+  width: number;
+  height: number;
+  /** Where it was cut from on the screen. */
+  rect: CatchHeroSectionFragmentRect;
 }
 
 /**
@@ -78,8 +101,15 @@ export interface CatchHeroSectionProps extends Omit<HTMLAttributes<HTMLElement>,
   linkLead?: string;
   /** split: the media column, usually a CatchScreenPreview. It sits on the band's bottom edge. */
   media?: ReactNode;
-  /** split: a small card floating over the media. */
+  /** split: the plan chip floating over the media. */
   aside?: CatchHeroSectionAside;
+  /**
+   * split: up to three cut-outs of the media's own phone screen, each lifted
+   * in place over its spot (a little larger, raised, nudged toward the
+   * nearer edge); below the expanded width only the first two show. A hero
+   * never captions its media.
+   */
+  fragments?: readonly CatchHeroSectionFragment[];
   /** split: the band's Website v2 ground; text takes its inks, and ink the dark theme. Defaults to the plain band. */
   ground?: Ground;
   /** Defaults to split. */
@@ -90,13 +120,26 @@ export interface CatchHeroSectionProps extends Omit<HTMLAttributes<HTMLElement>,
   imageAlt?: string;
 }
 
+/** A cut-out's spot on the screen layer, as shares of the screen. */
+function fragmentPlace(rect: CatchHeroSectionFragmentRect): CSSProperties {
+  return {"--catch-hero-fragment-x": rect.x, "--catch-hero-fragment-y": rect.y, "--catch-hero-fragment-width": rect.width} as CSSProperties;
+}
+
+/** The edge a cut-out leans toward: the nearer one, alternating for a full-width row. */
+function fragmentSide(rect: CatchHeroSectionFragmentRect, index: number): "start" | "end" {
+  const centre = rect.x + rect.width / 2;
+  if (Math.abs(centre - 0.5) < 0.04) return index % 2 === 0 ? "start" : "end";
+  return centre < 0.5 ? "start" : "end";
+}
+
 /**
  * The opening band of a website page (the playbook kit's hero and photo
  * hero): a kicker, the page headline, a lead, label chips, proof lines with
  * footnote marks, D20 actions, a white notice card (such as a notify form), a
- * note and a side link, beside a media slot with an optional floating card
- * (label-value rows, or a plan chip with its date square), on a Website v2
- * ground. The photo layout
+ * note and a side link, beside a media slot with the plan chip (a date
+ * square beside the title) or up to three cut-outs of the media's own screen
+ * floating over it, on a Website v2 ground. Below the expanded width the
+ * media always sits under the copy and actions, never over them. The photo layout
  * sets the same copy in the dark theme over a full-bleed photo under the
  * detail-hero scrim. The headline takes the canvas's hero size (80px, 44px on
  * phones). On a ground the band is an inset panel straight under the header.
@@ -118,6 +161,7 @@ export function CatchHeroSection({
   linkLead,
   media,
   aside,
+  fragments,
   ground,
   layout = "split",
   image,
@@ -180,7 +224,9 @@ export function CatchHeroSection({
     );
   }
 
+  const cutouts = (fragments ?? []).slice(0, 3);
   const hasMedia = media != null || aside != null;
+  const floating = aside != null || (media != null && cutouts.length > 0);
   return (
     <CatchSurface
       {...rest}
@@ -195,24 +241,27 @@ export function CatchHeroSection({
       {hasMedia ? (
         <CatchStack align="end" className={styles.split} collapseBelow="expanded" direction="row" equal gap={64}>
           <div className={styles.text}>{copy}</div>
-          <div className={styles.media}>
-            {media}
+          <div className={styles.media} data-floating={floating ? "" : undefined}>
+            {media != null && cutouts.length > 0 ? (
+              <div className={styles.stage}>
+                {media}
+                <div aria-hidden="true" className={styles.fragments} style={catchDeviceFrameVariables("phone")}>
+                  <ul className={styles.fragmentScreen}>
+                    {cutouts.map((fragment, index) => (
+                      <li className={styles.fragment} data-side={fragmentSide(fragment.rect, index)} key={fragment.src} style={fragmentPlace(fragment.rect)}>
+                        <img alt="" className={styles.fragmentImage} decoding="async" height={fragment.height} src={fragment.src} width={fragment.width} />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : media}
             {aside ? (
-              <CatchSurface block="floating" className={styles.aside} data-chip={aside.date ? "" : undefined} padding={aside.date ? "none" : undefined}>
+              <CatchSurface block="floating" className={styles.aside} data-chip="" padding="none">
                 {aside.date ? <CatchDateTile {...aside.date} size="sm" /> : null}
                 <div className={styles.asideCopy}>
-                  <CatchText as="p" variant={aside.date ? "label-button" : "title-row"}>{aside.title}</CatchText>
+                  <CatchText as="p" variant="label-button">{aside.title}</CatchText>
                   {aside.meta ? <CatchText as="p" tone="secondary" variant="body-meta">{aside.meta}</CatchText> : null}
-                  {aside.rows && aside.rows.length > 0 ? (
-                    <dl className={styles.rows}>
-                      {aside.rows.map((row, index) => (
-                        <div className={styles.row} key={`${index}:${row.label}`}>
-                          <dt><CatchText tone="secondary" variant="body-small">{row.label}</CatchText></dt>
-                          <dd><CatchText numeric variant="label-action">{row.value}</CatchText></dd>
-                        </div>
-                      ))}
-                    </dl>
-                  ) : null}
                 </div>
               </CatchSurface>
             ) : null}

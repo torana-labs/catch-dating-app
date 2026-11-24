@@ -1,0 +1,11 @@
+{
+  "id": "organizerSavedAudiences",
+  "path": "organizerSavedAudiences/{audienceId}",
+  "rulesMatch": "/organizerSavedAudiences/{audienceId}",
+  "typescriptInterface": "OrganizerSavedAudienceDocument",
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "manager-only organizer saved-audience callables",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

@@ -80,7 +80,7 @@
           },
           "pageKey": {
             "type": "string",
-            "enum": ["home", "visitor_discovery", "cities", "host", "weddings", "organizers", "listing", "event_detail", "event_runtime", "event_rehearsal", "sales_demo", "event_assistance", "event_offer", "account", "host_billing", "event_booking", "event_invite", "household_rsvp", "programme_link", "public_form", "claim", "privacy", "terms", "help", "account_deletion", "refunds", "contact", "not_found", "playbook", "discovery"]
+            "enum": ["home", "visitor_discovery", "cities", "host", "weddings", "organizers", "listing", "event_detail", "event_runtime", "event_rehearsal", "sales_demo", "event_assistance", "event_offer", "account", "host_billing", "walkthrough_manage", "event_booking", "event_invite", "household_rsvp", "programme_link", "public_form", "claim", "privacy", "terms", "help", "account_deletion", "refunds", "contact", "not_found", "playbook", "discovery"]
           },
           "source": {"type": "string"},
           "metaKey": {"type": "string"},

@@ -2,7 +2,7 @@
 import {logger} from "firebase-functions";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import type {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {spendTryItReadBudget} from "./pageRead";
+import {spendTryItReadBudget} from "../domain/supply/pageRead";
 import type {DraftLinkClassification} from "../instantDrafts/links";
 import {createSupplyIntakeRequest, intakeMarket, supplyIntakeRequestId,
   type SupplyIntakeTryItImport} from "../operations/supplyIntake/requests";

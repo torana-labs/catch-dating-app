@@ -1,0 +1,15 @@
+{
+  "id": "data:backfill-host-read-models",
+  "category": "data",
+  "path": "functions/scripts/backfill-host-read-models.cjs",
+  "command": "npm --prefix functions run build && node functions/scripts/backfill-host-read-models.cjs --project <id> --model <model> [--apply]",
+  "surface": "remote-write",
+  "guard": "apply-flag",
+  "status": "active",
+  "role": "operator",
+  "description": "Rebuilds one named host read model (contact summaries, group progress views, accountability views and others) for every environment under the clean-schema rule. Dry run unless --apply.",
+  "checks": [
+    "node --check functions/scripts/backfill-host-read-models.cjs"
+  ],
+  "runbook": "docs/data_contracts.md#host-today-attention-contract"
+}

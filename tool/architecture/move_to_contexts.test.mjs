@@ -371,3 +371,16 @@ test("verifyMoveDiff accepts folder mentions that moved with their folder", () =
   });
   assert.deepEqual(problems, []);
 });
+
+test("planMoves and folderMoves leave Phase 4 screen-move entries to move_screens.mjs", () => {
+  const groupMap = loadContextMap(JSON.stringify({
+    roots: map.roots,
+    contexts: [{id: "events", owns: "Events."}],
+    legacy: [
+      {path: "lib/hosts/", layer: "app"},
+      {path: "lib/hosts/today/", layer: "app", moveTo: "apps/host/lib/today/", group: "host-today"},
+    ],
+  }));
+  assert.deepEqual(Object.fromEntries(planMoves(["lib/hosts/today/today_screen.dart"], groupMap).moves), {});
+  assert.deepEqual(folderMoves(groupMap), []);
+});

@@ -26,10 +26,6 @@ import type {GetOrganizerFormEditorCallablePayload} from
   "../shared/generated/getOrganizerFormEditorCallablePayload";
 import type {GetOrganizerFormEditorCallableResponse} from
   "../shared/generated/getOrganizerFormEditorCallableResponse";
-import type {ListOrganizerFormsCallablePayload} from
-  "../shared/generated/listOrganizerFormsCallablePayload";
-import type {ListOrganizerFormsCallableResponse} from
-  "../shared/generated/listOrganizerFormsCallableResponse";
 import type {ListOrganizerFormTemplatesCallablePayload} from
   "../shared/generated/listOrganizerFormTemplatesCallablePayload";
 import type {ListOrganizerFormTemplatesCallableResponse} from
@@ -51,6 +47,7 @@ import type {ValidateOrganizerFormDraftCallablePayload} from
 import type {ValidateOrganizerFormDraftCallableResponse} from
   "../shared/generated/validateOrganizerFormDraftCallableResponse";
 import type {
+  HostFormSummaryDocument,
   OrganizerFormDocument,
   OrganizerFormDraftDocument,
   OrganizerFormVersionDocument,
@@ -71,9 +68,6 @@ import {
 import {
   validateGetOrganizerFormEditorCallablePayload,
 } from "../shared/generated/validators/getOrganizerFormEditorInput";
-import {
-  validateListOrganizerFormsCallablePayload,
-} from "../shared/generated/validators/listOrganizerFormsInput";
 import {
   validateListOrganizerFormTemplatesCallablePayload,
 } from
@@ -105,7 +99,7 @@ import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 
 type FormDefinition = OrganizerFormDraftDocument["definition"];
 type WireDefinition = UpdateOrganizerFormDraftCallablePayload["definition"];
-type FormSummary = ListOrganizerFormsCallableResponse["items"][number];
+type FormSummary = HostFormSummaryDocument["row"];
 type ValidationIssue =
   ValidateOrganizerFormDraftCallableResponse["issues"][number];
 type Question = FormDefinition["sections"][number]["questions"][number];
@@ -160,14 +154,6 @@ export interface FormTemplate {
 const formTemplates = (organizerFormTemplateCatalog as unknown as {
   templates: FormTemplate[];
 }).templates;
-
-interface FormsCursor {
-  version: 2;
-  organizerId: string;
-  filterHash: string;
-  updatedAtMillis: number;
-  formId: string;
-}
 
 /** Template content and materializer revision are reviewed together. */
 export function organizerFormTemplateReview(templateId: string): {
@@ -501,85 +487,6 @@ export async function getOrganizerFormEditorHandler(
     organizerId: data.organizerId,
   });
   return projectEditor(data.formId, result.form, result.draft);
-}
-
-/** Lists one organizer's forms with bounded scan and opaque pagination. */
-export async function listOrganizerFormsHandler(
-  request: CallableRequest<unknown>,
-  deps: OrganizerFormsDeps = defaultDeps
-): Promise<ListOrganizerFormsCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<ListOrganizerFormsCallablePayload>(
-    request,
-    validateListOrganizerFormsCallablePayload,
-    (value) => normalizePayloadStrings(value, {
-      stringFields: ["organizerId"],
-      nullableStringFields: ["query", "cursor"],
-    })
-  );
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOrganizerForms", {
-    maxRequests: 60, windowMs: 60 * 1000,
-  });
-  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
-  const filterHash = createHash("sha256").update(JSON.stringify({
-    organizerId: data.organizerId,
-    statuses: [...data.statuses].sort(),
-    purposes: [...data.purposes].sort(),
-    query: data.query?.trim().toLowerCase() ?? "",
-    order: "updatedAt:desc,id:desc",
-  })).digest("hex");
-  const cursor = decodeFormsCursor(data.cursor, data.organizerId, filterHash);
-  const scanLimit = Math.min(Math.max(data.limit * 4, data.limit + 1), 400);
-  let query: FirebaseFirestore.Query = db.collection("organizerForms")
-    .where("organizerId", "==", data.organizerId)
-    .orderBy("updatedAt", "desc")
-    .orderBy(admin.firestore.FieldPath.documentId(), "desc")
-    .limit(scanLimit);
-  if (cursor) {
-    query = query.startAfter(
-      admin.firestore.Timestamp.fromMillis(cursor.updatedAtMillis),
-      cursor.formId
-    );
-  }
-  const snapshot = await query.get();
-  const statuses = new Set(data.statuses);
-  const purposes = new Set(data.purposes);
-  const normalizedQuery = data.query?.trim().toLowerCase() ?? "";
-  const items: FormSummary[] = [];
-  let stopIndex = snapshot.docs.length;
-  for (let index = 0; index < snapshot.docs.length; index += 1) {
-    const doc = snapshot.docs[index];
-    const form = requireDoc<OrganizerFormDocument>(
-      doc,
-      "OrganizerFormDocument"
-    );
-    if (form.organizerId !== data.organizerId) continue;
-    if (statuses.size > 0 ? !statuses.has(form.status) :
-      form.status === "archived") {
-      continue;
-    }
-    if (purposes.size > 0 && !purposes.has(form.purpose)) continue;
-    if (normalizedQuery && !`${form.title} ${form.description ?? ""}`
-      .toLowerCase().includes(normalizedQuery)) {
-      continue;
-    }
-    items.push(projectSummary(doc.id, form));
-    if (items.length === data.limit) {
-      stopIndex = index + 1;
-      break;
-    }
-  }
-  const hasMore = stopIndex < snapshot.docs.length ||
-    snapshot.docs.length === scanLimit;
-  const cursorDoc = hasMore && stopIndex > 0 ?
-    snapshot.docs[stopIndex - 1] : null;
-  return {
-    organizerId: data.organizerId,
-    items,
-    nextCursor: cursorDoc ? encodeFormsCursor(cursorDoc,
-      data.organizerId, filterHash) : null,
-  };
 }
 
 /** Runs the same semantic validation used by publication without writing. */
@@ -1585,7 +1492,16 @@ function remapDefinition(
   };
 }
 
-function projectEditor(
+/**
+ * One form's editor state exactly as getOrganizerFormEditor returns it: the
+ * summary, the draft definition and its validation issues. Shared with the
+ * hostFormEditorViews trigger.
+ * @param {string} formId The form.
+ * @param {OrganizerFormDocument} form The form document.
+ * @param {OrganizerFormDraftDocument} draft The form's draft.
+ * @return {GetOrganizerFormEditorCallableResponse} The editor state.
+ */
+export function projectEditor(
   formId: string,
   form: OrganizerFormDocument,
   draft: OrganizerFormDraftDocument
@@ -1798,47 +1714,6 @@ function scopedNestedId(
   return `${prefix}_${digest}`;
 }
 
-function encodeFormsCursor(
-  doc: FirebaseFirestore.QueryDocumentSnapshot,
-  organizerId: string,
-  filterHash: string
-): string {
-  const form = requireDoc<OrganizerFormDocument>(
-    doc,
-    "OrganizerFormDocument"
-  );
-  return Buffer.from(JSON.stringify({
-    version: 2,
-    organizerId,
-    filterHash,
-    updatedAtMillis: form.updatedAt.toMillis(),
-    formId: doc.id,
-  } satisfies FormsCursor)).toString("base64url");
-}
-
-function decodeFormsCursor(value: string | null, organizerId: string,
-  filterHash: string): FormsCursor | null {
-  if (!value) return null;
-  try {
-    const decoded = JSON.parse(
-      Buffer.from(value, "base64url").toString("utf8")
-    );
-    if (!decoded || typeof decoded !== "object" ||
-        decoded.version !== 2 || decoded.organizerId !== organizerId ||
-        decoded.filterHash !== filterHash ||
-        !Number.isSafeInteger(decoded.updatedAtMillis) ||
-        decoded.updatedAtMillis < 0 ||
-        typeof decoded.formId !== "string" ||
-        !decoded.formId) {
-      throw new Error("invalid");
-    }
-    return decoded as FormsCursor;
-  } catch {
-    throw new HttpsError("invalid-argument",
-      "The form list changed. Refresh to continue.");
-  }
-}
-
 function sameDefinition(left: FormDefinition, right: FormDefinition): boolean {
   return JSON.stringify(definitionToWire(left)) ===
     JSON.stringify(definitionToWire(right));
@@ -1885,11 +1760,6 @@ export const updateOrganizerFormDraft = onCall(
 export const getOrganizerFormEditor = onCall(
   appCheckCallableOptionsWithLimits(organizerFormCallableLimits),
   (request) => getOrganizerFormEditorHandler(request)
-);
-
-export const listOrganizerForms = onCall(
-  appCheckCallableOptionsWithLimits(organizerFormCallableLimits),
-  (request) => listOrganizerFormsHandler(request)
 );
 
 export const validateOrganizerFormDraft = onCall(

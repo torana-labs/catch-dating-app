@@ -39,6 +39,65 @@ void main() {
     expect(shardCount(3 * filesPerShard + 1), 4);
     expect(shardCount(810), 4);
   });
+  test('shard tests are the root and app-package unit and widget tests', () {
+    expect(testPackage('test/a_test.dart'), '.');
+    expect(testPackage('apps/host/test/today/today_test.dart'), 'apps/host');
+    expect(packageRelative('apps/host/test/a_test.dart'), 'test/a_test.dart');
+    expect(packageRelative('test/a_test.dart'), 'test/a_test.dart');
+    for (final other in [
+      'test/goldens/home_test.dart',
+      'test/integration/shell_test.dart',
+      'apps/host/test/goldens/home_test.dart',
+      'apps/host/test/integration/journey_test.dart',
+      'apps/host/integration_test/journey_test.dart',
+      'apps/host/test/support/pump.dart',
+      'packages/catch_ui/test/button_test.dart',
+      'widgetbook/test/inventory_test.dart',
+    ]) {
+      expect(testPackage(other), isNull, reason: other);
+    }
+  });
+  test('app tests fill shards in order and root tests take the room', () {
+    final files = [
+      for (var i = 0; i < 300; i++) 'test/t${'$i'.padLeft(3, '0')}_test.dart',
+      for (var i = 0; i < 30; i++)
+        'apps/host/test/h${'$i'.padLeft(2, '0')}_test.dart',
+      'apps/consumer/test/c_test.dart',
+    ]..shuffle();
+    final shards = planShards(files);
+    expect([for (final shard in shards) shard['shard_label']], [1, 2, 3, 4]);
+    expect(
+      [for (final shard in shards) (shard['files']! as List).length],
+      [83, 83, 83, 82],
+    );
+    expect({
+      for (final shard in shards) ...shard['files']! as List<String>,
+    }, files.toSet());
+    final groups = [
+      for (final shard in shards)
+        [
+          for (final group in shard['groups']! as List<Map<String, Object>>)
+            group['package'],
+        ],
+    ];
+    // Each package group is its own flutter test run and cold compile.
+    expect(groups, [
+      ['apps/consumer', 'apps/host', '.'],
+      ['.'],
+      ['.'],
+      ['.'],
+    ]);
+    final first = shards.first['groups']! as List<Map<String, Object>>;
+    expect(first[0]['files'], ['test/c_test.dart']);
+    expect((first[1]['files']! as List).first, 'test/h00_test.dart');
+    expect((first[2]['files']! as List).length, 52);
+    expect(packageCounts(files), {
+      'apps/consumer': 1,
+      'apps/host': 30,
+      '.': 300,
+    });
+    expect(planShards([]), isEmpty);
+  });
   test('CLI binds document ownership and full fallback to committed trees', () {
     final root = Directory.systemTemp.createTempSync(
       'catch-flutter-selection-',
@@ -200,6 +259,40 @@ void main() {
       final unbundled = commit();
       expect(run(selectedBase: bundled, selectedHead: unbundled)['files'], [
         'test/probe_test.dart',
+      ]);
+      // Each shard groups its files by the package directory they run from.
+      write('apps/host/pubspec.yaml', 'name: catch_host_app\n');
+      write(
+        'apps/host/test/host_test.dart',
+        "import 'package:example/a.dart'; void main() {}",
+      );
+      final withApp = commit();
+      write('lib/a.dart', 'const a = 3;');
+      final appChange = commit();
+      final app = run(selectedBase: withApp, selectedHead: appChange);
+      expect(app['files'], [
+        'apps/host/test/host_test.dart',
+        'test/a_test.dart',
+        'test/probe_test.dart',
+      ]);
+      expect(app['selectedByPackage'], {'apps/host': 1, '.': 2});
+      expect(app['shards'], [
+        {
+          'shard_index': 0,
+          'shard_label': 1,
+          'shard_total': 1,
+          'files': app['files'],
+          'groups': [
+            {
+              'package': 'apps/host',
+              'files': ['test/host_test.dart'],
+            },
+            {
+              'package': '.',
+              'files': ['test/a_test.dart', 'test/probe_test.dart'],
+            },
+          ],
+        },
       ]);
     } finally {
       root.deleteSync(recursive: true);
@@ -789,6 +882,195 @@ void main() {
       expect(selected(plan), contains('test/schema_test.dart'));
       expect(selected(plan), isNot(contains('test/fixture_test.dart')));
     });
+  });
+  group('app packages', () {
+    final files = {
+      ...probed,
+      'apps/host/pubspec.yaml': 'name: catch_host_app\n',
+      'apps/host/lib/today.dart':
+          "import 'package:example/a.dart'; const today = a;",
+      'apps/host/lib/unused.dart': 'const unused = 1;',
+      'apps/host/test/today_test.dart':
+          "import 'package:catch_host_app/today.dart'; void main() {}",
+      'apps/host/test/support/fixture.dart':
+          "import 'dart:io'; final x = File('test/fixtures/x.json');",
+      'apps/host/test/fixture_test.dart':
+          "import 'support/fixture.dart'; void main() {}",
+      'apps/host/test/flutter_test_config.dart': 'void testExecutable() {}',
+      'flutter_test_config.dart': 'void testExecutable() {}',
+    };
+    final paths = {...files.keys, 'apps/host/test/fixtures/x.json'};
+    Map<String, Object> appPlan(
+      Set<String> changed, {
+      Map<String, String> extra = const {},
+    }) => selectFlutterTests(
+      before: {...files, ...extra},
+      after: {...files, ...extra},
+      beforePaths: {...paths, ...extra.keys},
+      afterPaths: {...paths, ...extra.keys},
+      changed: changed,
+    );
+
+    test('app tests join the plan through the import graph', () {
+      expect(appPlan({'apps/host/lib/today.dart'})['totalTests'], 5);
+      expect(selected(appPlan({'apps/host/lib/today.dart'})), [
+        'apps/host/test/today_test.dart',
+        'test/probe_test.dart',
+      ]);
+      expect(selected(appPlan({'lib/a.dart'})), [
+        'apps/host/test/today_test.dart',
+        'test/a_test.dart',
+        'test/probe_test.dart',
+      ]);
+      // App sources are not probe-only: an untested one needs proof.
+      expect(appPlan({'apps/host/lib/unused.dart'})['mode'], 'full');
+    });
+    test('native folders, journeys and goldens stay probe-only', () {
+      for (final input in [
+        'apps/host/ios/Runner/Info.plist',
+        'apps/host/web/index.html',
+        'apps/consumer/integration_test/app_shell_smoke_test.dart',
+        'apps/host/integration_test/host_app_shell_journeys_test.dart',
+        'apps/host/test/integration/host_app_shell_journeys_test.dart',
+        'apps/host/test/goldens/baseline/home.png',
+        'apps/host/test/goldens/home_golden_test.dart',
+      ]) {
+        final result = appPlan({input});
+        expect(result['mode'], 'affected', reason: input);
+        expect(selected(result), ['test/probe_test.dart'], reason: input);
+      }
+    });
+    test('relative reads resolve against the app package directory', () {
+      final result = appPlan({'apps/host/test/fixtures/x.json'});
+      expect(result['mode'], 'affected');
+      expect(selected(result), [
+        'apps/host/test/fixture_test.dart',
+        'test/probe_test.dart',
+      ]);
+      // A root test running the same reader reads other paths: a probe.
+      final cross = appPlan(
+        {'lib/c.dart'},
+        extra: {
+          'test/cross_test.dart':
+              "import '../apps/host/test/support/fixture.dart'; void main() {}",
+        },
+      );
+      expect(selected(cross), [
+        'test/c_test.dart',
+        'test/cross_test.dart',
+        'test/probe_test.dart',
+      ]);
+    });
+    test(
+      'retained probes name the always-run set, and selection keeps exactly it',
+      () {
+        final extra = {
+          'test/cross_test.dart':
+              "import '../apps/host/test/support/fixture.dart'; void main() {}",
+        };
+        final probes = retainedProbes(
+          files: {...files, ...extra},
+          paths: {...paths, ...extra.keys},
+        );
+        expect(probes, {
+          'test/cross_test.dart': 'reads_elsewhere',
+          'test/probe_test.dart': 'probe',
+        });
+        // A change no test imports or reads selects exactly the retained probes:
+        // the descriptive set matches what selection keeps.
+        expect(
+          selected(appPlan({'apps/host/ios/Runner/Info.plist'}, extra: extra)),
+          probes.keys.toList(),
+        );
+        // Bounded readers in their own package are not retained.
+        expect(probes, isNot(contains('apps/host/test/fixture_test.dart')));
+      },
+    );
+    test('test configs stop at the app package directory', () {
+      expect(selected(appPlan({'apps/host/test/flutter_test_config.dart'})), [
+        'apps/host/test/fixture_test.dart',
+        'apps/host/test/today_test.dart',
+        'test/probe_test.dart',
+      ]);
+      expect(selected(appPlan({'flutter_test_config.dart'})), [
+        'test/a_test.dart',
+        'test/c_test.dart',
+        'test/probe_test.dart',
+      ]);
+    });
+  });
+  test('--probes-only reports the always-run set and writes no plan', () {
+    final root = Directory.systemTemp.createTempSync('catch-flutter-probes-');
+    final selector = File(
+      'tool/harness/lib/flutter_test_selection.dart',
+    ).absolute.path;
+    final packages = File('.dart_tool/package_config.json').absolute.path;
+    String git(List<String> args) {
+      final result = Process.runSync('git', args, workingDirectory: root.path);
+      expect(result.exitCode, 0, reason: result.stderr as String);
+      return (result.stdout as String).trim();
+    }
+
+    try {
+      git(['init', '--quiet']);
+      final files = {
+        ...fixture,
+        'test/probe_test.dart':
+            "import 'dart:io'; void main() => File(Platform.environment['P']!);",
+      };
+      for (final entry in files.entries) {
+        File('${root.path}/${entry.key}')
+          ..parent.createSync(recursive: true)
+          ..writeAsStringSync(entry.value);
+      }
+      git(['add', '.']);
+      git([
+        '-c',
+        'user.name=CI test',
+        '-c',
+        'user.email=ci@example.invalid',
+        'commit',
+        '--quiet',
+        '-m',
+        'fixture',
+      ]);
+      final head = git(['rev-parse', 'HEAD']);
+      final output = '${root.path}/out/probes.json';
+      final run = Process.runSync(Platform.resolvedExecutable, [
+        '--packages=$packages',
+        selector,
+        '--probes-only',
+        'true',
+        '--head',
+        head,
+        '--output',
+        output,
+      ], workingDirectory: root.path);
+      expect(run.exitCode, 0, reason: '${run.stdout}${run.stderr}');
+      expect(jsonDecode(File(output).readAsStringSync()), {
+        'sourceSha': head,
+        'probesRetained': [
+          {'test': 'test/probe_test.dart', 'why': 'probe'},
+        ],
+      });
+      expect(jsonDecode(run.stdout as String), {
+        'sourceSha': head,
+        'probesRetained': 1,
+      });
+      final invalid = Process.runSync(Platform.resolvedExecutable, [
+        '--packages=$packages',
+        selector,
+        '--probes-only',
+        'yes',
+        '--head',
+        head,
+        '--output',
+        output,
+      ], workingDirectory: root.path);
+      expect(invalid.exitCode, isNot(0));
+    } finally {
+      root.deleteSync(recursive: true);
+    }
   });
   test('Dart sources outside lib and test are covered by the import graph', () {
     final files = {

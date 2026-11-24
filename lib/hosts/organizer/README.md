@@ -68,7 +68,7 @@ Typed handoffs:
 | `HostTeamManagementSection` | `lib/hosts/presentation/widgets/host_team_management_section.dart` | Structural owner. |
 | `HostTeamManagementController` | `lib/hosts/presentation/organizer_management/host_team_management_controller.dart` | Actions: add_host, remove_host, transfer_organizer_ownership. |
 | `HostProfileController` | `lib/hosts/presentation/host_profile_controller.dart` | Actions: create_host_profile, save_host_profile. |
-| `AuthSessionController` | `lib/auth/presentation/auth_session_controller.dart` | Actions: sign_out. |
+| `AuthSessionController` | `lib/pages/account/auth_session_controller.dart` | Actions: sign_out. |
 | `HostShellScreen` | `lib/routing/shell/host_shell_screen.dart` | Actions: switch_organizer. |
 
 ## Shared dependencies
@@ -89,11 +89,11 @@ Typed handoffs:
 - `contracts/callables/remove_organizer_manager_payload.schema.json`
 - `contracts/callables/transfer_organizer_ownership_payload.schema.json`
 - `contracts/callables/update_organizer_payload.schema.json`
+- `contracts/firestore/contact_permissions.schema.json`
 - `contracts/firestore/event_attendees.schema.json`
 - `contracts/firestore/host_analytics_snapshots.schema.json`
 - `contracts/firestore/host_payment_accounts.schema.json`
 - `contracts/firestore/host_profiles.schema.json`
-- `contracts/firestore/organizer_communication_preferences.schema.json`
 - `contracts/firestore/organizer_team_memberships.schema.json`
 - `contracts/firestore/organizers.schema.json`
 - `contracts/storage/organizer_logo_images.schema.json`

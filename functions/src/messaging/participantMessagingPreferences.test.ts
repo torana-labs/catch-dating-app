@@ -5,14 +5,20 @@ import {Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {FormPaymentTestStore, createFormPaymentFixture} from
   "../payments/formPayments/formPaymentTestStore";
-import {unknownOrganizerCommunicationChannel,
-  organizerCommunicationPreferenceId} from
+import {organizerCommunicationPreferenceId} from
   "../shared/organizerCommunicationPreferences";
+import {
+  contactSenderKey,
+  effectiveContactKeys,
+  whatsappPermissionSummary,
+  type ContactGrant,
+  type ContactPermission,
+} from "../shared/contactPermissions";
 import {normalizeFormMessagingDecision} from
   "../organizers/organizerFormMessagingConsent";
 import {withdrawParticipantMessagingPermissionHandler as withdraw} from
   "./participantMessagingPreferences";
-import {guestMessagingPermission} from "./guestMessagingPermissionStore";
+import {catchPermissionViewId} from "./guestMessagingPermissionStore";
 import type {WithdrawParticipantMessagingPermissionCallableResponse} from
   "../shared/generated/withdrawParticipantMessagingPermissionCallableResponse";
 import {contractValidator} from "../shared/contractTestValidators";
@@ -21,10 +27,11 @@ const validResult =
   contractValidator<WithdrawParticipantMessagingPermissionCallableResponse>(
     "WithdrawParticipantMessagingPermissionCallableResponse"
   );
-const validCatchReceipt =
-  contractValidator("CatchCommunicationPermissionReceiptDocument");
+const validReceipt = contractValidator("ContactPermissionReceiptDocument");
+const validPermission = contractValidator("ContactPermissionDocument");
 
 const now = Timestamp.fromMillis(1000);
+const phone = "+919000000001";
 const request = (data: unknown, uid = "person") =>
   ({auth: {uid, token: {}}, data}) as unknown as CallableRequest<unknown>;
 const input = (scope: "catch" | "organizer", expectedReceiptId: string | null
@@ -32,6 +39,14 @@ const input = (scope: "catch" | "organizer", expectedReceiptId: string | null
 requestId = "withdraw-1", organizerId = "org") =>
   ({scope, organizerId: scope === "catch" ? null : organizerId,
     expectedReceiptId, requestId});
+const senderOf = (scope: "catch" | "organizer", organizerId = "org") =>
+  scope === "catch" ? {kind: "catch" as const} :
+    {kind: "organizer" as const, organizerId};
+const permissionPath = (scope: "catch" | "organizer", uid = "person",
+  organizerId = "org") =>
+  `users/${uid}/contactPermissions/${contactSenderKey(
+    senderOf(scope, organizerId))}`;
+
 function fixture() {
   const store = new FormPaymentTestStore();
   store.records.set("organizers/org", {name: "RSVP Demo"});
@@ -39,101 +54,90 @@ function fixture() {
   const deps = {db: () => db, now: () => now, rateLimit: async () => undefined};
   return {store, db, deps};
 }
-/** One sender's settings row, as guestMessagingPermissions holds it. */
-async function permission(db: FirebaseFirestore.Firestore,
-  scope: "catch" | "organizer", uid = "person", organizerId = "org") {
-  const row = await db.runTransaction((tx) => guestMessagingPermission(db, tx,
-    scope === "catch" ? {scope, uid} : {scope,
-      preferenceId: organizerCommunicationPreferenceId(organizerId, uid)}));
-  assert.ok(row);
-  return row.preference;
+
+function grant(receiptId: string, patch: Partial<ContactGrant> = {}):
+  ContactGrant {
+  return {status: "optedIn", endpointE164: phone, receiptId,
+    termsVersion: "organizer-updates-v1", source: "publicEventRegistration",
+    updatedAt: Timestamp.fromMillis(500), ...patch};
 }
-function grant(h: ReturnType<typeof fixture>, scope: "catch" | "organizer",
-  uid = "person", organizerId = "org", receiptId = `${scope}-grant`) {
-  const whatsapp = {...unknownOrganizerCommunicationChannel(), status:
-    "optedIn",
-  evidenceStatus: "complete", currentReceiptId: receiptId, termsVersion:
-      "form-whatsapp-v1",
-  source: "hostFormResponse", updatedAt: Timestamp.fromMillis(500)};
-  const channel = {uid, whatsapp, createdAt: now, updatedAt: now};
-  const receipt = {uid, channel: "whatsapp", decision: "optedIn",
-    evidenceStatus: "complete",
-    termsVersion: "form-whatsapp-v1", consentCopyHash: "a".repeat(64),
-    grantedAt: Timestamp.fromMillis(500), revokedAt: null};
-  if (scope === "catch") {
-    h.store.records.set(`catchCommunicationPreferences/${uid}`, channel);
-    h.store.records.set(`catchCommunicationPermissionReceipts/${receiptId}`,
-      receipt);
-  } else {
-    h.store.records.set("organizerCommunicationPreferences/" +
-      organizerCommunicationPreferenceId(organizerId, uid), {...channel,
-      organizerId,
-      sms: unknownOrganizerCommunicationChannel()});
-    h.store.records.set(`organizerCommunicationPermissionReceipts/${receiptId}`,
-      {...receipt, organizerId});
-  }
+
+/** Stores one sender's permission, as a consent writer leaves it. */
+function seed(h: {store: FormPaymentTestStore}, scope: "catch" | "organizer",
+  grants: ContactPermission["grants"], uid = "person", organizerId = "org") {
+  const sender = senderOf(scope, organizerId);
+  h.store.records.set(permissionPath(scope, uid, organizerId), {
+    senderKind: sender.kind,
+    senderId: scope === "catch" ? "catch" : organizerId,
+    grants, granted: effectiveContactKeys(grants), updatedAt: now});
 }
+
+const stored = (h: {store: FormPaymentTestStore},
+  scope: "catch" | "organizer") =>
+  h.store.records.get(permissionPath(scope)) as unknown as
+    ContactPermission | undefined;
+const row = (h: {store: FormPaymentTestStore}, scope: "catch" | "organizer") =>
+  h.store.records.get("guestMessagingPermissions/" +
+    (scope === "catch" ? catchPermissionViewId("person") :
+      organizerCommunicationPreferenceId("org", "person"))) as
+    {preference: unknown} | undefined;
 
 test("Catch and each organizer withdraw independently, preserving SMS",
   async () => {
-    const h = fixture(); grant(h, "catch"); grant(h, "organizer");
-    const orgPath = "organizerCommunicationPreferences/" +
-    organizerCommunicationPreferenceId("org", "person");
-    const before = h.store.records.get(orgPath);
+    const h = fixture();
+    seed(h, "catch", {"whatsapp:marketing": grant("catch-grant")});
+    seed(h, "organizer", {"whatsapp:marketing": grant("organizer-grant"),
+      "sms:marketing": grant("sms-grant")});
+    const before = stored(h, "organizer");
     const result = await withdraw(
       request(input("catch", "catch-grant")), h.deps);
     assert.equal(validResult(result), true);
     assert.equal(result.preference.status, "optedOut");
-    assert.deepEqual(h.store.records.get(orgPath), before);
+    assert.deepEqual(stored(h, "organizer"), before);
     const evidence = h.store.records.get(
-      "catchCommunicationPermissionReceipts/" +
-    result.preference.receiptId)!;
-    assert.equal(validCatchReceipt(evidence), true);
+      `contactPermissionReceipts/${result.preference.receiptId}`)!;
+    assert.equal(validReceipt(evidence), true);
+    assert.equal(evidence.senderKind, "catch");
     assert.equal(evidence.sourceOrganizerId, null);
-    assert.equal(validCatchReceipt({...evidence, source: "hostFormResponse"}),
-      false);
-    assert.equal(validCatchReceipt({...evidence, source: "hostFormResponse",
-      sourceOrganizerId: "org"}), true);
     assert.equal(evidence.actorUid, "person");
+    assert.equal(validReceipt({...evidence, source: "hostFormResponse"}),
+      false);
+    assert.equal(validReceipt({...evidence, source: "hostFormResponse",
+      sourceOrganizerId: "org"}), true);
     const org = await withdraw(request(input("organizer", "organizer-grant")),
       h.deps);
     assert.equal(org.preference.status, "optedOut");
-    assert.deepEqual(h.store.records.get(orgPath)?.sms, before?.sms);
-    const saved = h.store.records.get("catchCommunicationPreferences/person")!;
-    assert.equal(
-      (saved.whatsapp as {currentReceiptId: string}).currentReceiptId,
-      result.preference.receiptId);
+    const organizer = stored(h, "organizer")!;
+    assert.equal(validPermission(organizer), true);
+    for (const key of ["whatsapp:eventOperations", "whatsapp:marketing",
+      "whatsapp:followerUpdates"] as const) {
+      assert.equal(organizer.grants[key]?.status, "optedOut", key);
+      assert.equal(organizer.grants[key]?.receiptId, org.preference.receiptId,
+        key);
+    }
+    assert.deepEqual(organizer.grants["sms:marketing"],
+      before!.grants["sms:marketing"]);
+    assert.deepEqual(organizer.granted, ["sms:marketing"]);
+    // The guest's row holds the summary the withdrawal returned.
+    assert.deepEqual(row(h, "catch")?.preference, result.preference);
+    assert.deepEqual(row(h, "organizer")?.preference, org.preference);
   });
 
 test("purpose grants are visible and sender withdrawal revokes every purpose",
   async () => {
     const h = fixture();
-    const orgPath = "organizerCommunicationPreferences/" +
-      organizerCommunicationPreferenceId("org", "person");
-    const makeChannel = (purpose: "eventOperations" | "marketing") => ({
-      status: "optedIn", evidenceStatus: "complete",
-      currentReceiptId: `purpose-${purpose}`,
-      termsVersion: "form-whatsapp-v2", source: "hostFormResponse",
-      sourceEventId: null, sourceResponseId: "response",
-      endpointE164: "+919000000001", updatedAt: Timestamp.fromMillis(500),
+    const form = (receiptId: string) => grant(receiptId,
+      {source: "hostFormResponse", termsVersion: "form-whatsapp-v2"});
+    seed(h, "organizer", {
+      "whatsapp:eventOperations": form("purpose-eventOperations"),
+      "whatsapp:marketing": form("purpose-marketing"),
     });
-    h.store.records.set(orgPath, {organizerId: "org", uid: "person",
-      whatsapp: unknownOrganizerCommunicationChannel(),
-      whatsappPurposes: {eventOperations: makeChannel("eventOperations"),
-        marketing: makeChannel("marketing")},
-      sms: unknownOrganizerCommunicationChannel(),
-      createdAt: now, updatedAt: now});
-    for (const purpose of ["eventOperations", "marketing"]) {
-      h.store.records.set(
-        `organizerCommunicationPermissionReceipts/purpose-${purpose}`,
-        {organizerId: "org", uid: "person", channel: "whatsapp", purpose,
-          sourceResponseId: "response", endpointE164: "+919000000001",
-          decision: "optedIn", evidenceStatus: "complete",
-          consentCopyHash: "a".repeat(64), revokedAt: null});
-    }
-    const listed = await permission(h.db, "organizer");
+    const listed = whatsappPermissionSummary(stored(h, "organizer")!,
+      "organizer");
     assert.equal(listed.purposes?.eventOperations?.status, "optedIn");
     assert.equal(listed.purposes?.marketing?.status, "optedIn");
+    // The form opt-ins await provider review: recorded, never granted.
+    assert.deepEqual(stored(h, "organizer")!.granted, []);
     const scoped = await withdraw(request({...input("organizer",
       "purpose-eventOperations", "scope-operations"),
     purpose: "eventOperations"}), h.deps);
@@ -141,29 +145,15 @@ test("purpose grants are visible and sender withdrawal revokes every purpose",
     assert.equal(scoped.preference.purposes?.eventOperations?.status,
       "optedOut");
     assert.equal(scoped.preference.purposes?.marketing?.status, "optedIn");
-    const partial = await permission(h.db, "organizer");
-    assert.equal(partial.purposes?.eventOperations?.status, "optedOut");
-    assert.equal(partial.purposes?.marketing?.status, "optedIn");
     const result = await withdraw(request(input("organizer",
       "purpose-marketing")), h.deps);
     assert.equal(result.preference.status, "optedOut");
-    const after = await permission(h.db, "organizer");
-    assert.equal(after.purposes?.eventOperations?.status, "optedOut");
-    assert.equal(after.purposes?.marketing?.status, "optedOut");
-    const stored = h.store.records.get(orgPath)!;
-    h.store.records.set(orgPath, {...stored, whatsappPurposes: {
-      ...(stored.whatsappPurposes as Record<string, unknown>),
-      eventOperations: {...makeChannel("eventOperations"),
-        currentReceiptId: "later-operations",
-        updatedAt: Timestamp.fromMillis(2000)},
-    }});
-    h.store.records.set(
-      "organizerCommunicationPermissionReceipts/later-operations",
-      {organizerId: "org", uid: "person", channel: "whatsapp",
-        purpose: "eventOperations", sourceResponseId: "response",
-        endpointE164: "+919000000001", decision: "optedIn",
-        evidenceStatus: "complete", consentCopyHash: "a".repeat(64),
-        revokedAt: null});
+    assert.equal(result.preference.purposes?.eventOperations?.status,
+      "optedOut");
+    assert.equal(result.preference.purposes?.marketing?.status, "optedOut");
+    // A newer opt-in is not undone by replaying the old withdrawal.
+    seed(h, "organizer", {...stored(h, "organizer")!.grants,
+      "whatsapp:eventOperations": form("later-operations")});
     const replay = await withdraw(request({...input("organizer",
       "purpose-eventOperations", "scope-operations"),
     purpose: "eventOperations"}), h.deps);
@@ -177,7 +167,8 @@ test("purpose grants are visible and sender withdrawal revokes every purpose",
 
 test("retry is immutable, payload bound, and cannot overwrite a newer grant",
   async () => {
-    const h = fixture(); grant(h, "catch");
+    const h = fixture();
+    seed(h, "catch", {"whatsapp:marketing": grant("catch-grant")});
     const data = input("catch", "catch-grant");
     const first = await withdraw(request(data), h.deps);
     const writes = h.store.records.size;
@@ -186,7 +177,8 @@ test("retry is immutable, payload bound, and cannot overwrite a newer grant",
     await assert.rejects(withdraw(request({...data, expectedReceiptId: null}),
       h.deps),
     {code: "already-exists"});
-    grant(h, "catch", "person", "org", "later-grant");
+    seed(h, "catch", {"whatsapp:marketing": grant("later-grant",
+      {updatedAt: Timestamp.fromMillis(5000)})});
     const replay = await withdraw(request(data), h.deps);
     assert.equal(replay.replayed, true);
     assert.equal(replay.preference.status, "optedIn");
@@ -200,13 +192,13 @@ test("retry is immutable, payload bound, and cannot overwrite a newer grant",
 test("legacy sender-wide withdrawal request IDs replay across upgrade",
   async () => {
     const h = fixture();
-    grant(h, "catch");
+    seed(h, "catch", {"whatsapp:marketing": grant("catch-grant")});
     const data = input("catch", "catch-grant", "old-request");
     const oldId = "pmpr_" + createHash("sha256")
       .update(JSON.stringify(["person", "catch", null, "old-request"]))
       .digest("hex").slice(0, 48);
-    h.store.records.set(`catchCommunicationPermissionReceipts/${oldId}`,
-      {uid: "person", source: "participantSettings",
+    h.store.records.set(`contactPermissionReceipts/${oldId}`,
+      {uid: "person", senderKind: "catch", source: "participantSettings",
         decision: "optedOut", supersedesReceiptId: "catch-grant"});
     const before = h.store.records.size;
     const replay = await withdraw(request(data), h.deps);
@@ -217,7 +209,8 @@ test("legacy sender-wide withdrawal request IDs replay across upgrade",
 
 test("auth, sender scope, deletion and foreign receipts cannot write",
   async () => {
-    const h = fixture(); grant(h, "catch");
+    const h = fixture();
+    seed(h, "catch", {"whatsapp:marketing": grant("catch-grant")});
     const before = h.store.records.size;
     await assert.rejects(withdraw({data: input("catch")} as
     CallableRequest<unknown>, h.deps),
@@ -237,11 +230,13 @@ test("auth, sender scope, deletion and foreign receipts cannot write",
   });
 
 test("failed commits preserve permission and allow retry", async () => {
-  const h = fixture(); grant(h, "catch");
+  const h = fixture();
+  seed(h, "catch", {"whatsapp:marketing": grant("catch-grant")});
   h.store.failNextCommit = true;
   await assert.rejects(withdraw(request(input("catch", "catch-grant")),
     h.deps));
-  assert.equal((await permission(h.db, "catch")).status, "optedIn");
+  assert.equal(stored(h, "catch")!.grants["whatsapp:marketing"]?.status,
+    "optedIn");
   assert.equal((await withdraw(request(input("catch", "catch-grant")),
     h.deps)).preference.status, "optedOut");
 });
@@ -266,11 +261,12 @@ test("actual withdrawals fence both grants from an earlier pending checkout",
     const b = await withdraw(request(input("organizer")), deps);
     h.capture(paymentId);
     assert.equal(await h.finalize(paymentId), "submitted");
-    const catchRow = await permission(h.db, "catch");
+    const catchRow = whatsappPermissionSummary(stored(h, "catch")!, "catch");
     assert.equal(catchRow.status, a.preference.status);
     assert.equal(catchRow.receiptId, a.preference.receiptId);
     assert.equal(catchRow.purposes?.marketing?.status, "optedOut");
-    const organizerRow = await permission(h.db, "organizer");
+    const organizerRow = whatsappPermissionSummary(stored(h, "organizer")!,
+      "organizer");
     assert.equal(organizerRow.status, b.preference.status);
     assert.equal(organizerRow.receiptId, b.preference.receiptId);
     assert.equal(organizerRow.purposes?.eventOperations?.status, "optedOut");

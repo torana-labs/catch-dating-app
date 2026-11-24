@@ -11,10 +11,11 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_contact_merge
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_memory.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_insights.dart';
+import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -35,16 +36,21 @@ part 'host_contacts_repository.g.dart';
 // firestore-index: hostContactSummaries (organizerId:ASCENDING, searchName:ASCENDING, __name__:ASCENDING)
 // firestore-index: hostContactSummaries (organizerId:ASCENDING, row.segmentIds:CONTAINS, searchName:ASCENDING, __name__:ASCENDING)
 // firestore-index: hostContactSummaries (organizerId:ASCENDING, manualTagIds:CONTAINS, searchName:ASCENDING, __name__:ASCENDING)
+// firestore-index: hostContactMergeCandidateViews (organizerId:ASCENDING, updatedAtMillis:DESCENDING, __name__:DESCENDING)
 class HostContactsRepository {
   const HostContactsRepository(
     this._functions, {
     required this.summaries,
     this.rosterInsights,
+    this.mergeCandidates,
     HostContactDetailReads? detail,
   }) : _detailReads = detail;
 
-  /// The directory read model, name searches included. Only queries it
-  /// cannot serve (intersecting filter groups) use a callable.
+  /// The duplicate review's read model (`hostContactMergeCandidateViews`).
+  final ScopedReadModelReader? mergeCandidates;
+
+  /// The directory read model, name searches included. It serves every
+  /// directory query the app makes.
   final HostContactSummaryReads summaries;
 
   /// One person's page listeners: directory row, detail facts and notes.
@@ -86,42 +92,14 @@ class HostContactsRepository {
     return reads.watch(eventId);
   }
 
+  /// One page of [query] from the directory read model. A query the read
+  /// model cannot serve (see [HostContactSummaryReads.supports]) is an
+  /// [ArgumentError]: no Function evaluates directory queries any more.
   Future<HostAudiencePage> listContacts(
     String organizerId, {
     HostAudienceQuery query = const HostAudienceQuery(),
     int limit = ReadLimitPolicy.directoryPage,
-  }) async {
-    if (HostContactSummaryReads.supports(query)) {
-      return summaries.list(organizerId, query: query, limit: limit);
-    }
-    return callHostCrm(
-      _functions,
-      name: 'listOrganizerContacts',
-      payload: ListOrganizerContactsCallableRequest(
-        organizerId: organizerId,
-        limit: limit,
-        cursor: query.cursor,
-        query: query.search?.trim().isEmpty ?? true
-            ? null
-            : query.search?.trim(),
-        // The callable's canonical default is lastSeen. Omitting it keeps the
-        // default directory compatible during a rolling client/server rollout.
-        sort: query.sort == HostAudienceSort.lastSeen
-            ? null
-            : query.sort.wireValue,
-        segmentIds: query.segments.isEmpty
-            ? null
-            : (query.segments.map((s) => s.wireValue).toList()..sort()),
-        manualTagIds: query.manualTagIds.isEmpty
-            ? null
-            : (query.manualTagIds.toList()..sort()),
-        segmentId: query.segment?.wireValue,
-        manualTagId: query.manualTagId,
-      ).toJson(),
-      action: 'load organizer audience',
-      parse: HostAudiencePage.fromCallableData,
-    );
-  }
+  }) => summaries.list(organizerId, query: query, limit: limit);
 
   Future<({int count, HostAudienceMatchCountCoverage coverage})> countContacts(
     String organizerId, {
@@ -140,6 +118,13 @@ class HostContactsRepository {
     String organizerId,
     String contactId,
   ) => _detail.watchSummary(organizerId, contactId);
+
+  /// Up to [ReadLimitPolicy.multiIdChunk] people's directory rows by id,
+  /// while listened to; an id with no row is left out.
+  Stream<Map<String, HostContactSummaryRow>> watchContactSummaries(
+    String organizerId,
+    List<String> contactIds,
+  ) => _detail.watchSummaries(organizerId, contactIds);
 
   /// One person's traits, revenue and newest event rows, while listened to.
   Stream<HostContactDetailFacts> watchContactFacts(
@@ -303,24 +288,36 @@ class HostContactsRepository {
     parse: HostAudienceExport.fromCallableData,
   );
 
-  /// One page of the duplicate review: pairs with the evidence for each,
-  /// the pairs marked as different people, and the cursor to the next page.
-  /// The server never lists a pair from a name match alone.
-  Future<HostContactMergeCandidatePage> listMergeCandidates(
+  /// The duplicate review, newest evidence first, [pageSize] pairs at a
+  /// time, every pair kept live (the `listOrganizerContactMergeCandidates`
+  /// callable is no longer called). A pair exists only while a verified
+  /// claim or a proposed phone or email link joins two people, never from a
+  /// name match. [readerUid] may show a pair again only if they marked it.
+  LivePager<HostContactMergeCandidate> watchMergeCandidates(
     String organizerId, {
-    String? cursor,
-    int limit = ReadLimitPolicy.historyPage,
-  }) => callHostCrm(
-    _functions,
-    name: 'listOrganizerContactMergeCandidates',
-    payload: ListOrganizerContactMergeCandidatesCallableRequest(
-      organizerId: organizerId,
-      limit: limit > 50 ? 50 : limit,
-      cursor: cursor,
-    ).toJson(),
-    action: 'load organizer contact merge candidates',
-    parse: HostContactMergeCandidatePage.fromCallableData,
-  );
+    required String readerUid,
+    int pageSize = ReadLimitPolicy.historyPage,
+  }) {
+    final reader =
+        mergeCandidates ??
+        (throw StateError('This repository has no duplicate review.'));
+    return reader
+        .watchPages(
+          collection: 'hostContactMergeCandidateViews',
+          scopeId: organizerId,
+          orderField: 'updatedAtMillis',
+          descending: true,
+          pageSize: pageSize,
+        )
+        .map(
+          (view) => HostContactMergeCandidate.fromMap({
+            ...view,
+            'canReopen':
+                view['decisionState'] == 'differentPeople' &&
+                view['reviewedByUid'] == readerUid,
+          }),
+        );
+  }
 
   Future<void> reviewMergeCandidate({
     required String organizerId,
@@ -393,20 +390,27 @@ class HostContactsRepository {
   );
 }
 
-// keepalive: Reuse the callable client for the contacts subdomain.
+// keepalive: account-free: Reuse the callable client for the contacts
+// subdomain.
 @Riverpod(keepAlive: true)
 HostContactsRepository hostContactsRepository(Ref ref) {
   ref.watch(authenticatedSessionProvider);
   return HostContactsRepository(
     ref.watch(firebaseFunctionsProvider),
     summaries: HostContactSummaryReads(
-      HostSummaryReader(
+      ScopedReadModelReader(
         ref.watch(firebaseFirestoreProvider),
+        family: hostReadModels,
         actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
       ),
     ),
     rosterInsights: HostRosterInsightReads(
       ref.watch(firebaseFirestoreProvider),
+    ),
+    mergeCandidates: ScopedReadModelReader(
+      ref.watch(firebaseFirestoreProvider),
+      family: hostReadModels,
+      actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
     ),
     detail: HostContactDetailReads(ref.watch(firebaseFirestoreProvider)),
   );

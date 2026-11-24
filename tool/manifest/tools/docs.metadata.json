@@ -1,0 +1,40 @@
+{
+  "id": "docs:metadata",
+  "category": "audit",
+  "path": "tool/docs/check_doc_metadata.mjs",
+  "impactPaths": [
+    "tool/docs/check_doc_metadata.test.mjs",
+    "docs/widget_catalog.md"
+  ],
+  "command": "node tool/docs/check_doc_metadata.mjs --base origin/main",
+  "surface": "local-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "index",
+    "setup": [
+      "node"
+    ]
+  },
+  "description": "Validates source-owned Markdown identity, owner, and lifecycle metadata; rejects duplicate identities, hand-kept version or updated fields, and identity swaps while reporting reviewed deletions without a duplicate catalog.",
+  "checks": [
+    "node --check tool/docs/check_doc_metadata.mjs",
+    "node --test tool/docs/check_doc_metadata.test.mjs",
+    "node tool/docs/check_doc_metadata.mjs --self-test"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "DOC-HYGIENE-001",
+      "title": "Prefer versioned owners over new markdown sprawl",
+      "appliesTo": [
+        "docs/**",
+        "PROJECT_CONTEXT.md",
+        "README.md"
+      ],
+      "instruction": "Update an existing source-of-truth document before creating a new one. Mark stale snapshots historical or delete them after their durable content moves. Markdown frontmatter is the document's metadata authority; do not update a parallel version catalog."
+    }
+  ],
+  "alsoEnforces": [
+    "WIDGET-CATALOG-001"
+  ]
+}

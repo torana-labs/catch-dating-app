@@ -6,7 +6,7 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {
   EventDocument,
   EventCrossPathsConsentDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import type {SetCrossPathsEventConsentCallablePayload} from
@@ -86,7 +86,7 @@ export async function setCrossPathsEventConsentHandler(
   await db.runTransaction(async (tx) => {
     const userRef = db.collection("users").doc(uid);
     const eventRef = db.collection("events").doc(data.eventId);
-    const participationRef = db.collection("eventParticipations")
+    const participationRef = db.collection("eventBookings")
       .doc(crossPathsConsentId(data.eventId, uid));
     const consentRef = db.collection("eventCrossPathsConsents")
       .doc(crossPathsConsentId(data.eventId, uid));
@@ -138,9 +138,9 @@ export async function setCrossPathsEventConsentHandler(
           "A confirmed event booking is required."
         );
       }
-      const participation = requireDoc<EventParticipationDocument>(
+      const participation = requireDoc<EventBookingDocument>(
         participationSnap,
-        "EventParticipationDocument"
+        "EventBookingDocument"
       );
       if (
         participation.uid !== uid ||

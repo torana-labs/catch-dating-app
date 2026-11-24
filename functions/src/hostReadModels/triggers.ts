@@ -4,6 +4,7 @@ import {reconcileSimpleSummary} from "./simpleStore";
 import * as admin from "firebase-admin";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {reconcileContactSummary} from "./contactStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true, memory: "512MiB" as const};
 export const onHostContactSummaryChanged = onDocumentWritten({
@@ -70,15 +71,20 @@ export const onHostFormSummaryChanged = onDocumentWritten({
     await refreshFormResponseSummaries(db, "formId", event.params.formId);
   }
 });
-export const onHostEventSummaryChanged = onDocumentWritten({
-  ...options, document: "events/{eventId}",
-}, async (event) => {
-  if (event.data?.before.exists && event.data?.after.exists &&
-      event.data.before.get("publicationState") === "published" &&
-      event.data.after.get("publicationState") === "published") return;
-  await reconcileSimpleSummary(
-    admin.firestore(), "events", event.params.eventId);
-});
+
+/**
+ * An event write outside an already published event: its summary row.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostEventSummaryProjections = defineProjections("events", [{
+  id: "hostEventSummary", kind: "projection",
+  when: ({before, after}) => !(before && after &&
+    before.publicationState === "published" &&
+    after.publicationState === "published"),
+  run: (change, ctx) => reconcileSimpleSummary(ctx.db, "events",
+    change.documentId),
+}]);
 
 export const onHostAudienceSummaryCoverageChanged = onDocumentWritten({
   ...options, document: "organizerAudienceSummaries/{organizerId}",

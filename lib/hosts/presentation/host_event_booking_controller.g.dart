@@ -43,7 +43,7 @@ final class HostEventBookingControllerProvider
 }
 
 String _$hostEventBookingControllerHash() =>
-    r'0e98c324f1ecf9240494c816505f3335e2501461';
+    r'a3ad880895581aa3bb65b649baf9bd0d46a55407';
 
 abstract class _$HostEventBookingController extends $Notifier<void> {
   void build();

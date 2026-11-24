@@ -14,6 +14,7 @@ import {
   maxRosterHistoryEdges,
   reconcileRosterInsightView,
 } from "./rosterInsightViewStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 
@@ -184,14 +185,23 @@ async function reconcileEvents(
   }
 }
 
+async function reconcileForChange(
+  source: RosterInsightSource,
+  documentId: string,
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined
+): Promise<void> {
+  const db = admin.firestore();
+  await reconcileEvents(db, await resolveRosterInsightEventIds(db, source,
+    documentId, before, after));
+}
+
 async function reconcileForWrite(
   source: RosterInsightSource,
   event: WriteEvent
 ): Promise<void> {
-  const db = admin.firestore();
-  await reconcileEvents(db, await resolveRosterInsightEventIds(db, source,
-    event.params.documentId, event.data?.before.data(),
-    event.data?.after.data()));
+  await reconcileForChange(source, event.params.documentId,
+    event.data?.before.data(), event.data?.after.data());
 }
 
 /**
@@ -223,12 +233,30 @@ export async function onPaymentWrite(
   return distinct;
 }
 
-export const onHostRosterInsightEventChanged = onDocumentWritten({
-  ...options, document: "events/{documentId}",
-}, (event) => reconcileForWrite("events", event));
-export const onHostRosterInsightAttendeeChanged = onDocumentWritten({
-  ...options, document: "eventAttendees/{documentId}",
-}, (event) => reconcileForWrite("eventAttendees", event));
+/**
+ * An event write: the roster labels of its open events.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostRosterInsightEventProjections = defineProjections("events", [{
+  id: "hostRosterInsightView", kind: "projection",
+  when: () => true,
+  run: (change) => reconcileForChange("events", change.documentId,
+    change.before, change.after),
+}]);
+
+/**
+ * An attendee write: the roster labels of its open event.
+ * Served by dispatchEventAttendees (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
+ */
+export const hostRosterInsightAttendeeProjections = defineProjections(
+  "eventAttendees", [{
+    id: "hostRosterInsightView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange("eventAttendees", change.documentId,
+      change.before, change.after),
+  }]);
 export const onHostRosterInsightEdgeChanged = onDocumentWritten({
   ...options, document: "organizerContactEventEdges/{documentId}",
 }, (event) => reconcileForWrite("organizerContactEventEdges", event));

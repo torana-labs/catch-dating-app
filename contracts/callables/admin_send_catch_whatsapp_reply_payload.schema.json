@@ -2,40 +2,110 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_send_catch_whatsapp_reply_payload.schema.json",
   "title": "AdminSendCatchWhatsappReplyCallablePayload",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "purpose",
-    "inboundEventId",
-    "reviewedInboundTextHash",
-    "confirmSupportRequest",
-    "body"
-  ],
-  "properties": {
-    "purpose": {
-      "type": "string",
-      "const": "serviceSupport"
+  "description": "A WhatsApp message from Catch's number. supportConversation replies to a Support conversation's WhatsApp sender inside the 24-hour customer-service window; clientRequestId makes a retry return the first attempt's outcome instead of sending again. hostLeadFollowUp sends the approved host_lead_follow_up template to a host lead's phone (salesInboundIntents/{intentId}), allowed only when the person has not written in the last 24 hours and no follow-up went to that number in the last 7 days; it is recorded in their Support thread (starting one if they have none) and is idempotent on clientRequestId. serviceSupport is the controlled reply trial for one reviewed inbound message.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "conversationId",
+        "clientRequestId",
+        "body",
+        "savedReplyId"
+      ],
+      "properties": {
+        "purpose": {
+          "type": "string",
+          "const": "supportConversation"
+        },
+        "conversationId": {
+          "type": "string",
+          "pattern": "^whatsapp-[a-f0-9]{64}$"
+        },
+        "clientRequestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9_-]{8,64}$"
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "savedReplyId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
     },
-    "inboundEventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 69,
-      "pattern": "^cwhe_[a-f0-9]{64}$"
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "intentId",
+        "clientRequestId"
+      ],
+      "properties": {
+        "purpose": {
+          "type": "string",
+          "const": "hostLeadFollowUp"
+        },
+        "intentId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "clientRequestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9_-]{8,64}$"
+        }
+      }
     },
-    "reviewedInboundTextHash": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 64,
-      "pattern": "^[a-f0-9]{64}$"
-    },
-    "confirmSupportRequest": {
-      "type": "boolean",
-      "const": true
-    },
-    "body": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 4096
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "inboundEventId",
+        "reviewedInboundTextHash",
+        "confirmSupportRequest",
+        "body"
+      ],
+      "properties": {
+        "purpose": {
+          "type": "string",
+          "const": "serviceSupport"
+        },
+        "inboundEventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 69,
+          "pattern": "^cwhe_[a-f0-9]{64}$"
+        },
+        "reviewedInboundTextHash": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "confirmSupportRequest": {
+          "type": "boolean",
+          "const": true
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        }
+      }
     }
-  }
+  ]
 }

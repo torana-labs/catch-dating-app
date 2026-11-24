@@ -1,7 +1,11 @@
 // architecture: provider-free
 import 'package:catch_dating_app/explore/presentation/explore_organizer_display_state.dart';
 import 'package:catch_dating_app/organizers/organizers.dart';
-import 'package:catch_dating_app/organizers/shared/organizer_cover.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_authority_badge.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_cover.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_host_identity_row.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_placeholder_cover.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_transition_tags.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

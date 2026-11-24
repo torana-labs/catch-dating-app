@@ -5,9 +5,11 @@ import type {
 } from "./contracts";
 
 /**
- * The host billing portal's data, parsed from the owner callables:
- * getOrganizerBillingStatus (trial and plan), manageOrganizerBillingPlan
- * (prices and the tools-only purchase) and listOrganizerBills (bills). The
+ * The host billing portal's data, parsed from the owner's
+ * hostOrganizerBillingViews row (trial facts and plan, #2306), the
+ * manageOrganizerBillingPlan callable (prices and the tools-only purchase),
+ * and from the hostOrganizerBillViews
+ * listener (bills, each the listOrganizerBills row shape). The
  * types come from the generated contracts in functions/src/shared/generated,
  * so a contract change fails the website typecheck. Parsing stays defensive:
  * a reply is read field by field (keyed by the contract) so an older or
@@ -25,7 +27,7 @@ export type PlanPrices = NonNullable<RawPlanView["prices"]>;
 export type PlanView = Omit<RawPlanView, "organizerId">;
 export type BillStatus = RawBill["status"];
 
-/** One bill as the portal shows it, derived from a listOrganizerBills row. */
+/** One bill as the portal shows it, derived from a hostOrganizerBillViews row's bill. */
 export interface Bill {
   billId: RawBill["billId"];
   month: RawBill["month"];
@@ -77,6 +79,28 @@ export function parseTrial(value: unknown): TrialStatus {
   const raw = record<RawTrial>(value);
   return {state: oneOf(trialStates, raw?.state) ?? "unconfigured", startsAtMillis: millis(raw?.startsAtMillis),
     endsAtMillis: millis(raw?.endsAtMillis), daysLeft: millis(raw?.daysLeft)};
+}
+
+const dayMillis = 24 * 60 * 60 * 1000;
+
+/**
+ * The trial from a hostOrganizerBillingViews trial (#2306) at nowMillis,
+ * exactly as the server's computeTrialStatus derives it: days null means
+ * Catch's terms are unset, no start means it has not started, and the days
+ * left round up while it is scheduled or running.
+ */
+export function trialFromView(value: unknown, nowMillis: number): TrialStatus {
+  const raw = record<{days: unknown; startsAtMillis: unknown; endsAtMillis: unknown}>(value);
+  const days = typeof raw?.days === "number" && Number.isSafeInteger(raw.days) ? raw.days : null;
+  if (days === null) return {state: "unconfigured", startsAtMillis: null, endsAtMillis: null, daysLeft: null};
+  const startsAtMillis = millis(raw?.startsAtMillis);
+  const endsAtMillis = millis(raw?.endsAtMillis);
+  const base = {startsAtMillis, endsAtMillis, daysLeft: null};
+  if (startsAtMillis === null || endsAtMillis === null) return {...base, state: days > 0 ? "notStarted" : "none"};
+  if (days <= 0) return {...base, state: "none"};
+  if (nowMillis >= endsAtMillis) return {...base, state: "ended"};
+  const daysLeft = Math.ceil((endsAtMillis - Math.max(nowMillis, startsAtMillis)) / dayMillis);
+  return {...base, state: nowMillis < startsAtMillis ? "scheduled" : "active", daysLeft};
 }
 
 export function parsePlanStatus(value: unknown): PlanStatus {

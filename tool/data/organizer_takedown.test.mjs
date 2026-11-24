@@ -97,7 +97,8 @@ test("prod writes need --allow-prod; prod reads do not", async () => {
 
 test("the inventory scans every organizerId collection and keeps money, safety and legal records", () => {
   const inventory = readSchemaInventory(path.join(root, "contracts/firestore"));
-  for (const collection of ["events", "organizerClaimRequests", "salesOpportunities", "eventPublicPage", "reviews"]) {
+  for (const collection of ["events", "organizerClaimRequests", "salesOpportunities", "eventPublicPage", "reviews",
+    "eventBookings", "eventParticipations"]) {
     assert.ok(inventory.byField.includes(collection), collection);
   }
   for (const collection of ["organizerGrowthFacts", "publicPageBuilds", "organizerPublicPage", "publicOrganizers",

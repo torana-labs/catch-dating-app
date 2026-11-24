@@ -1,0 +1,270 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_guest_directory_views.schema.json",
+  "title": "ProgramGuestDirectoryViewDocument",
+  "description": "Server-maintained programme guest directory row: one per guest, household and guest group, together exactly what listProgramGuests returned for a page (the guest fields with their function rows, and the households and groups those guests name). The id is {kind}__{sourceId}. Written by triggers on programGuests, programFunctionGuests, programHouseholds and programGuestGroups. A guest's name, phone and email are resolved by the trigger from the workspace field assertions exactly as the callable resolved them, and a guest whose name is not disclosable has no row; the assertions, their ids, the field authority and conflicts, the household's primary contact, consent and delivery fields, and membership evidence are never copied. Readable by the programme owner and by a live guest relations duty that covers the whole programme (programAccessViews programAll), as requireProgramGuestDirectoryAccess admits them. Names, phone numbers and emails are personal data: archive anonymization reaches the rows through the source triggers. Never identity, permission or mutation authority; the revisions are the write fences the commands check.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programGuestDirectoryViews",
+  "x-firestore-path": "programGuestDirectoryViews/{viewId}",
+  "x-document-id-field": "viewId",
+  "x-owner": "Programme read model projector (programGuestDirectoryViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "kind",
+    "sourceId",
+    "guest",
+    "household",
+    "group",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "guest",
+        "household",
+        "group"
+      ],
+      "description": "Which source the row mirrors; exactly the matching object below is set and the other two are null."
+    },
+    "sourceId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "The programGuests, programHouseholds or programGuestGroups document id."
+    },
+    "guest": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/guestRow"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "household": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/householdRow"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "group": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/groupRow"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "version": {
+      "const": 1
+    }
+  },
+  "definitions": {
+    "guestRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "displayName",
+        "householdId",
+        "contactId",
+        "phoneE164",
+        "email",
+        "externalReference",
+        "groupIds",
+        "invitationStatus",
+        "rsvpStatus",
+        "revision",
+        "functions"
+      ],
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140,
+          "description": "Resolved from the selected displayName assertion; the directory orders guests by it."
+        },
+        "householdId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "contactId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Optional organizerContacts link; the programme inbox attributes contact-linked threads with it."
+        },
+        "phoneE164": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 20,
+          "description": "Resolved from the selected phone assertion; null when none is selected, cleared or restricted."
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 320,
+          "description": "Resolved from the selected email assertion; null when none is selected, cleared or restricted."
+        },
+        "externalReference": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "groupIds": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+          }
+        },
+        "invitationStatus": {
+          "$ref": "../shared/program_common.schema.json#/definitions/programInvitationStatus"
+        },
+        "rsvpStatus": {
+          "$ref": "../shared/program_common.schema.json#/definitions/programRsvpStatus"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991,
+          "description": "The guest's revision, the expectedRevision fence of upsertProgramGuest."
+        },
+        "functions": {
+          "type": "array",
+          "maxItems": 60,
+          "items": {
+            "$ref": "#/definitions/functionRow"
+          },
+          "description": "The guest's programFunctionGuests rows in functionId order. A missing function means implicitly invited and pending for an allGuests function."
+        }
+      }
+    },
+    "functionRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "functionId",
+        "invited",
+        "rsvpStatus",
+        "attendanceStatus",
+        "partySize"
+      ],
+      "properties": {
+        "functionId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "invited": {
+          "type": "boolean"
+        },
+        "rsvpStatus": {
+          "$ref": "../shared/program_common.schema.json#/definitions/programRsvpStatus"
+        },
+        "attendanceStatus": {
+          "$ref": "../shared/program_common.schema.json#/definitions/programFunctionAttendanceStatus"
+        },
+        "partySize": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 20
+        }
+      }
+    },
+    "householdRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "memberGuestIds",
+        "revision"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "memberGuestIds": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+          }
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991,
+          "description": "The household's revision, the expectedRevision fence of upsertProgramHousehold."
+        }
+      }
+    },
+    "groupRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "dimension",
+        "sortOrder",
+        "memberCount",
+        "revision"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "dimension": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "sortOrder": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "memberCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  }
+}

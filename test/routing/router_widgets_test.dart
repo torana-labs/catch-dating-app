@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
@@ -19,13 +18,17 @@ import 'package:catch_dating_app/hosts/presentation/event_management/host_create
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
+import 'package:catch_dating_app/pages/chat/chat_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
-import 'package:catch_dating_app/routing/go_router.dart' as app_router;
+import 'package:catch_dating_app/routing/consumer_router.dart' as app_router;
+import 'package:catch_dating_app/routing/host_router.dart' as app_router;
+import 'package:catch_dating_app/routing/router_frame.dart' as app_router;
 import 'package:catch_platform/persistence/command_journal_provider.dart';
 import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
 import 'package:catch_platform/push/fcm_service.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,7 +38,6 @@ import '../events/events_test_helpers.dart' as run_helpers;
 import '../onboarding/onboarding_test_helpers.dart' as onboarding_helpers;
 import '../organizers/organizers_test_helpers.dart' as organizer_helpers;
 import '../support/profile_readiness_fixtures.dart';
-import '../test_pump_helpers.dart';
 
 class _ControlledProfileRepository
     extends onboarding_helpers.FakeOnboardingUserProfileRepository {

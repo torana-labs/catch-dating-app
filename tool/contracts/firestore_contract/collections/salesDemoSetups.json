@@ -1,0 +1,11 @@
+{
+  "id": "salesDemoSetups",
+  "path": "salesDemoSetups/{setupId}",
+  "rulesMatch": "/salesDemoSetups/{privateDocument=**}",
+  "typescriptInterface": "SalesDemoSetupDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "verified organizer demo setup boundary",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

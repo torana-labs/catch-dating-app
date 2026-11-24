@@ -13,8 +13,8 @@ import {
   "../shared/generated/validators/adminDecideOrganizerPolicyGapInput";
 import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {requireAdminRole} from "./adminAuth";
-import {setAdminAuditLogInTransaction} from "./adminAudit";
+import {requireAdminRole} from "../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 
 const organizerIntakeRoles = ["admin", "adminOwner", "support"] as const;
 const decisionCollection = "organizerPolicyGapReviewDecisions";

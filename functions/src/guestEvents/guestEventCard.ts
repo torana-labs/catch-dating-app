@@ -1,5 +1,6 @@
 import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import type {GuestEventCard} from "../shared/generated/guestEventCard";
+import {publicEventPriceHidden} from "../events/publicEventProjection";
 
 export type {GuestEventCard};
 
@@ -27,8 +28,9 @@ const count = (value: unknown): number | null =>
 
 /**
  * The fields a guest's own event lists show, from one event. No live booking
- * counts: a booking must never rewrite other guests' cards. Null when the
- * event cannot be listed (no organizer, start time or format).
+ * counts: a booking must never rewrite other guests' cards. A price the host
+ * hides until booking opens is null here, as on the public copy (#1666).
+ * Null when the event cannot be listed (no organizer, start time or format).
  * @param {string} eventId The event id.
  * @param {EventDocument | undefined} event The event.
  * @return {GuestEventCard | null} The card.
@@ -72,11 +74,12 @@ export function guestEventCard(
     locationDetails: text(event.locationDetails),
     description: text(event.description),
     capacityLimit: count(event.capacityLimit),
-    priceInPaise: count(event.priceInPaise),
+    priceInPaise: publicEventPriceHidden(event) ?
+      null : count(event.priceInPaise),
     currency: text(event.currency),
     priceHiddenUntilBookingOpens: event.priceHiddenUntilBookingOpens === true,
     publicRegistrationEnabled: event.publicRegistrationEnabled === true,
-    demandPricing:
+    demandPricing: !publicEventPriceHidden(event) &&
       (event.eventPolicy?.pricing?.demandPricingRules?.length ?? 0) > 0,
     synthetic: (event as {synthetic?: unknown}).synthetic === true,
   };

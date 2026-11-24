@@ -1,0 +1,31 @@
+{
+  "id": "audit:context-map",
+  "category": "audit",
+  "path": "tool/architecture/check_context_map.mjs",
+  "command": "node tool/architecture/check_context_map.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Checks what one file cannot show: tool/architecture/context_map.json is well formed and the architecture spec's context table matches it. Placement and import order are catch_arch_* lints that read the same map.",
+  "checks": [
+    "node --test tool/architecture/check_context_map.test.mjs",
+    "node --check tool/architecture/check_context_map.mjs",
+    "node tool/architecture/check_context_map.mjs"
+  ],
+  "role": "gate",
+  "alsoEnforces": [
+    "CONTEXT-MAP-001"
+  ],
+  "impactPaths": [
+    "docs/app_architecture.md",
+    "tool/architecture/check_context_map.test.mjs",
+    "tool/architecture/check_context_map.mjs",
+    "tool/architecture/context_map.json"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "queueGate": "always"
+}

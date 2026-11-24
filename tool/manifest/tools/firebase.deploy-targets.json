@@ -1,0 +1,38 @@
+{
+  "id": "firebase:deploy-targets",
+  "category": "firebase",
+  "path": "tool/deploy_firebase_targets.sh",
+  "command": "./tool/deploy_firebase_targets.sh",
+  "surface": "remote-deploy",
+  "guard": "none",
+  "guardReason": "Deploys each phase with firebase deploy --only; meant to run only from _backend-deploy.yml behind its environment approval.",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "description": "Deploys Firebase targets in safe order.",
+  "checks": [
+    "bash -n tool/deploy_firebase_targets.sh",
+    "node --test tool/firebase/plan_firebase_deploy_targets.test.mjs",
+    "node --test tool/firebase/check_deploy_ref.test.mjs",
+    "node --test tool/firebase/check_deploy_parity.test.mjs",
+    "node --test tool/firebase/retry_transient.test.mjs",
+    "node --check tool/firebase/check_deploy_ref.mjs"
+  ],
+  "role": "generator",
+  "impactPaths": [
+    "tool/firebase/retry_transient.mjs",
+    "tool/firebase/retry_transient.test.mjs",
+    "tool/firebase/check_deploy_ref.mjs",
+    "tool/firebase/check_deploy_ref.test.mjs",
+    "tool/firebase/check_deploy_parity.mjs",
+    "tool/firebase/check_deploy_parity.test.mjs",
+    "functions/scripts/set-callable-invokers-public.cjs",
+    "functions/test/callable-invokers.test.cjs",
+    "tool/deploy_firebase_targets.sh"
+  ],
+  "runbook": "docs/release_operations.md#firebase-backend-delivery-order"
+}

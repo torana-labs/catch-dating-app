@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/config_discovery_indexing.schema.json",
+  "title": "ConfigDiscoveryIndexingDocument",
+  "description": "Server-only owner switch stored at config/discoveryIndexing. With no document, or forceNoindex false, the indexing bar decides; forceNoindex true makes every city-by-format page noindex, follow. Any other shape also forces noindex, because a kill switch that cannot be read fails closed. functions/src/cityPlans/indexingOverride.ts parses exactly this shape.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "config_discovery_indexing",
+  "x-firestore-path": "config/discoveryIndexing",
+  "x-document-id-field": "discoveryIndexing",
+  "x-owner": "the owner in the Firebase console (Admin credentials); read by the hourly city plans rebuild",
+  "required": ["forceNoindex"],
+  "properties": {
+    "forceNoindex": {
+      "type": "boolean",
+      "description": "True keeps every city-by-format page out of search."
+    },
+    "reason": {
+      "type": "string",
+      "description": "Why the switch is set, for the next reader."
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedBy": {
+      "type": "string",
+      "description": "Who set the switch."
+    }
+  }
+}

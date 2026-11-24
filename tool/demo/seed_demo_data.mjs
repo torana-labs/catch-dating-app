@@ -43,7 +43,7 @@ import {
   validateOrganizerFollowDocument,
   validateOrganizerTeamMembershipDocument,
   validateEventDocument,
-  validateEventParticipationDocument,
+  validateEventBookingDocument,
   validateSavedEventDocument,
   validateSeedEventManifestDocument,
   validateSwipeDocument,
@@ -66,6 +66,16 @@ const {
   publishedEventBasics,
 } = requireFromFunctions("./lib/events/progressiveSetup/basics.js");
 const {eventTitleLabel} = requireFromFunctions("./lib/shared/eventLabels.js");
+const {newEventSeatLedger} = requireFromFunctions(
+  "./lib/events/seatAuthority/eventSeatLedgers.js");
+const {seatReservationDocId} = requireFromFunctions(
+  "./lib/events/seatAuthority/firestoreAdapter.js");
+const {
+  catchUidSeatKey,
+  seatIdentityAliasId,
+  seatIdentityValueHash,
+  seatVerifiedPhoneProofId,
+} = requireFromFunctions("./lib/events/seatIdentityAuthority.js");
 
 const DEFAULT_SEED_PREFIX = "demo_beta_2026";
 const DEFAULT_MAX_BATCH_WRITES = 450;
@@ -937,7 +947,8 @@ function buildSeed({
     ...organizers.map((organizer) => ({path: `organizers/${organizer.id}`, data: organizer.doc})),
     ...memberships.map((membership) => ({path: `${membership.collection}/${membership.id}`, data: membership.doc})),
     ...events.map((event) => ({path: `events/${event.id}`, data: event.doc})),
-    ...participations.map((participation) => ({path: `eventParticipations/${participation.id}`, data: participation.doc})),
+    ...participations.map((participation) => ({path: `eventBookings/${participation.id}`, data: participation.doc})),
+    ...seatDocsForEvents({events, participations, users}),
     ...eventSuccessPlans.map((plan) => ({path: `eventSuccessPlans/${plan.id}`, data: plan.doc})),
     ...eventSuccessPreferences.map((preference) => ({path: `eventSuccessPreferences/${preference.id}`, data: preference.doc})),
     ...eventSuccessCompatibilityResponses.map((response) => ({path: `eventSuccessCompatibilityResponses/${response.id}`, data: response.doc})),
@@ -1682,6 +1693,49 @@ function buildRoster({event, runIndex, organizerMembers, anchorProfiles}) {
   return roster;
 }
 
+/**
+ * Every event's seat records, as booking writes them: the ledger counting
+ * each signed-up or attended guest, and for each of them the uid and phone
+ * aliases, verified phone proof and active reservation of their seat.
+ */
+function seatDocsForEvents({events, participations, users}) {
+  const phoneByUid = new Map(users.map((user) =>
+    [user.uid, user.userDoc.phoneNumber ?? null]));
+  const docs = [];
+  for (const event of events) {
+    const organizerId = event.doc.organizerId;
+    const seated = participations.filter((participation) =>
+      participation.doc.eventId === event.id &&
+      ["signedUp", "attended"].includes(participation.doc.status));
+    docs.push({path: `eventSeatLedgers/${event.id}`,
+      data: {...newEventSeatLedger(event.id, event.doc),
+        occupied: seated.length}});
+    for (const participation of seated) {
+      const uid = participation.doc.uid;
+      const key = catchUidSeatKey(event.id, uid);
+      const phone = phoneByUid.get(uid) ?? null;
+      const alias = {eventId: event.id, organizerId, canonicalKey: key,
+        identityRevision: 1, migrationRevision: 1, state: "ready"};
+      docs.push({path: `eventSeatIdentityAliases/${seatIdentityAliasId(
+        event.id, "uid", uid)}`, data: {...alias, kind: "uid",
+        valueHash: seatIdentityValueHash("uid", uid)}});
+      if (phone) {
+        docs.push({path: `eventSeatIdentityAliases/${seatIdentityAliasId(
+          event.id, "phone", phone)}`, data: {...alias, kind: "phone",
+          valueHash: seatIdentityValueHash("phone", phone)}});
+      }
+      docs.push({path: `eventSeatVerifiedPhones/${seatVerifiedPhoneProofId(
+        event.id, uid)}`, data: {eventId: event.id, organizerId, uid,
+        phoneE164: phone, migrationRevision: 1, state: "current"}});
+      docs.push({path: `eventSeatReservations/${seatReservationDocId(
+        event.id, key)}`, data: {eventId: event.id, canonicalKey: key,
+        identityRevision: 1, active: true, revision: 1,
+        reservedAtMillis: 0, releasedAtMillis: null}});
+    }
+  }
+  return docs;
+}
+
 function applyRosterAggregates(event, roster) {
   const booked = roster.filter((entry) => entry.status === "signedUp" || entry.status === "attended");
   const attended = roster.filter((entry) => entry.status === "attended");
@@ -2281,6 +2335,11 @@ function buildReviews({seedPrefix, seedMarker, organizer, event, roster, now}) {
           reviewerName: entry.person.name || entry.person.displayName || "Runner",
           rating: 4 + (index % 2),
           comment: "Well organized demo event with clear pacing and a friendly group.",
+          // Attended-event reviews as createEventReview writes them; rules
+          // show other people only published reviews.
+          verificationStatus: "verified",
+          source: "catchEvent",
+          moderationStatus: "published",
           createdAt: admin.firestore.Timestamp.fromDate(offsetDate(now, {days: -2, minutes: index})),
           updatedAt: null,
         },
@@ -2447,7 +2506,7 @@ export function validateSeedDocuments(writePlan) {
     organizerFollows: 0,
     organizerTeamMemberships: 0,
     events: 0,
-    eventParticipations: 0,
+    eventBookings: 0,
     eventSuccessPlans: 0,
     eventSuccessPreferences: 0,
     eventSuccessCompatibilityResponses: 0,
@@ -2539,11 +2598,11 @@ export function validateSeedDocuments(writePlan) {
       result.events += 1;
     } else if (isEventParticipationPath(doc.path)) {
       assertValidSchemaPayload(
-        validateEventParticipationDocument,
+        validateEventBookingDocument,
         schemaSerializableFirestoreData(doc.data),
         doc.path
       );
-      result.eventParticipations += 1;
+      result.eventBookings += 1;
     } else if (isEventSuccessPlanPath(doc.path)) {
       assertValidSchemaPayload(
         validateEventSuccessPlanDocument,
@@ -2791,7 +2850,7 @@ function isRunPath(docPath) {
 }
 
 function isEventParticipationPath(docPath) {
-  return /^eventParticipations\/[^/]+$/.test(docPath);
+  return /^eventBookings\/[^/]+$/.test(docPath);
 }
 
 function isEventSuccessPlanPath(docPath) {
@@ -3021,7 +3080,7 @@ function isNewAnchorRelationshipDoc(doc, newAnchorSet, newAnchorMatchIds) {
       doc.path.startsWith("organizerTeamMemberships/")) {
     return newAnchorSet.has(doc.data.uid);
   }
-  if (doc.path.startsWith("eventParticipations/")) {
+  if (doc.path.startsWith("eventBookings/")) {
     return newAnchorSet.has(doc.data.uid);
   }
   if (doc.path.startsWith("eventSuccessPreferences/") ||
@@ -3154,7 +3213,7 @@ export async function normalizeAppendParticipationsForCapacity(firestore, docs) 
   const removedPaymentIds = new Set();
   const participationsByRun = groupBy(
     docs.filter((doc) =>
-      doc.path.startsWith("eventParticipations/") &&
+      doc.path.startsWith("eventBookings/") &&
       (doc.data.status === "signedUp" || doc.data.status === "attended")
     ),
     (doc) => doc.data.eventId
@@ -3200,7 +3259,7 @@ function isFutureRun(event, now = new Date()) {
 export async function filterAppendDocsForValidRelationships(firestore, docs) {
   const participationCache = new Map();
   for (const doc of docs) {
-    if (!doc.path.startsWith("eventParticipations/")) continue;
+    if (!doc.path.startsWith("eventBookings/")) continue;
     participationCache.set(doc.path.split("/")[1], doc.data);
   }
 
@@ -3285,7 +3344,7 @@ async function effectiveParticipation({
 }) {
   const id = `${eventId}_${uid}`;
   if (participationCache.has(id)) return participationCache.get(id);
-  const snap = await firestore.collection("eventParticipations").doc(id).get();
+  const snap = await firestore.collection("eventBookings").doc(id).get();
   const data = snap.exists ? snap.data() : null;
   participationCache.set(id, data);
   return data;
@@ -3315,7 +3374,7 @@ function buildAppendAggregateUpdates(docs) {
       organizerUpdate.followerCount = (organizerUpdate.followerCount ?? 0) + 1;
     }
 
-    if (!doc.path.startsWith("eventParticipations/")) continue;
+    if (!doc.path.startsWith("eventBookings/")) continue;
     const eventUpdate = mapEntry(eventUpdates, `events/${doc.data.eventId}`);
     if (doc.data.status === "signedUp" || doc.data.status === "attended") {
       eventUpdate.bookedCount = (eventUpdate.bookedCount ?? 0) + 1;
@@ -3457,7 +3516,7 @@ function printSummary({
     `${schemaValidation.publicProfiles} public profiles, ` +
     `${schemaValidation.organizers} clubs, ` +
     `${schemaValidation.events} events, ` +
-    `${schemaValidation.eventParticipations} participations, ` +
+    `${schemaValidation.eventBookings} participations, ` +
     `${schemaValidation.profileDecisions} decisions, ` +
     `${schemaValidation.matches} matches`
   );

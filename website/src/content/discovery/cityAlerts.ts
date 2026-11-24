@@ -13,13 +13,13 @@ import {brand} from "../brand.ts";
 export const cityAlertsCopy = {
   kicker: "Hear about new plans first",
   title: "Get new plans in {city} on WhatsApp.",
-  lead: "About once a week. Stop any time.",
+  lead: "We’ll let you know when new plans open.",
   phone: "Your WhatsApp number",
-  action: "Notify me",
-  consent: "Tapping Notify me means you agree to get new plans in {city} on WhatsApp, about once a week. You can stop any time.",
+  action: "Get plans",
+  consent: `On WhatsApp, from ${brand.name}.`,
   /** Names this wording on every stored consent; change it whenever the consent wording changes. */
-  consentVersion: "city-new-plans-whatsapp-v1",
-  privacy: "Privacy policy",
+  consentVersion: "city-new-plans-whatsapp-v3",
+  privacy: "Privacy",
   sent: "Done. We reply on WhatsApp, usually within an hour.",
   /** What the phone action bar's WhatsApp button types: any plan, one format's (`{plans}`, such as runs) or a newcomer's. */
   message: `Hi ${brand.name}, please send me new plans in {city}.`,

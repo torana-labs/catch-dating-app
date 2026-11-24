@@ -47,6 +47,12 @@ node tool/demo/seed_demo_data.mjs --scenario smoke --json >/dev/null
 echo "==> Checking Firestore contract metadata"
 node tool/contracts/check_firestore_contract.mjs
 
+echo "==> Checking direct client write contracts against rules"
+node tool/contracts/check_client_write_contracts.mjs
+
+echo "==> Checking BigQuery export paths against the Firestore registry"
+node tool/contracts/check_bigquery_export_paths.mjs
+
 echo "==> Checking Firestore query/index parity"
 node tool/contracts/check_firestore_query_indexes.mjs
 
@@ -87,7 +93,7 @@ flutter analyze --fatal-infos \
   lib/hosts/presentation/organizer_management/create/create_organizer_controller.dart \
   lib/contexts/reviews/data/reviews_repository.dart \
   lib/contexts/reviews/data/review_callable_adapters.dart \
-  lib/reviews/shared/reviews_section.dart \
+  lib/pages/reviews/reviews_section.dart \
   lib/contexts/events/data/event_repository.dart \
   lib/contexts/events/data/event_callable_adapters.dart \
   lib/contexts/events/data/event_callable_responses.dart \

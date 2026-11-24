@@ -1,4 +1,4 @@
-import type {HostListingCatchEvent, HostListingExternalEvent} from "./types";
+import type {HostListingCatchEvent} from "./types";
 
 /**
  * Catch is not a dating product (CAT-247). The public listing schema has no
@@ -13,8 +13,4 @@ const openActivityTitle = "Hosted event";
 export function withoutDatingFraming(event: HostListingCatchEvent): HostListingCatchEvent {
   if (event.activityKind !== "singlesMixer") return event;
   return {...event, activityKind: "openActivity", ...(event.title === generatedMixerTitle ? {title: openActivityTitle} : {})};
-}
-
-export function withoutExternalDatingFraming(event: HostListingExternalEvent): HostListingExternalEvent {
-  return event.activityKind === "singlesMixer" ? {...event, activityKind: "openActivity"} : event;
 }

@@ -229,9 +229,6 @@ function mergeFixture() {
   addAlias("contactOrigin", mergeOriginId);
   store.put(`eventSeatLedgers/${mergeEventId}`, {eventId: mergeEventId,
     state: "ready", revision: 2, migrationRevision: 1});
-  store.put(`eventSeatMigrationFences/${mergeEventId}`, {
-    eventId: mergeEventId, organizerId, state: "ready",
-    migrationRevision: 1});
   const request = (data: Record<string, unknown>) =>
     ({auth: {uid: manager}, data}) as unknown as
       import("firebase-functions/v2/https").CallableRequest<unknown>;

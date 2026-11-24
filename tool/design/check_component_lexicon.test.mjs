@@ -3,6 +3,7 @@ import {spawnSync} from "node:child_process";
 import {readFileSync} from "node:fs";
 import test from "node:test";
 import {readDesignRegistry} from "../lib/admin_registries.mjs";
+import {loadToolsManifest} from "../lib/tools_manifest.mjs";
 
 const run = (args, env = process.env) => spawnSync(process.execPath,
   ["tool/design/check_component_lexicon.mjs", ...args],
@@ -85,7 +86,7 @@ test("website surface checks work without Dart while full API checks fail closed
   assert.equal(full.status, 1);
   assert.match(full.stderr, /Component API collection failed/u);
   assert.equal(run(["--surfaces-only", "--known-bad-api"], env).status, 64);
-  const manifest = readJson("tool/tools_manifest.json");
+  const manifest = loadToolsManifest();
   const gate = manifest.tools.find(({id}) => id === "design:component-lexicon");
   assert.ok(gate.ciRequirements.setup.includes("flutter-pub"));
   // CI runs the full check, not --surfaces-only: this test file is a gate

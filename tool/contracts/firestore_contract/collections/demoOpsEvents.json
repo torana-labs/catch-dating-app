@@ -1,0 +1,10 @@
+{
+  "id": "demoOpsEvents",
+  "path": "demoOpsEvents/{operationId}",
+  "rulesMatch": "/demoOpsEvents/{operationId}",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Suvbot demo operations and the demo ops CLI",
+  "writerContext": "ops",
+  "read": "server only",
+  "write": "server only"
+}

@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/client_writes/create_host_profile.schema.json",
+  "title": "CreateHostProfileClientWrite",
+  "description": "Client-owned Firestore create of the host profile at hostProfiles/{uid} (HostProfileRepository.ensureHostProfile, a merge set that creates the document when it is absent).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "path",
+    "data"
+  ],
+  "properties": {
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid"
+      ],
+      "properties": {
+        "uid": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "displayName",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "displayName": {
+          "$ref": "../firestore/host_profiles.schema.json#/properties/displayName"
+        },
+        "status": {
+          "$ref": "../firestore/host_profiles.schema.json#/properties/status"
+        },
+        "createdAt": {
+          "$ref": "../firestore/host_profiles.schema.json#/properties/createdAt"
+        },
+        "updatedAt": {
+          "$ref": "../firestore/host_profiles.schema.json#/properties/updatedAt"
+        }
+      }
+    }
+  },
+  "x-firestore-operation": "create",
+  "x-firestore-path": "hostProfiles/{uid}",
+  "x-owner": "authenticated owner direct create"
+}

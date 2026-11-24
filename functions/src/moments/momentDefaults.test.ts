@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {FakeFirestore} from "../shared/testing/programFirestore";
 import {ensureEventDefaultMoments} from "./momentDefaults";
-import {momentFromDocument} from "./momentDocuments";
+import {momentFromDocument, momentToDocument} from "./momentDocuments";
+import type {MomentDefinition} from "./momentModel";
 import {runMomentSweep, type MomentRunnerDeps} from "./momentRunner";
+import {buildMomentRunnerDeps} from "./momentWiring";
 
 const NOW = 1_700_000_000_000;
 
@@ -54,7 +56,8 @@ test("provisions an armed system-default reminder for upcoming events",
     });
     const summary = await ensureEventDefaultMoments(deps(db));
     assert.equal(summary.scanned, 1);
-    assert.equal(summary.created, 1);
+    // The start reminder and the feedback request.
+    assert.equal(summary.created, 2);
     const doc = db.getDoc(
       "organizerMoments/e1_event_start_reminder");
     assert.ok(doc !== undefined);
@@ -104,7 +107,8 @@ test("does not clobber an existing paused moment", async () => {
     },
   });
   const summary = await ensureEventDefaultMoments(deps(db));
-  assert.equal(summary.created, 0);
+  // Only the feedback request is new; the paused reminder stays as is.
+  assert.equal(summary.created, 1);
   const doc = db.getDoc("organizerMoments/e1_event_start_reminder")!;
   assert.equal(doc.status, "paused");
   assert.equal((doc.approval as {approvedByUid: string}).approvedByUid,
@@ -115,7 +119,7 @@ test("provisioned reminder fires through the sweep and honors the " +
     "legacy send-once semantics", async () => {
   const db = new FakeFirestore({
     "events/e1": activeEvent(NOW + 10 * 60 * 1000),
-    "eventParticipations/p1":
+    "eventBookings/p1":
       {eventId: "e1", uid: "u1", status: "signedUp"},
     "users/u1": {},
   });
@@ -145,7 +149,7 @@ test("an at-anchor run inside the grace window skips once the anchor " +
   const runId = `e1_at_start_1_${start}`;
   const db = new FakeFirestore({
     "events/e1": activeEvent(start),
-    "eventParticipations/p1":
+    "eventBookings/p1":
       {eventId: "e1", uid: "u1", status: "signedUp"},
     "users/u1": {},
     "organizerMoments/e1_at_start": {
@@ -204,7 +208,7 @@ test("private and unconfigured events are never provisioned", async () => {
       eventOrigin: catchBooking, publicRegistrationEnabled: false},
   });
   const summary = await ensureEventDefaultMoments(deps(db));
-  assert.equal(summary.created, 3);
+  assert.equal(summary.created, 6);
   assert.equal(db.getDoc(
     "organizerMoments/priv_event_start_reminder"), undefined);
   assert.equal(db.getDoc(
@@ -218,3 +222,81 @@ test("private and unconfigured events are never provisioned", async () => {
   assert.ok(db.getDoc(
     "organizerMoments/bookedClosed_event_start_reminder") !== undefined);
 });
+
+// 06:30 in Asia/Kolkata (UTC+5:30), inside the default 21:00-08:00 quiet
+// hours; the T-15m reminder is due at 06:15 local.
+const DAWN_START = Date.UTC(2026, 10, 24, 1, 0);
+const DAWN_DUE = DAWN_START - 15 * 60_000;
+const QUIET_END = Date.UTC(2026, 10, 24, 2, 30); // 08:00 local
+
+function dawnRunner(db: FakeFirestore, pushed: string[]) {
+  // Real quiet hours, local time and daily cap from the wiring; only the
+  // push leg is captured.
+  return buildMomentRunnerDeps({
+    firestore: () => db as never,
+    nowMillis: () => DAWN_DUE,
+    sendPushToUid: async (params) => {
+      pushed.push(`${params.runId}:${params.uid}`);
+    },
+  });
+}
+
+function dawnEvent(): Record<string, unknown> {
+  return {...activeEvent(DAWN_START), timezone: "Asia/Kolkata",
+    organizerId: "org-1"};
+}
+
+test("a 06:30 event's start reminder goes at 06:15 despite quiet hours",
+  async () => {
+    const db = new FakeFirestore({
+      "events/dawn": dawnEvent(),
+      "eventBookings/p1": {eventId: "dawn", uid: "u1", status: "signedUp"},
+      "users/u1": {},
+    });
+    const provision = await ensureEventDefaultMoments({
+      firestore: () => db as never,
+      nowMillis: () => DAWN_DUE - 60 * 60_000,
+      timestampFromMillis: (millis: number) => millis,
+    });
+    assert.equal(provision.created, 2);
+    const pushed: string[] = [];
+    const summary = await runMomentSweep(dawnRunner(db, pushed));
+    assert.equal(summary.runsFired, 1);
+    assert.deepEqual(pushed,
+      [`dawn_event_start_reminder_1_${DAWN_DUE}:u1`]);
+    assert.equal(db.getDoc(
+      `organizerMomentRuns/dawn_event_start_reminder_1_${DAWN_DUE}`)!.status,
+    "dispatched");
+  });
+
+test("a non-critical push at 06:15 still defers to the end of quiet hours",
+  async () => {
+    const organizerPush: MomentDefinition = {
+      momentId: "dawn_host_note",
+      scope: {kind: "event", eventId: "dawn"},
+      name: "Bring water",
+      initiation: {kind: "scheduled", atMillis: DAWN_DUE},
+      sense: "individual",
+      audience: {kind: "eventParticipants", statuses: ["signedUp"]},
+      action: {kind: "push", notificationType: "eventReminder",
+        preferenceKey: "eventReminders"},
+      status: "armed",
+      approval: {approvedByUid: "host", approvedAtMillis: 1},
+      origin: "organizer",
+      revision: 1,
+    };
+    const db = new FakeFirestore({
+      "events/dawn": dawnEvent(),
+      "eventBookings/p1": {eventId: "dawn", uid: "u1", status: "signedUp"},
+      "users/u1": {},
+      "organizerMoments/dawn_host_note":
+        momentToDocument(organizerPush, 1, true),
+    });
+    const pushed: string[] = [];
+    const summary = await runMomentSweep(dawnRunner(db, pushed));
+    assert.equal(summary.runsFired, 0);
+    assert.deepEqual(pushed, []);
+    const run = db.getDoc(`organizerMomentRuns/dawn_host_note_0_${DAWN_DUE}`);
+    assert.equal(run!.status, "planned");
+    assert.equal(run!.dueAtMillis, QUIET_END);
+  });

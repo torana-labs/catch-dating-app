@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "group": "test-support",
+  "sequence": 1795411381015,
+  "entries": [
+    {
+      "path": "test/goldens/support/catch_golden_file_comparator.dart",
+      "moveTo": "packages/catch_test_support/lib/goldens/catch_golden_file_comparator.dart"
+    },
+    {
+      "path": "test/support/event_organizer_summary_fixture.dart",
+      "moveTo": "packages/catch_test_support/lib/event_organizer_summary_fixture.dart"
+    },
+    {
+      "path": "test/support/empty_event_chat_repository.dart",
+      "moveTo": "packages/catch_test_support/lib/empty_event_chat_repository.dart"
+    },
+    {
+      "path": "test/programs/program_operations_fixture.dart",
+      "moveTo": "packages/catch_test_support/lib/programmes/program_operations_fixture.dart"
+    },
+    {
+      "path": "test/support/analytics_test_helpers.dart",
+      "moveTo": "packages/catch_test_support/lib/analytics_test_helpers.dart"
+    },
+    {
+      "path": "test/support/dashboard_test_helpers.dart",
+      "moveTo": "packages/catch_test_support/lib/dashboard_test_helpers.dart"
+    },
+    {
+      "path": "test/support/profile_test_helpers.dart",
+      "moveTo": "packages/catch_test_support/lib/profile_test_helpers.dart"
+    },
+    {
+      "path": "test/goldens/support/golden_pump.dart",
+      "moveTo": "packages/catch_test_support/lib/goldens/golden_pump.dart"
+    },
+    {
+      "path": "test/support/catch_test_fonts.dart",
+      "moveTo": "packages/catch_test_support/lib/catch_test_fonts.dart"
+    },
+    {
+      "path": "test/support/contract_schemas.dart",
+      "moveTo": "packages/catch_test_support/lib/contract_schemas.dart"
+    },
+    {
+      "path": "test/support/router_topology.dart",
+      "moveTo": "packages/catch_test_support/lib/router_topology.dart"
+    },
+    {
+      "path": "test/test_pump_helpers.dart",
+      "moveTo": "packages/catch_test_support/lib/test_pump_helpers.dart"
+    },
+    {
+      "path": "lib/design_fixtures/",
+      "moveTo": "packages/catch_test_support/lib/design_fixtures/"
+    }
+  ],
+  "moves": {
+    "lib/design_fixtures/catches_surface_fixtures.dart": "packages/catch_test_support/lib/design_fixtures/catches_surface_fixtures.dart",
+    "lib/design_fixtures/dashboard_surface_fixtures.dart": "packages/catch_test_support/lib/design_fixtures/dashboard_surface_fixtures.dart",
+    "lib/design_fixtures/event_success_companion_fixtures.dart": "packages/catch_test_support/lib/design_fixtures/event_success_companion_fixtures.dart",
+    "lib/design_fixtures/host_inbox_surface_fixtures.dart": "packages/catch_test_support/lib/design_fixtures/host_inbox_surface_fixtures.dart",
+    "lib/design_fixtures/host_operations_fixtures.dart": "packages/catch_test_support/lib/design_fixtures/host_operations_fixtures.dart",
+    "lib/design_fixtures/matches_chat_surface_fixtures.dart": "packages/catch_test_support/lib/design_fixtures/matches_chat_surface_fixtures.dart",
+    "lib/design_fixtures/profile_surface_fixtures.dart": "packages/catch_test_support/lib/design_fixtures/profile_surface_fixtures.dart",
+    "lib/design_fixtures/utility_surface_fixtures.dart": "packages/catch_test_support/lib/design_fixtures/utility_surface_fixtures.dart",
+    "test/goldens/support/catch_golden_file_comparator.dart": "packages/catch_test_support/lib/goldens/catch_golden_file_comparator.dart",
+    "test/goldens/support/golden_pump.dart": "packages/catch_test_support/lib/goldens/golden_pump.dart",
+    "test/programs/program_operations_fixture.dart": "packages/catch_test_support/lib/programmes/program_operations_fixture.dart",
+    "test/support/analytics_test_helpers.dart": "packages/catch_test_support/lib/analytics_test_helpers.dart",
+    "test/support/catch_test_fonts.dart": "packages/catch_test_support/lib/catch_test_fonts.dart",
+    "test/support/contract_schemas.dart": "packages/catch_test_support/lib/contract_schemas.dart",
+    "test/support/dashboard_test_helpers.dart": "packages/catch_test_support/lib/dashboard_test_helpers.dart",
+    "test/support/empty_event_chat_repository.dart": "packages/catch_test_support/lib/empty_event_chat_repository.dart",
+    "test/support/event_organizer_summary_fixture.dart": "packages/catch_test_support/lib/event_organizer_summary_fixture.dart",
+    "test/support/profile_test_helpers.dart": "packages/catch_test_support/lib/profile_test_helpers.dart",
+    "test/support/router_topology.dart": "packages/catch_test_support/lib/router_topology.dart",
+    "test/test_pump_helpers.dart": "packages/catch_test_support/lib/test_pump_helpers.dart"
+  },
+  "folders": {
+    "lib/design_fixtures/": "packages/catch_test_support/lib/design_fixtures/"
+  }
+}

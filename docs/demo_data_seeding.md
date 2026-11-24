@@ -42,7 +42,7 @@ Depending on the scenario, the seeder creates:
 - `organizerFollows/{organizerId_uid}` for synthetic users and optional real anchor users;
 - `events/{eventId}` with upcoming, full, waitlisted, cancelled, recently completed,
   and older completed states;
-- `eventParticipations/{eventId_uid}` for signed-up, waitlisted, attended, and
+- `eventBookings/{eventId_uid}` (named `eventParticipations` until Nov 2026) for signed-up, waitlisted, attended, and
   cancelled states;
 - `eventSuccessPlans/{eventId}` plus event-success preferences, quick question
   answers, live-reveal assignments, private feedback, wingman requests, and
@@ -136,7 +136,7 @@ manual QA instead of aging out after a couple of days.
 The world seed does not write `scheduleLocks`
 by default. Those collections are denormalized server-owned race guards for
 callable writes; the Functions also query canonical `events` and
-`eventParticipations`, so seeded existing state remains conflict-safe without
+`eventBookings`, so seeded existing state remains conflict-safe without
 exploding demo document counts. Use `--include-schedule-locks` only when
 explicitly testing the lock collections themselves.
 
@@ -351,7 +351,7 @@ to create the match:
 ```
 
 `--via-swipes` requires a shared attended event. The command auto-detects one
-from `eventParticipations`; if there is no shared attended event, pass
+from `eventBookings`; if there is no shared attended event, pass
 `--event-id` or warm the users first. The option writes
 `profileDecisions/{uid}/outgoing/{targetUid}` documents.
 
@@ -411,7 +411,7 @@ node tool/demo/demo_ops.mjs reset-user-demo-state \
 The reset command deletes only demo-owned relationship/activity docs connected
 to that user:
 
-- `eventParticipations` by `uid`;
+- `eventBookings` by `uid`;
 - `scheduleLocks` by `uid`;
 - `savedEvents` by `uid`;
 - `payments` by `userId`;
@@ -437,7 +437,7 @@ node tool/demo/demo_ops.mjs cleanup-stale-events \
 ```
 
 The command is dry-run-first if you omit `--apply`. It deletes stale seeded
-`events`, `eventParticipations`, schedule locks, saved events, payments, reviews,
+`events`, `eventBookings`, schedule locks, saved events, payments, reviews,
 event-linked profile decisions, demo match threads tied to stale event IDs, and event/match
 notifications. It recomputes event and event-club aggregates after apply.
 
@@ -754,7 +754,7 @@ Treat this tooling as product infrastructure:
 - **Edge-first counts:** when tooling writes relationship edges, recompute parent
   aggregate projections instead of hand-tuning counts.
 - **Relationship invariants:** profile decisions and decision-derived matches
-  must be backed by attended `eventParticipations` for both users on the same
+  must be backed by attended `eventBookings` for both users on the same
   event. Append mode filters out relationship docs that fail this check instead
   of creating invalid demo state.
 - **Architecture signal:** if a demo command has to duplicate complicated product
@@ -1026,7 +1026,7 @@ notification docs.
 Append mode also validates relationship docs after target filtering and capacity
 normalization. Any generated swipe, swipe-created match, match message, or match
 notification is skipped unless the effective appended/existing
-`eventParticipations/{eventId_uid}` documents show both users attended that event.
+`eventBookings/{eventId_uid}` documents show both users attended that event.
 This keeps the seeded Catches data aligned with the same rule enforced by the
 app and by `tool/data/validate_firestore_data.mjs`.
 

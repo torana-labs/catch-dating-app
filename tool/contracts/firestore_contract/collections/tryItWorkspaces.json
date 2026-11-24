@@ -1,0 +1,11 @@
+{
+  "id": "tryItWorkspaces",
+  "path": "tryItWorkspaces/{uid}",
+  "rulesMatch": "/tryItWorkspaces/{privateDocument=**}",
+  "typescriptInterface": "TryItWorkspaceDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "ensureTryItWorkspace and expireTryItWorkspaces",
+  "writerContext": "website",
+  "read": "server only",
+  "write": "server only"
+}

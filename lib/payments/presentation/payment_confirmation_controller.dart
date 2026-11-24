@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_location_links.dart';
-import 'package:catch_dating_app/events/shared/event_invite_share_copy.dart';
+import 'package:catch_dating_app/pages/event/event_invite_share_copy.dart';
 import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/device/external_share.dart';
@@ -9,8 +9,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'payment_confirmation_controller.g.dart';
 
-// keepalive: payment confirmation actions coordinate shared calendar, link,
-// and share side effects after checkout.
+// keepalive: account-free: payment confirmation actions coordinate shared
+// calendar, link, and share side effects after checkout.
 @Riverpod(keepAlive: true)
 PaymentConfirmationController paymentConfirmationController(Ref ref) {
   return PaymentConfirmationController(

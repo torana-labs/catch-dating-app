@@ -31,6 +31,7 @@ const {
   useRulesEnvironment,
   where,
 } = require("./rulesHarness.cjs");
+const {collectionGroup} = require("firebase/firestore");
 
 let testEnv;
 
@@ -122,6 +123,33 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
+        ["eventBookings", "event-1_runner-1"],
+        eventParticipation(),
+      );
+
+      await assertSucceeds(
+        getDoc(doc(authedDb("runner-1"), "eventBookings", "event-1_runner-1")),
+      );
+      await assertSucceeds(
+        getDoc(doc(authedDb("host-1"), "eventBookings", "event-1_runner-1")),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("runner-3"), "eventBookings", "event-1_runner-1")),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-1"), "eventBookings", "event-1_runner-1"),
+          eventParticipation(),
+        ),
+      );
+    });
+
+    // TRANSITIONAL (phase 1 of the eventBookings rename): the legacy mirror
+    // stays readable exactly as before until phase 2 retires it.
+    it("keeps the legacy eventParticipations mirror readable as before and closed to client writes", async () => {
+      await seed(["organizers", "club-1"], organizer());
+      await seed(["events", "event-1"], event());
+      await seed(
         ["eventParticipations", "event-1_runner-1"],
         eventParticipation(),
       );
@@ -135,19 +163,53 @@ describe("firestore.rules", () => {
       await assertFails(
         getDoc(doc(authedDb("runner-3"), "eventParticipations", "event-1_runner-1")),
       );
-      await assertFails(
-        setDoc(
-          doc(authedDb("runner-1"), "eventParticipations", "event-1_runner-1"),
-          eventParticipation(),
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("host-1"), "eventParticipations"),
+            where("eventId", "==", "event-1"),
+            where("status", "in", ["signedUp", "waitlisted", "attended"]),
+          ),
         ),
       );
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("runner-1"), "eventParticipations"),
+            where("uid", "==", "runner-1"),
+            where("status", "in", ["signedUp", "waitlisted"]),
+          ),
+        ),
+      );
+      await assertFails(
+        getDocs(
+          query(
+            collection(authedDb("runner-3"), "eventParticipations"),
+            where("eventId", "==", "event-1"),
+          ),
+        ),
+      );
+      for (const uid of ["runner-1", "host-1"]) {
+        await assertFails(
+          setDoc(
+            doc(authedDb(uid), "eventParticipations", "event-1_runner-1"),
+            eventParticipation(),
+          ),
+        );
+        await assertFails(
+          setDoc(
+            doc(authedDb(uid), "eventBookings", "event-1_runner-1"),
+            eventParticipation(),
+          ),
+        );
+      }
     });
 
     it("allows users to query their own missing event participation edge", async () => {
       await assertSucceeds(
         getDocs(
           query(
-            collection(authedDb("runner-1"), "eventParticipations"),
+            collection(authedDb("runner-1"), "eventBookings"),
             where("eventId", "==", "event-404"),
             where("uid", "==", "runner-1"),
           ),
@@ -388,6 +450,90 @@ describe("firestore.rules", () => {
         )));
       }
     });
+
+    // Event-wide permissions end at operatorExpiresAt, as
+    // eventOperatorExpiryMillis caps them for the callables. A live group
+    // duty keeps the grant's expiresAt later, but it never extends the
+    // roster, the claim queue, the door list or a private event.
+    it("ends event-wide permissions at operatorExpiresAt while a group duty lives",
+      async () => {
+        await seed(["organizers", "club-1"], organizer());
+        await seed(["events", "event-1"], event());
+        await seed(["events", "event-private"],
+          event({publicationState: "private"}));
+        await seed(["eventAttendees", "attendee-1"], {
+          eventId: "event-1",
+          organizerId: "club-1",
+          displayName: "Asha Shah",
+          phoneE164: "+919876543210",
+          linkedUid: "runner-1",
+          source: "hostImport",
+          status: "registered",
+        });
+        await seed(
+          ["eventRuntimeClaimRequests", "event-1_runner-1"],
+          eventRuntimeClaimRequest(),
+        );
+        const past = Timestamp.fromDate(new Date("2020-08-12T10:00:00.000Z"));
+        const future = Timestamp.fromDate(new Date("2030-08-12T10:00:00.000Z"));
+        const groupDuties = [{
+          groupId: "group-1",
+          duty: "sweep",
+          expiresAtMillis: future.toMillis(),
+          sourceHash: "hash-1",
+          grantedBy: "host-1",
+          grantedAtMillis: past.toMillis(),
+        }];
+        const operator = (uid, eventId, overrides) => seed(
+          ["eventStaffGrants", `${eventId}__${uid}`],
+          eventStaffGrant({uid, eventId, role: "eventOperator", groupDuties,
+            expiresAt: future, ...overrides}),
+        );
+        const readsRoster = (uid) => getDocs(query(
+          collection(authedDb(uid), "eventAttendees"),
+          where("eventId", "==", "event-1")));
+        const readsClaims = (uid) => getDocs(query(
+          collection(authedDb(uid), "eventRuntimeClaimRequests"),
+          where("eventId", "==", "event-1")));
+        const readsPrivate = (uid) => getDoc(doc(authedDb(uid), "events",
+          "event-private"));
+
+        // Operator window over, group duty still live: nothing event-wide.
+        await operator("lapsed-operator", "event-1",
+          {operatorExpiresAt: past});
+        await operator("lapsed-operator", "event-private",
+          {operatorExpiresAt: past});
+        await assertFails(readsRoster("lapsed-operator"));
+        await assertFails(readsClaims("lapsed-operator"));
+        await assertFails(readsPrivate("lapsed-operator"));
+
+        // Group duties only (operatorExpiresAt null): nothing event-wide.
+        await operator("group-only", "event-1",
+          {operatorExpiresAt: null, permissions: []});
+        await assertFails(readsRoster("group-only"));
+        // A stale permissions list does not revive a null operator window.
+        await operator("group-only-stale", "event-1",
+          {operatorExpiresAt: null});
+        await assertFails(readsRoster("group-only-stale"));
+
+        // A live operator window still reads them.
+        await operator("live-operator", "event-1",
+          {operatorExpiresAt: future});
+        await operator("live-operator", "event-private",
+          {operatorExpiresAt: future});
+        await assertSucceeds(readsRoster("live-operator"));
+        await assertSucceeds(readsClaims("live-operator"));
+        await assertSucceeds(readsPrivate("live-operator"));
+
+        // A grant written without operatorExpiresAt: a check-in operator
+        // falls back to expiresAt, an event operator holds nothing
+        // event-wide, as the callables read it.
+        await seed(["eventStaffGrants", "event-1__legacy-checkin"],
+          eventStaffGrant({uid: "legacy-checkin"}));
+        await assertSucceeds(readsRoster("legacy-checkin"));
+        await operator("legacy-operator", "event-1", {});
+        await assertFails(readsRoster("legacy-operator"));
+      });
 
     it("keeps live operator positions server-only", async () => {
       const position = {
@@ -909,6 +1055,66 @@ describe("firestore.rules", () => {
         "catchpref_runner-1")));
     });
 
+    it("lets a guest get and list only their own contact permissions", async () => {
+      const permission = (senderKind, senderId) => ({senderKind, senderId,
+        grants: {"whatsapp:marketing": {status: "optedIn",
+          endpointE164: "+919800000001", receiptId: "receipt-1",
+          termsVersion: "organizer-updates-v1",
+          source: "publicEventRegistration", updatedAt: Timestamp.now()}},
+        granted: ["whatsapp:marketing"], updatedAt: Timestamp.now()});
+      await seed(["organizers", "club-1"], organizer());
+      await seed(["users", "runner-1", "contactPermissions", "catch"],
+        permission("catch", "catch"));
+      await seed(["users", "runner-1", "contactPermissions", "organizer_club-1"],
+        permission("organizer", "club-1"));
+      await seed(["users", "runner-2", "contactPermissions", "organizer_club-1"],
+        permission("organizer", "club-1"));
+      await seed(["contactPermissionReceipts", "receipt-1"], {
+        senderKind: "organizer", senderId: "club-1", uid: "runner-1",
+        channel: "whatsapp", decision: "optedIn"});
+      const db = authedDb("runner-1");
+      await assertSucceeds(getDoc(doc(db, "users", "runner-1",
+        "contactPermissions", "organizer_club-1")));
+      const missing = await assertSucceeds(getDoc(doc(db, "users", "runner-1",
+        "contactPermissions", "organizer_club-9")));
+      assert.equal(missing.exists(), false);
+      const own = await assertSucceeds(getDocs(collection(db, "users",
+        "runner-1", "contactPermissions")));
+      assert.deepEqual(own.docs.map((item) => item.id).sort(),
+        ["catch", "organizer_club-1"]);
+      // Another guest, the organiser's manager and an unrelated account.
+      for (const other of ["runner-2", "host-1", "stranger-1"]) {
+        const otherDb = authedDb(other);
+        await assertFails(getDoc(doc(otherDb, "users", "runner-1",
+          "contactPermissions", "organizer_club-1")));
+        await assertFails(getDocs(collection(otherDb, "users", "runner-1",
+          "contactPermissions")));
+        await assertFails(getDoc(doc(otherDb, "contactPermissionReceipts",
+          "receipt-1")));
+      }
+      await assertFails(getDocs(query(collectionGroup(authedDb("host-1"),
+        "contactPermissions"), where("senderId", "==", "club-1"))));
+      await assertFails(getDoc(doc(testEnv.unauthenticatedContext().firestore(),
+        "users", "runner-1", "contactPermissions", "catch")));
+      // No client reads receipts, its own included, and nobody writes either.
+      await assertFails(getDoc(doc(db, "contactPermissionReceipts",
+        "receipt-1")));
+      await assertFails(getDocs(query(collection(db,
+        "contactPermissionReceipts"), where("uid", "==", "runner-1"))));
+      await assertFails(setDoc(doc(db, "users", "runner-1",
+        "contactPermissions", "organizer_club-2"),
+      permission("organizer", "club-2")));
+      await assertFails(updateDoc(doc(db, "users", "runner-1",
+        "contactPermissions", "catch"), {granted: []}));
+      await assertFails(deleteDoc(doc(db, "users", "runner-1",
+        "contactPermissions", "catch")));
+      await assertFails(setDoc(doc(db, "contactPermissionReceipts",
+        "receipt-2"), {uid: "runner-1"}));
+      await seed(["deletedUsers", "runner-1"], {deletedAt: Timestamp.now()});
+      await assertFails(getDoc(doc(db, "users", "runner-1",
+        "contactPermissions", "catch")));
+    });
+
     it("keeps invite secrets, touches, share intents, and attribution server-only", async () => {
       const paths = [
         ["eventInviteLinkSecrets", "invite-1"],
@@ -918,8 +1124,6 @@ describe("firestore.rules", () => {
         ["eventVenueSessions", "session-1"],
         ["eventVenueSessionRedemptions", "redemption-1"],
         ["organizerProviderConnections", "connection-1"],
-        ["organizerCommunicationPermissionReceipts", "permission-1"],
-        ["catchCommunicationPreferences", "runner-1"],
         ["participantFormProfileProposals", "response-1"],
         ["participantOrganizerCards", "response-1"],
         ["eventChatMessages", "message-1"],
@@ -928,7 +1132,6 @@ describe("firestore.rules", () => {
         ["eventChatProfileShares", "share-1"],
         ["eventChatRooms", "event-1"],
         ["eventChatMemberships", "member-1"],
-        ["catchCommunicationPermissionReceipts", "permission-1"],
         ["organizerContactOrigins", "origin-1"],
         ["organizerSavedAudiences", "audience-1"],
         ["providerSyncRuns", "sync-1"],
@@ -964,66 +1167,6 @@ describe("firestore.rules", () => {
           await assertFails(setDoc(doc(db, ...path), {enabled: true}));
         }
       }
-    });
-
-    it("keeps organizer communication preferences server-only", async () => {
-      await seed(["organizerCommunicationPreferences", "club-1_runner-1"], {
-        organizerId: "club-1",
-        uid: "runner-1",
-        phoneE164: "+919876543210",
-        whatsapp: {status: "optedIn"},
-        sms: {status: "unknown"},
-      });
-
-      for (const uid of ["host-1", "runner-1"]) {
-        await assertFails(
-          getDoc(doc(
-            authedDb(uid),
-            "organizerCommunicationPreferences",
-            "club-1_runner-1",
-          )),
-        );
-        await assertFails(
-          getDocs(collection(
-            authedDb(uid),
-            "organizerCommunicationPreferences",
-          )),
-        );
-      }
-      await assertFails(
-        getDoc(doc(
-          testEnv.unauthenticatedContext().firestore(),
-          "organizerCommunicationPreferences",
-          "club-1_runner-1",
-        )),
-      );
-      await assertFails(
-        setDoc(
-          doc(
-            authedDb("runner-1"),
-            "organizerCommunicationPreferences",
-            "club-1_runner-1",
-          ),
-          {organizerId: "club-1", uid: "runner-1"},
-        ),
-      );
-      await assertFails(
-        updateDoc(
-          doc(
-            authedDb("host-1"),
-            "organizerCommunicationPreferences",
-            "club-1_runner-1",
-          ),
-          {sms: {status: "optedIn"}},
-        ),
-      );
-      await assertFails(
-        deleteDoc(doc(
-          authedDb("host-1"),
-          "organizerCommunicationPreferences",
-          "club-1_runner-1",
-        )),
-      );
     });
 
     for (const name of ["catchWhatsappOperatorSetupOperations",
@@ -1097,11 +1240,11 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({uid: "runner-1", status: "signedUp"}),
       );
       await seed(
-        ["eventParticipations", "event-1_runner-2"],
+        ["eventBookings", "event-1_runner-2"],
         eventParticipation({
           uid: "runner-2",
           status: "waitlisted",
@@ -1113,7 +1256,7 @@ describe("firestore.rules", () => {
       await assertFails(
         getDocs(
           query(
-            collection(authedDb("runner-3"), "eventParticipations"),
+            collection(authedDb("runner-3"), "eventBookings"),
             where("eventId", "==", "event-1"),
             where("status", "in", ["signedUp", "waitlisted", "attended"]),
           ),
@@ -1122,7 +1265,7 @@ describe("firestore.rules", () => {
       await assertSucceeds(
         getDocs(
           query(
-            collection(authedDb("host-1"), "eventParticipations"),
+            collection(authedDb("host-1"), "eventBookings"),
             where("eventId", "==", "event-1"),
             where("status", "in", ["signedUp", "waitlisted", "attended"]),
           ),
@@ -1134,7 +1277,7 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({
           status: "cancelled",
           signedUpAt: null,
@@ -1143,15 +1286,15 @@ describe("firestore.rules", () => {
       );
 
       await assertSucceeds(
-        getDoc(doc(authedDb("runner-1"), "eventParticipations", "event-1_runner-1")),
+        getDoc(doc(authedDb("runner-1"), "eventBookings", "event-1_runner-1")),
       );
       await assertFails(
-        getDoc(doc(authedDb("runner-3"), "eventParticipations", "event-1_runner-1")),
+        getDoc(doc(authedDb("runner-3"), "eventBookings", "event-1_runner-1")),
       );
       await assertFails(
         getDocs(
           query(
-            collection(authedDb("runner-3"), "eventParticipations"),
+            collection(authedDb("runner-3"), "eventBookings"),
             where("eventId", "==", "event-1"),
           ),
         ),

@@ -2,10 +2,12 @@ import 'package:catch_dating_app/routing/shell/adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
+import 'package:catch_dating_app/routing/shell/shell_chrome.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -15,8 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../test_pump_helpers.dart';
 
 void main() {
   group('connectivityResultsAreOffline', () {
@@ -373,6 +373,7 @@ void main() {
               bottomNavigationBar: AppShellNavigationBar(
                 currentIndex: 0,
                 unreadCount: 3,
+                items: consumerAppShellNavigationItems(),
                 onDestinationSelected: (index) => tappedIndex = index,
               ),
             ),
@@ -476,17 +477,18 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
-          home: const MediaQuery(
-            data: MediaQueryData(
+          home: MediaQuery(
+            data: const MediaQueryData(
               size: Size(393, 852),
               padding: EdgeInsets.only(bottom: 34),
               viewPadding: EdgeInsets.only(bottom: 34),
             ),
             child: Scaffold(
-              body: SizedBox.expand(),
+              body: const SizedBox.expand(),
               bottomNavigationBar: AppShellNavigationBar(
                 currentIndex: 3,
                 unreadCount: 0,
+                items: consumerAppShellNavigationItems(),
                 onDestinationSelected: _noopTabSelection,
               ),
             ),
@@ -586,6 +588,7 @@ void main() {
           bottomNavigationBar: AppShellNavigationBar(
             currentIndex: 0,
             unreadCount: 0,
+            items: consumerAppShellNavigationItems(),
             onDestinationSelected: (_) {},
           ),
         ),

@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_gender_interest_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_gender_interest_step_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_instagram_step.dart';
@@ -13,6 +12,7 @@ import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_profil
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_profile_prompts_step_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_running_prefs_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_running_prefs_step_state.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_step.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

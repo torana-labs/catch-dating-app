@@ -1,6 +1,9 @@
-import {createHash, createHmac, timingSafeEqual} from "node:crypto";
+import {createHash} from "node:crypto";
 import type {CatchWhatsappWebhookEventDocument} from
   "../shared/generated/catchWhatsappWebhookEventDocument";
+import {catchInboundPlaceholder} from "./whatsappInboundContent";
+import {equalSecret, verifyCatchWebhookSignature} from
+  "../platform/delivery/webhookSignature";
 
 export const MAX_WEBHOOK_BYTES = 3 * 1024 * 1024;
 export const MAX_WEBHOOK_EVENTS = 1000;
@@ -24,29 +27,9 @@ export interface CatchWebhookRequest {
 }
 export interface CatchWebhookResponse {status: number; body: string}
 
-function equalSecret(actual: unknown, expected: string): boolean {
-  if (typeof actual !== "string" || !expected || actual.length > 1024) {
-    return false;
-  }
-  const actualBytes = Buffer.from(actual);
-  const expectedBytes = Buffer.from(expected);
-  return actualBytes.length === expectedBytes.length &&
-    timingSafeEqual(actualBytes, expectedBytes);
-}
-
-export function verifyCatchWebhookSignature(rawBody: Buffer,
-  signature: string | undefined, appSecret: string): boolean {
-  if (!/^sha256=[a-f0-9]{64}$/.test(signature ?? "") || !appSecret) {
-    return false;
-  }
-  const expected = "sha256=" + createHmac("sha256", appSecret)
-    .update(rawBody).digest("hex");
-  return equalSecret(signature, expected);
-}
-
 export async function handleCatchWhatsappWebhook(request: CatchWebhookRequest,
   config: CatchWebhookConfig,
-  persist: (events: CatchWebhookEvent[]) => Promise<void>
+  persist: (events: CatchWebhookEvent[]) => Promise<unknown>
 ): Promise<CatchWebhookResponse> {
   if (request.method !== "GET" && request.method !== "POST") {
     return {status: 405, body: "Method not allowed."};
@@ -76,8 +59,11 @@ export async function handleCatchWhatsappWebhook(request: CatchWebhookRequest,
   try {
     events = parseCatchWhatsappWebhook(request.rawBody, config);
   } catch (error) {
-    return {status: error instanceof ScopeError ? 403 : 400,
-      body: "Invalid webhook."};
+    // A scope refusal names which configured id did not match, so the log
+    // can tell a foreign account from a foreign phone number.
+    return error instanceof ScopeError ?
+      {status: 403, body: error.message} :
+      {status: 400, body: "Invalid webhook."};
   }
   try {
     await persist(events);
@@ -148,11 +134,15 @@ export function parseCatchWhatsappWebhook(rawBody: Buffer,
         if (originalText !== null && typeof originalText !== "string") {
           throw new Error("Invalid message text.");
         }
+        // Any other type keeps a short placeholder for Support ("[photo]",
+        // a button's label); the media itself is never fetched.
+        const placeholder = messageType === "text" ? null :
+          catchInboundPlaceholder(messageType, message);
         events.push({...base, eventId: "cwhe_" + hash(JSON.stringify([
           config.wabaId, config.phoneNumberId, "inbound", messageId])),
         eventKind: "inbound", messageId, providerTimestampSeconds,
         participantId: identity(message.from), messageType,
-        text: originalText?.slice(0, 4096) ?? null,
+        text: originalText?.slice(0, 4096) ?? placeholder,
         textTruncated: (originalText?.length ?? 0) > 4096,
         deliveryStatus: null, errorCodes: []});
       }

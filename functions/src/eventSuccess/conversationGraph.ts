@@ -33,7 +33,7 @@ import {requireScheduledEvent,
 import {
   effectiveInteractionModelFor,
   eventSuccessPrimitivesFor,
-} from "./formatPrimitives";
+} from "../domain/formats/formatPrimitives";
 import {
   loadEventSuccessRoster,
   loadEventSuccessRosterParticipant,

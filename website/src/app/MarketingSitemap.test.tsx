@@ -2,11 +2,14 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {cleanup, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 import {HostPage} from "../features/host/HostPage";
+import {appLinkCopy} from "@content/appDownload";
 import {hostLandingCopy} from "@content/hostLanding";
 import {marketingCaptures} from "./marketingCaptures";
 import {retiredMarketingDestination} from "./retiredMarketingRoutes";
 import {getPageKey, pageMeta, pageMetaForWeddingsPath} from "./pageMeta";
 import {brand} from "@catch/brand";
+import {isPrivateEventUpdatePath} from "../analytics/privateRoutes";
+import {publicAdPage} from "../analytics/catchMeasurement";
 
 const redirects = [
   ["overview", "/"], ["platform", "/host/#features"], ["workflows", "/host/#how-it-works"],
@@ -22,7 +25,9 @@ describe("consolidated public sitemap", () => {
   it("provides every replacement section and sends hosts to the self-serve start band", () => {
     const {container} = renderPage(<HostPage captures={marketingCaptures} />);
     for (const id of ["features", "how-it-works", "use-cases", "existing-tools", "pricing", "apply", "start"]) expect(container.querySelector(`#${id}`)).toBeTruthy();
-    expect(container.querySelector("form")).toBeNull();
+    // The retired pilot application stays gone: the page's one form is "Text me the link" in the start band.
+    expect([...container.querySelectorAll("form")].map((form) => [form.closest("#start") !== null, form.getAttribute("aria-label")]))
+      .toEqual([[true, appLinkCopy.submit]]);
     const starts = screen.getAllByRole("link", {name: hostLandingCopy.sections.start});
     expect(starts.length).toBeGreaterThan(0);
     // The page's own buttons stay on the page; the host footer's link opens the start page.
@@ -101,6 +106,18 @@ describe("consolidated public sitemap", () => {
     expect(getPageKey("/host/billing")).toBe("host_billing");
     expect(getPageKey("/host/")).toBe("host");
     expect(pageMeta.host_billing.robots).toBe("noindex, follow");
+  });
+  it("serves the walkthrough manage link under its own private page key", () => {
+    expect(getPageKey("/start/walkthrough/manage/")).toBe("walkthrough_manage");
+    expect(getPageKey("/start/walkthrough/manage")).toBe("walkthrough_manage");
+    expect(getPageKey("/start/")).toBe("not_found");
+    expect(pageMeta.walkthrough_manage.robots).toBe("noindex, follow");
+    expect(retiredMarketingDestination({pathname: "/start/walkthrough/manage", search: "?booking=wt-x", hash: "#t=private"})).toBeNull();
+    // The link names the booking and carries its token: no analytics, error reports or ad tags.
+    for (const path of ["/start/walkthrough/manage", "/start/walkthrough/manage/"]) {
+      expect(isPrivateEventUpdatePath(path)).toBe(true);
+      expect(publicAdPage(path)).toBeNull();
+    }
   });
   it("leaves credential-bearing transactional paths and canonical profiles untouched", () => {
     for (const pathname of ["/booking/event", "/offer", "/invite/token", "/f/form", "/rsvp/token", "/join/runtime", "/event-update/link", "/demo/invitation", "/rehearse/id", "/organizers/moonmoth/", "/events/id", "/claim/real-id"]) {

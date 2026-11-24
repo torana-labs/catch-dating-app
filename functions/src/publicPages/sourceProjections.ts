@@ -4,7 +4,11 @@ import {publicExternalEvent} from "./publicExternalEvent";
 import {projectPublicOrganizer} from "./publicOrganizer";
 import {publicEventAuthorized} from "./publicReadPolicy";
 import {projectPublicReview} from "./publicReview";
-import {organizerWomenLed, womenLedLocked} from "../organizers/womenLed";
+import {organizerWomenLed, womenLedLocked} from "../domain/events/womenLed";
+import {
+  organizerTrackingEventPolicyReason,
+  trackingConfigurationEligible,
+} from "../analytics/organizerTrackingPublicationPolicy";
 
 /**
  * What one source document contributes to public pages. Triggers compare
@@ -18,7 +22,7 @@ function stringOrNull(value: unknown): string | null {
   return typeof value === "string" ? value : null;
 }
 
-/** website/src/server/repositories/catchEventRepository.ts project(). */
+/** A published, active Catch event whose public projection reads. */
 export function publicCatchEventAuthorized(
   id: string, data: unknown, now: number
 ): boolean {
@@ -38,7 +42,9 @@ export function organizerContribution(
   return JSON.stringify({...listing,
     metrics: without(listing.metrics ?? {}, ["followerCount"]),
     womenLed: organizerWomenLed(data),
-    womenLedLocked: womenLedLocked(data.womenLed)});
+    womenLedLocked: womenLedLocked(data.womenLed),
+    // Whether the pages carry an advertising-tag projection at all.
+    trackingAvailable: trackingConfigurationEligible(data)});
 }
 
 export function catchEventContribution(
@@ -50,14 +56,20 @@ export function catchEventContribution(
   return row ? JSON.stringify({organizerId: row.organizerId,
     event: withoutDatingFraming(row.event),
     womenLed: womenLed?.value ?? null,
-    womenLedLocked: womenLedLocked(womenLed)}) : null;
+    womenLedLocked: womenLedLocked(womenLed),
+    // The canonical format the tag classification reads (#2063).
+    trackingReason: organizerTrackingEventPolicyReason(data)}) : null;
 }
 
 export function externalEventContribution(
   id: string, data: Raw
 ): string | null {
   const row = data ? publicExternalEvent(id, data) : null;
-  return row ? JSON.stringify(row) : null;
+  // The organiser profile's tag classification reads the listing's raw
+  // activity label and text (#2063).
+  return row ? JSON.stringify({...row, tracking: {activity: data?.activity ??
+    null, title: data?.title ?? null, description: data?.description ?? null,
+  startTime: data?.startTime ?? null}}) : null;
 }
 
 /** Organizers whose pages may show this event: current and previous. */

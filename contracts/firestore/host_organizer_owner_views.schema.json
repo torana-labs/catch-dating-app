@@ -1,0 +1,145 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_organizer_owner_views.schema.json",
+  "title": "HostOrganizerOwnerViewDocument",
+  "description": "Server-maintained facts of one organizer's website owner page, at hostOrganizerOwnerViews/{organizerId}: the facts the page needs, without the reader or the clock (it replaced the getOrganizerOwnerView callable, retired in Nov 2026). It keeps the owner's uid and each role's capabilities (a reader who is not the owner is an editor, since only the team reads it), the last 40 days of page insights (the reader's 30-day window comes from its clock), the owner links, about text and photos, the follower message allowance used per month (Asia/Kolkata) and whether follower messages can go on WhatsApp. Written by triggers on organizers, organizerInsights, organizerFollowerMessageQuotas, organizerSenderConnections and organizerMessageTemplates. Never sender connections, provider ids, template bodies, request ids or analytics internals, and never identity, permission or mutation authority. Readable by the organizer's current owner and managers.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostOrganizerOwnerViews",
+  "x-firestore-path": "hostOrganizerOwnerViews/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Host read model projector (hostReadModels organizerAccountViewTriggers)",
+  "required": [
+    "organizerId",
+    "ownerUid",
+    "capabilitiesByRole",
+    "insightDays",
+    "links",
+    "about",
+    "photos",
+    "followerMessageLimit",
+    "followerMessageMonths",
+    "whatsappAvailable",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "ownerUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The organizer's owner (ownerUserId, else the primary host); the reader's role is owner when it is them."
+    },
+    "capabilitiesByRole": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner",
+        "editor",
+        "analyst"
+      ],
+      "properties": {
+        "owner": {
+          "$ref": "../callable_responses/organizer_owner_view_response.schema.json#/properties/capabilities"
+        },
+        "editor": {
+          "$ref": "../callable_responses/organizer_owner_view_response.schema.json#/properties/capabilities"
+        },
+        "analyst": {
+          "$ref": "../callable_responses/organizer_owner_view_response.schema.json#/properties/capabilities"
+        }
+      }
+    },
+    "insightDays": {
+      "type": "array",
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "date",
+          "visits",
+          "linkClicks",
+          "bookingClicks",
+          "newFollowers",
+          "sources",
+          "links"
+        ],
+        "properties": {
+          "date": {
+            "$ref": "organizer_insights.schema.json#/properties/date"
+          },
+          "visits": {
+            "$ref": "organizer_insights.schema.json#/properties/visits"
+          },
+          "linkClicks": {
+            "$ref": "organizer_insights.schema.json#/properties/linkClicks"
+          },
+          "bookingClicks": {
+            "$ref": "organizer_insights.schema.json#/properties/bookingClicks"
+          },
+          "newFollowers": {
+            "$ref": "organizer_insights.schema.json#/properties/newFollowers"
+          },
+          "sources": {
+            "$ref": "organizer_insights.schema.json#/properties/sources"
+          },
+          "links": {
+            "$ref": "organizer_insights.schema.json#/properties/links"
+          }
+        }
+      },
+      "description": "organizerInsights days of the last 40 UTC days that exist, oldest first."
+    },
+    "links": {
+      "$ref": "../callable_responses/organizer_owner_view_response.schema.json#/properties/links"
+    },
+    "about": {
+      "$ref": "../callable_responses/organizer_owner_view_response.schema.json#/properties/about"
+    },
+    "photos": {
+      "$ref": "../callable_responses/organizer_owner_view_response.schema.json#/properties/photos"
+    },
+    "followerMessageLimit": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "followerMessageMonths": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "month",
+          "used"
+        ],
+        "properties": {
+          "month": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}$"
+          },
+          "used": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "description": "Months of the last three with any follower message sent; a month not listed has none."
+    },
+    "whatsappAvailable": {
+      "type": "boolean",
+      "description": "An active WhatsApp sender and an approved follower update template exist, as findFollowerWhatsappSender decides. An analyst never sees it."
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

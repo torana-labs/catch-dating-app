@@ -75,7 +75,7 @@ export const onOrganizerGrowthClaimRequestCreated = onDocumentCreated({
  * free, lands on an event that is not cancelled.
  */
 export const onOrganizerGrowthParticipationWritten = onDocumentWritten({
-  document: "eventParticipations/{participationId}",
+  document: "eventBookings/{participationId}",
 }, async (event) => {
   const before = event.data?.before.data();
   const after = event.data?.after.data();

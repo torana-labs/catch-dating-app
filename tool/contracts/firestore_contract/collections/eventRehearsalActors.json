@@ -1,0 +1,29 @@
+{
+  "id": "eventRehearsalActors",
+  "path": "eventRehearsalActors/{actorDocumentId}",
+  "rulesMatch": "/eventRehearsalActors/{actorId}",
+  "typescriptInterface": "EventRehearsalActorDocument",
+  "dartModel": "lib/contexts/live/domain/event_rehearsal.dart",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps all dress rehearsal collections callable-only"
+  ],
+  "owner": "event rehearsal callables",
+  "writerContext": "live",
+  "read": "server only; bounded callable projections only",
+  "write": "server only",
+  "exportedFunctions": [
+    "createEventRehearsal",
+    "updateEventRehearsalSetup",
+    "controlEventRehearsal",
+    "injectEventRehearsalBehavior",
+    "resetEventRehearsal",
+    "getEventRehearsalGuestBootstrap",
+    "submitEventRehearsalGuestAction",
+    "completeEventRehearsal",
+    "expireEventRehearsals"
+  ],
+  "migrationNotes": [
+    "Actors are seed-derived synthetic identities with no UID, phone, email, booking, payment, match, production message, or production attendee reference."
+  ]
+}

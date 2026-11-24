@@ -33,11 +33,13 @@ if (sfFont && (platform !== "ios" || !fs.existsSync(sfFont))) {
   process.exit(64);
 }
 const outputLayout = valueAfter("--output-layout") ?? profileConfig.outputLayout;
-// Coverage of one capture's render: the files it executed, which its
-// marketing provenance records. A batch would merge several captures' files.
+// Coverage of one render process: the files it executed, which marketing
+// provenance records. The exporter runs one capture per process, or a screen
+// with its fragments (one family sharing the list); an unrelated batch would
+// merge several captures' files.
 const coveragePath = valueAfter("--coverage-path");
-if (coveragePath && ids.split(",").filter(Boolean).length !== 1) {
-  console.error("--coverage-path requires exactly one capture id.");
+if (coveragePath && ids.split(",").filter(Boolean).length < 1) {
+  console.error("--coverage-path requires a capture id.");
   process.exit(64);
 }
 const testPath = "test/ui_captures/capture_runner_test.dart";
@@ -53,7 +55,9 @@ if (deviceId) flutterArgs.push(`--dart-define=CAPTURE_DEVICE_ID=${deviceId}`);
 if (textScale) flutterArgs.push(`--dart-define=CAPTURE_TEXT_SCALE=${textScale}`);
 if (pixelRatio) flutterArgs.push(`--dart-define=CAPTURE_DPR=${pixelRatio}`);
 if (outputLayout) flutterArgs.push(`--dart-define=CAPTURE_OUTPUT_LAYOUT=${outputLayout}`);
-if (coveragePath) flutterArgs.push("--coverage", `--coverage-path=${coveragePath}`);
+// A coverage render is the exporter's, after the pinned `flutter pub get
+// --enforce-lockfile`; resolving again in every render only costs time.
+if (coveragePath) flutterArgs.push("--no-pub", "--coverage", `--coverage-path=${coveragePath}`);
 
 console.log(`Rendering UI captures: ${ids}`);
 console.log(`Output directory: ${outputDir}`);

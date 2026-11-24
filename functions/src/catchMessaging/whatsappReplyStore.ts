@@ -1,5 +1,4 @@
 import {
-  Timestamp,
   type Firestore,
   type Transaction,
 } from "firebase-admin/firestore";
@@ -8,9 +7,9 @@ import {
   type CallableRequest,
 } from "firebase-functions/v2/https";
 import {runAssistanceTransaction as transact} from
-  "../eventSuccess/operations/transactionCallback";
-import {validateCatchCommunicationPreferenceDocument} from
-  "../shared/generated/validators/catchCommunicationPreferenceDocument";
+  "../platform/transactionCallback";
+import {catchWithdrewAllWhatsapp, contactPermissionRef,
+  readContactPermission} from "../shared/contactPermissions";
 import {
   authorizeCatchReply,
   assertCatchReplyEnabled,
@@ -34,7 +33,7 @@ import {validateCatchWhatsappReplyOperationDocument} from
   "../shared/generated/validators/catchWhatsappReplyOperationDocument";
 import {validateCatchWhatsappReplyReadinessDocument} from
   "../shared/generated/validators/catchWhatsappReplyReadinessDocument";
-import {adminRolesFromToken} from "../admin/adminAuth";
+import {adminRolesFromToken} from "../platform/adminAuth";
 import {assertCatchIngressAccepted} from "./whatsappIngressStore";
 import {assertCatchAuthorityBinding} from "./whatsappAppAuthority";
 import type {
@@ -66,18 +65,6 @@ import {
   isCatchStopReceipt,
 } from "./whatsappEndpointStops";
 
-function serialized(value: unknown): unknown {
-  if (value instanceof Timestamp) {
-    return {_seconds: value.seconds, _nanoseconds: value.nanoseconds};
-  }
-  if (Array.isArray(value)) return value.map(serialized);
-  if (value && typeof value === "object") {
-    return Object.fromEntries(
-      Object.entries(value).map(([key, entry]) => [key, serialized(entry)]),
-    );
-  }
-  return value;
-}
 /** Canonical shape validation with domain relational invariants. */
 export function readCatchOperation(value: unknown): CatchReplyOperation {
   if (
@@ -308,11 +295,8 @@ export class CatchWhatsappReplyStore {
           .collection(CATCH_ENDPOINT_STOPS)
           .doc(catchStopId(config, endpointHash)),
       ),
-      tx.get(
-        this.db
-          .collection("catchCommunicationPreferences")
-          .doc(config.recipientUid),
-      ),
+      tx.get(contactPermissionRef(this.db, config.recipientUid,
+        {kind: "catch"})),
       tx.get(this.db.collection("deletedUsers").doc(config.recipientUid)),
       tx.get(
         this.db
@@ -327,11 +311,11 @@ export class CatchWhatsappReplyStore {
       );
     }
     if (preference.exists) {
-      const value = serialized(preference.data());
+      const value = readContactPermission(preference.data(),
+        {kind: "catch"});
       if (
-        !validateCatchCommunicationPreferenceDocument(value) ||
-        value.uid !== config.recipientUid ||
-        value.whatsapp.status === "optedOut"
+        !value ||
+        await catchWithdrewAllWhatsapp((ref) => tx.get(ref), this.db, value)
       ) {
         throw new HttpsError(
           "failed-precondition",

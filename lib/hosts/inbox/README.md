@@ -46,8 +46,8 @@ Typed handoffs:
 | Owner | Source | Responsibility |
 |---|---|---|
 | `HostInboxScreen` | `lib/hosts/presentation/inbox/host_inbox_screen.dart` | Actions: select_workspace, retry_inbox, select_scope, select_audience_segment, open_conversation. |
-| `ChatsSearchHeaderController` | `lib/chats/presentation/inbox/chats_search_header_controller.dart` | Actions: toggle_search. |
-| `ChatSearchQuery` | `lib/chats/presentation/inbox/chats_list_view_model.dart` | Actions: search_inquiries. |
+| `ChatsSearchHeaderController` | `lib/pages/inbox/chats_search_header_controller.dart` | Actions: toggle_search. |
+| `ChatSearchQuery` | `lib/pages/inbox/chats_list_view_model.dart` | Actions: search_inquiries. |
 | `HostBroadcastComposerSheet` | `lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart` | Actions: select_broadcast_audience, select_broadcast_template. |
 | `HostInboxBroadcastController` | `lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart` | Actions: send_broadcast. |
 | `_HostSendsPageBodySliverState` | `lib/hosts/presentation/inbox/host_sends_workspace.dart` | Actions: open_event_announcement_composer. |
@@ -67,19 +67,14 @@ Typed handoffs:
 ## Data contracts
 
 - `contracts/callable_responses/create_organizer_post_response.schema.json`
-- `contracts/callable_responses/get_organizer_whatsapp_thread_response.schema.json`
 - `contracts/callable_responses/list_organizer_campaigns_response.schema.json`
-- `contracts/callable_responses/list_organizer_whatsapp_threads_response.schema.json`
 - `contracts/callable_responses/organizer_campaign_response.schema.json`
 - `contracts/callable_responses/organizer_messaging_setup_response.schema.json`
 - `contracts/callable_responses/send_event_broadcast_response.schema.json`
 - `contracts/callable_responses/send_organizer_whatsapp_reply_response.schema.json`
 - `contracts/callables/complete_organizer_whatsapp_connection_payload.schema.json`
 - `contracts/callables/create_organizer_post_payload.schema.json`
-- `contracts/callables/get_organizer_whatsapp_thread_payload.schema.json`
-- `contracts/callables/list_organizer_campaigns_payload.schema.json`
 - `contracts/callables/list_organizer_manual_send_tasks_payload.schema.json`
-- `contracts/callables/list_organizer_whatsapp_threads_payload.schema.json`
 - `contracts/callables/mark_organizer_manual_send_task_payload.schema.json`
 - `contracts/callables/open_organizer_manual_send_task_payload.schema.json`
 - `contracts/callables/organizer_campaign_action_payload.schema.json`
@@ -88,8 +83,8 @@ Typed handoffs:
 - `contracts/callables/send_organizer_whatsapp_reply_payload.schema.json`
 - `contracts/callables/send_organizer_whatsapp_test_payload.schema.json`
 - `contracts/callables/upsert_organizer_campaign_payload.schema.json`
+- `contracts/firestore/event_bookings.schema.json`
 - `contracts/firestore/event_broadcasts.schema.json`
-- `contracts/firestore/event_participations.schema.json`
 - `contracts/firestore/events.schema.json`
 - `contracts/firestore/matches.schema.json`
 - `contracts/firestore/organizer_broadcast_summaries.schema.json`

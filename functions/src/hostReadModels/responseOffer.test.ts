@@ -8,8 +8,8 @@ import {validateHostResponseSummaryDocument} from
   "../shared/generated/validators/hostResponseSummaryDocument";
 import {backfillResponseOfferSummaries, reconcileApplicationSummary,
   reconcileResponseSummary} from "./responseStore";
-import {responseSummaryId} from "./responseIds";
-import {redactResponseSummary} from "./responseRedaction";
+import {responseSummaryId} from "../domain/forms/responseSummaryIds";
+import {redactResponseSummary} from "../domain/forms/responseSummaryRedaction";
 
 const now = Timestamp.fromMillis(1000);
 const source = {kind: "native", providerId: null, externalFormId: null,

@@ -185,30 +185,22 @@ test("flags manual-send queues outside Sends", () => {
   assert.match(findings[0].reason, /Sends workspace/u);
 });
 
-test("flags unreviewed permission-authority access", () => {
+test("flags contact permission access outside its reviewed owners", () => {
+  const source = 'db.collection("users").doc(uid)' +
+    '.collection("contactPermissions").doc(key)';
   const findings = scanBackendFile({
     relativePath: "functions/src/organizers/formGrant.ts",
-    source: 'db.collection("organizerCommunicationPreferences").doc(id)',
-  });
-  assert.match(findings[0].reason, /explicit reviewed owner/u);
-  assert.deepEqual(scanBackendFile({
-    relativePath: "functions/src/organizers/organizerFormConsentPromotion.ts",
-    source: 'db.collection("organizerCommunicationPreferences").doc(id)',
-  }), []);
-});
-
-test("approval notification permission review is limited to its facts owner", () => {
-  const source = 'db.collection("organizerCommunicationPreferences")' +
-    '.doc(organizerCommunicationPreferenceId(organizerId, uid))';
-  assert.deepEqual(scanBackendFile({
-    relativePath: "functions/src/events/approvalNotifications/facts.ts",
-    source,
-  }), []);
-  const findings = scanBackendFile({
-    relativePath: "functions/src/events/approvalNotifications/dispatch.ts",
     source,
   });
   assert.match(findings[0].reason, /explicit reviewed owner/u);
+  assert.match(scanBackendFile({
+    relativePath: "functions/src/organizers/formGrant.ts",
+    source: 'db.collection("contactPermissionReceipts").doc(id)',
+  })[0].reason, /explicit reviewed owner/u);
+  assert.deepEqual(scanBackendFile({
+    relativePath: "functions/src/safety/accountDeletion.ts",
+    source,
+  }), []);
 });
 
 test("flags direct contact creation outside canonical projection owners", () => {
@@ -272,7 +264,7 @@ test("flags application queue ownership outside Audience", () => {
     routeContractPath: "packages/platform/lib/routing/route_contract.dart",
     routeContractSource:
       "hostApplicationsScreen('/host/customers/applications'",
-    routerPath: "lib/routing/go_router.dart",
+    routerPath: "lib/routing/host_router.dart",
     routerSource: [
       "navigatorKey: keys.hostCustomers",
       "name: Routes.hostApplicationsScreen.name",
@@ -290,10 +282,10 @@ test("shared workspace keeps application routes in the Audience branch", () => {
   const routeContractSource = fs.readFileSync(
     new URL("../../packages/platform/lib/routing/route_contract.dart", import.meta.url), "utf8");
   const routerSource = fs.readFileSync(
-    new URL("../../lib/routing/go_router.dart", import.meta.url), "utf8");
+    new URL("../../lib/routing/host_router.dart", import.meta.url), "utf8");
   const scan = (source) => applicationRouteOwnershipFindings({
     routeContractPath: "packages/platform/lib/routing/route_contract.dart", routeContractSource,
-    routerPath: "lib/routing/go_router.dart", routerSource: source,
+    routerPath: "lib/routing/host_router.dart", routerSource: source,
   });
   assert.deepEqual(scan(routerSource), []);
   for (const name of ["hostApplicationsScreen", "hostApplicationDetailScreen"]) {

@@ -13233,6 +13233,16 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'RouteLoadingScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Loading route',
+                builder: _widgetbook_workspace_utility_app_root
+                    .routeLoadingScreenState,
+              ),
+            ],
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(

@@ -69,58 +69,89 @@ void main() {
     );
   }
 
-  group('program lifecycle', () {
+  group('guest pickers', () {
     test(
-      'listPrograms parses lifecycle fields for the archive affordance',
+      'listGuestGroups returns every group, empty ones too, in server order',
       () async {
         final functions = _Functions()
           ..response = {
-            'programs': [
+            'programId': 'program',
+            'groups': [
               {
-                'programId': 'program-active',
-                'kind': 'wedding',
-                'title': 'Mehta–Shah wedding',
-                'status': 'active',
-                'timezone': 'Asia/Kolkata',
-                'startsAtMillis': 1735689600000,
-                'endsAtMillis': 1736035200000,
-                'capabilities': ['functions'],
-                'archivedAtMillis': null,
-                'anonymizeAtMillis': null,
-                'anonymizedAtMillis': null,
-                'revision': 3,
+                'groupId': 'group-b',
+                'label': 'Bride side',
+                'dimension': 'side',
+                'sortOrder': 0,
+                'memberCount': 0,
+                'hotelId': null,
+                'revision': 1,
               },
               {
-                'programId': 'program-archived',
-                'kind': 'corporate',
-                'title': 'Aisle Summit',
-                'status': 'archived',
-                'timezone': 'Asia/Kolkata',
-                'startsAtMillis': 1735689600000,
-                'endsAtMillis': 1736035200000,
-                'capabilities': ['functions'],
-                'archivedAtMillis': 1737000000000,
-                'anonymizeAtMillis': 1738209600000,
-                'anonymizedAtMillis': null,
-                'revision': 9,
+                'groupId': 'group-a',
+                'label': 'Alumni',
+                'dimension': 'table',
+                'sortOrder': 2,
+                'memberCount': 12,
+                'hotelId': 'hotel-1',
+                'revision': 3,
               },
             ],
           };
-        final rows = await ProgramSetupRepository(
+        final groups = await ProgramSetupRepository(
           functions,
-        ).listPrograms('org-1');
-        expect(functions.calls, ['listOrganizerPrograms']);
-        expect(rows, hasLength(2));
-        expect(rows[0].revision, 3);
-        expect(rows[0].archivedAt, isNull);
-        expect(rows[1].status, 'archived');
+        ).listGuestGroups('program');
+        expect(functions.calls, ['listProgramGuestGroups']);
+        expect(functions.payload, {'programId': 'program'});
         expect(
-          rows[1].anonymizeAt,
-          DateTime.fromMillisecondsSinceEpoch(1738209600000),
+          [for (final group in groups) group.groupId],
+          ['group-b', 'group-a'],
         );
+        expect(groups.first.memberCount, 0);
+        expect(groups.first.hotelId, isNull);
+        expect(groups.last.hotelId, 'hotel-1');
       },
     );
 
+    test(
+      'listHouseholds returns every household, empty ones too, by label',
+      () async {
+        final functions = _Functions()
+          ..response = {
+            'programId': 'program',
+            'guests': <Object?>[],
+            'functionGuests': <Object?>[],
+            'groups': <Object?>[],
+            'households': [
+              {
+                'householdId': 'household-2',
+                'label': 'Verma family',
+                'memberGuestIds': ['guest-1'],
+                'revision': 2,
+              },
+              {
+                'householdId': 'household-1',
+                'label': 'Kapoor family',
+                'memberGuestIds': <String>[],
+                'revision': 1,
+              },
+            ],
+            'nextCursor': null,
+          };
+        final households = await ProgramSetupRepository(
+          functions,
+        ).listHouseholds('program');
+        expect(functions.calls, ['listProgramHouseholds']);
+        expect(functions.payload, {'programId': 'program'});
+        expect(
+          [for (final household in households) household.label],
+          ['Kapoor family', 'Verma family'],
+        );
+        expect(households.first.memberGuestIds, isEmpty);
+      },
+    );
+  });
+
+  group('program lifecycle', () {
     test('archiveProgram and unarchiveProgram fence on revision', () async {
       final functions = _Functions()
         ..response = {

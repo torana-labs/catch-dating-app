@@ -1,0 +1,22 @@
+{
+  "id": "hostFormAutomationRuleViews",
+  "path": "hostFormAutomationRuleViews/{ruleId}",
+  "rulesMatch": "/hostFormAutomationRuleViews/{ruleId}",
+  "typescriptInterface": "HostFormAutomationRuleViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/host_form_operation_reads.rules.test.cjs",
+  "rulesTestNames": [
+    "lets current managers list automation rule and run views and nothing else"
+  ],
+  "owner": "Host read model projector: hostReadModels form automation view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get and list (organizerId equality, optionally formId) while their account is not deleted",
+  "write": "server only; rewritten from each organizerFormAutomationRules document and deleted with it",
+  "exportedFunctions": [
+    "onHostFormAutomationRuleChanged"
+  ],
+  "migrationNotes": [
+    "row equals the rule row listOrganizerFormAutomationRuns returns: the webhook secret is only webhookSecretConfigured. The host-form-automation-views copy-forward migration creates views for rules saved before the trigger.",
+    "Saves and the on/off switch stay on createOrganizerFormAutomation and setOrganizerFormAutomationState: the rule revision is their write fence."
+  ]
+}

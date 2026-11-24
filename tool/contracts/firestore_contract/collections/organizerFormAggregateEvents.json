@@ -1,0 +1,11 @@
+{
+  "id": "organizerFormAggregateEvents",
+  "path": "organizerFormAggregateEvents/{eventId}",
+  "rulesMatch": "/organizerFormAggregateEvents/{eventId}",
+  "typescriptInterface": "OrganizerFormAggregateEventDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "organizer form aggregate projection",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

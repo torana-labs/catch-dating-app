@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_list.dart';
-import 'package:catch_dating_app/events/shared/event_check_in_qr_scanner.dart';
+import 'package:catch_dating_app/pages/check_in/event_check_in_qr_scanner.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test/events/event_viewer_state_fixtures.dart';

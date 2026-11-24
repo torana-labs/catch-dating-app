@@ -1,0 +1,20 @@
+{
+  "id": "data:repair-organizer-follower-counts",
+  "category": "data",
+  "path": "tool/data/recompute_organizer_follower_counts.mjs",
+  "command": "node tool/data/recompute_organizer_follower_counts.mjs",
+  "surface": "remote-write",
+  "guard": "apply-flag",
+  "status": "active",
+  "description": "Repairs organizer followerCount projections from active organizerFollows.",
+  "checks": [
+    "node --check tool/data/recompute_organizer_follower_counts.mjs",
+    "node --test tool/data/recompute_organizer_follower_counts.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/data/recompute_organizer_follower_counts.test.mjs",
+    "tool/data/lib/recompute_cli_test_support.mjs"
+  ],
+  "role": "generator",
+  "runbook": "tool/README.md#firestore-projection-repairs"
+}

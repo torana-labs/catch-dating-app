@@ -144,7 +144,7 @@
   },
   "anonymizeAt": {
    "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
-   "description": "Retention clock: archivedAt + 14 days. The anonymize sweep processes once this passes."
+   "description": "Retention clock: archivedAt + 60 days. The anonymize sweep processes once this passes, and moves a clock set under an earlier, shorter policy out to the current one."
   },
   "anonymizedAt": {
    "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",

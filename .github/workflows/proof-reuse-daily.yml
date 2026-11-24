@@ -1,0 +1,119 @@
+name: Proof reuse daily
+
+# Rolls up one UTC day of the merge queue's proof-reuse shadow reports
+# (proof-reuse-shadow-<run>-<attempt>, from ci.yml) into the
+# proof-reuse-daily-<date> artifact, schema proof-reuse-daily/1, and posts each
+# miss once to the "Proof reuse shadow miss" issue (Phase 1, 22 Nov 2026).
+# Report-only: it reads Actions and writes that issue, nothing else. Scheduled
+# runs start hours late, so it also wakes after main's push CI; the gate job
+# (tool/ci/daily_once_gate.mjs) lets only the first wake from 02:00 UTC roll up
+# the previous day (24 Nov 2026). Logic and
+# tests: tool/ci/proof_reuse_report.mjs. Operator guide:
+# docs/release_operations.md, "Required PR Checks".
+
+on:
+  schedule:
+    # Fallback: scheduled runs start hours late, so main's push CI wakes it too.
+    - cron: "17 5 * * *"
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      date:
+        description: UTC day to roll up (YYYY-MM-DD); empty means yesterday
+        required: false
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: proof-reuse-daily-${{ inputs.date || 'scheduled' }}
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    name: Once a day
+    # A workflow_run wake counts only for main's own push CI runs, never a
+    # pull-request run (a fork's branch can also be called main), as in #2408.
+    if: >-
+      github.event_name != 'workflow_run' || (
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      # Read the checkout and list artifacts.
+      actions: read
+      contents: read
+    outputs:
+      run: ${{ steps.gate.outputs.run }}
+      day: ${{ steps.day.outputs.day }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            tool/ci
+            .github/actions/load-toolchain
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      # The day it rolls up: yesterday, UTC. From 02:00 only (--not-before-hour),
+      # so that day's last merge-queue runs have finished.
+      - id: day
+        run: echo "day=$(date -u -d yesterday +%F)" >> "$GITHUB_OUTPUT"
+      - id: gate
+        name: Run only if today's artifact does not exist yet
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DAY: ${{ steps.day.outputs.day }}
+        run: node tool/ci/daily_once_gate.mjs --artifact "proof-reuse-daily-$DAY" --not-before-hour 2
+
+  report:
+    name: Roll up the proof-reuse shadow day
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            tool/ci
+            .github/actions/load-toolchain
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Roll up the day and post any miss
+        id: rollup
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # A dispatch names its day; otherwise the gate's day (yesterday, UTC).
+          REPORT_DATE: ${{ inputs.date || needs.gate.outputs.day }}
+        run: |
+          set -euo pipefail
+          if [[ -n "$REPORT_DATE" ]]; then
+            node tool/ci/proof_reuse_report.mjs --date "$REPORT_DATE" --out build/ci/proof-reuse-daily
+          else
+            node tool/ci/proof_reuse_report.mjs --out build/ci/proof-reuse-daily
+          fi
+      - name: Upload the daily roll-up
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: proof-reuse-daily-${{ steps.rollup.outputs.date }}
+          path: build/ci/proof-reuse-daily/
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: true

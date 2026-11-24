@@ -1,8 +1,9 @@
 // Marketing capture `host_formats_mix_phone`. One file per marketing capture keeps each
 // capture's inputs to its own imports; see docs/marketing_app_media_pipeline.md.
 
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_platform/app_config.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
+
 import '../../../hosts/live/formats/formats_captures.dart';
 import '../screen_capture_entry.dart';
 import '../shared/app_role_capture.dart';

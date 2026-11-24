@@ -1,0 +1,25 @@
+{
+  "id": "organizerEntitlements",
+  "path": "organizerEntitlements/{organizerId}",
+  "rulesMatch": "/organizerEntitlements/{organizerId}",
+  "typescriptInterface": "OrganizerEntitlementsDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps organizer entitlement state server-only"
+  ],
+  "owner": "admin organizer entitlement grant/revoke callables",
+  "writerContext": "admin",
+  "read": "server only; managers receive a bounded callable projection",
+  "write": "server only; admin-authorized grant and revoke callables",
+  "exportedFunctions": [
+    "adminGrantOrganizerEntitlement",
+    "adminRevokeOrganizerEntitlementGrant",
+    "getOrganizerEntitlement"
+  ],
+  "migrationNotes": [
+    "Entitlements are admin-written in the pilot (manual invoice then grant); self-serve checkout writes the same document later.",
+    "Limits from contracts/catalogs/organizer_entitlement_skus.json are enforced inside the owning callables (import commit, grant staff, arm moment), never in UI or rules.",
+    "quantityConsumed is a server-side ledger of plan units already spent on programs; managers see only the bounded projection."
+  ]
+}

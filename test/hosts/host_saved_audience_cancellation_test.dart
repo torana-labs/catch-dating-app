@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_kernel/read_model_family.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -115,8 +116,9 @@ class _Windows extends HostSavedAudienceRepository {
   _Windows()
     : super(
         _Functions(),
-        summaries: HostSummaryReader(
+        summaries: ScopedReadModelReader(
           FakeFirebaseFirestore(),
+          family: hostReadModels,
           actorId: () => 'host',
         ),
       );

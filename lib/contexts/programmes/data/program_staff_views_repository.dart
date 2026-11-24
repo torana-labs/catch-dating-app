@@ -96,7 +96,8 @@ class ProgramStaffViewsRepository {
   }
 }
 
-// keepalive: a stateless repository over account-free SDK singletons.
+// keepalive: account-free: a stateless repository over account-free SDK
+// singletons.
 @Riverpod(keepAlive: true)
 ProgramStaffViewsRepository programStaffViewsRepository(Ref ref) =>
     ProgramStaffViewsRepository(

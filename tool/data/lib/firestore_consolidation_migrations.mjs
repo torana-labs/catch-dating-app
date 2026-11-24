@@ -160,14 +160,14 @@ const validId = (value) => typeof value === "string" && value.length > 0 && !val
 async function guestEventSourcePaths(db, eventId, uid) {
   const byId = (snap) => snap.docs.map((doc) => doc.ref.path).sort();
   const [booking, roster, payments, applications, invitations] = await Promise.all([
-    db.collection("eventParticipations").doc(`${eventId}_${uid}`).get(),
+    db.collection("eventBookings").doc(`${eventId}_${uid}`).get(),
     db.collection("eventAttendees").where("eventId", "==", eventId).where("linkedUid", "==", uid).get(),
     db.collection("guestPayments").where("eventId", "==", eventId).where("recipientUid", "==", uid).get(),
     db.collection("organizerApplications").where("targetId", "==", eventId).where("linkedUid", "==", uid).get(),
     db.collection("organizerEventOfferRecipients").where("eventId", "==", eventId).where("recipientUid", "==", uid).get(),
   ]);
   return [
-    ...(booking.exists ? [`eventParticipations/${eventId}_${uid}`] : []),
+    ...(booking.exists ? [`eventBookings/${eventId}_${uid}`] : []),
     ...byId(roster),
     ...byId({docs: payments.docs.filter((doc) => ["publicEvent", "offer"].includes(doc.data().purpose))}),
     ...byId({docs: applications.docs.filter((doc) => doc.data().targetKind === "event")}),
@@ -288,26 +288,6 @@ async function applicationDetailViewRow(db, applicationId) {
   } catch {
     return null;
   }
-}
-
-let guestMessagingPermissionModule = null;
-function functionsGuestMessagingPermissions() {
-  try {
-    guestMessagingPermissionModule ??= createFunctionsRequire()(
-      "./lib/messaging/guestMessagingPermissionStore.js");
-  } catch (error) {
-    throw new Error(
-      "The guest-messaging-permissions migration needs compiled Functions; " +
-      `run \`npm --prefix functions run build\` first (${error.message}).`,
-    );
-  }
-  return guestMessagingPermissionModule;
-}
-
-/** A guest messaging permission row from current sources, read only. */
-function guestMessagingPermissionRow(db, row) {
-  const {guestMessagingPermission} = functionsGuestMessagingPermissions();
-  return db.runTransaction((tx) => guestMessagingPermission(db, tx, row));
 }
 
 let formProfileViewModule = null;
@@ -483,12 +463,77 @@ async function newProgramAccessViewRow(db, programId, uid) {
   return existing.exists ? null : programAccessViewRow(db, programId, uid);
 }
 
+let programAccessGrantModules = null;
+function functionsProgramAccessGrant() {
+  try {
+    const load = createFunctionsRequire();
+    programAccessGrantModules ??= {
+      view: load("./lib/programs/programAccessView.js"),
+      grant: load("./lib/domain/access/programAccessGrants.js"),
+    };
+  } catch (error) {
+    throw new Error(
+      "The access-grants-programs migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return programAccessGrantModules;
+}
+
+/**
+ * An account's programme access document from current sources, read only:
+ * what the grant commands write in their own transaction (issue #2474). The
+ * authority is programAccessViewFor's, with no organizer manager standing.
+ */
+async function programAccessGrantRow(db, programId, uid) {
+  const {view, grant} = functionsProgramAccessGrant();
+  try {
+    return await db.runTransaction(async (tx) => {
+      const programSnap = await tx.get(
+        db.collection("organizerPrograms").doc(programId));
+      const program = programSnap.data();
+      if (!program) return null;
+      const grantSnap = await tx.get(db.collection("programStaffGrants")
+        .doc(`${programId}__${uid}`));
+      const staff = grantSnap.data();
+      const authority = view.programAccessViewFor(program, programId, uid,
+        staff, false, programAccessNowMillis);
+      const grantedBy = staff ?
+        staff.programAuthorization?.approvedByUid ?? staff.createdBy ?? null :
+        null;
+      const updatedAt = staff?.updatedAt ?? program.createdAt ??
+        program.updatedAt;
+      return grant.programAccessGrant(authority, grantedBy, updatedAt);
+    });
+  } catch {
+    // A source that fails its contract gets no document, as in the writers.
+    return null;
+  }
+}
+
+/**
+ * An access document to create, or null when the account already has one: a
+ * stale document is the refresh step's to repair, never a conflict here.
+ */
+async function newProgramAccessGrantRow(db, programId, uid) {
+  const existing = await db.collection("accessGrants")
+    .doc(`program__${programId}__${uid}`).get();
+  return existing.exists ? null : programAccessGrantRow(db, programId, uid);
+}
+
+/** Every field the refresh compares; updatedAt records when a command ran. */
+const accessGrantFields = [
+  "scopeType", "scopeId", "uid", "organizerId", "role", "status",
+  "activeFromMillis", "expiresAtMillis", "reach", "assignments", "grantedBy",
+  "revision", "version",
+];
+
 /** Every field of a view; the refresh rewrites any that differ. */
 const programAccessViewFields = [
   "programId", "organizerId", "uid", "ownerUid", "role", "status",
   "activeFromMillis", "expiresAtMillis", "duties", "pickupAll",
   "pickupScoped", "hotelAll", "hotelScoped", "functionAll", "functionScoped",
-  "workPickup", "workHotel", "workFunction", "arrivalRoutes", "tripRoutes",
+  "programAll", "workPickup", "workHotel", "workFunction", "arrivalRoutes", "tripRoutes",
   "assignments",
   "grantExpiresAtMillis", "organizerManager", "revision", "version",
 ];
@@ -577,6 +622,142 @@ async function newView(db, collection, id, build) {
     // A source that fails its contract gets no view, as in the trigger.
     return null;
   }
+}
+
+let programGuestDirectoryModule = null;
+function guestDirectoryViews() {
+  try {
+    programGuestDirectoryModule ??= createFunctionsRequire()(
+      "./lib/programs/programGuestDirectoryViews.js");
+  } catch (error) {
+    throw new Error(
+      "The program-guest-directory-views migration needs compiled Functions; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return programGuestDirectoryModule;
+}
+
+/** One guest directory step: every source row without a view gets one. */
+function guestDirectoryStep(source, kind) {
+  return {
+    source,
+    target: "programGuestDirectoryViews",
+    skipReason: "no programme or organizer, a guest whose name is not " +
+      "disclosable, or already viewed",
+    targetId: (id) => validId(id) ? `${kind}__${id}` : null,
+    transform: (data, id, db) => newView(db, "programGuestDirectoryViews",
+      `${kind}__${id}`, (tx) => guestDirectoryViews()
+        .readProgramGuestDirectoryRow(db, tx, kind, id)),
+  };
+}
+
+let programSettingViewModule = null;
+function settingViews() {
+  try {
+    programSettingViewModule ??= createFunctionsRequire()(
+      "./lib/programs/programWhatsapp/settingViews.js");
+  } catch (error) {
+    throw new Error(
+      "The program-setting-views migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return programSettingViewModule;
+}
+
+let organizerAccountViewModules = null;
+function accountViews() {
+  try {
+    const load = createFunctionsRequire();
+    organizerAccountViewModules ??= {
+      account: load("./lib/hostReadModels/organizerAccountViews.js"),
+      owner: load("./lib/hostReadModels/organizerOwnerViewStore.js"),
+    };
+  } catch (error) {
+    throw new Error(
+      "The host-organizer-account-views migration needs compiled Functions; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return organizerAccountViewModules;
+}
+
+const organizerAccountNow = new Date();
+
+let hostFormViewModule = null;
+function formViews() {
+  try {
+    hostFormViewModule ??= createFunctionsRequire()(
+      "./lib/hostReadModels/formViewStore.js");
+  } catch (error) {
+    throw new Error(
+      "The host-form-views migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return hostFormViewModule;
+}
+
+let hostCrmViewModules = null;
+function crmViews() {
+  try {
+    const load = createFunctionsRequire();
+    hostCrmViewModules ??= {
+      sources: load("./lib/hostReadModels/audienceSourceViewStore.js"),
+      candidates: load("./lib/hostReadModels/contactMergeCandidateViewStore.js"),
+    };
+  } catch (error) {
+    throw new Error(
+      "The host-crm-views migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return hostCrmViewModules;
+}
+
+/**
+ * The duplicate candidate views one contact starts: a view for each partner
+ * whose id sorts after it, so each pair is planned once. Pairs that already
+ * have a view are left alone.
+ */
+async function contactCandidateViews(db, data, contactId) {
+  if (!validId(contactId) || !validId(data?.organizerId)) return [];
+  const {candidates} = crmViews();
+  const partners = await candidates.mergeCandidateSourcePartners(db,
+    data.organizerId, contactId);
+  const entries = [];
+  for (const partner of partners) {
+    if (partner <= contactId) continue;
+    const pair = [contactId, partner];
+    const view = await newView(db, "hostContactMergeCandidateViews",
+      candidates.organizerContactMergeCandidateViewId(data.organizerId, pair),
+      (tx) => candidates.readContactMergeCandidateView(db, tx,
+        data.organizerId, pair));
+    if (view) entries.push({targetId: view.candidateId, data: view});
+  }
+  return entries;
+}
+
+let guestEventStatusModule = null;
+function guestEventStatuses() {
+  try {
+    guestEventStatusModule ??=
+      createFunctionsRequire()("./lib/guestEvents/guestEventStatus.js");
+  } catch (error) {
+    throw new Error(
+      "The guest-roster-links migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return guestEventStatusModule;
+}
+
+/** The (at most two) roster rows linked to a guest at an event, by id. */
+async function linkedAttendeeIds(db, eventId, uid) {
+  const rows = await db.collection("eventAttendees").where("eventId", "==", eventId)
+    .where("linkedUid", "==", uid).limit(2).get();
+  return rows.docs.map((doc) => doc.id).sort();
 }
 
 let programArrivalViewModule = null;
@@ -920,13 +1101,13 @@ export const MIGRATIONS = [
   {
     name: "catch-booking-roster",
     description:
-      "Every eventParticipations booking gets one eventAttendees roster row " +
+      "Every eventBookings booking gets one eventAttendees roster row " +
       "and links to it (attendeeId). The booking stays the one record of the " +
       "guest's booking; the row is the Host's view of that guest. Existing " +
       "linked rows are reused, never replaced; nothing is deleted.",
     steps: [
       {
-        source: "eventParticipations",
+        source: "eventBookings",
         target: "eventAttendees",
         skipReason: "already has a roster row",
         targetId: async (id, data, db) => {
@@ -948,7 +1129,7 @@ export const MIGRATIONS = [
       },
       {
         kind: "fill",
-        collection: "eventParticipations",
+        collection: "eventBookings",
         fill: async (data, id, db) => {
           if (typeof data.attendeeId === "string" && data.attendeeId) return null;
           if (typeof data.eventId !== "string" || typeof data.uid !== "string") return null;
@@ -1016,7 +1197,7 @@ export const MIGRATIONS = [
         transform: (data, id, db) => chatDirectoryRow(db, data.eventId, data.uid),
       },
       {
-        source: "eventParticipations",
+        source: "eventBookings",
         target: "eventChatDirectoryEntries",
         skipReason: "no current access, or created from the chat membership",
         targetId: async (id, data, db) => {
@@ -1037,7 +1218,7 @@ export const MIGRATIONS = [
           const [member, booking] = await Promise.all([
             db.collection("eventChatMemberships").where("eventId", "==", data.eventId)
               .where("uid", "==", data.linkedUid).limit(1).get(),
-            db.collection("eventParticipations").doc(`${data.eventId}_${data.linkedUid}`).get(),
+            db.collection("eventBookings").doc(`${data.eventId}_${data.linkedUid}`).get(),
           ]);
           const booked = ["signedUp", "attended"].includes(booking.data()?.status);
           return member.empty && !booked ? `${data.eventId}_${data.linkedUid}` : null;
@@ -1062,6 +1243,25 @@ export const MIGRATIONS = [
     ],
   },
   {
+    name: "event-bookings",
+    description:
+      "The booking collection is renamed from eventParticipations to " +
+      "eventBookings (Nov 2026). Every eventParticipations document is " +
+      "copied to eventBookings with the same id and the same data. A booking " +
+      "already in eventBookings is never replaced, and nothing is deleted; " +
+      "the onEventBookingMirroredToLegacy trigger then keeps " +
+      "eventParticipations as a read-only copy for released apps until " +
+      "phase 2 retires it. Deploy rules, indexes and Functions first.",
+    steps: [
+      {
+        source: "eventParticipations",
+        target: "eventBookings",
+        targetId: (id) => id,
+        transform: (data) => ({...data}),
+      },
+    ],
+  },
+  {
     name: "guest-event-read-models",
     description:
       "Every published event gets the eventGuestEntries document and every " +
@@ -1082,7 +1282,7 @@ export const MIGRATIONS = [
           return db.runTransaction((tx) => eventGuestEntry(db, tx, id, guestEventNowMillis));
         },
       },
-      guestEventStatusStep("eventParticipations", "eventId", "uid"),
+      guestEventStatusStep("eventBookings", "eventId", "uid"),
       guestEventStatusStep("eventAttendees", "eventId", "linkedUid"),
       guestEventStatusStep("guestPayments", "eventId", "recipientUid",
         (data) => ["publicEvent", "offer"].includes(data.purpose)),
@@ -1102,7 +1302,7 @@ export const MIGRATIONS = [
       "write them. Only absent or null fields are added and no document is " +
       "replaced or removed. Build Functions first.",
     steps: [
-      missingGuestEventStatusStep("eventParticipations", "eventId", "uid"),
+      missingGuestEventStatusStep("eventBookings", "eventId", "uid"),
       {
         kind: "fill",
         collection: "guestEventStatuses",
@@ -1224,37 +1424,6 @@ export const MIGRATIONS = [
     ],
   },
   {
-    name: "guest-messaging-permissions",
-    description:
-      "The guest's messaging settings page reads guestMessagingPermissions " +
-      "instead of the listParticipantMessagingPreferences callable. Every " +
-      "Catch and organizer communication preference without a row gets one, " +
-      "with the summary the callable computes from the preference and the " +
-      "receipts it names, as the new triggers write it. Existing rows are " +
-      "never replaced; preferences and receipts are never changed. Build " +
-      "Functions first.",
-    steps: [
-      {
-        source: "catchCommunicationPreferences",
-        target: "guestMessagingPermissions",
-        skipReason: "no guest",
-        targetId: (id, data) => validId(data.uid) && data.uid === id ?
-          `catchpref_${id}` : null,
-        transform: (data, id, db) => guestMessagingPermissionRow(db,
-          {scope: "catch", uid: id}),
-      },
-      {
-        source: "organizerCommunicationPreferences",
-        target: "guestMessagingPermissions",
-        skipReason: "no guest or organizer",
-        targetId: (id, data) => validId(data.uid) && validId(data.organizerId) ?
-          id : null,
-        transform: (data, id, db) => guestMessagingPermissionRow(db,
-          {scope: "organizer", preferenceId: id}),
-      },
-    ],
-  },
-  {
     name: "participant-form-profile-views",
     description:
       "The guest's form profile list and review read " +
@@ -1361,6 +1530,69 @@ export const MIGRATIONS = [
         target: "programAccessViews",
         skipReason: "no organizer manager without a view, besides the creator",
         expand: (data, id, db) => newOrganizerManagerViewEntries(db, id, data),
+      },
+      {
+        kind: "fill",
+        collection: "programAccessViews",
+        refresh: programAccessViewFields,
+        fill: async (data, id, db) => {
+          if (!validId(data.programId) || typeof data.uid !== "string" ||
+              !validId(data.uid)) return null;
+          return programAccessViewRow(db, data.programId, data.uid);
+        },
+      },
+    ],
+  },
+  {
+    name: "access-grants-programs",
+    description:
+      "Security rules authorise programme reads from accessGrants (#2474, " +
+      "FIX-10), which createOrganizerProgram and the staff grant, claim and " +
+      "revoke commands write in their own transaction. Every programme " +
+      "owner and every staff grant without an access document gets one, " +
+      "built by programAccessViewFor as the commands build it; revoked or " +
+      "unapproved grants get an inactive one. Then every access document " +
+      "that differs from what the commands would write now is rewritten, and " +
+      "the program-access-views refresh runs over programAccessViews, so a " +
+      "rerun that writes nothing shows both agree with their sources. " +
+      "Programmes and grants are never changed and nothing is deleted. " +
+      "Build Functions first.",
+    steps: [
+      {
+        source: "organizerPrograms",
+        target: "accessGrants",
+        skipReason: "no creator recorded, or the owner already has an access " +
+          "document",
+        targetId: (id, data) => validId(id) &&
+          typeof data.createdBy === "string" && validId(data.createdBy) ?
+          `program__${id}__${data.createdBy}` : null,
+        transform: (data, id, db) =>
+          newProgramAccessGrantRow(db, id, data.createdBy),
+      },
+      {
+        source: "programStaffGrants",
+        target: "accessGrants",
+        skipReason: "not a grant of an existing programme, the owner's own, or " +
+          "already granted",
+        targetId: (id, data) => validId(data.programId) &&
+          validId(data.uid) && id === `${data.programId}__${data.uid}` ?
+          `program__${data.programId}__${data.uid}` : null,
+        transform: (data, id, db) =>
+          newProgramAccessGrantRow(db, data.programId, data.uid),
+      },
+      {
+        kind: "fill",
+        collection: "accessGrants",
+        refresh: accessGrantFields,
+        fill: async (data, id, db) => {
+          if (data.scopeType !== "program" || !validId(data.scopeId) ||
+              typeof data.uid !== "string" || !validId(data.uid)) return null;
+          const row = await programAccessGrantRow(db, data.scopeId, data.uid);
+          if (!row) return null;
+          // updatedAt records when a command ran; it is never refreshed.
+          delete row.updatedAt;
+          return row;
+        },
       },
       {
         kind: "fill",
@@ -1971,6 +2203,231 @@ export const MIGRATIONS = [
           id : null,
         transform: (data, id, db) => newTripView(db, "organizerMomentViews",
           id, (tx) => momentViews().readOrganizerMomentView(db, tx, id)),
+      },
+    ],
+  },
+  {
+    name: "program-guest-directory-views",
+    description:
+      "The Host app's guest list, guest desk and programme inbox audience " +
+      "read programGuestDirectoryViews through Firestore (#2306) instead of " +
+      "the listProgramGuests callable. Every guest, household and guest " +
+      "group without a row gets one: a guest's fields with its name, phone " +
+      "and email resolved from the workspace field assertions as the " +
+      "callable resolves them, and its function rows; a household's label, " +
+      "members and revision; a group's label, dimension, order, member " +
+      "count and revision. A guest whose name is not disclosable gets none. " +
+      "Then every programAccessViews view that differs from what the " +
+      "triggers would compute now is rewritten under a last-update-time " +
+      "precondition, which adds programAll, the whole-programme duty the " +
+      "directory rules read. Existing rows are never replaced; guests, " +
+      "households, groups, programmes and grants are never changed. Build " +
+      "Functions first.",
+    steps: [
+      guestDirectoryStep("programGuests", "guest"),
+      guestDirectoryStep("programHouseholds", "household"),
+      guestDirectoryStep("programGuestGroups", "group"),
+      {
+        kind: "fill",
+        collection: "programAccessViews",
+        refresh: programAccessViewFields,
+        fill: async (data, id, db) => {
+          if (!validId(data.programId) || typeof data.uid !== "string" ||
+              !validId(data.uid)) return null;
+          return programAccessViewRow(db, data.programId, data.uid);
+        },
+      },
+    ],
+  },
+  {
+    name: "program-setting-views",
+    description:
+      "The programme inbox header, the planned-message sender and the " +
+      "assistant settings read programSenderViews and " +
+      "programAssistantSettingViews through listeners (#2306) instead of the " +
+      "sender reads of listProgramWhatsappThreads and listOrganizerMoments " +
+      "and the getProgramAssistantSettings callable. Every programme without " +
+      "views gets them: its display-safe sender (the bound connection, else " +
+      "the organiser's first active WhatsApp sender, and that first active " +
+      "sender's id), never provider ids, the secret reference or test " +
+      "evidence; and its assistant settings (the stored ones, else the " +
+      "defaults) with each active escalation grant's expiry. Existing views " +
+      "are never replaced; programmes, connections, settings and grants are " +
+      "never changed. Build Functions first.",
+    steps: [
+      {
+        source: "organizerPrograms",
+        target: "programSenderViews",
+        skipReason: "no organizer, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "programSenderViews", id,
+          (tx) => settingViews().readProgramSenderView(db, tx, id)),
+      },
+      {
+        source: "organizerPrograms",
+        target: "programAssistantSettingViews",
+        skipReason: "no organizer, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db,
+          "programAssistantSettingViews", id,
+          (tx) => settingViews().readProgramAssistantSettingView(db, tx, id)),
+      },
+    ],
+  },
+  {
+    name: "host-organizer-account-views",
+    description:
+      "The Host app's billing status and plan grants and the website's " +
+      "billing portal and owner page read hostOrganizerBillingViews, " +
+      "hostOrganizerEntitlementViews and hostOrganizerOwnerViews through " +
+      "Firestore (#2306) instead of the getOrganizerBillingStatus, " +
+      "getOrganizerEntitlement and getOrganizerOwnerView callables. Every " +
+      "organizer without them gets a billing view (the trial's facts and " +
+      "the plan status, no prices) and an owner view (its owner, page " +
+      "fields, 40 days of insights, follower allowance and WhatsApp " +
+      "readiness), and every entitlements document an entitlement view " +
+      "(grants with validity windows, never the admin note, receipt or " +
+      "granter). Existing views are never replaced; sources are never " +
+      "changed. Build Functions first.",
+    steps: [
+      {
+        source: "organizers",
+        target: "hostOrganizerBillingViews",
+        skipReason: "already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "hostOrganizerBillingViews",
+          id, (tx) => accountViews().account.readOrganizerBillingView(db, tx,
+            id)),
+      },
+      {
+        source: "organizerEntitlements",
+        target: "hostOrganizerEntitlementViews",
+        skipReason: "an invalid entitlements document, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db,
+          "hostOrganizerEntitlementViews", id, (tx) => accountViews().account
+            .readOrganizerEntitlementView(db, tx, id)),
+      },
+      {
+        source: "organizers",
+        target: "hostOrganizerOwnerViews",
+        skipReason: "already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "hostOrganizerOwnerViews",
+          id, (tx) => accountViews().owner.readOrganizerOwnerView(db, tx, id,
+            organizerAccountNow)),
+      },
+    ],
+  },
+  {
+    name: "host-form-views",
+    description:
+      "The Host form editor and form analytics read hostFormEditorViews, " +
+      "hostFormAnalyticsViews and hostFormSourceViews (#2306) instead of " +
+      "the getOrganizerFormEditor and getOrganizerFormAnalytics callables. " +
+      "Every form with a draft gets its editor view (summary, draft " +
+      "definition and validation issues), every published version its " +
+      "analytics view (funnel and question aggregates, with the privacy " +
+      "threshold applied) and every form with share links its funnel view " +
+      "(labels and counters, never a token). Existing views are never " +
+      "replaced; forms, drafts, versions, aggregates and links are never " +
+      "changed. Build Functions first.",
+    steps: [
+      {
+        source: "organizerForms",
+        target: "hostFormEditorViews",
+        skipReason: "no draft, a draft of another organizer, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "hostFormEditorViews", id,
+          (tx) => formViews().readFormEditorView(db, tx, id)),
+      },
+      {
+        source: "organizerFormVersions",
+        target: "hostFormAnalyticsViews",
+        skipReason: "already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "hostFormAnalyticsViews", id,
+          (tx) => formViews().readFormAnalyticsView(db, tx, id)),
+      },
+      {
+        source: "organizerForms",
+        target: "hostFormSourceViews",
+        skipReason: "no share links, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "hostFormSourceViews", id,
+          (tx) => formViews().readFormSourceView(db, tx, id)),
+      },
+    ],
+  },
+  {
+    name: "host-crm-views",
+    description:
+      "Host form automations read hostAudienceSourceViews instead of the " +
+      "filterOptions of listOrganizerSavedAudiences, and the People " +
+      "duplicate review reads hostContactMergeCandidateViews instead of " +
+      "listOrganizerContactMergeCandidates (#2306). Every organizer gets its " +
+      "audience sources (form titles, filterable questions, event names and " +
+      "tag labels), and every pair a conflicted claim or a proposed phone or " +
+      "email link joins gets its candidate view (names, phones, emails, " +
+      "evidence and decision; never identity hashes or linked uids). " +
+      "Existing views are never replaced; sources are never changed. Build " +
+      "Functions first.",
+    steps: [
+      {
+        source: "organizers",
+        target: "hostAudienceSourceViews",
+        skipReason: "already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "hostAudienceSourceViews", id,
+          (tx) => crmViews().sources.readAudienceSourceView(db, tx, id)),
+      },
+      {
+        source: "organizerContacts",
+        target: "hostContactMergeCandidateViews",
+        skipReason: "no candidate pair starts at this contact, or already viewed",
+        expand: (data, id, db) => contactCandidateViews(db, data, id),
+      },
+    ],
+  },
+  {
+    name: "guest-roster-links",
+    description:
+      "The Catch app's event message preferences read the guest's own " +
+      "guestEventStatuses.rosterLink instead of " +
+      "getEventAssistanceParticipantContext (#2306). Every guest status row " +
+      "gets its roster link (the guest's own linked attendee id, ambiguous, " +
+      "or null), and a guest linked to a roster row with no status row yet " +
+      "gets one. Only rosterLink is written on existing rows, with a " +
+      "last-update-time precondition. Build Functions first.",
+    steps: [
+      {
+        kind: "fill",
+        collection: "guestEventStatuses",
+        refresh: ["rosterLink"],
+        fill: async (data, id, db) => {
+          // The row's id names its guest; a row whose fields disagree with
+          // its id is left for the trigger to rebuild.
+          if (!validId(data.eventId) || !validId(data.uid) ||
+              id !== `${data.eventId}_${data.uid}`) return null;
+          const event = await db.collection("events").doc(data.eventId).get();
+          return {rosterLink: guestEventStatuses().guestRosterLink(
+            event.data()?.status, await linkedAttendeeIds(db, data.eventId, data.uid))};
+        },
+      },
+      {
+        source: "eventAttendees",
+        target: "guestEventStatuses",
+        skipReason: "no linked guest, a second row of the same guest, or a row already",
+        expand: async (data, id, db) => {
+          if (!validId(data.eventId) || !validId(data.linkedUid)) return [];
+          const ids = await linkedAttendeeIds(db, data.eventId, data.linkedUid);
+          if (ids[0] !== id) return [];
+          const targetId = `${data.eventId}_${data.linkedUid}`;
+          const row = await newView(db, "guestEventStatuses", targetId,
+            (tx) => guestEventStatuses().guestEventStatus({db, tx,
+              eventId: data.eventId, uid: data.linkedUid, nowMillis: Date.now()}));
+          return row ? [{targetId, data: row}] : [];
+        },
       },
     ],
   },

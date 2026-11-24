@@ -1,0 +1,31 @@
+{
+  "id": "hostEventDepartureViews",
+  "path": "hostEventDepartureViews/{rosterId}",
+  "rulesMatch": "/hostEventDepartureViews/{rosterId}",
+  "typescriptInterface": "HostEventDepartureViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers read live movement views and nothing else"
+  ],
+  "owner": "Live movement view evaluator: hostReadModels movement view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get and list their own organizer's views (the history pages by organizerId, progressId and progressRevision descending)",
+  "write": "server only; one per recorded departure roster, deleted with the roster, its event or its group",
+  "exportedFunctions": [
+    "dispatchEvents",
+    "onHostMovementViewPlanChanged",
+    "onHostMovementViewProgressChanged",
+    "onHostMovementViewRosterChanged",
+    "onHostMovementViewCheckpointChanged",
+    "dispatchEventAttendees",
+    "onHostMovementViewGuestChanged",
+    "onHostMovementViewMembershipChanged",
+    "onHostMovementViewWorkItemChanged",
+    "onHostMovementViewStaffGrantChanged",
+    "dispatchOrganizers"
+  ],
+  "migrationNotes": [
+    "label and sourceState follow the group's current source, so an event or plan change re-evaluates the event's rosters."
+  ]
+}

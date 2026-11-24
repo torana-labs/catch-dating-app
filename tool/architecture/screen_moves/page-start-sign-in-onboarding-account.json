@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "group": "page-start-sign-in-onboarding-account",
+  "sequence": 1795410235021,
+  "entries": [
+    {
+      "path": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+      "moveTo": "lib/pages/start/onboarding_welcome_body.dart"
+    },
+    {
+      "path": "lib/onboarding/presentation/start_welcome_route_screen.dart",
+      "moveTo": "lib/pages/start/start_welcome_route_screen.dart"
+    },
+    {
+      "path": "lib/onboarding/presentation/onboarding_profile_draft.dart",
+      "moveTo": "lib/pages/onboarding/onboarding_profile_draft.dart"
+    },
+    {
+      "path": "lib/onboarding/presentation/onboarding_controller.dart",
+      "moveTo": "lib/pages/onboarding/onboarding_controller.dart"
+    },
+    {
+      "path": "lib/auth/presentation/auth_presentation_state.dart",
+      "moveTo": "lib/pages/sign_in/auth_presentation_state.dart"
+    },
+    {
+      "path": "lib/auth/presentation/auth_session_controller.dart",
+      "moveTo": "lib/pages/account/auth_session_controller.dart"
+    },
+    {
+      "path": "lib/onboarding/presentation/onboarding_step.dart",
+      "moveTo": "lib/pages/onboarding/onboarding_step.dart"
+    },
+    {
+      "path": "lib/safety/presentation/settings_controller.dart",
+      "moveTo": "lib/pages/account/settings_controller.dart"
+    },
+    {
+      "path": "lib/auth/presentation/auth_controller.dart",
+      "moveTo": "lib/pages/sign_in/auth_controller.dart"
+    },
+    {
+      "path": "lib/auth/presentation/auth_input.dart",
+      "moveTo": "lib/pages/sign_in/auth_input.dart"
+    }
+  ],
+  "moves": {
+    "lib/auth/presentation/auth_controller.dart": "lib/pages/sign_in/auth_controller.dart",
+    "lib/auth/presentation/auth_controller.freezed.dart": "lib/pages/sign_in/auth_controller.freezed.dart",
+    "lib/auth/presentation/auth_controller.g.dart": "lib/pages/sign_in/auth_controller.g.dart",
+    "lib/auth/presentation/auth_input.dart": "lib/pages/sign_in/auth_input.dart",
+    "lib/auth/presentation/auth_presentation_state.dart": "lib/pages/sign_in/auth_presentation_state.dart",
+    "lib/auth/presentation/auth_session_controller.dart": "lib/pages/account/auth_session_controller.dart",
+    "lib/auth/presentation/auth_session_controller.g.dart": "lib/pages/account/auth_session_controller.g.dart",
+    "lib/onboarding/presentation/onboarding_controller.dart": "lib/pages/onboarding/onboarding_controller.dart",
+    "lib/onboarding/presentation/onboarding_controller.freezed.dart": "lib/pages/onboarding/onboarding_controller.freezed.dart",
+    "lib/onboarding/presentation/onboarding_controller.g.dart": "lib/pages/onboarding/onboarding_controller.g.dart",
+    "lib/onboarding/presentation/onboarding_profile_draft.dart": "lib/pages/onboarding/onboarding_profile_draft.dart",
+    "lib/onboarding/presentation/onboarding_profile_draft.freezed.dart": "lib/pages/onboarding/onboarding_profile_draft.freezed.dart",
+    "lib/onboarding/presentation/onboarding_step.dart": "lib/pages/onboarding/onboarding_step.dart",
+    "lib/onboarding/presentation/pages/onboarding_welcome_body.dart": "lib/pages/start/onboarding_welcome_body.dart",
+    "lib/onboarding/presentation/pages/welcome_motion.dart": "lib/pages/start/welcome_motion.dart",
+    "lib/onboarding/presentation/start_welcome_route_screen.dart": "lib/pages/start/start_welcome_route_screen.dart",
+    "lib/safety/presentation/settings_controller.dart": "lib/pages/account/settings_controller.dart",
+    "lib/safety/presentation/settings_controller.g.dart": "lib/pages/account/settings_controller.g.dart",
+    "test/auth/presentation/auth_controller_test.dart": "test/pages/sign_in/auth_controller_test.dart",
+    "test/auth/presentation/auth_input_test.dart": "test/pages/sign_in/auth_input_test.dart",
+    "test/auth/presentation/auth_presentation_state_test.dart": "test/pages/sign_in/auth_presentation_state_test.dart",
+    "test/onboarding/onboarding_controller_test.dart": "test/pages/onboarding/onboarding_controller_test.dart",
+    "test/onboarding/onboarding_step_test.dart": "test/pages/onboarding/onboarding_step_test.dart",
+    "test/safety/settings_controller_test.dart": "test/pages/account/settings_controller_test.dart"
+  },
+  "folders": {}
+}

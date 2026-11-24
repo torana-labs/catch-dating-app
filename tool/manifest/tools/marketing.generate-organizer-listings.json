@@ -1,0 +1,27 @@
+{
+  "id": "marketing:generate-organizer-listings",
+  "category": "marketing",
+  "path": "website/scripts/generateOrganizerListings.mjs",
+  "command": "npm --workspace catch-marketing run generate:organizer-listings",
+  "surface": "remote-read",
+  "status": "active",
+  "description": "Projects approved organizer intake and seed organizer records into production hostListings.json, with a separate explicit demo-inclusive Storybook projection.",
+  "checks": [
+    "node --check website/scripts/generateOrganizerListings.mjs",
+    "node --test website/scripts/generateOrganizerListings.test.mjs"
+  ],
+  "impactPaths": [
+    "contracts/**/*.json",
+    "tool/contracts/generate_schema_contracts.mjs"
+  ],
+  "role": "generator",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "runbook": "tool/README.md#organiser-listings-projection",
+  "checkSafety": "local-readonly"
+}

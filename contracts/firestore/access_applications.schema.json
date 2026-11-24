@@ -38,7 +38,7 @@
         "paused",
         "notSelectedYet"
       ],
-      "x-catch-ownership": "admin-callable-owned"
+      "x-catch-ownership": "callable-owned"
     },
     "city": {
       "$ref": "../shared/event_common.schema.json#/definitions/marketId",
@@ -116,26 +116,26 @@
     "cohortId": {
       "type": ["string", "null"],
       "maxLength": 120,
-      "x-catch-ownership": "admin-callable-owned"
+      "x-catch-ownership": "callable-owned"
     },
     "hostUserId": {
       "anyOf": [
         {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
         {"type": "null"}
       ],
-      "x-catch-ownership": "admin-callable-owned"
+      "x-catch-ownership": "callable-owned"
     },
     "reviewerUid": {
       "anyOf": [
         {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
         {"type": "null"}
       ],
-      "x-catch-ownership": "admin-callable-owned"
+      "x-catch-ownership": "callable-owned"
     },
     "reviewNote": {
       "type": ["string", "null"],
       "maxLength": 1000,
-      "x-catch-ownership": "admin-callable-owned"
+      "x-catch-ownership": "callable-owned"
     },
     "submissionCount": {
       "type": "integer",
@@ -144,19 +144,19 @@
     },
     "createdAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
-      "x-catch-ownership": "client-server-timestamp"
+      "x-catch-ownership": "client-writable"
     },
     "submittedAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
-      "x-catch-ownership": "client-server-timestamp"
+      "x-catch-ownership": "client-writable"
     },
     "updatedAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
-      "x-catch-ownership": "client-server-timestamp"
+      "x-catch-ownership": "client-writable"
     },
     "reviewedAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
-      "x-catch-ownership": "admin-callable-owned"
+      "x-catch-ownership": "callable-owned"
     }
   }
 }

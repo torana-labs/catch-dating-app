@@ -1,0 +1,14 @@
+{
+  "id": "marketing:website-storybook",
+  "category": "marketing",
+  "path": "website/.storybook/main.ts",
+  "command": "npm --workspace catch-marketing run build:storybook",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Builds the Storybook workbench for route-linked marketing website component and page-state review.",
+  "checks": [
+    "npm --workspace catch-marketing run check:storybook-config",
+    "npm --workspace catch-marketing run build:storybook"
+  ],
+  "role": "generator"
+}

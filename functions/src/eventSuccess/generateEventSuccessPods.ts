@@ -43,13 +43,13 @@ import {
   unitLabel,
   unitSingularLabel,
   unitSubtitle,
-} from "./assignmentTopology";
+} from "../domain/formats/assignmentTopology";
 import {
   EventSuccessAssignmentAlgorithm,
   EventSuccessCompatibilityPolicy,
   EventSuccessMatchingObjective,
   eventSuccessPrimitivesFor,
-} from "./formatPrimitives";
+} from "../domain/formats/formatPrimitives";
 import {
   arrivalGroupPolicyForStructureConfig,
   assignmentConstraintsForStructureConfig,

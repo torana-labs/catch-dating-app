@@ -1,0 +1,19 @@
+{
+  "id": "instagramAccessTokens",
+  "path": "instagramAccessTokens/{accountId}",
+  "rulesMatch": "/instagramAccessTokens/{accountId}",
+  "typescriptInterface": "InstagramAccessTokenDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets a requester follow only their own claim verification"
+  ],
+  "owner": "Instagram access token renewal",
+  "writerContext": "organizers",
+  "read": "server only; names a Secret Manager version, never the token",
+  "write": "server only, by the scheduled renewal",
+  "exportedFunctions": [
+    "refreshInstagramAccessToken",
+    "instagramClaimWebhook"
+  ]
+}

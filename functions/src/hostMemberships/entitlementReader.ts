@@ -106,7 +106,7 @@ export async function readHostMembershipContext(params: {
     }).map((doc) => doc.data().eventId as string);
     // A cancelled booking no longer counts even if its use was not released.
     const participations = await Promise.all(candidates.map((id) =>
-      get(db.collection("eventParticipations")
+      get(db.collection("eventBookings")
         .doc(eventParticipationId(id, uid)))));
     upcomingMemberPricedBookings = participations.filter((snap) =>
       snap.data()?.status === "signedUp").length;

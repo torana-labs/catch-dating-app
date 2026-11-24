@@ -98,7 +98,7 @@ Provider observation retention is an unresolved product/data decision:
    established; `readyAt`/`manualCurbAt` are distinct.
 4. Amend the authored [R11 policy](../../../docs/plans/r11_program_retention_policy.md)
    explicitly before implementing deletion/migration. Current R11 preserves
-   flight fields indefinitely and anonymizes only archive + 14 days. Current
+   flight fields indefinitely and anonymizes only archive + 60 days. Current
    code cleans subscriptions during anonymization, not immediately at archive;
    blank configuration can discard subscription IDs without remote cleanup.
    Inventory/resolve any previous subscriptions before a pilot or shutdown;

@@ -9,7 +9,7 @@ import {
   type ShadowProfilePolicy,
 } from "./policy";
 import {e164, enabledEntries, entryKey} from "./store";
-import {instantDraftPhones, salesRelationshipPhones, syncObservations} from "./sync";
+import {salesRelationshipPhones, syncObservations} from "./sync";
 import {
   findClaimableOrganizersHandler,
   organizerPrefill,
@@ -48,10 +48,6 @@ test("sales relationships split verified and staff-entered phones", () => {
     {organizerId: "org-lantern", source: "sales_crm_verified", phones: ["+919000000001"]},
     {organizerId: "org-lantern", source: "staff_entered", phones: ["+919000000002"]},
   ]);
-  assert.deepEqual(instantDraftPhones({instantDraft: {whatsapp: {phone: "+919000000003"}}}), []);
-  assert.deepEqual(instantDraftPhones({approval: {organizerId: "org-ember"},
-    instantDraft: {whatsapp: {phone: "+919000000003"}}}),
-  [{organizerId: "org-ember", source: "self_verified_submitter", phones: ["+919000000003"]}]);
 });
 
 test("sync writes nothing while off, then adds and removes entries", async () => {

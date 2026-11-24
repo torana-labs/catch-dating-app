@@ -6,11 +6,11 @@ import type {
   OrganizerFollowDocument,
   OrganizerPostDeliveryOperationDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {organizerCommunicationPreferenceId} from
-  "../shared/organizerCommunicationPreferences";
+import {organizerPermissionSeed} from
+  "../shared/testing/contactPermissionFixtures";
 import {whatsappStopId} from "../shared/organizerWhatsappStops";
 import {organizerRelationshipId} from "../shared/relationshipDocuments";
-import {hashEndpoint} from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {followerWhatsappGrant} from "./organizerFollowerWhatsapp";
 import {
   findFollowerWhatsappSender,
@@ -41,7 +41,10 @@ class Store {
 class Ref {
   constructor(readonly store: Store, readonly path: string) {}
   get id() {
-    return this.path.split("/")[1];
+    return this.path.split("/").at(-1)!;
+  }
+  collection(name: string) {
+    return new Query(this.store, `${this.path}/${name}`, []);
   }
   async get() {
     const value = this.store.docs.get(this.path);
@@ -102,16 +105,10 @@ function seed() {
 }
 
 function grantFor(store: Store, uid: string, endpoint = phone) {
-  const unknown = {status: "unknown", evidenceStatus: "notApplicable",
-    currentReceiptId: null, termsVersion: null, source: null,
-    sourceEventId: null, updatedAt: null};
-  store.docs.set("organizerCommunicationPreferences/" +
-    organizerCommunicationPreferenceId("org-1", uid), {organizerId: "org-1",
-    uid, whatsapp: unknown, sms: unknown, whatsappPurposes: {followerUpdates:
-      followerWhatsappGrant({receiptId: `ocpr_${uid}`, endpointE164: endpoint,
-        now: Timestamp.fromMillis(10_000)})},
-    createdAt: Timestamp.fromMillis(10_000),
-    updatedAt: Timestamp.fromMillis(10_000)});
+  store.docs.set(...organizerPermissionSeed("org-1", uid, {
+    "whatsapp:followerUpdates": followerWhatsappGrant({
+      receiptId: `ocpr_${uid}`, endpointE164: endpoint,
+      now: Timestamp.fromMillis(10_000)})}));
 }
 
 test("the sender is the active connection with the approved template",

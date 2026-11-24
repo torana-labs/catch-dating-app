@@ -24,6 +24,10 @@ _OrganizerDraft _$OrganizerDraftFromJson(Map<String, dynamic> json) =>
           : OrganizerHostDefaults.fromJson(
               json['hostDefaults'] as Map<String, dynamic>,
             ),
+      signupSource: $enumDecodeNullable(
+        _$OrganizerSignupSourceEnumMap,
+        json['signupSource'],
+      ),
     );
 
 Map<String, dynamic> _$OrganizerDraftToJson(_OrganizerDraft instance) =>
@@ -38,6 +42,7 @@ Map<String, dynamic> _$OrganizerDraftToJson(_OrganizerDraft instance) =>
       'email': instance.email,
       'organizerType': _$OrganizerTypeEnumMap[instance.organizerType]!,
       'hostDefaults': instance.hostDefaults.toJson(),
+      'signupSource': _$OrganizerSignupSourceEnumMap[instance.signupSource],
     };
 
 const _$OrganizerTypeEnumMap = {
@@ -47,4 +52,13 @@ const _$OrganizerTypeEnumMap = {
   OrganizerType.eventProducer: 'eventProducer',
   OrganizerType.venue: 'venue',
   OrganizerType.brand: 'brand',
+};
+
+const _$OrganizerSignupSourceEnumMap = {
+  OrganizerSignupSource.metaAd: 'metaAd',
+  OrganizerSignupSource.googleSearch: 'googleSearch',
+  OrganizerSignupSource.instagramPost: 'instagramPost',
+  OrganizerSignupSource.friendOrHost: 'friendOrHost',
+  OrganizerSignupSource.teamOutreach: 'teamOutreach',
+  OrganizerSignupSource.other: 'other',
 };

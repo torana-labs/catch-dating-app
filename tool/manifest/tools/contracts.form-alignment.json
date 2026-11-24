@@ -1,0 +1,46 @@
+{
+  "id": "contracts:form-alignment",
+  "category": "contracts",
+  "path": "test/core/forms/contract_alignment_test.dart",
+  "command": "flutter test --concurrency=1 test/core/forms/contract_alignment_test.dart",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Checks that consumer and host form descriptors bind to generated schema field constraints, including a seeded contradictory-limit probe.",
+  "checks": [
+    "flutter test --concurrency=1 test/core/forms/contract_alignment_test.dart"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "FORM-CONTRACT-001",
+      "title": "Editable form constraints derive from schema contracts",
+      "appliesTo": [
+        "contracts/**/*.schema.json",
+        "tool/contracts/generate_schema_contracts.mjs",
+        "tool/contracts/generate_flutter_form_contract_inventory.mjs",
+        "contracts/forms/field_constraint_bindings.json",
+        "apps/*/lib/**",
+        "packages/catch_ui/lib/src/components/catch_contract_field_constraints.dart",
+        "packages/catch_ui/lib/src/components/catch_contract_field_policy.dart",
+        "packages/catch_ui/lib/src/components/catch_chip*.dart",
+        "packages/catch_ui/lib/src/components/catch_option_*.dart",
+        "packages/catch_ui/lib/src/components/catch_range_input.dart",
+        "packages/catch_ui/lib/src/components/catch_toggle_input.dart",
+        "lib/**/presentation/**",
+        "test/core/forms/contract_alignment_test.dart",
+        "tool/contracts/generate_flutter_form_contract_inventory.test.mjs",
+        "lib/user_profile/presentation/**",
+        "lib/hosts/presentation/**"
+      ],
+      "instruction": "Every editable canonical control and form-descriptor instance in the Consumer and Catch Host apps must bind generated CatchContractFieldConstraints instead of repeating length, required, pattern, collection, enum, format, or numeric constraints. Typed choices must declare their wire-value serializer, range controls must bind both endpoints, and genuinely non-editable disclosures must carry an explicit audited exemption."
+    }
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "flutter",
+      "flutter-pub"
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "ci:ios-build-inputs",
+  "category": "ci",
+  "path": "tool/ci/ios_build_inputs.mjs",
+  "command": "node --test tool/ci/ios_build_inputs.test.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "impactPaths": [
+    "tool/ci/ios_build_inputs.mjs",
+    "tool/ci/ios_build_inputs.test.mjs",
+    "nx.json",
+    "tool/nx/shadow_plan.mjs",
+    "tool/harness/lib/component_graph.mjs",
+    ".github/workflows/app-build-matrix.yml"
+  ],
+  "description": "The repository inputs an iOS simulator build depends on. In the merge queue the planner and Nx run the iOS build lane only when a change reaches one of them; tests pin nx.json lane-build-ios to the same list and require every tracked native iOS file to be on it.",
+  "checks": [
+    "node --check tool/ci/ios_build_inputs.mjs",
+    "node --test tool/ci/ios_build_inputs.test.mjs"
+  ],
+  "role": "gate"
+}

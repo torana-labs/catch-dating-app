@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
@@ -44,8 +43,9 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_razorpay_conne
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/organizers/organizers.dart'
     show OrganizerDetailReadOnlyPreview;
+import 'package:catch_dating_app/pages/account/auth_session_controller.dart';
+import 'package:catch_dating_app/pages/account/settings_controller.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
-import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_kernel/labelled.dart';

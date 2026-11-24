@@ -1,0 +1,16 @@
+{
+  "id": "marketing:website-storybook-a11y",
+  "category": "marketing",
+  "path": "website/vitest.config.ts",
+  "command": "npm --workspace catch-marketing run test:storybook:a11y",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Runs all marketing Storybook stories in Playwright Chromium with project-default axe failures blocking CI and exact legacy todos ratcheted separately.",
+  "checks": [
+    "npm --workspace catch-marketing run test:storybook:a11y"
+  ],
+  "role": "gate",
+  "impactPaths": [
+    "website/vitest.config.ts"
+  ]
+}

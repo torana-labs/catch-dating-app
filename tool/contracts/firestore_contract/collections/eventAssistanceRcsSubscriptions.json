@@ -1,0 +1,13 @@
+{
+  "id": "eventAssistanceRcsSubscriptions",
+  "path": "eventAssistanceRcsSubscriptions/{subscriptionId}",
+  "rulesMatch": "/eventAssistanceRcsSubscriptions/{subscriptionId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "event-assistance authenticated RCS ingress",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Agent and endpoint subscription observations commit with authenticated callbacks. Subscribe does not grant event consent. No direct client access or automatic retention deletion."
+  ]
+}

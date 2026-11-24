@@ -68,7 +68,7 @@ accountable owner and next action.
 | React website/admin architecture | `docs/web_surface_architecture.md`, `docs/agent_skills/catch-react-surface-refactor.md` | Registered React boundary, primitive, component, test, typecheck, and build checks; before pushing Admin work, `npm run check:admin` runs CI's Admin lane locally |
 | Marketing routes/components/SEO | `docs/marketing_website_architecture.md`, `design/website/routes.json`, `design/website/components.json` | Route/component/import checks and marketing typecheck/build |
 | Widget consolidation or dedupe | `docs/design_parity/widget_consolidation/consolidation_rules.md`, `docs/design_parity/widget_consolidation/decisions.json` | Apply only exact K/R/D rules; escalate unmatched identity or visual trade-offs; keep the decision ledger current |
-| Tooling or automation | `tool/README.md`, `tool/tools_manifest.json` | `node tool/run.mjs check --manifest-only` plus focused tool tests |
+| Tooling or automation | `tool/README.md`, `tool/manifest/` (one file per tool) | `node tool/run.mjs check --manifest-only` plus focused tool tests |
 | Parallel worktrees | `docs/agent_operating_model.md` | Ordinary Git plus the optional thin `tool/git/worktree_guard.mjs` safety wrapper |
 | Tasks, plans, strategy, decisions | GitHub Issues in this repo for tasks (`status:`, `priority:` and `project:` labels, sub-issues, the torana-labs **Catch** board); [torana-labs/catch-knowledge](https://github.com/torana-labs/catch-knowledge) for plans, strategy, research and decisions that need not change with code | File and update issues, never repo task lists; Linear is retired (`migrated-from-linear` issues link to their originals) |
 
@@ -145,7 +145,11 @@ the code. Each was resolved by measuring the thing itself.
 
 A local contribution is ready for handoff when its intended changes are present,
 focused checks pass, compile-critical generated outputs are current, and the
-exact commit is preserved. Shipping, issue status and retirement of the task's
+exact commit is preserved. Open its PR with squash auto-merge already on,
+unless the PR needs the owner's review, is a draft, or is stacked on a PR that
+has not merged; the PR body says which exception applies (see
+[`docs/agent_operating_model.md`](docs/agent_operating_model.md#execution-venue-and-source-handoff)).
+Shipping, issue status and retirement of the task's
 own worktree follow the mandatory checklist in
 [`docs/agent_operating_model.md`](docs/agent_operating_model.md#completion).
 A session that ends while its PR is still in the merge queue leaves its

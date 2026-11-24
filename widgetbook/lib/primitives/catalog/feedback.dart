@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/notifications/presentation/foreground_notification_controller.dart';
-import 'package:catch_dating_app/notifications/presentation/foreground_notification_listener.dart';
+import 'package:catch_dating_app/pages/frame/notifications/foreground_notification_controller.dart';
+import 'package:catch_dating_app/pages/frame/notifications/foreground_notification_listener.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';

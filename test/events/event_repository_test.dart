@@ -87,6 +87,33 @@ void main() {
       expect(await repository.fetchEvent('event-1'), event);
     });
 
+    test(
+      'a reader off the team gets the public copy by id, hidden price and all',
+      () async {
+        final guestFirestore = _GuestFirestore();
+        final guest = EventRepository(guestFirestore, functions);
+        final event = buildEvent();
+        await guestFirestore.collection('events').doc(event.id).set({
+          ...event.toJson(),
+          'publicationState': 'published',
+          'priceInPaise': 50000,
+        });
+        await _seedPublicCopy(
+          guestFirestore,
+          event,
+          overrides: {'priceHiddenUntilBookingOpens': true},
+        );
+        await guestFirestore.collection('publicEvents').doc(event.id).update({
+          'priceInPaise': FieldValue.delete(),
+        });
+
+        final fetched = await guest.fetchEvent(event.id);
+        expect(fetched?.id, event.id);
+        expect(fetched?.priceInPaise, 0);
+        expect(fetched?.priceHiddenUntilBookingOpens, isTrue);
+      },
+    );
+
     test('fetchEvent returns null when the document is missing', () async {
       expect(await repository.fetchEvent('event-missing'), isNull);
     });

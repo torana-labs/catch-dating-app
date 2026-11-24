@@ -18,7 +18,8 @@ import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 import {seatIdentityAliasId, seatIdentityValueHash,
   seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
 import {publishedEventSetup, withStoredEventPolicy} from
-  "../shared/testing/eventSetupFixture";
+  "../domain/events/testing/eventSetupFixture";
+import {withEventSeatLedgers} from "./seatAuthority/eventSeatLedgerTestSupport";
 
 type FakeData = Record<string, unknown>;
 
@@ -252,12 +253,51 @@ function seatReservationPath(key: string): string {
     .update(`event-1\u001f${key}`).digest("hex");
 }
 
+/** A fixture that seeds no seat records of its own gets what every event now
+ * has: a verified seat identity for each seeded user and an active
+ * reservation for each signed-up or attended booking. */
+function withSeatIdentities(
+  docs: Record<string, FakeData | undefined>
+): Record<string, FakeData | undefined> {
+  if (!docs["events/event-1"] ||
+      Object.keys(docs).some((path) => path.startsWith("eventSeat"))) {
+    return docs;
+  }
+  const seeded = {...docs};
+  let active = 0;
+  for (const path of Object.keys(docs)) {
+    const uid = /^users\/([^/]+)$/u.exec(path)?.[1] ?? null;
+    if (uid) {
+      seeded[`eventSeatVerifiedPhones/${seatVerifiedPhoneProofId("event-1",
+        uid)}`] = {eventId: "event-1", organizerId: "club-1", uid,
+        phoneE164: null, migrationRevision: 1, state: "current"};
+      seeded[`eventSeatIdentityAliases/${seatIdentityAliasId("event-1", "uid",
+        uid)}`] = {eventId: "event-1", organizerId: "club-1", kind: "uid",
+        valueHash: seatIdentityValueHash("uid", uid),
+        canonicalKey: `uid_${uid}`, identityRevision: 1,
+        migrationRevision: 1, state: "ready"};
+    }
+    const booking = path.startsWith("eventBookings/event-1_") ? docs[path] :
+      undefined;
+    if (booking && ["signedUp", "attended"].includes(String(booking.status))) {
+      const key = `uid_${String(booking.uid)}`;
+      seeded[seatReservationPath(key)] = {eventId: "event-1",
+        canonicalKey: key, identityRevision: 1, active: true, revision: 1,
+        reservedAtMillis: 1, releasedAtMillis: null};
+      active += 1;
+    }
+  }
+  // The ledger counts the reservations, whatever the seeded bookedCount.
+  const ledger = withEventSeatLedgers({"events/event-1":
+    {...docs["events/event-1"], bookedCount: active}},
+  )["eventSeatLedgers/event-1"];
+  return {...seeded, "eventSeatLedgers/event-1": ledger};
+}
+
 function readySeatDocs(sourceEvent: FakeData,
   uids: readonly string[]): Record<string, FakeData> {
   const policy = deriveEventSeatPolicy(sourceEvent);
   const rows: Record<string, FakeData> = {
-    "eventSeatMigrationFences/event-1": {eventId: "event-1",
-      migrationRevision: 1, state: "ready"},
     "eventSeatLedgers/event-1": {eventId: "event-1",
       capacity: policy.capacity, occupied: 1, revision: 1,
       capacityRevision: 1, policyVersion: policy.policyVersion,
@@ -295,11 +335,11 @@ test(
       }),
       "users/runner-1": user(),
       "users/runner-2": user({gender: "woman", interestedInGenders: ["man"]}),
-      "eventParticipations/event-1_runner-1": participation(
+      "eventBookings/event-1_runner-1": participation(
         "runner-1",
         "signedUp"
       ),
-      "eventParticipations/event-1_runner-2":
+      "eventBookings/event-1_runner-2":
         participation("runner-2", "waitlisted"),
       "guestPayments/pay-1": payment(),
     });
@@ -307,11 +347,11 @@ test(
     await cancelEventSignUpHandler(request("runner-1"), h.deps);
 
     assert.equal(
-      h.firestore.get("eventParticipations/event-1_runner-1")?.status,
+      h.firestore.get("eventBookings/event-1_runner-1")?.status,
       "cancelled"
     );
     assert.equal(
-      h.firestore.get("eventParticipations/event-1_runner-2")?.status,
+      h.firestore.get("eventBookings/event-1_runner-2")?.status,
       "waitlisted"
     );
     assert.equal(h.firestore.get("events/event-1")?.bookedCount, 0);
@@ -334,11 +374,11 @@ test("cancelEventSignUpHandler promotes free waitlist users", async () => {
       gender: "woman",
       interestedInGenders: ["man"],
     }),
-    "eventParticipations/event-1_runner-1": participation(
+    "eventBookings/event-1_runner-1": participation(
       "runner-1",
       "signedUp"
     ),
-    "eventParticipations/event-1_runner-2": participation(
+    "eventBookings/event-1_runner-2": participation(
       "runner-2",
       "waitlisted"
     ),
@@ -347,16 +387,16 @@ test("cancelEventSignUpHandler promotes free waitlist users", async () => {
   await cancelEventSignUpHandler(request("runner-1"), h.deps);
 
   assert.equal(
-    h.firestore.get("eventParticipations/event-1_runner-2")?.status,
+    h.firestore.get("eventBookings/event-1_runner-2")?.status,
     "signedUp"
   );
   // Both rosters rows move in the cancellation transaction.
   const rowFor = (uid: string) => h.firestore.get(`eventAttendees/${
-    h.firestore.get(`eventParticipations/event-1_${uid}`)?.attendeeId}`) as
+    h.firestore.get(`eventBookings/event-1_${uid}`)?.attendeeId}`) as
     {status?: string; booking?: {waitlistOfferStatus?: unknown}} | undefined;
   assert.equal(rowFor("runner-1")?.status, "cancelled");
   assert.equal(rowFor("runner-2")?.status, "registered");
-  assert.equal(h.firestore.get("eventParticipations/event-1_runner-2")
+  assert.equal(h.firestore.get("eventBookings/event-1_runner-2")
     ?.waitlistOfferStatus, "accepted");
   assert.equal(rowFor("runner-2")?.booking, undefined);
   assert.equal(h.firestore.get("events/event-1")?.bookedCount, 1);
@@ -383,9 +423,9 @@ test("ready seat ledger transfers the final seat on cancellation",
       "users/runner-1": user(),
       "users/runner-2": user({gender: "woman",
         interestedInGenders: ["man"]}),
-      "eventParticipations/event-1_runner-1":
+      "eventBookings/event-1_runner-1":
         participation("runner-1", "signedUp"),
-      "eventParticipations/event-1_runner-2":
+      "eventBookings/event-1_runner-2":
         participation("runner-2", "waitlisted"),
       ...readySeatDocs(sourceEvent, ["runner-1", "runner-2"])});
     await cancelEventSignUpHandler(request("runner-1"), h.deps);
@@ -395,7 +435,7 @@ test("ready seat ledger transfers the final seat on cancellation",
       ?.active, false);
     assert.equal(h.firestore.get(seatReservationPath("uid_runner-2"))
       ?.active, true);
-    assert.equal(h.firestore.get("eventParticipations/event-1_runner-2")
+    assert.equal(h.firestore.get("eventBookings/event-1_runner-2")
       ?.status, "signedUp");
   });
 
@@ -407,9 +447,9 @@ test("promotion enrolls a newly verified waitlisted UID in the same batch",
       "users/runner-1": user(),
       "users/runner-2": user({gender: "woman",
         interestedInGenders: ["man"]}),
-      "eventParticipations/event-1_runner-1":
+      "eventBookings/event-1_runner-1":
         participation("runner-1", "signedUp"),
-      "eventParticipations/event-1_runner-2":
+      "eventBookings/event-1_runner-2":
         participation("runner-2", "waitlisted"),
       ...readySeatDocs(sourceEvent, ["runner-1"])});
     h.deps.loadCurrentAuthPhone = async (uid) => uid === "runner-2" ?
@@ -419,30 +459,8 @@ test("promotion enrolls a newly verified waitlisted UID in the same batch",
     assert.equal(h.firestore.get(`eventSeatIdentityAliases/${
       seatIdentityAliasId("event-1", "phone", "+919999999999")}`)
       ?.state, "ready");
-    assert.equal(h.firestore.get("eventParticipations/event-1_runner-2")
+    assert.equal(h.firestore.get("eventBookings/event-1_runner-2")
       ?.status, "signedUp");
-  });
-
-test("locked migration denies cancellation and promotion atomically",
-  async () => {
-    const sourceEvent = event({bookedCount: 1, waitlistedCount: 1});
-    const rows = readySeatDocs(sourceEvent, ["runner-1", "runner-2"]);
-    rows["eventSeatMigrationFences/event-1"].state = "locked";
-    const h = harness({"events/event-1": sourceEvent,
-      "users/runner-1": user(),
-      "users/runner-2": user({gender: "woman",
-        interestedInGenders: ["man"]}),
-      "eventParticipations/event-1_runner-1":
-        participation("runner-1", "signedUp"),
-      "eventParticipations/event-1_runner-2":
-        participation("runner-2", "waitlisted"), ...rows});
-    await assert.rejects(() =>
-      cancelEventSignUpHandler(request("runner-1"), h.deps));
-    assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
-      ?.status, "signedUp");
-    assert.equal(h.firestore.get("eventParticipations/event-1_runner-2")
-      ?.status, "waitlisted");
-    assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
   });
 
 test("unresolved promoted seat rejects cancellation without partial writes",
@@ -453,16 +471,16 @@ test("unresolved promoted seat rejects cancellation without partial writes",
       "users/runner-1": user(),
       "users/runner-2": user({gender: "woman",
         interestedInGenders: ["man"]}),
-      "eventParticipations/event-1_runner-1":
+      "eventBookings/event-1_runner-1":
         participation("runner-1", "signedUp"),
-      "eventParticipations/event-1_runner-2":
+      "eventBookings/event-1_runner-2":
         participation("runner-2", "waitlisted"),
       ...readySeatDocs(sourceEvent, ["runner-1"])});
     await assert.rejects(() =>
       cancelEventSignUpHandler(request("runner-1"), h.deps));
-    assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
+    assert.equal(h.firestore.get("eventBookings/event-1_runner-1")
       ?.status, "signedUp");
-    assert.equal(h.firestore.get("eventParticipations/event-1_runner-2")
+    assert.equal(h.firestore.get("eventBookings/event-1_runner-2")
       ?.status, "waitlisted");
     assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
   });
@@ -501,22 +519,22 @@ test("Catch cancellation retains a separately valid imported guest seat",
       "users/runner-1": user(),
       "users/runner-2": user({gender: "woman",
         interestedInGenders: ["man"]}),
-      "eventParticipations/event-1_runner-1":
+      "eventBookings/event-1_runner-1":
         participation("runner-1", "signedUp"),
-      "eventParticipations/event-1_runner-2":
+      "eventBookings/event-1_runner-2":
         participation("runner-2", "waitlisted"), ...rows});
     h.deps.loadCurrentAuthPhone = async () => phone;
     await cancelEventSignUpHandler(request("runner-1"), h.deps);
     assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
     assert.equal(h.firestore.get(seatReservationPath(key))?.active, true);
-    assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
+    assert.equal(h.firestore.get("eventBookings/event-1_runner-1")
       ?.status, "cancelled");
     // The Host-owned row keeps its seat; it only gains the pointer.
     assert.equal(h.firestore.get("eventAttendees/guest-1")?.status,
       "registered");
-    assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
+    assert.equal(h.firestore.get("eventBookings/event-1_runner-1")
       ?.attendeeId, "guest-1");
-    assert.equal(h.firestore.get("eventParticipations/event-1_runner-2")
+    assert.equal(h.firestore.get("eventBookings/event-1_runner-2")
       ?.status, "waitlisted");
   });
 
@@ -549,18 +567,18 @@ test("migrated UID seat retains linked Host attendee at full capacity",
       "users/runner-1": user(),
       "users/runner-2": user({gender: "woman",
         interestedInGenders: ["man"]}),
-      "eventParticipations/event-1_runner-1":
+      "eventBookings/event-1_runner-1":
         participation("runner-1", "signedUp"),
-      "eventParticipations/event-1_runner-2":
+      "eventBookings/event-1_runner-2":
         participation("runner-2", "waitlisted"), ...rows});
     await cancelEventSignUpHandler(request("runner-1"), h.deps);
     assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
     assert.equal(h.firestore.get(seatReservationPath("uid_runner-1"))?.active,
       true);
     assert.equal(h.firestore.get("events/event-1")?.bookedCount, 1);
-    assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
+    assert.equal(h.firestore.get("eventBookings/event-1_runner-1")
       ?.status, "cancelled");
-    assert.equal(h.firestore.get("eventParticipations/event-1_runner-2")
+    assert.equal(h.firestore.get("eventBookings/event-1_runner-2")
       ?.status, "waitlisted");
   });
 
@@ -572,13 +590,13 @@ test("retried cancellation with committed no-op sends no stale push or refund",
       ...guestInstallation("runner-2", "push-2"),
       "users/runner-2": user({gender: "woman",
         interestedInGenders: ["man"]}),
-      "eventParticipations/event-1_runner-1":
+      "eventBookings/event-1_runner-1":
         participation("runner-1", "signedUp"),
-      "eventParticipations/event-1_runner-2":
+      "eventBookings/event-1_runner-2":
         participation("runner-2", "waitlisted"),
       "guestPayments/pay-1": payment()});
     h.firestore.retryAfterFirstAttempt = () => {
-      h.firestore.merge("eventParticipations/event-1_runner-1",
+      h.firestore.merge("eventBookings/event-1_runner-1",
         {status: "cancelled"});
     };
     const result = await cancelEventSignUpHandler(request("runner-1"),
@@ -587,7 +605,7 @@ test("retried cancellation with committed no-op sends no stale push or refund",
     assert.deepEqual(h.notifications, []);
     assert.deepEqual(h.refunds, []);
     assert.equal(h.firestore.get("guestPayments/pay-1")?.status, "completed");
-    assert.equal(h.firestore.get("eventParticipations/event-1_runner-2")
+    assert.equal(h.firestore.get("eventBookings/event-1_runner-2")
       ?.status, "waitlisted");
   });
 
@@ -599,19 +617,19 @@ test("private event cancellation does not auto-promote waitlist", async () => {
     }),
     "users/runner-1": user(),
     "users/runner-2": user({gender: "woman"}),
-    "eventParticipations/event-1_runner-1": participation(
+    "eventBookings/event-1_runner-1": participation(
       "runner-1", "signedUp"
     ),
-    "eventParticipations/event-1_runner-2": participation(
+    "eventBookings/event-1_runner-2": participation(
       "runner-2", "waitlisted"
     ),
   });
 
   await cancelEventSignUpHandler(request("runner-1"), h.deps);
 
-  assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
+  assert.equal(h.firestore.get("eventBookings/event-1_runner-1")
     ?.status, "cancelled");
-  assert.equal(h.firestore.get("eventParticipations/event-1_runner-2")
+  assert.equal(h.firestore.get("eventBookings/event-1_runner-2")
     ?.status, "waitlisted");
   assert.equal(h.firestore.get("events/event-1")?.bookedCount, 0);
   assert.equal(h.firestore.get("events/event-1")?.waitlistedCount, 1);
@@ -629,11 +647,11 @@ test(
         gender: "woman",
         interestedInGenders: ["man"],
       }),
-      "eventParticipations/event-1_runner-1": participation(
+      "eventBookings/event-1_runner-1": participation(
         "runner-1",
         "signedUp"
       ),
-      "eventParticipations/event-1_runner-2": participation(
+      "eventBookings/event-1_runner-2": participation(
         "runner-2",
         "waitlisted"
       ),
@@ -665,7 +683,7 @@ test(
         }),
       }),
       "users/runner-1": user(),
-      "eventParticipations/event-1_runner-1": participation(
+      "eventBookings/event-1_runner-1": participation(
         "runner-1",
         "signedUp"
       ),
@@ -689,7 +707,8 @@ function harness(
     authorizeRazorpayRefund?: (payment: PaymentDocument) =>
       Promise<LegacyRazorpayRefundAuthorization>} = {}
 ) {
-  const firestore = new FakeFirestore(initialDocs);
+  const firestore = new FakeFirestore(
+    withEventSeatLedgers(withSeatIdentities(initialDocs)));
   const refunds: Array<{paymentId: string; amountInPaise: number}> = [];
   const notifications: Array<{
     token: string;
@@ -895,7 +914,7 @@ test("guest cancellation saves its refund before provider failure and replays",
       refundError: new Error("Provider unavailable")};
     const h = harness({"events/event-1": event(),
       "users/runner-1": user(),
-      "eventParticipations/event-1_runner-1":
+      "eventBookings/event-1_runner-1":
         participation("runner-1", "signedUp"),
       "guestPayments/pay-1": payment()}, options);
     await cancelEventSignUpHandler(request("runner-1"), h.deps);
@@ -916,7 +935,7 @@ test("foreign Razorpay guest cancellation has zero booking or refund effects",
   async () => {
     const h = harness({"events/event-1": event({bookedCount: 1}),
       "users/runner-1": user(),
-      "eventParticipations/event-1_runner-1":
+      "eventBookings/event-1_runner-1":
         participation("runner-1", "signedUp"),
       "guestPayments/pay-1": payment()}, {
       authorizeRazorpayRefund: async (current) => {
@@ -945,7 +964,7 @@ test("Razorpay ownership read failure is retryable without partial effects",
     };
     const h = harness({"events/event-1": event({bookedCount: 1}),
       "users/runner-1": user(),
-      "eventParticipations/event-1_runner-1":
+      "eventBookings/event-1_runner-1":
         participation("runner-1", "signedUp"),
       "guestPayments/pay-1": payment()}, options);
     const before = cancellationEffectSnapshot(h.firestore);
@@ -955,7 +974,7 @@ test("Razorpay ownership read failure is retryable without partial effects",
     delete options.authorizationError;
     assert.deepEqual(await cancelEventSignUpHandler(request("runner-1"),
       h.deps), {cancelled: true});
-    assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
+    assert.equal(h.firestore.get("eventBookings/event-1_runner-1")
       ?.status, "cancelled");
     assert.equal(h.firestore.get("guestPayments/pay-1")?.status, "refunded");
   });
@@ -965,7 +984,7 @@ test("guest cancellation rebinds ownership to the transaction payment read",
     const options: {afterAuthorization?: () => void} = {};
     const h = harness({"events/event-1": event({bookedCount: 1}),
       "users/runner-1": user(),
-      "eventParticipations/event-1_runner-1":
+      "eventBookings/event-1_runner-1":
         participation("runner-1", "signedUp"),
       "guestPayments/pay-1": payment()}, options);
     options.afterAuthorization = () => {
@@ -975,7 +994,7 @@ test("guest cancellation rebinds ownership to the transaction payment read",
     await assert.rejects(() =>
       cancelEventSignUpHandler(request("runner-1"), h.deps),
     /ownership reconciliation/);
-    assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
+    assert.equal(h.firestore.get("eventBookings/event-1_runner-1")
       ?.status, "signedUp");
     assert.equal(h.firestore.get("events/event-1")?.bookedCount, 1);
     assert.equal(h.firestore.get("guestPayments/pay-1")?.cancellationRefund,
@@ -991,7 +1010,7 @@ test("Stripe guest cancellation does not require Razorpay authorization",
     delete stripePayment.razorpayOwnership;
     const h = harness({"events/event-1": event({bookedCount: 1}),
       "users/runner-1": user(),
-      "eventParticipations/event-1_runner-1":
+      "eventBookings/event-1_runner-1":
         participation("runner-1", "signedUp"),
       "guestPayments/pay-1": stripePayment}, {
       authorizeRazorpayRefund: async (current) => {
@@ -1002,7 +1021,7 @@ test("Stripe guest cancellation does not require Razorpay authorization",
     await cancelEventSignUpHandler(request("runner-1"), h.deps);
     assert.equal(authorizationCalls, 0);
     assert.equal(h.firestore.get("guestPayments/pay-1")?.status, "refunded");
-    assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
+    assert.equal(h.firestore.get("eventBookings/event-1_runner-1")
       ?.status, "cancelled");
   });
 
@@ -1014,7 +1033,7 @@ test("completed no-refund Razorpay cancellation replays without provider I/O",
     const h = harness({"events/event-1": event({bookedCount: 1,
       eventPolicy: eventPolicy({cancellation: {policyId: "strict"}})}),
     "users/runner-1": user(),
-    "eventParticipations/event-1_runner-1":
+    "eventBookings/event-1_runner-1":
       participation("runner-1", "signedUp"),
     "guestPayments/pay-1": payment()}, options);
     assert.deepEqual(await cancelEventSignUpHandler(request("runner-1"),
@@ -1031,7 +1050,7 @@ test("completed no-refund Razorpay cancellation replays without provider I/O",
 function cancellationEffectSnapshot(firestore: FakeFirestore): string {
   return JSON.stringify([
     firestore.get("events/event-1"),
-    firestore.get("eventParticipations/event-1_runner-1"),
+    firestore.get("eventBookings/event-1_runner-1"),
     firestore.get("eventSeatLedgers/event-1"),
     firestore.get("guestPayments/pay-1"),
   ]);
@@ -1055,21 +1074,21 @@ test("minimal accounts cancel and receive unrestricted seats",
       }),
       "users/runner-1": minimal,
       "users/runner-2": minimal,
-      "eventParticipations/event-1_runner-1": edge("runner-1", "signedUp"),
-      "eventParticipations/event-1_runner-2": edge("runner-2", "waitlisted"),
+      "eventBookings/event-1_runner-1": edge("runner-1", "signedUp"),
+      "eventBookings/event-1_runner-2": edge("runner-2", "waitlisted"),
     });
     await cancelEventSignUpHandler(request("runner-1"), h.deps);
     assert.equal(
-      h.firestore.get("eventParticipations/event-1_runner-1")?.status,
+      h.firestore.get("eventBookings/event-1_runner-1")?.status,
       "cancelled",
     );
     assert.equal(
-      h.firestore.get("eventParticipations/event-1_runner-2")?.status,
+      h.firestore.get("eventBookings/event-1_runner-2")?.status,
       "signedUp",
     );
     assert.deepEqual(h.firestore.get("events/event-1")?.genderCounts, {});
     assert.equal(
-      h.firestore.get("eventParticipations/event-1_runner-2")
+      h.firestore.get("eventBookings/event-1_runner-2")
         ?.genderAtSignup,
       null,
     );
@@ -1104,26 +1123,26 @@ for (const blocked of [
             new Date("1995-01-01"),
           ),
         }),
-        "eventParticipations/event-1_runner-1": participation(
+        "eventBookings/event-1_runner-1": participation(
           "runner-1",
           "signedUp",
         ),
-        "eventParticipations/event-1_runner-2": participation(
+        "eventBookings/event-1_runner-2": participation(
           "runner-2",
           "waitlisted",
         ),
-        "eventParticipations/event-1_runner-3": {
+        "eventBookings/event-1_runner-3": {
           ...participation("runner-3", "waitlisted"),
           waitlistedAt: 2,
         },
       });
       await cancelEventSignUpHandler(request("runner-1"), h.deps);
       assert.equal(
-        h.firestore.get("eventParticipations/event-1_runner-2")?.status,
+        h.firestore.get("eventBookings/event-1_runner-2")?.status,
         "waitlisted",
       );
       assert.equal(
-        h.firestore.get("eventParticipations/event-1_runner-3")?.status,
+        h.firestore.get("eventBookings/event-1_runner-3")?.status,
         "signedUp",
       );
       assert.equal(h.firestore.get("events/event-1")?.waitlistedCount, 1);
@@ -1135,7 +1154,7 @@ test("an organizer-routed paid booking is not cancelled natively",
     const h = harness({
       "events/event-1": event({priceInPaise: 25000, bookedCount: 1}),
       "users/runner-1": user(),
-      "eventParticipations/event-1_runner-1": {
+      "eventBookings/event-1_runner-1": {
         ...participation("runner-1", "signedUp"),
         paymentId: "pp_0123456789abcdef0123456789abcdef",
       },
@@ -1145,7 +1164,7 @@ test("an organizer-routed paid booking is not cancelled natively",
       /Cancel this paid booking from its payment details/u,
     );
     assert.equal(
-      h.firestore.get("eventParticipations/event-1_runner-1")?.status,
+      h.firestore.get("eventBookings/event-1_runner-1")?.status,
       "signedUp",
     );
     assert.equal(h.firestore.get("events/event-1")?.bookedCount, 1);

@@ -67,9 +67,9 @@ Current state:
 - iOS schemes and build configurations are wired for consumer `dev`
   and `prod` in `apps/consumer/ios`, and host `host-dev` and
   `host-prod` in `apps/host/ios`, through
-  `tool/platform/configure_apple_flavors.rb`. Only `apps/consumer` has a
-  macOS runner, with the consumer flavors; it hosts the native app-shell
-  smoke suite.
+  `tool/platform/configure_apple_flavors.rb`. Each app package also has a
+  macOS runner with its own flavors (`apps/consumer/macos`,
+  `apps/host/macos`); each hosts that app's native integration journeys.
 - Apple builds copy the matching `firebase/<env>/<platform>/GoogleService-Info.plist`
   into the app bundle at build time.
 - App Check is registered for Android, iOS/macOS, and web in both Firebase
@@ -311,8 +311,8 @@ Use it against dev before production and before running any migration.
 3. Generate the Dart options file for that environment:
 
 ```bash
-flutterfire configure --project=<firebase-project-id> --out=lib/firebase_options_dev.dart
-flutterfire configure --project=<firebase-project-id> --out=lib/firebase_options_prod.dart
+flutterfire configure --project=<firebase-project-id> --out=packages/platform/lib/firebase/firebase_options_dev.dart
+flutterfire configure --project=<firebase-project-id> --out=packages/platform/lib/firebase/firebase_options_prod.dart
 ```
 
 4. Update `firebase/<env>/web/firebase-messaging-sw.js` with the web app config

@@ -1,0 +1,21 @@
+{
+  "id": "analytics:deploy-host-bigquery",
+  "category": "analytics",
+  "path": "tool/analytics/deploy_host_analytics_bigquery.sh",
+  "command": "bash tool/analytics/deploy_host_analytics_bigquery.sh",
+  "surface": "remote-deploy",
+  "guard": "none",
+  "guardReason": "Runs the DDL and refresh against BigQuery by default; --dry-run is the opt-in preview. Run it only as the BigQuery runbook says.",
+  "status": "active",
+  "description": "Applies host analytics BigQuery DDL and mart refresh SQL.",
+  "checks": [
+    "bash -n tool/analytics/deploy_host_analytics_bigquery.sh"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "runbook": "docs/release_operations.md#bigquery--two-separate-exports-do-not-conflate-them"
+}

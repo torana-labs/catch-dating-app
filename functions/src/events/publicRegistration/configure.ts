@@ -20,11 +20,11 @@ import {
   writeCommandReceipt,
 } from "../../shared/commandReceipts";
 import {readRegistrationManager} from "./authority";
-import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
-import {
-  assertPublicRegistrationAvailability,
-  registrationUnavailable,
-} from "./policy";
+import {assertPublicRegistrationAvailability} from "./policy";
+import {registrationUnavailable} from
+  "../../domain/events/publicRegistrationTerms";
+import {updateEventPublicRegistration} from
+  "../../domain/events/eventDocumentWrites";
 
 /** An explicit, revision-checked opt-in; origin and booking provenance survive
  * every transition. Closing remains possible even after the event ends.
@@ -96,18 +96,6 @@ export async function configureEventRegistration(input: {
     const now = nowMillis();
     if (command.mode !== "closed") {
       assertPublicRegistrationAvailability(event, organizer, command.mode, now);
-      if (
-        command.mode === "paid" &&
-        (await readSeatMigrationWriterFence({
-          db,
-          tx,
-          eventId: command.eventId,
-        })) !== "ready"
-      ) {
-        registrationUnavailable(
-          "Reconcile event seats before opening checkout.",
-        );
-      }
     }
     if (command.mode === "paid") {
       if (!input.routing) {
@@ -127,7 +115,7 @@ export async function configureEventRegistration(input: {
       });
     }
     const next = revision + 1;
-    tx.update(eventRef, {
+    updateEventPublicRegistration(tx, eventRef, {
       publicRegistrationMode: command.mode,
       publicRegistrationEnabled: command.mode !== "closed",
       publicRegistrationRevision: next,

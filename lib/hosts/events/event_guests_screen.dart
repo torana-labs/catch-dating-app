@@ -8,9 +8,11 @@ import 'package:catch_dating_app/hosts/events/event_guests_state.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_state.dart';
+import 'package:catch_dating_app/hosts/events/guest_safety_commands_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/dialogs/confirm_danger_dialog.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
@@ -20,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 /// The event's guests: booked, asked, waitlisted and cancelled, with Let in
 /// for a guest who asked, Offer for a guest waiting, Message all and
@@ -29,7 +32,9 @@ import 'package:go_router/go_router.dart';
 /// callbacks into the existing join-request approval and decline, waitlist
 /// offers (one guest, or the places left at once) and list export
 /// commands, the event's messages and the guest's profile. Tapping a guest
-/// who asked asks Let in, Decline or See profile.
+/// who asked asks Let in, Decline or See profile; tapping anyone else asks
+/// See profile, Report or Block from your events. Blocked from your events
+/// lists who the organiser has blocked, with Let them back.
 class HostEventGuestsScreen extends ConsumerStatefulWidget {
   const HostEventGuestsScreen({super.key, required this.request});
 
@@ -92,6 +97,9 @@ class _HostEventGuestsScreenState extends ConsumerState<HostEventGuestsScreen> {
         ...guestMutations.values.expand((list) => list),
         offerAllMutation,
         shareMutation,
+        HostGuestSafetyCommands.reportMutation,
+        HostGuestSafetyCommands.blockMutation,
+        HostGuestSafetyCommands.letBackMutation,
       ],
       errorContext: AppErrorContext.event,
     );
@@ -136,6 +144,7 @@ class _HostEventGuestsScreenState extends ConsumerState<HostEventGuestsScreen> {
             queryParameters: {'eventId': request.eventId},
           ),
           onDownload: () => unawaited(_download()),
+          onBlocked: () => unawaited(_openBlocked()),
           onRetry: () => retryHostEventGuestsReads(ref, request),
         ),
       ),
@@ -251,11 +260,11 @@ class _HostEventGuestsScreenState extends ConsumerState<HostEventGuestsScreen> {
   );
 
   /// A guest who asked gets Let in, Decline or See profile; anyone else
-  /// opens their profile.
+  /// gets See profile, Report or Block from your events.
   Future<void> _openGuest(HostEventGuest guest) async {
     final uid = guest.uid;
     if (uid == null) return;
-    if (_list != HostEventGuestList.asked) return _profile(uid);
+    if (_list != HostEventGuestList.asked) return _openBookedGuest(guest, uid);
     final l10n = context.l10n;
     final choice = await showCatchAdaptiveDialog<_AskedChoice>(
       context: context,
@@ -289,6 +298,190 @@ class _HostEventGuestsScreenState extends ConsumerState<HostEventGuestsScreen> {
       case null:
         return;
     }
+  }
+
+  Future<void> _openBookedGuest(HostEventGuest guest, String uid) async {
+    final l10n = context.l10n;
+    final choice = await showCatchAdaptiveDialog<_GuestChoice>(
+      context: context,
+      title: guest.name,
+      message: l10n.hostEventsGuestsGuestBody,
+      actions: [
+        CatchDialogAction(
+          label: l10n.hostEventsGuestsSeeProfile,
+          value: _GuestChoice.profile,
+          isDefault: true,
+        ),
+        CatchDialogAction(
+          label: l10n.hostEventsGuestsReport,
+          value: _GuestChoice.report,
+        ),
+        CatchDialogAction(
+          label: l10n.hostEventsGuestsBlock,
+          value: _GuestChoice.block,
+          isDestructive: true,
+        ),
+      ],
+    );
+    if (!mounted) return;
+    switch (choice) {
+      case _GuestChoice.profile:
+        _profile(uid);
+      case _GuestChoice.report:
+        await _report(guest, uid);
+      case _GuestChoice.block:
+        await _block(guest, uid);
+      case null:
+        return;
+    }
+  }
+
+  /// Asks why, then reports the guest to Catch from this event.
+  Future<void> _report(HostEventGuest guest, String uid) async {
+    final l10n = context.l10n;
+    final reason = await showCatchAdaptiveDialog<OrganizerGuestReportReason>(
+      context: context,
+      title: l10n.hostEventsGuestsReportTitle(name: guest.name),
+      message: l10n.hostEventsGuestsReportBody,
+      actions: [
+        for (final reason in OrganizerGuestReportReason.values)
+          CatchDialogAction(
+            label: switch (reason) {
+              OrganizerGuestReportReason.unsafeBehaviour =>
+                l10n.hostEventsGuestsReportUnsafe,
+              OrganizerGuestReportReason.harassment =>
+                l10n.hostEventsGuestsReportHarassment,
+              OrganizerGuestReportReason.other =>
+                l10n.hostEventsGuestsReportOther,
+            },
+            value: reason,
+          ),
+      ],
+    );
+    if (reason == null || !mounted) return;
+    final request = widget.request;
+    try {
+      await HostGuestSafetyCommands.reportMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostGuestSafetyCommandsProvider.notifier)
+            .report(
+              organizerId: request.organizerId,
+              eventId: request.eventId,
+              uid: uid,
+              reason: reason,
+            ),
+      );
+    } on Object {
+      // The error notice for this mutation, set up in build, says why.
+      return;
+    }
+    if (mounted) showCatchNotice(context, l10n.hostEventsGuestsReported);
+  }
+
+  /// Confirms, then stops the guest booking the organiser events.
+  Future<void> _block(HostEventGuest guest, String uid) async {
+    final l10n = context.l10n;
+    final confirmed = await showConfirmDangerDialog(
+      context: context,
+      title: l10n.hostEventsGuestsBlockTitle(name: guest.name),
+      message: l10n.hostEventsGuestsBlockBody,
+      confirmLabel: l10n.hostEventsGuestsBlockConfirm,
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      await HostGuestSafetyCommands.blockMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostGuestSafetyCommandsProvider.notifier)
+            .block(organizerId: widget.request.organizerId, uid: uid),
+      );
+    } on Object {
+      // The error notice for this mutation, set up in build, says why.
+      return;
+    }
+    if (mounted) {
+      showCatchNotice(
+        context,
+        l10n.hostEventsGuestsBlockedNotice(name: guest.name),
+      );
+    }
+  }
+
+  /// Who the organiser has blocked from their events, each with Let them
+  /// back.
+  Future<void> _openBlocked() {
+    final l10n = context.l10n;
+    final organizerId = widget.request.organizerId;
+    final dates = DateFormat.yMMMd(
+      Localizations.localeOf(context).toLanguageTag(),
+    );
+    return showCatchBottomSheet<void>(
+      context: context,
+      builder: (_) => Consumer(
+        builder: (context, ref, _) {
+          final blocks = ref.watch(organizerGuestBlocksProvider(organizerId));
+          final lettingBack = ref
+              .watch(HostGuestSafetyCommands.letBackMutation)
+              .isPending;
+          return CatchSheet.standard(
+            title: l10n.hostEventsGuestsBlockedLink,
+            child: blocks.when(
+              data: (blocks) => CatchSection(
+                key: const ValueKey<String>('host-event-guests-blocked-list'),
+                empty: l10n.hostEventsGuestsBlockedEmpty,
+                children: [
+                  for (final block in blocks)
+                    CatchIndexRow(
+                      key: ValueKey<String>('host-event-blocked-${block.uid}'),
+                      title:
+                          block.displayName ??
+                          l10n.hostEventsGuestsBlockedNoName,
+                      meta: switch (block.createdAt) {
+                        final createdAt? => l10n.hostEventsGuestsBlockedOn(
+                          date: dates.format(createdAt),
+                        ),
+                        null => null,
+                      },
+                      onTap: null,
+                      action: CatchIndexRowAction(
+                        label: l10n.hostEventsGuestsLetBack,
+                        onPressed: lettingBack
+                            ? null
+                            : () => unawaited(_letBack(organizerId, block)),
+                      ),
+                    ),
+                ],
+              ),
+              error: (_, _) => CatchErrorState(
+                title: l10n.hostEventsGuestsBlockedErrorTitle,
+                message: l10n.hostEventsErrorBody,
+                retryLabel: l10n.hostEventsRetry,
+                onRetry: () =>
+                    ref.invalidate(organizerGuestBlocksProvider(organizerId)),
+              ),
+              loading: () => const CatchLoadingIndicator(),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> _letBack(String organizerId, OrganizerGuestBlock block) async {
+    final l10n = context.l10n;
+    try {
+      await HostGuestSafetyCommands.letBackMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostGuestSafetyCommandsProvider.notifier)
+            .letBack(organizerId: organizerId, uid: block.uid),
+      );
+    } on Object {
+      // The error notice for this mutation, set up in build, says why.
+      return;
+    }
+    if (mounted) showCatchNotice(context, l10n.hostEventsGuestsLetBackDone);
   }
 
   /// Shares the guest list through the existing list export.
@@ -340,3 +533,5 @@ class _HostEventGuestsScreenState extends ConsumerState<HostEventGuestsScreen> {
 }
 
 enum _AskedChoice { letIn, profile, decline }
+
+enum _GuestChoice { profile, report, block }

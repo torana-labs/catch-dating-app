@@ -1,0 +1,19 @@
+{
+  "id": "eventInviteAttributions",
+  "path": "eventInviteAttributions/{attributionId}",
+  "rulesMatch": "/eventInviteAttributions/{attributionId}",
+  "typescriptInterface": "EventInviteAttributionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "verified event fact attribution projection",
+  "writerContext": "events",
+  "read": "server only; Hosts receive authorized aggregates and traits",
+  "write": "server only",
+  "exportedFunctions": [
+    "onOrganizerContactEventEdgeInviteAttributed"
+  ],
+  "migrationNotes": [
+    "Immutable deterministic credit and reversal facts use one primary invite link per attendee fact; self-use never creates referral credit.",
+    "High-impact advocate status requires three referred verified check-ins during the trailing 365 days."
+  ]
+}

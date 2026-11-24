@@ -12,9 +12,13 @@ import {deleteAccountEventParticipations} from "./accountDeletionSeats";
 import {communityMembershipRows} from
   "../memberships/communityMembershipFixture";
 import {
+  DELETED_USER_PROFILE_KEYS,
+  deletedUserProfileTombstone,
   requestAccountDeletionHandler,
   storagePathFromDownloadUrl,
 } from "./accountDeletion";
+import {withEventSeatLedgers} from
+  "../events/seatAuthority/eventSeatLedgerTestSupport";
 
 test(
   "storagePathFromDownloadUrl extracts Firebase Storage object paths",
@@ -47,7 +51,8 @@ test("Host-only deletion removes identity and preserves shared business data",
           {uid: "host2", displayName: "Other host"},
         ], name: "Shared organizer", email: "business@example.com",
         status: "active"},
-      "events/retained": {organizerId: "shared", title: "Shared event"},
+      "events/retained": {organizerId: "shared", title: "Shared event",
+        status: "active"},
     };
     const harness = createAccountDeletionHarness({seed, now: "now"});
     await requestAccountDeletionHandler({auth: {uid: "host1"}} as
@@ -151,17 +156,6 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         status: "active",
         pushNotificationsEnabled: true,
       },
-      "organizerCommunicationPreferences/club-1_runner-1": {
-        organizerId: "club-1",
-        uid: "runner-1",
-        whatsapp: {status: "optedIn"},
-        sms: {status: "unknown"},
-      },
-      "organizerCommunicationPermissionReceipts/receipt-1": {
-        organizerId: "club-1",
-        uid: "runner-1",
-        channel: "whatsapp",
-      },
       "eventChatMessages/message-1": {uid: "runner-1", text: "Private"},
       "eventChatMessages/message-other": {uid: "runner-2", text: "Other"},
       "eventChatReactions/reaction-1": {uid: "runner-1"},
@@ -194,12 +188,22 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
       "adConversionDeliveries/meta_hc_runner2": {uid: "runner-2"},
       "participantIntakeProfiles/runner-1": {fields: [], revision: 1},
       "participantIntakeProfiles/runner-2": {fields: [], revision: 1},
-      "catchCommunicationPreferences/runner-1": {
-        uid: "runner-1", whatsapp: {status: "optedIn"},
-      },
-      "catchCommunicationPermissionReceipts/catch-receipt-1": {
-        uid: "runner-1", channel: "whatsapp", sourceOrganizerId: "club-1",
-      },
+      "users/runner-1/contactPermissions/catch": {senderKind: "catch",
+        senderId: "catch", grants: {}, granted: []},
+      "users/runner-1/contactPermissions/organizer_club-1": {
+        senderKind: "organizer", senderId: "club-1", grants: {},
+        granted: []},
+      "users/runner-2/contactPermissions/organizer_club-1": {
+        senderKind: "organizer", senderId: "club-1", grants: {},
+        granted: []},
+      "contactPermissionReceipts/catch-receipt-1": {uid: "runner-1",
+        senderKind: "catch", senderId: "catch"},
+      "contactPermissionReceipts/receipt-other": {uid: "runner-2",
+        senderKind: "organizer", senderId: "club-1"},
+      "guestMessagingPermissions/catchpref_runner-1": {uid: "runner-1",
+        scope: "catch"},
+      "guestMessagingPermissions/catchpref_runner-2": {uid: "runner-2",
+        scope: "catch"},
       "organizerContactOrigins/origin-1": {
         organizerId: "club-1",
         actorUid: "runner-1",
@@ -211,20 +215,23 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         step: 1,
         draftVersion: 2,
       },
-      "eventParticipations/event-1_runner-1": {
+      "eventBookings/event-1_runner-1": {
         eventId: "event-1",
         organizerId: "club-1",
         uid: "runner-1",
         status: "signedUp",
         genderAtSignup: "woman",
       },
-      "events/event-1": {organizerId: "club-1", bookedCount: 1},
+      "events/event-1": {organizerId: "club-1", bookedCount: 1,
+        genderCounts: {woman: 1}, status: "active"},
       "eventAttendees/attendee-1": {
         eventId: "event-1",
         organizerId: "club-1",
         linkedUid: "runner-1",
         phoneE164: "+919876543210",
       },
+      ...seatedBooking("event-1", "club-1", "runner-1",
+        {attendee: "attendee-1", phone: "+919876543210"}),
       "organizerContacts/contact-1": {
         organizerId: "club-1",
         linkedUid: "runner-1",
@@ -335,57 +342,16 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     (write) => write.path === "users/runner-1"
   );
   assert.ok(retainedUserWrite);
-  assert.deepEqual(retainedUserWrite.options, {merge: true});
-
-  const data = retainedUserWrite.data;
-  assert.equal(data.deleted, true);
-  assert.equal(data.deletedAt, now);
-  assert.equal(data.name, "Deleted user");
-  assert.equal(data.firstName, "");
-  assert.equal(data.lastName, "");
-  assert.equal(data.displayName, "Deleted user");
-  assert.equal(
-    (data.dateOfBirth as FirebaseFirestore.Timestamp).toMillis(),
-    0
-  );
-  assert.equal(data.phoneNumber, "");
-  assert.deepEqual(data.profilePhotos, []);
-  assert.deepEqual(data.activityPreferences, {
-    running: {
-      paceMinSecsPerKm: 300,
-      paceMaxSecsPerKm: 420,
-      preferredDistances: [],
-      runningReasons: [],
-      preferredRunTimes: [],
-      version: 1,
-    },
+  // A replacement write: no merge, so no unlisted field can survive.
+  assert.equal(retainedUserWrite.options, undefined);
+  assert.deepEqual(retainedUserWrite.data, {
+    deleted: true,
+    deletedAt: now,
+    name: "Deleted user",
+    displayName: "Deleted user",
+    phoneNumber: "",
+    profileComplete: false,
   });
-
-  for (const field of [
-    "city",
-    "height",
-    "occupation",
-    "company",
-    "education",
-    "religion",
-    "relationshipGoal",
-    "drinking",
-    "smoking",
-    "workout",
-    "diet",
-    "children",
-    "paceMinSecsPerKm",
-    "paceMaxSecsPerKm",
-    "preferredDistances",
-    "runningReasons",
-    "preferredRunTimes",
-    "runPreferencesVersion",
-    "prefsShowInCrossPaths",
-    "prefsCrossPathsInvitations",
-    "fcmToken",
-  ]) {
-    assert.equal(hasOwn(data, field), true);
-  }
 
   assert.ok(harness.deletedPublicDocs.includes("publicProfiles/runner-1"));
   assert.ok(
@@ -436,7 +402,7 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   );
   assert.ok(
     harness.setWrites.some((write) =>
-      write.path === "eventParticipations/event-1_runner-1" &&
+      write.path === "eventBookings/event-1_runner-1" &&
       write.data.status === "deleted"
     )
   );
@@ -474,16 +440,6 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     "users/runner-1/pushInstallations/device-1"));
   assert.ok(
     harness.deletedPublicDocs.includes("onboarding_drafts/runner-1")
-  );
-  assert.ok(
-    harness.deletedPublicDocs.includes(
-      "organizerCommunicationPreferences/club-1_runner-1"
-    )
-  );
-  assert.ok(
-    harness.deletedPublicDocs.includes(
-      "organizerCommunicationPermissionReceipts/receipt-1"
-    )
   );
   assert.ok(harness.updateWrites.some((write) =>
     write.path === "eventChatMessages/message-1" && write.data.uid === null &&
@@ -524,10 +480,17 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     "participantIntakeProfiles/runner-2"]) {
     assert.equal(harness.deletedPublicDocs.includes(path), false);
   }
-  assert.ok(harness.deletedPublicDocs.includes(
-    "catchCommunicationPreferences/runner-1"));
-  assert.ok(harness.deletedPublicDocs.includes(
-    "catchCommunicationPermissionReceipts/catch-receipt-1"));
+  for (const path of ["users/runner-1/contactPermissions/catch",
+    "users/runner-1/contactPermissions/organizer_club-1",
+    "contactPermissionReceipts/catch-receipt-1",
+    "guestMessagingPermissions/catchpref_runner-1"]) {
+    assert.ok(harness.deletedPublicDocs.includes(path), path);
+  }
+  for (const path of ["users/runner-2/contactPermissions/organizer_club-1",
+    "contactPermissionReceipts/receipt-other",
+    "guestMessagingPermissions/catchpref_runner-2"]) {
+    assert.equal(harness.deletedPublicDocs.includes(path), false, path);
+  }
   assert.ok(
     harness.updateWrites.some((write) =>
       write.path === "organizerContactOrigins/origin-1" &&
@@ -787,6 +750,42 @@ test("requestAccountDeletionHandler tolerates an already-removed Auth user",
   }
 );
 
+test("the users tombstone replaces the profile with a fixed key set (#2443)",
+  async () => {
+    const now = {kind: "serverTimestamp"};
+    const harness = createAccountDeletionHarness({
+      seed: {"users/runner-1": {
+        name: "Asha Runner", displayName: "Asha", phoneNumber: "+919876543210",
+        countryCode: "+91", instagramHandle: "asha.runs", city: "mumbai",
+        latitude: 19.0761, longitude: 72.8775, profileComplete: true,
+        email: "asha@example.com", prefsShowOnMap: true,
+        fieldNobodyListed: "still private",
+      }},
+      now,
+    });
+
+    await requestAccountDeletionHandler(
+      {auth: {uid: "runner-1"}} as Parameters<
+        typeof requestAccountDeletionHandler
+      >[0],
+      harness.deps
+    );
+
+    const writes = harness.setWrites.filter(
+      (write) => write.path === "users/runner-1");
+    assert.equal(writes.length, 1);
+    const [write] = writes;
+    assert.equal(write.options, undefined, "no merge: true");
+    assert.deepEqual(Object.keys(write.data).sort(),
+      [...DELETED_USER_PROFILE_KEYS].sort());
+    for (const field of ["latitude", "longitude", "instagramHandle",
+      "countryCode", "city", "email", "fieldNobodyListed"]) {
+      assert.equal(hasOwn(write.data, field), false, field);
+    }
+    assert.deepEqual(write.data, deletedUserProfileTombstone(
+      now as unknown as FirebaseFirestore.FieldValue));
+  });
+
 type FakeDocumentData = Record<string, unknown>;
 
 interface FakeDocumentReference {
@@ -825,7 +824,8 @@ function createAccountDeletionHarness(params: {
   const deletedAuthUsers: string[] = [];
   const deletedStorageFiles: string[] = [];
   let commits = 0;
-  const seed = params.seed;
+  // Every event has its seat ledger. Tests change the seed in place.
+  const seed = Object.assign(params.seed, withEventSeatLedgers(params.seed));
 
   const docFor = (
     collectionPath: string,
@@ -1009,6 +1009,32 @@ function seatReservationPath(key: string): string {
   return `eventSeatReservations/${id}`;
 }
 
+/** The seat records a signed-up guest holds: their uid alias, verified
+ * phone proof and active reservation, plus the aliases of a linked roster
+ * row, all to one key. */
+function seatedBooking(eventId: string, organizerId: string, uid: string,
+  linked: {attendee?: string; phone?: string} = {}
+): Record<string, FakeDocumentData> {
+  const key = `canonical_${uid}`;
+  const alias = (kind: "uid" | "attendee" | "phone", value: string) => ({
+    [`eventSeatIdentityAliases/${seatIdentityAliasId(eventId, kind,
+      value)}`]: {eventId, organizerId, kind,
+      valueHash: seatIdentityValueHash(kind, value), canonicalKey: key,
+      identityRevision: 1, migrationRevision: 1, state: "ready"}});
+  return {
+    ...alias("uid", uid),
+    ...(linked.attendee ? alias("attendee", linked.attendee) : {}),
+    ...(linked.phone ? alias("phone", linked.phone) : {}),
+    [`eventSeatVerifiedPhones/${seatVerifiedPhoneProofId(eventId, uid)}`]: {
+      eventId, organizerId, uid, phoneE164: linked.phone ?? null,
+      migrationRevision: 1, state: "current"},
+    ["eventSeatReservations/" + createHash("sha256")
+      .update(`${eventId}\u001f${key}`).digest("hex")]: {eventId,
+      canonicalKey: key, identityRevision: 1, active: true, revision: 1,
+      reservedAtMillis: 100, releasedAtMillis: null},
+  };
+}
+
 function readySeatSeed(options: {host?: boolean; catchMirror?: boolean;
   status?: "signedUp" | "attended"} = {}): Record<string, FakeDocumentData> {
   const uid = "runner1";
@@ -1020,11 +1046,9 @@ function readySeatSeed(options: {host?: boolean; catchMirror?: boolean;
   const policy = deriveEventSeatPolicy(event);
   const seed: Record<string, FakeDocumentData> = {
     "events/event1": event,
-    "eventParticipations/event1_runner1": {eventId: "event1",
+    "eventBookings/event1_runner1": {eventId: "event1",
       organizerId: "org1", uid,
       status: options.status ?? "signedUp", genderAtSignup: "woman"},
-    "eventSeatMigrationFences/event1": {eventId: "event1",
-      migrationRevision: 1, state: "ready"},
     "eventSeatLedgers/event1": {eventId: "event1", capacity: 5,
       occupied: 1, revision: 1, capacityRevision: 1,
       policyVersion: policy.policyVersion, policyHash: policy.policyHash,
@@ -1073,7 +1097,7 @@ test("ready account deletion releases the last seat exactly once", async () => {
     "event1", "uid", "runner1")}`].state, "retired");
   assert.equal(h.rows[`eventSeatVerifiedPhones/${seatVerifiedPhoneProofId(
     "event1", "runner1")}`].state, "revoked");
-  assert.equal(h.rows["eventParticipations/event1_runner1"].status,
+  assert.equal(h.rows["eventBookings/event1_runner1"].status,
     "deleted");
   assert.equal(Object.keys(h.rows).filter((path) =>
     path.startsWith("eventSeatRequestReceipts/")).length, 1);
@@ -1105,7 +1129,7 @@ test("deletion retains an independently imported occupied Host seat",
 test("attendee-only Host seat unlinks within the ready transaction",
   async () => {
     const seed = readySeatSeed({host: true});
-    delete seed["eventParticipations/event1_runner1"];
+    delete seed["eventBookings/event1_runner1"];
     const h = createAccountDeletionHarness({seed,
       now: {kind: "serverTimestamp"}});
     const command = {db: h.deps.firestore(), uid: "runner1",
@@ -1179,12 +1203,12 @@ test("deletion releases only the Catch seat beside an imported guest",
       false);
   });
 
-test("locked migration and unresolved UID deny deletion without seat writes",
+test("a revoked ledger or unresolved UID denies deletion without seat writes",
   async () => {
-    for (const broken of ["locked", "missingAlias"]) {
+    for (const broken of ["revoked", "missingAlias"]) {
       const seed = readySeatSeed();
-      if (broken === "locked") {
-        seed["eventSeatMigrationFences/event1"].state = "locked";
+      if (broken === "revoked") {
+        seed["eventSeatLedgers/event1"].state = "revoked";
       } else {
         delete seed[`eventSeatIdentityAliases/${seatIdentityAliasId(
           "event1", "uid", "runner1")}`];
@@ -1195,7 +1219,7 @@ test("locked migration and unresolved UID deny deletion without seat writes",
         db: h.deps.firestore(), uid: "runner1",
         now: admin.firestore.FieldValue.serverTimestamp(),
         nowMillis: 1000}));
-      assert.equal(h.rows["eventParticipations/event1_runner1"].status,
+      assert.equal(h.rows["eventBookings/event1_runner1"].status,
         "signedUp");
       assert.equal(h.rows["eventSeatLedgers/event1"].occupied, 1);
       assert.equal(h.rows[seatReservationPath("canonical_runner1")].active,
@@ -1215,7 +1239,7 @@ test("a linked Host attendee on another canonical seat blocks deletion",
       db: h.deps.firestore(), uid: "runner1",
       now: admin.firestore.FieldValue.serverTimestamp(),
       nowMillis: 1000}), /reconcile identity/u);
-    assert.equal(h.rows["eventParticipations/event1_runner1"].status,
+    assert.equal(h.rows["eventBookings/event1_runner1"].status,
       "signedUp");
     assert.equal(h.rows["eventSeatLedgers/event1"].occupied, 1);
   });
@@ -1225,7 +1249,7 @@ test("a participation changed after query is reread before any release",
     const seed = readySeatSeed();
     const h = createAccountDeletionHarness({seed,
       now: {kind: "serverTimestamp"}, beforeTransaction: () => {
-        seed["eventParticipations/event1_runner1"].status = "deleted";
+        seed["eventBookings/event1_runner1"].status = "deleted";
       }});
     await assert.rejects(deleteAccountEventParticipations({
       db: h.deps.firestore(),
@@ -1264,9 +1288,9 @@ test("account deletion preserves checkout identity before or after deletion",
     for (const status of ["cancelled", "deleted", "noParticipation"]) {
       const seed = readySeatSeed();
       if (status === "noParticipation") {
-        delete seed["eventParticipations/event1_runner1"];
+        delete seed["eventBookings/event1_runner1"];
       } else {
-        seed["eventParticipations/event1_runner1"].status = status;
+        seed["eventBookings/event1_runner1"].status = status;
       }
       seed["eventSeatLedgers/event1"] = {
         ...seed["eventSeatLedgers/event1"], occupied: 0, checkoutHeld: 1};
@@ -1288,7 +1312,7 @@ test("account deletion preserves checkout identity before or after deletion",
 
 test("payment-only identity is revoked after hold release", async () => {
   const seed = readySeatSeed();
-  delete seed["eventParticipations/event1_runner1"];
+  delete seed["eventBookings/event1_runner1"];
   seed["eventSeatLedgers/event1"] = {...seed["eventSeatLedgers/event1"],
     occupied: 0, checkoutHeld: 0};
   seed[seatReservationPath("canonical_runner1")] = {
@@ -1310,7 +1334,7 @@ test("payment-only identity is revoked after hold release", async () => {
 test("full account deletion releases its pair hold before retiring UID proof",
   async () => {
     const seed = readySeatSeed();
-    delete seed["eventParticipations/event1_runner1"];
+    delete seed["eventBookings/event1_runner1"];
     seed["users/runner1"] = {name: "Synthetic Guest", profilePhotos: []};
     seed["events/event1"] = {...seed["events/event1"], bookedCount: 0,
       crossPathsPairHeldCount: 1,
@@ -1343,4 +1367,159 @@ test("full account deletion releases its pair hold before retiring UID proof",
       "event1", "uid", "runner1")}`].state, "retired");
     assert.ok(h.deletedPublicDocs.includes("crossPathsPairHolds/hold1"));
     assert.deepEqual(h.deletedAuthUsers, ["runner1"]);
+  });
+
+/** Runs a full deletion of runner-1 over the seed and returns the harness. */
+async function deleteRunnerOne(seed: Record<string, FakeDocumentData>) {
+  const harness = createAccountDeletionHarness({
+    seed: {"users/runner-1": {name: "Asha"}, ...seed},
+    now: {kind: "serverTimestamp"},
+  });
+  await requestAccountDeletionHandler({auth: {uid: "runner-1"}} as
+    Parameters<typeof requestAccountDeletionHandler>[0], harness.deps);
+  return harness;
+}
+
+test("deletion deletes the account's access grants only (#2474)",
+  async () => {
+    const harness = await deleteRunnerOne({
+      "accessGrants/program__prog-1__runner-1": {scopeType: "program",
+        scopeId: "prog-1", uid: "runner-1", role: "staff"},
+      "accessGrants/organizer__club-1__runner-1": {scopeType: "organizer",
+        scopeId: "club-1", uid: "runner-1", role: "manager"},
+      "accessGrants/program__prog-1__runner-2": {scopeType: "program",
+        scopeId: "prog-1", uid: "runner-2", role: "staff"},
+    });
+    assert.ok(harness.deletedPublicDocs.includes(
+      "accessGrants/program__prog-1__runner-1"));
+    assert.ok(harness.deletedPublicDocs.includes(
+      "accessGrants/organizer__club-1__runner-1"));
+    assert.ok(!harness.deletedPublicDocs.includes(
+      "accessGrants/program__prog-1__runner-2"));
+  });
+
+test("deletion revokes the account's active team edges as team removal does " +
+  "(#2474)", async () => {
+  const harness = await deleteRunnerOne({
+    "organizerTeamMemberships/club-1_runner-1": {organizerId: "club-1",
+      uid: "runner-1", role: "manager", status: "active"},
+    "organizerTeamMemberships/club-2_runner-1": {organizerId: "club-2",
+      uid: "runner-1", role: "manager", status: "removed"},
+    "organizerTeamMemberships/club-1_runner-2": {organizerId: "club-1",
+      uid: "runner-2", role: "manager", status: "active"},
+  });
+  const revoked = harness.setWrites.filter((write) =>
+    write.path.startsWith("organizerTeamMemberships/"));
+  assert.deepEqual(revoked.map((write) => write.path),
+    ["organizerTeamMemberships/club-1_runner-1"]);
+  assert.equal(revoked[0].data.status, "removed");
+  assert.ok(revoked[0].data.removedAt instanceof admin.firestore.FieldValue);
+  assert.deepEqual(revoked[0].options, {merge: true});
+  assert.equal(harness.deletedPublicDocs.some((path) =>
+    path.startsWith("organizerTeamMemberships/")), false);
+});
+
+test("deletion erases the account's signal facts as uid and as peerUid (#2444)",
+  async () => {
+    const harness = await deleteRunnerOne({
+      "participantSignalFacts/outgoing_like__runner-1__swipe": {
+        uid: "runner-1", peerUid: "runner-2", type: "outgoing_like"},
+      "participantSignalFacts/incoming_like__runner-2__swipe": {
+        uid: "runner-2", peerUid: "runner-1", type: "incoming_like"},
+      "participantSignalFacts/event_attended__runner-2__event1": {
+        uid: "runner-2", type: "event_attended"},
+    });
+    assert.ok(harness.deletedPublicDocs.includes(
+      "participantSignalFacts/outgoing_like__runner-1__swipe"));
+    assert.ok(harness.deletedPublicDocs.includes(
+      "participantSignalFacts/incoming_like__runner-2__swipe"));
+    assert.ok(!harness.deletedPublicDocs.includes(
+      "participantSignalFacts/event_attended__runner-2__event1"));
+    assert.ok(!harness.updateWrites.some((write) =>
+      write.path.startsWith("participantSignalFacts/")));
+  });
+
+test("deletion removes the account's own metric counters only (#2444)",
+  async () => {
+    const harness = await deleteRunnerOne({
+      "participantMetricCounters/runner-1": {uid: "runner-1",
+        counters: {outgoing_like: 1}},
+      "participantMetricCounters/runner-2": {uid: "runner-2",
+        counters: {incoming_like: 1}},
+    });
+    assert.ok(harness.deletedPublicDocs.includes(
+      "participantMetricCounters/runner-1"));
+    // The peer keeps its anonymous running total.
+    assert.ok(!harness.deletedPublicDocs.includes(
+      "participantMetricCounters/runner-2"));
+    assert.ok(!harness.updateWrites.some((write) =>
+      write.path === "participantMetricCounters/runner-2"));
+  });
+
+test("deletion erases the account's event feedback (#2444)", async () => {
+  const harness = await deleteRunnerOne({
+    "eventSuccessFeedback/event1_runner-1": {eventId: "event1",
+      organizerId: "club-1", uid: "runner-1", privateNote: "Private"},
+    "eventSuccessFeedback/event1_runner-2": {eventId: "event1",
+      organizerId: "club-1", uid: "runner-2"},
+  });
+  assert.ok(harness.deletedPublicDocs.includes(
+    "eventSuccessFeedback/event1_runner-1"));
+  assert.ok(!harness.deletedPublicDocs.includes(
+    "eventSuccessFeedback/event1_runner-2"));
+});
+
+test("deletion erases the account's compatibility answers (#2444)",
+  async () => {
+    const harness = await deleteRunnerOne({
+      "eventSuccessCompatibilityResponses/event1_runner-1": {
+        eventId: "event1", uid: "runner-1", answerIds: ["a1"]},
+      "eventSuccessCompatibilityResponses/event1_runner-2": {
+        eventId: "event1", uid: "runner-2", answerIds: ["a2"]},
+    });
+    assert.ok(harness.deletedPublicDocs.includes(
+      "eventSuccessCompatibilityResponses/event1_runner-1"));
+    assert.ok(!harness.deletedPublicDocs.includes(
+      "eventSuccessCompatibilityResponses/event1_runner-2"));
+  });
+
+test("deletion erases the account's conversation graphs and its edges in " +
+  "other guests' graphs (#2444)", async () => {
+  const harness = await deleteRunnerOne({
+    "eventSuccessConversationGraphs/event1_runner-1": {eventId: "event1",
+      uid: "runner-1", status: "submitted", selectedUids: ["runner-2"]},
+    "eventSuccessConversationGraphs/event1_runner-2": {eventId: "event1",
+      uid: "runner-2", status: "submitted",
+      selectedUids: ["runner-1", "runner-3"], assignedSelectedCount: 1},
+    "eventSuccessConversationGraphs/event1_runner-3": {eventId: "event1",
+      uid: "runner-3", status: "submitted", selectedUids: ["runner-2"]},
+  });
+  assert.ok(harness.deletedPublicDocs.includes(
+    "eventSuccessConversationGraphs/event1_runner-1"));
+  const peer = harness.updateWrites.filter((write) =>
+    write.path === "eventSuccessConversationGraphs/event1_runner-2");
+  assert.deepEqual(peer.map((write) => write.data),
+    [{selectedUids: ["runner-3"]}]);
+  assert.ok(!harness.deletedPublicDocs.includes(
+    "eventSuccessConversationGraphs/event1_runner-2"));
+  assert.ok(!harness.updateWrites.some((write) =>
+    write.path === "eventSuccessConversationGraphs/event1_runner-3"));
+});
+
+test("deletion erases the account's event runtime identities (#2444)",
+  async () => {
+    const harness = await deleteRunnerOne({
+      "eventRuntimeParticipants/event1_runner-1": {eventId: "event1",
+        uid: "runner-1", runtimeProfile: {firstName: "Asha"}},
+      "eventRuntimeParticipants/event2_runner-1": {eventId: "event2",
+        uid: "runner-1", runtimeProfile: {}},
+      "eventRuntimeParticipants/event1_runner-2": {eventId: "event1",
+        uid: "runner-2", runtimeProfile: {}},
+    });
+    for (const path of ["eventRuntimeParticipants/event1_runner-1",
+      "eventRuntimeParticipants/event2_runner-1"]) {
+      assert.ok(harness.deletedPublicDocs.includes(path), path);
+    }
+    assert.ok(!harness.deletedPublicDocs.includes(
+      "eventRuntimeParticipants/event1_runner-2"));
   });

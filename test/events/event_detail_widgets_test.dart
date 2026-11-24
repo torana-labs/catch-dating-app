@@ -14,24 +14,25 @@ import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_fact_list.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_top_bar.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
-import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
-import 'package:catch_dating_app/events/shared/event_share_card.dart';
+import 'package:catch_dating_app/pages/event/event_detail_display_state.dart';
+import 'package:catch_dating_app/pages/event/event_detail_information_state.dart';
+import 'package:catch_dating_app/pages/event/event_detail_route_transition.dart';
+import 'package:catch_dating_app/pages/event/event_detail_screen.dart';
+import 'package:catch_dating_app/pages/event/event_detail_view_model.dart';
+import 'package:catch_dating_app/pages/event/event_share_card.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_detail_body.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_detail_dock.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_detail_fact_list.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_detail_hero_top_bar.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_detail_loading_skeleton.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_detail_surface_style.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +43,6 @@ import 'package:share_plus/share_plus.dart';
 
 import '../organizers/organizers_test_helpers.dart'
     show FakeOrganizersRepository, seededOrganizersRepository;
-import '../test_pump_helpers.dart';
 import 'event_viewer_state_fixtures.dart';
 import 'events_test_helpers.dart';
 

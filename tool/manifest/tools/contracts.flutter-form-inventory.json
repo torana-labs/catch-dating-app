@@ -1,0 +1,19 @@
+{
+  "id": "contracts:flutter-form-inventory",
+  "category": "contracts",
+  "path": "tool/contracts/generate_flutter_form_contract_inventory.mjs",
+  "command": "node tool/contracts/generate_flutter_form_contract_inventory.mjs --check",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Scans every editable canonical Flutter form control and descriptor instance directly from both installable apps, rejecting missing generated contracts, serializers, endpoint bindings, or explicit exemptions; an explicit non-check run writes only an ignored build report.",
+  "checks": [
+    "node --check tool/contracts/generate_flutter_form_contract_inventory.mjs",
+    "node --test tool/contracts/generate_flutter_form_contract_inventory.test.mjs",
+    "node tool/contracts/generate_flutter_form_contract_inventory.mjs --check"
+  ],
+  "role": "gate",
+  "alsoEnforces": [
+    "FORM-CONTRACT-001"
+  ],
+  "queueGate": "always"
+}

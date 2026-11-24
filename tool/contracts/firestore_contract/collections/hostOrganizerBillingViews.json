@@ -1,0 +1,26 @@
+{
+  "id": "hostOrganizerBillingViews",
+  "path": "hostOrganizerBillingViews/{organizerId}",
+  "rulesMatch": "/hostOrganizerBillingViews/{organizerId}",
+  "typescriptInterface": "HostOrganizerBillingViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/host_organizer_account_views.rules.test.cjs",
+  "rulesTestNames": [
+    "lets only the organizer's owner get its billing view"
+  ],
+  "owner": "Host read model projector: hostReadModels organizerAccountViewTriggers",
+  "writerContext": "host",
+  "read": "get by organizer id for the organizer's current owner (ownerUserId, else the primary host) while their account is not deleted; never listed",
+  "write": "server only; written from organizers, commercialTerms (a platform change rewrites every organizer), organizerGrowthFacts and organizerBillingPlans",
+  "exportedFunctions": [
+    "dispatchOrganizers",
+    "onHostOrganizerBillingViewTermsChanged",
+    "onHostOrganizerBillingViewGrowthChanged",
+    "onHostOrganizerBillingViewPlanChanged"
+  ],
+  "migrationNotes": [
+    "Replaces getOrganizerBillingStatus for the Host app and the website billing portal (#2306): the trial's facts (length, anchor, start, end) and the plan status; the readers derive the trial state and days left from their clock, as computeTrialStatus does. Prices and purchase links stay on manageOrganizerBillingPlan. The callable stays deployed for released Host builds and retires under #2174.",
+    "The host-organizer-account-views copy-forward migration creates views for organizers that predate the triggers.",
+    "No personal data."
+  ]
+}

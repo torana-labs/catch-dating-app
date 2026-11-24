@@ -810,7 +810,6 @@ than Firestore collection reads.
 - `createOrganizerFormDraft`
 - `updateOrganizerFormDraft`
 - `getOrganizerFormEditor`
-- `listOrganizerForms`
 - `validateOrganizerFormDraft`
 - `publishOrganizerForm`
 - `setOrganizerFormLifecycle`
@@ -818,6 +817,17 @@ than Firestore collection reads.
 - `deleteOrganizerFormDraft`
 - `createOrganizerFormShareLink`
 - `getOrganizerFormShareAssets`
+
+The Host app no longer calls the reads in this list (#2306). The editor reads
+`hostFormEditorViews/{formId}` (the summary, draft definition and validation
+issues `getOrganizerFormEditor` returned, kept by triggers on
+`organizerForms` and `organizerFormDrafts`), and opens a form it just created
+or saved once that view reaches the returned revision. Share links are built
+on the device from the `hostFormSummaries` row (#2309). The template gallery
+is generated from `contracts/catalogs/organizer_form_templates.json`, the
+catalog `createOrganizerForm` materializes forms from, so the app no longer
+calls `listOrganizerFormTemplates`. The callables stay deployed for released
+Host builds until #2174 retires them.
 
 ### Respondent
 
@@ -833,7 +843,9 @@ than Firestore collection reads.
 
 - `listOrganizerFormResponses`
 - `getOrganizerFormResponseDetail`
-- `getOrganizerFormAnalytics`
+- `getOrganizerFormAnalytics` (the Host app reads `hostFormAnalyticsViews`
+  and `hostFormSourceViews` instead; the privacy threshold is applied in
+  their trigger)
 - `requestOrganizerFormExport`
 - `createOrganizerFormAutomation`
 - `setOrganizerFormAutomationState`
@@ -870,7 +882,7 @@ or user availability.
 
 | Capability | Source evidence | Current status |
 | --- | --- | --- |
-| Audience navigation and Host Forms UI | [Audience README](../lib/hosts/audience/README.md), [router](../lib/routing/go_router.dart), `lib/hosts/presentation/forms/` | Audience-owned source implementation; route/state capture and release proof remain separate. |
+| Audience navigation and Host Forms UI | [Audience README](../lib/hosts/audience/README.md), [router](../lib/routing/host_router.dart), `lib/hosts/presentation/forms/` | Audience-owned source implementation; route/state capture and release proof remain separate. |
 | Management, lifecycle, builder, validation, publication | [Functions inventory](../functions/README.md) management entries and `lib/hosts/presentation/forms/` | Source seams are present for draft/editor/lifecycle operations; exact released-client coverage remains a gate. |
 | Public respondent and distribution | Functions respondent/distribution entries, website `/f/` route metadata, and the `/f/:publicFormId/` contract above | Source route and callable seams are present; mobile/desktop runtime, environment, abuse, and deployment proof remain open. |
 | Responses, analytics, exports, automations, and conversion | [Functions inventory](../functions/README.md) operations entries and `functions/src/organizers/organizerForm*.ts` | Source seams are present; aggregate/export/automation replay and downstream receipt proof remain open. |

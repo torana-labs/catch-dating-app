@@ -1,0 +1,28 @@
+{
+  "id": "ci:queue-entry-timings",
+  "category": "ci",
+  "path": "tool/ci/queue_entry_timings.mjs",
+  "command": "node tool/ci/queue_entry_timings.mjs",
+  "surface": "remote-read",
+  "checkSafety": "local-readonly",
+  "status": "active",
+  "role": "finder",
+  "description": "Report only: fetches merge_group CI runs, their jobs and each queued PR's timeline through gh api (fetch), then reports per entry the wait before its run existed, the time to Required CI (and to the last job), the critical-path lane job (the proof-reuse shadow's jobs excluded), runner waits split macOS and Linux, outcomes, removals with their cause, and queue rebuilds where an entry was regrouped onto a new base (report, offline over the saved file). With --proof-reuse <dir> it also reads the proof-reuse shadow's daily roll-ups (proof-reuse-daily/1): runner time saved against the potential, unchecked numbers, cancelled runs and the critical-path time hits would have saved.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/ci/fixtures/proof-reuse-daily/proof-reuse-daily-2026-11-22.json",
+    "tool/ci/proof_reuse_shadow.mjs",
+    "tool/ci/queue_entry_timings.test.mjs"
+  ],
+  "checks": [
+    "node --check tool/ci/queue_entry_timings.mjs",
+    "node --test tool/ci/queue_entry_timings.test.mjs",
+    "node tool/ci/queue_entry_timings.mjs --help"
+  ],
+  "runbook": "tool/README.md#merge-queue-entry-timings"
+}

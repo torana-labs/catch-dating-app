@@ -2,6 +2,12 @@ name: Flutter Visual & Integration CI
 
 on:
   workflow_call:
+    inputs:
+      macos_only:
+        description: Run only the macOS goldens (a main push the merge queue already validated).
+        required: false
+        type: boolean
+        default: false
   workflow_dispatch:
 
 permissions:
@@ -10,6 +16,8 @@ permissions:
 jobs:
   headless-journeys:
     name: Headless app journeys
+    # The merge queue already ran these for a main push it validated.
+    if: ${{ !inputs.macos_only }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -24,6 +32,11 @@ jobs:
 
   goldens:
     name: macOS goldens & Widgetbook determinism
+    # Out of the merge queue (owner decision, 22 Nov 2026): the 5 macOS
+    # runners held queue groups past their timeout. Main pushes whose inputs
+    # select this lane and the nightly run it, and a failure there reports to
+    # the main-red issue. A called workflow sees the caller's event.
+    if: ${{ github.event_name != 'merge_group' }}
     runs-on: macos-26
     timeout-minutes: 60
 
@@ -42,59 +55,19 @@ jobs:
 
       - run: flutter pub get
 
-      - name: Generate matching Flutter source outputs
-        id: provider-codegen
+      # The sqlite3 build hook downloads its native library during flutter test
+      # with one attempt (main run 43716269314 failed on a DNS error). This
+      # fetches it with retries into the hook's verified cache first.
+      - name: Prefetch the sqlite3 native library
+        run: node tool/ci/prefetch_sqlite3_asset.mjs
+
+      # A full build in every package that runs build_runner. A filtered build
+      # deletes tracked outputs outside its filter, so it is never used.
+      - name: Generate Flutter source outputs
         run: |
-          dart run build_runner build \
-            --build-filter=lib/hosts/presentation/event_management/create/create_event_controller.g.dart \
-            --build-filter=lib/hosts/presentation/event_management/create/create_event_photo_recovery_controller.g.dart \
-            --build-filter=lib/contexts/live/data/event_assignment_feature_choice_repository.g.dart \
-            --build-filter=lib/contexts/events/domain/event_draft.freezed.dart \
-            --build-filter=lib/contexts/events/domain/event_draft.g.dart \
-            --build-filter=lib/contexts/organizers/domain/organizer_host_defaults.freezed.dart \
-            --build-filter=lib/contexts/organizers/domain/organizer_host_defaults.g.dart \
-            --build-filter=lib/hosts/presentation/forms/host_forms_controller.g.dart \
-            --build-filter=lib/hosts/presentation/forms/host_form_operations_controller.g.dart \
-            --build-filter=lib/contexts/audience/data/crm/host_saved_audience_repository.g.dart \
-            --build-filter=lib/hosts/today/host_today_controller.g.dart \
-            --build-filter=lib/onboarding/presentation/onboarding_controller.g.dart \
-            --build-filter=lib/dashboard/presentation/dashboard_full_view_model.g.dart \
-            --build-filter=lib/contexts/payments/data/payment_repository.g.dart \
-            --build-filter=lib/events/presentation/event_booking_controller.g.dart
-          # A clean filtered build deletes tracked outputs outside its filter.
-          # Restore those unchanged outputs before downstream package analysis.
-          python3 - <<'PY'
-          from pathlib import Path
-          import subprocess
-          targets = {
-              'lib/hosts/presentation/event_management/create/create_event_controller.g.dart',
-              'lib/hosts/presentation/event_management/create/create_event_photo_recovery_controller.g.dart',
-              'lib/contexts/live/data/event_assignment_feature_choice_repository.g.dart',
-              'lib/contexts/events/domain/event_draft.freezed.dart',
-              'lib/contexts/events/domain/event_draft.g.dart',
-              'lib/contexts/organizers/domain/organizer_host_defaults.freezed.dart',
-              'lib/contexts/organizers/domain/organizer_host_defaults.g.dart',
-              'lib/hosts/presentation/forms/host_forms_controller.g.dart',
-              'lib/hosts/presentation/forms/host_form_operations_controller.g.dart',
-              'lib/contexts/audience/data/crm/host_saved_audience_repository.g.dart',
-              'lib/hosts/today/host_today_controller.g.dart',
-              'lib/onboarding/presentation/onboarding_controller.g.dart',
-              'lib/dashboard/presentation/dashboard_full_view_model.g.dart',
-              'lib/contexts/payments/data/payment_repository.g.dart',
-              'lib/events/presentation/event_booking_controller.g.dart',
-          }
-          for target in targets:
-              if not Path(target).is_file():
-                  raise SystemExit(f'Flutter generation did not emit {target}; refusing restoration')
-          deleted = subprocess.check_output([
-              'git', 'diff', '--name-only', '--diff-filter=D', '-z', '--',
-              '*.g.dart', '*.freezed.dart',
-          ]).decode().split('\0')
-          deleted = [path for path in deleted if path and path not in targets]
-          if deleted:
-              subprocess.run(['git', 'restore', '--worktree', '--', *deleted], check=True)
-          print(f'Restored {len(deleted)} unchanged generated files outside the target filter')
-          PY
+          dart run build_runner build --delete-conflicting-outputs
+          (cd apps/host && dart run build_runner build --delete-conflicting-outputs)
+          (cd apps/consumer && dart run build_runner build --delete-conflicting-outputs)
 
       - name: Resolve Widgetbook dependencies
         run: (cd widgetbook && flutter pub get)
@@ -103,102 +76,32 @@ jobs:
         id: widgetbook-codegen
         run: (cd widgetbook && dart run build_runner build)
 
-      - name: Package generated Flutter outputs
-        id: package-codegen
-        if: ${{ always() && (steps.provider-codegen.outcome == 'success' || steps.widgetbook-codegen.outcome == 'success') }}
-        env:
-          SOURCE_SHA: ${{ github.sha }}
-          RUN_ID: ${{ github.run_id }}
-          RUN_ATTEMPT: ${{ github.run_attempt }}
-          PROVIDER_CODEGEN: ${{ steps.provider-codegen.outcome }}
-          WIDGETBOOK_CODEGEN: ${{ steps.widgetbook-codegen.outcome }}
+      - name: Verify committed Flutter outputs are current
+        id: codegen-current
         run: |
-          python3 - <<'PY'
-          import hashlib
-          import json
-          import os
-          import pathlib
-          import shutil
-          import subprocess
+          git diff --exit-code -- '*.g.dart' '*.freezed.dart'
+          untracked="$(git status --porcelain --untracked-files=all -- '*.g.dart' '*.freezed.dart')"
+          if [[ -n "$untracked" ]]; then
+            printf 'Generated outputs are not committed:\n%s\n' "$untracked" >&2
+            exit 1
+          fi
 
-          source_sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
-          if source_sha != os.environ['SOURCE_SHA']:
-              raise SystemExit('Checkout does not match the workflow source SHA')
-          output = pathlib.Path('build/ci/generated-flutter-codegen')
-          output.mkdir(parents=True, exist_ok=True)
-          generated = []
-          if os.environ['PROVIDER_CODEGEN'] == 'success':
-              generated.extend([
-                  pathlib.Path('lib/hosts/presentation/event_management/create/create_event_controller.g.dart'),
-                  pathlib.Path('lib/hosts/presentation/event_management/create/create_event_photo_recovery_controller.g.dart'),
-                  pathlib.Path('lib/contexts/live/data/event_assignment_feature_choice_repository.g.dart'),
-                  pathlib.Path('lib/contexts/events/domain/event_draft.freezed.dart'),
-                  pathlib.Path('lib/contexts/events/domain/event_draft.g.dart'),
-                  pathlib.Path('lib/contexts/organizers/domain/organizer_host_defaults.freezed.dart'),
-                  pathlib.Path('lib/contexts/organizers/domain/organizer_host_defaults.g.dart'),
-                  pathlib.Path('lib/hosts/presentation/forms/host_forms_controller.g.dart'),
-                  pathlib.Path('lib/hosts/presentation/forms/host_form_operations_controller.g.dart'),
-                  pathlib.Path('lib/contexts/audience/data/crm/host_saved_audience_repository.g.dart'),
-                  pathlib.Path('lib/hosts/today/host_today_controller.g.dart'),
-                  pathlib.Path('lib/onboarding/presentation/onboarding_controller.g.dart'),
-                  pathlib.Path('lib/dashboard/presentation/dashboard_full_view_model.g.dart'),
-                  pathlib.Path('lib/contexts/payments/data/payment_repository.g.dart'),
-                  pathlib.Path('lib/events/presentation/event_booking_controller.g.dart'),
-              ])
-          if os.environ['WIDGETBOOK_CODEGEN'] == 'success':
-              generated.append(pathlib.Path('widgetbook/lib/main.directories.g.dart'))
-          sources = [pathlib.Path('lib/hosts/presentation/event_management/create/create_event_controller.dart'),
-                     pathlib.Path('lib/hosts/presentation/event_management/create/create_event_photo_recovery_controller.dart'),
-                     pathlib.Path('widgetbook/pubspec.yaml'), pathlib.Path('widgetbook/pubspec.lock'),
-                     pathlib.Path('pubspec.yaml'), pathlib.Path('pubspec.lock'),
-                     pathlib.Path('lib/contexts/live/data/event_assignment_feature_choice_repository.dart'),
-                     pathlib.Path('lib/contexts/events/domain/event_draft.dart'),
-                     pathlib.Path('lib/contexts/organizers/domain/organizer_host_defaults.dart'),
-                     pathlib.Path('lib/hosts/presentation/forms/host_forms_controller.dart'),
-                     pathlib.Path('lib/hosts/presentation/forms/host_form_operations_controller.dart'),
-                     pathlib.Path('lib/contexts/audience/data/crm/host_saved_audience_repository.dart'),
-                     pathlib.Path('lib/hosts/today/host_today_controller.dart'),
-                     pathlib.Path('lib/hosts/presentation/forms/host_form_target_controller.dart'),
-                     pathlib.Path('lib/onboarding/presentation/onboarding_controller.dart'),
-                     pathlib.Path('lib/dashboard/presentation/dashboard_full_view_model.dart'),
-                     pathlib.Path('lib/contexts/payments/data/payment_repository.dart'),
-                     pathlib.Path('lib/events/presentation/event_booking_controller.dart')]
-          sources += sorted(path for path in pathlib.Path('widgetbook/lib').rglob('*.dart')
-                            if not path.name.endswith('.g.dart'))
-          digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
-          for path in generated:
-              shutil.copy2(path, output / path.name)
-          manifest = {
-              'sourceSha': source_sha,
-              'runId': os.environ['RUN_ID'],
-              'runAttempt': os.environ['RUN_ATTEMPT'],
-              'sourceHashes': {str(path): digest(path) for path in sources},
-              'generatedHashes': {str(path): digest(path) for path in generated},
-              'generationOutcomes': {'provider': os.environ['PROVIDER_CODEGEN'],
-                                     'widgetbook': os.environ['WIDGETBOOK_CODEGEN']},
-              'kind': 'generated matching Flutter source and Widgetbook directory; source artifacts, not visual proof',
-          }
-          (output / 'manifest.json').write_text(json.dumps(manifest, indent=2, sort_keys=True) + '\n')
-          PY
+      # The regenerated outputs that differ, as a patch to read or apply.
+      - name: Retain generated output drift
+        if: ${{ failure() && steps.codegen-current.outcome == 'failure' }}
+        run: |
+          mkdir -p build/ci
+          git add --intent-to-add -- '*.g.dart' '*.freezed.dart'
+          git diff -- '*.g.dart' '*.freezed.dart' > build/ci/generated-flutter-drift.patch
 
-      - name: Upload generated Flutter outputs
-        if: ${{ always() && steps.package-codegen.outcome == 'success' }}
+      - name: Upload generated output drift
+        if: ${{ failure() && steps.codegen-current.outcome == 'failure' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: generated-flutter-codegen-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
-          path: build/ci/generated-flutter-codegen/
-          if-no-files-found: error
+          name: generated-flutter-drift-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/ci/generated-flutter-drift.patch
+          if-no-files-found: ignore
           retention-days: 7
-
-      - name: Verify committed Flutter outputs are current
-        run: |
-          git ls-files --error-unmatch -- lib/hosts/presentation/event_management/create/create_event_controller.g.dart lib/hosts/presentation/event_management/create/create_event_photo_recovery_controller.g.dart > /dev/null
-          git diff --exit-code -- lib/hosts/presentation/event_management/create/create_event_controller.g.dart lib/hosts/presentation/event_management/create/create_event_photo_recovery_controller.g.dart
-          git diff --exit-code -- widgetbook/lib/main.directories.g.dart lib/contexts/live/data/event_assignment_feature_choice_repository.g.dart lib/contexts/events/domain/event_draft.freezed.dart lib/contexts/events/domain/event_draft.g.dart lib/contexts/organizers/domain/organizer_host_defaults.freezed.dart lib/contexts/organizers/domain/organizer_host_defaults.g.dart lib/hosts/presentation/forms/host_forms_controller.g.dart lib/onboarding/presentation/onboarding_controller.g.dart lib/dashboard/presentation/dashboard_full_view_model.g.dart
-          git ls-files --error-unmatch -- lib/contexts/live/data/event_assignment_feature_choice_repository.g.dart > /dev/null
-          git diff --exit-code -- lib/hosts/presentation/forms/host_form_operations_controller.g.dart
-          git diff --exit-code -- lib/contexts/payments/data/payment_repository.g.dart lib/events/presentation/event_booking_controller.g.dart
-          git diff --exit-code -- lib/contexts/audience/data/crm/host_saved_audience_repository.g.dart lib/hosts/today/host_today_controller.g.dart
 
       # Golden pixel changes are reported, not failed: the app is still
       # changing visually on purpose. CATCH_GOLDEN_REPORT puts the shared
@@ -207,21 +110,36 @@ jobs:
       - name: Flutter goldens (report pixel changes)
         id: flutter-goldens
         env:
-          CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report.tsv
+          CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report-app.tsv
         run: flutter test --concurrency=1 test/goldens
 
       # The library's own golden families (packages/catch_ui/test/goldens,
       # tagged golden), reported through the same comparator and report.
       - name: Catch UI package goldens (report pixel changes)
         env:
-          CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report.tsv
+          CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report-package.tsv
         run: >-
           (cd packages/catch_ui &&
           flutter test --concurrency=1 --tags=golden)
 
+      # Each app package's golden families (apps/<app>/test/goldens), run from
+      # its package directory. They join the app report: like test/goldens,
+      # they have no baseline workflow.
+      - name: App package goldens (report pixel changes)
+        env:
+          CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report-app.tsv
+        run: |
+          status=0
+          for app in apps/*/; do
+            if [[ -d "${app}test/goldens" ]]; then
+              (cd "$app" && flutter test --concurrency=1 test/goldens) || status=$?
+            fi
+          done
+          exit "$status"
+
       - name: Widgetbook package suites (pass 1)
         env:
-          CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report.tsv
+          CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report-widgetbook.tsv
         run: >-
           (cd widgetbook &&
           flutter test --concurrency=1 test)
@@ -232,17 +150,21 @@ jobs:
       - name: Widgetbook corpus goldens (pass 2, determinism)
         if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
         env:
-          CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report.tsv
+          CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report-widgetbook.tsv
         run: >-
           (cd widgetbook &&
           flutter test --concurrency=1 test/primitive_goldens_test.dart)
 
+      # One report per suite (app, catch_ui package, Widgetbook), so the Main
+      # CI alert can dispatch the matching baseline workflow on drift.
       - name: Report golden pixel changes
         id: golden-report
         if: ${{ always() && steps.flutter-goldens.outcome != 'skipped' }}
         env:
           REPORT: ${{ runner.temp }}/catch-golden-report.tsv
+          REPORT_DIR: ${{ runner.temp }}
         run: |
+          cat "$REPORT_DIR"/catch-golden-report-{app,package,widgetbook}.tsv 2>/dev/null > "$REPORT" || true
           {
             echo "### Flutter golden changes"
             echo
@@ -268,6 +190,21 @@ jobs:
           path: |
             test/goldens/failures/
             packages/catch_ui/test/goldens/failures/
+            apps/*/test/goldens/failures/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      # The per-suite drift reports the Main CI alert reads on main and the
+      # nightly (tool/ci/golden_policy.mjs); a few lines of text each.
+      - name: Retain golden drift reports
+        if: ${{ always() && steps.golden-report.outputs.has_changes == 'true' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: golden-drift-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/catch-golden-report-app.tsv
+            ${{ runner.temp }}/catch-golden-report-package.tsv
+            ${{ runner.temp }}/catch-golden-report-widgetbook.tsv
           if-no-files-found: ignore
           retention-days: 14
 
@@ -281,7 +218,8 @@ jobs:
     # skipped job leaves the caller's visual-integration result green.
     if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     runs-on: macos-26
-    timeout-minutes: 30
+    # Two macOS app builds (Consumer and Host), each about five minutes.
+    timeout-minutes: 40
     # Independent runners use the same immutable checkout. Committed codegen
     # freshness remains required in goldens; neither result can replace it.
     steps:
@@ -299,10 +237,11 @@ jobs:
         uses: ./.github/actions/cache-cocoapods
         with:
           cocoapods-version: ${{ steps.toolchain.outputs.cocoapods-version }}
-          lockfiles: apps/consumer/macos/Podfile.lock
+          lockfiles: apps/*/macos/Podfile.lock
 
-      # The macOS runner lives in the Consumer project, and Flutter only runs
-      # device tests from that project's own integration_test/ directory.
+      # Each app keeps its macOS runner in its own project, and Flutter only
+      # runs device tests from that project's integration_test/ directory, so
+      # the runner script boots the Consumer smoke from apps/consumer and the
+      # Host journeys from apps/host.
       - name: Hosted native app-shell smoke
-        working-directory: apps/consumer
-        run: bash ../../tool/test_app_shell_integration.sh macos smoke
+        run: bash tool/test_app_shell_integration.sh macos smoke

@@ -1,0 +1,28 @@
+{
+  "id": "ads:meta-campaigns",
+  "category": "marketing",
+  "path": "tool/ads/apply_meta_campaigns.mjs",
+  "command": "node tool/ads/apply_meta_campaigns.mjs",
+  "surface": "remote-write",
+  "guard": "apply-flag",
+  "checkSafety": "local-readonly",
+  "status": "active",
+  "description": "Plans, and with --apply creates, the Meta lead forms and lead campaigns in tool/ads/meta_campaigns.json for ad account 3245368689001899. Every campaign, ad set and ad is created PAUSED for the owner to enable; existing forms and campaigns are left unchanged, and a failed run deletes what it made. The plan asks Meta to validate the campaign without making anything.",
+  "checks": [
+    "node --check tool/ads/apply_meta_campaigns.mjs",
+    "node --test tool/ads/apply_meta_campaigns.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/ads/meta_campaigns.json",
+    "tool/ads/apply_meta_campaigns.test.mjs"
+  ],
+  "role": "operator",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "runbook": "docs/ads_conversion_spec.md"
+}

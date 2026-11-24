@@ -10,13 +10,13 @@ import {
   PUBLIC_PAYMENT_COLLECTION,
   parsePublicPayment,
   publicPaymentLedger,
-} from "./paymentLedger";
+} from "../../domain/payments/publicEventPayments";
 import {readPublicPaidAdmission} from "./admissionProof";
 import {isPublicPaymentBooking} from "./catchBookingBridge";
 import {cancelPaidEventAdmission} from
   "../../payments/eventCheckout/eventPaymentCancellation";
 
-const edge = `eventParticipations/${eventId}_${uid}`;
+const edge = `eventBookings/${eventId}_${uid}`;
 
 async function catchUserFixture() {
   const h = await publicCapturedFixture();

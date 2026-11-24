@@ -22,6 +22,8 @@ on:
 
 permissions:
   contents: read
+  # Reads the open release-block issues only.
+  issues: read
 
 jobs:
   checklist:
@@ -42,6 +44,13 @@ jobs:
           node-version: ${{ steps.toolchain.outputs.node-version }}
           cache: npm
           cache-dependency-path: functions/package-lock.json
+
+      # A golden or capture failure on main blocks every mobile release until
+      # it passes again (owner decision, 22 Nov 2026; tool/ci/golden_policy.mjs).
+      - name: Require no open mobile release block
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tool/ci/release_block.mjs --check mobile
 
       - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
@@ -77,6 +86,21 @@ jobs:
 
       - name: Flutter tests
         run: flutter test --concurrency=1
+
+      # Each app package's own suite, for the roles this release covers. Its
+      # PNG goldens are macOS-rendered, so the macOS goldens lane owns them.
+      - name: App package tests
+        env:
+          APP_ROLE: ${{ inputs.app_role }}
+        run: |
+          roles="$APP_ROLE"
+          if [[ "$roles" == "both" ]]; then
+            roles="consumer host"
+          fi
+
+          for role in $roles; do
+            (cd "apps/$role" && flutter test --concurrency=1 --exclude-tags=golden)
+          done
 
       - name: Firestore contract check
         run: node tool/contracts/check_firestore_contract.mjs
@@ -115,6 +139,7 @@ jobs:
             echo "- Firebase config validation: passed"
             echo "- Flutter analysis: passed"
             echo "- Flutter tests: passed"
+            echo "- App package tests: passed"
             echo "- Firestore contract check: passed"
             echo "- Functions lint/tests: passed"
             echo "- Firestore rules emulator tests: passed"

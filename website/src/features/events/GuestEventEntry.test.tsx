@@ -66,6 +66,16 @@ it("starts with the phone step where there is no start action", () => {
   expect(screen.getByLabelText("Mobile number")).toBeTruthy();
 });
 
+it("says no app is needed once, then ends the phone step with the terms line", () => {
+  render(view(signedOut()));
+  expect(screen.getAllByText(/No app download/u)).toHaveLength(1);
+  fireEvent.click(screen.getByRole("button", {name: "Book now"}));
+  expect(screen.getByRole("link", {name: "terms"}).getAttribute("href")).toBe("/terms/");
+  expect(screen.getByRole("link", {name: "privacy policy"}).getAttribute("href")).toBe("/privacy/");
+  expect(screen.queryByText(/Marketing preferences/u)).toBeNull();
+  expect(screen.queryByText(/No app download is required/u)).toBeNull();
+});
+
 it("shows the code step and its error after the code is sent", () => {
   render(view({...signedOut(), codeSent: true, message: "Check your verification code and try again."}, null));
   expect(screen.getByLabelText("6-digit OTP")).toBeTruthy();

@@ -1,0 +1,32 @@
+{
+  "id": "design:library-shims",
+  "category": "design",
+  "path": "tool/design/check_library_shims.mjs",
+  "command": "node tool/design/check_library_shims.mjs --check",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Ratchets @Deprecated catch_ui shims left for legacy callers, and rejects any deprecated catch_ui symbol or ignored Catch code under apps/*/lib and lib/pages.",
+  "checks": [
+    "node --check tool/design/check_library_shims.mjs",
+    "node --test tool/design/check_library_shims.test.mjs",
+    "node tool/design/check_library_shims.mjs --check"
+  ],
+  "impactPaths": [
+    "tool/design/check_library_shims.test.mjs",
+    "tool/design/library_shims_baseline.json",
+    "tool/lib/flutter_source_roots.mjs",
+    "packages/catch_ui/lib/**/*.dart",
+    "tool/architecture/carried_screens.json",
+    "apps/**/lib/**/*.dart",
+    "lib/pages/**/*.dart"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "role": "ratchet",
+  "baseline": "tool/design/library_shims_baseline.json",
+  "queueGate": "always"
+}

@@ -1,0 +1,29 @@
+{
+  "id": "design:component-matrix",
+  "category": "design",
+  "path": "tool/design/component_matrix.mjs",
+  "impactPaths": [
+    "tool/design/component_matrix.test.mjs",
+    "tool/design/lib/system_components.mjs",
+    "design/components/catch.components.json",
+    "design/components/component_matrix.md",
+    "packages/web-ui/src/index.ts",
+    "packages/catch_ui/lib/**"
+  ],
+  "command": "node tool/design/component_matrix.mjs",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "role": "generator",
+  "description": "Generates the redesign programme's component matrix from the registry and the two frameworks' public barrels: what exists today and what is left to align, port or absorb.",
+  "checks": [
+    "node --check tool/design/component_matrix.mjs",
+    "node --test tool/design/component_matrix.test.mjs",
+    "node tool/design/component_matrix.mjs --check"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

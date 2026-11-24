@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$OrganizerDraft {
 
- DateTime get savedAt; String? get name; String? get area; String? get description; String? get location; String? get instagramHandle; String? get phoneNumber; String? get email; OrganizerType get organizerType; OrganizerHostDefaults get hostDefaults;
+ DateTime get savedAt; String? get name; String? get area; String? get description; String? get location; String? get instagramHandle; String? get phoneNumber; String? get email; OrganizerType get organizerType; OrganizerHostDefaults get hostDefaults;/// The optional "how did you hear" answer; null when skipped.
+ OrganizerSignupSource? get signupSource;
 /// Create a copy of OrganizerDraft
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +31,20 @@ $OrganizerDraftCopyWith<OrganizerDraft> get copyWith => _$OrganizerDraftCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as OrganizerDraft;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OrganizerDraft&&(identical(other.savedAt, _this.savedAt) || other.savedAt == _this.savedAt)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.area, _this.area) || other.area == _this.area)&&(identical(other.description, _this.description) || other.description == _this.description)&&(identical(other.location, _this.location) || other.location == _this.location)&&(identical(other.instagramHandle, _this.instagramHandle) || other.instagramHandle == _this.instagramHandle)&&(identical(other.phoneNumber, _this.phoneNumber) || other.phoneNumber == _this.phoneNumber)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.organizerType, _this.organizerType) || other.organizerType == _this.organizerType)&&(identical(other.hostDefaults, _this.hostDefaults) || other.hostDefaults == _this.hostDefaults));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OrganizerDraft&&(identical(other.savedAt, _this.savedAt) || other.savedAt == _this.savedAt)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.area, _this.area) || other.area == _this.area)&&(identical(other.description, _this.description) || other.description == _this.description)&&(identical(other.location, _this.location) || other.location == _this.location)&&(identical(other.instagramHandle, _this.instagramHandle) || other.instagramHandle == _this.instagramHandle)&&(identical(other.phoneNumber, _this.phoneNumber) || other.phoneNumber == _this.phoneNumber)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.organizerType, _this.organizerType) || other.organizerType == _this.organizerType)&&(identical(other.hostDefaults, _this.hostDefaults) || other.hostDefaults == _this.hostDefaults)&&(identical(other.signupSource, _this.signupSource) || other.signupSource == _this.signupSource));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as OrganizerDraft;
-  return Object.hash(runtimeType,_this.savedAt,_this.name,_this.area,_this.description,_this.location,_this.instagramHandle,_this.phoneNumber,_this.email,_this.organizerType,_this.hostDefaults);
+  return Object.hash(runtimeType,_this.savedAt,_this.name,_this.area,_this.description,_this.location,_this.instagramHandle,_this.phoneNumber,_this.email,_this.organizerType,_this.hostDefaults,_this.signupSource);
 }
 
 @override
 String toString() {
   final _this = this as OrganizerDraft;
-  return 'OrganizerDraft(savedAt: ${_this.savedAt}, name: ${_this.name}, area: ${_this.area}, description: ${_this.description}, location: ${_this.location}, instagramHandle: ${_this.instagramHandle}, phoneNumber: ${_this.phoneNumber}, email: ${_this.email}, organizerType: ${_this.organizerType}, hostDefaults: ${_this.hostDefaults})';
+  return 'OrganizerDraft(savedAt: ${_this.savedAt}, name: ${_this.name}, area: ${_this.area}, description: ${_this.description}, location: ${_this.location}, instagramHandle: ${_this.instagramHandle}, phoneNumber: ${_this.phoneNumber}, email: ${_this.email}, organizerType: ${_this.organizerType}, hostDefaults: ${_this.hostDefaults}, signupSource: ${_this.signupSource})';
 }
 
 
@@ -54,7 +55,7 @@ abstract mixin class $OrganizerDraftCopyWith<$Res>  {
   factory $OrganizerDraftCopyWith(OrganizerDraft value, $Res Function(OrganizerDraft) _then) = _$OrganizerDraftCopyWithImpl;
 @useResult
 $Res call({
- DateTime savedAt, String? name, String? area, String? description, String? location, String? instagramHandle, String? phoneNumber, String? email, OrganizerType organizerType, OrganizerHostDefaults hostDefaults
+ DateTime savedAt, String? name, String? area, String? description, String? location, String? instagramHandle, String? phoneNumber, String? email, OrganizerType organizerType, OrganizerHostDefaults hostDefaults, OrganizerSignupSource? signupSource
 });
 
 
@@ -71,7 +72,7 @@ class _$OrganizerDraftCopyWithImpl<$Res>
 
 /// Create a copy of OrganizerDraft
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? savedAt = null,Object? name = freezed,Object? area = freezed,Object? description = freezed,Object? location = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,Object? organizerType = null,Object? hostDefaults = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? savedAt = null,Object? name = freezed,Object? area = freezed,Object? description = freezed,Object? location = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,Object? organizerType = null,Object? hostDefaults = null,Object? signupSource = freezed,}) {
   return _then(OrganizerDraft(
 savedAt: null == savedAt ? _self.savedAt : savedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -83,7 +84,8 @@ as String?,phoneNumber: freezed == phoneNumber ? _self.phoneNumber : phoneNumber
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String?,organizerType: null == organizerType ? _self.organizerType : organizerType // ignore: cast_nullable_to_non_nullable
 as OrganizerType,hostDefaults: null == hostDefaults ? _self.hostDefaults : hostDefaults // ignore: cast_nullable_to_non_nullable
-as OrganizerHostDefaults,
+as OrganizerHostDefaults,signupSource: freezed == signupSource ? _self.signupSource : signupSource // ignore: cast_nullable_to_non_nullable
+as OrganizerSignupSource?,
   ));
 }
 /// Create a copy of OrganizerDraft
@@ -177,10 +179,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime savedAt,  String? name,  String? area,  String? description,  String? location,  String? instagramHandle,  String? phoneNumber,  String? email,  OrganizerType organizerType,  OrganizerHostDefaults hostDefaults)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime savedAt,  String? name,  String? area,  String? description,  String? location,  String? instagramHandle,  String? phoneNumber,  String? email,  OrganizerType organizerType,  OrganizerHostDefaults hostDefaults,  OrganizerSignupSource? signupSource)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OrganizerDraft() when $default != null:
-return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.location,_that.instagramHandle,_that.phoneNumber,_that.email,_that.organizerType,_that.hostDefaults);case _:
+return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.location,_that.instagramHandle,_that.phoneNumber,_that.email,_that.organizerType,_that.hostDefaults,_that.signupSource);case _:
   return orElse();
 
 }
@@ -198,10 +200,10 @@ return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.loca
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime savedAt,  String? name,  String? area,  String? description,  String? location,  String? instagramHandle,  String? phoneNumber,  String? email,  OrganizerType organizerType,  OrganizerHostDefaults hostDefaults)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime savedAt,  String? name,  String? area,  String? description,  String? location,  String? instagramHandle,  String? phoneNumber,  String? email,  OrganizerType organizerType,  OrganizerHostDefaults hostDefaults,  OrganizerSignupSource? signupSource)  $default,) {final _that = this;
 switch (_that) {
 case _OrganizerDraft():
-return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.location,_that.instagramHandle,_that.phoneNumber,_that.email,_that.organizerType,_that.hostDefaults);case _:
+return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.location,_that.instagramHandle,_that.phoneNumber,_that.email,_that.organizerType,_that.hostDefaults,_that.signupSource);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -218,10 +220,10 @@ return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.loca
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime savedAt,  String? name,  String? area,  String? description,  String? location,  String? instagramHandle,  String? phoneNumber,  String? email,  OrganizerType organizerType,  OrganizerHostDefaults hostDefaults)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime savedAt,  String? name,  String? area,  String? description,  String? location,  String? instagramHandle,  String? phoneNumber,  String? email,  OrganizerType organizerType,  OrganizerHostDefaults hostDefaults,  OrganizerSignupSource? signupSource)?  $default,) {final _that = this;
 switch (_that) {
 case _OrganizerDraft() when $default != null:
-return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.location,_that.instagramHandle,_that.phoneNumber,_that.email,_that.organizerType,_that.hostDefaults);case _:
+return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.location,_that.instagramHandle,_that.phoneNumber,_that.email,_that.organizerType,_that.hostDefaults,_that.signupSource);case _:
   return null;
 
 }
@@ -233,7 +235,7 @@ return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.loca
 @JsonSerializable()
 
 class _OrganizerDraft implements OrganizerDraft {
-  const _OrganizerDraft({required this.savedAt, this.name, this.area, this.description, this.location, this.instagramHandle, this.phoneNumber, this.email, this.organizerType = OrganizerType.club, this.hostDefaults = const OrganizerHostDefaults()});
+  const _OrganizerDraft({required this.savedAt, this.name, this.area, this.description, this.location, this.instagramHandle, this.phoneNumber, this.email, this.organizerType = OrganizerType.club, this.hostDefaults = const OrganizerHostDefaults(), this.signupSource});
   factory _OrganizerDraft.fromJson(Map<String, dynamic> json) => _$OrganizerDraftFromJson(json);
 
 @override final  DateTime savedAt;
@@ -246,6 +248,8 @@ class _OrganizerDraft implements OrganizerDraft {
 @override final  String? email;
 @override@JsonKey() final  OrganizerType organizerType;
 @override@JsonKey() final  OrganizerHostDefaults hostDefaults;
+/// The optional "how did you hear" answer; null when skipped.
+@override final  OrganizerSignupSource? signupSource;
 
 /// Create a copy of OrganizerDraft
 /// with the given fields replaced by the non-null parameter values.
@@ -260,18 +264,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _OrganizerDraft&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.name, name) || other.name == name)&&(identical(other.area, area) || other.area == area)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.email, email) || other.email == email)&&(identical(other.organizerType, organizerType) || other.organizerType == organizerType)&&(identical(other.hostDefaults, hostDefaults) || other.hostDefaults == hostDefaults));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _OrganizerDraft&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.name, name) || other.name == name)&&(identical(other.area, area) || other.area == area)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.email, email) || other.email == email)&&(identical(other.organizerType, organizerType) || other.organizerType == organizerType)&&(identical(other.hostDefaults, hostDefaults) || other.hostDefaults == hostDefaults)&&(identical(other.signupSource, signupSource) || other.signupSource == signupSource));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,savedAt,name,area,description,location,instagramHandle,phoneNumber,email,organizerType,hostDefaults);
+    return Object.hash(runtimeType,savedAt,name,area,description,location,instagramHandle,phoneNumber,email,organizerType,hostDefaults,signupSource);
 }
 
 @override
 String toString() {
-    return 'OrganizerDraft(savedAt: $savedAt, name: $name, area: $area, description: $description, location: $location, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, organizerType: $organizerType, hostDefaults: $hostDefaults)';
+    return 'OrganizerDraft(savedAt: $savedAt, name: $name, area: $area, description: $description, location: $location, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, organizerType: $organizerType, hostDefaults: $hostDefaults, signupSource: $signupSource)';
 }
 
 
@@ -282,7 +286,7 @@ abstract mixin class _$OrganizerDraftCopyWith<$Res> implements $OrganizerDraftCo
   factory _$OrganizerDraftCopyWith(_OrganizerDraft value, $Res Function(_OrganizerDraft) _then) = __$OrganizerDraftCopyWithImpl;
 @override @useResult
 $Res call({
- DateTime savedAt, String? name, String? area, String? description, String? location, String? instagramHandle, String? phoneNumber, String? email, OrganizerType organizerType, OrganizerHostDefaults hostDefaults
+ DateTime savedAt, String? name, String? area, String? description, String? location, String? instagramHandle, String? phoneNumber, String? email, OrganizerType organizerType, OrganizerHostDefaults hostDefaults, OrganizerSignupSource? signupSource
 });
 
 
@@ -299,7 +303,7 @@ class __$OrganizerDraftCopyWithImpl<$Res>
 
 /// Create a copy of OrganizerDraft
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? savedAt = null,Object? name = freezed,Object? area = freezed,Object? description = freezed,Object? location = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,Object? organizerType = null,Object? hostDefaults = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? savedAt = null,Object? name = freezed,Object? area = freezed,Object? description = freezed,Object? location = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,Object? organizerType = null,Object? hostDefaults = null,Object? signupSource = freezed,}) {
   return _then(_OrganizerDraft(
 savedAt: null == savedAt ? _self.savedAt : savedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -311,7 +315,8 @@ as String?,phoneNumber: freezed == phoneNumber ? _self.phoneNumber : phoneNumber
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String?,organizerType: null == organizerType ? _self.organizerType : organizerType // ignore: cast_nullable_to_non_nullable
 as OrganizerType,hostDefaults: null == hostDefaults ? _self.hostDefaults : hostDefaults // ignore: cast_nullable_to_non_nullable
-as OrganizerHostDefaults,
+as OrganizerHostDefaults,signupSource: freezed == signupSource ? _self.signupSource : signupSource // ignore: cast_nullable_to_non_nullable
+as OrganizerSignupSource?,
   ));
 }
 

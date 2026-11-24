@@ -30,14 +30,7 @@
         }
       ],
       "aside": {"label": "Run a venue with courts? See {{brand.name}} for venues", "to": {"route": "host_venues"}},
-      "chip": {
-        "title": "Pickleball Social · Sat",
-        "rows": [
-          {"label": "Booked", "value": "40"},
-          {"label": "Courts", "value": "3"},
-          {"label": "Round", "value": "4 of 8"}
-        ]
-      },
+      "fragments": ["host-formats-courts-court", "host-formats-courts-sitting-out"],
       "media": {"kind": "capture", "slot": "host-formats-courts"}
     },
     {
@@ -82,7 +75,7 @@
         {"time": "5:40 PM", "title": "Court time, counted", "body": "You see every player’s minutes on court and on the bench. Anyone sitting out is pointed to the lounge to mix."},
         {"time": "That evening", "title": "Standings, then the photos", "body": "Reveal the final standings at the end, and the photos follow."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-racket-sports"}
     },
     {
       "type": "checklist",
@@ -144,12 +137,13 @@
       "ground": "mint",
       "kicker": "Your next session",
       "title": "Every player gets a good game.",
-      "lead": "Start the free trial, or leave your number and we’ll send the racket social setup guide on WhatsApp.",
+      "lead": "Start the free trial and read the racket social guide. Or leave your number, and a person from our team will send it to you on WhatsApp.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "Read the racket social guide", "to": {"page": "playbook_guide/racket-sports"}, "emphasis": "secondary"}
       ],
-      "leadForm": {"id": "racket_social_setup_guide", "requestKind": "guide", "format": "racket-sports", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
-      "media": {"kind": "capture", "slot": "guest-explore"}
+      "leadForm": {"id": "racket_social_setup_guide", "requestKind": "guide", "format": "racket-sports", "label": "Your WhatsApp number", "submitLabel": "Send me the guide"},
+      "media": {"kind": "capture", "slot": "host-create-racket-sports"}
     }
   ]
 }

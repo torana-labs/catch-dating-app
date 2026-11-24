@@ -1,0 +1,17 @@
+{
+  "id": "demo:ops-core",
+  "category": "demo",
+  "path": "tool/demo/demo_ops_core.mjs",
+  "command": "node --test tool/demo/demo_ops_core.test.mjs",
+  "surface": "remote-destructive",
+  "guard": "apply-and-prod-flag",
+  "status": "internal",
+  "description": "Shared planning and Firestore helpers for demo operations.",
+  "impactPaths": [
+    "tool/demo/demo_ops_core.mjs",
+    "tool/demo/demo_ops_core.test.mjs"
+  ],
+  "checks": [
+    "node --check tool/demo/demo_ops_core.mjs"
+  ]
+}

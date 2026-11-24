@@ -114,7 +114,8 @@ class ProgramAssetUploader {
   }
 }
 
-// keepalive: a stateless uploader shared by the planner photo screens.
+// keepalive: account-free: a stateless uploader shared by the planner photo
+// screens.
 @Riverpod(keepAlive: true)
 ProgramAssetUploader programAssetUploader(Ref ref) =>
     ProgramAssetUploader(ref.watch(firebaseFunctionsProvider));

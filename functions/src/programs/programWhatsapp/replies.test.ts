@@ -6,9 +6,10 @@ import type {Firestore} from "firebase-admin/firestore";
 import {FakeFirestore} from "../../shared/testing/programFirestore";
 import {now} from "../../shared/testing/programFixtures";
 import {contractValidator} from "../../shared/contractTestValidators";
-import {MetaProviderError} from "../../organizers/organizerWhatsappProvider";
+import {MetaProviderError} from
+  "../../platform/delivery/organizerWhatsappProvider";
 import {whatsappStatusCorrelation} from
-  "../../eventSuccess/operations/whatsappDeliveryProtocol";
+  "../../platform/delivery/whatsappDeliveryProtocol";
 import type {ProgramWhatsappDispatchDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import {ProgramWhatsappDeliveryStore} from "../programWhatsappDeliveryStore";

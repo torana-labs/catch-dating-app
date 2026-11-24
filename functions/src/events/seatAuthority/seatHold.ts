@@ -1,8 +1,20 @@
 import {createHash} from "crypto";
-import {assertReadySeatState, CanonicalSeatIdentity, CHECKOUT_HOLD_MILLIS,
-  checkoutHeldCount, heldSeatCount, MAX_RESERVATION_PLACES, reservationPlaces,
-  SeatAuthorityError, SeatCommand, SeatLedger, SeatReceipt, SeatReservation,
-  SeatTransaction} from "./seatAuthority";
+import {
+  assertReadySeatState,
+  CanonicalSeatIdentity,
+  checkoutHeldCount,
+  heldSeatCount,
+  MAX_RESERVATION_PLACES,
+  reservationPlaces,
+  SeatAuthorityError,
+  SeatCommand,
+  SeatLedger,
+  SeatReceipt,
+  SeatReservation,
+  SeatTransaction,
+  fitsSeatCapacity,
+} from "./seatAuthority";
+import {CHECKOUT_HOLD_MILLIS} from "../../domain/payments/checkoutHold";
 
 export type CheckoutHoldOperation = "checkoutHold" |
   "confirmCheckoutHold" | "releaseCheckoutHold";
@@ -151,7 +163,8 @@ export async function prepareSeatHold<Subject>(params: {
         reservation?.temporaryHold) {
       fail("conflict", "This identity already has a seat or checkout hold.");
     }
-    if (ledger.occupied + heldSeatCount(ledger) + places > ledger.capacity) {
+    if (!fitsSeatCapacity(ledger.capacity,
+      ledger.occupied + heldSeatCount(ledger) + places)) {
       fail("conflict", "This event is full.");
     }
   } else {

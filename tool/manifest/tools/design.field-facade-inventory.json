@@ -1,0 +1,20 @@
+{
+  "id": "design:field-facade-inventory",
+  "category": "design",
+  "path": "tool/design/generate_field_inventory.mjs",
+  "command": "node tool/design/generate_field_inventory.mjs --check",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Validates the live CatchField facade and section contracts deterministically; an explicit non-check run writes an ignored build report rather than tracked governance evidence.",
+  "checks": [
+    "node --check tool/design/generate_field_inventory.mjs",
+    "node --test tool/design/generate_field_inventory.test.mjs",
+    "node tool/design/generate_field_inventory.mjs --check"
+  ],
+  "role": "gate",
+  "alsoEnforces": [
+    "DESIGN-PRIMITIVES-001",
+    "DESIGN-LEXICON-001"
+  ],
+  "queueGate": "always"
+}

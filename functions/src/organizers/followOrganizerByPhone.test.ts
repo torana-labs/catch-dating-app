@@ -28,6 +28,10 @@ class MemoryRef {
   get id() {
     return this.path.split("/").at(-1)!;
   }
+  collection(name: string) {
+    return {doc: (id: string) =>
+      new MemoryRef(this.store, `${this.path}/${name}/${id}`)};
+  }
   snapshot() {
     const value = this.store.docs.get(this.path);
     return {exists: value !== undefined, id: this.id,
@@ -92,14 +96,30 @@ test("a verified phone follows; the tick grants follower WhatsApp",
     const follow = [...store.docs.entries()]
       .find(([path]) => path.startsWith("organizerFollows/"))?.[1];
     assert.equal(follow?.status, "active");
-    const preference = store.docs.get("organizerCommunicationPreferences/" +
-    organizerCommunicationPreferenceId("org-1", "uid-1"));
-    assert.equal(effectiveFollowerWhatsappStatus(preference as never, phone),
-      "optedIn");
     const receipt = store.docs.get(
-      `organizerCommunicationPermissionReceipts/${result.receiptId}`);
+      `contactPermissionReceipts/${result.receiptId}`);
     assert.equal(receipt?.purpose, "followerUpdates");
     assert.equal(receipt?.endpointE164, phone);
+    assert.equal(receipt?.senderId, "org-1");
+    // The same transaction writes the contact permission and the guest's
+    // settings row; nothing else records the consent.
+    assert.equal([...store.docs.keys()].some((path) =>
+      path.startsWith("organizerCommunication")), false);
+    assert.equal(effectiveFollowerWhatsappStatus(store.docs.get(
+      "users/uid-1/contactPermissions/organizer_org-1") as never, phone),
+    "optedIn");
+    const permission = store.docs.get(
+      "users/uid-1/contactPermissions/organizer_org-1") as {
+        grants: Record<string, {endpointE164: string; receiptId: string}>;
+        granted: string[]} | undefined;
+    assert.deepEqual(permission?.granted, ["whatsapp:followerUpdates"]);
+    assert.equal(permission?.grants["whatsapp:followerUpdates"]?.endpointE164,
+      phone);
+    assert.equal(permission?.grants["whatsapp:followerUpdates"]?.receiptId,
+      result.receiptId);
+    const row = store.docs.get("guestMessagingPermissions/" +
+      organizerCommunicationPreferenceId("org-1", "uid-1"));
+    assert.equal((row?.preference as {status: string}).status, "optedIn");
 
     const replay = await followOrganizerByPhoneHandler(request({
       organizerId: "org-1", requestId: "req-1", whatsappUpdates: true,
@@ -115,7 +135,9 @@ test("without the tick the follow carries no WhatsApp permission", async () => {
   assert.equal(result.whatsappUpdates, "notRequested");
   assert.equal(result.receiptId, null);
   assert.equal([...store.docs.keys()].some((path) =>
-    path.startsWith("organizerCommunication")), false);
+    path.startsWith("organizerCommunication") ||
+    path.startsWith("guestMessagingPermissions/") ||
+    path.includes("contactPermission")), false);
 });
 
 test("an account without a verified phone cannot follow by phone", async () => {

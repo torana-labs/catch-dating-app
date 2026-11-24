@@ -1,7 +1,6 @@
 /**
- * Publication authorization for the public page read models. This mirrors
- * website/src/server/publicReadPolicy.ts rule for rule; the shared parity
- * fixtures in contracts/fixtures/public_pages hold both to the same output.
+ * Publication authorization for the public page read models, the only place
+ * the website's publication rules are decided (projections.test.ts).
  */
 export type PublicDocument = Record<string, unknown>;
 

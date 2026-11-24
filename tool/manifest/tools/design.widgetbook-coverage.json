@@ -1,0 +1,25 @@
+{
+  "id": "design:widgetbook-coverage",
+  "category": "design",
+  "path": "tool/design/check_widgetbook_coverage.mjs",
+  "command": "node tool/design/check_widgetbook_coverage.mjs",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Enforces role-derived Widgetbook evidence for concepts, members, contracted compositions, feature-owned compositions, and screen-owned widgets.",
+  "checks": [
+    "node --check tool/design/check_widgetbook_coverage.mjs",
+    "node tool/design/check_widgetbook_coverage.mjs --self-test",
+    "node tool/design/check_widgetbook_coverage.mjs --check"
+  ],
+  "impactPaths": [
+    "widgetbook/lib/main.directories.g.dart"
+  ],
+  "role": "gate",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "queueGate": "always"
+}

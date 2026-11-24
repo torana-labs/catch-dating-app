@@ -141,6 +141,7 @@ export const claimedOrganizerPage: OrganizerPageRecord = {
     host: {name: "Kabir Rao", role: "Founder · pace lead", avatarUrl: null},
   },
   womenLed: false,
+  tracking: null,
 };
 
 /** The page Catch built from public Luma and Instagram pages, before the club claims it. */
@@ -188,6 +189,7 @@ export const generatedOrganizerPage: OrganizerPageRecord = {
     ],
   },
   womenLed: false,
+  tracking: null,
 };
 
 /** A claimed page between plans: nothing upcoming yet. */

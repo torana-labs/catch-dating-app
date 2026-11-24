@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {loadToolsManifest} from "../lib/tools_manifest.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -31,10 +32,7 @@ export function toolCategoryCoverage({manifest, workflowText}) {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const manifest = JSON.parse(fs.readFileSync(
-    path.join(repoRoot, "tool/tools_manifest.json"),
-    "utf8",
-  ));
+  const manifest = loadToolsManifest({root: repoRoot});
   const workflowText = fs.readFileSync(
     path.join(repoRoot, ".github/workflows/tools-ci.yml"),
     "utf8",

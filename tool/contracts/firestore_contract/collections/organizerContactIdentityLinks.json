@@ -1,0 +1,22 @@
+{
+  "id": "organizerContactIdentityLinks",
+  "path": "organizerContactIdentityLinks/{identityLinkId}",
+  "rulesMatch": "/organizerContactIdentityLinks/{identityLinkId}",
+  "typescriptInterface": "OrganizerContactIdentityLinkDocument",
+  "dartModel": null,
+  "owner": "organizer audience identity resolver",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "onEventAttendeeAudienceProjected",
+    "getOrganizerContactDetail",
+    "mergeOrganizerContacts",
+    "unmergeOrganizerContacts"
+  ],
+  "migrationNotes": [
+    "Each document is one attendee-to-contact identity evidence edge; candidate sets are queried rather than stored as mutable arrays.",
+    "Keyed hashes are restricted lookup identifiers, not anonymous data.",
+    "Secret rotation requires a dual-hash backfill before changing the active version."
+  ]
+}

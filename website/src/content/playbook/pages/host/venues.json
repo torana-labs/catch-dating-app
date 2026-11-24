@@ -32,14 +32,6 @@
       "aside": {
         "label": "Running nights at several outlets? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
-      },
-      "chip": {
-        "title": "Tuesday pub quiz",
-        "rows": [
-          {"label": "Booked", "value": "48"},
-          {"label": "Back from last week", "value": "19"},
-          {"label": "Waitlist", "value": "6"}
-        ]
       }
     },
     {
@@ -115,7 +107,7 @@
         {"time": "8:00 PM", "title": "The night runs itself", "body": "Your quizmaster runs rounds and scores from a tablet. Your team runs the bar."},
         {"time": "Next morning", "title": "See who’ll come back", "body": "Photos and results go out, guests follow your venue, and you see which link filled the room."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-venues"}
     },
     {
       "type": "split",
@@ -201,12 +193,12 @@
       "ground": "indigo",
       "kicker": "Your quiet night",
       "title": "Pick the night. We’ll help you fill it.",
-      "lead": "Start the free trial, or leave your number and we’ll send the venue setup guide on WhatsApp.",
+      "lead": "Start the free trial, or leave your number and a person from our team will message you on WhatsApp to help you set up.",
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
-      "leadForm": {"id": "venue_setup_guide", "requestKind": "guide", "format": "venues", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
-      "media": {"kind": "capture", "slot": "guest-explore"}
+      "leadForm": {"id": "venue_setup_guide", "requestKind": "guide", "format": "venues", "label": "Your WhatsApp number", "submitLabel": "Message me"},
+      "media": {"kind": "capture", "slot": "host-create-venues"}
     }
   ]
 }

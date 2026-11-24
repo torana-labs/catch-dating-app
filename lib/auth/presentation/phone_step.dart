@@ -1,14 +1,16 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
-import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/auth/presentation/auth_page_presentation.dart';
-import 'package:catch_dating_app/auth/presentation/auth_presentation_state.dart';
 import 'package:catch_dating_app/auth/presentation/host_auth_card.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_controller.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_input.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_presentation_state.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
@@ -68,6 +70,9 @@ class _PhoneStepState extends ConsumerState<PhoneStep> {
       );
     }
   }
+
+  void _openLink(Uri uri) =>
+      unawaited(ref.read(externalLinkControllerProvider).openExternal(uri));
 
   @override
   Widget build(BuildContext context) {
@@ -295,6 +300,42 @@ class _PhoneStepState extends ConsumerState<PhoneStep> {
               ),
             ),
           ],
+          gapH16,
+          // The legal line, where the number is given, with its links under
+          // the words.
+          CatchStack(
+            key: const ValueKey<String>('auth-legal-notice'),
+            gap: CatchStackGap.g4,
+            align: CatchStackAlign.start,
+            children: [
+              CatchText(
+                l10n.authLegalAgreement,
+                variant: CatchTextVariant.bodySmall,
+                tone: CatchTextTone.secondary,
+              ),
+              CatchStack(
+                direction: CatchStackDirection.row,
+                gap: CatchStackGap.g8,
+                wrap: true,
+                children: [
+                  if (AppConfig.termsUrl case final uri?)
+                    CatchButton(
+                      label: l10n.authLegalTermsLink,
+                      onPressed: () => _openLink(uri),
+                      variant: CatchButtonVariant.quiet,
+                      size: CatchButtonSize.sm,
+                    ),
+                  if (AppConfig.privacyPolicyUrl case final uri?)
+                    CatchButton(
+                      label: l10n.authLegalPrivacyLink,
+                      onPressed: () => _openLink(uri),
+                      variant: CatchButtonVariant.quiet,
+                      size: CatchButtonSize.sm,
+                    ),
+                ],
+              ),
+            ],
+          ),
         ],
       ),
     );

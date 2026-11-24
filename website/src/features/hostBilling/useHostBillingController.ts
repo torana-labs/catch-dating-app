@@ -1,40 +1,26 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useEffect, useState} from "react";
 import {invokeHostBillingCallable, watchWebsiteAccountAuthState, type User} from "../../firebase";
+import {watchOrganizerBillingView, watchOrganizerBills, watchOwnedOrganizers} from "../../firebaseReadModels";
+import {liveReadErrorCode, useLiveRead} from "../../shared/query/useLiveRead";
 import {
   parseBills,
   parsePlanStatus,
   parsePlanView,
-  parseTrial,
+  trialFromView,
   type Bill,
   type PlanStatus,
   type PlanView,
   type TrialStatus,
 } from "./hostBillingModel";
-import type {
-  GetOrganizerBillingStatusCallablePayload,
-  GetOrganizerBillingStatusCallableResponse,
-  ListMyOwnedOrganizersCallablePayload,
-  ListMyOwnedOrganizersCallableResponse,
-  ListOrganizerBillsCallablePayload,
-  ManageOrganizerBillingPlanCallablePayload,
-} from "./contracts";
-
-type OwnedOrganizer = ListMyOwnedOrganizersCallableResponse["organizers"][number];
+import type {ManageOrganizerBillingPlanCallablePayload} from "./contracts";
 
 export interface BillingOrganizer {
-  organizerId: OwnedOrganizer["organizerId"];
-  organizerName: OwnedOrganizer["name"];
+  organizerId: string;
+  organizerName: string;
 }
 
-/** Organizers read per page, and the most pages read (500 organizers). */
-const organizerPageSize = 50;
-const maxOrganizerPages = 10;
-
 type PlanAction = Exclude<ManageOrganizerBillingPlanCallablePayload["action"], "read">;
-
-/** A reply not yet trusted: only the contract's keys, every value unknown. */
-type Untrusted<T> = {[K in keyof T]?: unknown};
 
 export type HostBillingPhase = "loading" | "signedOut" | "noOrganizers" | "notOwner" | "failed" | "ready";
 
@@ -57,11 +43,8 @@ export interface HostBillingController {
   nowMillis: number;
 }
 
-/** Firebase callable errors carry their code; permission-denied means not the owner. */
-function errorCode(error: unknown): string | null {
-  const code = (error as {code?: unknown} | null)?.code;
-  return typeof code === "string" ? code.replace(/^functions\//u, "") : null;
-}
+/** Callable and Firestore errors carry their code; permission-denied means not the owner. */
+const errorCode = liveReadErrorCode;
 
 function initialOrganizerId(): string | null {
   if (typeof window === "undefined") return null;
@@ -71,7 +54,8 @@ function initialOrganizerId(): string | null {
 
 /**
  * The signed-in owner's billing: which organizer, its trial and plan (status
- * from getOrganizerBillingStatus, prices from manageOrganizerBillingPlan) and
+ * from the owner's hostOrganizerBillingViews row, prices from
+ * manageOrganizerBillingPlan) and
  * its bills. Buying tools-only opens Razorpay's payment page on Catch's
  * account; the plan becomes active when Razorpay reports it paid.
  */
@@ -84,46 +68,29 @@ export function useHostBillingController(): HostBillingController {
   useEffect(() => watchWebsiteAccountAuthState((user) => setIdentity({user, loaded: true})), []);
   const uid = identity.user?.uid ?? null;
 
-  // Every organizer the signed-in user owns, a page at a time.
-  const organizersQuery = useQuery({queryKey: ["host-billing", uid, "organizers"], enabled: Boolean(uid),
-    retry: false, gcTime: 0, queryFn: async (): Promise<BillingOrganizer[]> => {
-      const owned: BillingOrganizer[] = [];
-      let after: string | null = null;
-      for (let page = 0; page < maxOrganizerPages; page++) {
-        const payload: ListMyOwnedOrganizersCallablePayload = {afterOrganizerId: after, limit: organizerPageSize};
-        const reply = await invokeHostBillingCallable("listMyOwnedOrganizers", {...payload}) as
-          Untrusted<ListMyOwnedOrganizersCallableResponse> | null;
-        const entries: unknown[] = Array.isArray(reply?.organizers) ? reply.organizers : [];
-        for (const entry of entries) {
-          const item = (entry ?? {}) as Untrusted<OwnedOrganizer>;
-          if (typeof item.organizerId === "string" && !owned.some((known) => known.organizerId === item.organizerId)) {
-            owned.push({organizerId: item.organizerId,
-              organizerName: typeof item.name === "string" && item.name ? item.name : item.organizerId});
-          }
-        }
-        const next = reply?.nextAfterOrganizerId;
-        if (typeof next !== "string" || next === after) break;
-        after = next;
-      }
-      return owned;
-    }});
-  const organizers = organizersQuery.data ?? [];
+  // Every organizer the signed-in user owns, and the chosen one's bills: the
+  // same organizers rows and hostOrganizerBillViews the Host app listens to.
+  const organizersRead = useLiveRead<BillingOrganizer[]>(uid, (onValue, onError) =>
+    watchOwnedOrganizers(uid!, (rows) => onValue(rows.map((row) =>
+      ({organizerId: row.organizerId, organizerName: row.name}))), onError));
+  const organizers = organizersRead.data ?? [];
   const organizerId = chosen && (organizers.length === 0 || organizers.some((item) => item.organizerId === chosen)) ?
     chosen : organizers[0]?.organizerId ?? null;
+  const billsRead = useLiveRead<Bill[]>(uid && organizerId ? `${uid}/${organizerId}` : null,
+    (onValue, onError) => watchOrganizerBills(organizerId!, (bills) => onValue(parseBills({bills})), onError));
 
+  // The trial and plan follow the owner's hostOrganizerBillingViews row
+  // (#2306); the trial state and days left come from its instants and this
+  // page's clock. Prices and the payment link stay on manageOrganizerBillingPlan.
+  const statusRead = useLiveRead<{trial: unknown; plan: unknown} | null>(uid && organizerId ? `${uid}/${organizerId}` :
+    null, (onValue, onError) => watchOrganizerBillingView(organizerId!, onValue, onError));
   const billingQuery = useQuery({queryKey: ["host-billing", uid, organizerId], enabled: Boolean(uid && organizerId),
     retry: false, gcTime: 0, queryFn: async () => {
-      const payload: GetOrganizerBillingStatusCallablePayload & ListOrganizerBillsCallablePayload =
-        {organizerId: organizerId!};
-      const read: ManageOrganizerBillingPlanCallablePayload = {...payload, action: "read", expectedRevision: null};
-      const [status, planView, bills] = await Promise.all([
-        invokeHostBillingCallable("getOrganizerBillingStatus", {...payload}),
-        invokeHostBillingCallable("manageOrganizerBillingPlan", {...read}),
-        invokeHostBillingCallable("listOrganizerBills", {...payload})]);
-      const statusRaw = status as Untrusted<GetOrganizerBillingStatusCallableResponse> | null;
-      return {trial: parseTrial(statusRaw?.trial), plan: parsePlanStatus(statusRaw?.plan),
-        planView: parsePlanView(planView), bills: parseBills(bills)};
+      const read: ManageOrganizerBillingPlanCallablePayload =
+        {organizerId: organizerId!, action: "read", expectedRevision: null};
+      return {planView: parsePlanView(await invokeHostBillingCallable("manageOrganizerBillingPlan", {...read}))};
     }});
+  const status = statusRead.data;
 
   const action = useMutation({retry: false, gcTime: 0, mutationFn: async (kind: PlanAction) => {
     const view = billingQuery.data?.planView;
@@ -145,22 +112,23 @@ export function useHostBillingController(): HostBillingController {
     window.location.assign(url);
   }
 
-  const failure = organizersQuery.error ?? billingQuery.error;
+  const failure = organizersRead.error ?? statusRead.error ?? billingQuery.error ?? billsRead.error;
   const phase: HostBillingPhase = !identity.loaded ? "loading" :
     !uid ? "signedOut" :
-      organizersQuery.isPending ? "loading" :
+      organizersRead.status === "pending" ? "loading" :
         failure ? errorCode(failure) === "permission-denied" ? "notOwner" : "failed" :
           !organizerId ? "noOrganizers" :
-            billingQuery.isPending ? "loading" : "ready";
+            billingQuery.isPending || statusRead.status === "pending" || billsRead.status === "pending" ?
+              "loading" : "ready";
   return {
     phase, user: identity.user, organizers, organizerId,
     selectOrganizer: (id) => {
       setChosen(id); setActionError(null);
     },
-    trial: billingQuery.data?.trial ?? null,
-    plan: billingQuery.data?.plan ?? null,
+    trial: status === undefined ? null : trialFromView(status?.trial, Date.now()),
+    plan: status === undefined ? null : parsePlanStatus(status?.plan),
     planView: billingQuery.data?.planView ?? null,
-    bills: billingQuery.data?.bills ?? [],
+    bills: billsRead.data ?? [],
     acting: action.isPending,
     actionError,
     buyToolsOnly: () => action.mutate("buyToolsOnly"),

@@ -83,6 +83,8 @@ jobs:
       tools_owns_ui_lint_smoke: ${{ steps.plan.outputs.tools_owns_ui_lint_smoke }}
       tools_owns_design_parity: ${{ steps.plan.outputs.tools_owns_design_parity }}
       queue_verified_run: ${{ steps.queue.outputs.run_id }}
+      main_goldens: ${{ steps.main_macos.outputs.goldens }}
+      main_captures: ${{ steps.main_macos.outputs.captures }}
 
     steps:
       - name: Checkout planner closure
@@ -101,6 +103,8 @@ jobs:
             /tool/nx/manifest_diff.mjs
             /tool/ci/toolchain.env
             /tool/ci/main_push_base.mjs
+            /tool/ci/main_push_queue_proof.mjs
+            /tool/ci/main_macos_selection.mjs
             /tool/ci/ios_build_inputs.mjs
             /tool/harness/component_graph.json
             /tool/harness/lib/component_graph.mjs
@@ -112,8 +116,9 @@ jobs:
             /tool/lib/tool_impact.mjs
             /tool/lib/tool_manifest_rules.mjs
             /tool/lib/tool_platform.mjs
+            /tool/lib/tools_manifest.mjs
             /tool/run.mjs
-            /tool/tools_manifest.json
+            /tool/manifest
             /.github/actions/load-toolchain/action.yml
             /tool/design/build_host_feature_responsibilities.mjs
             /design/features/host_feature_responsibilities.json
@@ -125,10 +130,55 @@ jobs:
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
 
-      # Nx chooses the lanes for pull requests and queue groups, and reads the
-      # whole tree to do it. Other runs keep the planner's selection.
+      - id: queue
+        name: Find the merge-queue validation of this exact source
+        if: ${{ github.event_name == 'push' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -uo pipefail
+          # The merge queue validated this exact commit before main moved to
+          # it, so main re-runs no validation lane: it only plans. The proof is
+          # the queue run's Required CI job, not the run's conclusion, which
+          # waits on reporting lanes. Any lookup failure keeps the full run.
+          run_id="$(node tool/ci/main_push_queue_proof.mjs --sha "$SOURCE_SHA")" || run_id=""
+          [[ -z "$run_id" || "$run_id" =~ ^[1-9][0-9]*$ ]] || run_id=""
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+          echo "Merge-queue validation reused: ${run_id:-none}" >> "$GITHUB_STEP_SUMMARY"
+
+      - id: main_macos
+        name: Select main's macOS jobs from the queue's plan
+        if: ${{ github.event_name == 'push' && steps.queue.outputs.run_id != '' }}
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          GH_TOKEN: ${{ github.token }}
+          QUEUE_RUN: ${{ steps.queue.outputs.run_id }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -uo pipefail
+          # The merge queue no longer runs the macOS goldens or the capture
+          # render (owner decision, 22 Nov 2026), so a main push it validated
+          # runs them when a queue plan selected visual integration, or capture
+          # freshness or marketing: this commit's, and that of every commit
+          # whose own push run was replaced (the range from the same base the
+          # plan step uses). Any failure to read one of them runs both; it
+          # never skips them.
+          if ! selected="$(node tool/ci/main_macos_selection.mjs --head "$SOURCE_SHA" --before "$BEFORE_SHA" \
+            --run-id "$GITHUB_RUN_ID" --queue-run "$QUEUE_RUN")" ||
+            ! grep -qx 'goldens=\(true\|false\)' <<< "$selected" ||
+            ! grep -qx 'captures=\(true\|false\)' <<< "$selected"; then
+            selected=$'goldens=true\ncaptures=true\nreason=selection_failed'
+          fi
+          grep -E '^(goldens|captures)=' <<< "$selected" >> "$GITHUB_OUTPUT"
+          echo "macOS jobs on this main push (queue run $QUEUE_RUN): $(tr '\n' ' ' <<< "$selected")" >> "$GITHUB_STEP_SUMMARY"
+
+      # Nx chooses the lanes for pull requests, queue groups and main pushes,
+      # and reads the whole tree to do it. A main push the merge queue already
+      # validated runs no lane: it keeps the sparse checkout and never installs
+      # Nx. A main-mode dispatch (base_sha) plans like a main push.
       - name: Install Nx
-        if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+        if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' || (github.event_name == 'push' && !steps.queue.outputs.run_id) || (github.event_name == 'workflow_dispatch' && inputs.base_sha != '') }}
         run: |
           git sparse-checkout disable
           npm ci --ignore-scripts --no-audit --no-fund
@@ -144,6 +194,7 @@ jobs:
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           REQUEST_FULL: ${{ github.event_name == 'schedule' || inputs.full }}
           DISPATCH_BASE_SHA: ${{ inputs.base_sha }}
+          QUEUE_RUN: ${{ steps.queue.outputs.run_id }}
         run: |
           set -euo pipefail
           event_mode="pr"
@@ -247,8 +298,12 @@ jobs:
           rm build/ci/impact-plan.unbound.json
           node tool/harness/compare_selectors.mjs --verify-plan build/ci/impact-plan.json \
             --comparison build/ci/selector-comparison.json --github-output "$GITHUB_OUTPUT"
+          queue_flag=()
+          if [[ -n "${QUEUE_RUN:-}" ]]; then
+            queue_flag=(--queue-verified "$QUEUE_RUN")
+          fi
           node tool/nx/select_lanes.mjs --plan build/ci/impact-plan.json --base "$base_sha" --head "$HEAD_SHA" \
-            --github-output "$GITHUB_OUTPUT"
+            "${queue_flag[@]}" --github-output "$GITHUB_OUTPUT"
           {
             echo "base_sha=$base_sha"
             echo "source_sha=$HEAD_SHA"
@@ -257,46 +312,22 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {toolsOwnUiLintSmoke, toolsOwnDesignChecks} from './tool/lib/tool_impact.mjs';
+          import {loadToolsManifest} from './tool/lib/tools_manifest.mjs';
           const read = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
+          const manifest = loadToolsManifest();
           const owned = toolsOwnUiLintSmoke({
             plan: read('build/ci/impact-plan.json'),
-            manifest: read('tool/tools_manifest.json'),
+            manifest,
             componentGraph: read('tool/harness/component_graph.json'),
           });
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `tools_owns_ui_lint_smoke=${owned}\n`);
           const design = toolsOwnDesignChecks({
-            plan: read('build/ci/impact-plan.json'), manifest: read('tool/tools_manifest.json'),
+            plan: read('build/ci/impact-plan.json'), manifest,
             componentGraph: read('tool/harness/component_graph.json'),
           });
           fs.appendFileSync(process.env.GITHUB_OUTPUT,
             `tools_owns_design_parity=${design.parity}\n`);
           NODE
-
-      - id: queue
-        name: Find the merge-queue validation of this exact source
-        if: ${{ github.event_name == 'push' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-          SOURCE_SHA: ${{ github.sha }}
-        run: |
-          set -uo pipefail
-          # The merge queue validated this exact commit before main moved to
-          # it, so main re-runs no validation lane: it only plans. Any lookup
-          # failure keeps the full run.
-          run_id=""
-          if runs="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?event=merge_group&head_sha=$SOURCE_SHA&per_page=20")"; then
-            run_id="$(jq -r --arg sha "$SOURCE_SHA" '[.workflow_runs[]? | select(.event == "merge_group" and
-              .head_sha == $sha and .conclusion == "success" and .path == ".github/workflows/ci.yml")] |
-              max_by(.id) | .id // empty' <<< "$runs" || true)"
-          fi
-          if [[ -n "$run_id" ]]; then
-            jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" || echo '{}')"
-            jq -e '[.jobs[]? | select(.name == "Required CI" and .conclusion == "success")] | length == 1' \
-              <<< "$jobs" > /dev/null || run_id=""
-          fi
-          [[ -z "$run_id" || "$run_id" =~ ^[1-9][0-9]*$ ]] || run_id=""
-          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
-          echo "Merge-queue validation reused: ${run_id:-none}" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Report Audience documentation impact
         env:
@@ -458,10 +489,14 @@ jobs:
       ui_lint_smoke_in_tools: ${{ needs.plan.outputs.tools_owns_ui_lint_smoke == 'true' }}
       design_parity_in_tools: ${{ needs.plan.outputs.tools_owns_design_parity == 'true' }}
 
+  # A main push the merge queue validated still runs the macOS goldens the
+  # queue no longer runs, when the queue's plan selected this lane.
   visual-integration:
     needs: [plan]
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.visual_integration == 'true' && !needs.plan.outputs.queue_verified_run }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && ((needs.plan.outputs.visual_integration == 'true' && !needs.plan.outputs.queue_verified_run) || needs.plan.outputs.main_goldens == 'true') }}
     uses: ./.github/workflows/visual-integration-ci.yml
+    with:
+      macos_only: ${{ needs.plan.outputs.queue_verified_run != '' }}
 
   admin:
     needs: [plan]
@@ -469,6 +504,8 @@ jobs:
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: admin
+      # The nightly, scheduled or re-run by the Scheduled run watchdog (full dispatch).
+      visual_report: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.full) }}
 
   marketing:
     needs: [plan, capture-freshness]
@@ -476,11 +513,16 @@ jobs:
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: marketing
+      # The nightly, scheduled or re-run by the Scheduled run watchdog (full dispatch).
+      visual_report: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.full) }}
       capture_binding: ${{ needs.capture-freshness.outputs.capture_binding }}
+      capture_result: ${{ needs.capture-freshness.result }}
 
+  # A main push the merge queue validated renders the captures the queue no
+  # longer renders, when the queue's plan selected capture freshness or marketing.
   capture-freshness:
     needs: [plan]
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && (needs.plan.outputs.capture_freshness == 'true' || needs.plan.outputs.marketing == 'true') && !needs.plan.outputs.queue_verified_run }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && (((needs.plan.outputs.capture_freshness == 'true' || needs.plan.outputs.marketing == 'true') && !needs.plan.outputs.queue_verified_run) || needs.plan.outputs.main_captures == 'true') }}
     uses: ./.github/workflows/marketing-captures.yml
     with:
       automatic_source_sha: ${{ needs.plan.outputs.source_sha }}
@@ -655,6 +697,156 @@ jobs:
       - name: Shellcheck standalone scripts
         run: git ls-files -z '*.sh' | xargs -0 shellcheck --severity=warning
 
+  # Shadow proof reuse (Phase 1, 22 Nov 2026): records each lane's input key
+  # on pull requests and, in the merge queue, whether a lane that passed on the
+  # queued pull request could have been reused. Shadow only: every lane still
+  # runs, nothing is skipped, and neither job is in Required CI's needs.
+  proof-keys:
+    name: Compute proof-reuse keys
+    needs: [plan]
+    if: >-
+      ${{ needs.plan.result == 'success' &&
+          (github.event_name == 'merge_group' ||
+           (github.event_name == 'pull_request' && !github.event.pull_request.draft)) }}
+    continue-on-error: true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      checks: read
+      contents: read
+      pull-requests: read
+    outputs:
+      verdicts: ${{ steps.verdicts.outputs.verdicts }}
+    steps:
+      # A pull request's keys are those of its own head, the commit its queue
+      # group recomputes, not of the merge commit.
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Install Nx
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Record this commit's lane keys
+        env:
+          HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: node tool/ci/proof_reuse_shadow.mjs --keys --head "$HEAD_SHA" --out build/ci/proof-keys.json
+      - id: verdicts
+        name: Decide which lanes the queue could have reused
+        if: ${{ github.event_name == 'merge_group' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.sha }}
+          HEAD_REF: ${{ github.event.merge_group.head_ref }}
+        run: |
+          set -euo pipefail
+          node tool/ci/proof_reuse_shadow.mjs --verdicts --head "$HEAD_SHA" --head-ref "$HEAD_REF" \
+            --out build/ci/proof-verdicts.json
+          echo "verdicts=$(jq -c . build/ci/proof-verdicts.json)" >> "$GITHUB_OUTPUT"
+
+  proof-reuse-shadow:
+    name: Compare proof-reuse verdicts with the lanes
+    needs: [proof-keys, admin, app-builds, capture-freshness, contracts, docs-policy, firestore-rules, flutter,
+      functions, marketing, operations, tools, visual-integration]
+    if: ${{ !cancelled() && github.event_name == 'merge_group' && needs.proof-keys.outputs.verdicts != '' }}
+    continue-on-error: true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /tool/ci/proof_reuse_shadow.mjs
+            /.github/actions/load-toolchain/action.yml
+            /tool/ci/toolchain.env
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Compare each verdict with the lane's real result
+        env:
+          VERDICTS: ${{ needs.proof-keys.outputs.verdicts }}
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$VERDICTS" > "$RUNNER_TEMP/proof-verdicts.json"
+          node tool/ci/proof_reuse_shadow.mjs --compare --verdicts "$RUNNER_TEMP/proof-verdicts.json" \
+            --out build/ci/proof-reuse-shadow.json
+      - name: Upload the proof-reuse shadow report
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: proof-reuse-shadow-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/ci/proof-reuse-shadow.json
+          if-no-files-found: error
+          retention-days: 30
+
+  semantic-checks:
+    name: Semantic checks
+    needs: [plan]
+    # Every merge-queue entry, every non-draft pull request (reporting only),
+    # the nightly (timings for the budget report) and a main push with no
+    # merge-queue proof (a bypass or a stale proof). No plan selection: the
+    # 69 gates are whole-repo checks, run on every entry (owner decision after
+    # the clean replay, docs/plans/semantic_check_replay_report.md; the
+    # Functions context, client-write and BigQuery export path checks joined
+    # with the architecture sign-off, #2445, and the account deletion erasure
+    # check with #2444).
+    if: >-
+      ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) &&
+        (github.event_name == 'merge_group' || github.event_name == 'schedule' ||
+         (github.event_name == 'pull_request' && !github.event.pull_request.draft) ||
+         (github.event_name == 'push' && !needs.plan.outputs.queue_verified_run)) }}
+    # A pull request sees a red job but Required CI still passes: the gate
+    # blocks in the merge queue (and on main), not before it.
+    continue-on-error: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      # Full history: ratchets compare with origin/main.
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            functions/package-lock.json
+      - run: npm ci
+      - run: npm --prefix functions ci --ignore-scripts
+      # audit:widget-cleanup scans with rg; the other gates need only Node.
+      - uses: ./.github/actions/install-ripgrep
+      # Uncached, like source preflight: only validation-lane workflows may
+      # restore cached contracts (the ci:generate-contracts-cache policy).
+      - uses: ./.github/actions/generate-contracts
+      - name: Generate the Admin build modules
+        run: |
+          node tool/admin/generate_admin_action_catalog.mjs
+          node admin/scripts/generateCallableValidators.mjs
+      - name: Run the semantic gates
+        run: node tool/ci/semantic_gates.mjs run --candidates --timings build/ci/semantic-timings.json
+      - name: Retain gate timings
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: semantic-timings-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/ci/semantic-timings.json
+          if-no-files-found: warn
+          retention-days: 14
+
   required:
     name: Required CI
     # A draft cannot merge or enter the merge queue; it validates once ready.
@@ -675,6 +867,7 @@ jobs:
       - marketing
       - capture-freshness
       - workflow-lint
+      - semantic-checks
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -693,6 +886,7 @@ jobs:
         name: Require every selected lane
         env:
           QUEUE_RUN: ${{ needs.plan.outputs.queue_verified_run }}
+          EVENT_NAME: ${{ github.event_name }}
           NEEDS_JSON: ${{ toJSON(needs) }}
         run: |
           set -euo pipefail
@@ -709,6 +903,15 @@ jobs:
           preflight="$(jq -er '.["source-preflight"].result' <<< "$NEEDS_JSON")"
           # The cited queue run already completed this exact source's preflight.
           [[ "$preflight" == success || ( -n "${QUEUE_RUN:-}" && "$preflight" == skipped ) ]]
+          # The semantic gates must have run and passed wherever they block: every
+          # merge-queue entry, the nightly, and a main push with no queue proof.
+          # A failure already fails the check above; this also refuses a skipped
+          # job (a wrong if:). A pull request only reports, and a queue-proven
+          # main push skips the job.
+          if [[ "${EVENT_NAME:-}" == merge_group || "${EVENT_NAME:-}" == schedule ||
+                ( "${EVENT_NAME:-}" == push && -z "${QUEUE_RUN:-}" ) ]]; then
+            test "$(jq -er '.["semantic-checks"].result' <<< "$NEEDS_JSON")" = success
+          fi
           # Selection only counts when its owning job actually succeeded.
           jq -e --arg queue "${QUEUE_RUN:-}" '
             . as $needs |

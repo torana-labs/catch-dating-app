@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/live/data/event_assistance_guest_views.dart';
 import 'package:catch_dating_app/contexts/live/data/event_assistance_membership_repository.dart';
@@ -8,6 +7,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_membershi
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -164,7 +164,7 @@ void main() {
     // from the membership view evaluator and the manager read.
     final fixture =
         jsonDecode(
-              File(
+              repoFile(
                 'test/event_success/fixtures/membership_views.json',
               ).readAsStringSync(),
             )

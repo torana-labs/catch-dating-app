@@ -8,8 +8,7 @@ import type {
   ProgramWhatsappDispatchDocument,
   ProgramWhatsappReplyOperationDocument,
 } from "../../shared/generated/firestoreAdminTypes";
-import {validateProgramWhatsappDispatchDocument} from
-  "../../shared/generated/validators/programWhatsappDispatchDocument";
+import {setWhatsappDispatch} from "../../delivery/whatsappDispatches";
 import {validateProgramWhatsappReplyOperationDocument} from
   "../../shared/generated/validators/programWhatsappReplyOperationDocument";
 import {assertOutboundContentAllowed} from
@@ -19,19 +18,18 @@ import {
   MetaProviderError,
   MetaWhatsappProvider,
   OrganizerTokenStore,
-} from "../../organizers/organizerWhatsappProvider";
+  metaWhatsappGraphVersion,
+} from "../../platform/delivery/organizerWhatsappProvider";
 import {
   metaWhatsappAppId,
   metaWhatsappAppSecret,
   metaWhatsappConfigId,
-  metaWhatsappGraphVersion,
 } from "../../organizers/organizerMessagingSetup";
 import {programStaffGrantId} from "../../shared/programAuthority";
 import {whatsappStatusCorrelation} from
-  "../../eventSuccess/operations/whatsappDeliveryProtocol";
+  "../../platform/delivery/whatsappDeliveryProtocol";
 import {whatsappEndpointHash} from
   "../../eventSuccess/operations/whatsappReplyProtocol";
-import {PROGRAM_WHATSAPP_DISPATCHES} from "../programDeliveryWorker";
 import {
   PROGRAM_WHATSAPP_MESSAGES,
   PROGRAM_WHATSAPP_REPLY_OPERATIONS,
@@ -148,8 +146,6 @@ export async function sendProgramWhatsappText(deps: ProgramReplyDeps,
   const messageRef = db.collection(PROGRAM_WHATSAPP_MESSAGES).doc(messageId);
   const threadRef = db.collection(PROGRAM_WHATSAPP_THREADS)
     .doc(input.threadId);
-  const dispatchRef = db.collection(PROGRAM_WHATSAPP_DISPATCHES)
-    .doc(attemptId);
   const reservation = await db.runTransaction(async (tx):
     Promise<Reservation | {kind: "replay"; result: ProgramReplyResult}> => {
     const [operationSnap, messageSnap, threadSnap, programSnap] =
@@ -269,11 +265,8 @@ export async function sendProgramWhatsappText(deps: ProgramReplyDeps,
       templateDocumentId: null, templateHash: null,
       payloadHash: bodyHash, createdAt: nowMillis,
     };
-    if (!validateProgramWhatsappDispatchDocument(dispatch)) {
-      throw new Error("Invalid programme WhatsApp service dispatch");
-    }
+    setWhatsappDispatch(db, tx, dispatch);
     tx.create(operationRef, replyOperation);
-    tx.set(dispatchRef, dispatch);
     return {kind: "reserved", connection, connectionId: thread.connectionId,
       toE164, callbackData};
   });

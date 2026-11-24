@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_signup_source.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'organizer_draft.freezed.dart';
@@ -20,6 +21,9 @@ abstract class OrganizerDraft with _$OrganizerDraft {
     String? email,
     @Default(OrganizerType.club) OrganizerType organizerType,
     @Default(OrganizerHostDefaults()) OrganizerHostDefaults hostDefaults,
+
+    /// The optional "how did you hear" answer; null when skipped.
+    OrganizerSignupSource? signupSource,
   }) = _OrganizerDraft;
 
   factory OrganizerDraft.fromJson(Map<String, dynamic> json) =>
@@ -42,5 +46,6 @@ extension OrganizerDraftX on OrganizerDraft {
       phoneNumber == null &&
       email == null &&
       organizerType == OrganizerType.club &&
-      hostDefaults == const OrganizerHostDefaults();
+      hostDefaults == const OrganizerHostDefaults() &&
+      signupSource == null;
 }

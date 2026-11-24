@@ -5,7 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 /// Sign in, as the board draws it: the kicker, two stats from a real night,
-/// the promise, the phone field, Text me a code, and a way to the guest app.
+/// the promise, the phone field, Text me a code, the terms and ad-matching
+/// lines with their links, and a way to the guest app.
 class HostSignInBody extends StatelessWidget {
   const HostSignInBody({
     super.key,
@@ -16,6 +17,8 @@ class HostSignInBody extends StatelessWidget {
     required this.onPhoneChanged,
     required this.onSend,
     required this.onGetCatch,
+    this.onOpenTerms,
+    this.onOpenPrivacy,
     this.phoneError,
     this.sendError,
   });
@@ -34,6 +37,11 @@ class HostSignInBody extends StatelessWidget {
 
   /// Opens the guest app's download page.
   final VoidCallback onGetCatch;
+
+  /// Open the Terms, the Privacy policy and its advertising section. A null
+  /// callback leaves its link out.
+  final VoidCallback? onOpenTerms;
+  final VoidCallback? onOpenPrivacy;
 
   /// Shown under the field once the host has typed something unusable.
   final String? phoneError;
@@ -119,6 +127,39 @@ class HostSignInBody extends StatelessWidget {
                   ? CatchButtonStatus.loading
                   : CatchButtonStatus.idle,
               fullWidth: true,
+            ),
+            CatchStack(
+              key: const ValueKey<String>('host-sign-in-legal'),
+              gap: CatchStackGap.g4,
+              align: CatchStackAlign.start,
+              children: [
+                CatchText(
+                  l10n.authLegalAgreement,
+                  variant: CatchTextVariant.bodySmall,
+                  tone: CatchTextTone.secondary,
+                ),
+                CatchStack(
+                  direction: CatchStackDirection.row,
+                  gap: CatchStackGap.g8,
+                  wrap: true,
+                  children: [
+                    if (onOpenTerms != null)
+                      CatchButton(
+                        label: l10n.authLegalTermsLink,
+                        onPressed: onOpenTerms,
+                        variant: CatchButtonVariant.quiet,
+                        size: CatchButtonSize.sm,
+                      ),
+                    if (onOpenPrivacy != null)
+                      CatchButton(
+                        label: l10n.authLegalPrivacyLink,
+                        onPressed: onOpenPrivacy,
+                        variant: CatchButtonVariant.quiet,
+                        size: CatchButtonSize.sm,
+                      ),
+                  ],
+                ),
+              ],
             ),
           ],
         ),

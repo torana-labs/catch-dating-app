@@ -16,6 +16,7 @@ import {
   maxEventAttendees,
   membershipViewsCollection,
 } from "./guestViewSupport";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 
@@ -251,32 +252,68 @@ export async function reconcileGuestViewTargets(
 
 const options = {retry: true, memory: "512MiB" as const};
 
-async function reconcileForWrite(source: GuestViewSource,
-  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
-    {documentId: string}>): Promise<void> {
-  const targets = resolveGuestViewTargets(source, event.params.documentId,
-    event.data?.before.data(), event.data?.after.data());
+async function reconcileForChange(source: GuestViewSource,
+  documentId: string,
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): Promise<void> {
+  const targets = resolveGuestViewTargets(source, documentId,
+    before, after);
   await reconcileGuestViewTargets(admin.firestore(), targets);
 }
 
-export const onHostGuestViewEventChanged = onDocumentWritten({
-  ...options, document: "events/{documentId}",
-}, (event) => reconcileForWrite("events", event));
+async function reconcileForWrite(
+  source: GuestViewSource,
+  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
+    {documentId: string}>
+): Promise<void> {
+  await reconcileForChange(source, event.params.documentId,
+    event.data?.before.data(), event.data?.after.data());
+}
+
+/**
+ * An event write: its attendees' and setting views.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostGuestViewEventProjections = defineProjections("events", [{
+  id: "hostGuestView", kind: "projection",
+  when: () => true,
+  run: (change) => reconcileForChange("events", change.documentId,
+    change.before, change.after),
+}]);
 export const onHostGuestViewPlanChanged = onDocumentWritten({
   ...options, document: "eventSuccessPlans/{documentId}",
 }, (event) => reconcileForWrite("eventSuccessPlans", event));
-export const onHostGuestViewAttendeeChanged = onDocumentWritten({
-  ...options, document: "eventAttendees/{documentId}",
-}, (event) => reconcileForWrite("eventAttendees", event));
+
+/**
+ * An attendee write: its accountability and membership views.
+ * Served by dispatchEventAttendees (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
+ */
+export const hostGuestViewAttendeeProjections = defineProjections(
+  "eventAttendees", [{
+    id: "hostGuestView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange("eventAttendees", change.documentId,
+      change.before, change.after),
+  }]);
 export const onHostGuestViewGuestChanged = onDocumentWritten({
   ...options, document: "eventAssistanceGuests/{documentId}",
 }, (event) => reconcileForWrite("eventAssistanceGuests", event));
 export const onHostGuestViewMembershipChanged = onDocumentWritten({
   ...options, document: "eventAssistanceMemberships/{documentId}",
 }, (event) => reconcileForWrite("eventAssistanceMemberships", event));
-export const onHostGuestViewOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{documentId}",
-}, (event) => reconcileForWrite("organizers", event));
+
+/**
+ * An organizer's managers: its events' open membership views.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostGuestViewProjections = defineProjections("organizers", [{
+  id: "hostGuestView", kind: "projection", when: () => true,
+  run: (change) => reconcileForChange("organizers", change.documentId,
+    change.before, change.after),
+}]);
 export const onHostGuestViewStaffGrantChanged = onDocumentWritten({
   ...options, document: "eventStaffGrants/{documentId}",
 }, (event) => reconcileForWrite("eventStaffGrants", event));

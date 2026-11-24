@@ -2,7 +2,7 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {onCall, HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../admin/adminAuth";
+import {requireAdminRole} from "../platform/adminAuth";
 import {
   type BigQueryClient,
   defaultBigQueryClient,
@@ -75,7 +75,7 @@ bookings AS (
     JSON_VALUE(data, '$.uid') AS uid,
     JSON_VALUE(data, '$.status') AS status,
     COALESCE(${ts("signedUpAt")}, ${ts("createdAt")}) AS booked_at
-  FROM \`${dataset}.event_participations_raw_latest\`
+  FROM \`${dataset}.event_bookings_raw_latest\`
 ),
 scoped AS (
   SELECT ev.*, o.market_id, o.name AS organizer_name

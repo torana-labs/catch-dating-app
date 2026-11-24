@@ -20,6 +20,7 @@ import {
   sameFields,
   valueAt,
 } from "./support/fanout";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 
@@ -157,18 +158,26 @@ export async function resolveEventDeliveryViewIds(
 const options = {retry: true, memory: "512MiB" as const};
 
 /** Re-evaluates every delivery view a source write can affect. */
+async function reconcileForChange(source: EventDeliveryViewSource,
+  documentId: string,
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): Promise<void> {
+  const db = admin.firestore();
+  const messageIds = await resolveEventDeliveryViewIds(db, source,
+    documentId, before,
+    after);
+  for (const messageId of messageIds) {
+    await reconcileEventDeliveryView(db, messageId);
+  }
+}
+
 async function reconcileForWrite(
   source: EventDeliveryViewSource,
   event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
     {documentId: string}>
 ): Promise<void> {
-  const db = admin.firestore();
-  const messageIds = await resolveEventDeliveryViewIds(db, source,
-    event.params.documentId, event.data?.before.data(),
-    event.data?.after.data());
-  for (const messageId of messageIds) {
-    await reconcileEventDeliveryView(db, messageId);
-  }
+  await reconcileForChange(source, event.params.documentId,
+    event.data?.before.data(), event.data?.after.data());
 }
 
 export const onHostEventDeliveryViewMessageChanged = onDocumentWritten({
@@ -177,18 +186,47 @@ export const onHostEventDeliveryViewMessageChanged = onDocumentWritten({
 export const onHostEventDeliveryViewGuestChanged = onDocumentWritten({
   ...options, document: "eventAssistanceGuests/{documentId}",
 }, (event) => reconcileForWrite("eventAssistanceGuests", event));
-export const onHostEventDeliveryViewAttendeeChanged = onDocumentWritten({
-  ...options, document: "eventAttendees/{documentId}",
-}, (event) => reconcileForWrite("eventAttendees", event));
-export const onHostEventDeliveryViewEventChanged = onDocumentWritten({
-  ...options, document: "events/{documentId}",
-}, (event) => reconcileForWrite("events", event));
+
+/**
+ * An attendee write: its live delivery views.
+ * Served by dispatchEventAttendees (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
+ */
+export const hostEventDeliveryViewAttendeeProjections = defineProjections(
+  "eventAttendees", [{
+    id: "hostEventDeliveryView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange("eventAttendees", change.documentId,
+      change.before, change.after),
+  }]);
+
+/**
+ * An event's organizer, status or end: its live delivery views.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostEventDeliveryViewEventProjections = defineProjections(
+  "events", [{
+    id: "hostEventDeliveryView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange("events", change.documentId,
+      change.before, change.after),
+  }]);
 export const onHostEventDeliveryViewWorkItemChanged = onDocumentWritten({
   ...options, document: "operationWorkItems/{documentId}",
 }, (event) => reconcileForWrite("operationWorkItems", event));
 export const onHostEventDeliveryViewRunChanged = onDocumentWritten({
   ...options, document: "operationRuns/{documentId}",
 }, (event) => reconcileForWrite("operationRuns", event));
-export const onHostEventDeliveryViewOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{documentId}",
-}, (event) => reconcileForWrite("organizers", event));
+
+/**
+ * An organizer's manager fields: its manually handled delivery views.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostEventDeliveryViewProjections = defineProjections(
+  "organizers", [{
+    id: "hostEventDeliveryView", kind: "projection", when: () => true,
+    run: (change) => reconcileForChange("organizers", change.documentId,
+      change.before, change.after),
+  }]);

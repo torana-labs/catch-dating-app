@@ -1,0 +1,16 @@
+{
+  "id": "programWhatsappEndpointIndex",
+  "path": "programWhatsappEndpointIndex/{endpointIndexId}",
+  "rulesMatch": "/programWhatsappEndpointIndex/{endpointIndexId}",
+  "typescriptInterface": "ProgramWhatsappEndpointIndexDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "programme WhatsApp endpoint index trigger",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Maps {programId, sha256(E.164)} to the household a number reaches; no raw number.",
+    "Kept current by triggers on programHouseholds and programGuests; seeded by functions/scripts/backfill-program-whatsapp-endpoint-index.cjs.",
+    "Deleted by the archive retention sweep."
+  ]
+}

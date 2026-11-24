@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {execFileSync} from "node:child_process";
+import {createRequire} from "node:module";
 import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
@@ -15,6 +16,7 @@ import {collectLocalReadonlyCheckIds, planAffectedToolChecks, supportedToolSetup
   from "../lib/tool_impact.mjs";
 import {planPreCommitActions} from "../git/pre_commit_generated_artifacts.mjs";
 import {iosBuildInput} from "../ci/ios_build_inputs.mjs";
+import {loadToolsManifest} from "../lib/tools_manifest.mjs";
 
 const graph = JSON.parse(
   fs.readFileSync(new URL("./component_graph.json", import.meta.url), "utf8"),
@@ -26,9 +28,7 @@ const everyTarget = (mode, paths) => [...graph.targets].sort().filter((target) =
 const graphSchema = JSON.parse(
   fs.readFileSync(new URL("./component_graph.schema.json", import.meta.url), "utf8"),
 );
-const toolsManifest = JSON.parse(
-  fs.readFileSync(new URL("../tools_manifest.json", import.meta.url), "utf8"),
-);
+const toolsManifest = loadToolsManifest();
 
 function plan(path, mode = "pr", sourceGraph = graph) {
   return planAffected({changedPaths: [path], graph: sourceGraph, mode});
@@ -38,14 +38,13 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-// test:rules runs functions/test/emulator-tests.json through the strict driver.
+// test:rules runs the strict list the driver derives from *.emulator.test / *.rules.test names.
 function strictEmulatorTests() {
   const packageJson = JSON.parse(fs.readFileSync(
     new URL("../../functions/package.json", import.meta.url), "utf8"));
   assert.equal(packageJson.scripts["test:rules"],
     "npm run build && node scripts/run-tests.cjs --require-emulators");
-  return JSON.parse(fs.readFileSync(
-    new URL("../../functions/test/emulator-tests.json", import.meta.url), "utf8"));
+  return createRequire(import.meta.url)("../../functions/scripts/run-tests.cjs").listedStrictTests();
 }
 
 function adminPendingInputs() {
@@ -183,7 +182,7 @@ const organizerAuthorityEmulatorPaths = [
   "functions/src/organizers/manageOrganizerTeam.ts",
   "functions/src/profiles/syncPublicProfile.ts",
   "functions/src/profiles/syncPublicProfile.test.ts",
-  "functions/src/profiles/syncPublicProfileEmulator.test.ts",
+  "functions/src/profiles/syncPublicProfile.emulator.test.ts",
 ];
 
 function assertOrganizerAuthorityEmulatorSelection(sourceGraph) {
@@ -250,7 +249,7 @@ test("organizer authority routing preserves unrelated and mixed source lanes", (
 
 test("rules emulator command executes the organizer authority regression", () => {
   const listed = strictEmulatorTests();
-  const compiledTest = "lib/profiles/syncPublicProfileEmulator.test.js";
+  const compiledTest = "lib/profiles/syncPublicProfile.emulator.test.js";
   const assertIncluded = (tests) => {
     assert.equal(tests.filter((part) => part === compiledTest).length,
       1, "test:rules must run the organizer authority emulator regression exactly once");
@@ -259,7 +258,7 @@ test("rules emulator command executes the organizer authority regression", () =>
   assert.throws(() => assertIncluded(listed.filter((part) => part !== compiledTest)),
     /must run the organizer authority emulator regression/u);
   assert.ok(fs.existsSync(new URL(
-    "../../functions/src/profiles/syncPublicProfileEmulator.test.ts", import.meta.url)));
+    "../../functions/src/profiles/syncPublicProfile.emulator.test.ts", import.meta.url)));
   const workflow = fs.readFileSync(
     new URL("../../.github/workflows/firestore-rules-ci.yml", import.meta.url), "utf8");
   assert.match(workflow,
@@ -552,6 +551,8 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/nx/manifest_diff.mjs",
       "/tool/ci/toolchain.env",
       "/tool/ci/main_push_base.mjs",
+      "/tool/ci/main_push_queue_proof.mjs",
+      "/tool/ci/main_macos_selection.mjs",
       "/tool/ci/ios_build_inputs.mjs",
       "/tool/harness/component_graph.json",
       "/tool/harness/lib/component_graph.mjs",
@@ -563,8 +564,9 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/lib/tool_impact.mjs",
       "/tool/lib/tool_manifest_rules.mjs",
       "/tool/lib/tool_platform.mjs",
+      "/tool/lib/tools_manifest.mjs",
       "/tool/run.mjs",
-      "/tool/tools_manifest.json",
+      "/tool/manifest",
       "/.github/actions/load-toolchain/action.yml",
       "/tool/design/build_host_feature_responsibilities.mjs",
       "/design/features/host_feature_responsibilities.json",
@@ -871,6 +873,7 @@ test("web and desktop shells never select signed mobile builds", () => {
     "apps/host/web/index.html",
     "apps/consumer/web/index.html",
     "apps/consumer/macos/Runner/Info.plist",
+    "apps/host/macos/Runner/Info.plist",
   ]) {
     for (const mode of graph.modes) {
       const result = plan(path, mode);
@@ -943,9 +946,9 @@ test("generated Flutter bindings validate Flutter without expanding upstream", (
 const formConversionEmulatorPaths = [
   "functions/package.json",
   "functions/src/organizers/organizerFormConversions.ts",
-  "functions/src/organizers/organizerFormConversions.test.ts",
+  "functions/src/organizers/organizerFormConversions.emulator.test.ts",
   "functions/src/events/eventAttendees.ts",
-  "functions/src/events/eventAttendees.test.ts",
+  "functions/src/events/eventAttendees.emulator.test.ts",
 ];
 
 test("form conversion authority selects emulator validation in every CI mode", () => {
@@ -986,8 +989,8 @@ test("backend integration conservatively covers runtime and mixed lanes", () => 
 
 test("rules command executes both form conversion and attendee regressions", () => {
   const listed = strictEmulatorTests();
-  for (const compiled of ["lib/organizers/organizerFormConversions.test.js",
-    "lib/events/eventAttendees.test.js"]) {
+  for (const compiled of ["lib/organizers/organizerFormConversions.emulator.test.js",
+    "lib/events/eventAttendees.emulator.test.js"]) {
     assert.equal(listed.filter((part) => part === compiled).length,
       1, `${compiled} must run exactly once in test:rules`);
   }
@@ -1380,9 +1383,9 @@ test("minimum safety obligations cover source, tests, lockfiles and generated ou
     {paths: ["docs/design_parity/comprehensive_todo.md"], required: ["docs", "tools"]},
     {paths: ["functions/test/rules/users.rules.test.cjs"], required: ["functions", "firestore_rules"]},
     {paths: ["functions/src/chats/eventChatAccess.ts"], required: ["functions", "firestore_rules"]},
-    {paths: ["functions/src/chats/eventChatAccessEmulator.test.ts"], required: ["functions", "firestore_rules"]},
+    {paths: ["functions/src/chats/eventChatAccess.emulator.test.ts"], required: ["functions", "firestore_rules"]},
     {paths: ["functions/package-lock.json"], required: ["functions", "firestore_rules", "contracts"]},
-    {paths: ["lib/routing/go_router.dart"], required: ["flutter", "visual_integration"]},
+    {paths: ["lib/routing/host_router.dart"], required: ["flutter", "visual_integration"]},
     {paths: ["lib/events/presentation/event_detail_cta.dart"], required: ["flutter", "visual_integration"]},
     {paths: ["lib/core/theme/app_theme.dart"], required: ["flutter", "visual_integration"]},
     {paths: ["packages/platform/lib/schema_contracts/generated/field_constraints.g.dart"], required: ["contracts", "flutter"]},
@@ -1405,7 +1408,7 @@ test("minimum safety obligations cover source, tests, lockfiles and generated ou
 
 test("every selector control input routes to full validation before comparison", () => {
   for (const file of ["tool/lib/path_glob.mjs", "tool/lib/tool_impact.mjs",
-    "tool/lib/repository_snapshot.mjs", "tool/run.mjs", "tool/tools_manifest.json",
+    "tool/lib/repository_snapshot.mjs", "tool/run.mjs", "tool/manifest/manifest.json",
     "tool/harness.mjs", "tool/harness/compare_selectors.mjs"]) {
     for (const mode of ["pr", "merge_group", "main", "nightly"]) {
       const result = plan(file, mode);

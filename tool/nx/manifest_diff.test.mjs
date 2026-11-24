@@ -5,13 +5,14 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {planAffected} from "../harness/lib/component_graph.mjs";
-import {canonical, manifestChange, manifestFile} from "./manifest_diff.mjs";
+import {canonical, manifestChange} from "./manifest_diff.mjs";
 import {callerGraph, compare, comparedLanes, plannerManifestLanes} from "./shadow_plan.mjs";
 import {mainShadowReport} from "./select_lanes.mjs";
 import {manifestLanes, workflowCallers} from "./workflow_callers.mjs";
+import {formatToolsManifest, loadToolsManifest, splitToolsManifest, toolsManifestPath as manifestFile} from "../lib/tools_manifest.mjs";
 
 const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
-const baseText = fs.readFileSync(path.join(repoRoot, manifestFile), "utf8");
+const baseText = formatToolsManifest(loadToolsManifest());
 const graph = callerGraph();
 const allLanes = comparedLanes;
 const edit = (mutate) => {
@@ -146,7 +147,7 @@ jobs:
     ".github/actions/setup/action.yml": "runs:\n  using: composite\n  steps:\n    - shell: bash\n      run: node tool/run.mjs check b:action\n",
     "package.json": JSON.stringify({name: "root", scripts: {check: "node tool/run.mjs check c:npm"}}),
     "tool/run.mjs": "\n",
-    "tool/tools_manifest.json": JSON.stringify({tools}),
+    ...Object.fromEntries(splitToolsManifest({tools})),
   });
   const fixture = workflowCallers({root, lanes: ["build", "web", "tools", "policy_docs"]});
   assert.deepEqual([...fixture.idLanes.get("a:workflow")], ["build"]);

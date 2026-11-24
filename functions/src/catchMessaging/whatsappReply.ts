@@ -1,6 +1,6 @@
 import {createHash} from "node:crypto";
 import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
-import {requireAdminRole, adminRolesFromToken} from "../admin/adminAuth";
+import {requireAdminRole, adminRolesFromToken} from "../platform/adminAuth";
 import {assertOutboundContentAllowed} from
   "../communications/outboundContentPolicy";
 import type {CatchWhatsappReplyStore} from "./whatsappReplyStore";
@@ -21,14 +21,15 @@ export interface CatchReplyConfig {
   graphVersion: string;
   readinessEvidenceHash: string;
 }
-export type {AdminSendCatchWhatsappReplyCallablePayload as CatchReplyInput}
-  from "../shared/generated/adminSendCatchWhatsappReplyCallablePayload";
 export type {CatchWhatsappReplyOperationDocument as CatchReplyOperation}
   from "../shared/generated/catchWhatsappReplyOperationDocument";
 export type {CatchWhatsappEndpointStopDocument as CatchEndpointStop}
   from "../shared/generated/catchWhatsappEndpointStopDocument";
-import type {AdminSendCatchWhatsappReplyCallablePayload as CatchReplyInput}
+import type {AdminSendCatchWhatsappReplyCallablePayload}
   from "../shared/generated/adminSendCatchWhatsappReplyCallablePayload";
+/** The controlled trial's payload: one reviewed inbound message. */
+export type CatchReplyInput = Extract<
+  AdminSendCatchWhatsappReplyCallablePayload, {purpose: "serviceSupport"}>;
 import type {CatchWhatsappReplyOperationDocument as CatchReplyOperation}
   from "../shared/generated/catchWhatsappReplyOperationDocument";
 import {validateAdminSendCatchWhatsappReplyCallablePayload} from
@@ -80,12 +81,12 @@ export function assertCatchReplyEnabled(config: CatchReplyConfig): void {
 
 export function parseCatchReplyInput(value: unknown): CatchReplyInput {
   if (!validateAdminSendCatchWhatsappReplyCallablePayload(value) ||
-      !value.body.trim()) {
+      value.purpose !== "serviceSupport" || !value.body.trim()) {
     throw new HttpsError("invalid-argument", "Invalid Catch support reply.");
   }
   const data = value;
   assertOutboundContentAllowed([data.body], "Reply content is not allowed.");
-  return {purpose: data.purpose, inboundEventId: data.inboundEventId!,
+  return {purpose: data.purpose, inboundEventId: data.inboundEventId,
     reviewedInboundTextHash: data.reviewedInboundTextHash,
     confirmSupportRequest: true, body: data.body};
 }

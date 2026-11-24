@@ -7,7 +7,6 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_time
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automation.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/people/automations_state.dart';
 import 'package:catch_dating_app/hosts/people/compose_state.dart';
 import 'package:catch_dating_app/hosts/people/messages_state.dart';
@@ -15,6 +14,7 @@ import 'package:catch_dating_app/hosts/people/people_state.dart';
 import 'package:catch_dating_app/hosts/people/person_state.dart';
 import 'package:catch_dating_app/hosts/people/saved_group_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 
 import '../../events/events_test_helpers.dart';
 
@@ -405,4 +405,25 @@ final savedGroupState = HostSavedGroupState(
     ],
     evaluatedAt: DateTime(2026, 10, 27),
   ),
+);
+
+/// A hand-picked group of [count] people, ids p0, p1 and on.
+HostSavedAudience handPickedGroupAudience(int count) => HostSavedAudience(
+  organizerId: peopleOrganizer.id,
+  audienceId: 'picked',
+  name: 'Quiz captains',
+  status: 'active',
+  definition: HostSavedAudienceDefinition(
+    join: HostSavedAudienceJoin.all,
+    predicates: [
+      HostSavedAudienceStaticMembers([for (var i = 0; i < count; i++) 'p$i']),
+    ],
+  ),
+  definitionHash: 'hash',
+  definitionVersion: 1,
+  revision: 2,
+  lastPreviewMatchCount: count,
+  lastPreviewAt: DateTime(2026, 10, 20),
+  createdAt: DateTime(2026, 9),
+  updatedAt: DateTime(2026, 10, 20),
 );

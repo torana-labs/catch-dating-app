@@ -1,0 +1,21 @@
+{
+  "id": "eventCloseOuts",
+  "path": "eventCloseOuts/{eventId}",
+  "rulesMatch": "/eventCloseOuts/{eventId}",
+  "typescriptInterface": "EventCloseOutDocument",
+  "dartModel": "lib/contexts/live/domain/event_close_out.dart",
+  "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps close-out, live receipts and guest history server-written"
+  ],
+  "owner": "setEventCloseOut callable",
+  "writerContext": "live",
+  "read": "the event's organizer hosts get it by listener; a night not closed out reads as missing",
+  "write": "server only",
+  "exportedFunctions": [
+    "setEventCloseOut"
+  ],
+  "migrationNotes": [
+    "New collection, optional per event: a missing document reads as every switch off, so no backfill is needed. The thank-you is an event-scope organizerMoments document; stay-in-touch picks and the no-show note are recorded only."
+  ]
+}

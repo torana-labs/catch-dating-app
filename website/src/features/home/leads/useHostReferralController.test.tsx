@@ -116,7 +116,8 @@ describe("useHostReferralController", () => {
     await act(() => result.current.handleSubmit(submitEvent()));
     const recorded = (window.dataLayer ?? []).filter((entry) => !Array.isArray(entry) && String(entry.event).startsWith("lead_form_"));
     const form = {content_version: "website_copy_v2", lead_kind: "referral", form_id: "home-refer", page_path: "/"};
-    expect(recorded).toEqual([{event: "lead_form_viewed", ...form}, {event: "lead_form_submitted", ...form}, {event: "lead_form_succeeded", ...form}]);
+    expect(recorded).toEqual([{event: "lead_form_viewed", ...form}, {event: "lead_form_started", ...form},
+      {event: "lead_form_submitted", ...form}, {event: "lead_form_succeeded", ...form}]);
     expect(JSON.stringify(window.dataLayer)).not.toMatch(/Asha|98765|Lantern|lanternlanesocial|supper club|Mumbai/u);
   });
 

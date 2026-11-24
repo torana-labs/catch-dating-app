@@ -1,0 +1,26 @@
+{
+  "id": "hostAudienceSourceViews",
+  "path": "hostAudienceSourceViews/{organizerId}",
+  "rulesMatch": "/hostAudienceSourceViews/{organizerId}",
+  "dartModel": null,
+  "typescriptInterface": "HostAudienceSourceViewDocument",
+  "rulesTestFile": "functions/test/rules/host_crm_views.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers get an organizer's audience sources and nothing else"
+  ],
+  "owner": "Host read model projector: hostReadModels CRM view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get their organizer's view by id, as listOrganizerSavedAudiences admitted them (requireOrganizerManager); a view not written yet reads as missing; nobody lists the collection",
+  "write": "server only; written from organizerForms, organizerApplicationForms, organizerFormVersions, events and organizerContactTagVocabularies",
+  "exportedFunctions": [
+    "onHostAudienceSourceViewFormChanged",
+    "onHostAudienceSourceViewApplicationFormChanged",
+    "onHostAudienceSourceViewVersionChanged",
+    "dispatchEvents",
+    "onHostAudienceSourceViewTagsChanged"
+  ],
+  "migrationNotes": [
+    "Replaces the filterOptions of listOrganizerSavedAudiences for the Host app (#2306): the forms, filterable questions, events and manual tags exactly as the callable returned them. A source over the callable's bounds stores unavailableReason instead of options. The host-crm-views copy-forward migration creates views for organizers that predate the triggers.",
+    "No personal data: form titles, question labels, event names and the organizer's tag names."
+  ]
+}

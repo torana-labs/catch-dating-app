@@ -82,6 +82,25 @@ void main() {
       );
     });
 
+    test('the guest directory needs one whole-programme assignment', () {
+      // Every hotel from one assignment is not the whole programme.
+      final split = view(
+        raw(
+          duties: {'guestRelations': ms(at(30))},
+          hotelAll: {'guestRelations': ms(at(30))},
+        ),
+      );
+      expect(split.holdsGuestDirectory(at(1)), isFalse);
+      final whole = view({
+        ...raw(duties: {'guestRelations': ms(at(30))}),
+        'programAll': {'guestRelations': ms(at(30))},
+      });
+      expect(whole.holdsGuestDirectory(at(29)), isTrue);
+      expect(whole.holdsGuestDirectory(at(30)), isFalse);
+      expect(whole.nextChangeAfter(at(1))?.millisecondsSinceEpoch, ms(at(30)));
+      expect(view(raw(role: 'manager')).holdsGuestDirectory(at(5000)), isTrue);
+    });
+
     test('the owner holds every duty with no end', () {
       final owner = view(raw(role: 'manager'));
       expect(owner.isManager, isTrue);

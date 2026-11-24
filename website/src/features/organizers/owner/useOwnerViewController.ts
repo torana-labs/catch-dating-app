@@ -1,7 +1,9 @@
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useMutation} from "@tanstack/react-query";
 import {useEffect, useMemo, useState} from "react";
 import {ownerViewBackends, type OwnerViewBackends} from "./ownerViewBackends";
-import type {OwnerCapability, OwnerFollowerMessages, OwnerLink, OwnerViewData} from "./ownerViewTypes";
+import {useLiveRead} from "../../../shared/query/useLiveRead";
+import type {OwnerCapability, OwnerFollowerMessages, OwnerLink, OwnerReview, OwnerTrackingSettings, OwnerViewData} from
+  "./ownerViewTypes";
 
 /** The owner view's five tabs, each shown only when the role has one of its capabilities. */
 export type OwnerTab = "insights" | "links" | "page" | "audience" | "settings";
@@ -27,11 +29,6 @@ const requestId = () => (globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${M
 
 const newLinkId = () => `link-${requestId().slice(0, 24)}`;
 
-function permissionDenied(error: unknown) {
-  return typeof error === "object" && error !== null && "code" in error &&
-    (error.code === "functions/permission-denied" || error.code === "permission-denied");
-}
-
 /**
  * The owner view on a claimed organiser's own page (#1109). A signed-out
  * visitor gets a quiet sign-in prompt; a signed-in member of the team gets
@@ -40,28 +37,28 @@ function permissionDenied(error: unknown) {
  * view re-reads after each one; the public page catches up within its
  * 60-second cache.
  */
-export function useOwnerViewController({backends = ownerViewBackends, claimed, initialTab, initialUid, organizerId}: {
+export function useOwnerViewController({backends = ownerViewBackends, claimed, initialTab, initialUid, organizerId,
+  replyName, reviews: pageReviews}: {
   backends?: OwnerViewBackends;
   claimed: boolean;
+  /** The page's published reviews, as the server rendered them from the read model. */
+  reviews: readonly OwnerReview[];
+  /** Who a reply shows as until the page's next read carries it. */
+  replyName: string;
   /** Opens the bar on this tab (stories and tests). */
   initialTab?: OwnerTab;
   /** Stories start signed in or out without a Firebase runtime. */
   initialUid?: string | null;
   organizerId: string;
 }) {
-  const queryClient = useQueryClient();
   const [uid, setUid] = useState<string | null>(initialUid ?? null);
   useEffect(() => (initialUid === undefined && claimed ? backends.watchUser(setUid) : undefined),
     [backends, claimed, initialUid]);
 
-  const viewKey = ["ownerView", organizerId, uid] as const;
-  const view = useQuery({
-    queryKey: viewKey,
-    queryFn: () => backends.getView(organizerId),
-    enabled: claimed && uid !== null,
-    retry: (count, error) => !permissionDenied(error) && count < 1,
-    staleTime: 30_000,
-  });
+  // The page as this reader sees it, live from hostOrganizerOwnerViews
+  // (#2306): a save shows when its trigger rewrites the row.
+  const view = useLiveRead<OwnerViewData>(claimed && uid !== null ? `${uid}/${organizerId}` : null,
+    (onValue, onError) => backends.watchView(organizerId, uid!, onValue, onError));
   const data: OwnerViewData | null = view.data ?? null;
   const tabs = useMemo(() => (data ? ownerTabsFor(data.capabilities) : []), [data]);
   const can = (capability: OwnerCapability) => data?.capabilities.includes(capability) ?? false;
@@ -87,9 +84,12 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
   const photosMutation = useMutation({retry: false, gcTime: 0,
     mutationFn: (photoIds: string[]) => backends.manage({organizerId, requestId: requestId(), action: "setPhotoOrder", photoIds})});
 
-  // Reviews and replies.
-  const reviews = useQuery({queryKey: ["ownerReviews", organizerId], queryFn: () => backends.listReviews(organizerId),
-    enabled: open && tab === "audience" && can("reviews"), retry: false});
+  // Reviews and replies: the page's own reviews, with replies sent here shown
+  // at once until the page's next read carries them.
+  const [replies, setReplies] = useState<Record<string, string>>({});
+  const reviewItems = useMemo(() => pageReviews.map((review) => replies[review.id] === undefined ? review :
+    {...review, ownerResponse: {message: replies[review.id], hostName: review.ownerResponse?.hostName ?? replyName}}),
+  [pageReviews, replies, replyName]);
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
   const replyMutation = useMutation({retry: false, gcTime: 0,
@@ -105,8 +105,9 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
         ...(input.whatsapp ? {channels: ["app", "whatsapp"]} : {})})});
 
   // Tracking settings.
-  const tracking = useQuery({queryKey: ["ownerTracking", organizerId], queryFn: () => backends.getTracking(organizerId),
-    enabled: open && tab === "settings" && can("settings"), retry: false});
+  // Live, so a save elsewhere shows here without a reload.
+  const tracking = useLiveRead<OwnerTrackingSettings>(open && tab === "settings" && can("settings") ?
+    `${uid}/${organizerId}` : null, (onValue, onError) => backends.watchTracking(organizerId, onValue, onError));
   const [pixelDraft, setPixelDraft] = useState<string | null>(null);
   const [gaDraft, setGaDraft] = useState<string | null>(null);
   const trackingMutation = useMutation({retry: false, gcTime: 0,
@@ -119,7 +120,8 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
     setPixelDraft(null); setGaDraft(null); setNotice(null);
   }, [organizerId, uid]);
 
-  const refresh = () => queryClient.invalidateQueries({queryKey: viewKey});
+  // The listener carries the saved result; nothing to refetch.
+  const refresh = async () => undefined;
   async function run(panel: OwnerTab, what: string, action: () => Promise<unknown>, after?: () => void) {
     setNotice(null);
     try {
@@ -187,8 +189,8 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
         () => photosMutation.mutateAsync([id, ...photoIds.filter((photoId) => photoId !== id)])),
     },
     reviews: {
-      items: reviews.data ?? [],
-      ready: reviews.isSuccess,
+      items: reviewItems,
+      ready: true,
       replyTo,
       replyText,
       start: (reviewId: string, current: string) => {setReplyTo(reviewId); setReplyText(current); setNotice(null);},
@@ -197,8 +199,10 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
       busy: replyMutation.isPending,
       send: () => {
         if (!replyTo || !replyText.trim()) return;
-        void run("audience", "reply", () => replyMutation.mutateAsync({reviewId: replyTo, message: replyText.trim()}),
-          () => {setReplyTo(null); setReplyText(""); void reviews.refetch();});
+        const reviewId = replyTo;
+        const message = replyText.trim();
+        void run("audience", "reply", () => replyMutation.mutateAsync({reviewId, message}),
+          () => {setReplies((current) => ({...current, [reviewId]: message})); setReplyTo(null); setReplyText("");});
       },
     },
     followers: {
@@ -226,7 +230,7 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
       },
     },
     tracking: {
-      ready: tracking.isSuccess,
+      ready: tracking.status === "success",
       canEdit: tracking.data?.canEdit ?? false,
       live: tracking.data?.live ?? false,
       notLiveReason: tracking.data?.notLiveReason ?? null,
@@ -239,7 +243,7 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
         if (!tracking.data) return;
         void run("settings", "tracking", () => trackingMutation.mutateAsync({expectedRevision: tracking.data.revision,
           metaPixelId: pixel.trim() || null, googleMeasurementId: ga.trim() || null}),
-        () => {setPixelDraft(null); setGaDraft(null); void tracking.refetch();});
+        () => {setPixelDraft(null); setGaDraft(null);});
       },
     },
   };

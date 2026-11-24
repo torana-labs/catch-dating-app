@@ -15,7 +15,7 @@ const snapshotPaths = ["tool/harness/component_graph.json",
 // when present, so an older base still runs its own engine.
 const optionalSnapshotPaths = ["tool/ci/ios_build_inputs.mjs"];
 // Harness tests assert selector behaviour but never feed the snapshot engine.
-const selectorControl = /^(?:tool\/harness(?:\.mjs|\/(?!.*\.test\.mjs$))|tool\/lib\/(?:path_glob|tool_impact|repository_snapshot)\.mjs$|tool\/(?:run\.mjs|tools_manifest\.json)$|tool\/ci\/ios_build_inputs\.mjs$|\.github\/workflows\/ci\.yml$)/u;
+const selectorControl = /^(?:tool\/harness(?:\.mjs|\/(?!.*\.test\.mjs$))|tool\/lib\/(?:path_glob|tool_impact|repository_snapshot|tools_manifest)\.mjs$|tool\/(?:run\.mjs|tools_manifest\.json)$|tool\/manifest\/|tool\/ci\/ios_build_inputs\.mjs$|\.github\/workflows\/ci\.yml$)/u;
 const sha256 = bytes => createHash("sha256").update(bytes).digest("hex");
 function git(cwd, args) {
   const result = spawnSync("git", args, {cwd, encoding: "utf8", maxBuffer: 32 * 1024 * 1024});

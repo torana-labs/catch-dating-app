@@ -5,8 +5,8 @@ import * as logger from "firebase-functions/logger";
 import {Timestamp} from "firebase-admin/firestore";
 import {onCall, HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../admin/adminAuth";
-import {setAdminAuditLogInTransaction} from "../admin/adminAudit";
+import {requireAdminRole} from "../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {publicPaymentExecutionFor} from
   "../events/publicRegistration/runtime";
 import {offerPaymentExecutionFor} from

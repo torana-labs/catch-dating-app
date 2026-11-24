@@ -278,7 +278,7 @@ export const weddingsCopy = {
     heard: {label: "How you heard about us", options: ["Another planner", "A hotel", "Instagram", `A ${brand.name} event`, "Search"], error: "Tell us how you heard about us"},
     back: "Back",
     send: "Send our application",
-    consent: "We review applications and follow up on this number if the wedding is a fit. Sending doesn’t book a call or grant access.",
+    consent: "We reply on WhatsApp if the wedding is a fit.",
   },
   sent: {
     kicker: "Application sent",

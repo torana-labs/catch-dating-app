@@ -5,13 +5,14 @@ import {
   onDocumentCreated,
   onDocumentWritten,
 } from "firebase-functions/v2/firestore";
-import {GUEST_PAYMENTS} from "../payments/guestPayments";
+import {reconcilePublicEvent} from "../events/publicEventProjection";
 import {eventGuestEntries, refreshEventGuestEntry} from "./eventGuestEntry";
 import {guestEventStatuses, refreshGuestEventStatus} from
   "./guestEventStatus";
 import {savedEvents} from "./guestEventCard";
 import {refreshSavedEventCard, refreshSavedEventCardsForEvent} from
   "./savedEventCards";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type Data = FirebaseFirestore.DocumentData | undefined;
 
@@ -83,11 +84,13 @@ export function guestEventStatusPairs(
  * Rebuilds every existing guest row of one event, a page at a time.
  * @param {FirebaseFirestore.Firestore} db Firestore.
  * @param {string} eventId The event.
+ * @param {Set<string>} refreshed Collects the guests whose rows it rebuilt.
  * @return {Promise<number>} Rows rebuilt.
  */
 export async function refreshGuestEventStatusesForEvent(
   db: FirebaseFirestore.Firestore,
   eventId: string,
+  refreshed: Set<string> = new Set(),
 ): Promise<number> {
   let count = 0;
   let after: FirebaseFirestore.QueryDocumentSnapshot | undefined;
@@ -102,6 +105,59 @@ export async function refreshGuestEventStatusesForEvent(
       const uid = row.get("uid");
       if (typeof uid === "string") {
         await refreshGuestEventStatus(db, eventId, uid);
+        refreshed.add(uid);
+        count++;
+      }
+    }
+    if (page.docs.length < pageSize) return count;
+    after = page.docs.at(-1);
+  }
+}
+
+/** Event states in which a guest's roster row is their roster link. */
+const rosterLinkStates = new Set(["active", "cancelled"]);
+
+/**
+ * Whether an event write moved it into a state that carries roster links
+ * (draft to active, say), so linked guests with no row yet may need one.
+ * @param {Data} before The previous version.
+ * @param {Data} after The new version.
+ * @return {boolean} True when the event now carries links and did not.
+ */
+export function rosterLinksOpened(before: Data, after: Data): boolean {
+  return rosterLinkStates.has(after?.status) &&
+    !rosterLinkStates.has(before?.status);
+}
+
+/**
+ * Rebuilds the row of every guest linked to one of the event's roster rows,
+ * a page at a time, skipping guests already rebuilt. A guest whose only
+ * record is a linked roster row has no row until the event carries links,
+ * so the existing rows alone would miss them.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {string} eventId The event.
+ * @param {Set<string>} refreshed Guests already rebuilt; extended here.
+ * @return {Promise<number>} Rows rebuilt.
+ */
+export async function refreshLinkedGuestStatusesForEvent(
+  db: FirebaseFirestore.Firestore,
+  eventId: string,
+  refreshed: Set<string> = new Set(),
+): Promise<number> {
+  let count = 0;
+  let after: FirebaseFirestore.QueryDocumentSnapshot | undefined;
+  for (;;) {
+    let query = db.collection("eventAttendees")
+      .where("eventId", "==", eventId)
+      .orderBy(admin.firestore.FieldPath.documentId())
+      .limit(pageSize);
+    if (after) query = query.startAfter(after);
+    const page = await query.get();
+    for (const row of page.docs) {
+      const uid = id(row.data(), "linkedUid");
+      if (uid && !refreshed.has(uid)) {
+        await refreshGuestEventStatus(db, eventId, uid);
+        refreshed.add(uid);
         count++;
       }
     }
@@ -151,24 +207,37 @@ const versions = (event: Written) =>
 const options = {retry: true, memory: "256MiB" as const};
 
 export const onGuestEventStatusParticipationWritten = onDocumentWritten({
-  ...options, document: "eventParticipations/{documentId}",
+  ...options, document: "eventBookings/{documentId}",
 }, (event) => refreshPairs(guestEventStatusPairs(...versions(event),
   "eventId", "uid", ["status", "organizerId"])));
 
-export const onGuestEventStatusAttendeeWritten = onDocumentWritten({
-  ...options, document: "eventAttendees/{documentId}",
-}, (event) => refreshPairs(guestEventStatusPairs(...versions(event),
-  "eventId", "linkedUid", ["status", "source", "organizerId"])));
+/**
+ * A roster row's link, source or status: the linked guest's status row.
+ * Served by dispatchEventAttendees (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
+ */
+export const guestEventStatusAttendeeProjections = defineProjections(
+  "eventAttendees", [{
+    id: "guestEventStatuses", kind: "projection",
+    when: () => true,
+    run: (change) => refreshPairs(guestEventStatusPairs(change.before,
+      change.after, "eventId", "linkedUid",
+      ["status", "source", "organizerId"])),
+  }]);
 
-export const onGuestEventStatusPaymentWritten = onDocumentWritten({
-  ...options, document: `${GUEST_PAYMENTS}/{documentId}`,
-}, async (event) => {
-  const [before, after] = versions(event);
-  if (![before?.purpose, after?.purpose].some((purpose) =>
-    purpose === "publicEvent" || purpose === "offer")) return;
-  await refreshPairs(guestEventStatusPairs(before, after, "eventId",
-    "recipientUid", null));
-});
+/**
+ * A website or offer payment: the guest's status row.
+ * Served by dispatchGuestPayments (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
+ */
+export const guestEventStatusPaymentProjections = defineProjections(
+  "guestPayments", [{
+    id: "guestEventStatuses", kind: "projection",
+    when: ({before, after}) => [before?.purpose, after?.purpose].some(
+      (purpose) => purpose === "publicEvent" || purpose === "offer"),
+    run: (change) => refreshPairs(guestEventStatusPairs(change.before,
+      change.after, "eventId", "recipientUid", null)),
+  }]);
 
 export const onGuestEventStatusApplicationWritten = onDocumentWritten({
   ...options, document: "organizerApplications/{documentId}",
@@ -181,17 +250,41 @@ export const onGuestEventStatusOfferRecipientWritten = onDocumentWritten({
 }, (event) => refreshPairs(guestEventStatusPairs(...versions(event),
   "eventId", "recipientUid", null)));
 
-export const onEventGuestEntryEventWritten = onDocumentWritten({
-  ...options, document: "events/{documentId}",
-}, async (event) => {
-  const [before, after] = versions(event);
+/**
+ * The event's public copy, guest entry, guests' status rows and saved
+ * cards, each rebuilt from its sources.
+ */
+async function refreshEventGuestEntryWrite(eventId: string,
+  before: Data, after: Data): Promise<void> {
+  // The public copy (#1666) carries live counts, so every write refreshes it.
+  await reconcilePublicEvent(eventId);
   if (!eventTermsChanged(before, after)) return;
   const db = admin.firestore();
-  await refreshEventGuestEntry(db, event.params.documentId);
+  await refreshEventGuestEntry(db, eventId);
   // Status rows carry the guest's list card, so this also refreshes it.
-  await refreshGuestEventStatusesForEvent(db, event.params.documentId);
-  await refreshSavedEventCardsForEvent(db, event.params.documentId);
-});
+  const refreshed = new Set<string>();
+  await refreshGuestEventStatusesForEvent(db, eventId,
+    refreshed);
+  // Going live gives linked guests their roster link, even those with no
+  // row yet (a cancelled roster row alone keeps no row on a draft).
+  if (rosterLinksOpened(before, after)) {
+    await refreshLinkedGuestStatusesForEvent(db, eventId,
+      refreshed);
+  }
+  await refreshSavedEventCardsForEvent(db, eventId);
+}
+
+/**
+ * An event write: its public copy and guest-facing rows.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const eventGuestEntryEventProjections = defineProjections("events", [{
+  id: "eventGuestEntries", kind: "projection",
+  when: () => true,
+  run: (change) => refreshEventGuestEntryWrite(change.documentId,
+    change.before, change.after),
+}]);
 
 /** A new saved-event edge gets its list card; event changes keep it. */
 export const onSavedEventCardCreated = onDocumentCreated({
@@ -199,17 +292,19 @@ export const onSavedEventCardCreated = onDocumentCreated({
 }, (event) => refreshSavedEventCard(admin.firestore(),
   event.params.documentId).then(() => undefined));
 
-export const onEventGuestEntryOrganizerWritten = onDocumentWritten({
-  ...options, document: "organizers/{documentId}",
-}, async (event) => {
-  const [before, after] = versions(event);
-  if (before && after &&
-      !changed(before, after, ["archived", "appVisibility", "publicPage"])) {
-    return;
-  }
-  await refreshEventGuestEntriesForOrganizer(admin.firestore(),
-    event.params.documentId);
-});
+/**
+ * An organizer's archive, app visibility or public page: its guests' entries.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const eventGuestEntryProjections = defineProjections("organizers", [{
+  id: "eventGuestEntries", kind: "projection",
+  when: ({before, after}) => !before || !after ||
+    changed(before, after, ["archived", "appVisibility", "publicPage"]),
+  run: async (change, ctx) => {
+    await refreshEventGuestEntriesForOrganizer(ctx.db, change.documentId);
+  },
+}]);
 
 export const onEventGuestEntryFormWritten = onDocumentWritten({
   ...options, document: "organizerForms/{documentId}",

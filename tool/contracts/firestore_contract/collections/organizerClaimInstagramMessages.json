@@ -1,0 +1,18 @@
+{
+  "id": "organizerClaimInstagramMessages",
+  "path": "organizerClaimInstagramMessages/{messageKey}",
+  "rulesMatch": "/organizerClaimInstagramMessages/{messageKey}",
+  "typescriptInterface": "OrganizerClaimInstagramMessageDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets a requester follow only their own claim verification"
+  ],
+  "owner": "Instagram claim webhook",
+  "writerContext": "messaging",
+  "read": "server only",
+  "write": "server only, created once per signed message; TTL deletes it after expiresAt",
+  "exportedFunctions": [
+    "instagramClaimWebhook"
+  ]
+}

@@ -40,7 +40,8 @@ test("real canonical wrappers export all 12 with exact provenance and complete b
   // Each capture renders alone with coverage, so it records its own inputs.
   const renders = calls.filter(c => c.command === "flutter");
   assert.equal(renders.length, 12);
-  assert.equal(calls.filter(c => c.command === "dart").length, 12);
+  // generic-phone screens are unframed: the exporter copies the render, with no framing step.
+  assert.equal(calls.filter(c => c.command === "dart").length, 0);
   for (const {args, ids} of renders) {
     assert.ok(args.includes("--dart-define=CAPTURE_PLATFORM=ios"));
     assert.ok(args.some(a => a.startsWith("--coverage-path=")));
@@ -125,7 +126,7 @@ test("hosted workflow keeps manual dispatch and limits PR events to explicit cap
   assert.match(storybook, /runs-on: ubuntu-24\.04\n/u);
   assert.match(storybook, /run: npm ci\n[^]*?run: npm --workspace website run build:storybook\n[^]*?name: capture-storybook-/u);
   assert.match(storybook, /retention-days: 1\n/u);
-  assert.match(render, /needs: \[plan, storybook\]\n[^]*?    if: \$\{\{ !cancelled\(\) && needs\.plan\.result == 'success' && needs\.plan\.outputs\.render == 'true' && \(needs\.storybook\.result == 'success' \|\| \(needs\.storybook\.result == 'skipped' && needs\.plan\.outputs\.web_render != 'true'\)\) \}\}\n/u);
+  assert.match(render, /needs: \[plan, storybook\]\n[^]*?    if: \$\{\{ github\.event_name != 'merge_group' && !cancelled\(\) && needs\.plan\.result == 'success' && needs\.plan\.outputs\.render == 'true' && \(needs\.storybook\.result == 'success' \|\| \(needs\.storybook\.result == 'skipped' && needs\.plan\.outputs\.web_render != 'true'\)\) \}\}\n/u);
   assert.doesNotMatch(render + reuse, /npm ci|build:storybook/u);
   assert.match(render, /npm install --no-save --no-package-lock --ignore-scripts --prefix "\$RUNNER_TEMP\/playwright" "playwright@\$PLAYWRIGHT_VERSION"\n/u);
   assert.match(render, /playwright" install webkit\n/u);

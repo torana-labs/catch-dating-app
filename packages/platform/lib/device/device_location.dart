@@ -64,13 +64,13 @@ class GeolocatorDeviceLocationGateway implements DeviceLocationGateway {
       Geolocator.requestPermission();
 }
 
-// keepalive: a stateless platform facade with no account state.
+// keepalive: account-free: a stateless platform facade with no account state.
 @Riverpod(keepAlive: true)
 DeviceLocationGateway deviceLocationGateway(Ref ref) =>
     const GeolocatorDeviceLocationGateway();
 
-// keepalive: device location should be resolved once and reused by discovery
-// surfaces instead of re-prompting across route rebuilds.
+// keepalive: account-free: device location should be resolved once and reused
+// by discovery surfaces instead of re-prompting across route rebuilds.
 @Riverpod(keepAlive: true)
 class DeviceLocation extends _$DeviceLocation {
   DeviceLocationFailure? _lastFailure;

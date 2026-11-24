@@ -32,6 +32,7 @@ import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {captureSlot} from "../../shared/media/captureSlot";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {AppDownloadQr} from "../marketing/AppDownloadQr";
+import {AppLinkCapture} from "../marketing/AppLinkCapture";
 import {useAppDownloadCtas} from "../marketing/useAppDownloadCtas";
 import {linkedParts} from "../../shared/text/linkedParts";
 import {PricingFeeBand} from "../marketing/PricingBands";
@@ -287,9 +288,11 @@ function Faq() {
 /**
  * The yellow free-trial start. The three steps are a picker: each shows its own
  * Catch Host screen beside the list (the app's home, a first event, payments).
- * The other ways in are two sentences with their links inside. Phones get the
- * store badges; wider pages the QR code that opens this band on the phone and
- * the WhatsApp link, as every band that offers an app does.
+ * The other ways in are two sentences with their links inside. Then "Text me
+ * the link" (the site's one app link capture), right above the badges it
+ * points at. Phones get the store badges; wider pages the QR code that opens
+ * this band on the phone and the WhatsApp link, as every band that offers an
+ * app does.
  */
 function Start({captures}: {captures: CaptureSlots}) {
   const start = copy.start;
@@ -313,6 +316,7 @@ function Start({captures}: {captures: CaptureSlots}) {
             })} tone="primary" />
             <CatchLinkedText parts={linkedParts(start.weddingsLine, {weddings: {label: start.weddings, href: start.weddingsHref, arrow: true}})} tone="primary" />
           </CatchStack>
+          <AppLinkCapture />
         </CatchStack>
       )}
       ground="yellow"

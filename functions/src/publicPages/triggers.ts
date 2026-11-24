@@ -18,6 +18,7 @@ import {
   reviewContribution,
   reviewOrganizerIds,
 } from "./sourceProjections";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type Raw = Record<string, unknown> | undefined;
 const options = {retry: true, memory: "512MiB" as const, timeoutSeconds: 300};
@@ -44,14 +45,19 @@ async function pathPeers(
     .filter((id) => id !== organizerId);
 }
 
-export const onPublicPageOrganizerWritten = onDocumentWritten({
-  ...options, document: "organizers/{organizerId}",
-}, async (event) => {
-  const organizerId = event.params.organizerId;
-  const before = event.data?.before.data() as Raw;
-  const after = event.data?.after.data() as Raw;
-  if (organizerContribution(organizerId, before, liveMarkets) ===
-      organizerContribution(organizerId, after, liveMarkets)) return;
+/** Whether an organizer write changes its public page contribution. */
+function organizerContributionChanged(organizerId: string, before: Raw,
+  after: Raw): boolean {
+  return organizerContribution(organizerId, before, liveMarkets) !==
+    organizerContribution(organizerId, after, liveMarkets);
+}
+
+/**
+ * Rebuilds the organizer's scope and the scopes of pages that share a
+ * path with it, before or after.
+ */
+async function rebuildForOrganizerWrite(organizerId: string, before: Raw,
+  after: Raw): Promise<void> {
   // A page withheld for sharing its path with this organizer may now be
   // unique again, and a page at the new path may now conflict.
   const paths = [before, after].flatMap((data) => {
@@ -61,14 +67,29 @@ export const onPublicPageOrganizerWritten = onDocumentWritten({
   });
   await rebuildAll([organizerId, ...await pathPeers(organizerId, paths)],
     "organizer");
-});
+}
 
-export const onPublicPageEventWritten = onDocumentWritten({
-  ...options, document: "events/{eventId}",
-}, async (event) => {
-  const eventId = event.params.eventId;
-  const before = event.data?.before.data() as Raw;
-  const after = event.data?.after.data() as Raw;
+/**
+ * An organizer write that changes its public page contribution.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const publicPageOrganizerProjections = defineProjections(
+  "organizers", [{
+    id: "publicPages", kind: "projection", timeoutSeconds: 300,
+    memory: "512MiB",
+    when: (change) => organizerContributionChanged(change.documentId,
+      change.before as Raw, change.after as Raw),
+    run: (change) => rebuildForOrganizerWrite(change.documentId,
+      change.before as Raw, change.after as Raw),
+  }]);
+
+/**
+ * Rebuilds the scopes an event write can change: its organizers', and an
+ * imported twin's when publishing or withdrawing makes it ambiguous.
+ */
+async function rebuildForEventWrite(eventId: string, before: Raw,
+  after: Raw): Promise<void> {
   const now = Date.now();
   const previous = catchEventContribution(eventId, before, now);
   const next = catchEventContribution(eventId, after, now);
@@ -81,7 +102,20 @@ export const onPublicPageEventWritten = onDocumentWritten({
     ids.push(...externalEventOrganizerIds(twin.data()));
   }
   await rebuildAll(ids, "event");
-});
+}
+
+/**
+ * An event write that changes its public page contribution.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const publicPageEventProjections = defineProjections("events", [{
+  id: "publicPages", kind: "projection", timeoutSeconds: 300,
+  memory: "512MiB",
+  when: () => true,
+  run: (change) => rebuildForEventWrite(change.documentId,
+    change.before as Raw, change.after as Raw),
+}]);
 
 export const onPublicPageExternalEventWritten = onDocumentWritten({
   ...options, document: "externalEvents/{eventId}",

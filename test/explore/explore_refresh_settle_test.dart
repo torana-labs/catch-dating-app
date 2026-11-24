@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/discovery/data/city_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
@@ -8,14 +9,13 @@ import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_kernel/city_data.dart';
 import 'package:catch_platform/cache/cache_policies.dart';
-import 'package:catch_platform/cities/city_repository.dart';
 import 'package:catch_platform/device/device_location.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test_pump_helpers.dart';
 import 'explore_device_location_fakes.dart';
 
 const _cities = [
@@ -42,7 +42,15 @@ Future<void> _pump(
             ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
           ),
         ),
-        exploreFeedViewModelProvider.overrideWith((ref) => feed(++builds)),
+        // Each read is new, so the feed that composes it rebuilds.
+        exploreDiscoveryReferenceNowProvider.overrideWith(
+          (ref) => DateTime.now(),
+        ),
+        // Like the real feed, it composes a read that a refresh renews.
+        exploreFeedViewModelProvider.overrideWith((ref) {
+          ref.watch(exploreDiscoveryReferenceNowProvider);
+          return feed(++builds);
+        }),
       ],
       child: MaterialApp(theme: AppTheme.light, home: const ExploreScreen()),
     ),

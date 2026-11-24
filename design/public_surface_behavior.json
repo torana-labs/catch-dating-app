@@ -1893,7 +1893,7 @@
           ]
         },
         {
-          "path": "test/organizers/organizer_detail_dock_test.dart",
+          "path": "test/pages/organizer/widgets/organizer_detail_dock_test.dart",
           "contains": [
             "OrganizerBellButton retains toggle and pending semantics over icon chrome"
           ]
@@ -3873,7 +3873,7 @@
       ],
       "evidence": [
         {
-          "path": "test/events/event_detail_screen_state_test.dart",
+          "path": "test/pages/event/event_detail_screen_state_test.dart",
           "contains": [
             "derives eligible paid and paid-unsupported booking states",
             "locks member context for guests",
@@ -4299,7 +4299,7 @@
           ]
         },
         {
-          "path": "lib/routing/route_destinations.dart",
+          "path": "lib/routing/router_frame.dart",
           "contains": [
             "String? appRedirect("
           ]
@@ -4709,7 +4709,7 @@
           ]
         },
         {
-          "path": "lib/routing/route_destinations.dart",
+          "path": "lib/routing/router_frame.dart",
           "contains": [
             "bool isGuestPublicRoute(String matchedLocation)",
             "return false;"
@@ -4838,7 +4838,7 @@
       ],
       "evidence": [
         {
-          "path": "lib/routing/route_destinations.dart",
+          "path": "lib/routing/router_frame.dart",
           "contains": [
             "bool _requiresSocialProfile",
             "Routes.filtersScreen.path"
@@ -4963,7 +4963,7 @@
       ],
       "evidence": [
         {
-          "path": "lib/routing/route_destinations.dart",
+          "path": "lib/routing/router_frame.dart",
           "contains": [
             "if (onOnboarding) {",
             "profileCompletionLocation("
@@ -6115,7 +6115,7 @@
           "path": "website/src/features/reviews/useListingReviewsController.test.tsx",
           "contains": [
             "keeps disabled listing routes read-only",
-            "publishes configured reviews and refreshes the listing review query"
+            "publishes configured reviews and shows them until the page's next read"
           ]
         },
         {

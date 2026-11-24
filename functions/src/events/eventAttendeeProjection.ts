@@ -1,12 +1,12 @@
 import type {
   EventAttendeeDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
 } from "../shared/generated/firestoreAdminTypes";
 
 /**
  * Pure builder for a Catch booking's roster row. Booking callables write it in
  * their own transaction through catchBookingRoster. The booking itself stays
- * in eventParticipations; the row is the Host's view of that guest.
+ * in eventBookings; the row is the Host's view of that guest.
  */
 
 /**
@@ -16,7 +16,7 @@ import type {
  * @return {EventAttendeeDocument} Roster row.
  */
 export function catchBookingAttendeeDocument(params: {
-  source: EventParticipationDocument;
+  source: EventBookingDocument;
   sourceExists: boolean;
   existing: EventAttendeeDocument | undefined;
   organizerId: string;
@@ -73,7 +73,7 @@ export function projectedParticipationStatus(
 }
 
 export function participationStatus(
-  status: EventParticipationDocument["status"] | undefined
+  status: EventBookingDocument["status"] | undefined
 ): EventAttendeeDocument["status"] {
   switch (status) {
   case "signedUp": return "registered";

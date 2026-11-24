@@ -443,7 +443,7 @@ that.
     matrix-driven, golden-asserted; zero provider scaffolding required by
     construction once D1 lands.
   - **L5 bodies:** a bounded state set, always mounting the production widget
-    with `lib/design_fixtures` data — this is composition-regression
+    with `packages/catch_test_support/lib/design_fixtures` data — this is composition-regression
     coverage, not decoration.
   - **L6 screens under provider scopes:** lowest value, highest harness tax,
     and redundant with the UI capture pipeline. Each existing case either
@@ -2039,7 +2039,7 @@ pass:
 | `catch.roster_table` / `roster_row` | `CatchRosterTable` / `CatchRosterRow` (+ cells, actions) | `ParticipantTable` rendering a new `CatchTable` (L3, T1) / `ParticipantRow`; cells become private; `ParticipantAction`, `ParticipantRowData` |
 | `lib/core/widgets` (12 widgets, all failing) | `CatchEventThumbnail`, `CatchEventThumbnailActivityFallback`, `EventActivityBackdrop`, `EventActivityStamp`, `CatchStartupLoadingScreen`, `CatchStartupBrandStage`, ... | `EventThumbnail`, `EventFallbackThumbnail`, `EventBackdropImage`, `EventActivityBadge`, `SplashScreen`, `StartupBrandHeader`; file suffixes fixed |
 | Other `Catch` prefixes outside the design system | `CatchAdaptiveTabScaffold`, `CatchCelebrationScreen`, `CatchStartupAnimationScope`, `CatchProfileView` | `AdaptiveTabScaffold`, `CelebrationScreen`, `StartupAnimationScope`, `ProfileBody` |
-| Map adapter (`lib/locations/shared`) | `CatchGoogleMap`, `CatchGoogleMapController`, `CatchMapMarker`, `CatchMapMarkerBitmap`, `CatchMapMarkerHue`, `CatchMapCircle`, `CatchMapPolyline`, `CatchMapCameraPosition`, `CatchMapType` | `LocationMap`, `LocationMapController`, `MapMarker`, `MapMarkerBitmap`, `MapMarkerHue`, `MapCircle`, `MapPolyline`, `MapCameraPosition`, `LocationMapType` |
+| Map adapter (`lib/pages/event/location`) | `CatchGoogleMap`, `CatchGoogleMapController`, `CatchMapMarker`, `CatchMapMarkerBitmap`, `CatchMapMarkerHue`, `CatchMapCircle`, `CatchMapPolyline`, `CatchMapCameraPosition`, `CatchMapType` | `LocationMap`, `LocationMapController`, `MapMarker`, `MapMarkerBitmap`, `MapMarkerHue`, `MapCircle`, `MapPolyline`, `MapCameraPosition`, `LocationMapType` |
 | Design-system vocabulary | `CatchFormRowList`, `CatchSectionRowList`, `CatchStepRowList`, `CatchFormStepRowList`, `CatchDockSurface` | `List` and `Dock` spellings; `CatchSectionRowList` is reviewed as a possible `CatchSection` recipe first, because `CatchSectionList` already exists |
 | Compositions | `OrganizerDetailDock`, `EventDetailBody`, `NotificationRow`, startup screen | level and role recorded (Dock, Body, Row, Screen) |
 

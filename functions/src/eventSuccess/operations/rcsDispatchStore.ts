@@ -1,10 +1,12 @@
-import {runAssistanceTransaction as transact} from "./transactionCallback";
+import {runAssistanceTransaction as transact} from
+  "../../platform/transactionCallback";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
 import {FirestoreMessageOutbox, PrepareDispatchResource} from
   "./firestoreMessageOutbox";
 import {readEventAssistanceMessageGate} from "./guestMessageGate";
-import type {GuestLinkSigningKeys} from "./guestLinkTokens";
+import type {GuestLinkSigningKeys} from
+  "../../platform/guestLinkSigningKeys";
 import {Grant, guestCollections, parseGrant, parseGuest, requireDocumentId}
   from "./guestRecords";
 import type {MessageRecord, OutboxFacts} from "./messageOutbox";

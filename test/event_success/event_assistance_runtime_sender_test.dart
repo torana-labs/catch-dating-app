@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/live/data/event_assistance_runtime_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_parsing.dart';
@@ -8,16 +7,19 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_r
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_scope.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_sender.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_setting.dart';
+import 'package:catch_test_support/contract_schemas.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
-import '../support/contract_schemas.dart';
 import 'event_assistance_runtime_fixtures.dart';
 
 Map<Object?, Object?> fixture() => assistanceObject(
   jsonDecode(
-    File('test/event_success/fixtures/runtime_senders.json').readAsStringSync(),
+    repoFile(
+      'test/event_success/fixtures/runtime_senders.json',
+    ).readAsStringSync(),
   ),
 );
 EventAssistanceRuntimeScope fixtureScope(Map<Object?, Object?> f) {

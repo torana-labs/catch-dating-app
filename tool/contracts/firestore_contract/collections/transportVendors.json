@@ -1,0 +1,15 @@
+{
+  "id": "transportVendors",
+  "path": "transportVendors/{vendorId}",
+  "rulesMatch": "/transportVendors/{vendorId}",
+  "typescriptInterface": "TransportVendorDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "organizer transport vendor callables",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Organizer-level vendor identity; programIds binds the vendor to specific programs.",
+    "Rate cards and commercial terms are deferred to the reconciliation slice."
+  ]
+}

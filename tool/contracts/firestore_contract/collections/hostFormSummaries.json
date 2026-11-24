@@ -1,0 +1,11 @@
+{
+  "id": "hostFormSummaries",
+  "path": "hostFormSummaries/{formId}",
+  "rulesMatch": "/hostFormSummaries/{formId}",
+  "typescriptInterface": "HostFormSummaryDocument",
+  "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+  "owner": "Host read model projector",
+  "writerContext": "host",
+  "read": "the organizer's summary managers",
+  "write": "server only"
+}

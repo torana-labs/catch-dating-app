@@ -1,0 +1,18 @@
+{
+  "id": "programWhatsappMessages",
+  "path": "programWhatsappMessages/{programWhatsappMessageId}",
+  "rulesMatch": "/programWhatsappMessages/{programWhatsappMessageId}",
+  "typescriptInterface": "ProgramWhatsappMessageDocument",
+  "rulesTestFile": "functions/test/rules/program_batch5_reads.rules.test.cjs",
+  "owner": "programme WhatsApp inbound router and reply callables",
+  "writerContext": "programmes",
+  "read": "get and list (query naming programId and threadId) for the programme owner and the communications duty (programAccessViews), while not deleted",
+  "write": "server only",
+  "migrationNotes": [
+    "One guest, assistant or planner message; media is recorded by reference only.",
+    "Deleted by the archive retention sweep."
+  ],
+  "rulesTestNames": [
+    "reads one thread's messages, never the server-only thread"
+  ]
+}

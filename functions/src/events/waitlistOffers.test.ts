@@ -1,4 +1,5 @@
-import {withStoredEventPolicy} from "../shared/testing/eventSetupFixture";
+import {withStoredEventPolicy} from
+  "../domain/events/testing/eventSetupFixture";
 import {communityMembershipRows} from
   "../memberships/communityMembershipFixture";
 import assert from "node:assert/strict";
@@ -209,11 +210,11 @@ test("createEventWaitlistOffersHandler creates balanced capacity offers",
         gender: "woman",
         interestedInGenders: ["man"],
       }),
-      "eventParticipations/event-1_runner-1":
+      "eventBookings/event-1_runner-1":
         participation("runner-1", "signedUp"),
-      "eventParticipations/event-1_runner-2":
+      "eventBookings/event-1_runner-2":
         participation("runner-2", "waitlisted", "womenInterestedInMen"),
-      "eventParticipations/event-1_runner-3":
+      "eventBookings/event-1_runner-3":
         participation("runner-3", "waitlisted", "womenInterestedInMen"),
     });
 
@@ -237,7 +238,7 @@ test("createEventWaitlistOffersHandler creates balanced capacity offers",
       "active"
     );
     assert.equal(
-      h.firestore.get("eventParticipations/event-1_runner-2")
+      h.firestore.get("eventBookings/event-1_runner-2")
         ?.waitlistOfferStatus,
       "active"
     );
@@ -254,7 +255,7 @@ test("acceptEventWaitlistOfferHandler books free offers", async () => {
   const h = harness({
     "events/event-1": event({priceInPaise: 0, capacityLimit: 2}),
     "users/runner-2": user({gender: "woman", interestedInGenders: ["man"]}),
-    "eventParticipations/event-1_runner-2":
+    "eventBookings/event-1_runner-2":
       participation("runner-2", "waitlisted", "womenInterestedInMen"),
     "eventWaitlistOffers/event-1_runner-2": offer({
       uid: "runner-2",
@@ -288,7 +289,7 @@ test("acceptEventWaitlistOfferHandler unlocks paid checkout", async () => {
   const h = harness({
     "events/event-1": event({priceInPaise: 25000, capacityLimit: 2}),
     "users/runner-2": user({gender: "woman", interestedInGenders: ["man"]}),
-    "eventParticipations/event-1_runner-2":
+    "eventBookings/event-1_runner-2":
       participation("runner-2", "waitlisted", "womenInterestedInMen"),
     "eventWaitlistOffers/event-1_runner-2": offer({
       uid: "runner-2",
@@ -309,7 +310,7 @@ test("acceptEventWaitlistOfferHandler unlocks paid checkout", async () => {
   });
   assert.equal(h.signUps.length, 0);
   assert.equal(
-    h.firestore.get("eventParticipations/event-1_runner-2")
+    h.firestore.get("eventBookings/event-1_runner-2")
       ?.waitlistOfferStatus,
     "accepted"
   );
@@ -317,7 +318,7 @@ test("acceptEventWaitlistOfferHandler unlocks paid checkout", async () => {
 
 test("declineEventWaitlistOfferHandler releases an open offer", async () => {
   const h = harness({
-    "eventParticipations/event-1_runner-2":
+    "eventBookings/event-1_runner-2":
       participation("runner-2", "waitlisted"),
     "eventWaitlistOffers/event-1_runner-2": offer({
       uid: "runner-2",
@@ -336,7 +337,7 @@ test("declineEventWaitlistOfferHandler releases an open offer", async () => {
     "declined"
   );
   assert.equal(
-    h.firestore.get("eventParticipations/event-1_runner-2")
+    h.firestore.get("eventBookings/event-1_runner-2")
       ?.waitlistOfferStatus,
     "declined"
   );
@@ -347,7 +348,7 @@ test("expireEventWaitlistOffersHandler expires stale offers", async () => {
     "events/event-1": event(),
     "users/runner-2": user(),
     ...guestInstallation("runner-2", "token-2"),
-    "eventParticipations/event-1_runner-2":
+    "eventBookings/event-1_runner-2":
       participation("runner-2", "waitlisted"),
     "eventWaitlistOffers/event-1_runner-2": offer({
       uid: "runner-2",
@@ -546,12 +547,12 @@ test("offer issue reads every candidate before writing", async () => {
     "users/booked": user(),
     "users/runner-2": user(),
     "users/runner-3": user(),
-    "eventParticipations/event-1_booked": participation("booked", "signedUp"),
-    "eventParticipations/event-1_runner-2": participation(
+    "eventBookings/event-1_booked": participation("booked", "signedUp"),
+    "eventBookings/event-1_runner-2": participation(
       "runner-2",
       "waitlisted"
     ),
-    "eventParticipations/event-1_runner-3": participation(
+    "eventBookings/event-1_runner-3": participation(
       "runner-3",
       "waitlisted"
     ),
@@ -581,7 +582,7 @@ test("revoked members cannot accept paid or free waitlist offers", async () => {
         },
       }),
       "users/runner-2": user(),
-      "eventParticipations/event-1_runner-2": participation(
+      "eventBookings/event-1_runner-2": participation(
         "runner-2",
         "waitlisted"
       ),

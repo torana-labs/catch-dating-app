@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/profiles/domain/profile_validation.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_step.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/schema_contracts/generated/profile_requirements.g.dart';
 import 'package:flutter/material.dart';

@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/form_operation_fields.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 
 // firestore-index: hostResponseSummaries (organizerId:ASCENDING, formId:ASCENDING, offer.status:ASCENDING, submittedAtMillis:DESCENDING, __name__:DESCENDING)
 // firestore-index: hostResponseSummaries (organizerId:ASCENDING, reviewStatus:ASCENDING, submittedAtMillis:DESCENDING, __name__:DESCENDING)
@@ -32,7 +32,7 @@ import 'package:catch_platform/firebase/live_pages.dart';
 /// builder's latest submitted answer.
 class HostResponseSummaryReads {
   const HostResponseSummaryReads(this.reader);
-  final HostSummaryReader reader;
+  final ScopedReadModelReader reader;
   static const marker = 'responseSummaryVersion';
 
   /// Whether the inbox read model can serve [request]: the plain inbox,
@@ -70,12 +70,12 @@ class HostResponseSummaryReads {
   /// One page of a request [supports] accepts.
   Future<HostFormResponsePage> list(HostFormResponseListRequest request) async {
     final spec = _ResponseQuerySpec(request);
-    await reader.activatedDirectory(request.organizerId, marker);
+    await reader.activatedReadiness(request.organizerId, marker);
     final key = scopeKey(request);
     final scope = key == null ? null : await this.scope(key);
     final page = await reader.page(
       collection: 'hostResponseSummaries',
-      organizerId: request.organizerId,
+      scopeId: request.organizerId,
       orderField: 'submittedAtMillis',
       descending: !request.oldestFirst,
       queryKey: spec.queryKey,
@@ -100,7 +100,7 @@ class HostResponseSummaryReads {
     return reader
         .watchPages(
           collection: 'hostResponseSummaries',
-          organizerId: request.organizerId,
+          scopeId: request.organizerId,
           orderField: 'submittedAtMillis',
           descending: !request.oldestFirst,
           pageSize: pageSize,
@@ -161,10 +161,10 @@ class HostResponseSummaryReads {
     String formId,
     String? versionId,
   ) async {
-    await reader.activatedDirectory(organizerId, 'formSummaryVersion');
+    await reader.activatedReadiness(organizerId, 'formSummaryVersion');
     final form = await reader.document(
       collection: 'hostFormSummaries',
-      organizerId: organizerId,
+      scopeId: organizerId,
       id: formId,
     );
     final row = form?['row'];
@@ -175,7 +175,7 @@ class HostResponseSummaryReads {
         ? null
         : await reader.document(
             collection: 'hostFormVersionFilters',
-            organizerId: organizerId,
+            scopeId: organizerId,
             id: filterVersionId,
           );
     if (filters != null && filters['formId'] != formId) {

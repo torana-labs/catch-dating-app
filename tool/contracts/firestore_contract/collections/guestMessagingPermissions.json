@@ -1,0 +1,28 @@
+{
+  "id": "guestMessagingPermissions",
+  "path": "guestMessagingPermissions/{permissionId}",
+  "rulesMatch": "/guestMessagingPermissions/{permissionId}",
+  "typescriptInterface": "GuestMessagingPermissionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "rulesTestNames": [
+    "lets guests read only their own messaging permission rows"
+  ],
+  "owner": "messaging contact permission writer, called in the same transaction by every consent writer",
+  "writerContext": "messaging",
+  "read": "the guest gets and lists only rows whose uid is theirs, while their account is not deleted; a row not written yet reads as missing",
+  "write": "server only; written from the sender's contact permission in the transaction of every consent decision, deleted at account deletion",
+  "exportedFunctions": [
+    "registerPublicEvent",
+    "followOrganizerByPhone",
+    "promoteFormCommunicationIntent",
+    "submitOrganizerFormResponse",
+    "getOrganizerFormPayment",
+    "withdrawParticipantMessagingPermission",
+    "onOrganizerMessagingWebhookEventCreated",
+    "requestAccountDeletion"
+  ],
+  "migrationNotes": [
+    "preference is the sender's WhatsApp summary from users/{uid}/contactPermissions, the one a withdrawal returns. The row is deleted once the guest minimum-build floor passes a build that reads contactPermissions (issue #2460, step 4)."
+  ]
+}

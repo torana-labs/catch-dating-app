@@ -103,7 +103,11 @@ test("lost text and unsupported originals never become equivalent replays",
     const [image2] = parse([{...message(), type: "image",
       image: {caption: "STOP"}}]);
     assert.equal(derive(image1).ambiguity, "unsupported-message");
-    assert.equal(compare(image1, image2), "ambiguous");
+    // The Support placeholder keeps the caption, so a changed caption is a
+    // conflict; an identical one is still only ambiguous, never equivalent.
+    assert.equal(image1.text, "[photo] hello");
+    assert.equal(compare(image1, image2), "conflict");
+    assert.equal(compare(image1, image1), "ambiguous");
     const [blank] = parse([message(" ")]);
     assert.equal(derive(blank).ambiguity, "missing-text");
     assert.equal(compare(blank, blank), "ambiguous");

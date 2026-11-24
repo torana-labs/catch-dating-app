@@ -10,8 +10,9 @@ import {validateOperationWorkItem} from "../operations/validation";
 import {supplyIntakeCollections} from "../operations/supplyIntake/worker";
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {requireAdminRole} from "./adminAuth";
+import {requireAdminRole} from "../platform/adminAuth";
 import {listingApprovalRoles} from "./organizerListingApproval";
+import {publicSlugFor} from "../organizers/organizerIdentity";
 
 // Anyone who reviews organizer intake can read the queue; approving it is
 // narrower (see adminApproveOrganizerListing).
@@ -82,9 +83,8 @@ async function reviewRow(db: FirebaseFirestore.Firestore, requestId: string,
     kind: intakeRequest.kind as Row["kind"],
     submittedByRole: submittedBy.role as Row["submittedByRole"],
     submittedAt: String(intakeRequest.submittedAt),
-    // The review contract lists the staff-facing front doors; a website
-    // instant draft (which approval saves as a private draft) reads as none.
-    origin: (typeof origin?.kind === "string" && origin.kind !== "web_instant_draft" ? origin.kind : "none") as Row["origin"],
+    // The review contract lists the staff-facing front doors; any other origin reads as none.
+    origin: reviewOrigin(origin?.kind),
     market: {slug, marketId: market?.marketId ?? null, label: market?.label ?? null,
       open: market?.hostCreatable === true},
     suggestedSlug: publicSlugFor(name ?? text(seed?.name, 500) ?? listing.listingId as string),
@@ -134,13 +134,6 @@ function duplicateCheckRow(value: unknown): Row["duplicateCheck"] {
   };
 }
 
-/** A route-safe slug the reviewer can accept or edit. */
-export function publicSlugFor(value: string): string {
-  const slug = value.normalize("NFKD").toLowerCase().replace(/[^a-z0-9]+/gu, "-")
-    .replace(/^-+|-+$/gu, "").slice(0, 64).replace(/-+$/u, "");
-  return slug.length >= 3 ? slug : `organizer-${slug || "listing"}`.slice(0, 64);
-}
-
 function recordValue(value: unknown): Record<string, unknown> | null {
   return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : null;
 }
@@ -157,4 +150,11 @@ function strings(value: unknown, maxItems: number, maxLength: number): string[] 
 
 function nonNegative(value: unknown): number {
   return Number.isSafeInteger(value) && (value as number) >= 0 ? value as number : 0;
+}
+
+const reviewOrigins: ReadonlyArray<Row["origin"]> =
+  ["admin_nomination", "sales_inbound_intent", "message_nomination", "discovery_run"];
+
+function reviewOrigin(kind: unknown): Row["origin"] {
+  return reviewOrigins.find((origin) => origin === kind) ?? "none";
 }

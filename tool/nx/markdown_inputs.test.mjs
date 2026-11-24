@@ -2,7 +2,7 @@
 //
 // Most lane inputs negate *.md, so a document reaches a lane only when nx.json
 // names it. Two sources say which documents checks read:
-//   - tools_manifest.json impactPaths: `affected-tools`, which runs in the
+//   - tools manifest impactPaths: `affected-tools`, which runs in the
 //     Tools lane, re-runs an entry when one of them changes;
 //   - a scan of the scripts CI runs for Markdown paths and patterns. Each
 //     script that names one is listed below as a reader, with the lanes that
@@ -20,6 +20,7 @@ import {fileURLToPath} from "node:url";
 
 import {matchesGlobPath} from "../lib/path_glob.mjs";
 import {callerGraph, compare, targets} from "./shadow_plan.mjs";
+import {loadToolsManifest} from "../lib/tools_manifest.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const readJson = (file) => JSON.parse(fs.readFileSync(path.join(workspaceRoot, file), "utf8"));
@@ -30,6 +31,8 @@ const readJson = (file) => JSON.parse(fs.readFileSync(path.join(workspaceRoot, f
 export const markdownReaders = {
   "tool/architecture/check_app_architecture_exhibits.mjs": {"docs/app_architecture.md": ["tools"]},
   "tool/audit/check_fn_readme_inventory.mjs": {"functions/README.md": ["functions"]},
+  // A fragment-only change selects lane-tools through toolImpactPaths, and affected-tools runs it.
+  "tool/docs/function_catalog.mjs": {"docs/backend_operation_catalog/functions/*.md": ["tools"]},
   // flutter-ci.yml runs it; the migration note must keep the organizerType marker.
   "tool/check_organizer_nomenclature.mjs": {"docs/migrations/clubs_to_organizers.md": ["flutter"]},
   // A mandatory check: the Tools lane runs it through affected-tools and it scans every tracked document.
@@ -52,7 +55,8 @@ export const markdownReaders = {
 // Scripts that name Markdown without CI reading it: a pointer in a message, a
 // path filter that skips documents, an output, or a local-only tool.
 export const markdownMentions = {
-  "tool/architecture/provider_graph.dart": "names docs/screen_data_caching.md as the rule's documentation",
+  "tool/architecture/lib/screen_move_apply.mjs": "the Phase 4 screen move run by hand; it rewrites moved paths in documents and CI runs only its fixture tests",
+  "tool/architecture/lib/screen_move_outputs.mjs": "names the host READMEs a generator writes during a hand-run screen move",
   "tool/architecture/rename_to_organizer.mjs": "a path filter that leaves documents out of the rename",
   "tool/ci/flutter_package_scope.mjs": "classifies Markdown as outside package code",
   "tool/contracts/generate_market_catalog.mjs": "a path filter that leaves documents out of the scan",
@@ -90,7 +94,7 @@ export function markdownNamingScripts(root = workspaceRoot) {
 }
 
 /** The Markdown impactPaths of the tools manifest, with the entries that name them. */
-export function manifestMarkdown(manifest = readJson("tool/tools_manifest.json")) {
+export function manifestMarkdown(manifest = loadToolsManifest()) {
   const byPath = new Map();
   for (const tool of manifest.tools) {
     for (const impact of tool.impactPaths ?? []) {
@@ -165,7 +169,7 @@ test("every Markdown impactPath in the tools manifest is a lane-tools input", ()
 // came from Dart, ARB and Firebase files; widen this only with that evidence.
 const laneToolsExceptions = ["admin/", "website/"];
 
-function uncoveredImpactFiles(nxJson, manifest = readJson("tool/tools_manifest.json")) {
+function uncoveredImpactFiles(nxJson, manifest = loadToolsManifest()) {
   // Nx never hashes a tracked symlink (mode 120000), so one cannot select the lane.
   const files = execFileSync("git", ["ls-files", "-s"], {cwd: workspaceRoot, encoding: "utf8", maxBuffer: 64 * 1024 * 1024})
     .trim().split("\n").filter((entry) => !entry.startsWith("120000 ")).map((entry) => entry.slice(entry.indexOf("\t") + 1))

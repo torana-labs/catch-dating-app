@@ -1,0 +1,28 @@
+{
+  "id": "contracts:firestore-read-limits",
+  "category": "contracts",
+  "path": "tool/contracts/check_firestore_read_limits.mjs",
+  "command": "node tool/contracts/check_firestore_read_limits.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Rejects numeric repository read limits and unbounded Firestore collection reads outside the canonical ReadLimitPolicy and reviewed-exception contracts.",
+  "checks": [
+    "node --check tool/contracts/check_firestore_read_limits.mjs",
+    "node --test tool/contracts/check_firestore_read_limits.test.mjs",
+    "node tool/contracts/check_firestore_read_limits.mjs"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "FIRESTORE-READ-LIMIT-POLICY-001",
+      "title": "Repository read limits use one reviewed surface policy",
+      "appliesTo": [
+        "lib/**/data/*repository*.dart",
+        "packages/platform/lib/firebase/read_limit_policy.dart",
+        "packages/platform/lib/firebase/cursor_page.dart"
+      ],
+      "instruction": "Growing repository reads use a reviewed ReadLimitPolicy value plus an opaque cursor path. Numeric limit and take literals must not be reintroduced in repository code, and bounded-set exceptions must remain explicit in data_contracts.md."
+    }
+  ],
+  "queueGate": "always"
+}

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/account/data/force_update_provider.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
@@ -10,6 +9,8 @@ import 'package:catch_kernel/brand.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/repo_file.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,13 +18,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../events/events_test_helpers.dart';
-import '../test_pump_helpers.dart';
 
 /// Configures AppConfig with the release define file the consumer app ships
 /// with.
 void _useProdLegalUrlDefines() {
   final defines =
-      jsonDecode(File('tool/env/dart_defines/prod.json').readAsStringSync())
+      jsonDecode(repoFile('tool/env/dart_defines/prod.json').readAsStringSync())
           as Map<String, dynamic>;
   AppConfig.overrideLegalUrlDefinesForTesting(defines.cast<String, String>());
   addTearDown(AppConfig.resetLegalUrlDefinesOverrideForTesting);

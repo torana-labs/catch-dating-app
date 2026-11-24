@@ -16,6 +16,7 @@ import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/firestore_chunks.dart';
 import 'package:catch_platform/firebase/firestore_converters.dart';
+import 'package:catch_platform/firebase/permission_fallback.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart'
     show
@@ -42,6 +43,14 @@ part 'event_repository.g.dart';
 part 'event_repository_actions.dart';
 
 const _collectionPath = 'events';
+
+/// Server-written public copy of each published event (#1666). It carries no
+/// gender, cohort or pair counts, internals or join id, and no hidden price;
+/// `events` is read only by the organizer's team and the event's staff, so
+/// every read that a guest can reach falls back to it on permission-denied.
+/// Lists of copies must ask for listed events: rules never list link-only
+/// ones.
+const _publicCollectionPath = 'publicEvents';
 
 class EventRepository with EventRepositoryActions {
   const EventRepository(
@@ -83,11 +92,17 @@ class EventRepository with EventRepositoryActions {
 
   // ── Read ──────────────────────────────────────────────────────────────────
 
+  /// The full event for its organizer's team and staff, the public copy for
+  /// everyone else. Rules decide which, so call sites never need to know.
   Future<Event?> fetchEvent(String id) => withBackendErrorContext(
-    () async {
-      final doc = await _db.collection(_collectionPath).doc(id).get();
-      return publishedRichEvent(doc);
-    },
+    () => fetchWithPermissionFallback<Event?>(
+      primary: () async => publishedRichEvent(
+        await _db.collection(_collectionPath).doc(id).get(),
+      ),
+      fallback: () async => publishedRichEvent(
+        await _db.collection(_publicCollectionPath).doc(id).get(),
+      ),
+    ),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'fetch event',
@@ -96,11 +111,18 @@ class EventRepository with EventRepositoryActions {
   );
 
   Stream<Event?> watchEvent(String id) => withBackendErrorStream(
-    () => _db
-        .collection(_collectionPath)
-        .doc(id)
-        .snapshots()
-        .map(publishedRichEvent),
+    () => watchWithPermissionFallback<Event?>(
+      primary: () => _db
+          .collection(_collectionPath)
+          .doc(id)
+          .snapshots()
+          .map(publishedRichEvent),
+      fallback: () => _db
+          .collection(_publicCollectionPath)
+          .doc(id)
+          .snapshots()
+          .map(publishedRichEvent),
+    ),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch event',
@@ -146,40 +168,50 @@ class EventRepository with EventRepositoryActions {
   /// [fetchPastEventsPage]; cancelled events are not included.
   Stream<List<Event>> watchEventsForOrganizer({required String organizerId}) {
     final boundary = Timestamp.fromDate(_clock.now());
-    Query<Map<String, dynamic>> active() => _db
-        .collection(_collectionPath)
-        .where('publicationState', isEqualTo: 'published')
-        .where('organizerId', isEqualTo: organizerId)
-        .where('status', isEqualTo: EventLifecycleStatus.active.name);
-    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
-    final current = active()
-        .where('endTime', isGreaterThan: boundary)
-        .orderBy('endTime')
-        .orderBy(FieldPath.documentId)
-        .limit(ReadLimitPolicy.directoryPage);
-    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:DESCENDING,__name__:DESCENDING)
-    final recent = active()
-        .where('endTime', isLessThanOrEqualTo: boundary)
-        .orderBy('endTime', descending: true)
-        .orderBy(FieldPath.documentId, descending: true)
-        .limit(ReadLimitPolicy.directoryPage);
     List<Event> events(QuerySnapshot<Map<String, dynamic>> snap) => [
       for (final event in snap.docs.map(publishedRichEvent).whereType<Event>())
         if (!event.synthetic) event,
     ];
+    // Each listener builds its own query from [active].
+    Stream<List<Event>> both(Query<Map<String, dynamic>> Function() active) =>
+        combineLatest(
+          active()
+              .where('endTime', isGreaterThan: boundary)
+              .orderBy('endTime')
+              .orderBy(FieldPath.documentId)
+              .limit(ReadLimitPolicy.directoryPage)
+              .snapshots()
+              .map(events),
+          active()
+              .where('endTime', isLessThanOrEqualTo: boundary)
+              .orderBy('endTime', descending: true)
+              .orderBy(FieldPath.documentId, descending: true)
+              .limit(ReadLimitPolicy.directoryPage)
+              .snapshots()
+              .map(events),
+          (coming, ended) {
+            final byId = {
+              for (final event in [...ended, ...coming]) event.id: event,
+            };
+            return List<Event>.unmodifiable(
+              byId.values.toList()
+                ..sort((a, b) => a.startTime.compareTo(b.startTime)),
+            );
+          },
+        );
     return withBackendErrorStream(
-      () => combineLatest(
-        current.snapshots().map(events),
-        recent.snapshots().map(events),
-        (coming, ended) {
-          final byId = {
-            for (final event in [...ended, ...coming]) event.id: event,
-          };
-          return List<Event>.unmodifiable(
-            byId.values.toList()
-              ..sort((a, b) => a.startTime.compareTo(b.startTime)),
-          );
-        },
+      () => watchWithPermissionFallback<List<Event>>(
+        // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
+        // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:DESCENDING,__name__:DESCENDING)
+        primary: () => both(
+          () => _organizerEvents(organizerId, EventLifecycleStatus.active),
+        ),
+        // firestore-index: publicEvents (organizerId:ASCENDING,listing:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
+        // firestore-index: publicEvents (organizerId:ASCENDING,listing:ASCENDING,status:ASCENDING,endTime:DESCENDING,__name__:DESCENDING)
+        fallback: () => both(
+          () =>
+              _listedOrganizerCopies(organizerId, EventLifecycleStatus.active),
+        ),
       ),
       context: const BackendErrorContext(
         service: BackendService.firestore,
@@ -194,6 +226,8 @@ class EventRepository with EventRepositoryActions {
   /// The fixed [sessionBoundary] keeps paging stable while the Host Events
   /// screen is open. Presentation logic can still move an event from live to
   /// past as its clock advances without reissuing the Firestore query.
+  /// The Host Events pages read `events` only: rules let the organizer's team
+  /// list them, and a guest never pages an organizer's history.
   Future<CursorPage<Event, PageCursor<Event>>> fetchActiveEventsPage({
     required String organizerId,
     required DateTime sessionBoundary,
@@ -222,13 +256,8 @@ class EventRepository with EventRepositoryActions {
     required String organizerId,
     required DateTime endsAfter,
     int limit = ReadLimitPolicy.directoryPage,
-  }) => withBackendErrorStream(
-    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
-    () => _db
-        .collection(_collectionPath)
-        .where('publicationState', isEqualTo: 'published')
-        .where('organizerId', isEqualTo: organizerId)
-        .where('status', isEqualTo: EventLifecycleStatus.active.name)
+  }) {
+    Stream<List<Event>> live(Query<Map<String, dynamic>> active) => active
         .where('endTime', isGreaterThan: Timestamp.fromDate(endsAfter))
         .orderBy('endTime')
         .orderBy(FieldPath.documentId)
@@ -241,13 +270,45 @@ class EventRepository with EventRepositoryActions {
                 .whereType<Event>()
                 .where((event) => !event.synthetic),
           ),
+        );
+    return withBackendErrorStream(
+      () => watchWithPermissionFallback<List<Event>>(
+        // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
+        primary: () =>
+            live(_organizerEvents(organizerId, EventLifecycleStatus.active)),
+        // firestore-index: publicEvents (organizerId:ASCENDING,listing:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
+        fallback: () => live(
+          _listedOrganizerCopies(organizerId, EventLifecycleStatus.active),
         ),
-    context: const BackendErrorContext(
-      service: BackendService.firestore,
-      action: 'watch active organizer events',
-      resource: _collectionPath,
-    ),
-  );
+      ),
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch active organizer events',
+        resource: _collectionPath,
+      ),
+    );
+  }
+
+  /// One organizer's published events in [status], as the Host app's own
+  /// queries shape them so rules can prove the reader manages it.
+  Query<Map<String, dynamic>> _organizerEvents(
+    String organizerId,
+    EventLifecycleStatus status,
+  ) => _db
+      .collection(_collectionPath)
+      .where('publicationState', isEqualTo: 'published')
+      .where('organizerId', isEqualTo: organizerId)
+      .where('status', isEqualTo: status.name);
+
+  /// The same organizer's listed public copies, for readers off its team.
+  Query<Map<String, dynamic>> _listedOrganizerCopies(
+    String organizerId,
+    EventLifecycleStatus status,
+  ) => _db
+      .collection(_publicCollectionPath)
+      .where('organizerId', isEqualTo: organizerId)
+      .where('listing', isEqualTo: 'listed')
+      .where('status', isEqualTo: status.name);
 
   /// Fetches completed organizer events newest-first with an opaque cursor.
   Future<CursorPage<Event, PageCursor<Event>>> fetchPastEventsPage({
@@ -333,21 +394,37 @@ class EventRepository with EventRepositoryActions {
     List<String> organizerIds,
   ) => withBackendErrorContext(
     () async {
-      // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,startTime:ASCENDING)
       final uniqueOrganizerIds = organizerIds.toSet().toList()..sort();
       if (uniqueOrganizerIds.isEmpty) return [];
       final nowDateTime = _clock.now();
       final now = Timestamp.fromDate(nowDateTime);
       final events = <Event>[];
+      Future<QuerySnapshot<Map<String, dynamic>>> upcoming(
+        Query<Map<String, dynamic>> query,
+      ) => query
+          .where('startTime', isGreaterThan: now)
+          .orderBy('startTime')
+          .limit(ReadLimitPolicy.directoryPage)
+          .get();
       for (final chunk in chunkedForWhereIn(uniqueOrganizerIds)) {
-        final snap = await _db
-            .collection(_collectionPath)
-            .where('publicationState', isEqualTo: 'published')
-            .where('organizerId', whereIn: chunk)
-            .where('startTime', isGreaterThan: now)
-            .orderBy('startTime')
-            .limit(ReadLimitPolicy.directoryPage)
-            .get();
+        // The organizer's own team gets its link-only events too; everyone
+        // else gets listed public copies.
+        final snap = await fetchWithPermissionFallback(
+          // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,startTime:ASCENDING)
+          primary: () => upcoming(
+            _db
+                .collection(_collectionPath)
+                .where('publicationState', isEqualTo: 'published')
+                .where('organizerId', whereIn: chunk),
+          ),
+          // firestore-index: publicEvents (organizerId:ASCENDING,listing:ASCENDING,startTime:ASCENDING)
+          fallback: () => upcoming(
+            _db
+                .collection(_publicCollectionPath)
+                .where('organizerId', whereIn: chunk)
+                .where('listing', isEqualTo: 'listed'),
+          ),
+        );
         events.addAll(
           snap.docs
               .map(publishedRichEvent)

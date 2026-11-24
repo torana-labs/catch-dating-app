@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/chats/chats.dart';
 import 'package:catch_dating_app/contexts/safety/parts/block_user_dialog.dart';
+import 'package:catch_dating_app/pages/chat/chat_controller.dart';
+import 'package:catch_dating_app/pages/chat/widgets/chat_share_card.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_platform/errors/app_error_message.dart';

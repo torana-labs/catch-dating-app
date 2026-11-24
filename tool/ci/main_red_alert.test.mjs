@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
-import {FLOOR_EXIT_TITLE, ISSUE_TITLE, decideAlert, decideFloorExit, nightlyWindow, owedFromIssue}
+import {FLOOR_EXIT_TITLE, ISSUE_TITLE, decideAlert, decideFloorExit, decideUncovered, failedJobNames, nightlyWindow,
+  onlyMobileBlockFailures, owedFromIssue, reportedUncovered, uncoveredCommits, uncoveredReportCounts}
   from "./main_red_alert.mjs";
+import {CAPTURE_JOB, GOLDENS_JOB} from "./golden_policy.mjs";
 
 const run = (conclusion, extra = {}) => ({id: 7, html_url: "https://example.test/run/7", head_sha: "a".repeat(40),
   conclusion, event: "push", display_title: "CI", ...extra});
@@ -146,6 +148,15 @@ test("the workflow listens only to main's push and nightly CI and can only write
   assert.doesNotMatch(workflow, /contents: write|pull-requests: write/u);
   assert.match(workflow, /RUN_ID: \$\{\{ github\.event\.workflow_run\.id \}\}/u);
   assert.match(workflow, /node tool\/ci\/main_red_alert\.mjs/u);
+  // Only the golden-policy job may dispatch, and only the dispatch-only baseline workflows.
+  const jobs = workflow.split(/\n  (?=[a-z-]+:\n)/u).slice(1);
+  const policy = jobs.find((block) => block.startsWith("golden-policy:"));
+  assert.ok(policy, "golden-policy job");
+  assert.match(policy, /permissions:\n {6}actions: write\n {6}contents: read\n {6}issues: write\n/u);
+  assert.match(policy, /run: node tool\/ci\/golden_policy\.mjs/u);
+  for (const block of jobs.filter((entry) => !entry.startsWith("golden-policy:"))) {
+    assert.doesNotMatch(block, /actions: write/u, block.split(":")[0]);
+  }
 });
 
 const NOW = Date.parse("2026-11-30T12:00:00Z");
@@ -177,6 +188,23 @@ test("a red run inside the week, reporting lanes included, keeps the floor", () 
   assert.equal(decideFloorExit({runs: [...greenWeek(), ciRun(7.1, "failure")], now: NOW, openIssue: null}).action, "open");
 });
 
+test("a run whose only failures were the macOS golden and capture jobs does not restart the green week", () => {
+  // Owner decision, 22 Nov 2026: they block mobile releases instead (golden_policy.mjs).
+  const red = {...ciRun(2, "failure", "push"), id: 41};
+  assert.equal(decideFloorExit({runs: [...greenWeek(), red], now: NOW, openIssue: null, mobileOnly: new Set([41])}).action, "open");
+  // Control: the same run with any other failure still restarts it.
+  assert.deepEqual(decideFloorExit({runs: [...greenWeek(), red], now: NOW, openIssue: null, mobileOnly: new Set([42])}),
+    {action: "none", reason: "red_within_window"});
+  const failed = (...jobs) => failedJobNames(jobs);
+  assert.equal(onlyMobileBlockFailures(failed(job(GOLDENS_JOB, "failure"), job("Required CI", "failure"),
+    job("flutter / Analyze & test", "success"))), true, "Required CI fails because of them");
+  assert.equal(onlyMobileBlockFailures(failed(job(CAPTURE_JOB, "timed_out"), job(GOLDENS_JOB, "failure"))), true);
+  assert.equal(onlyMobileBlockFailures(failed(job(GOLDENS_JOB, "failure"), job(lint, "failure"))), false,
+    "another failure restarts the week");
+  assert.equal(onlyMobileBlockFailures(failed(job("Required CI", "failure"))), false, "Required CI alone");
+  assert.equal(onlyMobileBlockFailures(failed(job(GOLDENS_JOB, "success"))), false, "nothing failed");
+});
+
 test("cancelled runs, other events, short history and missing nightlies never end the floor", () => {
   const runs = [...greenWeek(), ciRun(1, "cancelled", "push"), ciRun(2, "failure", "pull_request"),
     {...ciRun(3, null, "push"), status: "in_progress"}];
@@ -186,4 +214,80 @@ test("cancelled runs, other events, short history and missing nightlies never en
   assert.deepEqual(decideFloorExit({runs: greenWeek().filter((run) => run.event === "push" ||
     Date.parse(run.created_at) < NOW - 5 * 864e5), now: NOW, openIssue: null}), {action: "none", reason: "too_few_nightlies"});
   assert.deepEqual(decideFloorExit({runs: greenWeek(), now: NOW, openIssue: null, reportingLanes: []}), {action: "none"});
+});
+
+// Uncovered main commits: a replaced push run that no other run covers.
+const GAP_NOW = Date.parse("2026-11-22T16:00:00Z");
+const at = (minutes) => new Date(GAP_NOW - minutes * 60 * 1000).toISOString();
+const pushRun = (id, digit, status, conclusion, minutesAgo) => ({id, head_sha: digit.repeat(40), status, conclusion,
+  event: "push", head_branch: "main", path: ".github/workflows/ci.yml", created_at: at(minutesAgo),
+  html_url: `https://example.test/run/${id}`});
+// Main's history is A < H < D < E.
+const order = ["a", "h", "d", "e"].map((digit) => digit.repeat(40));
+const linear = (descendant, sha) => order.indexOf(sha) <= order.indexOf(descendant);
+
+test("a later commit's pending run replaced by an earlier commit's run leaves that commit uncovered", () => {
+  // D's run was pending; H's run, created after it, replaced it and ran.
+  const runs = [pushRun(10, "a", "completed", "success", 60), pushRun(20, "d", "completed", "cancelled", 30),
+    pushRun(21, "h", "completed", "success", 29)];
+  assert.deepEqual(uncoveredCommits({runs, now: GAP_NOW, contains: linear}),
+    {uncovered: [{sha: "d".repeat(40), runId: 20, html_url: "https://example.test/run/20"}], unknown: []});
+});
+
+test("a replaced run is covered by any later commit's run that ran or is still to run", () => {
+  for (const [status, conclusion] of [["completed", "success"], ["completed", "failure"], ["in_progress", null], ["queued", null]]) {
+    const runs = [pushRun(20, "d", "completed", "cancelled", 30), pushRun(21, "h", "completed", "success", 29),
+      pushRun(22, "e", status, conclusion, 5)];
+    assert.deepEqual(uncoveredCommits({runs, now: GAP_NOW, contains: linear}).uncovered, [], `${status} ${conclusion}`);
+  }
+  // A later commit's run that was itself replaced covers nothing.
+  const runs = [pushRun(20, "d", "completed", "cancelled", 30), pushRun(22, "e", "completed", "cancelled", 5),
+    pushRun(23, "h", "completed", "success", 4)];
+  assert.deepEqual(uncoveredCommits({runs, now: GAP_NOW, contains: linear}).uncovered.map((commit) => commit.runId), [22, 20]);
+});
+
+test("an ordinary replaced intermediate run is covered; out-of-order creation within ten minutes still counts", () => {
+  // E's run was created two minutes before D's replaced one and ran.
+  const runs = [pushRun(20, "e", "completed", "success", 32), pushRun(21, "d", "completed", "cancelled", 30)];
+  assert.deepEqual(uncoveredCommits({runs, now: GAP_NOW, contains: linear}).uncovered, []);
+});
+
+test("unknown ancestry is not reported as uncovered; runs older than the nightly window are settled", () => {
+  const runs = [pushRun(20, "d", "completed", "cancelled", 30), pushRun(21, "e", "completed", "success", 20)];
+  assert.deepEqual(uncoveredCommits({runs, now: GAP_NOW, contains: () => null}), {uncovered: [], unknown: ["d".repeat(40)]});
+  assert.deepEqual(uncoveredCommits({runs: [pushRun(20, "d", "completed", "cancelled", 27 * 60)], now: GAP_NOW, contains: linear}),
+    {uncovered: [], unknown: []});
+});
+
+test("an uncovered commit opens the red issue owing Required CI, or comments once on the open one", () => {
+  const uncovered = [{sha: "d".repeat(40), runId: 20, html_url: "https://example.test/run/20"}];
+  const opened = decideUncovered({uncovered, openIssue: null});
+  assert.equal(opened.action, "open");
+  assert.equal(opened.title, ISSUE_TITLE);
+  assert.match(opened.body, /`dddddddd`: its run https:\/\/example\.test\/run\/20 was replaced before it ran/u);
+  assert.match(opened.body, /Nothing was triggered automatically/u);
+  // The next green main push passes Required CI and closes it.
+  assert.deepEqual(owedFromIssue([opened.body]), {jobs: ["Required CI"], pending: false, unknown: false});
+  assert.equal(decideAlert({run: run("success"), openIssue: {number: 3}, owed: owedFromIssue([opened.body]),
+    jobs: [job("Required CI", "success")]}).action, "close");
+  // Once reported, the same commit is not reported again.
+  assert.deepEqual(decideUncovered({uncovered, openIssue: {number: 3}, reported: reportedUncovered([opened.body])}),
+    {action: "none"});
+  const comment = decideUncovered({uncovered, openIssue: {number: 9}});
+  assert.deepEqual([comment.action, comment.issue], ["comment", 9]);
+  assert.equal(owedFromIssue([comment.body]), null, "a comment leaves the issue's owed jobs as they were");
+  assert.deepEqual(decideUncovered({uncovered: [], openIssue: null}), {action: "none"});
+});
+
+test("a commit reported before an early close is reported once more at most, never in a loop", () => {
+  const uncovered = [{sha: "d".repeat(40), runId: 20, html_url: "https://example.test/run/20"}];
+  const first = decideUncovered({uncovered, openIssue: null});
+  // A green run of an earlier commit closed the issue before the commit was covered.
+  const again = decideUncovered({uncovered, openIssue: null, counts: uncoveredReportCounts([first.body])});
+  assert.equal(again.action, "open");
+  // Closed a second time the same way: the commit has had its two reports.
+  assert.deepEqual(decideUncovered({uncovered, openIssue: null, counts: uncoveredReportCounts([first.body, again.body])}),
+    {action: "none"});
+  assert.deepEqual(decideUncovered({uncovered, openIssue: {number: 4},
+    counts: uncoveredReportCounts([first.body, again.body])}), {action: "none"});
 });

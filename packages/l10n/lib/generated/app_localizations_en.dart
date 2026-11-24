@@ -13,7 +13,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostAnalyticsPrivacyBody =>
-      'Help improve Catch Host by sharing sign-in, onboarding and event setup activity with Google Analytics using a random app identifier. Names, contact details, guest data and event details are excluded. This choice applies to this device for 30 days. Advertising measurement stays off. You can turn analytics off here at any time.';
+      'Help improve Catch Host by sharing sign-in, onboarding and event setup activity with Google Analytics using a random app identifier. Names, contact details, guest data and event details are excluded. This choice applies to this device for 30 days and does not cover ad matching, which the privacy policy explains. You can turn analytics off here at any time.';
 
   @override
   String get hostAnalyticsPrivacyDeny => 'Keep analytics off';
@@ -700,6 +700,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostOnboardingFormatNightsOut => 'Parties';
 
   @override
+  String get hostOnboardingSignupSourceTitle => 'How did you hear about Catch?';
+
+  @override
+  String get hostOnboardingSignupSourceNote =>
+      'Optional. One tap helps us know what works.';
+
+  @override
+  String get hostOnboardingSignupSourceMetaAd => 'Instagram or Facebook ad';
+
+  @override
+  String get hostOnboardingSignupSourceGoogleSearch => 'Google search';
+
+  @override
+  String get hostOnboardingSignupSourceInstagramPost =>
+      'Instagram post or reel';
+
+  @override
+  String get hostOnboardingSignupSourceFriendOrHost =>
+      'A friend or another host';
+
+  @override
+  String get hostOnboardingSignupSourceTeamOutreach =>
+      'Someone from Catch reached out';
+
+  @override
+  String get hostOnboardingSignupSourceOther => 'Somewhere else';
+
+  @override
+  String get hostOnboardingSignupSourceSkip => 'Skip';
+
+  @override
   String get hostOnboardingPageKicker => 'Your page';
 
   @override
@@ -1308,6 +1339,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authInvalidPhoneNumber => 'Please enter a valid phone number.';
 
   @override
+  String get authLegalAgreement =>
+      'By continuing you agree to Catch’s terms and privacy policy.';
+
+  @override
+  String get authLegalTermsLink => 'Terms';
+
+  @override
+  String get authLegalPrivacyLink => 'Privacy policy';
+
+  @override
   String get authOtpTitle => 'Enter the code';
 
   @override
@@ -1739,6 +1780,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboardActivityScreenTitleActivity => 'Activity';
+
+  @override
+  String get dashboardActivityFromCatch => 'From Catch';
+
+  @override
+  String get dashboardActivityAppeal => 'Appeal';
+
+  @override
+  String get dashboardActivityAppealTitle => 'Appeal this decision';
+
+  @override
+  String get dashboardActivityAppealField =>
+      'Tell us why this decision is wrong';
+
+  @override
+  String get dashboardActivityAppealSend => 'Send appeal';
+
+  @override
+  String get dashboardActivityAppealSent =>
+      'Appeal sent. Someone who didn’t make the decision will review it.';
+
+  @override
+  String get dashboardActivityAppealClosed =>
+      'This decision can only be appealed once, or is no longer in force.';
 
   @override
   String get dashboardDashboardScreenTooltipCalendar => 'Calendar';
@@ -22129,6 +22194,29 @@ class AppLocalizationsEn extends AppLocalizations {
       'Guests choose who they would like to see again';
 
   @override
+  String get hostEventsCloseOutReportTitle => 'Attendance report';
+
+  @override
+  String get hostEventsCloseOutReportCame => 'Came';
+
+  @override
+  String get hostEventsCloseOutReportNoShows => 'Didn’t come';
+
+  @override
+  String get hostEventsCloseOutReportUnmarked => 'Not marked yet';
+
+  @override
+  String get hostEventsCloseOutReportNotExpected => 'Waitlist or cancelled';
+
+  @override
+  String get hostEventsCloseOutNoShowTooEarly =>
+      'You can mark who didn’t come once the night has ended.';
+
+  @override
+  String get hostEventsCloseOutNoShowUnavailable =>
+      'This guest can’t be marked as not coming.';
+
+  @override
   String get hostEventsCloseOutNoShows => 'Tell no-shows about next week';
 
   @override
@@ -22840,6 +22928,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostPeopleGroupMatchEmpty => 'Nobody matches yet.';
+
+  @override
+  String hostPeopleGroupMembers({required int count, required String people}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$people people',
+      one: '1 person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostPeopleGroupMembersEmpty => 'Nobody is in this group yet.';
+
+  @override
+  String get hostPeopleGroupMembersError => 'We couldn’t list this group';
+
+  @override
+  String get hostPeopleGroupMembersMoreError => 'We couldn’t list more people.';
+
+  @override
+  String get hostPeopleGroupMemberGone => 'No longer in your contacts';
+
+  @override
+  String get hostPeopleGroupMemberGoneBody =>
+      'Merged into another contact or removed';
 
   @override
   String get hostPeopleGroupCountError => 'We couldn’t count this group';
@@ -24623,7 +24738,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostProgrammeAttendanceArchiveBody =>
-      'Guest details are anonymised after the retention window.';
+      'Guest details are anonymised 60 days after closing. Until then, the programme can be reopened.';
 
   @override
   String get hostProgrammeAttendanceArchiveAction => 'Close';
@@ -24957,6 +25072,22 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$created new guests, $updated updated.';
   }
+
+  @override
+  String get hostProgrammeImportDetach => 'Detach from party';
+
+  @override
+  String get hostProgrammeImportDetachTitle => 'Detach from their party?';
+
+  @override
+  String get hostProgrammeImportDetachBody =>
+      'The rest of the party still rides together. We check the list again after.';
+
+  @override
+  String get hostProgrammeImportDetachConfirm => 'Detach';
+
+  @override
+  String get hostProgrammeImportDetachKeep => 'Keep in party';
 
   @override
   String get hostFormatsBackToEvent => 'Back to the event';
@@ -27977,6 +28108,79 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostEventsGuestsDecline => 'Decline';
+
+  @override
+  String get hostEventsGuestsGuestBody =>
+      'See their profile, report them to Catch, or stop them booking your events.';
+
+  @override
+  String get hostEventsGuestsReport => 'Report';
+
+  @override
+  String get hostEventsGuestsBlock => 'Block from your events';
+
+  @override
+  String hostEventsGuestsReportTitle({required String name}) {
+    return 'Why are you reporting $name?';
+  }
+
+  @override
+  String get hostEventsGuestsReportBody =>
+      'Pick the closest reason. Catch’s team reads every report.';
+
+  @override
+  String get hostEventsGuestsReportUnsafe => 'Made people feel unsafe';
+
+  @override
+  String get hostEventsGuestsReportHarassment => 'Harassed someone';
+
+  @override
+  String get hostEventsGuestsReportOther => 'Something else';
+
+  @override
+  String get hostEventsGuestsReported =>
+      'Thanks. Catch’s team will look into it.';
+
+  @override
+  String hostEventsGuestsBlockTitle({required String name}) {
+    return 'Block $name from your events?';
+  }
+
+  @override
+  String get hostEventsGuestsBlockBody =>
+      'They won’t be able to book your events. Bookings they already have stay, so cancel those from the guest list.';
+
+  @override
+  String get hostEventsGuestsBlockConfirm => 'Block';
+
+  @override
+  String hostEventsGuestsBlockedNotice({required String name}) {
+    return '$name can’t book your events now';
+  }
+
+  @override
+  String get hostEventsGuestsBlockedLink => 'Blocked from your events';
+
+  @override
+  String get hostEventsGuestsBlockedEmpty =>
+      'Nobody is blocked from your events.';
+
+  @override
+  String get hostEventsGuestsBlockedNoName => 'Someone without a name';
+
+  @override
+  String hostEventsGuestsBlockedOn({required String date}) {
+    return 'Blocked $date';
+  }
+
+  @override
+  String get hostEventsGuestsBlockedErrorTitle => 'The list could not load';
+
+  @override
+  String get hostEventsGuestsLetBack => 'Let them back';
+
+  @override
+  String get hostEventsGuestsLetBackDone => 'They can book your events again';
 
   @override
   String get hostEventsPlanEmptyAction => 'Edit the event';

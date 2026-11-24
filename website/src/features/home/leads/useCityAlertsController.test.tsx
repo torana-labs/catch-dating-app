@@ -36,7 +36,7 @@ describe("useCityAlertsController", () => {
     expect(post.mock.calls[0][1]?.headers).toMatchObject({"X-Firebase-AppCheck": "app-check-token"});
     expect(body(0)).toEqual({
       requestKind: "city_alerts", city: "Mumbai", cityId: "in-mh-mumbai", countryIsoCode: "IN", citySource: "picked", website: "",
-      lead: {requestId: "request000000000001", phone: "+919876543210", consent: {purpose: "cityNewPlans", version: "city-new-plans-whatsapp-v2"},
+      lead: {requestId: "request000000000001", phone: "+919876543210", consent: {purpose: "cityNewPlans", version: "city-new-plans-whatsapp-v3"},
         sourcePage: "/", entry: "home-thin-week", cityAlerts: {interests: []}},
     });
     expect(result.current).toMatchObject({sent: true, submitting: false, sendProblem: null});
@@ -77,7 +77,7 @@ describe("useCityAlertsController", () => {
     await act(() => result.current.handleSubmit(submitEvent()));
     const form = {content_version: "website_copy_v2", lead_kind: "city_alerts", form_id: "home-thin-week", page_path: "/"};
     expect((window.dataLayer ?? []).filter((entry) => !Array.isArray(entry) && String(entry.event).startsWith("lead_form_"))).toEqual([
-      {event: "lead_form_viewed", ...form},
+      {event: "lead_form_viewed", ...form}, {event: "lead_form_started", ...form},
       {event: "lead_form_submitted", ...form}, {event: "lead_form_failed", ...form, problem: "busy"},
       {event: "lead_form_submitted", ...form}, {event: "lead_form_succeeded", ...form},
     ]);

@@ -2,8 +2,9 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {readFileSync} from "node:fs";
 import {
-  backfillPublicOrganizers, projectPublicOrganizer, publicOrganizerEligible,
-  reconcilePublicOrganizer, reconcilePublicOrganizerDetailed,
+  backfillPublicOrganizers, organizerWriteMovesSummary, projectPublicOrganizer,
+  publicOrganizerEligible, reconcilePublicOrganizer,
+  reconcilePublicOrganizerDetailed, syncPublicOrganizerWrite,
   PUBLIC_ORGANIZER_DERIVED_FIELDS,
   PUBLIC_ORGANIZER_FIELDS,
 } from "./publicOrganizerProjection";
@@ -133,6 +134,30 @@ test("only shown or hosted organizers are eligible", () => {
     hostUserId: "host-1"}), true);
   assert.equal(publicOrganizerEligible({...base, status: "archived",
     hostUserId: "host-1"}), true);
+  const scraped = {...base, hostUserId: null, ownerUserId: null,
+    hostUserIds: [], appVisibility: "hidden"};
+  assert.equal(publicOrganizerEligible({...scraped, publicPage: {
+    publishStatus: "published", canonicalPath: "/organizers/indore/lane/"}}),
+  true);
+  assert.equal(publicOrganizerEligible({...scraped, publicPage: {
+    publishStatus: "draft", canonicalPath: "/organizers/indore/lane/"}}),
+  false);
+});
+
+test("publicPagePath carries only a published page's canonical path", () => {
+  const page = (publishStatus: string, canonicalPath: unknown) =>
+    projectPublicOrganizer({...organizerDoc(),
+      publicPage: {publishStatus, canonicalPath, robots: "index, follow"}});
+  const published = page("published", "/organizers/brindle-run-club/");
+  assert.equal(published.publicPagePath, "/organizers/brindle-run-club/");
+  assert.equal(validatePublicOrganizerDocument(published), true,
+    JSON.stringify(validatePublicOrganizerDocument.errors));
+  assert.equal("publicPage" in published, false);
+  for (const [status, path] of [["draft", "/organizers/brindle-run-club/"],
+    ["suppressed", "/organizers/brindle-run-club/"],
+    ["published", "https://evil.test/"], ["published", null]]) {
+    assert.equal(page(status as string, path).publicPagePath, null);
+  }
 });
 
 test("reconcile writes, skips unchanged, removes and refuses invalid",
@@ -184,6 +209,43 @@ test("only a change to a field the event summary holds fans out to events",
       {outcome: "removed", summaryChanged: true});
     assert.deepEqual(await reconcilePublicOrganizerDetailed("o1", deps(store)),
       {outcome: "absent", summaryChanged: false});
+  });
+
+test("a retry after the events refresh failed part way still refreshes them",
+  async () => {
+    const store = new FakeStore();
+    const before = {...organizerDoc(), hostUserId: "host-1"};
+    store.rows.set("organizers/o1", before);
+    await reconcilePublicOrganizerDetailed("o1", deps(store));
+    const after = {...before, name: "Renamed club"};
+    store.rows.set("organizers/o1", after);
+    let refreshes = 0;
+    const writeDeps = {
+      reconcile: (id: string) => reconcilePublicOrganizerDetailed(id,
+        deps(store)),
+      refresh: async () => {
+        refreshes += 1;
+        if (refreshes === 1) throw new Error("events page failed");
+      },
+    };
+    // The first attempt writes the projection, then fails on the events.
+    await assert.rejects(syncPublicOrganizerWrite("o1", before, after,
+      writeDeps), /events page failed/);
+    // The retry finds the projection already current, but the write still
+    // moves the summary, so it refreshes the events again and converges.
+    assert.equal(organizerWriteMovesSummary(before, after), true);
+    await syncPublicOrganizerWrite("o1", before, after, writeDeps);
+    assert.equal(refreshes, 2);
+    // A write that moves no summary field, with the projection current,
+    // refreshes nothing.
+    const counted = {...after, followerCount: 9};
+    assert.equal(organizerWriteMovesSummary(after, counted), false);
+    await syncPublicOrganizerWrite("o1", after, counted, writeDeps);
+    assert.equal(refreshes, 2);
+    // Gaining or losing eligibility moves the summary between hidden and
+    // shown.
+    assert.equal(organizerWriteMovesSummary(undefined, after), true);
+    assert.equal(organizerWriteMovesSummary(after, undefined), true);
   });
 
 test("backfill dry run writes nothing; apply writes projections only",

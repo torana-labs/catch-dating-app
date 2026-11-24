@@ -1,9 +1,10 @@
 import type {Firestore} from "firebase-admin/firestore";
 import {MetaWhatsappProvider} from
-  "../../organizers/organizerWhatsappProvider";
+  "../../platform/delivery/organizerWhatsappProvider";
 import {GuestAssistanceStore} from "./guestAssistanceStore";
-import {GuestLinkKeyStore} from "./guestLinkKeyStore";
-import type {GuestLinkSigningKeys} from "./guestLinkTokens";
+import {GuestLinkKeyStore} from "../../platform/guestLinkKeyStore";
+import type {GuestLinkSigningKeys} from
+  "../../platform/guestLinkSigningKeys";
 import {threadIdentity} from "./guestRecords";
 import {hasAutomaticDelivery} from "./deliveryWorkRecords";
 import type {MessageRecord} from "./messageOutbox";

@@ -28,7 +28,7 @@ owner has not yet chosen which to turn on.
    front door changes. Each trigger returns at once while every source is off.
    | Source | Strength | Where it comes from | Wired |
    |---|---|---|---|
-   | `self_verified_submitter` | strong | The number a person verified while submitting an instant draft, once the draft is saved as an organizer (`supplyIntakeRequests`) | Yes |
+   | `self_verified_submitter` | strong | A number the submitter verified themselves while sending in their own page | Not now. Its only feeder, the website instant-draft tool, was retired in Nov 2026; a try-it import fills the visitor's own workspace, so there is nothing to claim. The source waits for a front door that collects a submitter's verified phone for a page they do not yet own. |
    | `sales_crm_verified` | strong | A phone endpoint staff marked verified on a sales contact relationship (`salesContactRelationships`) | Yes |
    | `staff_entered` | medium | A phone endpoint staff entered but did not verify, on the same records | Yes |
    | `public_page` | weak | A number printed on the organizer's public page | Not yet. No import keeps page phones today (listing approval clears `phoneNumber`), so the source has nothing to read until one does. |
@@ -86,5 +86,4 @@ owner has not yet chosen which to turn on.
    (`lib/hosts/onboarding/setup_find_screen.dart`); it needs an app release
    carrying that step before hosts see it.
 3. Index records that already exist, because triggers only see new writes.
-   This needs a one-off backfill over `salesContactRelationships` and saved
-   instant drafts.
+   This needs a one-off backfill over `salesContactRelationships`.

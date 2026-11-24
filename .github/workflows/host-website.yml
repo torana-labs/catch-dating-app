@@ -93,9 +93,11 @@ jobs:
         if: ${{ steps.superseded.outputs.superseded != 'true' }}
         uses: ./.github/actions/find-queue-validation
         with:
+          # Analyze & test passes only when every Flutter job did, including
+          # the test shards that run the Host package's tests.
           jobs: |
             flutter / Flutter analysis and gates
-            flutter / Catch UI, Consumer & Host package tests
+            flutter / Analyze & test
 
   validate:
     name: Validate standalone Host web
@@ -126,13 +128,17 @@ jobs:
       - run: flutter pub get
         if: ${{ needs.queue-validation.outputs.validated != 'true' }}
 
+      # The Host package and the root library it builds from: the shared
+      # pages and contexts, and the host screens still waiting to move into
+      # apps/host (#2373).
       - name: Analyze Host-owned Flutter surfaces
         if: ${{ needs.queue-validation.outputs.validated != 'true' }}
-        run: flutter analyze --no-fatal-infos apps/host lib/hosts lib/events
+        run: flutter analyze --no-fatal-infos apps/host lib
 
-      - name: Test standalone Host roster behavior
+      - name: Test the Host package
         if: ${{ needs.queue-validation.outputs.validated != 'true' }}
-        run: flutter test --concurrency=1 test/hosts
+        working-directory: apps/host
+        run: flutter test --concurrency=1 --exclude-tags=golden
 
   package:
     name: Package exact Host Hosting bytes

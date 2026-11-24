@@ -1,8 +1,9 @@
 import type {EventAssistanceDeliveryAttempt as DeliveryAttempt} from
   "../../shared/generated/eventAssistanceDeliveryAttempt";
 import {parseDeliveryAttempt} from "./messageProtocol";
-import {mergeConfirmedDeliveryState, ConfirmedDeliveryState} from
-  "./deliveryReceiptState";
+import {mergeConfirmedDeliveryState} from "./deliveryReceiptState";
+import type {ConfirmedDeliveryState} from
+  "../../platform/delivery/confirmedDeliveryState";
 
 type LiveAttempt = Extract<DeliveryAttempt, {mode: "live"}>;
 

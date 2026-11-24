@@ -1,0 +1,22 @@
+{
+  "id": "foundingHostPlaces",
+  "path": "foundingHostPlaces/{organizerId}",
+  "rulesMatch": "/foundingHostPlaces/{organizerId}",
+  "typescriptInterface": "FoundingHostPlaceDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/founding_host_offers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps the founding-host offer config, organizer places and owner guards server-only"
+  ],
+  "owner": "the founding place grant (functions/src/foundingHosts)",
+  "writerContext": "payments",
+  "read": "server only; the founding place grant and its daily reconcile",
+  "write": "create-only in the transaction that increments foundingHostOffers takenCount, creates the owner's foundingHostOwnerPlaces guard and writes the founding trial into the organizer's commercial terms override; its existence makes the grant idempotent. Records the organizer's canonical owner when the place was taken",
+  "exportedFunctions": [
+    "onFoundingHostOrganizerWritten",
+    "reconcileFoundingHostPlacesDaily"
+  ],
+  "migrationNotes": [
+    "New collection keyed by organizer id; never updated or deleted by later cap, deadline, terms or ownership changes."
+  ]
+}

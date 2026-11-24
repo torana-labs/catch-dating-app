@@ -14,19 +14,18 @@ import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
 import 'package:catch_dating_app/organizers/presentation/discovery/widgets/organizer_discover_list.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_detail_screen.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_detail_view_model.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-
-import '../test_pump_helpers.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

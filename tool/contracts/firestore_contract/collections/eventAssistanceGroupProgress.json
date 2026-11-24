@@ -1,0 +1,14 @@
+{
+  "id": "eventAssistanceGroupProgress",
+  "path": "eventAssistanceGroupProgress/{progressId}",
+  "rulesMatch": "/eventAssistanceGroupProgress/{progressId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "event-assistance group progress commands",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "confirmEventAssistanceDeparture",
+    "changeEventAssistanceRoute"
+  ]
+}

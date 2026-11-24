@@ -124,7 +124,6 @@ stays until no supported app build calls it.
 | What is done twice | Where | Plan | Status |
 |---|---|---|---|
 | Catch Host guest import split across two callables | `lib/contexts/audience/data/host_roster_intake_repository.dart`, `functions/src/events/hostRosterIntakeApply.ts` | App revise and apply move onto `guests.import-list`; the old callable stays for older builds | PR #2249 |
-| Old instant-draft pipeline | `functions/src/instantDrafts/{request,status,materialize,expiry,publishOnClaim}.ts`, exported from `functions/src/index.ts` | Remove the two client-less callables, then drain existing requests before removing the trigger and expiry job; keep `links.ts` and `model.ts` | Open |
 | Older app builds write `eventSuccessPlans` directly | `firestore.rules` (`match /eventSuccessPlans`) repeats `planSetup` checks | Close client create and update once older builds fall below the support floor | Needs support floor |
 | Two Anthropic clients, four spend ledgers | `programs/assistant/provider.ts` and `budget.ts`; `aiFallbackUsage`; sales provider grants; `supplyIntakeUsage` | Move the assistant onto the operations provider with federation tokens; one reserve-then-settle ledger shape | Open |
 | Host fee figures typed twice | `website/src/content/pricing.ts` vs `commercialTerms` used by `sales.import-past` | Generate the website figures from commercial terms, or check they match | Open |

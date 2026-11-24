@@ -1,30 +1,43 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_controller.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_step.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_controller.dart';
+import 'package:catch_dating_app/routing/router_frame.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+/// A container with `uid-a` signed in, so session-lifetime providers hold
+/// their lease.
+Future<ProviderContainer> _signedIn() async {
+  final container = ProviderContainer(
+    overrides: [uidProvider.overrideWith((ref) => Stream.value('uid-a'))],
+  );
+  // A provider with no listener is paused, so the sign-in is listened to.
+  container.listen(uidProvider, (_, _) {});
+  await container.read(uidProvider.future);
+  return container;
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
-  group('keepAlive provider lifecycle', () {
+  group('kept-alive and session-lifetime providers', () {
     test(
       'companion launch registry retains de-dupe state without listeners',
       () async {
-        final container = ProviderContainer();
+        final container = await _signedIn();
         addTearDown(container.dispose);
 
         final subscription = container.listen(
@@ -132,7 +145,7 @@ void main() {
     });
 
     test('onboarding form state survives step listener disposal', () async {
-      final container = ProviderContainer();
+      final container = await _signedIn();
       addTearDown(container.dispose);
 
       final subscription = container.listen(
@@ -163,7 +176,7 @@ void main() {
     test(
       'Explore city selection keeps manual choice and guard across listeners',
       () async {
-        final container = ProviderContainer();
+        final container = await _signedIn();
         addTearDown(container.dispose);
 
         final subscription = container.listen(
@@ -195,7 +208,7 @@ void main() {
     );
 
     test('Explore search query survives listener disposal', () async {
-      final container = ProviderContainer();
+      final container = await _signedIn();
       addTearDown(container.dispose);
 
       final subscription = container.listen(
@@ -250,13 +263,12 @@ void main() {
       await signIn(null);
       expect(subscription.read(), isEmpty);
 
-      container.read(chatSearchQueryProvider.notifier).setQuery('morgan');
       await signIn('uid-b');
       expect(subscription.read(), isEmpty);
     });
 
     test('Explore filters survive listener disposal', () async {
-      final container = ProviderContainer();
+      final container = await _signedIn();
       addTearDown(container.dispose);
 
       final subscription = container.listen(exploreFiltersProvider, (_, _) {});
@@ -275,6 +287,63 @@ void main() {
       final retainedFilters = container.read(exploreFiltersProvider);
       expect(retainedFilters.timeFilter, ExploreTimeFilter.thisWeek);
       expect(retainedFilters.distanceFilter, ExploreDistanceFilter.fiveKm);
+    });
+
+    test('session-lifetime state ends with the signed-in period', () async {
+      final auth = StreamController<String?>();
+      addTearDown(auth.close);
+      final container = ProviderContainer(
+        overrides: [uidProvider.overrideWith((ref) => auth.stream)],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(uidProvider, (_, _) {});
+      addTearDown(uidSubscription.close);
+
+      Future<void> signIn(String? uid) async {
+        auth.add(uid);
+        await container.pump();
+      }
+
+      await signIn('uid-a');
+      container.read(exploreSearchQueryProvider.notifier).setQuery('dinner');
+      container
+          .read(exploreFiltersProvider.notifier)
+          .setTimeFilter(ExploreTimeFilter.thisWeek);
+      container
+          .read(hostOrganizerSelectionProvider('uid-a').notifier)
+          .select('organizer-1');
+      container
+          .read(eventSuccessCompanionLaunchRegistryProvider)
+          .claimLaunch(
+            eventId: 'event-1',
+            moment: EventSuccessCompanionLaunchMoment.checkedIn,
+          );
+      await container.pump();
+      expect(container.read(exploreSearchQueryProvider), 'dinner');
+      expect(
+        container.read(hostOrganizerSelectionProvider('uid-a')),
+        'organizer-1',
+      );
+
+      await signIn(null);
+      expect(container.read(exploreSearchQueryProvider), isEmpty);
+      expect(container.read(hostOrganizerSelectionProvider('uid-a')), isNull);
+
+      await signIn('uid-b');
+      expect(container.read(exploreSearchQueryProvider), isEmpty);
+      expect(
+        container.read(exploreFiltersProvider).timeFilter,
+        const ExploreFilterSelection().timeFilter,
+      );
+      expect(
+        container
+            .read(eventSuccessCompanionLaunchRegistryProvider)
+            .claimLaunch(
+              eventId: 'event-1',
+              moment: EventSuccessCompanionLaunchMoment.checkedIn,
+            ),
+        isTrue,
+      );
     });
   });
 }

@@ -7,6 +7,7 @@ import {
   requestViewEventFacts,
   requestViewParticipationFacts,
 } from "./requestViewStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type Data = FirebaseFirestore.DocumentData | undefined;
 const options = {retry: true};
@@ -62,7 +63,7 @@ export function requestViewAttendedCount(data: Data): number | null {
 
 /** Keeps the request views of the events a person waits on current. */
 export const onHostRequestViewParticipationWritten = onDocumentWritten({
-  ...options, document: "eventParticipations/{participationId}",
+  ...options, document: "eventBookings/{participationId}",
 }, async (event) => {
   const db = admin.firestore();
   for (const eventId of requestViewEventsForParticipation(
@@ -71,15 +72,17 @@ export const onHostRequestViewParticipationWritten = onDocumentWritten({
   }
 });
 
-/** Event name, time, capacity, bookings, status and waitlist policy. */
-export const onHostRequestViewEventWritten = onDocumentWritten({
-  ...options, document: "events/{eventId}",
-}, async (event) => {
-  if (!requestViewEventChanged(event.data?.before.data(),
-    event.data?.after.data())) return;
-  await reconcileHostEventRequestView(admin.firestore(),
-    event.params.eventId);
-});
+/**
+ * Event name, time, capacity, bookings, status and waitlist policy.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostRequestViewEventProjections = defineProjections("events", [{
+  id: "hostRequestView", kind: "projection",
+  when: (change) => requestViewEventChanged(change.before, change.after),
+  run: (change, ctx) => reconcileHostEventRequestView(ctx.db,
+    change.documentId),
+}]);
 
 /** A person's name on every coming event they wait on. */
 export const onHostRequestViewProfileWritten = onDocumentWritten({

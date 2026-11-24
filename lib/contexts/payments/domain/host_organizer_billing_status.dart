@@ -32,10 +32,62 @@ class HostTrialStatus {
         daysLeft: json['daysLeft'] as int?,
       );
 
+  /// The trial from a `hostOrganizerBillingViews` trial (#2306) at [now],
+  /// exactly as the server's `computeTrialStatus` derives it: [days] null
+  /// means Catch's terms are unset, no start means it has not started, and
+  /// the days left round up while it is scheduled or running.
+  factory HostTrialStatus.fromView(Map<Object?, Object?> trial, DateTime now) {
+    final days = trial['days'] as int?;
+    final startsAt = _dateOf(trial['startsAtMillis']);
+    final endsAt = _dateOf(trial['endsAtMillis']);
+    HostTrialStatus status(HostTrialState state, [int? daysLeft]) =>
+        HostTrialStatus(
+          state: state,
+          startsAt: startsAt,
+          endsAt: endsAt,
+          daysLeft: daysLeft,
+        );
+    if (days == null) {
+      return const HostTrialStatus(
+        state: HostTrialState.unconfigured,
+        startsAt: null,
+        endsAt: null,
+        daysLeft: null,
+      );
+    }
+    if (startsAt == null || endsAt == null) {
+      return status(days > 0 ? HostTrialState.notStarted : HostTrialState.none);
+    }
+    if (days <= 0) return status(HostTrialState.none);
+    if (!now.isBefore(endsAt)) return status(HostTrialState.ended);
+    final from = now.isAfter(startsAt) ? now : startsAt;
+    final daysLeft = (endsAt.difference(from).inMilliseconds / _dayMillis)
+        .ceil();
+    return status(
+      now.isBefore(startsAt) ? HostTrialState.scheduled : HostTrialState.active,
+      daysLeft,
+    );
+  }
+
+  static const _dayMillis = 24 * 60 * 60 * 1000;
+
   final HostTrialState state;
   final DateTime? startsAt;
   final DateTime? endsAt;
   final int? daysLeft;
+
+  /// When this status next changes by time alone: the trial starting, its
+  /// days left ticking down, or it ending. Null when nothing will.
+  DateTime? nextChangeAfter(DateTime now) {
+    final start = startsAt;
+    final end = endsAt;
+    final left = daysLeft;
+    if (start == null || end == null || left == null) return null;
+    if (state == HostTrialState.scheduled) return start;
+    if (state != HostTrialState.active) return null;
+    final next = end.subtract(Duration(milliseconds: (left - 1) * _dayMillis));
+    return next.isAfter(now) ? next : end;
+  }
 
   static DateTime? _dateOf(Object? millis) => millis == null
       ? null
@@ -109,6 +161,23 @@ class HostOrganizerBillingStatus {
               : Map<String, Object?>.from(json['plan']! as Map),
         ),
       );
+
+  /// The status from a `hostOrganizerBillingViews` document (#2306) at
+  /// [now]: the trial derived from its facts, the plan as stored.
+  factory HostOrganizerBillingStatus.fromView(
+    Map<Object?, Object?> view,
+    DateTime now,
+  ) {
+    final trial = view['trial'];
+    final plan = view['plan'];
+    if (view['version'] != 1 || trial is! Map || plan is! Map) {
+      throw const FormatException('Invalid organizer billing view.');
+    }
+    return HostOrganizerBillingStatus(
+      trial: HostTrialStatus.fromView(trial, now),
+      plan: HostPlanStatus.fromJson(Map<String, Object?>.from(plan)),
+    );
+  }
 
   final HostTrialStatus trial;
   final HostPlanStatus plan;

@@ -1,8 +1,9 @@
 import 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
+import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_form_new_response_count.g.dart';
@@ -20,11 +21,12 @@ Future<int?> hostFormNewResponseCount(
   required String formId,
 }) async {
   final firestore = ref.watch(firebaseFirestoreProvider);
-  final reader = HostSummaryReader(
+  final reader = ScopedReadModelReader(
     firestore,
+    family: hostReadModels,
     actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
   );
-  final directory = await reader.directory(organizerId);
+  final directory = await reader.readiness(organizerId);
   if (directory?['responseSummaryVersion'] != 1) return null;
   final snapshot = await withBackendErrorContext(
     () => firestore

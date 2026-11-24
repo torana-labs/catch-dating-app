@@ -5,7 +5,6 @@ import 'package:catch_dating_app/contexts/events/data/event_publication_journal.
 import 'package:catch_dating_app/contexts/events/data/event_publication_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_journal.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_journal.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
@@ -74,7 +73,6 @@ class SetupViewFeed extends ReadModelFeed<PrivateEventSetupView> {
     final revision = switch (result) {
       PrivateEventCreateReceipt(:final setupRevision) => setupRevision,
       EventPublicationReceipt(:final setupRevision) => setupRevision,
-      PrivateSeatReconciliationResult(:final receipt?) => receipt.setupRevision,
       _ => null,
     };
     if (revision != null && revision > _floor.value) _floor.value = revision;

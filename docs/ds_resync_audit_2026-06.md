@@ -310,7 +310,7 @@ data-threading into the hero); series kicker (no `Event` series/recurrence field
 - **`CatchOptionCard`** (Wave 2) — `lib/core/widgets/catch_option_card.dart`: descriptive
   selectable choice card (check/circle + ink-border selected + ink wash).
 - **`CatchOrganizerDock` + `OrganizerMembershipDock`** (Wave 2 primitive **+ Wave 4 screen**) —
-  `lib/organizers/presentation/detail/widgets/catch_club_dock.dart`: the 4-state pinned club
+  `lib/pages/organizer/widgets/catch_club_dock.dart`: the 4-state pinned club
   dock (guest/visitor/member/owner) with count block, activity-pigmented Join CTA,
   accent-filled notifications bell (fixes the raw-Material-colorScheme bell drift), quiet
   "Joined" control, and mono footnote. **Wired** into `OrganizerDetailScreen` as

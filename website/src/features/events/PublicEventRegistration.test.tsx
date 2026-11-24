@@ -80,3 +80,17 @@ it("requires birth date when the current event has an age restriction", async ()
   expect(await screen.findByLabelText("Date of birth — required for this event")).toBeTruthy();
   expect(api.register).not.toHaveBeenCalled();
 });
+
+it("carries the terms line on the account step and no separate ad notice", async () => {
+  api.account.mockResolvedValue({uid: "guest", accountReady: false, displayName: "", phoneNumber: "+919999999999", profileRevision: 0, dateOfBirth: null, eventAge: null});
+  render(<PublicEventRegistration eventId="event-1" />, {wrapper});
+  expect((await screen.findByRole("link", {name: "terms"})).getAttribute("href")).toBe("/terms/");
+  expect(screen.getByRole("link", {name: "privacy policy"}).getAttribute("href")).toBe("/privacy/");
+  expect(screen.queryByText(/Google and Meta/u)).toBeNull();
+});
+it("shows no ad notice by the register button and no longer says booking data is not for advertising", async () => {
+  render(<PublicEventRegistration eventId="event-1" />, {wrapper});
+  await screen.findByLabelText(copy.nameLabel);
+  expect(screen.queryByText(/Google and Meta/u)).toBeNull();
+  expect(screen.queryByText(/not permission for advertising/iu)).toBeNull();
+});

@@ -1,0 +1,10 @@
+{
+  "id": "salesOutreachJobs",
+  "path": "salesOutreachJobs/{jobId}",
+  "rulesMatch": "/salesOutreachJobs/{privateDocument=**}",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales intelligence generate callable",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

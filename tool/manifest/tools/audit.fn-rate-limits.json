@@ -1,0 +1,32 @@
+{
+  "id": "audit:fn-rate-limits",
+  "category": "audit",
+  "path": "tool/audit/check_fn_rate_limits.mjs",
+  "command": "node tool/audit/check_fn_rate_limits.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Checks every literal checkRateLimit action under functions/src has a matching RATE_LIMITS entry.",
+  "checks": [
+    "node --check tool/audit/check_fn_rate_limits.mjs",
+    "node --test tool/audit/check_fn_rate_limits.test.mjs",
+    "node tool/audit/check_fn_rate_limits.mjs"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "FN-RATE-001",
+      "title": "Every checkRateLimit call passes its own required limit; the shared module holds no per-action table",
+      "appliesTo": [
+        "functions/src/**"
+      ],
+      "instruction": "Declare each callable's limit where it calls checkRateLimit, inline or as a constant in a module only that callable family imports. The limit parameter is required, so no call falls back to a loose default. Never add a per-action limit table to functions/src/shared/rateLimit.ts: nearly every Function imports it, so editing it makes the backend deploy select every Function. Its frozen LEGACY_RATE_LIMITS table covers only callers whose module another task's claim holds; it may only shrink. demoOps and other privileged fan-out callables must declare dedicated limits."
+    }
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "queueGate": "always"
+}

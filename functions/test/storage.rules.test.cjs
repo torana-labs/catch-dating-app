@@ -717,7 +717,7 @@ describe("storage.rules", () => {
         organizerId: "club-1",
         startTime: Timestamp.fromMillis(Date.now() - 60 * 1000),
       });
-      await seedFirestore(["eventParticipations", "event-1_guest-1"], {
+      await seedFirestore(["eventBookings", "event-1_guest-1"], {
         eventId: "event-1",
         uid: "guest-1",
         status: "attended",

@@ -31,7 +31,7 @@ This spec consolidates and normalizes guidance from:
   token tiers, sizing rules, design-tool boundaries, and analyzer-plugin policy.
 - `docs/widget_catalog.md`: widget ownership, primitive governance, public
   widget catalog, and private-helper remediation.
-- `tool/tools_manifest.json`: rules a tool enforces, on the tool that enforces
+- `tool/manifest/tools/`: rules a tool enforces, on the tool that enforces
   them, such as `CONTROLLER-BOUNDARY-001`, `PROVIDER-SEAM-001`,
   `MUTATION-ERROR-SURFACE-001`, `PENDING-SNAPSHOT-001`,
   `EXTERNAL-SIDE-EFFECT-001`, `UI-LINT-001`, and `WIDGET-CATALOG-001`.
@@ -281,7 +281,7 @@ Two habits reviewers hold every layer to:
   production code, route or config registration, or a Widgetbook use case or
   capture-catalog entry for a component with a widget-catalog or contract entry.
   Test-only references do not count, and Widgetbook alone does not count without
-  that entry. `lib/design_fixtures` and intentional in-dev features are exempt.
+  that entry. `packages/catch_test_support/lib/design_fixtures` and intentional in-dev features are exempt.
   Delete orphaned symbols together with their dead tests.
 
 ## Bounded Context Contract
@@ -295,7 +295,8 @@ on which tab shows the data.
 their order and where every current folder belongs. The `catch_arch_*` lints in
 `packages/catch_ui_lints` read it and check every file inside the analyzer;
 `audit:context-map` (`tool/architecture/check_context_map.mjs`) checks that the
-map is well formed and that the table below matches it.
+map is well formed, that every root and legacy path in it still matches a
+tracked file, and that the table below matches it.
 
 ### Target layout
 
@@ -393,15 +394,19 @@ may read repositories and platform plugins.
    events and hosts folders came to import each other. Rule 2 catches the
    result.
 7. One context writes each Firestore collection and calls each callable,
-   matching `docs/backend_operation_catalog.md`. Manual review: the author of
-   each move PR names the collections and callables the context writes.
+   matching `docs/backend_operation_catalog.md`. Each collection's
+   `writerContext` in `tool/contracts/firestore_contract/collections/<id>.json` names it, and
+   `check_functions_contexts.mjs` checks the Functions writes against it
+   (see Backend contexts). Callables remain manual review.
 8. Context names are product nouns used the same way in Flutter,
-   `functions/src` and the website. Manual review when a context is added.
+   `functions/src` and the website. `check_functions_contexts.mjs` holds the
+   Functions map to this order and vocabulary; the website is manual review.
 
 A legacy import that has to break rules 1 or 2 takes a reasoned `// ignore:`
 next to the import; see [Enforcement And Overrides](#enforcement-and-overrides).
 Files under `lib/contexts/`, `lib/pages/`, `packages/kernel/lib/` and `packages/platform/lib/`
-take no exceptions, and rules 3 to 5 take none anywhere.
+take no exceptions, except a [carried screen](#carried-screens), and rules 3 to 5
+take none anywhere.
 
 ### Placing legacy folders
 
@@ -416,6 +421,78 @@ target for files no rule places, such as the `lib/core/` sort; the script
 moves them the same verified way, and the entry goes once its files have
 moved.
 
+### Backend contexts
+
+`functions/src` follows the same vocabulary (issue #1350). Every handwritten
+module sits in one of four places, recorded in
+`tool/architecture/functions_context_map.json`:
+
+- **platform:** Firebase seams, delivery providers, the durable operations
+  runtime, admin role checks and audit, the Anthropic identity, shared
+  contracts. Target root `functions/src/platform/`.
+- **domain contexts:** data writes and rules, grouped by who owns the data.
+  They are the contexts above, in the same order, plus two backend-only
+  contexts declared after `insights`: `sales` (Catch's own pipeline,
+  partners, demos and walkthroughs, city interest, the launch waitlist) and
+  then `supply` (external events, listing intake, approval, publication and
+  visibility policy, suppressions and takedowns), which calls into sales but
+  never the reverse. Target root
+  `functions/src/domain/<context>/`.
+- **surfaces:** endpoints and read models built for one client: `admin`,
+  `host`, `website` and `ops`. Target root `functions/src/surfaces/<surface>/`.
+- **entry:** `functions/src/index.ts` and the area entries it stars,
+  `functions/src/<area>/functions.ts` (named re-exports only; see
+  `functions/README.md`, Function inventory).
+
+Rules, checked by `node tool/architecture/check_functions_contexts.mjs`:
+
+1. Platform imports only platform (`platformImportsUp`).
+2. Domain code never imports a surface (`domainImportsSurface`), and a surface
+   never imports another surface (`surfaceImportsSurface`). Code two clients
+   need belongs in a domain context or platform.
+3. A domain context imports only contexts declared before it
+   (`contextOrder`). Today's folders still mix contexts, so the map lists
+   each existing import against the order in `knownContextOrderImports`
+   (file and target, printed by `--list-context-order`). Any other such
+   import fails, and so does a listed one that no longer happens
+   (`staleKnownViolation`), so the list only shrinks. Issue #1350's file
+   splits empty it.
+4. A collection is written only from the `writerContext` its entry in
+   `tool/contracts/firestore_contract/collections/<id>.json` names: a domain context, a
+   surface for its own read models, `platform`, or `shared` for a deliberate
+   shared outbox (today only `deliveryMessages`, which says why in
+   `sharedWriterReason`). Other contexts call the owner's functions inside
+   their own transaction (`foreignWrite`, `writerContext`). The write
+   detector reads the syntax tree and follows references it can see, so it
+   is a lower bound. Existing cross-context writes are listed one by one in
+   `knownCrossContextWrites` (file and collection, printed by
+   `--list-foreign-writes`), with the same rule: an unlisted write fails, and
+   a listed one that no longer happens must be removed.
+5. Every module is placed, and every placement still places a file
+   (`unplaced`, `stalePlacement`).
+6. A source collection served by a dispatcher (issue #2451) has one
+   Firestore trigger, `dispatch<Source>`, built by
+   `functions/src/platform/dispatch/runtime.ts`. Each context registers its
+   projections for it with `export const <name> =
+   defineProjections("<source>", [...])` beside the code they run, and
+   `node tool/architecture/generate_dispatch_registries.mjs` writes the
+   generated registry `functions/src/<area>/dispatch/<source>.generated.ts`
+   from `functions/dispatch-sources.json`. That registry is the one module
+   that may import any context or surface (the map's `dispatchRegistries`
+   pattern); only its area's `functions.ts` imports it
+   (`dispatchRegistryImported`), and `--check` fails on a stale registry.
+   Only convergent work registers: a projection re-reads its source, and an
+   effect names the `commandReceipts` command it dedupes with by event id.
+
+Until the scripted move, the map's `legacy` list places today's folders; the
+longest path wins, and a path that does not end in `/` places one file, so a
+mixed folder can be placed file by file. Code moved before the scripted move
+goes under its target root, and its legacy entry goes with it. Moving a file
+that `index.ts` exports from changes its deploy codebase
+(`functions/deploy-codebases.json` groups exports by top-level folder), so an
+exported endpoint in the wrong folder is placed by a file entry until the
+scripted move handles codebases.
+
 ### Host destinations
 
 Host destinations are app folders, `apps/host/lib/<destination>/`. They read
@@ -425,10 +502,11 @@ data because two tabs show it. Regrouping tabs, such as the proposed merge of
 Audience and Inbox into People, moves app folders only.
 
 `design/features/host_feature_responsibilities.json` keeps generating the
-product guide and route-owner `README.md` for each current host root until
-that destination's screens move. It does not make a destination a context.
-Edit the machine-readable source and regenerate; do not hand-maintain the
-summaries.
+product guide and route-owner `README.md` for each host destination. Its
+`targetRoot` is the legacy `lib/hosts/<id>` until the destination moves, then
+`apps/host/lib/<id>`, with Audience and Inbox under `apps/host/lib/people/`. It
+does not make a destination a context. Edit the machine-readable source and
+regenerate; do not hand-maintain the summaries.
 
 ### Migration by phase
 
@@ -444,7 +522,9 @@ The `catch_arch_*` lints place each file by layer rather than matching
 the clock rule,
 `actions/` the controller exemptions, `parts/` the provider-free rule, and
 `lib/pages/` and `apps/<app>/lib/<destination>/` the screen rules. Findings
-under these roots take no exceptions, so moved code arrives clean.
+under these roots take no exceptions, so moved code arrives clean; the one
+exception is a [carried screen](#carried-screens), which a Phase 4 move brings
+in under the rules of the legacy path it left.
 
 The app packages include the root `analysis_options.yaml` and stay in the root
 analysis, so the Catch UI and Riverpod plugins reach them from the root analysis
@@ -479,35 +559,110 @@ PRs:
 
 The baseline is empty when this phase ends.
 
-#### Phase 4: move screens when they are redrawn
+#### Phase 4: move every legacy screen into its app
 
-Each redrawn screen is written in `apps/<app>/lib/<destination>/`, or
-`lib/pages/` when both apps show it, and the old screen is deleted in the same
-PR (Migration Protocol v2). Destinations are disjoint folders, so these PRs can
-run in parallel. Riverpod code generation already runs inside both app packages:
-`dart run build_runner build` from `apps/<app>`, using that package's `build.yaml`.
-The first screen PR proves tests inside an app package with one host destination;
-if that proves too costly, screens go to `lib/apps/<app>/` instead, placed as the
-app layer in the map.
+Issue #2373 holds the plan and its PRs; this section holds the contract. The
+owner asked on 23 November 2026 to finish the move now rather than one redraw at
+a time, so every legacy screen moves as it is, with no behavior change:
+
+- **Where a file goes.** A file only the Host app reaches goes to
+  `apps/host/lib/<destination>/`; one only the consumer app reaches goes to
+  `apps/consumer/lib/<destination>/`; one both reach, or one a shared page
+  (event, organizer, chat, sign-in, start, the app frame) reaches, goes to
+  `lib/pages/<page>/`. A mutation controller or query provider that more than
+  one of those uses, and whose imports keep context order, goes to
+  `lib/contexts/<context>/actions/` or `data/`. A destination may nest, such as
+  `apps/host/lib/people/audience/`. Nothing moves mechanically into
+  `lib/pages/startup/` or a context's `parts/`, which Widgetbook reads as its
+  corpus.
+- **Why app packages.** Screens go in the app packages, not `lib/apps/`: the
+  package boundary makes the compiler hold that `lib/` never imports a screen
+  and that the consumer app never mounts a Host screen, during `flutter build`
+  as well as in the analyzer. Riverpod and Freezed code generation run inside
+  each app package (`dart run build_runner build` from `apps/<app>`).
+- **Routers.** The two routers leave `lib/`: `apps/host/lib/routing/` holds the
+  Host route graph and `apps/consumer/lib/routing/` the consumer one, each with
+  its shell; what both apps draw around them (the app root, bootstraps, router
+  refresh and redirect, shell chrome) goes to `lib/pages/frame/`, and
+  `app_deep_links.dart` to `packages/platform/lib/routing/`. The role-selected
+  router provider is already gone (each app's root passes its own), so once
+  the routers move `lib/` cannot build either. Each router declares its own
+  `GoRoute`s for the pages both apps mount.
+  `tool/ui_capture/check_route_inventory.mjs` reads every file in its
+  `canonicalRouterFiles`, each as its own graph, and
+  `test/routing/router_topology_test.dart` holds both routers' routes against
+  committed snapshots, which the split must leave unchanged.
+- **The codemod.** `tool/architecture/move_screens.mjs` makes every move from
+  the `moveTo` and `group` fields of the map's legacy entries. A library moves
+  with its parts and generated parts, tests follow the files they import into
+  the app package, path mentions outside Dart are rewritten, generated outputs
+  are regenerated rather than edited, and files that move from code not drawn
+  to the new-root rules are [carried](#carried-screens). Each move writes its
+  own record, `tool/architecture/screen_moves/<group>.json`, so `--verify` and
+  `--imports-only` work after a squash merge, and replays follow each record's
+  `sequence`. Moves run in parallel: no two edit the same record, and the map's
+  legacy entries and the carried list keep one entry per line with a blank line
+  between neighbours, so moves that drop or carry different entries touch no
+  shared line. A move PR's diff is renames plus directive and path lines; a
+  conflict is resolved by rerunning the codemod on the latest main, never by
+  hand.
+- **Order.** Infrastructure first (the codemod; lint and tool readiness; app
+  test shards and coverage; app-package dependencies; shared test support in
+  `packages/catch_test_support`; captures split per app), then the actions and
+  data sweep per context, the router split (hand-written, inside `lib/routing`,
+  then moved), the shared pages, and the Host and consumer waves, which run in
+  parallel within a wave.
+- **Host journeys.** Host integration journeys run from an `apps/host/macos`
+  runner instead of through the consumer app's `integration_test/`.
 
 #### Phase 5: delete empty legacy folders
 
 Delete a legacy folder and its map entries once it is empty. The rule sunsets
-when the legacy list is empty.
+when the legacy list is empty, and `lib/` then holds only `contexts/`, `pages/`
+and its README. The carried list sunsets on its own, when redraws empty it.
 
 ### Screen state files
 
-Files under `lib/**/presentation/**` ending in `_state.dart` are provider-free
-display adapters by naming convention. They may depend on domain/core/value
-types and `CatchAsyncState`, but they must not import Riverpod, declare
-providers, or call `ref.watch/read/listen`; provider-owned composition belongs
-in a neighboring `_view_model.dart`, `_controller.dart`, or route screen.
+Files ending in `_state.dart` under `lib/**/presentation/**`, `apps/*/lib/**`
+and `lib/pages/**` are provider-free display adapters by naming convention
+(`catch_arch_state_file_provider_coupling`; under `apps/*/lib` and `lib/pages`,
+`catch_arch_provider_free_boundary` holds them too). They may depend on
+domain/core/value types and `CatchAsyncState`, but they must not import
+Riverpod, declare providers, or call `ref.watch/read/listen`; provider-owned
+composition belongs in a neighboring `_view_model.dart`, `_controller.dart`, or
+route screen. A [carried](#carried-screens) `_state.dart` keeps the rule of the
+path it moved from.
 When a route edge translates Riverpod `AsyncValue` into `CatchAsyncState`, it
 must use `catchAsyncStateFromAsyncValue` from
 `packages/platform/lib/riverpod_ui/catch_async_value_adapter.dart`. That adapter preserves
 the exhaustive presentation phase: initial loading, retrying, data,
 refreshing data, stale data with an error, or terminal error. A loading retry
 without credible data always renders loading, never its previous error.
+
+### Carried screens
+
+`tool/architecture/carried_screens.json` lists `{path, from}` for files under
+`apps/*/lib` and `lib/pages` that keep the rules of a legacy path until their
+redraw. The Phase 4 codemod adds an entry for each file it moves whose old path
+is not under a new root, so a move changes no finding: the Catch lints evaluate
+the file as its `from` path. `placeSource` places it there, so its layer rules
+and reasoned `// ignore:`s stand; the screen rules read their folder-shaped
+flags (feature presentation, presentation, the UI-system scan) from it; and
+zero drawing, the new-root debt rule and the path-made provider-free promise
+stay off. Placement in the context map and the Firestore boundary still read
+the real path, and the codemod's closure checks hold the imports.
+
+`catch_arch_stale_carry` runs the screen and architecture rules again in shadow,
+as if the library were not carried, and reports each carried unit of a library
+that would then be clean. The codemod drops every entry it reports, and an
+entry cannot be ignored, so the list only shrinks between moves. A library and
+its parts share one verdict, because the screen rules read the library's path.
+`tool/design/check_library_shims.mjs` skips carried files and fails when one is
+gone, so a library is not clean while any unit silences a Catch lint or
+`deprecated_member_use`, or uses a catch_ui element that is deprecated or a
+registry legacy member: the shims gate would refuse it once uncarried. The two screens that predate D24 (`splash_screen.dart`,
+`celebration_screen.dart`) are carried as their own path until their P6
+redraw; no other entry may carry itself.
 
 ### Event Dress Rehearsal Boundary
 
@@ -539,7 +694,8 @@ all rehearsal collections remains denied.
 
 ### Exhibit ARCH-ROUTER-LIFECYCLE-001: App Router And Integration-Test Lifecycle
 
-`goRouterProvider` owns both its `GoRouter` disposal and a fresh set of
+Each app's router provider (`consumerGoRouterProvider`, `hostGoRouterProvider`)
+owns both its `GoRouter` disposal and a fresh set of
 `GlobalKey<NavigatorState>` instances for that provider-container lifecycle.
 Navigator keys must not be file-level singletons: a disposed app/test container
 must be able to mount a new router without retaining navigation state.
@@ -575,7 +731,7 @@ applied after this spec uses these owners:
   is an event agenda surface. Do not recreate top-level `lib/calendar`.
 - Chat and host-inbox list UI lives under `lib/chats/presentation/inbox`.
   Match lifecycle data and domain behavior live in `lib/contexts/connections`;
-  `lib/matches/presentation` keeps match-specific screens such as the
+  `lib/pages/inbox` keeps match-specific screens such as the
   celebration dialog.
 - Event formatters, arrival policy, QR payloads, map links, calendar links,
   invite/share copy, and check-in location services live in
@@ -738,6 +894,10 @@ provider exceptions, so moving a file moves its reviews:
 ```dart
 // provider-graph: cross-feature-presentation:lookupProvider->otherProvider planned CAT156 -- why this edge still exists
 ```
+
+A provider under `apps/*/lib` or `lib/pages` raises no cross-feature-presentation
+candidate: composing several features is a screen's job, so a moved screen
+brings no new review with it. A move removes the reviews this makes stale.
 
 The check rejects dangling or duplicate provider nodes,
 unresolved internal references, reactive cycles, unreviewed candidates, and
@@ -1063,8 +1223,9 @@ contracts as substring counts.
 The consumer shell and compact Host shell own bottom tab chrome only for
 root-screen screens. The medium and expanded Host shell instead owns persistent
 side navigation. Branch child routes that own their own route chrome or bottom
-affordance must set `parentNavigatorKey: _rootNavigatorKey` in
-`lib/routing/go_router.dart` so compact detail CTAs, chat composers, and
+affordance must set `parentNavigatorKey: keys.root` in their app's router
+(`lib/routing/consumer_router.dart`, `lib/routing/host_router.dart`) so compact
+detail CTAs, chat composers, and
 full-screen actions are not rendered under the floating tab bar. A later
 master-detail adopter may intentionally keep a child selection inside its Host
 branch on medium or expanded layouts, but the route remains the selection
@@ -2394,7 +2555,7 @@ Candidate patterns:
 | Error banner | `packages/catch_ui/lib/src/components/catch_banner.dart` |
 | Mutation helpers | `packages/platform/lib/riverpod_ui/mutation_error_util.dart` |
 | Mutation subscriptions and transient error notices | `packages/platform/lib/riverpod_ui/catch_notice_feedback.dart` |
-| Global error handlers | `lib/app_bootstrap.dart` |
+| Global error handlers | `lib/pages/frame/app_bootstrap.dart` |
 
 ### Event conversation session ownership
 
@@ -2514,10 +2675,10 @@ implementation.
 
 Reference files:
 
-- `lib/auth/presentation/auth_controller.dart`
-- `lib/auth/presentation/auth_presentation_state.dart`
+- `lib/pages/sign_in/auth_controller.dart`
+- `lib/pages/sign_in/auth_presentation_state.dart`
 - `lib/auth/presentation/phone_step.dart`
-- `test/auth/presentation/auth_controller_test.dart`
+- `test/pages/sign_in/auth_controller_test.dart`
 - `test/auth/presentation/auth_screen_test.dart`
 
 An in-flight request owns the exact input snapshot that was submitted. A
@@ -2960,7 +3121,8 @@ concept under different names.
 
 Ratified 2026-11-02 (blueprint D24 and D25). This section binds every file under
 `apps/host/lib/`, `apps/consumer/lib/` and `lib/pages/` from the first redesigned
-screen, with no baseline and no exceptions. Legacy `presentation/` folders follow
+screen, with no baseline and no exceptions but the
+[carried screens](#carried-screens) a Phase 4 move brings in until their redraw. Legacy `presentation/` folders follow
 the rest of this document until they are redrawn. "PR 1.4" and the like use the
 numbering of the
 [redesign programme plan](https://github.com/torana-labs/catch-knowledge/blob/main/plans/redesign-implementation-programme.md).
@@ -3034,7 +3196,8 @@ counts the classes in a file.
 These hold from PR 1.4, with seeded probes in `tool/check_catch_ui_lints.sh`, one
 of them a real file under `apps/host/lib`. `newRootPath` in
 `packages/catch_ui_lints/lib/src/migration_scope.dart` names the roots, and every
-screen rule runs there whatever the folder is called. `catch_no_raw_surface_shell`
+screen rule runs there whatever the folder is called, except in a
+[carried screen](#carried-screens). `catch_no_raw_surface_shell`
 also rejects `Theme.of` and a raw `Icon` here; `catch_text_requires_style` any raw
 `Text`, `RichText` or `SelectableText`; `catch_no_raw_ui_spacing` any number in
 `SizedBox` or `EdgeInsets`, and a non-zero one in a spacing argument of any widget;
@@ -3064,9 +3227,9 @@ a progressive-setup command (create, basics update, details, preferences,
 publication) through the setup controllers, which follow their listeners.
 The draft poster and the plan step row live in the events `parts/`. The
 folders move into `apps/host` unchanged with the router. Two
-files under `lib/pages` predate D24 and are listed shrink-only in `migration_scope.dart`
-until their P6 redraw (`splash_screen.dart`, `celebration_screen.dart`); the list
-cannot grow, and `apps/*/lib` stays at zero with no list.
+files under `lib/pages` predate D24 and are carried until their P6 redraw
+(`splash_screen.dart`, `celebration_screen.dart`); see
+[Carried screens](#carried-screens).
 
 #### Phase library shims reach zero
 
@@ -3517,7 +3680,7 @@ Reference implementation:
 - `packages/l10n/l10n.yaml` — deterministic `gen_l10n` configuration;
 - `packages/l10n/lib/app_en.arb` — canonical typed English Flutter catalog;
 - `packages/l10n/lib/l10n.dart` — presentation access seam and isolated-preview fallback;
-- `lib/app.dart` — shared locale delegates, supported locales, and role-aware
+- `lib/pages/frame/app.dart` — shared locale delegates, supported locales, and role-aware
   app title;
 - `lib/routing/shell/app_shell.dart` and
   `lib/routing/shell/host_app_shell.dart` — semantic navigation destinations
@@ -3526,7 +3689,7 @@ Reference implementation:
   at the app boundary;
 - presentation-state factories such as
   `lib/onboarding/presentation/onboarding_flow_state.dart`,
-  `lib/events/presentation/event_detail_screen_state.dart`, and
+  `lib/pages/event/event_detail_screen_state.dart`, and
   `lib/event_success/presentation/event_success_companion_screen_state.dart`
   — receive `AppLocalizations` explicitly and return resolved display copy;
 - `lib/contexts/events/parts/event_activity_visuals.dart` — resolves semantic taxonomy
@@ -3810,7 +3973,7 @@ The Host Inbox contract is:
   event-id sentinel;
 - personal two-party contacted-host inquiry threads, separated by event;
 - Booked and Prospective thread views, with broadcast counts derived from
-  `eventParticipations` rather than conversation count;
+  `eventBookings` rather than conversation count;
 - inquiry-only users may appear as Prospective/Inquiry without becoming a
   broadcast recipient;
 - event broadcasts use a dedicated callable and produce Activity plus
@@ -4020,7 +4183,18 @@ the resolver rather than reproduce suffix or role formulas.
 
 ## Routing And Navigation
 
-Routing remains centralized in `lib/routing/go_router.dart`.
+Each app declares its own route table in `lib/routing/`:
+`consumer_router.dart` (`consumerGoRouterProvider`) and `host_router.dart`
+(`hostGoRouterProvider`, with its Host workspace parts). What both share sits in
+`router_frame.dart` (the refresh bridge, the auth and profile redirect, the
+initial location, the loading route's screen and the shared `state.extra`
+readers) and `shell/shell_chrome.dart` (Firebase Messaging start-up and the
+destination bar and rail). There is no role-selected router: app roots, tests
+and Widgetbook pass an app's router provider to `MyApp(routerProvider:)`. The
+Phase 4 split later moves each router into its app package. The route inventory reads the
+files `canonicalRouterFiles` in `tool/ui_capture/check_route_inventory.mjs`
+lists, and `test/routing/router_topology_test.dart` snapshots both routers'
+routes, so a route change is always a reviewed snapshot change.
 
 Rules:
 
@@ -4045,7 +4219,7 @@ Do not reduce the decision to `uid != null` or a crawled/claimed boolean. Auth
 resolution, app role, profile readiness, viewer relationship, organizer
 visibility, effective lifecycle availability, and authority, event
 availability, and capability/runtime evidence remain separate inputs. Every
-consumer route in `go_router.dart` must have
+consumer route in `consumer_router.dart` must have
 exactly one matrix owner; a route hidden from guest tab chrome still needs an
 explicit guest and profile-readiness redirect. Run
 `node tool/run.mjs check design:public-surface-behavior` whenever a covered
@@ -4097,8 +4271,9 @@ boundary rather than distribute one monolith across `part` files.
 source under `lib/`, `apps/*/lib/`, `packages/` and `widgetbook/lib/`. A file above 800 lines states why in a `// size-exemption: <reason>`
 comment in its first 20 lines; no file passes 2,500 lines, exemption or not.
 The reason lives next to the code it excuses, so there is no baseline file to
-refresh. Today's exemptions are the route table in `lib/routing/go_router.dart`
-(the route inventory requires every `GoRoute` there), the `CatchField` facade in
+refresh. Today's exemptions are the Host route table in
+`lib/routing/host_router.dart` (the route inventory requires every Host `GoRoute`
+there), the `CatchField` facade in
 `packages/catch_ui/lib/src/components/catch_field.dart`, and two pre-existing
 monoliths that should be split before they grow further.
 
@@ -4110,7 +4285,7 @@ exemption.
 
 Use three enforcement levels.
 
-A rule a tool enforces is written on that tool in `tool/tools_manifest.json`:
+A rule a tool enforces is written on that tool in its `tool/manifest/tools/` file:
 its `rules` holds the id, title, paths and instruction, and any other tool that
 helps enforce it names the id in `alsoEnforces`. `node tool/run.mjs check
 --manifest-only` validates those entries. A rule no tool checks is a sentence in
@@ -4561,7 +4736,7 @@ but new campaign writes cannot submit legacy segment ids.
 Reference files:
 
 - `functions/src/shared/organizerContactOrigins.ts`
-- `functions/src/shared/organizerCommunicationPreferences.ts`
+- `functions/src/shared/contactPermissions.ts`
 - `functions/src/events/eventAttendees.ts`
 - `functions/src/organizers/organizerAudienceProjection.ts`
 - `functions/src/organizers/organizerContactMerges.ts`
@@ -4607,7 +4782,7 @@ Reference files:
 
 - `packages/catch_ui/lib/src/components/catch_poster.dart`
 - `packages/catch_ui/lib/src/components/catch_polaroid.dart`
-- `lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart`
+- `lib/pages/organizer/widgets/organizer_hero_top_bar.dart`
 - `lib/swipes/shared/profile_surface/profile_body.dart`
 - `design/components/catch.components.json`
 - `widgetbook/lib/organizers/catalog/poster.dart`
@@ -4695,9 +4870,9 @@ Reference files:
 - `lib/contexts/connections/domain/cross_paths_pair_hold.dart`
 - `lib/cross_paths/presentation/cross_paths_invitation_controller.dart`
 - `lib/cross_paths/presentation/cross_paths_invitation_screen.dart`
-- `lib/cross_paths/presentation/cross_paths_event_consent_controller.dart`
-- `lib/cross_paths/presentation/cross_paths_event_consent_state.dart`
-- `lib/cross_paths/presentation/cross_paths_event_consent_section.dart`
+- `lib/pages/event/cross_paths_event_consent_controller.dart`
+- `lib/pages/event/cross_paths_event_consent_state.dart`
+- `lib/pages/event/cross_paths_event_consent_section.dart`
 - `lib/contexts/events/domain/event.dart`
 - `lib/safety/presentation/settings_screen.dart`
 - `functions/src/crossPaths/pilotPolicy.ts`
@@ -4706,7 +4881,7 @@ Reference files:
 - `functions/src/crossPaths/pairHolds.ts`
 - `functions/src/events/eventPolicy.ts`
 - `functions/src/events/signUpUserForEvent.ts`
-- `test/cross_paths/cross_paths_event_consent_section_test.dart`
+- `test/pages/event/cross_paths_event_consent_section_test.dart`
 
 Use layered consent for an identifiable people surface: a private default-false
 global preference is the master permission, a deterministic caller-scoped edge
@@ -4809,10 +4984,10 @@ Preserve these boundaries in later adopters:
 
 Reference files:
 
-- `lib/events/presentation/event_detail_screen.dart`
-- `lib/events/presentation/event_detail_controller.dart`
-- `lib/events/presentation/widgets/event_detail_body.dart`
-- `test/events/event_detail_controller_test.dart`
+- `lib/pages/event/event_detail_screen.dart`
+- `lib/pages/event/event_detail_controller.dart`
+- `lib/pages/event/widgets/event_detail_body.dart`
+- `test/pages/event/event_detail_controller_test.dart`
 - `test/events/event_detail_widgets_test.dart`
 - `design/screens/catch.screens.json`
 - `widgetbook/lib/events/catalog/detail_screen.dart`
@@ -5091,7 +5266,7 @@ Reference files:
 
 - `packages/catch_ui/lib/src/components/catch_top_bar.dart`
 - `lib/dashboard/presentation/dashboard_home_screen.dart`
-- `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart`
+- `lib/pages/inbox/widgets/chats_sliver_header.dart`
 - `lib/explore/presentation/widgets/explore_header.dart`
 - `lib/user_profile/presentation/profile_screen.dart`
 

@@ -1,0 +1,3 @@
+| Function | Type | Initiator | Writes | Notes |
+|---|---|---|---|---|
+| `manageEventOfferCheckout` | Callable | Free acceptance and OTP recipient checkout (links come from `prepareEventOfferHandoff`) | Private invitation, claim, admission receipt and offer-payment ledger | App Check and actor rate limits; current manager issuance, existing phone OTP plus current Admin Auth claim, strict scoped payloads, UID-owned discovery/status and frozen attempt replay; cash terms reviewed before preparation and explicit quoted-amount cancellation with atomic seat release and durable refund intent. Link secret stays in the URL fragment. New issuance/claim/reservation retain the event-offer source gate. |

@@ -50,6 +50,10 @@ export class FakeDocRef {
   get id() {
     return this.path.split("/").pop()!;
   }
+  /** A subcollection of this document, as users/{uid}/... paths need. */
+  collection(name: string): FakeCollectionRef {
+    return new FakeCollectionRef(this.firestore, `${this.path}/${name}`);
+  }
   async get() {
     return new FakeDocSnapshot(this.id, this,
       this.firestore.getDoc(this.path));

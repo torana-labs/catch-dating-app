@@ -1,11 +1,12 @@
 import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/host_request.dart';
+import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:catch_platform/streams/combine_latest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -30,7 +31,7 @@ class HostRequestsRepository {
   static const eventWindow = 50;
 
   final FirebaseFirestore _db;
-  final HostSummaryReader _summaries;
+  final ScopedReadModelReader _summaries;
   final String? Function() actorId;
   final AppClock clock;
 
@@ -45,7 +46,7 @@ class HostRequestsRepository {
     }
     final views = _summaries.watchWindow(
       collection: _views,
-      organizerId: organizerId,
+      scopeId: organizerId,
       orderField: 'eventEndMillis',
       descending: false,
       limit: eventWindow,
@@ -97,7 +98,11 @@ HostRequestsRepository hostRequestsRepository(Ref ref) {
   String? actor() => auth.currentUser?.uid;
   return HostRequestsRepository(
     ref.watch(firebaseFirestoreProvider),
-    HostSummaryReader(ref.watch(firebaseFirestoreProvider), actorId: actor),
+    ScopedReadModelReader(
+      ref.watch(firebaseFirestoreProvider),
+      family: hostReadModels,
+      actorId: actor,
+    ),
     actorId: actor,
     clock: ref.watch(appClockProvider),
   );

@@ -27,10 +27,10 @@ export const playbookCopy = {
    * field left empty, and the thanks for each kind of request.
    */
   leadForm: {
-    /** {action} is the form's button, as the page words it. */
-    consent: "Tapping {action} means we’ll message you on WhatsApp about this request.",
+    /** One short line: how the reply comes. The privacy policy is linked after it. */
+    consent: "We reply on WhatsApp.",
     /** Names this wording on every stored consent; change it whenever the wording changes. */
-    consentVersion: "playbook-lead-whatsapp-v1",
+    consentVersion: "playbook-lead-whatsapp-v2",
     privacy: "Privacy policy",
     retry: "Try again",
     /** Under a field left empty when the button is tapped. */
@@ -48,7 +48,7 @@ export const playbookCopy = {
     },
     /** In the form's place once it is sent. */
     sent: {
-      guide: "Done. We’ll send you the guide on WhatsApp.",
+      guide: "Thanks. A person from our team will message you on WhatsApp.",
       venue: "Thanks. We’ll message you on WhatsApp about your space.",
       demo: "Thanks. We’ll message you on WhatsApp when your demo is ready.",
       walkthrough: "Thanks. We’ll confirm your time on WhatsApp.",

@@ -1,5 +1,6 @@
 import {describe, expect, it} from "vitest";
 import runClubs from "@content/playbook/pages/host/run-clubs.json";
+import {appLinkCopy} from "@content/appDownload";
 import {playbookCopy} from "@content/playbook/playbookCopy";
 import {websiteLeadCopy} from "@content/websiteLead";
 import {validatedPlaybookPage, type PlaybookLeadForm, type PlaybookPageDocument} from "../../content/playbook/playbookContract";
@@ -66,9 +67,17 @@ describe("playbook guide formats", () => {
   it("maps every format tag a page's guide form names, and every page form can be sent", async () => {
     const forms = await pageLeadForms();
     expect(forms.some(({form}) => form.id === "run_club_setup_guide")).toBe(true);
+    expect(forms.some(({form}) => form.requestKind === "app_link")).toBe(true);
     for (const {page, form} of forms) {
       const where = `${page.id} ${form.id}`;
       if (form.requestKind === "guide") expect(playbookGuideFormat(form.format), where).toBeDefined();
+      if (form.requestKind === "app_link") {
+        // The site's one "Text me the link" capture draws it (features/marketing), in its own words.
+        expect(playbookSendableLeadKind(form), where).toBeNull();
+        expect({label: form.label, submitLabel: form.submitLabel, fields: form.fields}, where)
+          .toEqual({label: appLinkCopy.label, submitLabel: appLinkCopy.submit, fields: undefined});
+        continue;
+      }
       // A try-it tool's form waits for its command: it never sends, so it never renders.
       expect(playbookSendableLeadKind(form), where).toBe(form.requestKind === "tool" ? null : form.requestKind);
       expect(form.id, where).toMatch(entryPattern);

@@ -1,0 +1,15 @@
+{
+  "id": "firebase:function-targets",
+  "category": "firebase",
+  "path": "tool/firebase/list_firebase_function_targets.mjs",
+  "command": "node tool/firebase/list_firebase_function_targets.mjs",
+  "surface": "local-read",
+  "status": "internal",
+  "description": "Checked by firebase:deploy-target-plan. Expands Firebase function deploy target names from Functions exports.",
+  "checks": [
+    "node --check tool/firebase/list_firebase_function_targets.mjs"
+  ],
+  "impactPaths": [
+    "functions/scripts/functionExports.cjs"
+  ]
+}

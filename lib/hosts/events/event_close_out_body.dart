@@ -7,7 +7,8 @@ import 'package:flutter/widgets.dart';
 
 /// Close out the night in board order: how many came of how many booked,
 /// why it matters, each booked guest nobody checked in with Came and
-/// Didn't come, and the after-closing switches.
+/// Didn't come, the attendance report and the after-closing switches. A
+/// guest recorded as not coming shows Didn't come on every visit.
 class HostEventCloseOutBody extends StatelessWidget {
   const HostEventCloseOutBody({
     super.key,
@@ -56,8 +57,13 @@ class HostEventCloseOutBody extends StatelessWidget {
       ...state.checked.where((attendee) => marks.containsKey(attendee.id)),
     ]..sort((a, b) => a.searchName.compareTo(b.searchName));
     final open = state.unchecked
-        .where((attendee) => !marks.containsKey(attendee.id))
+        .where(
+          (attendee) =>
+              !marks.containsKey(attendee.id) &&
+              !state.recordedNoShow(attendee),
+        )
         .length;
+    final report = state.report;
     return CatchPageBody.screen(
       child: CatchStack(
         gap: CatchStackGap.section,
@@ -98,12 +104,38 @@ class HostEventCloseOutBody extends StatelessWidget {
                   attendee: attendee,
                   came: attendee.status == EventAttendeeStatus.checkedIn
                       ? true
-                      : marks[attendee.id],
+                      : marks[attendee.id] ??
+                            (state.recordedNoShow(attendee) ? false : null),
                   onCame: () => onMark(attendee, true),
                   onNoShow: () => onMark(attendee, false),
                 ),
             ],
           ),
+          if (report != null)
+            CatchSection(
+              key: const ValueKey<String>('host-event-close-out-report'),
+              title: l10n.hostEventsCloseOutReportTitle,
+              children: [
+                for (final (label, count) in [
+                  (l10n.hostEventsCloseOutReportCame, report.attended),
+                  (
+                    l10n.hostEventsCloseOutReportNoShows,
+                    report.recordedNoShows,
+                  ),
+                  (l10n.hostEventsCloseOutReportUnmarked, report.unreviewed),
+                  (
+                    l10n.hostEventsCloseOutReportNotExpected,
+                    report.notExpected,
+                  ),
+                ])
+                  CatchIndexRow(
+                    title: label,
+                    value: '$count',
+                    density: CatchIndexRowSize.compact,
+                    onTap: null,
+                  ),
+              ],
+            ),
           if (onOption case final onOption?)
             CatchSection(
               title: l10n.hostEventsCloseOutAfterTitle,

@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/detach_program_travel_leg_payload.schema.json",
+  "title": "DetachProgramTravelLegCallablePayload",
+  "description": "Remove one journey from its ride-together party. The party keeps its label and vehicle setting; detaching its last journey leaves it empty. Only the detached journey must still be editable.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "legId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "legId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "The journey's revision as last read."
+    }
+  }
+}

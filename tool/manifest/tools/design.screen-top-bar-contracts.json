@@ -1,0 +1,39 @@
+{
+  "id": "design:screen-top-bar-contracts",
+  "category": "design",
+  "path": "tool/design/check_screen_top_bar_contracts.mjs",
+  "command": "node tool/design/check_screen_top_bar_contracts.mjs --check",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Gates every Flutter Scaffold app bar, required pushed-route back affordance, raw navigation-bar implementation, shell-covering editor presentation, feature-owned header, and canonical top-bar action family against an exact reviewed screen-chrome role.",
+  "checks": [
+    "node --check tool/design/check_screen_top_bar_contracts.mjs",
+    "node --test tool/design/check_screen_top_bar_contracts.test.mjs",
+    "node tool/design/check_screen_top_bar_contracts.mjs --check"
+  ],
+  "impactPaths": [
+    "tool/design/check_screen_top_bar_contracts.test.mjs",
+    "tool/design/root_screen_composition_contracts.json"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "SCREEN-CHROME-001",
+      "title": "Every screen declares one reviewed navigation-chrome owner",
+      "appliesTo": [
+        "lib/**/*.dart",
+        "apps/*/lib/**/*.dart",
+        "tool/design/check_screen_top_bar_contracts.mjs",
+        "tool/design/screen_top_bar_contracts.json"
+      ],
+      "instruction": "Every handwritten Scaffold appBar must have an exact reviewed role in the screen-top-bar manifest: root or root-like screen voice uses CatchLegacyTopBar.screen, compact detail/edit/utility navigation uses CatchLegacyTopBar.route, and identity navigation uses CatchLegacyTopBar.identity; a screen framed by CatchScreen takes a CatchTopBar variant and needs no entry. Pushed routes that require an exit declare leading back and must configure an explicit back affordance. Raw Material or Cupertino navigation bars require an exact durable media-hero exception. Feature-owned Header and TopBar classes must be classified by symbol and owner, and full-screen editors that cover shell chrome must present through the root navigator. Broad file allowlists and unrelated canonical calls elsewhere in a file do not satisfy the contract."
+    }
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "queueGate": "always"
+}

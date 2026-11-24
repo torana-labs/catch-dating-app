@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import {createRequire} from "node:module";
 import path from "node:path";
 import test from "node:test";
 
@@ -17,8 +18,11 @@ const catalog = read("contracts/commands/catalog.json") as {
     responseSchema: string; effect: string; caller: string;
     surfaces: string[]; linkAllowance: string | null}>;
 };
-const index = fs.readFileSync(path.join(repo, "functions/src/index.ts"),
-  "utf8");
+// The one reader of the Functions entry point's export list.
+const exported = new Set<string>((createRequire(__filename)(
+  path.join(repo, "functions/scripts/functionExports.cjs")) as
+  {functionExportNames: (options: {root: string}) => string[]})
+  .functionExportNames({root: path.join(repo, "functions")}));
 const ENVELOPE = "../shared/command_envelope.schema.json#/definitions/";
 
 test("every command names a known effect, caller and surfaces", () => {
@@ -39,7 +43,7 @@ test("every command names a known effect, caller and surfaces", () => {
 
 test("every command's callable is exported and its schemas share the envelope", () => {
   for (const command of catalog.commands) {
-    assert.match(index, new RegExp(`export \\{[^}]*\\b${command.callable}\\b`, "u"),
+    assert.ok(exported.has(command.callable),
       `${command.callable} is not exported from functions/src/index.ts`);
     const payload = read(command.payloadSchema);
     for (const field of ["mode", "idempotencyKey", "surface", "confirm"]) {

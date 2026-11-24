@@ -33,7 +33,6 @@ import {
   createPublicOrganizerReview,
   getPublicOrganizerForm,
   getWebsiteAppCheckToken,
-  listPublicOrganizerReviews,
   recordOrganizerAnalyticsEvent,
   registerPublicEvent,
   requestOrganizerClaim,
@@ -86,12 +85,11 @@ describe("website callables and App Check", () => {
     expect(sdk.call).toHaveBeenCalledWith(payload);
   });
 
-  // These six once called httpsCallable directly and had the same unbounded wait.
+  // These once called httpsCallable directly and had the same unbounded wait.
   it.each([
     ["getPublicOrganizerForm", () => getPublicOrganizerForm({} as never)],
     ["requestOrganizerClaim", () => requestOrganizerClaim({} as never)],
     ["createPublicOrganizerReview", () => createPublicOrganizerReview({} as never)],
-    ["listPublicOrganizerReviews", () => listPublicOrganizerReviews({} as never)],
     ["recordOrganizerAnalyticsEvent", () => recordOrganizerAnalyticsEvent({} as never)],
     ["registerPublicEvent", () => registerPublicEvent({} as never)],
   ])("bounds %s's App Check wait, and calls it once the token arrives", async (name, call) => {

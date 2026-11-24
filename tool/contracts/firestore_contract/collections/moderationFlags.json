@@ -1,0 +1,14 @@
+{
+  "id": "moderationFlags",
+  "path": "moderationFlags/{flagId}",
+  "rulesMatch": "/moderationFlags/{flagId}",
+  "typescriptInterface": "ModerationFlagDocument",
+  "owner": "moderation triggers",
+  "writerContext": "safety",
+  "read": "server/admin only",
+  "write": "server only",
+  "exportedFunctions": [
+    "moderatePhotoOnUpload",
+    "moderateChatMessage"
+  ]
+}

@@ -8,7 +8,8 @@ part 'health_activity_client_provider.g.dart';
 ///
 /// The Host package deliberately retains the unsupported default so HealthKit
 /// and Health Connect are absent from its native dependency graph.
-// keepalive: this capability binding is immutable for an installable app root.
+// keepalive: account-free: this capability binding is immutable for an
+// installable app root.
 @Riverpod(keepAlive: true)
 HealthActivityClient healthActivityClient(Ref ref) =>
     const UnsupportedHealthActivityClient();

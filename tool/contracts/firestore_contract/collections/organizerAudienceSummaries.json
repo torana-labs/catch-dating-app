@@ -1,0 +1,19 @@
+{
+  "id": "organizerAudienceSummaries",
+  "path": "organizerAudienceSummaries/{organizerId}",
+  "rulesMatch": "/organizerAudienceSummaries/{organizerId}",
+  "typescriptInterface": "OrganizerAudienceSummaryDocument",
+  "dartModel": null,
+  "owner": "organizer audience projection",
+  "writerContext": "organizers",
+  "read": "server only; managers read aggregate counts from hostDirectorySummaries",
+  "write": "server only",
+  "exportedFunctions": [
+    "onEventAttendeeAudienceProjected",
+    "onContactPermissionAudienceProjected",
+    "onOrganizerContactEventEdgeInviteAttributed"
+  ],
+  "migrationNotes": [
+    "Summary reads replace the legacy 2500-row callable scan after dual-write backfill comparison."
+  ]
+}

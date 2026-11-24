@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_organizer_billing_views.schema.json",
+  "title": "HostOrganizerBillingViewDocument",
+  "description": "Server-maintained billing status of one organizer for its owner, at hostOrganizerBillingViews/{organizerId}: exactly what getOrganizerBillingStatus returned (the free trial and the plan), with the trial's facts (its length from the effective commercial terms, null while they are unset, and the anchor, start and end from the growth facts) instead of the clock-dependent state and days left, which the Host app and the website work out from their clock. Written by triggers on organizers, commercialTerms (a platform change rewrites every organizer), organizerGrowthFacts and organizerBillingPlans. Status only, as App Store guideline 3.1.3(f) needs: never prices, payment links, provider ids, order or subscription ids, or internal pricing notes. Readable by the organizer's owner (ownerUserId, else the primary host). Never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostOrganizerBillingViews",
+  "x-firestore-path": "hostOrganizerBillingViews/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Host read model projector (hostReadModels organizerAccountViewTriggers)",
+  "required": [
+    "organizerId",
+    "trial",
+    "plan",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "trial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "days",
+        "anchor",
+        "startsAtMillis",
+        "endsAtMillis"
+      ],
+      "description": "The trial's facts. days null means Catch's terms are not configured; a window of nulls means it has not started (no event and no paid booking yet).",
+      "properties": {
+        "days": {
+          "$ref": "../embedded/organizer_trial_status.schema.json#/properties/days"
+        },
+        "anchor": {
+          "$ref": "../embedded/organizer_trial_status.schema.json#/properties/anchor"
+        },
+        "startsAtMillis": {
+          "$ref": "../embedded/organizer_trial_status.schema.json#/properties/startsAtMillis"
+        },
+        "endsAtMillis": {
+          "$ref": "../embedded/organizer_trial_status.schema.json#/properties/endsAtMillis"
+        }
+      }
+    },
+    "plan": {
+      "$ref": "../embedded/organizer_billing_plan_status.schema.json"
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

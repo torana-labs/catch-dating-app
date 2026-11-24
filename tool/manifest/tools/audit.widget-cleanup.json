@@ -1,0 +1,16 @@
+{
+  "id": "audit:widget-cleanup",
+  "category": "audit",
+  "path": "tool/widget_cleanup_scan.sh",
+  "command": "bash tool/widget_cleanup_scan.sh",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Fails on any live widget/design-system cleanup candidate.",
+  "checks": [
+    "bash -n tool/widget_cleanup_scan.sh",
+    "node --test tool/lib/widget_cleanup_gate.test.mjs",
+    "bash tool/widget_cleanup_scan.sh --check"
+  ],
+  "role": "gate",
+  "queueGate": "always"
+}

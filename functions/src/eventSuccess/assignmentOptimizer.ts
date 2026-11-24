@@ -4,7 +4,7 @@ import {
   scoreDatingCompatibilityPair,
   scoreQuestionnaireObjectivePair,
 } from "./compatibilityPolicy";
-import {AssignmentTopology} from "./assignmentTopology";
+import {AssignmentTopology} from "../domain/formats/assignmentTopology";
 import {
   planAssignmentRounds,
   type PlannedRound,
@@ -27,7 +27,7 @@ import {
   EventSuccessMatchingObjective,
   EventSuccessVariableResolution,
   eventSuccessVariableResolutionFor,
-} from "./formatPrimitives";
+} from "../domain/formats/formatPrimitives";
 import {
   AssignmentConstraintConfig,
   AssignmentConstraintEvaluation,

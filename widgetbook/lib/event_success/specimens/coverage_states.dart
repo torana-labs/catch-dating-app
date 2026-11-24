@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart';
+import 'package:catch_test_support/design_fixtures/event_success_companion_fixtures.dart';
 import 'package:flutter/material.dart';
 
 class LiveRevealCoverageStates extends StatelessWidget {

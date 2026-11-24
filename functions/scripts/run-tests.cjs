@@ -8,9 +8,12 @@ const path = require("node:path");
 const {spawnSync} = require("node:child_process");
 
 const functionsRoot = path.resolve(__dirname, "..");
-// The strict emulator list is test data, not a package script: a package.json
-// edit counts as a runtime change and redeploys every Function.
-const strictTestList = "test/emulator-tests.json";
+// The strict emulator list is derived from file names, so adding a test edits
+// no shared file: name a Functions test *.emulator.test.ts and a harness test
+// *.emulator.test.cjs or *.rules.test.cjs. Sources are globbed, not lib/, so
+// selection works before a build; compiled paths are what the runner executes.
+const strictTestPatterns = ["src/**/*.emulator.test.ts", "test/**/*.emulator.test.cjs",
+  "test/**/*.rules.test.cjs"];
 
 function discoverTestFiles(root = functionsRoot) {
   return fs.globSync(["lib/**/*.test.js", "test/**/*.test.cjs", "scripts/**/*.test.cjs"], {cwd: root})
@@ -20,11 +23,10 @@ function discoverTestFiles(root = functionsRoot) {
 }
 
 function listedStrictTests(root = functionsRoot) {
-  const listed = JSON.parse(fs.readFileSync(path.join(root, strictTestList), "utf8"));
-  if (!Array.isArray(listed) || !listed.every((file) => typeof file === "string")) {
-    throw new Error(`${strictTestList} must be an array of test paths.`);
-  }
-  return listed;
+  return fs.globSync(strictTestPatterns, {cwd: root})
+    .map((file) => file.split(path.sep).join("/"))
+    .map((file) => file.startsWith("src/") ? `lib/${file.slice(4, -3)}.js` : file)
+    .sort();
 }
 
 async function run(argv = process.argv.slice(2), {root = functionsRoot,
@@ -188,4 +190,4 @@ function writeEvidence(evidence, status) {
 }
 
 module.exports = {discoverTestFiles, listedStrictTests, narrowToSelection, run, runStrictFiles, shardFiles,
-  strictTestList};
+  strictTestPatterns};

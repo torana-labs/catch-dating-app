@@ -5,14 +5,22 @@ import {
   reconcileProgramWorkSummary,
 } from "./programWorkViews";
 import type {ProgramResourceKind} from "./programWorkViews";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true};
 
-/** A programme's title, zone, status, capabilities or vehicle classes. */
-export const onProgramWorkSummaryChanged = onDocumentWritten({
-  ...options, document: "organizerPrograms/{programId}",
-}, (event) => reconcileProgramWorkSummary(admin.firestore(),
-  event.params.programId));
+/**
+ * A programme's title, zone, status, capabilities or vehicle classes.
+ * Served by dispatchOrganizerPrograms (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
+ */
+export const programWorkSummaryProjections = defineProjections(
+  "organizerPrograms", [{
+    id: "programWorkSummary", kind: "projection",
+    when: () => true,
+    run: (change, ctx) => reconcileProgramWorkSummary(ctx.db,
+      change.documentId),
+  }]);
 
 /**
  * Reconciles the view of the source that changed, and the old view when the

@@ -1,7 +1,7 @@
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../admin/adminAuth";
-import {setAdminAuditLogInTransaction} from "../admin/adminAudit";
+import {requireAdminRole} from "../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {validateCallableWithAjv} from "../shared/validation";

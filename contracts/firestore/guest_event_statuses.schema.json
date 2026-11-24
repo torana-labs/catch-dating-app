@@ -4,7 +4,7 @@
   "title": "GuestEventStatusDocument",
   "type": "object",
   "additionalProperties": false,
-  "description": "What one guest's own records say about one event, at guestEventStatuses/{eventId}_{uid}: their Catch booking, roster place, website or offer payment, application and offer invitation, plus the event card their lists show. Triggers rebuild it from those records whenever one of them changes; a guest with no such record has no row. Only the guest reads it, and it never holds CRM notes, answers, phone numbers or invitation tokens. The website's event page reads it with the event's eventGuestEntries document and decides the guest's next step in the browser. It grants nothing: booking, checkout, application and offer commands keep reading the authoritative documents.",
+  "description": "What one guest's own records say about one event, at guestEventStatuses/{eventId}_{uid}: their Catch booking, roster place and which roster row is theirs, website or offer payment, application and offer invitation, plus the event card their lists show. Triggers rebuild it from those records whenever one of them changes; a guest with no such record has no row. Only the guest reads it, and it never holds CRM notes, answers, phone numbers or invitation tokens. The website's event page reads it with the event's eventGuestEntries document and decides the guest's next step in the browser. It grants nothing: booking, checkout, application and offer commands keep reading the authoritative documents.",
   "x-firestore-collection": "guestEventStatuses",
   "x-firestore-path": "guestEventStatuses/{statusId}",
   "x-document-id-field": "id",
@@ -106,7 +106,29 @@
         {"type": "string", "enum": ["signedUp", "waitlisted", "attended", "cancelled"]},
         {"type": "null"}
       ],
-      "description": "The guest's Catch booking status (eventParticipations), or null without one. Any of these keeps the row, so the guest's booking lists read only their own rows. Absent on rows written before it existed; read as null.",
+      "description": "The guest's Catch booking status (eventBookings), or null without one. Any of these keeps the row, so the guest's booking lists read only their own rows. Absent on rows written before it existed; read as null.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "rosterLink": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "attendeeId"],
+          "properties": {
+            "kind": {"const": "linked"},
+            "attendeeId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": {"kind": {"const": "ambiguous"}}
+        }
+      ],
+      "description": "Which roster row is the guest's own, exactly as getEventAssistanceParticipantContext resolves it: the one eventAttendees row whose linkedUid is the guest (linked), more than one such row (ambiguous), or null for none, or while the event is neither active nor cancelled. Only the guest's own attendee id: never a name, phone or another guest's row. Any non-null value keeps the row. Absent on rows written before it existed; read as null.",
       "x-catch-ownership": "trigger-owned"
     },
     "eventCard": {

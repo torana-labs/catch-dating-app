@@ -10,27 +10,30 @@ part of 'event_rehearsal_pending_help.dart';
 // ignore_for_file: type=lint, type=warning
 /// Discovery references only. Each case editor owns its command and retry.
 /// A server page may omit a case whose save succeeded without confirmation.
-// keepalive: Pending case discovery survives closed sheets until confirmation or account reset.
+/// Session lifetime: pending case discovery survives closed sheets until
+/// confirmation, and ends with the signed-in period.
 
 @ProviderFor(EventRehearsalPendingHelp)
 final eventRehearsalPendingHelpProvider = EventRehearsalPendingHelpProvider._();
 
 /// Discovery references only. Each case editor owns its command and retry.
 /// A server page may omit a case whose save succeeded without confirmation.
-// keepalive: Pending case discovery survives closed sheets until confirmation or account reset.
+/// Session lifetime: pending case discovery survives closed sheets until
+/// confirmation, and ends with the signed-in period.
 final class EventRehearsalPendingHelpProvider
     extends
         $NotifierProvider<EventRehearsalPendingHelp, Set<RehearsalHelpScope>> {
   /// Discovery references only. Each case editor owns its command and retry.
   /// A server page may omit a case whose save succeeded without confirmation.
-  // keepalive: Pending case discovery survives closed sheets until confirmation or account reset.
+  /// Session lifetime: pending case discovery survives closed sheets until
+  /// confirmation, and ends with the signed-in period.
   EventRehearsalPendingHelpProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'eventRehearsalPendingHelpProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -52,11 +55,12 @@ final class EventRehearsalPendingHelpProvider
 }
 
 String _$eventRehearsalPendingHelpHash() =>
-    r'ffefbe07a1b513f65093dda4460232151d6b7f55';
+    r'13d9e0ed52b7fd45ef4dcec22a460d000a94734d';
 
 /// Discovery references only. Each case editor owns its command and retry.
 /// A server page may omit a case whose save succeeded without confirmation.
-// keepalive: Pending case discovery survives closed sheets until confirmation or account reset.
+/// Session lifetime: pending case discovery survives closed sheets until
+/// confirmation, and ends with the signed-in period.
 
 abstract class _$EventRehearsalPendingHelp
     extends $Notifier<Set<RehearsalHelpScope>> {

@@ -10,7 +10,7 @@ import {CATCH_RECEIPTS} from "../../catchMessaging/whatsappEndpointStops";
 import type {OperationRun, OperationWorkItem} from "../models";
 import type {ProjectionImportWriter} from "../projectionImporter";
 import {FakeFirestore} from "../testFirestore";
-import {listingApprovalId} from "../../admin/organizerListingApproval";
+import {listingApprovalId} from "../../domain/supply/listingApproval";
 import {AUTO_PUBLISH_ACTOR, autoPublishNominatedListing} from "./autoPublish";
 import {INSTAGRAM_MESSAGE_RECEIPTS} from "../../catchMessaging/instagramInboundRouter";
 import {SUPPLY_NOMINATORS, instagramNominatorId, whatsappNominatorId} from "./nominators";

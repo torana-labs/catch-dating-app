@@ -1,4 +1,3 @@
-import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import {HttpsError} from "firebase-functions/v2/https";
 import {FieldValue} from "firebase-admin/firestore";
 import {followersFirstChoice} from "../followersFirst";
@@ -93,7 +92,6 @@ export async function setEventPublication(params: {
         setupRevision: receipt.appliedRevision as number,
         publicationState: command.publicationState, replayed: true};
     }
-    await readSeatMigrationWriterFence({db, tx, eventId: command.eventId});
     const revision = requireRevision(event);
     if (revision !== command.expectedSetupRevision) {
       throw new HttpsError("aborted", "Event changed. Review it again.", {
@@ -181,10 +179,6 @@ export async function setEventPublication(params: {
     if (ledger?.ledger) {
       tx.set(db.collection("eventSeatLedgers").doc(command.eventId),
         ledger.ledger);
-    }
-    if (ledger?.fence) {
-      tx.create(db.collection("eventSeatMigrationFences")
-        .doc(command.eventId), ledger.fence);
     }
     tx.update(eventRef, {...patch, ...Object.fromEntries(removals.map(
       (key) => [key, FieldValue.delete()]))});

@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import {canonicalJson} from "../events/eventSetupPreferences/resolve";
+import {canonicalJson} from "../domain/formats/eventSetupPreferences/resolve";
 import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import {guestEventCard, savedEvents} from "./guestEventCard";
 

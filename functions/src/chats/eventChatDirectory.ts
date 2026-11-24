@@ -6,6 +6,7 @@ import {
   onDocumentWritten,
 } from "firebase-functions/v2/firestore";
 import {readEventChatAccess} from "./eventChatAccess";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type Data = FirebaseFirestore.DocumentData | undefined;
 
@@ -198,14 +199,22 @@ export const onEventChatDirectoryMembershipWritten = onDocumentWritten({
   ["status", "revision", "notificationsMuted"])));
 
 export const onEventChatDirectoryParticipationWritten = onDocumentWritten({
-  ...options, document: "eventParticipations/{documentId}",
+  ...options, document: "eventBookings/{documentId}",
 }, (event) => refreshPairs(eventChatDirectoryPairs(...versions(event), "uid",
   ["status", "organizerId"])));
 
-export const onEventChatDirectoryAttendeeWritten = onDocumentWritten({
-  ...options, document: "eventAttendees/{documentId}",
-}, (event) => refreshPairs(eventChatDirectoryPairs(...versions(event),
-  "linkedUid", ["status", "organizerId"])));
+/**
+ * A linked guest's roster row: their chat directory row.
+ * Served by dispatchEventAttendees (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
+ */
+export const eventChatDirectoryAttendeeProjections = defineProjections(
+  "eventAttendees", [{
+    id: "eventChatDirectory", kind: "projection",
+    when: () => true,
+    run: (change) => refreshPairs(eventChatDirectoryPairs(change.before,
+      change.after, "linkedUid", ["status", "organizerId"])),
+  }]);
 
 export const onEventChatDirectoryRoomWritten = onDocumentWritten({
   ...options, document: "eventChatRooms/{documentId}",
@@ -216,15 +225,19 @@ export const onEventChatDirectoryRoomWritten = onDocumentWritten({
     event.params.documentId);
 });
 
-export const onEventChatDirectoryEventWritten = onDocumentWritten({
-  ...options, document: "events/{documentId}",
-}, async (event) => {
-  const [before, after] = versions(event);
-  if (before && after && !changed(before, after,
-    ["name", "status", "organizerId", "startTime"])) return;
-  await refreshEventChatDirectoryEntriesFor(admin.firestore(), "eventId",
-    event.params.documentId);
-});
+/**
+ * An event's name, status, organizer or start: its chat directory rows.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const eventChatDirectoryEventProjections = defineProjections("events", [{
+  id: "eventChatDirectory", kind: "projection",
+  when: ({before, after}) => !before || !after ||
+    changed(before, after, ["name", "status", "organizerId",
+      "startTime"]),
+  run: (change, ctx) => refreshEventChatDirectoryEntriesFor(ctx.db,
+    "eventId", change.documentId),
+}]);
 
 export const onEventChatDirectoryUserWritten = onDocumentWritten({
   ...options, document: "users/{documentId}",

@@ -35,13 +35,15 @@ final _forbiddenImport = RegExp(
 /// Files that promise to stay provider-free: display-state adapters by name,
 /// context parts by folder, and anything marked `// architecture: provider-free`.
 /// The promise is stated by the file, so it moves with the file. Under the D24
-/// roots the path makes the promise for bodies, states and `widgets/`.
+/// roots the path makes the promise for bodies, states and `widgets/`; a
+/// carried file ([carriedFrom]) keeps what its legacy path promised.
 List<ArchitectureFinding> providerFreeFindings({
   required String relativePath,
   required String source,
   required CompilationUnit unit,
+  String? carriedFrom,
 }) {
-  final layer = placeSource(relativePath)?.layer;
+  final layer = placeSource(relativePath, carriedFrom: carriedFrom)?.layer;
   final isStateFile =
       layer == 'presentation' &&
       relativePath.endsWith('_state.dart') &&
@@ -49,7 +51,7 @@ List<ArchitectureFinding> providerFreeFindings({
   final isParts = layer == 'parts';
   final isMarked = _marker.hasMatch(source);
   final isNewRootComposition =
-      newRootPath(relativePath) &&
+      newRootPath(carriedFrom ?? relativePath) &&
       (relativePath.endsWith('_body.dart') ||
           relativePath.endsWith('_state.dart') ||
           relativePath.contains('/widgets/'));

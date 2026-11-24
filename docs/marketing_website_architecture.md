@@ -25,16 +25,18 @@ released through the `Website Release` train. The Vite `dist` build is still
 produced and is the rollback target
 ([release operations](release_operations.md#website-rollback-to-the-static-vite-build)).
 
-`src/server/publicCatalog.ts` reads only the published organizer, Catch-event
-and external-event collections, bounded to 400 rows each with an eight-second
-read deadline. `publicReadPolicy.ts` rejects synthetic, withdrawn, suppressed,
-archived, malformed and non-live-market organizer records. Admin SDK access is
-not publication authority. `publicOrganizerProjection.ts` reuses the extracted
-CLI projector and validates its closed output contract before serialization;
-contact information, owner identities and arbitrary raw objects do not leave
-this boundary. External events retain outbound-only booking capabilities.
-The Next validator adapter compiles the same generated schemas as repository
-checks, with parity tests, without the CLI dependency-discovery loader.
+`src/server/publicCatalog.ts` reads only the public page read models
+(`organizerPublicPage`, `eventPublicPage`, `cityPlans`), bounded to 400
+organizer pages with an eight-second read deadline, and validates every
+document against its contract before serialization. It never reads
+`organizers`, `events`, `externalEvents` or `reviews`: Functions decide
+publication when they build the pages (`functions/src/publicPages`), so
+synthetic, withdrawn, suppressed, archived and non-live-market records,
+contact information, owner identities and arbitrary raw objects never reach
+the website. Admin SDK access is not publication authority. External events
+retain outbound-only booking capabilities. The Next validator adapter compiles
+the same generated schemas as repository checks, with parity tests, without
+the CLI dependency-discovery loader.
 
 Firebase Hosting's CDN caches public organiser, event and city-aware discovery
 pages (`/`, `/explore/`, `/cities/`, `/organizers/…` and `/events/…`) for up to a minute:
@@ -434,8 +436,8 @@ A claimed organiser's team manages its page in place, on the page itself
 fields, the same ones every organiser command checks: the owner
 (`ownerUserId`) is **owner**; managers and hosts (`hostUserIds`) are
 **editor**; **analyst** is reserved in the contract and the page (insights and
-"Open in Catch Host" only) until a team command grants it. The server returns
-the role's capabilities with the view, and each capability mirrors its
+"Open in Catch Host" only) until a team command grants it. The view stores
+each role's capabilities, and each capability mirrors its
 command: about through `updateOrganizer` (owner only, as that command
 requires), the photo order and owner links through `manageOrganizerOwnerPage`
 (owner and editors), review replies through `setReviewResponse`, Pixel and GA4
@@ -445,16 +447,16 @@ through `manageOrganizerOwnerPage`, which reserves one of two sends per
 calendar month (Asia/Kolkata) in `organizerFollowerMessageQuotas` and then
 calls `createOrganizerPost`. Insights read 30 server-only `organizerInsights`
 day documents that `rollupOrganizerInsightsDaily` writes each night from the
-host analytics marts and `organizerFollows`; `getOrganizerOwnerView` returns
-them with the editable content. A signed-out visitor sees one quiet sign-in
+host analytics marts and `organizerFollows`; the `hostOrganizerOwnerViews`
+projection keeps the last 40 of them with the editable content. A signed-out visitor sees one quiet sign-in
 line above the footer (today's claim sign-in); a signed-in visitor who is not
 on the team sees only the public page. Photo uploads and removals, events and
 live tools stay in Catch Host.
 
 Edits reach the public page within a minute without a purge: an organiser
-write rebuilds `organizerPublicPages` through `onPublicPageOrganizerWritten`
-within seconds, a server render reads the rebuilt record, and the CDN's cached
-HTML expires after `s-maxage=60`. The owner view re-reads its own data after
+write rebuilds `organizerPublicPages` through the `publicPages` projection of
+`dispatchOrganizers` within seconds, a server render reads the rebuilt record,
+and the CDN's cached HTML expires after `s-maxage=60`. The owner view re-reads its own data after
 every write, so the team sees the change at once.
 
 ## Current State
@@ -550,7 +552,7 @@ The website is already split out of the old monolithic shell:
   for Consumer dating-profile setup. The mutation is server-owned, links or
   creates an `eventAttendees` record with `webOtp` source, and returns only the
   attendee's event-scoped state. The website never reads a private roster or
-  writes `eventParticipations` directly. A first registration may seed a private
+  writes `eventBookings` directly. A first registration may seed a private
   onboarding draft with the attendee-supplied name and verified phone for an
   intentional later Consumer onboarding continuation; this does not create a
   profile. Optional organizer WhatsApp and SMS permissions are independent,

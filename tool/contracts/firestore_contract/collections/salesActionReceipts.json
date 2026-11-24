@@ -1,0 +1,11 @@
+{
+  "id": "salesActionReceipts",
+  "path": "salesActionReceipts/{receiptId}",
+  "rulesMatch": "/salesActionReceipts/{privateDocument=**}",
+  "typescriptInterface": "SalesActionReceiptDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales action dispatcher",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

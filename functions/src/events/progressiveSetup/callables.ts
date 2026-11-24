@@ -1,6 +1,3 @@
-import {reconcilePrivateEventSeats as reconcileSeats} from
-  "./seatReconciliation";
-import type {PagedSeatBootstrapDeps} from "../seatMigrationPaged";
 import {validateReconcilePrivateEventSeatsCallablePayload} from
   "../../shared/generated/validators/reconcilePrivateEventSeatsInput";
 import {validatePrivateSeatReconciliationCallableResponse} from
@@ -30,24 +27,12 @@ import {updatePrivateEventPreferences as updatePreferences} from
 import {validateUpdatePrivateEventPreferencesCallablePayload} from
   "../../shared/generated/validators/updatePrivateEventPreferencesInput";
 import {assertPrivateEventBasicsEditable} from "./commitments";
-import {listPrivateEventSetups as listSetups} from "./listPrivateEventSetups";
-import {validateListPrivateEventSetupsCallablePayload} from
-  "../../shared/generated/validators/listPrivateEventSetupsInput";
-import {validatePrivateEventSetupListCallableResponse} from
-  "../../shared/generated/validators/privateEventSetupListOutput";
 
 import {updatePrivateEventDetails as updateDetails} from "./details";
 import {validateUpdatePrivateEventDetailsCallablePayload} from
   "../../shared/generated/validators/updatePrivateEventDetailsInput";
 import {validatePrivateEventSetupMutationCallableResponse} from
   "../../shared/generated/validators/privateEventSetupMutationOutput";
-
-import {listOfferEventTargets as listOfferTargets} from
-  "./listOfferEventTargets";
-import {validateListOfferEventTargetsCallablePayload} from
-  "../../shared/generated/validators/listOfferEventTargetsInput";
-import {validateOfferEventTargetListCallableResponse} from
-  "../../shared/generated/validators/offerEventTargetListOutput";
 
 import {setEventPublication as setPublication} from "./publication";
 import {armDefaultMomentsOnPublish} from "./publishMoments";
@@ -57,7 +42,6 @@ import {validateEventPublicationCallableResponse} from
   "../../shared/generated/validators/eventPublicationOutput";
 
 export interface SetupCallableDependencies {
-  seatAuth?: PagedSeatBootstrapDeps["auth"];
   nowMillis?: () => number;
   firestore: () => FirebaseFirestore.Firestore;
   checkRateLimit: typeof checkRateLimit;
@@ -147,27 +131,6 @@ export async function updatePrivateEventPreferencesHandler(
 export const updatePrivateEventPreferences = onCall(appCheckCallableOptions,
   (request) => updatePrivateEventPreferencesHandler(request));
 
-/** Bounded manager list that also works for basics-only private events. */
-export async function listPrivateEventSetupsHandler(
-  request: CallableRequest<unknown>, deps = defaultDeps
-) {
-  const actorUid = requireAuth(request);
-  const command = validateCallableWithAjv(request,
-    validateListPrivateEventSetupsCallablePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listPrivateEventSetups", {
-    maxRequests: 30, windowMs: 60 * 1000,
-  });
-  const result = await listSetups({actorUid, command, db});
-  if (!validatePrivateEventSetupListCallableResponse(result)) {
-    throw new HttpsError("internal", "Invalid private event list response.");
-  }
-  return result;
-}
-
-export const listPrivateEventSetups = onCall(appCheckCallableOptions,
-  (request) => listPrivateEventSetupsHandler(request));
-
 /** Adds optional details without publishing or activating paid admission. */
 export async function updatePrivateEventDetailsHandler(
   request: CallableRequest<unknown>, deps = defaultDeps
@@ -188,26 +151,6 @@ export async function updatePrivateEventDetailsHandler(
 }
 export const updatePrivateEventDetails = onCall(appCheckCallableOptions,
   (request) => updatePrivateEventDetailsHandler(request));
-
-/** Lists owned upcoming event choices; selecting never authorizes admission. */
-export async function listOfferEventTargetsHandler(
-  request: CallableRequest<unknown>, deps = defaultDeps
-) {
-  const actorUid = requireAuth(request);
-  const command = validateCallableWithAjv(request,
-    validateListOfferEventTargetsCallablePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOfferEventTargets", {
-    maxRequests: 30, windowMs: 60 * 1000,
-  });
-  const result = await listOfferTargets({actorUid, command, db});
-  if (!validateOfferEventTargetListCallableResponse(result)) {
-    throw new HttpsError("internal", "Invalid event target list response.");
-  }
-  return result;
-}
-export const listOfferEventTargets = onCall(appCheckCallableOptions,
-  (request) => listOfferEventTargetsHandler(request));
 
 /** Changes visibility; registration and guest state stay separate. */
 export async function setEventPublicationHandler(
@@ -238,8 +181,12 @@ export const setEventPublication = onCall(appCheckCallableOptions,
   (request) => setEventPublicationHandler(request));
 
 
-/** Admission settings remain in the current flow while existing guests are
- * reconciled in bounded pages. The client retains the exact command on retry.
+/**
+ * Kept for installed Host builds that send admission-terms saves here; the
+ * current app calls updatePrivateEventDetails. Every event has its seat
+ * ledger, so there is nothing to reconcile: a save is the ordinary details
+ * save, and a discard applies nothing. Retire under D1 with the older-build
+ * callables (#2174).
  */
 export async function reconcilePrivateEventSeatsHandler(
   request: CallableRequest<unknown>, deps = defaultDeps
@@ -252,11 +199,13 @@ export async function reconcilePrivateEventSeatsHandler(
     maxRequests: 30, windowMs: 60 * 1000,
   });
   const {discard, ...settings} = command;
-  const result = await reconcileSeats({actorUid, command: settings, discard,
-    deps: {...deps.service(db), auth: deps.seatAuth ?? admin.auth(),
-      nowMillis: deps.nowMillis ?? Date.now}});
+  const result = discard ?
+    {kind: "discarded" as const, eventId: settings.eventId,
+      requestId: settings.requestId} :
+    {kind: "complete" as const, receipt: await updateDetails({actorUid,
+      command: settings, deps: deps.service(db)})};
   if (!validatePrivateSeatReconciliationCallableResponse(result)) {
-    throw new HttpsError("internal", "Invalid guest reconciliation result.");
+    throw new HttpsError("internal", "Invalid admission settings result.");
   }
   return result;
 }

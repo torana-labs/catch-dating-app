@@ -16,7 +16,7 @@ import {
   validateAdminListOrganizerDirectoryCallablePayload,
 } from "../shared/generated/validators/adminListOrganizerDirectoryInput";
 import {validateCallableWithAjv} from "../shared/validation";
-import {requireAdminRole} from "./adminAuth";
+import {requireAdminRole} from "../platform/adminAuth";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
   authStaffNames,
@@ -33,10 +33,9 @@ import {
   organizerPageState,
   pageOf,
   recordsReaderRoles,
-  timestampIso,
-  timestampMillis,
   type StaffNames,
 } from "./recordsDirectory";
+import {timestampIso, timestampMillis} from "../shared/dates";
 
 /** The most organizers, sales accounts or upcoming events one read covers. */
 export const organizerDirectoryScanLimit = 5000;

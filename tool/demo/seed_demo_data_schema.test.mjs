@@ -31,7 +31,7 @@ test("seed document validation accepts valid profile and event docs", () => {
       },
       {path: "events/event-1", data: validEventDoc()},
       {
-        path: "eventParticipations/event-1_runner-1",
+        path: "eventBookings/event-1_runner-1",
         data: validEventParticipationDoc(),
       },
       {path: "savedEvents/runner-1_run-1", data: validSavedEventDoc()},
@@ -45,7 +45,7 @@ test("seed document validation accepts valid profile and event docs", () => {
     organizerFollows: 1,
     organizerTeamMemberships: 1,
     events: 1,
-    eventParticipations: 1,
+    eventBookings: 1,
     eventSuccessPlans: 0,
     eventSuccessPreferences: 0,
     eventSuccessCompatibilityResponses: 0,

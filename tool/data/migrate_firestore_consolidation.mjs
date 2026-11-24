@@ -84,6 +84,12 @@ function printSummary(summary) {
     for (const conflict of step.conflicts) {
       console.log(`    conflict: ${conflict.sourcePath} -> ${conflict.targetPath}`);
     }
+    for (const [reason, count] of Object.entries(step.skippedReasons ?? {})) {
+      console.log(`    skipped ${count}: ${reason}`);
+    }
+    for (const note of step.notes ?? []) {
+      console.log(`    note: ${note.sourcePath} -> ${note.targetPath}: ${note.note}`);
+    }
   }
 }
 

@@ -1,0 +1,11 @@
+{
+  "id": "eventAssistanceOperationalNoticeQuotas",
+  "path": "eventAssistanceOperationalNoticeQuotas/{quotaId}",
+  "rulesMatch": "/eventAssistanceOperationalNoticeQuotas/{quotaId}",
+  "typescriptInterface": "EventAssistanceOperationalNoticeQuotaDocument",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted event-assistance operational notice publisher",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only"
+}

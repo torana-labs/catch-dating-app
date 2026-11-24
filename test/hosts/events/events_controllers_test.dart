@@ -12,6 +12,8 @@ import 'package:catch_dating_app/contexts/events/data/read_models/host_event_sum
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_event_staff_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/organizer_program_views.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_state.dart';
@@ -24,11 +26,11 @@ import 'package:catch_dating_app/hosts/events/event_workspace_state.dart';
 import 'package:catch_dating_app/hosts/events/events_controller.dart';
 import 'package:catch_dating_app/hosts/events/events_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod/misc.dart' show Override;
 
-import '../../test_pump_helpers.dart';
 import 'events_fixtures.dart';
 
 final _eventsRequest = HostEventsRequest(
@@ -202,9 +204,14 @@ void main() {
   });
 
   group('hostEventsProgrammes', () {
-    Map<Object?, Object?> view(String id, {String status = 'active'}) => {
+    Map<Object?, Object?> view(
+      String id, {
+      String status = 'active',
+      Map<String, Object?> counts = const {},
+    }) => {
       'programId': id,
       'organizerId': eventsOrganizerId,
+      'createdBy': 'host-1',
       'kind': 'wedding',
       'title': 'Programme $id',
       'timezone': 'Asia/Kolkata',
@@ -213,71 +220,53 @@ void main() {
       'endsAtMillis': 1796256000000,
       'revision': 3,
       'functionCount': 4,
+      ...counts,
     };
-    OrganizerProgramInventoryPage page(List<OrganizerProgramListRow> rows) =>
-        OrganizerProgramInventoryPage(programs: rows);
-    const counted = OrganizerProgramListRow(
-      programId: 'wedding',
-      title: 'Programme wedding',
-      kind: 'wedding',
-      status: 'active',
-      timezone: 'Asia/Kolkata',
-      revision: 3,
-      guestCount: 120,
-      flyingInCount: 30,
-      repliedShare: 0.5,
+
+    test(
+      'lists the live rows with their counts, archived ones left out',
+      () async {
+        final container = _container([
+          organizerProgramRowsStreamProvider(eventsOrganizerId).overrideWith(
+            (ref) => Stream.value([
+              organizerProgramListRowFromView(
+                view(
+                  'wedding',
+                  counts: {
+                    'guestCount': 120,
+                    'repliedGuestCount': 60,
+                    'flyingInCount': 30,
+                  },
+                ),
+                'host-1',
+              ),
+              organizerProgramListRowFromView(view('new'), 'host-1'),
+              organizerProgramListRowFromView(
+                view('old', status: 'archived'),
+                'host-1',
+              ),
+            ]),
+          ),
+        ]);
+        final provider = hostEventsProgrammesProvider(eventsOrganizerId);
+        container.listen(provider, (_, _) {});
+        expect(container.read(provider), isEmpty);
+        await flushTestEventQueue();
+        final rows = container.read(provider);
+        expect(rows.map((row) => row.programId), ['wedding', 'new']);
+        expect(rows.first.functionCount, 4);
+        expect(rows.first.guestCount, 120);
+        expect(rows.first.flyingInCount, 30);
+        expect(rows.first.repliedShare, 0.5);
+        expect(rows.last.guestCount, isNull, reason: 'not counted yet');
+      },
     );
 
-    test('paints the views first and fills in the counts after', () async {
-      final counts = Completer<OrganizerProgramInventoryPage>();
+    test('a failed read leaves the section out', () async {
       final container = _container([
-        hostEventsProgrammeViewsProvider(eventsOrganizerId).overrideWith(
-          (ref) =>
-              Stream.value([view('wedding'), view('old', status: 'archived')]),
-        ),
-        hostEventsProgrammeCountsProvider(
-          eventsOrganizerId,
-        ).overrideWith((ref) => counts.future),
-      ]);
-      final provider = hostEventsProgrammesProvider(eventsOrganizerId);
-      container.listen(provider, (_, _) {});
-      expect(container.read(provider), isEmpty);
-      await flushTestEventQueue();
-      final painted = container.read(provider).single;
-      expect(painted.programId, 'wedding');
-      expect(painted.functionCount, 4);
-      expect(painted.guestCount, isNull);
-      counts.complete(page([counted]));
-      await flushTestEventQueue();
-      final filled = container.read(provider).single;
-      expect(filled.guestCount, 120);
-      expect(filled.flyingInCount, 30);
-      expect(filled.repliedShare, 0.5);
-    });
-
-    test('a failed views read falls back to the callable rows', () async {
-      final container = _container([
-        hostEventsProgrammeViewsProvider(
+        organizerProgramRowsStreamProvider(
           eventsOrganizerId,
         ).overrideWith((ref) => Stream.error(StateError('denied'))),
-        hostEventsProgrammeCountsProvider(
-          eventsOrganizerId,
-        ).overrideWith((ref) async => page([counted])),
-      ]);
-      final provider = hostEventsProgrammesProvider(eventsOrganizerId);
-      container.listen(provider, (_, _) {});
-      await flushTestEventQueue();
-      expect(container.read(provider).single.guestCount, 120);
-    });
-
-    test('both reads failing leave the section out', () async {
-      final container = _container([
-        hostEventsProgrammeViewsProvider(
-          eventsOrganizerId,
-        ).overrideWith((ref) => Stream.error(StateError('denied'))),
-        hostEventsProgrammeCountsProvider(
-          eventsOrganizerId,
-        ).overrideWith((ref) async => throw StateError('offline')),
       ]);
       final provider = hostEventsProgrammesProvider(eventsOrganizerId);
       container.listen(provider, (_, _) {});

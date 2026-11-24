@@ -13,7 +13,7 @@ import {type CatchBookingRosterSlot, loadVerifiedRosterPhone,
 import * as logger from "firebase-functions/logger";
 import type {
   EventDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   EventWaitlistOfferDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -50,7 +50,7 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {
   eventParticipationId,
   eventWaitlistOfferId,
-  eventParticipationsByStatusInTransaction,
+  eventBookingsByStatusInTransaction,
   participantUids,
 } from "../shared/relationshipDocuments";
 import {hasBlockingRelationshipInTransaction} from "../safety/blocking";
@@ -185,7 +185,7 @@ export async function createEventWaitlistOffersHandler(
     }
 
     const activeParticipations =
-      await eventParticipationsByStatusInTransaction(tx, db, eventId, [
+      await eventBookingsByStatusInTransaction(tx, db, eventId, [
         "signedUp",
         "attended",
       ]);
@@ -206,7 +206,7 @@ export async function createEventWaitlistOffersHandler(
     const activePeerIds = participantUids(activeParticipations);
     const targetRows = await Promise.all(userIds.map(async (uid) => {
       const participationRef = db
-        .collection("eventParticipations")
+        .collection("eventBookings")
         .doc(eventParticipationId(eventId, uid));
       const offerRef = db
         .collection("eventWaitlistOffers")
@@ -239,7 +239,7 @@ export async function createEventWaitlistOffersHandler(
 
     for (const row of targetRows) {
       const participation = row.participationSnap.data() as
-        Partial<EventParticipationDocument> | undefined;
+        Partial<EventBookingDocument> | undefined;
       const existingOffer = row.offerSnap.data();
       if (isLiveOffer(existingOffer, nowMillis) &&
           participation?.status === "waitlisted") {
@@ -405,7 +405,7 @@ export async function acceptEventWaitlistOfferHandler(
       .collection("eventWaitlistOffers")
       .doc(eventWaitlistOfferId(eventId, uid));
     const participationRef = db
-      .collection("eventParticipations")
+      .collection("eventBookings")
       .doc(eventParticipationId(eventId, uid));
     const [offerSnap, eventSnap, participationSnap, userSnap, rosterSlot] =
       await Promise.all([
@@ -435,7 +435,7 @@ export async function acceptEventWaitlistOfferHandler(
       "EventWaitlistOfferDocument"
     );
     const participation = participationSnap.data() as
-      Partial<EventParticipationDocument> | undefined;
+      Partial<EventBookingDocument> | undefined;
     if (
       participation?.status === "signedUp" ||
       participation?.status === "attended"
@@ -466,7 +466,7 @@ export async function acceptEventWaitlistOfferHandler(
     }
 
     const activeParticipations =
-      await eventParticipationsByStatusInTransaction(tx, db, eventId, [
+      await eventBookingsByStatusInTransaction(tx, db, eventId, [
         "signedUp",
         "attended",
       ]);
@@ -569,7 +569,7 @@ export async function declineEventWaitlistOfferHandler(
       .collection("eventWaitlistOffers")
       .doc(eventWaitlistOfferId(eventId, uid));
     const participationRef = db
-      .collection("eventParticipations")
+      .collection("eventBookings")
       .doc(eventParticipationId(eventId, uid));
     const [offerSnap, participationSnap, rosterSlot] = await Promise.all([
       tx.get(offerRef),
@@ -722,7 +722,7 @@ async function expireOfferIfCurrent(params: {
     const eventId = String(openOffer.eventId ?? "");
     const uid = String(openOffer.uid ?? "");
     const participationRef = params.db
-      .collection("eventParticipations")
+      .collection("eventBookings")
       .doc(eventParticipationId(eventId, uid));
     const [participationSnap, eventSnap, userSnap, rosterSlot] =
       await Promise.all([

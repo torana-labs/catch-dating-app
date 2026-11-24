@@ -13,7 +13,7 @@ import type {EventAssistanceCaseDocument} from
   "../shared/generated/eventAssistanceCaseDocument";
 import type {
   EventDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   HostPaymentAccountDocument,
   OrganizerApplicationDocument,
   OrganizerAttentionItemDocument,
@@ -232,7 +232,7 @@ test("private basics do not create waitlist or payout obligations", () => {
 test("latest terminal outcomes resolve failures without weak proxies", () => {
   const base = sourceFixture();
   base.events[0].data = event({manualApprovalRequired: true});
-  base.eventParticipations = [row(
+  base.eventBookings = [row(
     "event-1_requester-1",
     eventParticipation(),
     nowMillis - 25 * hourMillis
@@ -1016,7 +1016,7 @@ function emptySources(): OrganizerAttentionSources {
     events: [],
     eventAssistanceCases: [],
     deliveryReviewWorkItems: [],
-    eventParticipations: [],
+    eventBookings: [],
     applications: [],
     providerSyncRuns: [],
     automationRules: [],
@@ -1178,7 +1178,7 @@ function organizer(): OrganizerDocument {
   } as unknown as OrganizerDocument;
 }
 
-function eventParticipation(): EventParticipationDocument {
+function eventParticipation(): EventBookingDocument {
   return {
     eventId: "event-1",
     organizerId: "organizer-1",
@@ -1188,7 +1188,7 @@ function eventParticipation(): EventParticipationDocument {
     createdAt: timestamp(nowMillis - 26 * hourMillis),
     updatedAt: timestamp(nowMillis - 25 * hourMillis),
     waitlistedAt: timestamp(nowMillis - 26 * hourMillis),
-  } as unknown as EventParticipationDocument;
+  } as unknown as EventBookingDocument;
 }
 
 function application(

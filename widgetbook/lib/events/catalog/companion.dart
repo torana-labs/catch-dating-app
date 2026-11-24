@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
+import 'package:catch_dating_app/pages/event/event_detail_display_state.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_detail_body.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_detail_surface_style.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

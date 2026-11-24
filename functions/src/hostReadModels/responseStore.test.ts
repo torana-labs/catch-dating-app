@@ -11,7 +11,7 @@ import {genericFormApplicationId} from
   "../organizers/organizerApplicationAccess";
 import {reconcileResponseSummary, reconcileApplicationSummary,
   backfillResponseSummaries, activateResponseSummaries} from "./responseStore";
-import {responseSummaryId} from "./responseIds";
+import {responseSummaryId} from "../domain/forms/responseSummaryIds";
 const now = Timestamp.fromMillis(1000);
 const source = {kind: "native", providerId: null, externalFormId: null,
   externalResponseId: null, importReceiptId: null};

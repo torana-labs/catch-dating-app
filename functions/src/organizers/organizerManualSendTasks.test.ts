@@ -12,7 +12,7 @@ import {
   organizerManualSendTaskId,
   terminalManualTask,
 } from "./organizerManualSendTasks";
-import {hashEndpoint} from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 
 const now = admin.firestore.Timestamp.fromMillis(10_000);
 

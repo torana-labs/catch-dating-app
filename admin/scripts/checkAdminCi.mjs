@@ -25,7 +25,8 @@ const setupCommands = new Set(["npm ci"]);
 
 /**
  * Evaluates a GitHub Actions expression. The lane uses only ==, !=, &&, ||, !, parentheses,
- * single-quoted strings and the inputs and github contexts; anything else throws.
+ * single-quoted strings, the inputs and github contexts, and the outputs of steps this event
+ * skips, which are empty as in GitHub Actions; anything else throws.
  */
 export function evaluateExpression(expression, context) {
   const tokens = expression.match(/'[^']*'|==|!=|&&|\|\||!|\(|\)|[A-Za-z_][\w.-]*|\S/gu) ?? [];
@@ -34,6 +35,8 @@ export function evaluateExpression(expression, context) {
     if (name === "true") return true;
     if (name === "false") return false;
     if (Object.hasOwn(context, name)) return context[name];
+    const step = /^steps\.([\w-]+)\.outputs\.[\w-]+$/u.exec(name)?.[1];
+    if (step && context.skippedSteps?.has(step)) return "";
     throw new Error(`Cannot evaluate "${name}" in: ${expression}`);
   };
   const primary = () => {
@@ -79,16 +82,22 @@ export function laneSteps(workflow, {event = "merge_group", surface = "admin"} =
   const context = {
     "inputs.surface": surface,
     "inputs.update_visual_baselines": false,
+    // CI sets visual_report for its nightly only.
+    "inputs.visual_report": event === "schedule",
     "inputs.skip_deployable_build": false,
     "github.event_name": event,
     "github.workflow": "Admin Website",
+    skippedSteps: new Set(),
   };
   const steps = [];
   for (const step of workflow.jobs.validate.steps) {
     if (typeof step.run !== "string") continue;
     if (step.if !== undefined) {
       const condition = String(step.if).replace(/^\$\{\{|\}\}$/gu, "");
-      if (!evaluateExpression(condition, context)) continue;
+      if (!evaluateExpression(condition, context)) {
+        if (step.id) context.skippedSteps.add(step.id);
+        continue;
+      }
     }
     if (setupCommands.has(step.run.trim())) continue;
     steps.push({
@@ -119,8 +128,9 @@ Runs CI's Admin lane locally, reading its steps from ${workflowPath}.
 Every step runs even after a failure, so one run shows everything CI would.
 Logs are in build/admin-ci/.
 
-  --pr            What a pull request runs: leaves out the Storybook build and
-                  visual report. The default is what the merge queue runs.
+  --pr            What a pull request runs: leaves out the Storybook build.
+                  The default is what the merge queue runs.
+  --nightly       What the CI nightly runs: adds the visual report.
   --only <text>   Only the steps whose name contains <text>.
   --list          Print the steps and stop.`);
 }
@@ -135,7 +145,7 @@ async function main(argv) {
   const workflow = YAML.parse(fs.readFileSync(path.join(repoRoot, workflowPath), "utf8"));
   const steps = [
     ...otherLaneGates.map((gate) => ({...gate, env: {}})),
-    ...laneSteps(workflow, {event: argv.includes("--pr") ? "pull_request" : "merge_group"}),
+    ...laneSteps(workflow, {event: argv.includes("--pr") ? "pull_request" : argv.includes("--nightly") ? "schedule" : "merge_group"}),
   ].filter((step) => !only || step.name.toLowerCase().includes(only));
   if (argv.includes("--list")) {
     for (const step of steps) console.log(`${step.name}\n    ${step.run.trim()}`);

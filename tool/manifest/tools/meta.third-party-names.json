@@ -1,0 +1,27 @@
+{
+  "id": "meta:third-party-names",
+  "category": "meta",
+  "path": "tool/check_third_party_names.mjs",
+  "command": "node tool/check_third_party_names.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/third_party_names_allowlist.json",
+    "tool/check_third_party_names.test.mjs",
+    "packages/brand/brand.json"
+  ],
+  "role": "gate",
+  "description": "Keeps real third-party organisers out of the public repository, since they live only in the production database: fails when an Instagram, Facebook, Luma or Meetup URL in any tracked file, or an @handle in a fixture, story, test, doc, design pack, sample or demo file, names an account that is not on the fictional allowlist, and when committed generated listing data holds a record built from public sources. Findings print file, line and rule only, never the matched text.",
+  "checks": [
+    "node --check tool/check_third_party_names.mjs",
+    "node --test tool/check_third_party_names.test.mjs",
+    "node tool/check_third_party_names.mjs"
+  ],
+  "queueGate": "always"
+}

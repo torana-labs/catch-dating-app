@@ -9,6 +9,7 @@ import {initializeApp} from "firebase-admin/app";
 import {getFirestore} from "firebase-admin/firestore";
 import {chromium} from "playwright";
 import {organizerFixture} from "./organizerFixture.mjs";
+import {rebuildPublicPages} from "./publicPagesEmulator.mjs";
 import {sharedCachePage} from "./deployedSmoke.mjs";
 import {PUBLIC_PAGE_CACHE_CONTROL} from "../../src/app/next/publicPageCache.ts";
 import {prepareStandalone} from "./prepareStandalone.mjs";
@@ -27,6 +28,7 @@ const output = [];
 let browser;
 let boundedFixtures = false;
 let checks = 0;
+const rebuild = () => rebuildPublicPages("demo-catch-nextjs", "next-proof");
 async function request(origin, route, status, options) {
   const response = await fetch(origin + route, {...options, redirect: "manual"});
   const body = await response.text();
@@ -88,21 +90,21 @@ try {
   await prepareStandalone(root);
   await cp(path.join(root, ".next/standalone"), temporary, {recursive: true, dereference: true});
   assert(!(await readFile(path.join(temporary, "website/server.js"), "utf8")).includes(root));
-  await ref.set(fixture);
+  await ref.set(fixture); rebuild();
   const origins = [await start(3118), await start(3119)];
   await verifyCatalogState(origins, true);
-  await ref.update({name: "Edited public organizer"});
+  await ref.update({name: "Edited public organizer"}); rebuild();
   await verifyCatalogState(origins, true, "Edited public organizer");
   for (const patch of [
     {"publicPage.publishStatus": "draft"}, {"publicPage.publishStatus": "suppressed"},
     {archived: true}, {dataOrigin: "catchDemo"},
     {publicProfile: {headline: "Public", facts: [{label: "Label", value: "Value", privateToken: secret}]}},
   ]) {
-    await ref.set(fixture); await ref.update(patch);
+    await ref.set(fixture); await ref.update(patch); rebuild();
     await verifyCatalogState(origins, false);
   }
-  await ref.delete(); await verifyCatalogState(origins, false);
-  await ref.set(fixture); await verifyCatalogState(origins, true);
+  await ref.delete(); rebuild(); await verifyCatalogState(origins, false);
+  await ref.set(fixture); rebuild(); await verifyCatalogState(origins, true);
 
   browser = await chromium.launch({headless: true});
   const page = await browser.newPage();
@@ -122,11 +124,11 @@ try {
   await page.getByRole("heading", {level: 1, name: fixture.name, exact: true}).waitFor();
   await browser.close(); browser = null;
 
-  // 401 query rows must fail the whole-catalog routes unavailable, not return a
-  // truncated successful catalog. An organizer page reads only its own events,
-  // so rows for other organizers cannot take it down.
+  // 401 organizer pages must fail the whole-catalog routes unavailable, not
+  // return a truncated successful catalog. An organizer page reads only its
+  // own document, so other pages cannot take it down.
   const batch = db.batch();
-  for (let index = 0; index < 401; index++) batch.set(db.doc(`events/next-bound-proof-${index}`), {publicationState: "published"});
+  for (let index = 0; index < 401; index++) batch.set(db.doc(`organizerPublicPage/next-bound-proof-${index}`), {schemaVersion: 1});
   boundedFixtures = true; await batch.commit();
   for (const origin of origins) {
     await request(origin, "/api/public-catalog", 503);
@@ -160,10 +162,11 @@ try {
   }));
   if (boundedFixtures) {
     const batch = db.batch();
-    for (let index = 0; index < 401; index++) batch.delete(db.doc(`events/next-bound-proof-${index}`));
+    for (let index = 0; index < 401; index++) batch.delete(db.doc(`organizerPublicPage/next-bound-proof-${index}`));
     await batch.commit();
   }
   if (original.exists) await ref.set(original.data()); else await ref.delete();
+  rebuild();
   await db.terminate();
   await rm(temporary, {recursive: true, force: true});
 }

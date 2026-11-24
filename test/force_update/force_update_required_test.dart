@@ -3,10 +3,9 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/account/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/contexts/account/data/force_update_provider.dart';
 import 'package:catch_dating_app/contexts/account/domain/app_version_config.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../test_pump_helpers.dart';
 
 void main() {
   group('forceUpdateRequiredProvider', () {

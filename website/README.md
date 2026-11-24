@@ -27,7 +27,10 @@ Packaging replaces old runtime chunks rather than accumulating earlier builds.
 For isolated runtime acceptance, start the Firestore emulator on loopback port
 8765 with project `demo-catch-nextjs`. Start the packaged server with
 `FIRESTORE_EMULATOR_HOST=127.0.0.1:8765` and
-`CATCH_PUBLIC_FIRESTORE_PROJECT=demo-catch-nextjs`, then run:
+`CATCH_PUBLIC_FIRESTORE_PROJECT=demo-catch-nextjs`. The website reads only the
+public page read models, so after seeding an organizer the runs rebuild its
+pages with the Functions rebuild (`scripts/next/publicPagesEmulator.mjs`):
+build Functions first with `npm --prefix functions run build`. Then run:
 
 ```sh
 FIRESTORE_EMULATOR_HOST=127.0.0.1:8765 npm run test:next-runtime --workspace catch-marketing
@@ -307,6 +310,7 @@ Primary web events:
 - `client_error`
 - `cta_click`
 - `lead_form_viewed`
+- `lead_form_started`
 - `lead_form_submitted`
 - `lead_form_succeeded`
 - `lead_form_failed`
@@ -331,6 +335,14 @@ Primary web events:
 - `organizer_contactClick`
 - `organizer_claimClick`
 - `organizer_outboundClick`
+- `store_cta_click`
+- `explore_filters_applied`
+- `scroll_depth` (25, 50, 75 and 90%)
+- `section_read` (seconds a `section[id]` band was in view)
+
+After the analytics choice, `analytics.ts` forwards the events it has a closed
+GA4 projection for (`googleAnalyticsProjection`) to Google Analytics through
+`adTags.analyticsEvent`; everything else stays on the local `dataLayer` bus.
 
 Claim conversion events use the ads contract keys `club_id` and `claim_role`.
 Consent-based marketing events are still recorded for public organizer pages

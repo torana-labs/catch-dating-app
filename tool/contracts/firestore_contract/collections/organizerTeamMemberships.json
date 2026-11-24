@@ -1,0 +1,11 @@
+{
+  "id": "organizerTeamMemberships",
+  "path": "organizerTeamMemberships/{membershipId}",
+  "rulesMatch": "/organizerTeamMemberships/{membershipId}",
+  "typescriptInterface": "OrganizerTeamMembershipDocument",
+  "rulesTestFile": "functions/test/rules/events.rules.test.cjs",
+  "owner": "organizer team callables",
+  "writerContext": "organizers",
+  "read": "the member or the organizer's hosts",
+  "write": "server only"
+}

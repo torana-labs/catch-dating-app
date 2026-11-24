@@ -24,3 +24,4 @@ export const legalPageCopy = {
   contactLineHere: "Or email {email}.",
   contactPage: "contact page",
 } as const;
+

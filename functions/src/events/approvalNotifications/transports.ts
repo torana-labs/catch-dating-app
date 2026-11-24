@@ -7,16 +7,15 @@ import {
   MetaWhatsappProvider,
   OrganizerTokenStore,
   metaTemplateFromDocument,
-} from "../../organizers/organizerWhatsappProvider";
-import {metaWhatsappGraphVersion} from
-  "../../organizers/organizerMessagingSetup";
+  metaWhatsappGraphVersion,
+} from "../../platform/delivery/organizerWhatsappProvider";
 import {GupshupSmsTransport, parseSmsCredentials} from
-  "../../messaging/gupshupSmsTransport";
+  "../../platform/delivery/gupshupSmsTransport";
 import {smsProviderCorrelation} from
-  "../../eventSuccess/operations/smsReportCredentials";
-import {smsSegments} from "../../eventSuccess/operations/smsProtocol";
+  "../../platform/delivery/smsReportCredentials";
+import {smsSegments} from "../../platform/delivery/smsSegments";
 import {whatsappStatusCorrelation} from
-  "../../eventSuccess/operations/whatsappDeliveryProtocol";
+  "../../platform/delivery/whatsappDeliveryProtocol";
 import type {Snapshot} from "./facts";
 import {approvalEmailText, eventUrl, type Binding, type Intent} from "./model";
 export type Submission =

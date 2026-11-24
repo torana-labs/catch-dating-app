@@ -1,0 +1,26 @@
+{
+  "id": "design:lint-enforcement-generate",
+  "category": "design",
+  "path": "tool/design/build_lint_enforcement_tables.mjs",
+  "command": "node tool/design/build_lint_enforcement_tables.mjs --check",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Generates analyzer steering tables, contract expectations, and seeded steering probes from the component registry.",
+  "checks": [
+    "node --check tool/design/build_lint_enforcement_tables.mjs",
+    "node tool/design/build_lint_enforcement_tables.mjs --check"
+  ],
+  "impactPaths": [
+    "tool/design/generated/enforcement_expectations.json"
+  ],
+  "role": "generator",
+  "alsoEnforces": [
+    "UI-LINT-001"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

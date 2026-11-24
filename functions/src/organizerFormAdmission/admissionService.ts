@@ -1,8 +1,10 @@
 import {readVerifiedOfferRecipient} from
   "../organizerEventOfferRecipients/recipientGrant";
-import {assertUnpartitionedAdmission} from "./admissionEligibility";
+import {assertUnpartitionedAdmission} from
+  "../domain/events/admissionEligibility";
 import {newFormAttendee} from "./admissionRoster";
-import {heldSeatCount} from "../events/seatAuthority/seatAuthority";
+import {fitsSeatCapacity, heldSeatCount} from
+  "../events/seatAuthority/seatAuthority";
 import {createHash} from "node:crypto";
 import {rosterWithReservedWaitlistOffersInTransaction} from
   "../events/eventPolicy";
@@ -17,7 +19,7 @@ import type {CommitOrganizerFormAdmissionCallablePayload} from
 import type {CommitOrganizerFormAdmissionCallableResponse} from
   "../shared/generated/commitOrganizerFormAdmissionCallableResponse";
 import type {
-  EventAttendeeDocument, EventDocument, EventParticipationDocument,
+  EventAttendeeDocument, EventDocument, EventBookingDocument,
   OrganizerContactDocument, OrganizerContactOriginDocument,
   OrganizerDocument, OrganizerFormConversionReceiptDocument,
   OrganizerFormDocument, OrganizerFormResponseDocument,
@@ -42,8 +44,6 @@ import {organizerContactOriginId} from
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {eventAttendeeId, normalizeRosterPhone} from
   "../events/eventAttendees";
-import {readSeatMigrationWriterFence} from
-  "../events/seatMigrationPaged";
 import {prepareCrmOriginSeatIdentity,
   FirestoreSeatIdentityAuthority, seatIdentityAliasId,
   seatIdentityValueHash} from "../events/seatIdentityAuthority";
@@ -138,7 +138,7 @@ function sourceFacts(response: OrganizerFormResponseDocument,
 
 /** No fabricated phone/email may leak from users/{uid} or Admin Auth. */
 function catchAttendee(eventId: string, organizerId: string, uid: string,
-  participation: EventParticipationDocument,
+  participation: EventBookingDocument,
   profile: PublicProfileDocument | undefined,
   now: FirebaseFirestore.Timestamp): EventAttendeeDocument {
   const displayName = profile?.name?.trim() || uid;
@@ -427,9 +427,6 @@ async function executeAdmission(
     // App-free CRM provenance does not establish a cohort or pair-hold right.
     // Keep these policies closed until their shared reservation path is wired.
     assertUnpartitionedAdmission(event);
-    const fence = await readSeatMigrationWriterFence({db, tx,
-      eventId: payload.eventId});
-    if (fence !== "ready") unavailable("Seat migration is not ready.");
     const identity = await prepareCrmOriginSeatIdentity({db, tx,
       eventId: payload.eventId, organizerId: payload.organizerId,
       originId: organizerContactOriginId({organizerId: payload.organizerId,
@@ -474,7 +471,7 @@ async function executeAdmission(
     let rosterTarget: AdmissionFacts["seat"]["rosterTarget"] = "absent";
     let catchParticipation: AdmissionFacts["seat"]["catchParticipation"] =
       null;
-    let participation: EventParticipationDocument | null = null;
+    let participation: EventBookingDocument | null = null;
     let publicProfile: PublicProfileDocument | undefined;
     let attendeeId: string;
     let attendeeRaw: EventAttendeeDocument | undefined;
@@ -495,14 +492,14 @@ async function executeAdmission(
       const uid = response.respondentUid;
       if (uid && currentAuth?.uid === uid) {
         const [participationRaw, uidIdentity] = await Promise.all([
-          read(db, tx, "eventParticipations",
+          read(db, tx, "eventBookings",
             eventParticipationId(payload.eventId, uid)),
           new FirestoreSeatIdentityAuthority().resolve({db, tx,
             eventId: payload.eventId, organizerId: payload.organizerId,
             subject: {kind: "verifiedUid", uid}}),
         ]);
         const part = participationRaw as
-          EventParticipationDocument | undefined;
+          EventBookingDocument | undefined;
         if (part && part.eventId === payload.eventId &&
             part.organizerId === payload.organizerId &&
             (part.organizerId === undefined ||
@@ -585,7 +582,7 @@ async function executeAdmission(
           waitlistedCountsByCohort: {},
           totalBooked: ledger.occupied + heldSeatCount(ledger)},
         {nowMillis: now});
-      if (withOffers.totalBooked >= ledger.capacity) {
+      if (!fitsSeatCapacity(ledger.capacity, withOffers.totalBooked + 1)) {
         unavailable("Available seats are reserved by current waitlist offers.");
       }
     }

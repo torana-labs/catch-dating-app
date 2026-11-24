@@ -18,7 +18,6 @@ import {
   FirestoreSeatTransaction,
   assertCurrentReadySeatSnapshot,
 } from "../seatAuthority/firestoreAdapter";
-import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import {
   prepareCheckoutHold,
   applyCheckoutHold,
@@ -32,10 +31,9 @@ import {
   publicGuestMembership,
 } from "./authority";
 import {preparePublicGuestIdentity} from "./identity";
-import {
-  assertPublicRegistrationPolicy,
-  registrationUnavailable,
-} from "./policy";
+import {assertPublicRegistrationPolicy} from "./policy";
+import {registrationUnavailable} from
+  "../../domain/events/publicRegistrationTerms";
 import {
   parsePublicPayment,
   publicPaymentLedger,
@@ -43,11 +41,15 @@ import {
   PUBLIC_ADMISSION_COLLECTION,
   publicAdmissionId,
   publicPaymentPlaces,
-} from "./paymentLedger";
+} from "../../domain/payments/publicEventPayments";
 import {assertPublicPaidAdmission} from "./admissionProof";
 import {prepareCatchBookingAdmission} from "./catchBookingBridge";
+import {markEventPaymentAdmitted, markEventPaymentRefundPending} from
+  "../../payments/eventCheckout/eventPaymentState";
 import {recordPublicMemberBenefitUse} from
   "../../hostMemberships/publicCheckout";
+import {updateEventBookingCounters} from
+  "../../domain/events/eventDocumentWrites";
 
 type Result = "admitted" | "refundPending" | "unchanged";
 /** Only the provider processor may establish captured state. Its current,
@@ -99,10 +101,7 @@ export async function finalizePublicPayment(input: {
       refundEligible = true;
       if (receiptSnap.exists) registrationUnavailable();
       if (p.reservationReleased) {
-        tx.update(paymentRef, {
-          status: "refundPending",
-          updatedAt: Timestamp.fromMillis(nowMillis),
-        });
+        markEventPaymentRefundPending(tx, paymentRef, nowMillis);
         return "refundPending";
       }
       const {eventId, organizerId, recipientUid: uid} = p;
@@ -124,9 +123,7 @@ export async function finalizePublicPayment(input: {
       if (
         event.organizerId !== organizerId ||
         event.startTime.toMillis() !==
-          p.cancellationPolicy.eventStartsAtMillis ||
-        (await readSeatMigrationWriterFence({db, tx, eventId})) !==
-          "ready"
+          p.cancellationPolicy.eventStartsAtMillis
       ) {
         registrationUnavailable();
       }
@@ -278,7 +275,7 @@ export async function finalizePublicPayment(input: {
       guest.createAttendeeAlias(ledger.migrationRevision);
       applyCheckoutHold(seats, confirm);
       tx.set(guest.attendeeRef, attendee);
-      tx.update(db.collection("events").doc(eventId), {
+      updateEventBookingCounters(tx, db.collection("events").doc(eventId), {
         bookedCount: ledger.occupied + placeCount,
         ...catchBooking?.eventCounts(event),
       });
@@ -290,28 +287,8 @@ export async function finalizePublicPayment(input: {
       }
       tx.create(receiptRef, receipt);
       catchBooking?.apply(event);
-      tx.update(paymentRef, {
-        status: "admitted",
-        admissionReceiptId: receiptId,
-        admittedAt: now,
-        updatedAt: now,
-        lastErrorCode: null,
-        ...(p.routing.selection.route === "razorpayRoute" ?
-          {
-            settlement: {
-              state: "waiting",
-              transferId: null,
-              nextAttemptAtMillis: nowMillis,
-              leaseUntilMillis: 0,
-              leaseId: null,
-              authorizedAtMillis: null,
-              completedAtMillis: null,
-              releasedAtMillis: null,
-              settledAtMillis: null,
-            },
-          } :
-          {}),
-      });
+      markEventPaymentAdmitted(tx, paymentRef, {routing: p.routing,
+        admissionReceiptId: receiptId, nowMillis});
       return "admitted";
     });
     if (finalized === "admitted") {

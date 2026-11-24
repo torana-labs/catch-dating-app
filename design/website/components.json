@@ -1552,7 +1552,7 @@
         "catch.surface",
         "catch.text"
       ],
-      "comparisonReason": "The opening band of a website page (the playbook kit's hero and photo hero): kicker, h1, lead, tag chips, footnoted proof lines, band actions, a side link, and a screen beside it with a floating stat card, or a full-bleed photo. It composes catch.chip, catch.icon (the side link's arrow), catch.detail_media, catch.stack, catch.surface and catch.text inside its own ground (catch.root's ground provider); it is a page band, not any of those parts, and implements none of their contracts. It is a whole page band with its own ground and heading, not a catch.section module (a quiet in-page group with a collection's empty content and separators) and not a catch.metric_strip of caller-formatted metrics.",
+      "comparisonReason": "The opening band of a website page (the playbook kit's hero and photo hero): kicker, h1, lead, tag chips, footnoted proof lines, band actions, a side link, and a screen beside it with the plan chip or up to three cut-outs of that screen (fragment captures, never a drawn card) floating over it, or a full-bleed photo. It composes catch.chip, catch.icon (the side link's arrow), catch.detail_media, catch.stack, catch.surface and catch.text inside its own ground (catch.root's ground provider); it is a page band, not any of those parts, and implements none of their contracts. It is a whole page band with its own ground and heading, not a catch.section module (a quiet in-page group with a collection's empty content and separators) and not a catch.metric_strip of caller-formatted metrics.",
       "css": [
         "packages/web-ui/src/components/CatchHeroSection.module.css"
       ],
@@ -6433,6 +6433,38 @@
       "notes": "/host/billing/: the organiser owner's billing on the web (trial, plan with prices, bills to pay, tools-only buy or cancel); private and noindex; signed out it offers the sign-in sheet. The native Host app shows status only (App Store 3.1.3(f))."
     },
     {
+      "id": "route_walkthrough_manage",
+      "kind": "route",
+      "routeIds": [
+        "walkthrough_manage"
+      ],
+      "owner": "features/walkthroughs",
+      "source": "website/src/features/walkthroughs/WalkthroughManagePage.tsx",
+      "exportName": "WalkthroughManagePage",
+      "css": [
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchChoiceInput.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "booked",
+          "confirmed",
+          "cancelled",
+          "sign-in",
+          "not-found"
+        ]
+      },
+      "notes": "/start/walkthrough/manage/: a walkthrough booking's manage page, opened from the booking's managePath (?booking=…, token in #t=…); read, move to another open India-time slot, or cancel; private and noindex; without a token it offers the sign-in sheet for the booked number."
+    },
+    {
       "id": "host_billing_view",
       "kind": "supporting-component",
       "routeIds": [
@@ -6509,6 +6541,26 @@
         ]
       },
       "notes": "A button that opens the sign-in sheet and reports the signed-in user."
+    },
+    {
+      "id": "terms_line",
+      "kind": "supporting-component",
+      "routeIds": [
+        "account"
+      ],
+      "owner": "features/account",
+      "source": "website/src/features/account/TermsLine.tsx",
+      "exportName": "TermsLine",
+      "css": [
+        "packages/web-ui/src/components/CatchLinkedText.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "signed-out"
+        ]
+      },
+      "notes": "The one legal line where someone signs up (sign-in sheet and the account step before booking): the terms and privacy policy, linked. The privacy policy covers ad measurement; there is no separate ad notice."
     },
     {
       "id": "site_account_menu",
@@ -7228,6 +7280,29 @@
         ]
       },
       "notes": "How a wide page offers an app (CatchCtaSection's storesWide, from 840px): a QR code that opens the page's download band on the phone, where the store button for that phone is, and a text link to have the app's link sent on WhatsApp. The host start band, the homepage app band and every playbook band with store badges use it, so the action reads the same everywhere (website cleanup, 21 Nov 2026). Its words live in content/appDownload.ts."
+    },
+    {
+      "id": "app_link_capture",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host",
+        "host_start",
+        "tools_event_page_from_link"
+      ],
+      "owner": "features/marketing",
+      "source": "website/src/features/marketing/AppLinkCapture.tsx",
+      "exportName": "AppLinkCapture",
+      "css": [],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "idle",
+          "invalid-number",
+          "sent",
+          "failed"
+        ]
+      },
+      "notes": "Text me the link beside the host store badges: the phone field (India by default, with the country picker) beside an outlined button, stacking on phones, and the one short consent line with the privacy policy linked. It files an app_link website lead, a host lead for analytics and the Google Ads conversion. Once sent, the thanks takes the form's place and the band's badges or QR code right below are the link; staff send it on WhatsApp from the lead alert. The host landing's start band and every playbook band whose form is an app link request use it. Its words live in content/appDownload.ts (appLinkCopy)."
     },
     {
       "id": "host_compare_section",

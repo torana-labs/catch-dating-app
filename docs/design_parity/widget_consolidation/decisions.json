@@ -8874,12 +8874,12 @@
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
         {
-          "name": "lib/organizers/presentation/detail/widgets/organizer_photo_rail.dart:48",
+          "name": "lib/pages/organizer/widgets/organizer_photo_rail.dart:48",
           "action": "defer",
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
         {
-          "name": "lib/organizers/presentation/detail/widgets/organizer_photo_rail.dart:53",
+          "name": "lib/pages/organizer/widgets/organizer_photo_rail.dart:53",
           "action": "defer",
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
@@ -8914,47 +8914,47 @@
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
         {
-          "name": "lib/events/presentation/widgets/event_detail_dock.dart:467",
+          "name": "lib/pages/event/widgets/event_detail_dock.dart:467",
           "action": "defer",
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
         {
-          "name": "lib/events/presentation/widgets/event_detail_fact_list.dart:528",
+          "name": "lib/pages/event/widgets/event_detail_fact_list.dart:528",
           "action": "defer",
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
         {
-          "name": "lib/events/presentation/widgets/event_detail_fact_list.dart:533",
+          "name": "lib/pages/event/widgets/event_detail_fact_list.dart:533",
           "action": "defer",
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
         {
-          "name": "lib/events/presentation/widgets/event_detail_fact_list.dart:616",
+          "name": "lib/pages/event/widgets/event_detail_fact_list.dart:616",
           "action": "defer",
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
         {
-          "name": "lib/events/presentation/widgets/event_detail_hero_top_bar.dart:404",
+          "name": "lib/pages/event/widgets/event_detail_hero_top_bar.dart:404",
           "action": "defer",
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
         {
-          "name": "lib/events/presentation/widgets/event_detail_hero_top_bar.dart:430",
+          "name": "lib/pages/event/widgets/event_detail_hero_top_bar.dart:430",
           "action": "defer",
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
         {
-          "name": "lib/events/shared/event_tiles/event_date_rail_card.dart:285",
+          "name": "lib/pages/event/tiles/event_date_rail_card.dart:285",
           "action": "defer",
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
         {
-          "name": "lib/events/shared/event_tiles/event_date_rail_card.dart:567",
+          "name": "lib/pages/event/tiles/event_date_rail_card.dart:567",
           "action": "defer",
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
         {
-          "name": "lib/events/shared/event_tiles/event_date_rail_card.dart:587",
+          "name": "lib/pages/event/tiles/event_date_rail_card.dart:587",
           "action": "defer",
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },

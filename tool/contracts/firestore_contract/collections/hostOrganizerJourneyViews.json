@@ -1,0 +1,27 @@
+{
+  "id": "hostOrganizerJourneyViews",
+  "path": "hostOrganizerJourneyViews/{viewId}",
+  "rulesMatch": "/hostOrganizerJourneyViews/{viewId}",
+  "typescriptInterface": "HostOrganizerJourneyViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/host_organizer_views.rules.test.cjs",
+  "rulesTestNames": [
+    "lets each reader get only their own journey view",
+    "lets a claimant list only their own waiting journeys"
+  ],
+  "owner": "Host read model projector: hostReadModels organizer journey view triggers",
+  "writerContext": "host",
+  "read": "only the view's own uid: gets it while a current manager of the organizer or while their claim is still being checked, and lists it with uid and waitingClaim equality; never while their account is deleted",
+  "write": "server only; written per organizer from organizers, organizerClaimRequests, supplyIntakeRequests, events and organizerGrowthFacts, and deleted when its reader is no longer a manager or claimant",
+  "exportedFunctions": [
+    "dispatchOrganizers",
+    "onHostOrganizerJourneyViewClaimChanged",
+    "onHostOrganizerJourneyViewIntakeChanged",
+    "dispatchEvents",
+    "onHostOrganizerJourneyViewGrowthChanged"
+  ],
+  "migrationNotes": [
+    "journey equals what listMyOrganizerJourneys returns to that reader. The host-organizer-journey-views copy-forward migration creates views for every organizer with a manager or a pending claim.",
+    "listMyOrganizerJourneys stays deployed for released Host builds."
+  ]
+}

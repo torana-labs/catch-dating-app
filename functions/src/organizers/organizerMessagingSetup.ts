@@ -38,16 +38,17 @@ import {requireOrganizerManager} from
 import {checkRateLimit, RateLimitConfig} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {
-  hashEndpoint,
   organizerMessageTemplateId,
   organizerSenderConnectionId,
 } from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {
   MetaTemplateSnapshot,
   MetaWhatsappProvider,
   OrganizerTokenStore,
   metaTemplateFromDocument,
-} from "./organizerWhatsappProvider";
+  metaWhatsappGraphVersion,
+} from "../platform/delivery/organizerWhatsappProvider";
 import {assertOutboundContentAllowed} from
   "../communications/outboundContentPolicy";
 
@@ -56,9 +57,6 @@ export const metaWhatsappAppId = defineString("META_WHATSAPP_APP_ID", {
 });
 export const metaWhatsappConfigId = defineString(
   "META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID", {default: ""}
-);
-export const metaWhatsappGraphVersion = defineString(
-  "META_WHATSAPP_GRAPH_VERSION", {default: "v23.0"}
 );
 export const metaWhatsappEnabled = defineString(
   "META_WHATSAPP_ENABLED", {default: "false"}

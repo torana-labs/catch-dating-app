@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "group": "page-organizer",
+  "sequence": 1795450317925,
+  "entries": [
+    {
+      "path": "lib/organizers/presentation/detail/organizer_detail_screen_state.dart",
+      "moveTo": "lib/pages/organizer/organizer_detail_screen_state.dart"
+    },
+    {
+      "path": "lib/organizers/presentation/detail/organizer_detail_view_model.dart",
+      "moveTo": "lib/pages/organizer/organizer_detail_view_model.dart"
+    },
+    {
+      "path": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+      "moveTo": "lib/pages/organizer/organizer_detail_screen.dart"
+    },
+    {
+      "path": "lib/organizers/presentation/detail/widgets/",
+      "moveTo": "lib/pages/organizer/widgets/"
+    },
+    {
+      "path": "lib/organizers/shared/",
+      "moveTo": "lib/pages/organizer/"
+    }
+  ],
+  "moves": {
+    "lib/organizers/presentation/detail/organizer_detail_screen_state.dart": "lib/pages/organizer/organizer_detail_screen_state.dart",
+    "lib/organizers/presentation/detail/organizer_detail_screen.dart": "lib/pages/organizer/organizer_detail_screen.dart",
+    "lib/organizers/presentation/detail/organizer_detail_view_model.dart": "lib/pages/organizer/organizer_detail_view_model.dart",
+    "lib/organizers/presentation/detail/organizer_detail_view_model.freezed.dart": "lib/pages/organizer/organizer_detail_view_model.freezed.dart",
+    "lib/organizers/presentation/detail/organizer_detail_view_model.g.dart": "lib/pages/organizer/organizer_detail_view_model.g.dart",
+    "lib/organizers/presentation/detail/widgets/organizer_contact_section.dart": "lib/pages/organizer/widgets/organizer_contact_section.dart",
+    "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart": "lib/pages/organizer/widgets/organizer_detail_body.dart",
+    "lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart": "lib/pages/organizer/widgets/organizer_detail_dock.dart",
+    "lib/organizers/presentation/detail/widgets/organizer_detail_formatters.dart": "lib/pages/organizer/widgets/organizer_detail_formatters.dart",
+    "lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart": "lib/pages/organizer/widgets/organizer_hero_top_bar.dart",
+    "lib/organizers/presentation/detail/widgets/organizer_host_section.dart": "lib/pages/organizer/widgets/organizer_host_section.dart",
+    "lib/organizers/presentation/detail/widgets/organizer_photo_rail.dart": "lib/pages/organizer/widgets/organizer_photo_rail.dart",
+    "lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart": "lib/pages/organizer/widgets/organizer_schedule_section.dart",
+    "lib/organizers/presentation/detail/widgets/organizer_share_card.dart": "lib/pages/organizer/widgets/organizer_share_card.dart",
+    "lib/organizers/shared/organizer_action_keys.dart": "lib/pages/organizer/organizer_action_keys.dart",
+    "lib/organizers/shared/organizer_cover.dart": "lib/pages/organizer/organizer_cover.dart",
+    "lib/organizers/shared/organizer_host_identity_row.dart": "lib/pages/organizer/organizer_host_identity_row.dart",
+    "lib/organizers/shared/organizer_placeholder_cover.dart": "lib/pages/organizer/organizer_placeholder_cover.dart",
+    "lib/organizers/shared/organizer_transition_tags.dart": "lib/pages/organizer/organizer_transition_tags.dart",
+    "test/organizers/organizer_detail_dock_test.dart": "test/pages/organizer/widgets/organizer_detail_dock_test.dart",
+    "test/organizers/organizer_hero_top_bar_test.dart": "test/pages/organizer/widgets/organizer_hero_top_bar_test.dart",
+    "test/organizers/organizer_host_section_test.dart": "test/pages/organizer/widgets/organizer_host_section_test.dart",
+    "test/organizers/organizer_schedule_section_test.dart": "test/pages/organizer/widgets/organizer_schedule_section_test.dart",
+    "test/organizers/organizer_share_card_test.dart": "test/pages/organizer/widgets/organizer_share_card_test.dart"
+  },
+  "folders": {
+    "lib/organizers/presentation/detail/widgets/": "lib/pages/organizer/widgets/",
+    "lib/organizers/shared/": "lib/pages/organizer/"
+  }
+}

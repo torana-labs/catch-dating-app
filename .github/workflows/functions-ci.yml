@@ -46,6 +46,12 @@ jobs:
       - name: Functions governance checks
         run: node tool/run.mjs check audit:fn-rate-limits audit:fn-readme-inventory
 
+      # Layering and one-writer-per-collection rules for functions/src, with
+      # today's known violations listed one by one in the context map. This
+      # lane is in Required CI's needs, so a new violation blocks the merge.
+      - name: Functions context check
+        run: node tool/run.mjs check audit:functions-contexts
+
       - name: Functions deploy param coverage
         run: node tool/run.mjs check firebase:params-coverage
 

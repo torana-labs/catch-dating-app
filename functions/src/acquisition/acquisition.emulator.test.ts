@@ -5,8 +5,9 @@ import {deleteApp, initializeApp, type App} from "firebase-admin/app";
 import {Timestamp, type Firestore} from "firebase-admin/firestore";
 import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import {nextPilotReview, recordHostPilotActivation} from "./pilotActivation";
-import {enqueueHostAlert, deliverHostAlert, dispatchHostAlerts} from
+import {ALERTS, SETTINGS_PATH, alertOnSalesIntent} from
   "../hostAlerts/delivery";
+import {alertWindowId} from "../hostAlerts/alerts";
 
 const enabled = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
 const now = 1792512000000;
@@ -21,35 +22,47 @@ before(() => {
 after(async () => {
   if (app) await deleteApp(app);
 });
-test("real Host alert transactions deduplicate and remove terminal due-work",
+test("real operator alert transactions send once and hold past the cap",
   {skip: !enabled}, async () => {
-    const intentId = randomBytes(32).toString("hex");
-    const eventId = `host_lead_${now}_${randomUUID()}`;
-    const source = db.doc(`salesInboundIntents/${intentId}`);
-    const receipt = db.doc(`hostOperatorAlerts/${eventId}`);
-    await source.create({source: "website", classification: "sales_private",
-      hostLead: {eventId, isNew: true}, status: "needs_identity_review",
-      hostApplication: {organizationName: "Emulator only"},
-      fullName: "Synthetic local test", email: "fixture@organizer.in",
-      submissionId: "emulator-only"});
-    const input = {enabled: true, since: now, db, now: () => now};
-    const enqueue = () => enqueueHostAlert({...input, intentId});
-    assert.equal((await Promise.all([enqueue(), enqueue(), enqueue()]))
-      .filter(Boolean).length, 1);
+    const intentIds = [0, 1, 2].map(() => randomBytes(32).toString("hex"));
+    const clock = Date.now();
+    // This file's emulator project is its own, so the fixed path is safe.
+    await db.doc(SETTINGS_PATH).set({schemaVersion: 1,
+      email: {provider: "resend", accountId: "account-fixture",
+        from: "billing@catch.example",
+        credentialVersion: "projects/demo/secrets/EMAIL/versions/1"},
+      operatorAlerts: {enabled: true, recipients: ["staff@catch.example"],
+        from: "alerts@catch.example", hourlyCap: 1},
+      updatedAtMillis: 1});
+    for (const intentId of intentIds) {
+      await db.doc(`salesInboundIntents/${intentId}`).create({
+        status: "needs_identity_review", source: "website",
+        submissionId: `emulator-${intentId.slice(0, 8)}`,
+        fullName: "Synthetic local test", email: "fixture@organizer.in",
+        city: "Pune", hostApplication: {organizationName: "Emulator only"},
+        createdAt: Timestamp.fromMillis(clock)});
+    }
     let sends = 0;
-    const provider = {id: "fake", submit: async () => {
-      sends++;
-      return {kind: "accepted" as const, providerMessageId: "synthetic-mail"};
-    }};
-    const deliver = () => deliverHostAlert({...input, eventId, provider});
-    await Promise.all([deliver(), deliver(), deliver()]);
+    const deps = {db: () => db, now: () => clock,
+      emailSender: async () => ({id: "fake", submit: async () => {
+        sends++;
+        return {kind: "accepted" as const,
+          providerMessageId: "synthetic-mail"};
+      }})};
+    const first = await Promise.all([0, 1, 2].map(() =>
+      alertOnSalesIntent(deps, intentIds[0])));
+    assert.deepEqual(first.sort(), ["duplicate", "duplicate", "sent"]);
+    assert.deepEqual(await Promise.all(intentIds.slice(1).map((id) =>
+      alertOnSalesIntent(deps, id))), ["overflow", "overflow"]);
     assert.equal(sends, 1);
-    assert.equal((await receipt.get()).data()?.status, "accepted");
-    assert.equal((await receipt.get()).data()?.nextAttemptAt, undefined);
-    assert.equal(await dispatchHostAlerts({...input, provider}), 0);
-    assert.equal(await enqueue(), false);
-    await source.delete();
-    await receipt.delete();
+    const window = await db.doc(
+      `${ALERTS}/hourly/windows/${alertWindowId(clock)}`).get();
+    assert.equal(window.get("sentCount"), 1);
+    assert.equal(window.get("overflowCount"), 2);
+    await Promise.all([db.doc(SETTINGS_PATH).delete(), window.ref.delete(),
+      ...intentIds.flatMap((id) => [
+        db.doc(`salesInboundIntents/${id}`).delete(),
+        db.doc(`${ALERTS}/lead_${id}`).delete()])]);
   });
 
 test("competing reviewed check-ins create one private activation receipt",

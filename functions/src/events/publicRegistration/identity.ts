@@ -12,7 +12,8 @@ import {
   seatIdentityAliasId,
   seatIdentityValueHash,
 } from "../seatIdentityAuthority";
-import {registrationUnavailable} from "./policy";
+import {registrationUnavailable} from
+  "../../domain/events/publicRegistrationTerms";
 
 /** Resolve the existing phone row before inventing an attendee ID. Import
  * provenance survives registration; ambiguity blocks collection of money.
@@ -79,7 +80,7 @@ export async function preparePublicGuestIdentity(input: {
     const participation = (
       await tx.get(
         db
-          .collection("eventParticipations")
+          .collection("eventBookings")
           .doc(eventParticipationId(eventId, uid)),
       )
     ).data();

@@ -66,6 +66,7 @@ writeRoute("/listings/request/", staticRouteMeta(websiteMeta, "listing_requests"
 writeRoute("/listings/policy/", staticRouteMeta(websiteMeta, "listing_policy", baseUrl));
 writeRoute("/listings/notice-and-takedown/", staticRouteMeta(websiteMeta, "takedown_policy", baseUrl));
 writeRoute("/host/billing/", staticRouteMeta(websiteMeta, "host_billing", baseUrl));
+writeRoute("/start/walkthrough/manage/", staticRouteMeta(websiteMeta, "walkthrough_manage", baseUrl));
 writeRoute("/event-update/", staticRouteMeta(websiteMeta, "event_assistance", baseUrl));
 writeRoute("/rehearse/", staticRouteMeta(websiteMeta, "event_rehearsal", baseUrl));
 writeRoute("/invite/", staticRouteMeta(websiteMeta, "event_invite", baseUrl));
@@ -339,7 +340,8 @@ function buildLegalStaticBody(page, effectiveDate) {
     const links = (section.links ?? [])
       .map((link) => `<li><a href="${escapeHtml(String(link.href))}">${escapeHtml(String(link.label))}</a></li>`)
       .join("");
-    return `<section><h2>${escapeHtml(String(section.heading))}</h2>` +
+    const anchor = section.anchor ? ` id="${escapeHtml(String(section.anchor))}"` : "";
+    return `<section${anchor}><h2>${escapeHtml(String(section.heading))}</h2>` +
       `${paragraphs}${bullets ? `<ul>${bullets}</ul>` : ""}` +
       `${links ? `<ul>${links}</ul>` : ""}</section>`;
   }).join("");

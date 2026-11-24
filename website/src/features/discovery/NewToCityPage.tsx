@@ -80,12 +80,12 @@ function NewToCityMonth({page}: {page: Page}) {
  * The new-to-the-city page (/new-to-<city>/, the PlaybookNewToCity board):
  * the pink hero, this week's newcomer plans, walking in alone on ink, a
  * first month, why the hosts can be trusted on the tint panel, the
- * questions, the pink WhatsApp band beside a guest's phone after checking
- * in (the board's phone), the footer and the phone action bar. It arranges
+ * questions, the pink WhatsApp band beside the city's What's on page in
+ * Safari, the footer and the phone action bar. It arranges
  * library parts and binds the controller (D18).
  */
 function NewToCityPageSections({captures, page}: {captures: CaptureSlots; page: Page}) {
-  const checkedIn = captureSlot(captures, "guest-checked-in");
+  const whatsOn = captureSlot(captures, "guest-web-whats-on");
   return (
     <CitySiteChrome cities={page.cities} city={page.city} discovery={page.discovery} dock={<DiscoveryDock href={page.dock.href} label={page.dock.label} message={page.notify.message} />}
       exploreHref={page.exploreHref} onChooseCity={page.chooseCity} showWhatsOn={page.showWhatsOn}>
@@ -119,7 +119,7 @@ function NewToCityPageSections({captures, page}: {captures: CaptureSlots; page: 
       />
       <CatchFaqSection items={page.faq.items} kicker={page.faq.kicker} title={page.faq.title} />
       <CityAlertsCapture ground="pink" interests={page.notify.interests} kicker={page.notify.kicker} place={page.notify.place} title={page.notify.title}
-        media={checkedIn ? <CatchAppCaptureImage {...checkedIn} caption={undefined} size="md" /> : undefined} />
+        media={whatsOn ? <CatchAppCaptureImage {...whatsOn} caption={undefined} size="md" /> : undefined} />
     </CitySiteChrome>
   );
 }

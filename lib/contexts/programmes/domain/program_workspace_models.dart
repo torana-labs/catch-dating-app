@@ -453,8 +453,10 @@ class ProgramGuestGroupRow {
   final int revision;
 }
 
-/// `listProgramGuests` page: guests plus the household/function/group joins
-/// needed to render the household×function RSVP grid.
+/// One page of programme guests plus the household/function/group joins
+/// needed to render the household×function RSVP grid, as the
+/// `listProgramGuests` callable returned it and the guest directory read
+/// model now does.
 class ProgramGuestListPage {
   const ProgramGuestListPage({
     required this.programId,
@@ -495,6 +497,62 @@ class ProgramGuestListPage {
     );
   }
 
+  /// The page from `programGuestDirectoryViews` rows (#2306): [guests] in
+  /// the directory's name order, and the [households] and [groups] those
+  /// guests name, as `listProgramGuests` returned them. Rows of another
+  /// programme or kind are ignored; [nextCursor] says more guests follow.
+  factory ProgramGuestListPage.fromDirectoryRows({
+    required String programId,
+    required List<Map<Object?, Object?>> guests,
+    required List<Map<Object?, Object?>> households,
+    required List<Map<Object?, Object?>> groups,
+    String? nextCursor,
+  }) {
+    final guestRows = [
+      for (final row in guests)
+        if (_directoryRow(row, programId, 'guest') case final guest?)
+          (id: requiredString(row, 'sourceId'), guest: guest),
+    ];
+    final householdIds = {
+      for (final row in guestRows) ?row.guest['householdId'] as String?,
+    };
+    final groupIds = {
+      for (final row in guestRows)
+        ...stringList(row.guest['groupIds'] ?? const <Object?>[]),
+    };
+    return ProgramGuestListPage(
+      programId: programId,
+      guests: [
+        for (final row in guestRows)
+          ProgramGuestRow.fromMap({...row.guest, 'guestId': row.id}),
+      ],
+      functionGuests: [
+        for (final row in guestRows)
+          for (final fn in mapList(row.guest['functions'], 'functions'))
+            ProgramFunctionGuestRow.fromMap({...fn, 'guestId': row.id}),
+      ],
+      households: [
+        for (final row in households)
+          if (_directoryRow(row, programId, 'household') case final house?
+              when householdIds.contains(row['sourceId']))
+            ProgramHouseholdRow.fromMap({
+              ...house,
+              'householdId': row['sourceId'],
+            }),
+      ],
+      groups: [
+        for (final row in groups)
+          if (_directoryRow(row, programId, 'group') case final group?
+              when groupIds.contains(row['sourceId']))
+            ProgramGuestGroupRow.fromMap({
+              ...group,
+              'groupId': row['sourceId'],
+            }),
+      ],
+      nextCursor: nextCursor,
+    );
+  }
+
   final String programId;
   final List<ProgramGuestRow> guests;
   final List<ProgramHouseholdRow> households;
@@ -502,6 +560,24 @@ class ProgramGuestListPage {
   final List<ProgramGuestGroupRow> groups;
   final String? nextCursor;
 }
+
+/// The [kind] object of one `programGuestDirectoryViews` row of [programId],
+/// or null for a row of another programme or kind.
+Map<Object?, Object?>? _directoryRow(
+  Map<Object?, Object?> row,
+  String programId,
+  String kind,
+) {
+  if (row['programId'] != programId || row['kind'] != kind) return null;
+  return requiredMap(row[kind], 'program guest directory $kind');
+}
+
+/// One `programGuestDirectoryViews` guest row as a [ProgramGuestRow].
+ProgramGuestRow programGuestRowFromDirectory(Map<Object?, Object?> row) =>
+    ProgramGuestRow.fromMap({
+      ...requiredMap(row['guest'], 'program guest directory guest'),
+      'guestId': requiredString(row, 'sourceId'),
+    });
 
 /// Field keys for the manifest import column mapper. Labels are resolved
 /// server-side; `groupLabels` accepts a comma/semicolon-separated list.
@@ -556,6 +632,11 @@ class ProgramManifestImportResult {
             (entry) => (
               index: requiredInt(entry, 'index'),
               message: requiredString(entry, 'message'),
+              partyJourney: entry['partyJourney'] == null
+                  ? null
+                  : ProgramManifestPartyJourney.fromMap(
+                      requiredMap(entry['partyJourney'], 'partyJourney'),
+                    ),
             ),
           )
           .toList(growable: false),
@@ -572,8 +653,37 @@ class ProgramManifestImportResult {
   final int householdsCreated;
   final int partiesCreated;
   final int groupsCreated;
-  final List<({int index, String message})> rowErrors;
+
+  /// Rows the server refused. [ProgramManifestRowError.partyJourney] is set
+  /// when detaching that journey from its party would clear the row.
+  final List<ProgramManifestRowError> rowErrors;
   final bool alreadyApplied;
+}
+
+/// One refused manifest row: its index, the reason, and the journey to
+/// detach when the row is blocked by that journey's travel party.
+typedef ProgramManifestRowError = ({
+  int index,
+  String message,
+  ProgramManifestPartyJourney? partyJourney,
+});
+
+/// An existing journey whose ride-together party blocks a manifest row,
+/// with the revision `detachProgramTravelLeg` expects.
+class ProgramManifestPartyJourney {
+  const ProgramManifestPartyJourney({
+    required this.legId,
+    required this.revision,
+  });
+
+  factory ProgramManifestPartyJourney.fromMap(Map<Object?, Object?> map) =>
+      ProgramManifestPartyJourney(
+        legId: requiredString(map, 'legId'),
+        revision: requiredInt(map, 'revision'),
+      );
+
+  final String legId;
+  final int revision;
 }
 
 /// The guest pages' accent colours.

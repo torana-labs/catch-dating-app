@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_draft.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_signup_source.dart';
 import 'package:catch_dating_app/hosts/onboarding/onboarding_controller.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
@@ -75,6 +76,27 @@ void main() {
     state = container.read(hostSetupControllerProvider);
     expect(state.formats, isEmpty);
     expect(state.draft.isEmpty, isTrue);
+  });
+
+  test('how they heard is one answer, and Skip clears it', () {
+    final container = _container();
+    final setup = container.read(hostSetupControllerProvider.notifier);
+    expect(
+      container.read(hostSetupControllerProvider).draft.signupSource,
+      isNull,
+    );
+
+    setup
+      ..setSignupSource(OrganizerSignupSource.metaAd)
+      ..setSignupSource(OrganizerSignupSource.friendOrHost);
+    var draft = container.read(hostSetupControllerProvider).draft;
+    expect(draft.signupSource, OrganizerSignupSource.friendOrHost);
+    expect(draft.isEmpty, isFalse);
+
+    setup.setSignupSource(null);
+    draft = container.read(hostSetupControllerProvider).draft;
+    expect(draft.signupSource, isNull);
+    expect(draft.isEmpty, isTrue);
   });
 
   test(

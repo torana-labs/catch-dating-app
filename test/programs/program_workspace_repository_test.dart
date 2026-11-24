@@ -1,11 +1,10 @@
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_manifest_mapper.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_test_support/contract_schemas.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
-
-import '../support/contract_schemas.dart';
 
 void main() {
   group('organizerProgramDetail', () {
@@ -103,103 +102,6 @@ void main() {
         }),
         throwsFormatException,
       );
-    });
-  });
-
-  group('listProgramGuests', () {
-    test('serializes cursor and parses the page projections', () async {
-      final functions = _Functions()
-        ..response = {
-          'programId': 'program',
-          'guests': [
-            {
-              'guestId': 'g-1',
-              'displayName': 'Asha Mehta',
-              'householdId': 'hh-1',
-              'contactId': 'contact-9',
-              'phoneE164': '+919900000001',
-              'email': 'asha@example.com',
-              'externalReference': 'crm-7',
-              'groupIds': ['grp-1', 'grp-2'],
-              'invitationStatus': 'invited',
-              'rsvpStatus': 'attending',
-              'revision': 3,
-            },
-          ],
-          'households': [
-            {
-              'householdId': 'hh-1',
-              'label': 'Mehta household',
-              'memberGuestIds': ['g-1'],
-              'revision': 2,
-            },
-          ],
-          'functionGuests': [
-            {
-              'guestId': 'g-1',
-              'functionId': 'fn-1',
-              'invited': true,
-              'rsvpStatus': 'attending',
-              'attendanceStatus': 'expected',
-              'partySize': 3,
-            },
-          ],
-          'groups': [
-            {
-              'groupId': 'grp-1',
-              'label': 'Bride side',
-              'dimension': 'side',
-              'hotelId': 'hotel-1',
-              'memberCount': 40,
-              'sortOrder': 1,
-              'revision': 5,
-            },
-          ],
-          'nextCursor': 'cursor-2',
-        };
-      final page = await ProgramSetupRepository(
-        functions,
-      ).listGuests('program', limit: 50, cursor: 'cursor-1');
-      expect(functions.calls, ['listProgramGuests']);
-      expect(functions.payload, {
-        'programId': 'program',
-        'limit': 50,
-        'cursor': 'cursor-1',
-      });
-      final guest = page.guests.single;
-      expect(guest.groupIds, ['grp-1', 'grp-2']);
-      expect(guest.householdId, 'hh-1');
-      expect(guest.contactId, 'contact-9');
-      expect(page.households.single.label, 'Mehta household');
-      expect(page.functionGuests.single.partySize, 3);
-      expect(page.groups.single.dimension, 'side');
-      expect(page.groups.single.hotelId, 'hotel-1');
-      expect(page.groups.single.memberCount, 40);
-      expect(page.nextCursor, 'cursor-2');
-    });
-
-    test('tolerates absent projection blocks for older servers', () async {
-      final functions = _Functions()
-        ..response = {
-          'programId': 'program',
-          'guests': [
-            {
-              'guestId': 'g-1',
-              'displayName': 'Asha',
-              'invitationStatus': 'invited',
-              'rsvpStatus': 'pending',
-              'revision': 1,
-            },
-          ],
-        };
-      final page = await ProgramSetupRepository(
-        functions,
-      ).listGuests('program');
-      expect(page.households, isEmpty);
-      expect(page.functionGuests, isEmpty);
-      expect(page.groups, isEmpty);
-      expect(page.guests.single.groupIds, isEmpty);
-      expect(page.nextCursor, isNull);
     });
   });
 
@@ -382,6 +284,11 @@ void main() {
             'partiesCreated': 1,
             'groupsCreated': 2,
             'rowErrors': [
+              {
+                'index': 1,
+                'message': 'Remove this journey from its party first.',
+                'partyJourney': {'legId': 'leg-1', 'revision': 4},
+              },
               {'index': 2, 'message': 'missing display name'},
             ],
             'alreadyApplied': false,
@@ -405,9 +312,15 @@ void main() {
         });
         expect(result.mode, 'preview');
         expect(result.groupsCreated, 2);
-        expect(result.rowErrors.single, (
+        expect(result.rowErrors, hasLength(2));
+        final blocked = result.rowErrors.first;
+        expect(blocked.index, 1);
+        expect(blocked.partyJourney?.legId, 'leg-1');
+        expect(blocked.partyJourney?.revision, 4);
+        expect(result.rowErrors.last, (
           index: 2,
           message: 'missing display name',
+          partyJourney: null,
         ));
         expect(result.alreadyApplied, isFalse);
       },

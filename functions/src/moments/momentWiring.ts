@@ -4,24 +4,24 @@ import {
   metaWhatsappAppId,
   metaWhatsappAppSecret,
   metaWhatsappConfigId,
-  metaWhatsappGraphVersion,
 } from "../organizers/organizerMessagingSetup";
 import {
   MetaWhatsappProvider,
   OrganizerTokenStore,
-} from "../organizers/organizerWhatsappProvider";
+  metaWhatsappGraphVersion,
+} from "../platform/delivery/organizerWhatsappProvider";
 import {
   activityNotificationId,
   allowsPushPreference,
   createActivityNotificationIfAbsent,
   eventActivityNotificationCopy,
+  eventFeedbackNotificationCopy,
   sendFcmNotification,
   type ActivityNotificationType,
   type NotificationPreference,
 } from "../shared/notifications";
 import {readPushToken} from "../shared/consumerPushToken";
 import type {
-  OrganizerCommunicationPreferenceDocument,
   OrganizerContactChannelStateDocument,
   OrganizerContactDocument,
   UserProfileDocument,
@@ -38,10 +38,8 @@ import type {ProgramFcmSender} from "../programs/programActivityChannel";
 import {deliverProgramReminder} from "../programs/programReminderDelivery";
 import {deliverAutomationMessage} from
   "../organizers/automationMomentDelivery";
-import {
-  effectiveOrganizerWhatsappPurposeStatus,
-  organizerCommunicationPreferenceId,
-} from "../shared/organizerCommunicationPreferences";
+import {contactPermissionRef, contactPermissionStatus,
+  readContactPermission} from "../shared/contactPermissions";
 import {organizerContactChannelStateId} from
   "../organizers/organizerCampaignModel";
 
@@ -61,6 +59,10 @@ const DEFAULT_TIMEZONE = "Asia/Kolkata";
 const DEFAULT_QUIET_HOURS: QuietHours = {startMinute: 21 * 60, endMinute: 480};
 const DEFAULT_DAILY_CAP = 4;
 
+// Activity items carry only types every shipped Consumer build can decode
+// (an unknown type fails the whole activity list there). Other push types,
+// such as eventFeedback, keep their own push type and copy, while the item
+// falls back to organizerUpdate and still opens the event from its ids.
 const ACTIVITY_TYPES: ReadonlySet<string> = new Set([
   "message", "match", "eventReminder", "eventSignup", "waitlistPromotion",
   "waitlistOffer", "waitlistOfferExpiring", "waitlistOfferExpired",
@@ -253,6 +255,17 @@ async function pushCopy(
 ): Promise<{title: string; body: string}> {
   if (moment.scope.kind === "event" &&
       moment.action.kind === "push" &&
+      moment.action.notificationType === "eventFeedback") {
+    const event = (await db.collection("events")
+      .doc(moment.scope.eventId).get()).data() as
+      Parameters<typeof eventFeedbackNotificationCopy>[0] | undefined;
+    if (event) {
+      return eventFeedbackNotificationCopy(event,
+        await organizerName(db, event.organizerId));
+    }
+  }
+  if (moment.scope.kind === "event" &&
+      moment.action.kind === "push" &&
       ACTIVITY_TYPES.has(moment.action.notificationType)) {
     const eventSnap = await db.collection("events")
       .doc(moment.scope.eventId).get();
@@ -264,6 +277,18 @@ async function pushCopy(
     }
   }
   return {title: moment.name, body: ""};
+}
+
+async function organizerName(
+  db: Firestore,
+  organizerId: unknown,
+): Promise<string | null> {
+  if (typeof organizerId !== "string" || organizerId.length === 0) {
+    return null;
+  }
+  const name = (await db.collection("organizers").doc(organizerId).get())
+    .data()?.name;
+  return typeof name === "string" && name.trim() ? name.trim() : null;
 }
 
 /** IDs are interpolated by the native route parser; preserve exact safe
@@ -398,26 +423,24 @@ async function consentFacts(
       | OrganizerContactDocument
       | undefined;
     if (!contact) return {communicationPermission: "unknown"};
-    const [preferenceSnap, channelSnap] = await Promise.all([
+    const sender = {kind: "organizer" as const,
+      organizerId: contact.organizerId};
+    const [permissionSnap, channelSnap] = await Promise.all([
       contact.linkedUid ?
-        db.collection("organizerCommunicationPreferences")
-          .doc(organizerCommunicationPreferenceId(
-            contact.organizerId, contact.linkedUid)).get() :
+        contactPermissionRef(db, contact.linkedUid, sender).get() :
         Promise.resolve(null),
       db.collection("organizerContactChannelStates")
         .doc(organizerContactChannelStateId(
           contact.organizerId, contactId)).get(),
     ]);
-    const preference = preferenceSnap?.data() as
-      | OrganizerCommunicationPreferenceDocument
-      | undefined;
+    const permission = readContactPermission(permissionSnap?.data(), sender);
     const channel = channelSnap.data() as
       | OrganizerContactChannelStateDocument
       | undefined;
-    facts.communicationPermission = !contact.phoneE164 || !preference ?
+    facts.communicationPermission = !contact.phoneE164 || !permission ?
       "unknown" :
-      effectiveOrganizerWhatsappPurposeStatus(
-        preference, "marketing", contact.phoneE164);
+      contactPermissionStatus(permission, "whatsapp:marketing",
+        contact.phoneE164);
     facts.endpointSuppressed = channel?.adminSuppressed === true ||
       (channel?.suppressionStatus !== undefined &&
         channel.suppressionStatus !== "none");

@@ -48,14 +48,44 @@ const allowedFeatureImports = new Map([
   // form opens the page's try-it tool (the guest list and Reports' export
   // uploads are their own features), and the /refer/ form carries the
   // referral sign-in above it.
-  ["playbook", new Set(["guestImportTryIt", "marketing", "pastSalesTryIt", "referral", "tryIt"])],
+  // The walkthrough page's form is the slot picker (features/walkthroughs).
+  ["playbook", new Set(["guestImportTryIt", "marketing", "pastSalesTryIt", "referral", "tryIt", "walkthroughs"])],
   // The /refer/ form signs the referrer in with the one shared sign-in sheet.
   ["referral", new Set(["account"])],
   ["reviews", new Set(["organizers"])],
   // A try-it tool confirms the phone with the one shared sign-in sheet and
   // ends with Catch Host's store badges.
   ["tryIt", new Set(["account", "marketing"])],
+  // Booking a walkthrough confirms the WhatsApp number with the one shared
+  // sign-in sheet, as the try-it tools do.
+  ["walkthroughs", new Set(["account"])],
 ]);
+
+/**
+ * The website's Firebase service modules: firebase.ts (the callers' entry,
+ * which re-exports the per-domain modules), the per-domain modules directly
+ * under services/firebase/ (runtime.ts holds the shared runtime and the
+ * callable invoke), and the read-model, account-linking and config modules.
+ * Only they load the browser Firebase SDK, and only the per-domain modules
+ * import the generated callable types, so every callable gets the shared App
+ * Check deadline, the "configured" checks and typed payloads.
+ */
+const firebaseServiceFiles = new Set([
+  "firebase.ts",
+  "firebaseClaimAccountLinking.ts",
+  "firebaseConfig.ts",
+  "firebaseReadModels.ts",
+]);
+const firebaseServiceDirectory = "services/firebase/";
+
+function firebaseDomainModule(relativePath) {
+  return relativePath.startsWith(firebaseServiceDirectory) &&
+    !relativePath.slice(firebaseServiceDirectory.length).includes("/") && !/\.test\./.test(relativePath);
+}
+
+function firebaseServiceFile(relativePath) {
+  return firebaseServiceFiles.has(relativePath) || firebaseDomainModule(relativePath);
+}
 
 if (args.selfTest) {
   runSelfTest();
@@ -101,8 +131,7 @@ function layerFor(relativePath) {
   if (parts[0] === "stories") return {name: "story"};
   if (
     relativePath === "analytics.ts" || relativePath.startsWith("analytics/") ||
-    relativePath === "firebase.ts" ||
-    relativePath === "firebaseConfig.ts"
+    firebaseServiceFile(relativePath)
   ) {
     return {name: "service"};
   }
@@ -110,6 +139,11 @@ function layerFor(relativePath) {
     return {name: "entry"};
   }
   return {name: "root"};
+}
+
+function browserFirebaseImport(specifier, sourceRelativePath) {
+  return /^firebase(?:\/|$)/.test(specifier) && !firebaseServiceFile(sourceRelativePath) &&
+    !/\.test\./.test(sourceRelativePath);
 }
 
 function sourceModule(source) {
@@ -159,11 +193,6 @@ function allowedExternalImport(sourceRelativePath, targetAbsolutePath) {
     "tool/demo/demo_seed/personas/india_core_sales_personas.draft.json",
     "tool/demo/lib/demo_world.mjs",
   ].some(target => targetAbsolutePath === path.join(repoRoot, target))) return true;
-  if (["server/publicOrganizerProjection.ts", "server/publicExternalEvent.ts"].includes(sourceRelativePath) && [
-    "website/scripts/next/organizerProjection.mjs",
-    "website/scripts/next/externalEventProjection.mjs",
-    "tool/contracts/generated/schema_contract_validators.mjs",
-  ].some(target => targetAbsolutePath === path.join(repoRoot, target))) return true;
   // The private page test drives the Next proxy itself, which sits beside
   // website/src, to pin that receipts, offers and invitations stay unstored.
   if (sourceRelativePath === "server/privateShellCache.test.ts" &&
@@ -179,7 +208,7 @@ function allowedExternalImport(sourceRelativePath, targetAbsolutePath) {
   return (
     sourceRelativePath === "features/organizers/types.ts" ||
     sourceRelativePath === "features/hostBilling/contracts.ts" ||
-    sourceRelativePath === "firebase.ts" ||
+    firebaseDomainModule(sourceRelativePath) ||
     sourceRelativePath === "server/repositories/publicPageRepository.ts"
   ) && isInside(functionsGeneratedRoot, targetAbsolutePath);
 }
@@ -312,6 +341,10 @@ for (const file of [...walkSourceFiles(websiteSrcRoot),
     if (privilegedImport(specifier, sourceRelativePath, sourceLayer, source)) {
       violations.push({source: sourceRelativePath, specifier,
         reason: "privileged runtime packages must remain in server modules"});
+    }
+    if (browserFirebaseImport(specifier, sourceRelativePath)) {
+      violations.push({source: sourceRelativePath, specifier,
+        reason: "the browser Firebase SDK loads only in the Firebase service modules; call firebase.ts instead"});
     }
     if (webUiDeepImport(specifier)) {
       violations.push({
@@ -459,6 +492,23 @@ function runSelfTest() {
   }
   assert.equal(isClientModule('// "use client";\nconst text = "use client";'), false);
 
+  // Only the Firebase service modules load the browser SDK; tests may mock it.
+  for (const file of firebaseServiceFiles) {
+    assert.deepEqual(layerFor(file), {name: "service"});
+    assert.equal(browserFirebaseImport("firebase/functions", file), false);
+  }
+  assert.equal(browserFirebaseImport("firebase/functions", "services/firebase/runtime.ts"), false);
+  assert.equal(browserFirebaseImport("firebase/app", "services/firebase/nested/deep.ts"), true);
+  assert.deepEqual(layerFor("services/firebase/forms.ts"), {name: "service"});
+  assert.equal(allowedExternalImport("services/firebase/forms.ts",
+    path.join(repoRoot, "functions/src/shared/generated/getPublicOrganizerFormCallablePayload.ts")), true);
+  assert.equal(allowedExternalImport("firebase.ts",
+    path.join(repoRoot, "functions/src/shared/generated/getPublicOrganizerFormCallablePayload.ts")), false);
+  assert.equal(browserFirebaseImport("firebase/functions", "features/organizers/owner/ownerViewBackends.ts"), true);
+  assert.equal(browserFirebaseImport("firebase", "features/account/useAccount.ts"), true);
+  assert.equal(browserFirebaseImport("firebase/auth", "shared/auth/claimAccountLinking.test.ts"), false);
+  assert.equal(browserFirebaseImport("firebase-admin/firestore", "server/repositories/organizerRepository.ts"), false);
+
   assert.deepEqual(layerFor("server/publicCatalog.ts"), {name: "server"});
   assert.deepEqual(layerFor("../app/page.tsx"), {name: "next-entry"});
   for (const layer of ["app", "feature", "shared", "content", "service", "story"]) {
@@ -467,8 +517,8 @@ function runSelfTest() {
   assert.equal(violationFor("../app/page.tsx", {name: "next-entry"}, {name: "server"}), null);
   assert.equal(violationFor("server/publicCatalog.ts", {name: "server"}, {name: "feature"}), null);
   assert.match(violationFor("server/publicCatalog.ts", {name: "server"}, {name: "generated"}), /build-time data/);
-  assert.equal(allowedExternalImport("server/publicOrganizerProjection.ts",
-    path.join(repoRoot, "website/scripts/next/organizerProjection.mjs")), true);
+  assert.equal(allowedExternalImport("server/publicCatalog.ts",
+    path.join(repoRoot, "website/scripts/next/organizerProjection.mjs")), false);
   assert.equal(allowedExternalImport("app/leak.ts",
     path.join(repoRoot, "website/scripts/next/organizerProjection.mjs")), false);
   assert.equal(allowedExternalImport("server/repositories/publicPageRepository.ts",

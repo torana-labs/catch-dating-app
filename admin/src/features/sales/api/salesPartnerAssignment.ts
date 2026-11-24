@@ -6,7 +6,7 @@ import {loadAdminCallableValidators} from
 
 export interface PartnerOfferInput {
   requestId: string; organizerId: string; partnerUid: string;
-  expectedRevision: 0; nextAction: string; reviewAt: string; expiresAt: string;
+  expectedRevision: number; nextAction: string; reviewAt: string; expiresAt: string;
   reason: string; originatorUid: null;
 }
 export async function offerSalesPartner(input: PartnerOfferInput): Promise<void> {
@@ -17,7 +17,7 @@ export async function offerSalesPartner(input: PartnerOfferInput): Promise<void>
   const {data} = await httpsCallable<PartnerOfferInput, unknown>(functions, "adminAssignSalesPartner")(input);
   if (!data || typeof data !== "object" || !("organizerId" in data) ||
       data.organizerId !== input.organizerId || !("partnerUid" in data) ||
-      data.partnerUid !== input.partnerUid || !("revision" in data) || data.revision !== 1 ||
+      data.partnerUid !== input.partnerUid || !("revision" in data) || data.revision !== input.expectedRevision + 1 ||
       !("status" in data) || data.status !== "offered") {
     throw new Error("The offer was not confirmed. Retry the unchanged request to reconcile it.");
   }

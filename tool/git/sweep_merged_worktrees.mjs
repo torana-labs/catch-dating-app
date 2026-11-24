@@ -17,10 +17,12 @@ export function sweepHelp() {
 
 Lists every linked worktree of this repository and removes (with --apply) the
 ones that are finished:
-  - HEAD is an ancestor of origin/main, or is the exact head of a merged PR;
+  - HEAD is an ancestor of origin/main, or is a commit of a merged PR (its
+    final head or any earlier commit);
   - no modified or untracked files (ignored files such as node_modules go with it);
   - not locked, not the primary checkout, no process has its cwd inside it;
   - no open PR for its branch;
+  - not a claimed task with no commits yet (HEAD still at the claim's base);
   - idle for at least --min-idle-hours (default ${DEFAULT_MIN_IDLE_HOURS}).
 Removal is a non-forced git worktree remove. A worktree guard claim for the
 path is released first with finish --abandon. Branches, refs and stashes stay.
@@ -35,6 +37,7 @@ export function classifyWorktree({
   dirty = false,
   inUse = false,
   openPullRequest = false,
+  unstartedClaim = false,
   ancestorOfMain = false,
   mergedPullRequest = null,
   idleHours = 0,
@@ -46,6 +49,10 @@ export function classifyWorktree({
   if (dirty) return {action: "keep", reason: "uncommitted-changes"};
   if (inUse) return {action: "keep", reason: "process-running-inside"};
   if (openPullRequest) return {action: "keep", reason: "open-pull-request"};
+  // A task worktree starts at its claim's base, which is already in main, so
+  // until its first commit it would look finished. The guard's stale command
+  // owns claims that never start.
+  if (unstartedClaim) return {action: "keep", reason: "claimed-not-started"};
   const merged = mergedPullRequest != null
     ? `merged-pr-${mergedPullRequest}`
     : ancestorOfMain ? "in-origin-main" : null;
@@ -90,10 +97,27 @@ export function githubFromCli({cwd}) {
   };
   const merged = list("merged");
   const open = list("open");
+  const ghJson = (args) => {
+    const out = spawnSync("gh", args, {cwd, encoding: "utf8", maxBuffer: 64 * 1024 * 1024});
+    if (out.status !== 0) return null;
+    try { return JSON.parse(out.stdout); } catch { return null; }
+  };
   return {
     available: merged != null && open != null,
     mergedByHead: new Map((merged ?? []).map((pr) => [pr.headRefOid, pr.number])),
     openBranches: new Set((open ?? []).map((pr) => pr.headRefName)),
+    // A PR often gains commits after a checkout's last one (merge-main,
+    // update-branch, a fixup from another checkout), so its final head never
+    // matches. Search finds merged PRs that contain the commit; the commit
+    // list confirms it, since search also matches the SHA quoted in text.
+    mergedContaining: (sha) => {
+      const hits = ghJson(["pr", "list", "--state", "merged", "--search", sha, "--limit", "5", "--json", "number"]);
+      for (const {number} of hits ?? []) {
+        const pr = ghJson(["pr", "view", String(number), "--json", "commits"]);
+        if ((pr?.commits ?? []).some((c) => c.oid === sha)) return number;
+      }
+      return null;
+    },
   };
 }
 
@@ -159,13 +183,19 @@ export function sweepWorktrees({
       facts.ancestorOfMain = mainSha.ok && entry.head != null &&
         git(["merge-base", "--is-ancestor", entry.head, mainSha.stdout], top.stdout).ok;
       facts.mergedPullRequest = gh.mergedByHead.get(entry.head) ?? null;
+      const stillUndecided = !facts.ancestorOfMain && facts.mergedPullRequest == null &&
+        !facts.dirty && !facts.inUse && !facts.openPullRequest && !entry.locked;
+      if (stillUndecided && entry.head != null && gh.mergedContaining) {
+        facts.mergedPullRequest = gh.mergedContaining(entry.head) ?? null;
+      }
+      const claim = claimFileFor(commonDir, entry.path);
+      facts.unstartedClaim = claim != null && entry.head != null && claim.baseSha === entry.head;
       facts.idleHours = idleHoursFor(entry.path, now);
     }
     const decision = classifyWorktree(facts);
     const row = {path: entry.path, branch: entry.branch, head: entry.head, ...decision};
     if (apply && decision.action === "remove") {
-      const claim = claimFileFor(commonDir, entry.path);
-      if (claim) {
+      if (claimFileFor(commonDir, entry.path)) {
         try {
           executeTaskCommand({
             args: ["finish", "--worktree", entry.path, "--abandon",

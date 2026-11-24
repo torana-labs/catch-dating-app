@@ -18,15 +18,22 @@ import type {CampaignWhatsappDispatchDocument}
 import type {OrganizerCampaignRecipientDocument}
   from "../shared/generated/firestoreAdminTypes";
 import {whatsappStatusCorrelation} from
-  "../eventSuccess/operations/whatsappDeliveryProtocol";
+  "../platform/delivery/whatsappDeliveryProtocol";
 import {whatsappEndpointHash} from
   "../eventSuccess/operations/whatsappReplyProtocol";
-import {MetaProviderError} from "./organizerWhatsappProvider";
+import {MetaProviderError} from
+  "../platform/delivery/organizerWhatsappProvider";
 import {
-  hashCanonical, hashEndpoint, organizerContactChannelStateId,
+  hashCanonical,
+  organizerContactChannelStateId,
 } from "./organizerCampaignModel";
-import {organizerCommunicationPreferenceId} from
-  "../shared/organizerCommunicationPreferences";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
+import {
+  contactPermissionDocument,
+  contactPermissionPath,
+  optedInGrant,
+  optedOutGrant,
+} from "../shared/testing/contactPermissionFixtures";
 
 const NOW_MS = 1_800_000_000_000;
 const NOW = admin.firestore.Timestamp.fromMillis(NOW_MS);
@@ -81,25 +88,11 @@ function seedCrm(): Record<string, Record<string, unknown>> {
       deletedAt: null,
       hiddenAt: null,
     },
-    ["organizerCommunicationPreferences/" +
-      organizerCommunicationPreferenceId("org-1", "u-1")]: {
-      organizerId: "org-1",
-      uid: "u-1",
-      whatsappPurposes: {
-        marketing: {
-          status: "optedIn",
-          endpointE164: E164,
-          evidenceStatus: "complete",
-          currentReceiptId: "rcpt-1",
-          source: "manualImport",
-          termsVersion: "v1",
-          updatedAt: NOW,
-        },
-      },
-      whatsapp: null,
-      createdAt: NOW,
-      updatedAt: NOW,
-    },
+    [contactPermissionPath("u-1", {kind: "organizer",
+      organizerId: "org-1"})]: contactPermissionDocument(
+      {kind: "organizer", organizerId: "org-1"},
+      {"whatsapp:marketing": optedInGrant(E164,
+        {receiptId: "rcpt-1", updatedAt: NOW})}, NOW),
     "organizerSenderConnections/conn-1": {
       organizerId: "org-1",
       provider: "metaCloudApi",
@@ -197,11 +190,9 @@ test("an opted-out preference suppresses at claim time with the reason",
   async () => {
     const db = new FakeFirestore(seedCrm());
     db.updateDoc(
-      `organizerCommunicationPreferences/${
-        organizerCommunicationPreferenceId("org-1", "u-1")}`,
-      {whatsappPurposes: {
-        marketing: {status: "optedOut", updatedAt: NOW},
-      }},
+      contactPermissionPath("u-1", {kind: "organizer", organizerId: "org-1"}),
+      {grants: {"whatsapp:marketing": optedOutGrant({updatedAt: NOW})},
+        granted: []},
     );
     const calls: unknown[] = [];
     const {result} = await enqueueAndDispatch(db, {

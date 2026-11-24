@@ -4,6 +4,7 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {repoRoot} from "./lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "./lib/repository_snapshot.mjs";
+import {loadToolsManifestFromSnapshot, toolsManifestAt} from "./lib/tools_manifest.mjs";
 import {changedPathsSince} from "./harness/lib/git_changes.mjs";
 import {
   toolSupportsPlatform,
@@ -14,6 +15,8 @@ import {
   formatAffectedToolGithubOutputs,
   hasExecutableChecks,
   planAffectedToolChecks,
+  prerequisiteFingerprint,
+  splitSharedPrerequisite,
   uniqueToolChecks,
   validateToolCheckSafety,
   validateToolCiRequirements,
@@ -29,7 +32,6 @@ import {
   validateRemoteOpsEntrypoints,
 } from "./lib/tool_manifest_rules.mjs";
 
-const manifestPath = "tool/tools_manifest.json";
 const componentGraphPath = "tool/harness/component_graph.json";
 const remoteOpsManifestPath = "tool/remote_ops_manifest.json";
 let capturedRepositorySnapshot = null;
@@ -54,9 +56,9 @@ if (command === "help" || command === "--help" || command === "-h") {
 }
 
 function loadManifest() {
-  const manifest = repositorySnapshot().readJson(manifestPath, {required: true});
+  const manifest = loadToolsManifestFromSnapshot(repositorySnapshot());
   if (!Array.isArray(manifest.tools)) {
-    throw new Error("tools_manifest.json must contain a tools array.");
+    throw new Error("The tools manifest must contain a tools array.");
   }
   return manifest;
 }
@@ -219,6 +221,22 @@ async function runChecks(tools, {marketingChecksInReact = false,
   const categoryOf = new Map(compatible.map((tool) => [tool.id, tool.category]));
   const failures = [];
   const failedTools = new Set();
+  // A shared prerequisite (the Functions build) runs at the first check that
+  // needs it, and again only if its inputs changed since. If it fails, every
+  // check that needs it fails with it; none is skipped as passed.
+  const prerequisiteRuns = new Map();
+  const runPrerequisite = (prerequisite) => {
+    const fingerprint = prerequisiteFingerprint(prerequisite, repoRoot);
+    const previous = prerequisiteRuns.get(prerequisite.command);
+    if (previous?.status === 0 && previous.fingerprint === fingerprint) return 0;
+    if (previous?.status > 0) return previous.status;
+    console.log(`==> shared prerequisite: ${prerequisite.command}`);
+    const result = spawnSync(prerequisite.command, {cwd: repoRoot, shell: true, stdio: "inherit"});
+    const status = result.status ?? 1;
+    prerequisiteRuns.set(prerequisite.command,
+      {status, fingerprint: prerequisiteFingerprint(prerequisite, repoRoot)});
+    return status;
+  };
   for (const {toolId, command} of uniqueToolChecks(compatible)) {
     if (failedTools.has(toolId)) {
       console.log(`    skipped, an earlier ${toolId} command failed: ${command}`);
@@ -236,7 +254,22 @@ async function runChecks(tools, {marketingChecksInReact = false,
       continue;
     }
     console.log(`==> ${toolId}: ${command}`);
-    const result = spawnSync(command, {
+    const {prerequisite, rest} = splitSharedPrerequisite(command);
+    if (prerequisite) {
+      const status = runPrerequisite(prerequisite);
+      if (status !== 0) {
+        console.error(`    FAILED: the shared prerequisite "${prerequisite.command}" failed, so this check fails too.`);
+        failures.push({toolId, category: categoryOf.get(toolId), command, status});
+        failedTools.add(toolId);
+        continue;
+      }
+      if (rest === null) {
+        console.log("    shared prerequisite passed.");
+        continue;
+      }
+      console.log(`    shared prerequisite passed; running: ${rest}`);
+    }
+    const result = spawnSync(rest, {
       cwd: repoRoot,
       shell: true,
       stdio: "inherit",
@@ -555,9 +588,7 @@ function validateManifest(manifest, componentGraph) {
 }
 
 function manifestAt(ref) {
-  const result = spawnSync("git", ["show", `${ref}:tool/tools_manifest.json`],
-    {cwd: repoRoot, encoding: "utf8", maxBuffer: 16 * 1024 * 1024});
-  return result.status === 0 ? JSON.parse(result.stdout) : null;
+  return toolsManifestAt(ref, {cwd: repoRoot});
 }
 
 function loadComponentGraph() {

@@ -1,0 +1,24 @@
+{
+  "id": "operations:import-admin-projection",
+  "category": "operations",
+  "path": "functions/scripts/operations/import-shadow-projection.cjs",
+  "command": "npm --prefix functions run operations:import-projection --",
+  "surface": "remote-write",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "role": "operator",
+  "alsoEnforces": [
+    "OPERATIONS-PLATFORM-001"
+  ],
+  "description": "Validates a Supply Intake admin export locally by default and, only with explicit apply, alias-bound environment/project, production, and run confirmation flags, imports or repairs the immutable shadow projection in server-owned Firestore collections.",
+  "checks": [
+    "node --check functions/scripts/operations/import-shadow-projection.cjs",
+    "npm --prefix functions run build",
+    "node --test functions/lib/operations/projectionImporter.test.js",
+    "node --test functions/test/operations-import-shadow-projection.test.cjs"
+  ],
+  "impactPaths": [
+    "functions/src/operations/projectionImporter.test.ts"
+  ],
+  "runbook": "functions/README.md"
+}

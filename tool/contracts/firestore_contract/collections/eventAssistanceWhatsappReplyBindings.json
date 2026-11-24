@@ -1,0 +1,13 @@
+{
+  "id": "eventAssistanceWhatsappReplyBindings",
+  "path": "eventAssistanceWhatsappReplyBindings/{attemptId}",
+  "rulesMatch": "/eventAssistanceWhatsappReplyBindings/{attemptId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted event-assistance WhatsApp dispatch and reply boundary",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Immutable reply choices are committed with a claimed live attempt. They do not grant sending authority. Keep correlation through the outbox reconciliation window; live sender integration and retention remain activation work."
+  ]
+}

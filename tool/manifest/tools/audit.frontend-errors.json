@@ -1,0 +1,30 @@
+{
+  "id": "audit:frontend-errors",
+  "category": "audit",
+  "path": "tool/audit/frontend_error_candidates.dart",
+  "command": "dart tool/audit/frontend_error_candidates.dart",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Scans frontend, provider, plugin, and local error-handling migration candidates.",
+  "checks": [
+    "dart analyze tool/audit/frontend_error_candidates.dart",
+    "dart tool/audit/frontend_error_candidates.dart --self-test",
+    "dart tool/audit/frontend_error_candidates.dart --check"
+  ],
+  "role": "ratchet",
+  "rules": [
+    {
+      "id": "EXTERNAL-SIDE-EFFECT-001",
+      "title": "Put plugin and platform side effects behind seams",
+      "appliesTo": [
+        "lib/**/presentation/**",
+        "packages/platform/lib/**"
+      ],
+      "instruction": "Store launches, URL launches, share sheets, image pickers, connectivity subscriptions, FCM setup, and other platform/plugin effects should sit behind providers/controllers/services so tests can replace them."
+    }
+  ],
+  "alsoEnforces": [
+    "ERROR-CATALOG-001"
+  ],
+  "baseline": "tool/audit/frontend_error_candidates_baseline.json"
+}

@@ -13,11 +13,11 @@ import {
   validateComponentGraph,
 } from "./harness/lib/component_graph.mjs";
 import {collectLocalReadonlyCheckIds} from "./lib/tool_impact.mjs";
+import {loadToolsManifest} from "./lib/tools_manifest.mjs";
 import {changedPathsSince} from "./harness/lib/git_changes.mjs";
 export {changedPathsSince} from "./harness/lib/git_changes.mjs";
 
 const graphPath = fromRepo("tool/harness/component_graph.json");
-const toolsManifestPath = fromRepo("tool/tools_manifest.json");
 
 export function parseArgs(args) {
   const command = args[0] ?? "help";
@@ -109,7 +109,7 @@ export function main({
       return;
     }
     const graph = readJson(graphPath);
-    const toolsManifest = readJson(toolsManifestPath);
+    const toolsManifest = loadToolsManifest();
     const knownCheckIds = collectKnownCheckIds(toolsManifest);
     const validationErrors = validateComponentGraph(graph, {knownCheckIds});
     if (validationErrors.length > 0) {

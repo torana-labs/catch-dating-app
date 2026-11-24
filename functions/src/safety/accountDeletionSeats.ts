@@ -1,10 +1,7 @@
 import {createHash} from "crypto";
-import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
-import type {EventParticipationDocument} from
+import type {EventBookingDocument} from
   "../shared/generated/firestoreAdminTypes";
-import {readSeatMigrationWriterFence} from
-  "../events/seatMigrationPaged";
 import {FirestoreSeatIdentityAuthority, seatIdentityAliasId,
   seatIdentityValueHash,
   seatVerifiedPhoneProofId} from
@@ -26,30 +23,8 @@ function decrement(value: unknown, label: string): number {
   return Number(value) - 1;
 }
 
-function legacyEventPatch(participation: EventParticipationDocument):
-  Record<string, unknown> {
-  switch (participation.status) {
-  case "signedUp": {
-    const patch: Record<string, unknown> = {
-      bookedCount: admin.firestore.FieldValue.increment(-1),
-    };
-    if (participation.genderAtSignup) {
-      patch[`genderCounts.${participation.genderAtSignup}`] =
-        admin.firestore.FieldValue.increment(-1);
-    }
-    return patch;
-  }
-  case "waitlisted":
-    return {waitlistedCount: admin.firestore.FieldValue.increment(-1)};
-  case "attended":
-    return {checkedInCount: admin.firestore.FieldValue.increment(-1)};
-  default:
-    return {};
-  }
-}
-
 /**
- * Each participation is removed under the same migration fence as booking.
+ * Each participation is removed against the event's seat ledger, as booking.
  * The caller must finish this before unlinking retained Host attendees.
  */
 export async function deleteAccountEventParticipations(params: {
@@ -62,7 +37,7 @@ export async function deleteAccountEventParticipations(params: {
   if (!ID.test(uid) || !Number.isSafeInteger(nowMillis) || nowMillis < 0) {
     unavailable("Account deletion seat scope is invalid.");
   }
-  const participations = await db.collection("eventParticipations")
+  const participations = await db.collection("eventBookings")
     .where("uid", "==", uid).get();
   const linkedAttendees = await db.collection("eventAttendees")
     .where("linkedUid", "==", uid).get();
@@ -98,7 +73,7 @@ export async function deleteAccountEventParticipations(params: {
     const found = byEvent.get(eventId);
     await db.runTransaction(async (tx) => {
       const currentSnap = found ? await tx.get(found.ref) : null;
-      const current = currentSnap?.data() as EventParticipationDocument |
+      const current = currentSnap?.data() as EventBookingDocument |
         undefined;
       if (current && (current.uid !== uid || current.eventId !== eventId)) {
         unavailable("Current participation identity is malformed.");
@@ -106,23 +81,20 @@ export async function deleteAccountEventParticipations(params: {
       const eventRef = db.collection("events").doc(eventId);
       const eventSnap = await tx.get(eventRef);
       const event = eventSnap.data();
-      const seatMode = await readSeatMigrationWriterFence({db, tx, eventId});
       const linked = await tx.get(db.collection("eventAttendees")
         .where("eventId", "==", eventId)
         .where("linkedUid", "==", uid).limit(3));
       if (linked.docs.length > 2) {
         unavailable("Linked attendee sources need reconciliation.");
       }
-      if (seatMode === "ready") {
-        const alias = (await tx.get(db.collection("eventSeatIdentityAliases")
-          .doc(seatIdentityAliasId(eventId, "uid", uid)))).data();
-        if (alias?.state === "ready" && alias.canonicalKey) {
-          const held = await new FirestoreSeatTransaction(db, tx)
-            .reservation(eventId, alias.canonicalKey);
-          if (held?.checkoutHold || held?.temporaryHold) {
-            unavailable("Finish payment reconciliation before deleting " +
-              "account.");
-          }
+      const alias = (await tx.get(db.collection("eventSeatIdentityAliases")
+        .doc(seatIdentityAliasId(eventId, "uid", uid)))).data();
+      if (alias?.state === "ready" && alias.canonicalKey) {
+        const held = await new FirestoreSeatTransaction(db, tx)
+          .reservation(eventId, alias.canonicalKey);
+        if (held?.checkoutHold || held?.temporaryHold) {
+          unavailable("Finish payment reconciliation before deleting " +
+            "account.");
         }
       }
       const status = current?.status;
@@ -132,58 +104,39 @@ export async function deleteAccountEventParticipations(params: {
         unavailable("Participation status is malformed.");
       }
       if ((!current || status === "deleted") && linked.docs.length === 0) {
-        if (seatMode === "ready") {
-          const aliasRef = db.collection("eventSeatIdentityAliases")
-            .doc(seatIdentityAliasId(eventId, "uid", uid));
-          const proofRef = db.collection("eventSeatVerifiedPhones")
-            .doc(seatVerifiedPhoneProofId(eventId, uid));
-          const [aliasSnap, proofSnap] = await Promise.all([
-            tx.get(aliasRef), tx.get(proofRef),
-          ]);
-          const alias = aliasSnap.data();
-          const proof = proofSnap.data();
-          if (alias) {
-            if (alias.eventId !== eventId || alias.kind !== "uid" ||
-                alias.valueHash !== seatIdentityValueHash("uid", uid) ||
-                !ID.test(alias.canonicalKey)) {
-              unavailable("Deleted account seat identity is malformed.");
-            }
-            const reservation = await new FirestoreSeatTransaction(db, tx)
-              .reservation(eventId, alias.canonicalKey);
-            if (alias.state === "ready" &&
-                (reservation?.active || reservation?.checkoutHold ||
-                  reservation?.temporaryHold)) {
-              unavailable("Deleted account still owns an active seat " +
-                "or checkout.");
-            }
+        const aliasRef = db.collection("eventSeatIdentityAliases")
+          .doc(seatIdentityAliasId(eventId, "uid", uid));
+        const proofRef = db.collection("eventSeatVerifiedPhones")
+          .doc(seatVerifiedPhoneProofId(eventId, uid));
+        const [aliasSnap, proofSnap] = await Promise.all([
+          tx.get(aliasRef), tx.get(proofRef),
+        ]);
+        const alias = aliasSnap.data();
+        const proof = proofSnap.data();
+        if (alias) {
+          if (alias.eventId !== eventId || alias.kind !== "uid" ||
+              alias.valueHash !== seatIdentityValueHash("uid", uid) ||
+              !ID.test(alias.canonicalKey)) {
+            unavailable("Deleted account seat identity is malformed.");
           }
-          if (proof && (proof.eventId !== eventId || proof.uid !== uid)) {
-            unavailable("Deleted account phone proof is malformed.");
-          }
-          if (alias && alias.state !== "retired") {
-            tx.update(aliasRef, {state: "retired"});
-          }
-          if (proof && (proof.state !== "revoked" ||
-              proof.phoneE164 !== null)) {
-            tx.update(proofRef, {state: "revoked", phoneE164: null});
+          const reservation = await new FirestoreSeatTransaction(db, tx)
+            .reservation(eventId, alias.canonicalKey);
+          if (alias.state === "ready" &&
+              (reservation?.active || reservation?.checkoutHold ||
+                reservation?.temporaryHold)) {
+            unavailable("Deleted account still owns an active seat " +
+              "or checkout.");
           }
         }
-        return;
-      }
-      if (seatMode === "legacy") {
-        const patch = current && status !== "deleted" ?
-          legacyEventPatch(current) : {};
-        if (Object.keys(patch).length > 0) {
-          if (!event) unavailable("Event aggregate is unavailable.");
-          tx.update(eventRef, patch);
+        if (proof && (proof.eventId !== eventId || proof.uid !== uid)) {
+          unavailable("Deleted account phone proof is malformed.");
         }
-        for (const row of linked.docs) {
-          tx.update(row.ref, {linkedUid: null, linkedAt: null,
-            ...deletedBookingFields(row.data(), now), updatedAt: now});
+        if (alias && alias.state !== "retired") {
+          tx.update(aliasRef, {state: "retired"});
         }
-        if (current && status !== "deleted") {
-          tx.set(found!.ref, {status: "deleted", updatedAt: now,
-            deletedAt: now}, {merge: true});
+        if (proof && (proof.state !== "revoked" ||
+            proof.phoneE164 !== null)) {
+          tx.update(proofRef, {state: "revoked", phoneE164: null});
         }
         return;
       }

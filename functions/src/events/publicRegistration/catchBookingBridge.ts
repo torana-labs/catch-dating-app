@@ -13,7 +13,8 @@ import {
   setActivityNotificationInTransaction,
 } from "../../shared/notifications";
 import {cohortIdForUser, decrementCount, incrementCount} from "../eventPolicy";
-import {registrationUnavailable} from "./policy";
+import {registrationUnavailable} from
+  "../../domain/events/publicRegistrationTerms";
 
 const PUBLIC_PAYMENT_PREFIX = "pp_";
 
@@ -50,7 +51,7 @@ export async function prepareCatchBookingAdmission(input: {
   attendeeId: string;
 }) {
   const {db, tx, eventId, uid, paymentId} = input;
-  const participationRef = db.collection("eventParticipations")
+  const participationRef = db.collection("eventBookings")
     .doc(eventParticipationId(eventId, uid));
   const [userSnap, participationSnap, rosterSlot] = await Promise.all([
     tx.get(db.collection("users").doc(uid)),

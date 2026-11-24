@@ -11,6 +11,7 @@ import {
   reconcileEventSetupView,
   setupEventIdsForOrganizer,
 } from "./eventSetupViewStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 
@@ -91,47 +92,91 @@ function isSame(left: unknown, right: unknown): boolean {
 const options = {retry: true, memory: "512MiB" as const};
 
 /** Re-evaluates every event setup view a source write can affect. */
-async function reconcileForWrite(
-  source: EventSetupViewSource,
-  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
-    {documentId: string}>
-): Promise<void> {
+async function reconcileForChange(source: EventSetupViewSource,
+  documentId: string,
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): Promise<void> {
   const db = admin.firestore();
   const eventIds = await resolveEventSetupViewEventIds(db, source,
-    event.params.documentId, event.data?.before.data(),
-    event.data?.after.data());
+    documentId, before,
+    after);
   for (const eventId of eventIds) {
     await reconcileEventSetupView(db, eventId);
   }
 }
 
-export const onHostEventSetupViewEventChanged = onDocumentWritten({
-  ...options, document: "events/{documentId}",
-}, (event) => reconcileForWrite("events", event));
+async function reconcileForWrite(
+  source: EventSetupViewSource,
+  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
+    {documentId: string}>
+): Promise<void> {
+  await reconcileForChange(source, event.params.documentId,
+    event.data?.before.data(), event.data?.after.data());
+}
+
+/**
+ * An event write: its setup view.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostEventSetupViewEventProjections = defineProjections("events", [{
+  id: "hostEventSetupView", kind: "projection",
+  when: () => true,
+  run: (change) => reconcileForChange("events", change.documentId,
+    change.before, change.after),
+}]);
 export const onHostEventSetupViewPreferencesChanged = onDocumentWritten({
   ...options, document: "eventSetupPreferences/{documentId}",
 }, (event) => reconcileForWrite("eventSetupPreferences", event));
-export const onHostEventSetupViewOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{documentId}",
-}, (event) => reconcileForWrite("organizers", event));
-export const onHostEventSetupViewAttendeeChanged = onDocumentWritten({
-  ...options, document: "eventAttendees/{documentId}",
-}, (event) => reconcileForWrite("eventAttendees", event));
+
+/**
+ * An organizer write: the setup views of its events.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostEventSetupViewProjections = defineProjections("organizers", [{
+  id: "hostEventSetupView", kind: "projection", when: () => true,
+  run: (change) => reconcileForChange("organizers", change.documentId,
+    change.before, change.after),
+}]);
+
+/**
+ * An attendee write: its event's setup view.
+ * Served by dispatchEventAttendees (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
+ */
+export const hostEventSetupViewAttendeeProjections = defineProjections(
+  "eventAttendees", [{
+    id: "hostEventSetupView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange("eventAttendees", change.documentId,
+      change.before, change.after),
+  }]);
 export const onHostEventSetupViewAttendeeImportChanged = onDocumentWritten({
   ...options, document: "eventAttendeeImports/{documentId}",
 }, (event) => reconcileForWrite("eventAttendeeImports", event));
 export const onHostEventSetupViewParticipationChanged = onDocumentWritten({
-  ...options, document: "eventParticipations/{documentId}",
-}, (event) => reconcileForWrite("eventParticipations", event));
+  ...options, document: "eventBookings/{documentId}",
+}, (event) => reconcileForWrite("eventBookings", event));
 export const onHostEventSetupViewWaitlistOfferChanged = onDocumentWritten({
   ...options, document: "eventWaitlistOffers/{documentId}",
 }, (event) => reconcileForWrite("eventWaitlistOffers", event));
 export const onHostEventSetupViewEventOfferChanged = onDocumentWritten({
   ...options, document: "organizerEventOffers/{documentId}",
 }, (event) => reconcileForWrite("organizerEventOffers", event));
-export const onHostEventSetupViewGuestPaymentChanged = onDocumentWritten({
-  ...options, document: `${GUEST_PAYMENTS}/{documentId}`,
-}, (event) => reconcileForWrite(GUEST_PAYMENTS, event));
+
+/**
+ * A guest payment of any purpose: its event's setup view.
+ * Served by dispatchGuestPayments (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
+ */
+export const hostEventSetupViewPaymentProjections = defineProjections(
+  "guestPayments", [{
+    id: "hostEventSetupView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange(GUEST_PAYMENTS, change.documentId,
+      change.before, change.after),
+  }]);
 export const onHostEventSetupViewMomentChanged = onDocumentWritten({
   ...options, document: "organizerMoments/{documentId}",
 }, (event) => reconcileForWrite("organizerMoments", event));

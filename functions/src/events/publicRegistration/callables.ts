@@ -39,12 +39,10 @@ import {
   publicGuestMembership,
   readRegistrationManager,
 } from "./authority";
-import {
-  publicBookingPlaces,
-  publicCheckoutQuote,
-  publicGuestNames,
-  registrationUnavailable,
-} from "./policy";
+import {publicBookingPlaces, publicCheckoutQuote, publicGuestNames} from
+  "./policy";
+import {registrationUnavailable} from
+  "../../domain/events/publicRegistrationTerms";
 import {publicHostMembershipQuoteTerms} from
   "../../hostMemberships/publicCheckout";
 import {
@@ -52,7 +50,7 @@ import {
   PUBLIC_PAYMENT_COLLECTION,
   parsePublicPayment,
   publicPaymentLedger,
-} from "./paymentLedger";
+} from "../../domain/payments/publicEventPayments";
 import {reservePublicPayment} from "./reservation";
 import {publicPaymentExecutionFor} from "./runtime";
 import {projectPublicPayment} from "./projection";

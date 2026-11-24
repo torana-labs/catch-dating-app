@@ -2,9 +2,10 @@ import {beforeEach, describe, expect, it} from "vitest";
 import {brand} from "@catch/brand";
 import {createAdTags, type AdBooking} from "./adTags";
 
-type Globals = {catchTagLayer?: ArrayLike<unknown>[]; fbq?: {queue: ArrayLike<unknown>[]; disablePushState?: boolean}; _fbq?: unknown};
+type Globals = {catchTagLayer?: ArrayLike<unknown>[]; fbq?: {queue: ArrayLike<unknown>[]; disablePushState?: boolean}; _fbq?: unknown;
+  clarity?: {q?: unknown[][]}};
 const globals = () => window as unknown as Globals;
-const consent = (choice: "accepted" | "analytics" | "essential", version = 6, updatedAt = "2026-11-18T10:00:00.000Z") => ({
+const consent = (choice: "accepted" | "analytics" | "essential", version = 7, updatedAt = "2026-11-18T10:00:00.000Z") => ({
   version, choice, analytics: choice !== "essential", marketing: choice === "accepted", updatedAt,
 });
 /** gtag commands as arrays (gtag.js reads them as Arguments objects). */
@@ -13,6 +14,10 @@ const meta = () => (globals().fbq?.queue ?? []).map((entry) => Array.from(entry)
 const scripts = () => Array.from(document.querySelectorAll("script")).map((script) => script.src);
 const googleEvents = (name: string) => google().filter(([command, event]) => command === "event" && event === name);
 const catchPixel = "1844810253539672";
+const googleAnalyticsScript = "https://www.googletagmanager.com/gtag/js?id=G-HZFG0DL2DK&l=catchTagLayer";
+/** Catch's Clarity project loads with Google Analytics, under the analytics choice. */
+const clarityScript = "https://www.clarity.ms/tag/zh6x16vddo";
+const metaScript = "https://connect.facebook.net/en_US/fbevents.js";
 /** Catch's Meta events: always `trackSingle` to Catch's own pixel. */
 const metaEvents = (name: string) => meta().filter(([command, pixel, event]) => command === "trackSingle" && pixel === catchPixel &&
   event === name);
@@ -24,6 +29,7 @@ beforeEach(() => {
   delete globals().catchTagLayer;
   delete globals().fbq;
   delete globals()._fbq;
+  delete globals().clarity;
   document.querySelectorAll("script").forEach((script) => script.remove());
   sessionStorage.clear();
   window.history.replaceState(null, "", "/");
@@ -50,17 +56,14 @@ describe("first-party Google tag and Meta Pixel", () => {
     expect(scripts()).toEqual([]);
     window.history.replaceState(null, "", "/events/synthetic-run/");
     controller.sync(consent("accepted"));
-    expect(scripts()).toHaveLength(2);
+    expect(scripts()).toEqual([googleAnalyticsScript, clarityScript, metaScript]);
   });
 
   it("loads both tags after the marketing choice with Consent Mode set first and no automatic sends", () => {
     window.history.replaceState(null, "", "/host/?utm_source=google&utm_campaign=private&gclid=SyntheticGoogle123");
     const controller = tags();
     controller.sync(consent("accepted"));
-    expect(scripts()).toEqual([
-      "https://www.googletagmanager.com/gtag/js?id=G-HZFG0DL2DK&l=catchTagLayer",
-      "https://connect.facebook.net/en_US/fbevents.js",
-    ]);
+    expect(scripts()).toEqual([googleAnalyticsScript, clarityScript, metaScript]);
     const commands = google();
     expect(commands.slice(0, 2)).toEqual([
       ["consent", "default", {ad_storage: "denied", analytics_storage: "denied", ad_user_data: "denied", ad_personalization: "denied"}],
@@ -84,7 +87,8 @@ describe("first-party Google tag and Meta Pixel", () => {
     window.history.replaceState(null, "", "/host/");
     const controller = tags();
     controller.sync(consent("analytics"));
-    expect(scripts()).toEqual(["https://www.googletagmanager.com/gtag/js?id=G-HZFG0DL2DK&l=catchTagLayer"]);
+    expect(scripts()).toEqual([googleAnalyticsScript, clarityScript]);
+    expect(globals().clarity?.q).toEqual([["consentv2", {ad_Storage: "denied", analytics_Storage: "granted"}]]);
     expect(globals().fbq).toBeUndefined();
     expect(google().slice(0, 2)).toEqual([
       ["consent", "default", {ad_storage: "denied", analytics_storage: "denied", ad_user_data: "denied", ad_personalization: "denied"}],
@@ -106,11 +110,8 @@ describe("first-party Google tag and Meta Pixel", () => {
     const controller = tags();
     controller.sync(consent("analytics"));
     controller.pageView();
-    controller.sync(consent("accepted", 6, "2026-11-18T11:00:00.000Z"));
-    expect(scripts()).toEqual([
-      "https://www.googletagmanager.com/gtag/js?id=G-HZFG0DL2DK&l=catchTagLayer",
-      "https://connect.facebook.net/en_US/fbevents.js",
-    ]);
+    controller.sync(consent("accepted", 7, "2026-11-18T11:00:00.000Z"));
+    expect(scripts()).toEqual([googleAnalyticsScript, clarityScript, metaScript]);
     expect(google().filter(([command]) => command === "config").map(([, id]) => id)).toEqual(["G-HZFG0DL2DK", "AW-18526407471"]);
     expect(controller.pageView("meta")).toBe(true);
     expect(googleEvents("page_view")).toHaveLength(1);
@@ -124,7 +125,7 @@ describe("first-party Google tag and Meta Pixel", () => {
     document.cookie = "_fbp=fb.1.1800000000000.1234567890; path=/";
     document.cookie = "_ga=GA1.1.123.456; path=/";
     document.cookie = "keep=1; path=/";
-    controller.sync(consent("analytics", 6, "2026-11-18T11:00:00.000Z"));
+    controller.sync(consent("analytics", 7, "2026-11-18T11:00:00.000Z"));
     expect(google().at(-1)).toEqual(["consent", "update",
       {ad_storage: "denied", analytics_storage: "granted", ad_user_data: "denied", ad_personalization: "denied"}]);
     expect(meta().at(-1)).toEqual(["consent", "revoke"]);
@@ -134,7 +135,7 @@ describe("first-party Google tag and Meta Pixel", () => {
     expect(controller.pageView()).toBe(true);
     expect(controller.viewItem({eventId: "synthetic-run", activityKind: "socialRun", city: "Pune", amountPaise: 45000})).toBe(true);
     expect(meta().length).toBe(metaBefore);
-    controller.sync(consent("essential", 6, "2026-11-18T11:30:00.000Z"));
+    controller.sync(consent("essential", 7, "2026-11-18T11:30:00.000Z"));
     expect(google().at(-1)).toEqual(["consent", "update",
       {ad_storage: "denied", analytics_storage: "denied", ad_user_data: "denied", ad_personalization: "denied"}]);
     expect(document.cookie).not.toMatch(/_fbp|_ga/u);
@@ -145,8 +146,8 @@ describe("first-party Google tag and Meta Pixel", () => {
     expect(controller.beginCheckout(booking)).toBe(false);
     expect([google().length, meta().length]).toEqual(before);
     // A new marketing choice grants again without loading the scripts twice.
-    controller.sync(consent("accepted", 6, "2026-11-18T12:00:00.000Z"));
-    expect(scripts()).toHaveLength(2);
+    controller.sync(consent("accepted", 7, "2026-11-18T12:00:00.000Z"));
+    expect(scripts()).toEqual([googleAnalyticsScript, clarityScript, metaScript]);
     expect(google().at(-1)?.[2]).toMatchObject({ad_storage: "granted"});
     expect(meta().at(-1)).toEqual(["consent", "grant"]);
     document.cookie = "keep=; Max-Age=0; path=/";
@@ -217,6 +218,13 @@ describe("first-party Google tag and Meta Pixel", () => {
     // No receipt: a generated id still deduplicates.
     expect(controller.hostLead({kind: "demo", leadId: null, phone: null})).toBe(true);
     expect(metaEvents("Lead")[1]?.[4]).toEqual({eventID: expect.stringMatching(/^catch_1800000000000_generated\d+$/u)});
+    // A host app link request (Text me the link) is a host lead too.
+    const appLinkId = "e".repeat(64);
+    expect(controller.hostLead({kind: "app_link", leadId: appLinkId, phone: "+919812345678"})).toBe(true);
+    expect(googleEvents("conversion").at(-1)?.[2]).toEqual({send_to: "AW-18526407471/WgIECMue97odEK-WioJF",
+      transaction_id: appLinkId, event_id: appLinkId});
+    expect(metaEvents("Lead").at(-1)).toEqual(["trackSingle", catchPixel, "Lead", {content_category: "host", lead_kind: "app_link"},
+      {eventID: appLinkId}]);
     assertNoForbiddenFields();
   });
 });

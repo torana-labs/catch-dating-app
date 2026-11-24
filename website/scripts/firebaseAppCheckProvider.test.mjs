@@ -3,7 +3,7 @@ import fs from "node:fs";
 import test from "node:test";
 
 const firebaseSource = fs.readFileSync(
-  new URL("../src/firebase.ts", import.meta.url),
+  new URL("../src/services/firebase/runtime.ts", import.meta.url),
   "utf8"
 );
 

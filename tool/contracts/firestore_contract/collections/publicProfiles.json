@@ -1,0 +1,20 @@
+{
+  "id": "publicProfiles",
+  "path": "publicProfiles/{uid}",
+  "rulesMatch": "/publicProfiles/{uid}",
+  "typescriptInterface": "PublicProfileDocument",
+  "dartModel": "lib/contexts/profiles/domain/public_profile.dart",
+  "rulesTestFile": "functions/test/rules/swipes.rules.test.cjs",
+  "owner": "syncPublicProfile trigger",
+  "writerContext": "profiles",
+  "read": "authenticated users, except deleted or blocked relationships",
+  "write": "server only",
+  "exportedFunctions": [
+    "syncPublicProfile",
+    "onHostRequestViewParticipationWritten",
+    "dispatchEvents",
+    "onHostRequestViewProfileWritten",
+    "onHostRequestViewContactSummaryWritten",
+    "onHostRequestViewContactWritten"
+  ]
+}

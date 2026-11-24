@@ -9,6 +9,7 @@ import 'architecture_context_map.dart';
 import 'architecture_findings.dart';
 import 'architecture_firestore_boundary.dart';
 import 'architecture_provider_free.dart';
+import 'migration_scope.dart' show carriedFrom;
 
 /// Dependency direction, bounded-context placement and the provider-boundary
 /// rules that go with them. An exception is a reasoned `// ignore:` next to the
@@ -44,6 +45,47 @@ class CatchArchitectureRules extends MultiAnalysisRule {
   }
 }
 
+/// Every architecture finding in one unit, the refused exceptions included.
+/// A carried file ([carriedFrom]) keeps its legacy path's layer rules and
+/// exceptions; placement in the map and the Firestore boundary read its real
+/// path. `catch_arch_stale_carry` calls this with no [carriedFrom].
+List<ArchitectureFinding> architectureFindings({
+  required String absolutePath,
+  required String relativePath,
+  required String source,
+  required CompilationUnit unit,
+  required String? carriedFrom,
+}) {
+  final map = contextMapFor(absolutePath);
+  final findings = [
+    ...dependencyDirectionFindings(
+      relativePath: relativePath,
+      source: source,
+      unit: unit,
+      carriedFrom: carriedFrom,
+    ),
+    ...providerFreeFindings(
+      relativePath: relativePath,
+      source: source,
+      unit: unit,
+      carriedFrom: carriedFrom,
+    ),
+    ...firestoreBoundaryFindings(relativePath: relativePath, unit: unit),
+    if (map != null)
+      ...contextMapFindings(relativePath: relativePath, unit: unit, map: map),
+  ];
+  return [
+    ...findings,
+    ...ignorePolicyFindings(
+      relativePath: relativePath,
+      source: source,
+      unit: unit,
+      findings: findings,
+      carriedFrom: carriedFrom,
+    ),
+  ];
+}
+
 class _ArchitectureVisitor extends SimpleAstVisitor<void> {
   _ArchitectureVisitor(this.rule, this.context);
 
@@ -57,31 +99,13 @@ class _ArchitectureVisitor extends SimpleAstVisitor<void> {
     final absolutePath = unit.file.path;
     final relativePath = architectureRelativePath(absolutePath);
     if (relativePath == null) return;
-    final map = contextMapFor(absolutePath);
-    final findings = [
-      ...dependencyDirectionFindings(
-        relativePath: relativePath,
-        source: unit.content,
-        unit: node,
-      ),
-      ...providerFreeFindings(
-        relativePath: relativePath,
-        source: unit.content,
-        unit: node,
-      ),
-      ...firestoreBoundaryFindings(relativePath: relativePath, unit: node),
-      if (map != null)
-        ...contextMapFindings(relativePath: relativePath, unit: node, map: map),
-    ];
-    for (final finding in [
-      ...findings,
-      ...ignorePolicyFindings(
-        relativePath: relativePath,
-        source: unit.content,
-        unit: node,
-        findings: findings,
-      ),
-    ]) {
+    for (final finding in architectureFindings(
+      absolutePath: absolutePath,
+      relativePath: relativePath,
+      source: unit.content,
+      unit: node,
+      carriedFrom: carriedFrom(absolutePath),
+    )) {
       rule.reportAtOffset(
         finding.offset,
         finding.length,

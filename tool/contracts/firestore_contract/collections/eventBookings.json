@@ -1,0 +1,35 @@
+{
+  "id": "eventBookings",
+  "path": "eventBookings/{bookingId}",
+  "rulesMatch": "/eventBookings/{bookingId}",
+  "typescriptInterface": "EventBookingDocument",
+  "dartModel": "lib/contexts/bookings/domain/event_participation.dart",
+  "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+  "owner": "booking, waitlist, attendance, cancellation, and account-deletion callables",
+  "writerContext": "bookings",
+  "read": "participant own edge or authorized event host only; candidate discovery is callable-owned",
+  "write": "server only",
+  "exportedFunctions": [
+    "signUpForFreeEvent",
+    "cancelEventSignUp",
+    "joinEventWaitlist",
+    "leaveEventWaitlist",
+    "createEventWaitlistOffers",
+    "acceptEventWaitlistOffer",
+    "declineEventWaitlistOffer",
+    "markEventAttendance",
+    "selfCheckInAttendance",
+    "fetchSwipeCandidates",
+    "requestAccountDeletion",
+    "onHostRequestViewParticipationWritten",
+    "dispatchEvents",
+    "onHostRequestViewProfileWritten",
+    "onHostRequestViewContactSummaryWritten",
+    "onHostRequestViewContactWritten"
+  ],
+  "migrationNotes": [
+    "Owns signed-up, waitlisted, attended, cancelled, and deleted event roster state; events documents retain only callable-owned aggregate counts.",
+    "As of 2026-08-05, consumer roster enumeration is denied. Post-event candidate identity is resolved by fetchSwipeCandidates after attendance, window, reciprocal-preference, prior-decision, and block checks.",
+    "Named eventParticipations until Nov 2026. Phase 1 of the rename moved every reader and writer here; the transitional eventParticipations entry below is its read-only legacy mirror for released app builds."
+  ]
+}

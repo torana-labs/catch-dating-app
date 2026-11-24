@@ -253,6 +253,11 @@ async function main() {
     "catalogs/organizer_form_templates.json"
   );
   assertOrganizerFormTemplateCatalog(organizerFormTemplateCatalog);
+  addTextOutput(
+    "packages/platform/lib/schema_contracts/generated/" +
+      "organizer_form_template_summaries.g.dart",
+    renderDartOrganizerFormTemplateSummaries(organizerFormTemplateCatalog)
+  );
   const customDomainBlocklist = readContractJson(
     "catalogs/custom_domain_blocklist.json"
   );
@@ -1614,6 +1619,60 @@ class OrganizerProviderCatalogContract {
 /// Every provider, in display order.
 const List<OrganizerProviderCatalogContract> organizerProviderCatalog =
     <OrganizerProviderCatalogContract>[
+${rows}
+];
+`;
+}
+
+/**
+ * The form template gallery the Host app shows, generated from the catalog
+ * Functions materializes forms from, so the gallery and createOrganizerForm
+ * cannot drift (#2306 replaced listOrganizerFormTemplates with it). Each row
+ * is the summary the callable returned: no question content.
+ */
+function renderDartOrganizerFormTemplateSummaries(catalog) {
+  const rows = catalog.templates.map((template) =>
+    "  OrganizerFormTemplateSummaryContract(\n" +
+    `    templateId: ${dartString(template.id)},\n` +
+    `    version: ${template.version},\n` +
+    `    title: ${dartString(template.title)},\n` +
+    `    description: ${template.description == null ? "null" :
+      dartString(template.description)},\n` +
+    `    purpose: ${dartString(template.purpose)},\n` +
+    `    identityPolicy: ${dartString(template.identityPolicy)},\n` +
+    `    sectionCount: ${template.sections.length},\n` +
+    `    questionCount: ${template.sections.reduce((sum, section) =>
+      sum + section.questions.length, 0)},\n` +
+    "  ),"
+  ).join("\n");
+  return `${dartGeneratedHeader()}// Source: contracts/catalogs/organizer_form_templates.json.
+
+/// One form template's gallery summary, in wire values.
+class OrganizerFormTemplateSummaryContract {
+  const OrganizerFormTemplateSummaryContract({
+    required this.templateId,
+    required this.version,
+    required this.title,
+    required this.description,
+    required this.purpose,
+    required this.identityPolicy,
+    required this.sectionCount,
+    required this.questionCount,
+  });
+
+  final String templateId;
+  final int version;
+  final String title;
+  final String? description;
+  final String purpose;
+  final String identityPolicy;
+  final int sectionCount;
+  final int questionCount;
+}
+
+/// Every form template, in catalog order.
+const List<OrganizerFormTemplateSummaryContract> organizerFormTemplateSummaries =
+    <OrganizerFormTemplateSummaryContract>[
 ${rows}
 ];
 `;
@@ -3304,6 +3363,7 @@ ${ungenerableRows}
 | \`tool/contracts/generated/schema_contract_validators.mjs\` | Node-side Ajv validators for contract checks. |
 | \`packages/platform/lib/schema_contracts/generated/profile_schema_contracts.g.dart\` | Dart profile catalog and storage policy constants. |
 | \`packages/platform/lib/schema_contracts/generated/host_attention_policies.g.dart\` | Dart Host Today attention policy versions, horizons and per-kind delivery modes. |
+| \`packages/platform/lib/schema_contracts/generated/organizer_form_template_summaries.g.dart\` | Dart form template gallery summaries from the Functions template catalog. |
 | \`packages/platform/lib/schema_contracts/generated/field_constraints.g.dart\` | UI constraints for the schema fields declared in \`contracts/forms/field_constraint_bindings.json\`. |
 | \`packages/platform/lib/schema_contracts/generated/callable_request_dtos.g.dart\` | Generated Dart callable request and patch helper barrel. |
 | \`lib/contexts/*/data/generated/*.g.dart\` | Generated Dart callable requests that carry a context's domain types. |

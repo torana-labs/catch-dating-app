@@ -5,6 +5,7 @@ import {organizerPageFromListing, type OrganizerPageRecord} from "./organizerPag
 import {OwnerSignInPrompt, OwnerView} from "./owner/OwnerView";
 import {ownerViewBackends, type OwnerViewBackends} from "./owner/ownerViewBackends";
 import {useOwnerViewController} from "./owner/useOwnerViewController";
+import type {OwnerReview} from "./owner/ownerViewTypes";
 import {HostListingSections} from "./sections/HostListingSections";
 import type {HostListing} from "./types";
 import {organizerPageBackends, useOrganizerPageController, type OrganizerPageBackends} from "./useOrganizerPageController";
@@ -14,8 +15,7 @@ import {organizerPageBackends, useOrganizerPageController, type OrganizerPageBac
  * owner-approved hero layout (17 Nov 2026), between the site header and
  * footer (owner decision, 14 Nov 2026). It renders the organizer's
  * `organizerPublicPage` read model when the route read one, and otherwise the
- * same record built from the listing (pages assembled from their sources, and
- * the static build). The women-led label comes from the read model's
+ * same record built from the listing (the static build). The women-led label comes from the read model's
  * `womenLed`; the listing has no such field, so its record never shows it.
  */
 export function HostListingPage({backends = organizerPageBackends, listing, ownerBackends = ownerViewBackends, ownerUid, page,
@@ -33,8 +33,9 @@ export function HostListingPage({backends = organizerPageBackends, listing, owne
   const record = useMemo(() => page?.organizerId === listing.id ? page : organizerPageFromListing(listing, at),
     [at, listing, page]);
   const controller = useOrganizerPageController({backends, listing, page: record, readAt: at});
+  const ownerReviews = useMemo(() => record.latestReviews.map(ownerReview), [record]);
   const owner = useOwnerViewController({backends: ownerBackends, claimed: controller.view.kind === "claimed",
-    initialUid: ownerUid, organizerId: listing.id});
+    initialUid: ownerUid, organizerId: listing.id, replyName: controller.view.name ?? listing.name, reviews: ownerReviews});
 
   return (
     <CatchRoot theme="day">
@@ -50,4 +51,11 @@ export function HostListingPage({backends = organizerPageBackends, listing, owne
       <PublicSiteFooter />
     </CatchRoot>
   );
+}
+
+/** A published review as the owner view lists it to reply to. */
+function ownerReview(review: OrganizerPageRecord["latestReviews"][number], index: number): OwnerReview {
+  return {id: review.id ?? `review-${index}`, reviewerName: review.reviewerName, rating: review.rating, comment: review.comment,
+    createdAt: review.createdAt, verificationStatus: review.verificationStatus,
+    ownerResponse: review.ownerResponse ? {message: review.ownerResponse.message, hostName: review.ownerResponse.hostName} : null};
 }

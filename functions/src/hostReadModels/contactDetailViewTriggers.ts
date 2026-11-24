@@ -1,12 +1,12 @@
 import * as admin from "firebase-admin";
 import {isDeepStrictEqual} from "node:util";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
-import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import {
   reconcileHostContactDetailView,
   reconcileHostContactDetailViewsForAccount,
   reconcileHostContactDetailViewsForEvent,
 } from "./contactDetailViewStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type Data = FirebaseFirestore.DocumentData | undefined;
 const options = {retry: true};
@@ -111,26 +111,34 @@ export const onHostContactDetailViewEdgeWritten = onDocumentWritten({
   }
 });
 
-/** A completed or refunded Catch payment of a linked account. */
-export const onHostContactDetailViewPaymentWritten = onDocumentWritten({
-  ...options, document: `${GUEST_PAYMENTS}/{paymentId}`,
-}, async (event) => {
-  const db = admin.firestore();
-  for (const uid of contactDetailPayersForPayment(
-    event.data?.before.data(), event.data?.after.data())) {
-    await reconcileHostContactDetailViewsForAccount(db, uid);
-  }
-});
+/**
+ * A completed or refunded Catch payment of a linked account.
+ * Served by dispatchGuestPayments (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
+ */
+export const hostContactDetailPaymentProjections = defineProjections(
+  "guestPayments", [{
+    id: "hostContactDetailView", kind: "projection",
+    when: () => true,
+    run: async (change, ctx) => {
+      for (const uid of contactDetailPayersForPayment(change.before,
+        change.after)) {
+        await reconcileHostContactDetailViewsForAccount(ctx.db, uid);
+      }
+    },
+  }]);
 
-/** An event renamed or its origin changed. */
-export const onHostContactDetailViewEventWritten = onDocumentWritten({
-  ...options, document: "events/{eventId}",
-}, async (event) => {
-  if (!contactDetailEventChanged(event.data?.before.data(),
-    event.data?.after.data())) return;
-  await reconcileHostContactDetailViewsForEvent(admin.firestore(),
-    event.params.eventId);
-});
+/**
+ * An event renamed or its origin changed: its contacts' detail views.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostContactDetailEventProjections = defineProjections("events", [{
+  id: "hostContactDetailView", kind: "projection",
+  when: (change) => contactDetailEventChanged(change.before, change.after),
+  run: (change, ctx) => reconcileHostContactDetailViewsForEvent(ctx.db,
+    change.documentId),
+}]);
 
 /**
  * The contact a merge receipt changes the merges of: the survivor it names.

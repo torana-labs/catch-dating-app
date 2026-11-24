@@ -1,11 +1,12 @@
 // Marketing capture `guest_group_chat`. One file per marketing capture keeps each
 // capture's inputs to its own imports; see docs/marketing_app_media_pipeline.md.
 
-import 'package:catch_dating_app/chats/presentation/event_chat_controller.dart';
-import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
+import 'package:catch_dating_app/pages/chat/event_chat_controller.dart';
+import 'package:catch_dating_app/pages/chat/event_chat_screen.dart';
 import 'package:catch_platform/cache/app_clock.dart';
+
 import '../../fixtures/sales_demo_synthetic_fixtures.dart';
 import '../../support/capture_device.dart';
 import '../screen_capture_entry.dart';

@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as image;
 
@@ -9,11 +9,11 @@ import 'package:image/image.dart' as image;
 /// master or the bg token changes.
 void main() {
   final master = image.decodePng(
-    File('assets/branding/catch_icon.png').readAsBytesSync(),
+    repoFile('assets/branding/catch_icon.png').readAsBytesSync(),
   )!;
 
   image.Image decode(String path) =>
-      image.decodePng(File('website/public$path').readAsBytesSync())!;
+      image.decodePng(repoFile('website/public$path').readAsBytesSync())!;
 
   double meanDifference(image.Image a, image.Image b) {
     final left = image.copyResize(a, width: 64, height: 64);
@@ -59,7 +59,9 @@ void main() {
 
   test('the manifest theme colour follows the light tile token', () {
     final tokens =
-        jsonDecode(File('design/tokens/catch.tokens.json').readAsStringSync())
+        jsonDecode(
+              repoFile('design/tokens/catch.tokens.json').readAsStringSync(),
+            )
             as Map<String, dynamic>;
     final theme = tokens['theme'] as Map<String, dynamic>;
     final light = theme['light'] as Map<String, dynamic>;
@@ -69,7 +71,9 @@ void main() {
             as Map<String, dynamic>;
     final manifest =
         jsonDecode(
-              File('website/public/assets/site.webmanifest').readAsStringSync(),
+              repoFile(
+                'website/public/assets/site.webmanifest',
+              ).readAsStringSync(),
             )
             as Map<String, dynamic>;
     expect(manifest['theme_color'], (tile['hex'] as String).toUpperCase());

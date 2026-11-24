@@ -35,6 +35,7 @@ import {
   nominatorRoleLabels,
   rupees,
   share,
+  signupSourceLabels,
   trendLabel,
 } from "../controllers/growthLabels";
 
@@ -294,13 +295,17 @@ function perPaying(channel: Growth["channels"][number]): {text: string; tone?: T
 
 function channelsView(data: Growth): [ReactNode, ReactNode, CatchMetricData[]] {
   const ads = data.channels.find((channel) => channel.channel === "ads");
-  const spend = data.adSpend.metaMinor;
+  const {metaMinor, googleMinor} = data.adSpend;
+  const spend = metaMinor === null && googleMinor === null ? null : (metaMinor ?? 0) + (googleMinor ?? 0);
+  const platformSpend = (platform: string, minor: number | null, connected: boolean) =>
+    `${platform} ${minor !== null ? rupees(minor) : connected ? "none" : "not connected"}`;
   const priced = data.channels.filter((channel) => channel.paying > 0 && channel.costMinor !== null &&
     (channel.costKind === "ads" || channel.costKind === "credit"));
   const cheapest = [...priced].sort((a, b) => (a.costMinor ?? 0) / a.paying - (b.costMinor ?? 0) / b.paying)[0];
   const stats: CatchMetricData[] = [
     {label: `Ad spend, ${monthName(data.adSpend.month)}`, value: spend === null ? "Not connected" : rupees(spend),
-      note: data.adSpend.metaConnected ? "Meta only" : "Meta waits for its token", noteTone: data.adSpend.metaConnected ? "secondary" : "warning"},
+      note: `${platformSpend("Meta", metaMinor, data.adSpend.metaConnected)} · ${platformSpend("Google", googleMinor, data.adSpend.googleConnected)}`,
+      noteTone: spend === null ? "warning" : "secondary"},
     {label: "Cost per claim", value: spend !== null && data.adSpend.adClaims > 0 ? rupees(Math.round(spend / data.adSpend.adClaims)) : "None yet",
       note: `from ads, ${data.adSpend.adClaims} ${data.adSpend.adClaims === 1 ? "claim" : "claims"}`},
     {label: "Cost per paying organizer", value: ads && ads.paying > 0 && ads.costMinor !== null ? rupees(Math.round(ads.costMinor / ads.paying)) : "None yet",
@@ -319,9 +324,12 @@ function channelsView(data: Growth): [ReactNode, ReactNode, CatchMetricData[]] {
     perPaying: perPaying(channel),
   }));
   const main = (
-    <CatchSection dividers="none" note="where each organizer first came from" title="By channel">
-      <CatchTable<ChannelRow> columns={channelColumns} density="compact" label="By channel" rowKey="key" rows={rows} />
-    </CatchSection>
+    <CatchGap size="section">
+      <CatchSection dividers="none" note="where each organizer first came from" title="By channel">
+        <CatchTable<ChannelRow> columns={channelColumns} density="compact" label="By channel" rowKey="key" rows={rows} />
+      </CatchSection>
+      <SignupSourceTable signupSources={data.signupSources} />
+    </CatchGap>
   );
   const aside = (
     <CatchGap size="section">
@@ -346,6 +354,37 @@ function channelsView(data: Growth): [ReactNode, ReactNode, CatchMetricData[]] {
     </CatchGap>
   );
   return [main, aside, stats];
+}
+
+interface SignupSourceRow {
+  key: string;
+  source: string;
+  organizers: string;
+  paying: string;
+}
+
+const signupSourceColumns: CatchTableColumn<SignupSourceRow>[] = [
+  {key: "source", label: "They said", kind: "title"},
+  {key: "organizers", label: "Organizers", kind: "number", width: "100px"},
+  {key: "paying", label: "Paying", kind: "number", width: "70px"},
+];
+
+/**
+ * What organizers that set themselves up said in Catch Host setup. Kept apart
+ * from the channel table: an organizer keeps its derived channel whatever it
+ * answered, so the two can be compared, never added up.
+ */
+function SignupSourceTable({signupSources}: {signupSources: Growth["signupSources"]}) {
+  const rows: SignupSourceRow[] = [
+    ...signupSources.rows.map((row) => ({key: row.source, source: signupSourceLabels[row.source],
+      organizers: String(row.organizers), paying: String(row.paying)})),
+    {key: "unanswered", source: "Skipped or not asked", organizers: String(signupSources.unanswered), paying: "—"},
+  ];
+  return (
+    <CatchSection dividers="none" note="what hosts told us in setup, beside the channel, not in it" title="Self-reported source">
+      <CatchTable<SignupSourceRow> columns={signupSourceColumns} density="compact" label="Self-reported source" rowKey="key" rows={rows} />
+    </CatchSection>
+  );
 }
 
 // ---------- Nominators ----------

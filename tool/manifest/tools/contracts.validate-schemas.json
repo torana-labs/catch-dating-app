@@ -1,0 +1,13 @@
+{
+  "id": "contracts:validate-schemas",
+  "category": "contracts",
+  "path": "tool/contracts/validate_schema_contracts.mjs",
+  "command": "node tool/contracts/validate_schema_contracts.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates JSON schema source consistency.",
+  "checks": [
+    "node --check tool/contracts/validate_schema_contracts.mjs"
+  ],
+  "queueGate": "always"
+}

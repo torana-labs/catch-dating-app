@@ -1,18 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
-import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
-import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/launch_access_repository.dart';
 import 'package:catch_dating_app/contexts/account/domain/launch_access_application.dart';
@@ -25,6 +17,7 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_filter_options.dart';
 import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
+import 'package:catch_dating_app/contexts/bookings/actions/event_booking_controller.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/guest_event_cards_repository.dart';
@@ -38,6 +31,7 @@ import 'package:catch_dating_app/contexts/connections/data/match_repository.dart
 import 'package:catch_dating_app/contexts/connections/domain/cross_paths_suggestion.dart';
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
+import 'package:catch_dating_app/contexts/discovery/data/city_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/data/explore_recommendations_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
@@ -113,24 +107,13 @@ import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
-import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
-import 'package:catch_dating_app/design_fixtures/host_inbox_surface_fixtures.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
-import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.dart';
-import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
-import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
-import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
-import 'package:catch_dating_app/events/presentation/widgets/who_is_going_section.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
-import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/explore/presentation/explore_cross_paths_provider.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
@@ -193,25 +176,36 @@ import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_controller.dart';
-import 'package:catch_dating_app/matches/shared/match_celebration_dialog.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen_state.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_body.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_dock.dart';
+import 'package:catch_dating_app/pages/account/auth_session_controller.dart';
+import 'package:catch_dating_app/pages/account/settings_controller.dart';
 import 'package:catch_dating_app/pages/celebration/celebration_effects_controller.dart';
+import 'package:catch_dating_app/pages/chat/chat_screen.dart';
+import 'package:catch_dating_app/pages/chat/widgets/chat_input.dart';
+import 'package:catch_dating_app/pages/chat/widgets/chat_share_card.dart';
+import 'package:catch_dating_app/pages/event/event_detail_route_transition.dart';
+import 'package:catch_dating_app/pages/event/event_detail_screen.dart';
+import 'package:catch_dating_app/pages/event/event_detail_view_model.dart';
+import 'package:catch_dating_app/pages/event/widgets/who_is_going_section.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/pages/inbox/match_celebration_dialog.dart';
+import 'package:catch_dating_app/pages/inbox/widgets/chats_sliver_header.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_controller.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_step.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_detail_screen.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_detail_screen_state.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_detail_view_model.dart';
+import 'package:catch_dating_app/pages/organizer/widgets/organizer_detail_body.dart';
+import 'package:catch_dating_app/pages/organizer/widgets/organizer_detail_dock.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_controller.dart';
+import 'package:catch_dating_app/pages/start/onboarding_welcome_body.dart';
 import 'package:catch_dating_app/pages/startup/splash_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
-import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_host_photo_viewer_screen.dart';
@@ -231,7 +225,6 @@ import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
-import 'package:catch_platform/cities/city_repository.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_platform/device/device_location.dart';
 import 'package:catch_platform/device/external_links.dart';
@@ -248,6 +241,14 @@ import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
 import 'package:catch_platform/riverpod_ui/catch_external_share_sheet.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_test_support/design_fixtures/event_success_companion_fixtures.dart';
+import 'package:catch_test_support/design_fixtures/host_inbox_surface_fixtures.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
+import 'package:catch_test_support/design_fixtures/matches_chat_surface_fixtures.dart';
+import 'package:catch_test_support/design_fixtures/profile_surface_fixtures.dart';
+import 'package:catch_test_support/design_fixtures/utility_surface_fixtures.dart';
+import 'package:catch_test_support/repo_file.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
@@ -283,7 +284,6 @@ import '../../hosts/programmes/planner/planner_captures.dart';
 import '../../hosts/programmes/staff/staff_captures.dart';
 import '../../organizers/organizers_test_helpers.dart' as organizer_test;
 import '../../support/profile_readiness_fixtures.dart';
-import '../../test_pump_helpers.dart';
 import '../fixtures/host_audience_journey_fixture.dart';
 import '../fixtures/sales_demo_synthetic_fixtures.dart';
 import '../support/capture_device.dart';
@@ -292,20 +292,43 @@ import 'entries/event_success_companion_micro_pod_assignment.dart';
 import 'entries/guest_after_event.dart';
 import 'entries/guest_book_sheet.dart';
 import 'entries/guest_follow_host.dart';
+import 'entries/guest_follow_host_follow_fragment.dart';
+import 'entries/guest_follow_host_followers_fragment.dart';
 import 'entries/guest_group_chat.dart';
 import 'entries/guest_reminder.dart';
 import 'entries/host_application_detail.dart';
 import 'entries/host_automations_phone.dart';
+import 'entries/host_create_colleges.dart';
+import 'entries/host_create_communities.dart';
 import 'entries/host_create_first_event.dart';
+import 'entries/host_create_nightlife.dart';
+import 'entries/host_create_racket_sports.dart';
+import 'entries/host_create_runs.dart';
+import 'entries/host_create_studios.dart';
+import 'entries/host_create_suppers.dart';
+import 'entries/host_create_teams.dart';
+import 'entries/host_create_venues.dart';
 import 'entries/host_door_arriving.dart';
+import 'entries/host_door_arriving_new_guest_fragment.dart';
+import 'entries/host_door_arriving_regular_fragment.dart';
 import 'entries/host_door_in.dart';
 import 'entries/host_event_share_links.dart';
+import 'entries/host_event_share_links_whatsapp_fragment.dart';
+import 'entries/host_form_responses_new_fragment.dart';
+import 'entries/host_formats_courts_court_fragment.dart';
 import 'entries/host_formats_courts_phone.dart';
 import 'entries/host_formats_courts_setup_phone.dart';
+import 'entries/host_formats_courts_sitting_out_fragment.dart';
+import 'entries/host_formats_crawl_move_map_fragment.dart';
+import 'entries/host_formats_crawl_move_message_fragment.dart';
 import 'entries/host_formats_crawl_move_phone.dart';
 import 'entries/host_formats_crawl_phone.dart';
 import 'entries/host_formats_mix_phone.dart';
+import 'entries/host_formats_pods_chatty_fragment.dart';
+import 'entries/host_formats_pods_needs_pod_fragment.dart';
 import 'entries/host_formats_pods_phone.dart';
+import 'entries/host_formats_rules_consent_fragment.dart';
+import 'entries/host_formats_rules_first_time_fragment.dart';
 import 'entries/host_formats_rules_phone.dart';
 import 'entries/host_home_dashboard.dart';
 import 'entries/host_insights_phone.dart';
@@ -313,10 +336,27 @@ import 'entries/host_live_console.dart';
 import 'entries/host_live_needs_phone.dart';
 import 'entries/host_live_now_tablet.dart';
 import 'entries/host_live_scores_phone.dart';
+import 'entries/host_live_scores_standings_fragment.dart';
+import 'entries/host_live_scores_team_fragment.dart';
+import 'entries/host_live_scores_third_team_fragment.dart';
+import 'entries/host_live_tablet_colleges.dart';
+import 'entries/host_live_tablet_communities.dart';
+import 'entries/host_live_tablet_creators.dart';
+import 'entries/host_live_tablet_facilities.dart';
+import 'entries/host_live_tablet_outdoors.dart';
+import 'entries/host_live_tablet_racket_sports.dart';
+import 'entries/host_live_tablet_runs.dart';
+import 'entries/host_live_tablet_studios.dart';
+import 'entries/host_live_tablet_suppers.dart';
+import 'entries/host_live_tablet_teams.dart';
+import 'entries/host_live_tablet_venues.dart';
+import 'entries/host_live_tablet_workshops.dart';
 import 'entries/host_organizer_memberships.dart';
 import 'entries/host_organizer_payments_phone.dart';
 import 'entries/host_organizer_team_phone.dart';
+import 'entries/host_people_drifting_fragment.dart';
 import 'entries/host_people_phone.dart';
+import 'entries/host_people_regular_fragment.dart';
 import 'entries/host_person_phone.dart';
 import 'entries/host_post_event_report.dart';
 import 'entries/host_post_event_report_more.dart';
@@ -350,7 +390,9 @@ export 'screen_capture_entry.dart';
 
 part 'host_audience_capture_fixtures.dart';
 
-final _profileHeroImage = FileImage(File('test/goldens/fixtures/portrait.jpg'));
+final _profileHeroImage = FileImage(
+  repoFile('test/goldens/fixtures/portrait.jpg'),
+);
 const _organizerHeroPortraitAssetPath =
     'assets/fixtures/club_hero_portrait.jpg';
 const _organizerHeroPortraitAssetImage = AssetImage(
@@ -379,10 +421,12 @@ const _eventScenePhotoSizes = [
   (1200, 900),
   (1200, 900),
 ];
-final _organizerHeroPortraitBytes = File(
+final _organizerHeroPortraitBytes = repoFile(
   _organizerHeroPortraitAssetPath,
 ).readAsBytesSync();
-final _profilePortraitBytes = File(_profilePortraitAssetPath).readAsBytesSync();
+final _profilePortraitBytes = repoFile(
+  _profilePortraitAssetPath,
+).readAsBytesSync();
 final _hostMediaCaptureImages = <ImageProvider<Object>>[
   MemoryImage(_organizerHeroPortraitBytes),
   MemoryImage(_profilePortraitBytes),
@@ -6829,26 +6873,74 @@ final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
   'host_staff_departures_phone': () => hostStaffDeparturesPhoneCapture,
   'host_home_dashboard': () => hostHomeDashboardCapture,
   'host_door_arriving': () => hostDoorArrivingCapture,
+  'host_door_arriving_new_guest_fragment': () =>
+      hostDoorArrivingNewGuestFragmentCapture,
+  'host_door_arriving_regular_fragment': () =>
+      hostDoorArrivingRegularFragmentCapture,
   'host_door_in': () => hostDoorInCapture,
   'host_live_now_tablet': () => hostLiveNowTabletCapture,
   'host_live_needs_phone': () => hostLiveNeedsPhoneCapture,
   'host_live_scores_phone': () => hostLiveScoresPhoneCapture,
+  'host_live_scores_team_fragment': () => hostLiveScoresTeamFragmentCapture,
+  'host_live_scores_standings_fragment': () =>
+      hostLiveScoresStandingsFragmentCapture,
+  'host_live_scores_third_team_fragment': () =>
+      hostLiveScoresThirdTeamFragmentCapture,
   'host_formats_courts_setup_phone': () => hostFormatsCourtsSetupPhoneCapture,
   'host_formats_courts_phone': () => hostFormatsCourtsPhoneCapture,
+  'host_formats_courts_court_fragment': () =>
+      hostFormatsCourtsCourtFragmentCapture,
+  'host_formats_courts_sitting_out_fragment': () =>
+      hostFormatsCourtsSittingOutFragmentCapture,
   'host_formats_mix_phone': () => hostFormatsMixPhoneCapture,
   'host_formats_crawl_phone': () => hostFormatsCrawlPhoneCapture,
   'host_formats_crawl_move_phone': () => hostFormatsCrawlMovePhoneCapture,
+  'host_formats_crawl_move_message_fragment': () =>
+      hostFormatsCrawlMoveMessageFragmentCapture,
+  'host_formats_crawl_move_map_fragment': () =>
+      hostFormatsCrawlMoveMapFragmentCapture,
   'host_formats_pods_phone': () => hostFormatsPodsPhoneCapture,
+  'host_formats_pods_chatty_fragment': () =>
+      hostFormatsPodsChattyFragmentCapture,
+  'host_formats_pods_needs_pod_fragment': () =>
+      hostFormatsPodsNeedsPodFragmentCapture,
   'host_formats_rules_phone': () => hostFormatsRulesPhoneCapture,
+  'host_formats_rules_consent_fragment': () =>
+      hostFormatsRulesConsentFragmentCapture,
+  'host_formats_rules_first_time_fragment': () =>
+      hostFormatsRulesFirstTimeFragmentCapture,
   'member_event_discovery': () => memberEventDiscoveryCapture,
   'host_live_console': () => hostLiveConsoleCapture,
   'host_post_event_report': () => hostPostEventReportCapture,
+  'host_live_tablet_colleges': () => hostLiveTabletCollegesCapture,
+  'host_live_tablet_communities': () => hostLiveTabletCommunitiesCapture,
+  'host_live_tablet_creators': () => hostLiveTabletCreatorsCapture,
+  'host_live_tablet_facilities': () => hostLiveTabletFacilitiesCapture,
+  'host_live_tablet_outdoors': () => hostLiveTabletOutdoorsCapture,
+  'host_live_tablet_racket_sports': () => hostLiveTabletRacketSportsCapture,
+  'host_live_tablet_runs': () => hostLiveTabletRunsCapture,
+  'host_live_tablet_studios': () => hostLiveTabletStudiosCapture,
+  'host_live_tablet_suppers': () => hostLiveTabletSuppersCapture,
+  'host_live_tablet_teams': () => hostLiveTabletTeamsCapture,
+  'host_live_tablet_venues': () => hostLiveTabletVenuesCapture,
+  'host_live_tablet_workshops': () => hostLiveTabletWorkshopsCapture,
+  'host_create_colleges': () => hostCreateCollegesCapture,
+  'host_create_communities': () => hostCreateCommunitiesCapture,
+  'host_create_nightlife': () => hostCreateNightlifeCapture,
+  'host_create_racket_sports': () => hostCreateRacketSportsCapture,
+  'host_create_runs': () => hostCreateRunsCapture,
+  'host_create_studios': () => hostCreateStudiosCapture,
+  'host_create_suppers': () => hostCreateSuppersCapture,
+  'host_create_teams': () => hostCreateTeamsCapture,
+  'host_create_venues': () => hostCreateVenuesCapture,
   'host_post_event_report_more': () => hostPostEventReportMoreCapture,
   'guest_after_event': () => guestAfterEventCapture,
   'host_insights_phone': () => hostInsightsPhoneCapture,
   'host_application_detail': () => hostApplicationDetailCapture,
   'host_organizer_memberships': () => hostOrganizerMembershipsCapture,
   'host_event_share_links': () => hostEventShareLinksCapture,
+  'host_event_share_links_whatsapp_fragment': () =>
+      hostEventShareLinksWhatsappFragmentCapture,
   'event_success_companion_first_hello_assigned': () =>
       eventSuccessCompanionFirstHelloAssignedCapture,
   'host_organizer_payments_phone': () => hostOrganizerPaymentsPhoneCapture,
@@ -6857,10 +6949,17 @@ final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
   'host_automations_phone': () => hostAutomationsPhoneCapture,
   'host_person_phone': () => hostPersonPhoneCapture,
   'host_people_phone': () => hostPeoplePhoneCapture,
+  'host_people_regular_fragment': () => hostPeopleRegularFragmentCapture,
+  'host_people_drifting_fragment': () => hostPeopleDriftingFragmentCapture,
   'host_response_phone': () => hostResponsePhoneCapture,
   'host_responses_phone': () => hostResponsesPhoneCapture,
+  'host_form_responses_new_fragment': () => hostFormResponsesNewFragmentCapture,
   'guest_book_sheet': () => guestBookSheetCapture,
   'guest_follow_host': () => guestFollowHostCapture,
+  'guest_follow_host_followers_fragment': () =>
+      guestFollowHostFollowersFragmentCapture,
+  'guest_follow_host_follow_fragment': () =>
+      guestFollowHostFollowFragmentCapture,
   'guest_group_chat': () => guestGroupChatCapture,
   'guest_reminder': () => guestReminderCapture,
   'host_create_first_event': () => hostCreateFirstEventCapture,
@@ -10833,6 +10932,27 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   hostLiveConsoleCapture,
   hostPostEventReportCapture,
+  hostLiveTabletCollegesCapture,
+  hostLiveTabletCommunitiesCapture,
+  hostLiveTabletCreatorsCapture,
+  hostLiveTabletFacilitiesCapture,
+  hostLiveTabletOutdoorsCapture,
+  hostLiveTabletRacketSportsCapture,
+  hostLiveTabletRunsCapture,
+  hostLiveTabletStudiosCapture,
+  hostLiveTabletSuppersCapture,
+  hostLiveTabletTeamsCapture,
+  hostLiveTabletVenuesCapture,
+  hostLiveTabletWorkshopsCapture,
+  hostCreateCollegesCapture,
+  hostCreateCommunitiesCapture,
+  hostCreateNightlifeCapture,
+  hostCreateRacketSportsCapture,
+  hostCreateRunsCapture,
+  hostCreateStudiosCapture,
+  hostCreateSuppersCapture,
+  hostCreateTeamsCapture,
+  hostCreateVenuesCapture,
   hostPostEventReportMoreCapture,
 
   ScreenCaptureEntry(

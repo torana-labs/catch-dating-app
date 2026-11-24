@@ -145,17 +145,20 @@ final class ProgramPlannedMessagesFamily extends $Family
   String toString() => r'programPlannedMessagesProvider';
 }
 
-/// The WhatsApp sender new planned messages send through, or null.
+/// The WhatsApp sender new planned messages send through, or null: the
+/// organiser's first active sender, as `listOrganizerMoments` offered it.
 
 @ProviderFor(programMessageSender)
 final programMessageSenderProvider = ProgramMessageSenderFamily._();
 
-/// The WhatsApp sender new planned messages send through, or null.
+/// The WhatsApp sender new planned messages send through, or null: the
+/// organiser's first active sender, as `listOrganizerMoments` offered it.
 
 final class ProgramMessageSenderProvider
     extends $FunctionalProvider<AsyncValue<String?>, String?, FutureOr<String?>>
     with $FutureModifier<String?>, $FutureProvider<String?> {
-  /// The WhatsApp sender new planned messages send through, or null.
+  /// The WhatsApp sender new planned messages send through, or null: the
+  /// organiser's first active sender, as `listOrganizerMoments` offered it.
   ProgramMessageSenderProvider._({
     required ProgramMessageSenderFamily super.from,
     required String super.argument,
@@ -200,9 +203,10 @@ final class ProgramMessageSenderProvider
 }
 
 String _$programMessageSenderHash() =>
-    r'1d182525b2e71dc099c492e20c47d84fb2509272';
+    r'3ee66afb40760c550c409c826f1278cf89250ec8';
 
-/// The WhatsApp sender new planned messages send through, or null.
+/// The WhatsApp sender new planned messages send through, or null: the
+/// organiser's first active sender, as `listOrganizerMoments` offered it.
 
 final class ProgramMessageSenderFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<String?>, String> {
@@ -215,107 +219,12 @@ final class ProgramMessageSenderFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The WhatsApp sender new planned messages send through, or null.
+  /// The WhatsApp sender new planned messages send through, or null: the
+  /// organiser's first active sender, as `listOrganizerMoments` offered it.
 
   ProgramMessageSenderProvider call(String programId) =>
       ProgramMessageSenderProvider._(argument: programId, from: this);
 
   @override
   String toString() => r'programMessageSenderProvider';
-}
-
-/// The planner home: the organiser's programmes with their overview
-/// numbers, from the first `listOrganizerPrograms` page.
-
-@ProviderFor(programmesOverview)
-final programmesOverviewProvider = ProgrammesOverviewFamily._();
-
-/// The planner home: the organiser's programmes with their overview
-/// numbers, from the first `listOrganizerPrograms` page.
-
-final class ProgrammesOverviewProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<OrganizerProgramInventoryPage>,
-          OrganizerProgramInventoryPage,
-          FutureOr<OrganizerProgramInventoryPage>
-        >
-    with
-        $FutureModifier<OrganizerProgramInventoryPage>,
-        $FutureProvider<OrganizerProgramInventoryPage> {
-  /// The planner home: the organiser's programmes with their overview
-  /// numbers, from the first `listOrganizerPrograms` page.
-  ProgrammesOverviewProvider._({
-    required ProgrammesOverviewFamily super.from,
-    required String super.argument,
-  }) : super(
-         retry: null,
-         name: r'programmesOverviewProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$programmesOverviewHash();
-
-  @override
-  String toString() {
-    return r'programmesOverviewProvider'
-        ''
-        '($argument)';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<OrganizerProgramInventoryPage> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<OrganizerProgramInventoryPage> create(Ref ref) {
-    final argument = this.argument as String;
-    return programmesOverview(ref, argument);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is ProgrammesOverviewProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$programmesOverviewHash() =>
-    r'fddbc0427727cfb0525807395282f7a9967068f2';
-
-/// The planner home: the organiser's programmes with their overview
-/// numbers, from the first `listOrganizerPrograms` page.
-
-final class ProgrammesOverviewFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<OrganizerProgramInventoryPage>,
-          String
-        > {
-  ProgrammesOverviewFamily._()
-    : super(
-        retry: null,
-        name: r'programmesOverviewProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  /// The planner home: the organiser's programmes with their overview
-  /// numbers, from the first `listOrganizerPrograms` page.
-
-  ProgrammesOverviewProvider call(String organizerId) =>
-      ProgrammesOverviewProvider._(argument: organizerId, from: this);
-
-  @override
-  String toString() => r'programmesOverviewProvider';
 }

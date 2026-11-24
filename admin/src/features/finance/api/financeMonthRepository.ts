@@ -72,9 +72,12 @@ const sampleCostRows: MonthCosts["costs"] = [
     category: "sms", amountMinor: 260_000, source: "manual",
     note: "Sign-in codes", updatedAtMillis: 1, updatedByUid: "sample-owner"},
   {schemaVersion: 1, costId: "2026-10_ads_meta", month: "2026-10",
-    category: "ads_meta", amountMinor: 4_820_000, source: "manual",
-    note: "Entered from the Meta invoice", updatedAtMillis: 1,
-    updatedByUid: "sample-owner"},
+    category: "ads_meta", amountMinor: 4_820_000, source: "meta_api",
+    note: "4 campaigns", updatedAtMillis: 1, updatedByUid: null},
+  {schemaVersion: 1, costId: "2026-10_ads_google", month: "2026-10",
+    category: "ads_google", amountMinor: 1_260_000,
+    source: "google_ads_api", note: "2 campaigns", updatedAtMillis: 1,
+    updatedByUid: null},
 ];
 let costRows = sampleCostRows;
 
@@ -98,7 +101,8 @@ function sampleCosts(payload: AdminManagePlatformCostsCallablePayload):
   return {month: payload.month, costs, whatsapp,
     totalMinor: costs.reduce((sum, cost) => sum + cost.amountMinor, 0) +
       (whatsapp.usesEstimate ? whatsapp.estimateMinor : 0),
-    adSpend: {metaConnected: false, googleConnected: false}};
+    adSpend: {metaConnected: costs.some((cost) => cost.source === "meta_api"),
+      googleConnected: costs.some((cost) => cost.source === "google_ads_api")}};
 }
 
 export function sampleFinanceMonth(payload: AdminGetFinanceMonthCallablePayload):

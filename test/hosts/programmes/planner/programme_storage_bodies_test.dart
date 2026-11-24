@@ -4,10 +4,10 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_id_tracker_b
 import 'package:catch_dating_app/hosts/programmes/planner/programme_photos_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_reconcile_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../support/catch_test_fonts.dart';
 import 'planner_storage_fixtures.dart';
 import 'planner_test_pump.dart';
 
@@ -114,7 +114,10 @@ void main() {
       onRetry: () {},
     );
     await pumpPlannerBody(tester, body(editing: false), size: plannerDesktop);
-    expect(find.text('Lantern Lane Travels · invoice 2026-118'), findsOneWidget);
+    expect(
+      find.text('Lantern Lane Travels · invoice 2026-118'),
+      findsOneWidget,
+    );
     expect(find.text('The 3 trips to question'), findsOneWidget);
     expect(find.text('Send the 3 questions'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('host-bill-approve')));

@@ -1,11 +1,10 @@
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/host_legacy_redirects.dart';
+import 'package:catch_dating_app/routing/host_router.dart';
 import 'package:catch_platform/routing/route_contract.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-
-import '../test_pump_helpers.dart';
 
 /// Host organizer routes, split from router_redirect_test.dart to keep
 /// each routing test file under the size budget.

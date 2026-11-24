@@ -1,0 +1,37 @@
+{
+  "id": "design:widget-catalog",
+  "category": "design",
+  "path": "tool/design/generate_widget_catalog.mjs",
+  "impactPaths": [
+    "tool/design/generate_widget_catalog.test.mjs",
+    "tool/design/lib/component_naming.mjs",
+    "design/components/catch.components.schema.json",
+    "docs/widget_catalog.md",
+    "design/components/catch.components.json",
+    "lib/**",
+    "packages/platform/lib/**",
+    "apps/consumer/lib/**",
+    "apps/host/lib/**",
+    "packages/catch_ui/lib/**",
+    "design/components/widget_naming_baseline.json",
+    "tool/design/generate_widget_catalog_carried.test.mjs",
+    "tool/architecture/carried_screens.json"
+  ],
+  "command": "node tool/design/generate_widget_catalog.mjs --write",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "role": "generator",
+  "description": "Generates and checks the widget catalog inventory from production declarations and reviewed shared-component identities. Source, registry and catalog changes select its drift check; temporary fixtures prove membership retention, documentation attachment and hand-edit rejection.",
+  "checks": [
+    "node --check tool/design/generate_widget_catalog.mjs",
+    "node --test tool/design/generate_widget_catalog.test.mjs",
+    "node --test tool/design/generate_widget_catalog_carried.test.mjs",
+    "node tool/design/generate_widget_catalog.mjs --check"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

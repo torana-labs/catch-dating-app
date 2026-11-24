@@ -221,7 +221,7 @@
           "$ref": "#/$defs/nonEmptyStrings"
         },
         "targetRoot": {
-          "pattern": "^lib/hosts/(today|events|audience|inbox|organizer)$"
+          "pattern": "^(?:lib/hosts/(?:today|events|audience|inbox|organizer)|apps/host/lib/(?:today|events|people/audience|people/inbox|organizer))$"
         },
         "migrationStatus": {
           "enum": [

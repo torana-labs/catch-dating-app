@@ -1,0 +1,14 @@
+{
+  "id": "reports",
+  "path": "reports/{reportId}",
+  "rulesMatch": "/reports/{reportId}",
+  "typescriptInterface": "ReportDocument",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "reportUser callable",
+  "writerContext": "safety",
+  "read": "server/admin only",
+  "write": "server only",
+  "exportedFunctions": [
+    "reportUser"
+  ]
+}

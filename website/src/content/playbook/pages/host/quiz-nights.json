@@ -33,14 +33,7 @@
         "label": "A venue with a weekly quiz, or a quizmaster at several venues? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "chip": {
-        "title": "Tuesday Trivia Night",
-        "rows": [
-          {"label": "Booked", "value": "30"},
-          {"label": "Came alone", "value": "7"},
-          {"label": "On a team", "value": "30"}
-        ]
-      },
+      "fragments": ["host-live-scores-team", "host-live-scores-third-team", "host-live-scores-standings"],
       "media": {"kind": "capture", "slot": "host-live-scores"}
     },
     {
@@ -163,13 +156,14 @@
       "ground": "yellow",
       "kicker": "Your next quiz, sorted",
       "title": "Fill next Tuesday.",
-      "lead": "Start the free trial, or leave your number and we’ll send the quiz night setup guide on WhatsApp.",
+      "lead": "Start the free trial and read the quiz night guide. Or leave your number, and a person from our team will send it to you on WhatsApp.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "Read the quiz night guide", "to": {"page": "playbook_guide/quiz-night"}, "emphasis": "secondary"}
       ],
-      "leadForm": {"id": "quiz_night_setup_guide", "requestKind": "guide", "format": "quiz-nights", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
+      "leadForm": {"id": "quiz_night_setup_guide", "requestKind": "guide", "format": "quiz-nights", "label": "Your WhatsApp number", "submitLabel": "Send me the guide"},
       "storeBadges": "host",
-      "media": {"kind": "capture", "slot": "guest-explore"}
+      "media": {"kind": "capture", "slot": "host-create-first-event"}
     }
   ]
 }

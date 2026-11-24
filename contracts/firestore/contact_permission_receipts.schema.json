@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/contact_permission_receipts.schema.json",
+  "title": "ContactPermissionReceiptDocument",
+  "description": "Immutable, append-only evidence for one contact permission decision by one person for one sender: a grant or a withdrawal on one channel, optionally for one purpose. It replaced catchCommunicationPermissionReceipts and organizerCommunicationPermissionReceipts (issue #2460) and keeps their fields and id schemes, plus senderKind and senderId. Top-level because it is legal evidence that may need to outlive the account in anonymised form (issue #2460). Server only; no client and no organiser reads it.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "contactPermissionReceipts",
+  "x-firestore-path": "contactPermissionReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "messaging contact permission writer (functions/src/messaging/contactPermissions.ts), called by every consent writer",
+  "required": [
+    "senderKind",
+    "senderId",
+    "uid",
+    "channel",
+    "decision",
+    "evidenceStatus",
+    "termsVersion",
+    "consentCopyHash",
+    "source",
+    "sourceEventId",
+    "sourceFormId",
+    "sourceResponseId",
+    "sourceProviderEventId",
+    "actorClass",
+    "actorUid",
+    "identityStrength",
+    "grantedAt",
+    "revokedAt",
+    "supersedesReceiptId",
+    "createdAt"
+  ],
+  "properties": {
+    "senderKind": {"type": "string", "enum": ["catch", "organizer"]},
+    "senderId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "catch for Catch itself, otherwise the organizer id."
+    },
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "channel": {"type": "string", "enum": ["whatsapp", "sms"]},
+    "purpose": {"type": "string", "enum": ["eventOperations", "marketing", "followerUpdates"]},
+    "endpointE164": {"type": "string", "pattern": "^\\+[1-9][0-9]{6,14}$"},
+    "sourceVersionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "sourceDecidedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "decision": {"type": "string", "enum": ["optedIn", "optedOut"]},
+    "evidenceStatus": {"type": "string", "enum": ["complete", "incomplete"]},
+    "termsVersion": {"type": ["string", "null"], "minLength": 1, "maxLength": 80},
+    "consentCopyHash": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+    "source": {
+      "type": "string",
+      "enum": ["publicEventRegistration", "hostFormResponse", "participantSettings", "unsubscribeLink", "inboundStop", "providerWebhook", "legacyIncomplete", "organizerFollowByPhone"]
+    },
+    "sourceEventId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+    "sourceFormId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+    "sourceResponseId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+    "sourceOrganizerId": {
+      "description": "On a Catch receipt from an organiser's form, the organiser whose form carried the choice.",
+      "anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]
+    },
+    "sourceProviderEventId": {"type": ["string", "null"], "minLength": 1, "maxLength": 240},
+    "actorClass": {"type": "string", "enum": ["participant", "provider", "system"]},
+    "actorUid": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "identityStrength": {"type": "string", "enum": ["unknown", "emailVerified", "phoneVerified", "catchAccount"]},
+    "grantedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "revokedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "supersedesReceiptId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"decision": {"const": "optedIn"}, "evidenceStatus": {"const": "complete"}}, "required": ["decision", "evidenceStatus"]},
+      "then": {
+        "properties": {
+          "termsVersion": {"type": "string", "minLength": 1, "maxLength": 80},
+          "consentCopyHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "grantedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+          "revokedAt": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"decision": {"const": "optedOut"}, "evidenceStatus": {"const": "complete"}}, "required": ["decision", "evidenceStatus"]},
+      "then": {
+        "properties": {
+          "grantedAt": {"type": "null"},
+          "revokedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"senderKind": {"const": "catch"}}, "required": ["senderKind"]},
+      "then": {
+        "properties": {
+          "senderId": {"const": "catch"},
+          "channel": {"const": "whatsapp"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"senderKind": {"const": "catch"}, "source": {"const": "hostFormResponse"}}, "required": ["senderKind", "source"]},
+      "then": {
+        "required": ["sourceOrganizerId"],
+        "properties": {
+          "sourceOrganizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+        }
+      }
+    }
+  ]
+}

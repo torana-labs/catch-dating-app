@@ -1,0 +1,13 @@
+{
+  "id": "contracts:path-literals",
+  "category": "contracts",
+  "path": "tool/contracts/check_schema_path_literals.mjs",
+  "command": "node tool/contracts/check_schema_path_literals.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Blocks retired raw schema path literals in production code.",
+  "checks": [
+    "node --check tool/contracts/check_schema_path_literals.mjs"
+  ],
+  "queueGate": "always"
+}

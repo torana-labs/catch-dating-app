@@ -1,0 +1,16 @@
+{
+  "id": "data:backfill-event-admin-search",
+  "category": "data",
+  "path": "tool/data/backfill_event_admin_search.mjs",
+  "command": "node tool/data/backfill_event_admin_search.mjs",
+  "surface": "remote-write",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "description": "Backfills event adminSearch projections for the admin Events canonical directory.",
+  "checks": [
+    "node --check tool/data/backfill_event_admin_search.mjs",
+    "node --test tool/data/backfill_event_admin_search.test.mjs"
+  ],
+  "role": "generator",
+  "runbook": "docs/release_operations.md#explore-event-discovery-rollout"
+}

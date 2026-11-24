@@ -1,0 +1,11 @@
+{
+  "id": "organizerSalesAccounts",
+  "path": "organizerSalesAccounts/{organizerId}",
+  "rulesMatch": "/organizerSalesAccounts/{privateDocument=**}",
+  "typescriptInterface": "OrganizerSalesAccountDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales account service",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

@@ -1,0 +1,43 @@
+{
+  "id": "audit:flutter-source-size",
+  "category": "audit",
+  "path": "tool/architecture/check_flutter_source_size.mjs",
+  "command": "node tool/architecture/check_flutter_source_size.mjs --check",
+  "surface": "local-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "lib/**/*.dart",
+    "apps/*/lib/**/*.dart",
+    "packages/**/*.dart",
+    "widgetbook/lib/**/*.dart",
+    "tool/architecture/check_flutter_source_size.test.mjs",
+    "tool/test/check_flutter_test_size.mjs"
+  ],
+  "description": "Keeps handwritten Dart sources within 800 lines unless the file states a reason in a size-exemption comment near its top; no file may pass 2,500 lines. No baseline file; lib/routing/host_router.dart and the CatchField facade carry their reasons in the file.",
+  "checks": [
+    "node --check tool/architecture/check_flutter_source_size.mjs",
+    "node --test tool/architecture/check_flutter_source_size.test.mjs",
+    "node tool/architecture/check_flutter_source_size.mjs --check"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "FLUTTER-SOURCE-MAINTAINABILITY-001",
+      "title": "Bound handwritten Dart sources; exceptions state their reason in the file",
+      "appliesTo": [
+        "lib/**/*.dart",
+        "apps/*/lib/**/*.dart",
+        "packages/**/*.dart",
+        "widgetbook/lib/**/*.dart"
+      ],
+      "instruction": "Keep handwritten Dart files at or below 800 lines. A larger file states its reason in a `// size-exemption: <reason>` comment in its first 20 lines, and no file passes 2,500 lines. Generated producer outputs are excluded by identity."
+    }
+  ],
+  "queueGate": "always"
+}

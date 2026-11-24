@@ -3,7 +3,7 @@ import type {
   EventRuntimeParticipantDocument,
   EventSuccessPlanDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {eventSuccessPrimitivesFor} from "./formatPrimitives";
+import {eventSuccessPrimitivesFor} from "../domain/formats/formatPrimitives";
 
 export type RuntimeFieldId =
   EventRuntimeParticipantDocument["requiredFieldIds"][number];

@@ -1,0 +1,19 @@
+{
+  "id": "eventMessagingBudgetDecisions",
+  "path": "eventMessagingBudgetDecisions/{decisionId}",
+  "rulesMatch": "/eventMessagingBudgetDecisions/{decisionId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "admin messaging budget review and decision callables",
+  "writerContext": "admin",
+  "read": "server/admin callable only",
+  "write": "server only",
+  "exportedFunctions": [
+    "adminReviewEventMessagingBudget",
+    "adminDecideEventMessagingBudget"
+  ],
+  "migrationNotes": [
+    "Stores a revision-fenced finance decision bound to current runtime, sender, budget-source and setup-review hashes.",
+    "The Finance review callable returns a bounded current decision summary without exposing credentials or private RCS agent identity.",
+    "The record has a literal decision-only effect and grants no spending, dispatch, provider or activation authority."
+  ]
+}

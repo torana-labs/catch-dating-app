@@ -84,7 +84,7 @@ final class HostFormatsRunControllerProvider
 }
 
 String _$hostFormatsRunControllerHash() =>
-    r'3755c9fe51ea292c19eaa9e969d1e9c40d047f33';
+    r'89b970a3fa85e07c9ece8955a9831aa01996d8c6';
 
 /// The run console, composed from listeners only: the plan (the step on
 /// now), the sweep (who is checked in and who is back) and, for each runner

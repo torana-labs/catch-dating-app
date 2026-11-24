@@ -3,43 +3,29 @@ import {validatePublicRuntimeEnvironment} from "./publicEnvironment";
 import {getApps, initializeApp, applicationDefault} from "firebase-admin/app";
 import {getFirestore} from "firebase-admin/firestore";
 import {cache} from "react";
-import {activeEventLiveCities} from "../content/markets";
 import type {PublicCatalog} from "../app/next/publicCatalogTypes";
-import type {LivePublicCatchEvent} from "../features/organizers/publicCatchEventProjection";
 import {organizerPageRecord} from "../features/organizers/organizerPage";
-import type {HostListing} from "../features/organizers/types";
 import {withinReadDeadline, type PublicReader} from "./repositories/publicReader";
-import {
-  findPublishedOrganizerById,
-  findPublishedOrganizerByPath,
-  listPublishedOrganizers,
-  listRecommendedOrganizers,
-  type PublishedOrganizerRoute,
-} from "./repositories/organizerRepository";
-import {
-  findPublishedCatchEvent,
-  listPublishedCatchEvents,
-  listPublishedCatchEventsForOrganizer,
-} from "./repositories/catchEventRepository";
-import {
-  findPublicExternalEvent,
-  listPublicExternalEvents,
-  listPublicExternalEventsForOrganizer,
-  type PublicExternalEventRow,
-} from "./repositories/externalEventRepository";
-import {withPublicReviews} from "./repositories/reviewRepository";
 import {
   eventPageListing,
   findEventPage,
   findOrganizerPage,
+  listOrganizerPages,
+  organizerCatalogListing,
   organizerPageListings,
 } from "./repositories/publicPageRepository";
 import {organizerPath, publicDocumentId} from "./publicReadPolicy";
-import {eventPageFromListing} from "../features/events/eventPageFromListing";
+import type {HostListing} from "../features/organizers/types";
 import type {EventPageData} from "../features/events/eventPageModel";
 import {eventMapLink, eventMapsAvailable} from "./eventMapLink";
 
-const markets = new Set(activeEventLiveCities.map(city => city.slug));
+/**
+ * The public website reads only the public page read models Functions build
+ * (functions/src/publicPages): organizerPublicPage, eventPublicPage and
+ * cityPlans. It never reads organizers, events, externalEvents or reviews,
+ * so publication and suppression are decided once, on the server that
+ * builds the pages.
+ */
 function publicReaderApp() {
   validatePublicRuntimeEnvironment();
   const projectId = process.env.CATCH_PUBLIC_FIRESTORE_PROJECT;
@@ -72,26 +58,18 @@ export async function publicReader(): Promise<PublicReader> {
   return getFirestore(app);
 }
 
-function withEvents(listing: HostListing, events: readonly LivePublicCatchEvent[],
-  externalEvents: readonly PublicExternalEventRow[]): HostListing {
-  return {...listing, catchEvents: events.map(row => row.event),
-    ...(externalEvents.length ? {externalEvents: externalEvents.map(row => row.event)} : {})};
+/**
+ * Discovery, directory, claim lookup and sitemap: every public organizer
+ * page's listing with its listed events, one read-model document each.
+ */
+export async function assemblePublicCatalog(db: PublicReader, readAt: number): Promise<PublicCatalog> {
+  const pages = await withinReadDeadline(listOrganizerPages(db));
+  return {listings: pages.map(page => organizerCatalogListing(page, readAt)), readAt};
 }
 
-/** Discovery, directory, claim lookup and sitemap: every published listing with its events. */
-export async function assemblePublicCatalog(db: PublicReader, readAt: number): Promise<PublicCatalog> {
-  const [listings, events, externalEvents] = await withinReadDeadline(Promise.all([
-    listPublishedOrganizers(db, markets),
-    listPublishedCatchEvents(db, readAt),
-    listPublicExternalEvents(db),
-  ]));
-  const byId = new Map(listings.map(listing => [listing.id, listing]));
-  for (const row of events) byId.get(row.organizerId)?.catchEvents?.push(row.event);
-  for (const row of externalEvents) {
-    const listing = byId.get(row.organizerId);
-    if (listing) (listing.externalEvents ??= []).push(row.event);
-  }
-  return {listings, readAt};
+export interface PublishedOrganizerRoute {
+  listing: HostListing;
+  isLegacyPath: boolean;
 }
 
 export interface PublicOrganizerDetail {
@@ -101,28 +79,24 @@ export interface PublicOrganizerDetail {
 
 /**
  * One organizer page from its read model: one document holds the page the
- * organiser route renders, with the listing its routing and metadata read. Until every
- * environment is backfilled (functions/scripts/backfill-public-pages.cjs
- * --check), a page without a read model is assembled from its sources under
- * the same publication rules, so a withdrawn page stays withdrawn either way.
+ * organiser route renders, with the listing its routing and metadata read.
+ * A page without a read model is withheld or unknown, and renders as not found.
  */
 export async function assembleOrganizerDetailCatalog(
   db: PublicReader, pathname: string, readAt: number
 ): Promise<PublicOrganizerDetail | null> {
   return withinReadDeadline((async () => {
     const read = await findOrganizerPage(db, pathname);
-    if (read) {
-      const listings = organizerPageListings(read.page, readAt);
-      return {catalog: {listings, readAt, organizerPage: organizerPageRecord(read.page, readAt)},
-        route: {listing: listings[0], isLegacyPath: read.isLegacyPath}};
-    }
-    return assembleOrganizerDetailFromSources(db, pathname, readAt);
+    if (!read) return null;
+    const listings = organizerPageListings(read.page, readAt);
+    return {catalog: {listings, readAt, organizerPage: organizerPageRecord(read.page, readAt)},
+      route: {listing: listings[0], isLegacyPath: read.isLegacyPath}};
   })());
 }
 
 /**
- * One event page from its read model, or from its sources until backfilled.
- * The listing still feeds route metadata and the organizer analytics.
+ * One event page from its read model. The listing still feeds route metadata
+ * and the organizer analytics.
  */
 export async function assembleEventDetailCatalog(
   db: PublicReader, eventId: string, readAt: number, mapsAvailable: () => Promise<boolean> = () => eventMapsAvailable()
@@ -130,60 +104,13 @@ export async function assembleEventDetailCatalog(
   return withinReadDeadline((async () => {
     // Secret Manager answers while the page is read; a cached answer is instant.
     const [page, mapsOn] = await Promise.all([findEventPage(db, eventId), mapsAvailable()]);
-    const withMap = async (catalog: PublicCatalog & {eventPage: EventPageData}): Promise<PublicCatalog> => {
-      const {item} = catalog.eventPage;
-      const eventMap = await eventMapLink(eventId, item.source === "catch" ? item.event.meetingLocation : null,
-        async () => mapsOn);
-      return eventMap ? {...catalog, eventMap} : catalog;
-    };
-    if (page) {
-      const {builtAt: _builtAt, contentHash: _contentHash, listing: _listing, ...eventPage} = page;
-      return withMap({listings: [eventPageListing(page, readAt)], readAt, eventPage});
-    }
-    const catalog = await assembleEventDetailFromSources(db, eventId, readAt);
-    const eventPage = catalog?.listings[0] ? eventPageFromListing(catalog.listings[0], eventId) : null;
-    return catalog && eventPage ? withMap({...catalog, eventPage}) : catalog;
-  })());
-}
-
-/**
- * One organizer page from its sources: its listing with events and reviews,
- * then the verified organizers its recommendation rail can show. Reads scale
- * with that organizer, not with the catalog.
- */
-export async function assembleOrganizerDetailFromSources(
-  db: PublicReader, pathname: string, readAt: number
-): Promise<PublicOrganizerDetail | null> {
-  return withinReadDeadline((async () => {
-    const route = await findPublishedOrganizerByPath(db, pathname, markets);
-    if (!route) return null;
-    const [events, externalEvents, recommended] = await Promise.all([
-      listPublishedCatchEventsForOrganizer(db, route.listing.id, readAt),
-      listPublicExternalEventsForOrganizer(db, route.listing.id),
-      listRecommendedOrganizers(db, markets, route.listing.id),
-    ]);
-    const listing = await withPublicReviews(db, withEvents(route.listing, events, externalEvents));
-    return {catalog: {listings: [listing, ...recommended], readAt}, route: {...route, listing}};
-  })());
-}
-
-/** One event page from its sources: the event on its organizer listing, with reviews for both. */
-export async function assembleEventDetailFromSources(
-  db: PublicReader, eventId: string, readAt: number
-): Promise<PublicCatalog | null> {
-  return withinReadDeadline((async () => {
-    const [catchEvent, externalEvent] = await Promise.all([
-      findPublishedCatchEvent(db, eventId, readAt),
-      findPublicExternalEvent(db, eventId),
-    ]);
-    // An id published as both kinds is ambiguous, so the full catalog withholds it too.
-    if (catchEvent && externalEvent) return null;
-    const organizerId = catchEvent?.organizerId ?? externalEvent?.organizerId;
-    if (!organizerId) return null;
-    const organizer = await findPublishedOrganizerById(db, organizerId, markets);
-    if (!organizer) return null;
-    const listing = withEvents(organizer, catchEvent ? [catchEvent] : [], externalEvent ? [externalEvent] : []);
-    return {listings: [await withPublicReviews(db, listing, eventId)], readAt};
+    if (!page) return null;
+    const {builtAt: _builtAt, contentHash: _contentHash, listing: _listing, ...eventPage} = page;
+    const catalog: PublicCatalog & {eventPage: EventPageData} = {listings: [eventPageListing(page, readAt)], readAt, eventPage};
+    const {item} = eventPage;
+    const eventMap = await eventMapLink(eventId, item.source === "catch" ? item.event.meetingLocation : null,
+      async () => mapsOn);
+    return eventMap ? {...catalog, eventMap} : catalog;
   })());
 }
 

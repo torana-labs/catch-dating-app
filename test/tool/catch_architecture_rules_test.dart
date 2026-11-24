@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_ui_lints/src/architecture_context_map.dart';
 import 'package:catch_ui_lints/src/architecture_findings.dart';
 import 'package:catch_ui_lints/src/architecture_firestore_boundary.dart';
@@ -893,8 +894,8 @@ final firstProvider = rp.FutureProvider.autoDispose.family<int, String>((ref, ke
     test('flags upward layer imports', () {
       for (final (path, uri) in const [
         ('lib/core/widgets/event_thumbnail.dart', 'events/domain/event.dart'),
-        ('lib/events/data/event_launcher.dart', 'routing/go_router.dart'),
-        ('lib/pages/event_page/event_page.dart', 'routing/go_router.dart'),
+        ('lib/events/data/event_launcher.dart', 'routing/consumer_router.dart'),
+        ('lib/pages/event_page/event_page.dart', 'routing/host_router.dart'),
         ('lib/activity/domain/activity_taxonomy.dart', 'core/labelled.dart'),
       ]) {
         expect(
@@ -928,7 +929,7 @@ final firstProvider = rp.FutureProvider.autoDispose.family<int, String>((ref, ke
     test('app screens may import anything', () {
       expect(
         _contextRules('lib/events/presentation/event_screen.dart', '''
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/host_router.dart';
 import 'package:catch_dating_app/contexts/bookings/data/booking_repository.dart';
 '''),
         isEmpty,
@@ -1050,17 +1051,18 @@ import 'package:catch_dating_app/contexts/bookings/data/booking_repository.dart'
 
     test('the checked-in map parses and places every lib file', () {
       final map = ContextMap.parse(
-        File('tool/architecture/context_map.json').readAsStringSync(),
+        repoFile('tool/architecture/context_map.json').readAsStringSync(),
       );
       expect(map.forbidLegacy, isTrue);
       final unplaced = [
-        for (final entity in Directory('lib').listSync(recursive: true))
+        for (final entity in repoDirectory('lib').listSync(recursive: true))
           if (entity is File &&
               entity.path.endsWith('.dart') &&
               !entity.path.endsWith('.g.dart') &&
               !entity.path.endsWith('.freezed.dart') &&
-              map.place(entity.path) == null)
-            entity.path,
+              map.place(entity.path.substring(repoRoot.path.length + 1)) ==
+                  null)
+            entity.path.substring(repoRoot.path.length + 1),
       ];
       expect(unplaced, isEmpty);
     });

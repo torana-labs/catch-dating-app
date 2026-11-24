@@ -1,4 +1,6 @@
-import {WHATSAPP_DISPATCHES} from "../delivery/whatsappDispatches";
+import {
+  WHATSAPP_DISPATCHES, prepareWhatsappDispatch,
+} from "../delivery/whatsappDispatches";
 import {readProgramGuestFields} from
   "../workspaces/workspaceFieldAuthority";
 import * as admin from "firebase-admin";
@@ -22,7 +24,6 @@ import type {
   EventDocument,
   OrganizerCampaignDocument,
   OrganizerCampaignRecipientDocument,
-  OrganizerCommunicationPreferenceDocument,
   OrganizerContactChannelStateDocument,
   OrganizerContactDocument,
   OrganizerMessageTemplateDocument,
@@ -33,20 +34,24 @@ import type {
 import {
   MetaProviderError, MetaWhatsappProvider, OrganizerTokenStore,
   metaTemplateFromDocument,
-} from "./organizerWhatsappProvider";
+} from "../platform/delivery/organizerWhatsappProvider";
 import {whatsappStatusCorrelation} from
-  "../eventSuccess/operations/whatsappDeliveryProtocol";
-import {validateCampaignWhatsappDispatchDocument} from
-  "../shared/generated/validators/campaignWhatsappDispatchDocument";
+  "../platform/delivery/whatsappDeliveryProtocol";
+import type {CampaignWhatsappDispatchDocument} from
+  "../shared/generated/campaignWhatsappDispatchDocument";
 import {
-  effectiveOrganizerWhatsappPurposeStatus,
-  organizerCommunicationPreferenceId,
-} from "../shared/organizerCommunicationPreferences";
+  contactPermissionRef,
+  contactPermissionStatus,
+  readContactPermission,
+  type ContactPermission,
+} from "../shared/contactPermissions";
 import {
-  classifyMetaError, hashCanonical, hashEndpoint,
+  classifyMetaError,
+  hashCanonical,
   organizerCampaignFrequencyCapMillis,
   organizerContactChannelStateId,
 } from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {campaignVariables} from "./organizerCampaigns";
 import {followerRecipientSuppression} from "./organizerFollowerWhatsappLeg";
 
@@ -217,10 +222,10 @@ async function readCampaignFacts(
   const contact = contactSnap?.data() as
     | OrganizerContactDocument
     | undefined;
-  const preferenceRef = contact?.linkedUid ?
-    db.collection("organizerCommunicationPreferences").doc(
-      organizerCommunicationPreferenceId(
-        intent.context.organizerId, contact.linkedUid)) :
+  const sender = {kind: "organizer" as const,
+    organizerId: intent.context.organizerId};
+  const permissionRef = contact?.linkedUid ?
+    contactPermissionRef(db, contact.linkedUid, sender) :
     null;
   const channelRef = recipient.contactId ?
     db.collection("organizerContactChannelStates").doc(
@@ -254,7 +259,7 @@ async function readCampaignFacts(
       .limit(10) :
     null;
   const related = await Promise.all([
-    preferenceRef ? tx.get(preferenceRef) : null,
+    permissionRef ? tx.get(permissionRef) : null,
     channelRef ? tx.get(channelRef) : null,
     tx.get(connectionRef),
     tx.get(templateRef),
@@ -264,9 +269,7 @@ async function readCampaignFacts(
     householdRef ? tx.get(householdRef) : null,
     endpointHistoryQuery ? tx.get(endpointHistoryQuery) : null,
   ]);
-  const preference = related[0]?.data() as
-    | OrganizerCommunicationPreferenceDocument
-    | undefined;
+  const permission = readContactPermission(related[0]?.data(), sender);
   const channelState = related[1]?.data() as
     | OrganizerContactChannelStateDocument
     | undefined;
@@ -313,7 +316,7 @@ async function readCampaignFacts(
     }) :
     finalSuppressionReason({
       organizerId: intent.context.organizerId,
-      campaign, recipient, contact, preference, channelState,
+      campaign, recipient, contact, permission, channelState,
       connection, template, event, inviteToken, now,
     });
   // The frozen recipient content hash re-verifies inside the claim window —
@@ -417,7 +420,7 @@ export function finalSuppressionReason(params: {
   campaign: OrganizerCampaignDocument;
   recipient: OrganizerCampaignRecipientDocument;
   contact: OrganizerContactDocument | undefined;
-  preference: OrganizerCommunicationPreferenceDocument | undefined;
+  permission: ContactPermission | null;
   channelState: OrganizerContactChannelStateDocument | undefined;
   connection: OrganizerSenderConnectionDocument | undefined;
   template: OrganizerMessageTemplateDocument | undefined;
@@ -440,16 +443,12 @@ export function finalSuppressionReason(params: {
   ) {
     return "invalidEndpoint";
   }
-  if (!params.preference ||
-      params.preference.organizerId !== params.organizerId ||
-      params.preference.uid !== params.contact.linkedUid) {
+  if (!params.permission ||
+      params.permission.senderId !== params.organizerId) {
     return "unknownPermission";
   }
-  const permissionStatus = effectiveOrganizerWhatsappPurposeStatus(
-    params.preference,
-    "marketing",
-    params.contact.phoneE164
-  );
+  const permissionStatus = contactPermissionStatus(params.permission,
+    "whatsapp:marketing", params.contact.phoneE164);
   if (permissionStatus === "unknown") return "unknownPermission";
   if (permissionStatus === "optedOut") return "optedOut";
   if (
@@ -637,7 +636,7 @@ async function dispatchCampaignWhatsapp(
         const endpointHash = recipient.endpointHash;
         const payloadHash = operationContentHash([
           metaTemplateFromDocument(tpl), intent.whatsapp.variables]);
-        const dispatch = {
+        const dispatch: CampaignWhatsappDispatchDocument = {
           schemaVersion: 1, source: "campaign",
           attemptId: liveAttempt.attemptId,
           messageId: liveRecord.messageId, context: intent.context,
@@ -651,12 +650,8 @@ async function dispatchCampaignWhatsapp(
           templateDocumentId: intent.whatsapp.templateId,
           templateHash: operationContentHash(tplSnap.data()),
           payloadHash, createdAt: now};
-        if (!validateCampaignWhatsappDispatchDocument(dispatch)) {
-          throw new Error("Invalid campaign WhatsApp dispatch evidence");
-        }
-        const evidenceRef = db.collection(CAMPAIGN_WHATSAPP_DISPATCHES)
-          .doc(liveAttempt.attemptId);
-        if ((await tx.get(evidenceRef)).exists) return {kind: "withheld"};
+        const stageEvidence = await prepareWhatsappDispatch(db, tx, dispatch);
+        if (!stageEvidence) return {kind: "withheld"};
         const campaignRef = db.collection("organizerCampaigns")
           .doc(intent.context.campaignId);
         const leaseUntil = Math.min(now + RECIPIENT_LEASE_MS,
@@ -665,7 +660,7 @@ async function dispatchCampaignWhatsapp(
           value: {e164: recipient.endpointE164, payloadHash},
           validUntil: Math.min(now + FACT_SNAPSHOT_MS, intent.expiresAt),
           commit: () => {
-            tx.create(evidenceRef, dispatch);
+            stageEvidence();
             // The attempt id IS the lease: exactly one executor can hold
             // the recipient row, and the row always names its executor.
             tx.update(recipientRef, {

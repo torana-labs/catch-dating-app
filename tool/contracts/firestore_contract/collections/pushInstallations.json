@@ -1,0 +1,11 @@
+{
+  "id": "pushInstallations",
+  "path": "users/{uid}/pushInstallations/{installationId}",
+  "rulesMatch": "/users/{uid}/pushInstallations/{installationId}",
+  "typescriptInterface": "PushInstallationDocument",
+  "rulesTestFile": "functions/test/rules/users.rules.test.cjs",
+  "owner": "the signed-in app (FcmService) writes its own installation; push senders read",
+  "writerContext": "messaging",
+  "read": "owner only",
+  "write": "owner direct create, update and delete of bounded push installation documents"
+}

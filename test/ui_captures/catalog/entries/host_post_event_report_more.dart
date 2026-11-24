@@ -2,9 +2,10 @@
 // capture's inputs to its own imports; see docs/marketing_app_media_pipeline.md.
 
 import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../../../test_pump_helpers.dart';
+
 import '../../fixtures/sales_demo_synthetic_fixtures.dart';
 import '../../support/capture_device.dart';
 import '../screen_capture_entry.dart';

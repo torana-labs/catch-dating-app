@@ -342,7 +342,7 @@ APP_TARGETS.fetch('roles').each do |role, role_config|
   project_root = File.join(REPO_ROOT, role_config.fetch('projectRoot'))
   flavors = flavors_for(role: role, package_entrypoints: true)
   configure_ios(project_root: project_root, flavors: flavors)
-  # Only the Consumer project ships a macOS runner; it hosts the native
-  # app-shell smoke suite.
-  configure_macos(project_root: project_root, flavors: flavors) if Dir.exist?(File.join(project_root, 'macos'))
+  # Each app project ships a macOS runner that hosts its own native
+  # integration journeys.
+  configure_macos(project_root: project_root, flavors: flavors)
 end

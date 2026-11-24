@@ -124,7 +124,8 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
   }, [listing.id]);
 
   useEffect(() => observeOrganizerPageView(listing, "listingView", "listing_page"), [listing]);
-  useEffect(() => observeOrganizerProviders(listing), [listing]);
+  const tracking = page.tracking;
+  useEffect(() => observeOrganizerProviders(listing, null, {tracking}), [listing, tracking]);
 
   async function changeAccountFollow(following: boolean) {
     if (followBusy.current) return;

@@ -23,7 +23,7 @@ import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {onSchedule} from "firebase-functions/v2/scheduler";
-import {adminRolesFromToken} from "../admin/adminAuth";
+import {adminRolesFromToken} from "../platform/adminAuth";
 import {requireAuth} from "../shared/auth";
 import {requireScheduledEvent} from "../events/configuredEvent";
 import {
@@ -142,7 +142,7 @@ import {applyPracticeRequiredDataSubmission,
   practiceRequiredDataReview, preparePracticeRequiredDataRequest} from
   "./requiredData";
 import {practiceOutcomeReview, preparePracticeOutcome} from "./outcomes";
-import {eventSuccessPrimitivesFor} from "../eventSuccess/formatPrimitives";
+import {eventSuccessPrimitivesFor} from "../domain/formats/formatPrimitives";
 import {practiceRevealReview, preparePracticeReveal,
   settlePracticeReveal} from "./reveal";
 import {practiceAllocationReview, preparePracticeAllocation,

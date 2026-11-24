@@ -1,0 +1,23 @@
+{
+  "id": "organizerMomentViews",
+  "path": "organizerMomentViews/{momentId}",
+  "rulesMatch": "/organizerMomentViews/{momentId}",
+  "typescriptInterface": "OrganizerMomentViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/host_screen_read_views.rules.test.cjs",
+  "rulesTestNames": [
+    "gives programme rows to the owner and the communications duty",
+    "gives event rows to the event organiser's managers only"
+  ],
+  "owner": "Moments read model projector: organizerMomentViewTriggers",
+  "writerContext": "messaging",
+  "read": "get and list: programme rows (query naming scopeKind and programId) by the programme owner and the communications duty; event rows (query naming scopeKind and eventId) by the event organiser's current managers; while not deleted",
+  "write": "server only; written from organizerMoments and organizerMomentRuns",
+  "exportedFunctions": [
+    "onOrganizerMomentViewChanged",
+    "onOrganizerMomentRunViewChanged"
+  ],
+  "migrationNotes": [
+    "The moment exactly as listOrganizerMoments returned it and its plan summary (anchor, sent count, next planned run while armed); the board state that compares moments is the phone's. The organiser's WhatsApp sender stays on listOrganizerMoments. Organiser-scope automation moments get no row. The organizer-moment-views copy-forward migration creates rows for moments that predate the triggers and leaves rows the triggers wrote alone."
+  ]
+}

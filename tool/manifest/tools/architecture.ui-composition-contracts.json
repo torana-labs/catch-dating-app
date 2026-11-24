@@ -1,0 +1,50 @@
+{
+  "id": "architecture:ui-composition-contracts",
+  "category": "architecture",
+  "path": "tool/architecture/check_ui_composition_contracts.dart",
+  "impactPaths": [
+    "test/tool/ui_composition_contracts_test.dart",
+    "test/tool/ui_composition_route_factory_test.dart",
+    "test/tool/catch_row_api_contract_test.dart",
+    "test/tool/ui_composition_ownership_test.dart",
+    "test/tool/route_discovery_adversarial_test.dart",
+    "test/tool/fixtures/scaffold_ownership_fixture.dart",
+    "test/tool/fixtures/route_discovery_adversarial_fixture.dart",
+    "design/screens/catch.screens.json",
+    "design/screens/catch.screens.schema.json",
+    "design/screens/screen_coverage.json",
+    "tool/ui_capture/check_route_inventory.mjs",
+    "tool/ui_capture/route_inventory.json",
+    "tool/design/screen_top_bar_contracts.json",
+    "lib/routing/consumer_router.dart",
+    "lib/routing/host_router.dart",
+    "lib/**",
+    "packages/platform/lib/**",
+    "apps/host/lib/**",
+    "apps/consumer/lib/**"
+  ],
+  "command": "dart run tool/architecture/check_ui_composition_contracts.dart --check",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Uses analyzer resolution to require branch-universal typed layout ownership for every statically reachable terminal of each rendered GoRoute and full-screen PageRoute presentation, fails unsupported PageRoute aliases, factories, tear-offs, builders, and subclasses closed, and reserves Flutter Scaffold construction, aliases, and subclasses for the canonical screen scaffold. Only direct MaterialPageRoute construction is supported by the generated imperative route inventory.",
+  "checks": [
+    "dart format --output=none --set-exit-if-changed tool/architecture/check_ui_composition_contracts.dart test/tool/ui_composition_contracts_test.dart test/tool/ui_composition_route_factory_test.dart test/tool/ui_composition_ownership_test.dart test/tool/route_discovery_adversarial_test.dart test/tool/fixtures/scaffold_ownership_fixture.dart test/tool/fixtures/route_discovery_adversarial_fixture.dart",
+    "dart test test/tool/ui_composition_contracts_test.dart",
+    "dart test test/tool/ui_composition_route_factory_test.dart",
+    "dart test test/tool/ui_composition_ownership_test.dart",
+    "dart test test/tool/route_discovery_adversarial_test.dart",
+    "dart run tool/architecture/check_ui_composition_contracts.dart --check"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "flutter",
+      "flutter-pub"
+    ]
+  },
+  "role": "gate",
+  "alsoEnforces": [
+    "UI-LINT-001"
+  ]
+}

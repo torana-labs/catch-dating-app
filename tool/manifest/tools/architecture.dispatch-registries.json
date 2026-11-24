@@ -1,0 +1,27 @@
+{
+  "id": "architecture:dispatch-registries",
+  "category": "generator",
+  "path": "tool/architecture/generate_dispatch_registries.mjs",
+  "command": "node tool/architecture/generate_dispatch_registries.mjs --check",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "role": "generator",
+  "description": "Writes the generated dispatch registry for each source collection in functions/dispatch-sources.json (issue #2451): functions/src/<area>/dispatch/<source>.generated.ts imports every export const <name> = defineProjections(\"<source>\", [...]) set in functions/src and passes them to dispatchTrigger (functions/src/platform/dispatch/runtime.ts), the one Firestore trigger for that collection. --check fails when a registry is missing, stale or orphaned, when a set names an unlisted source or calls defineProjections any other way, and when the area's functions.ts does not re-export the dispatcher. audit:functions-contexts runs the same check as part of the Functions lane gate.",
+  "checks": [
+    "node --check tool/architecture/generate_dispatch_registries.mjs",
+    "node --test tool/architecture/generate_dispatch_registries.test.mjs",
+    "node tool/architecture/generate_dispatch_registries.mjs --check"
+  ],
+  "impactPaths": [
+    "functions/dispatch-sources.json",
+    "functions/deploy-codebases.json",
+    "functions/src/**/*.ts",
+    "tool/architecture/generate_dispatch_registries.test.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

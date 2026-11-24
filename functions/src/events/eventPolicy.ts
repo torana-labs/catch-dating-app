@@ -6,9 +6,6 @@ import type {
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {requireEventPolicyTerms} from "./configuredEvent";
 
-import {requiresCommunityMembership} from
-  "../memberships/communityMembershipAuthority";
-
 export const cohortIds = {
   unspecified: "unspecified",
   menInterestedInWomen: "menInterestedInWomen",
@@ -103,6 +100,15 @@ export interface EventPolicyBundleDocument {
   settlement: {
     hostPayoutTiming: "afterEventCompletion";
   };
+}
+
+export function requiresCommunityMembership(
+  policy: Pick<EventPolicyBundleDocument, "admission">
+): boolean {
+  return (
+    policy.admission.membershipRequired === true ||
+    policy.admission.format === "membersOnly"
+  );
 }
 
 export interface EventRosterSnapshot {
@@ -556,7 +562,7 @@ export async function rosterWithReservedWaitlistOffers(
 
   const participationSnaps = await Promise.all(
     offers.map((offer) => db
-      .collection("eventParticipations")
+      .collection("eventBookings")
       .doc(eventParticipationId(eventId, String(offer.uid ?? "")))
       .get())
   );
@@ -596,7 +602,7 @@ export async function rosterWithReservedWaitlistOffersInTransaction(
   const offers = offerSnap.docs.map((doc) => doc.data());
   const participationSnaps = await Promise.all(
     offers.map((offer) => tx.get(db
-      .collection("eventParticipations")
+      .collection("eventBookings")
       .doc(eventParticipationId(eventId, String(offer.uid ?? "")))))
   );
   return rosterWithReservableOfferData({

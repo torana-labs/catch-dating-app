@@ -2,7 +2,8 @@ import * as admin from "firebase-admin";
 import {createHash} from "node:crypto";
 import type {Request, Response} from "express";
 import {HttpsError} from "firebase-functions/v2/https";
-import {adminRolesFromToken} from "../admin/adminAuth";
+import {adminRolesFromToken} from "../platform/adminAuth";
+import {createAdminAuditLogInTransaction} from "../platform/adminAudit";
 import type {SalesPrincipal} from "../admin/sales/types";
 import {ASSISTANT_ACTIONS, READ_ACTIONS, WRITE_ACTIONS} from "./actions";
 import {SALES_ASSISTANT_OPENAPI} from "./openapi";
@@ -189,7 +190,6 @@ async function managementMutation(
   const materialHash = createHash("sha256")
     .update(JSON.stringify({action, targetId, material})).digest("hex");
   const receiptRef = deps.db.collection("assistantManagementReceipts").doc(key);
-  const auditRef = deps.db.collection("adminAuditLogs").doc(`assistant_${key}`);
   return deps.db.runTransaction(async (tx) => {
     // Auth is checked before a receipt can be replayed; receipts grant no role.
     const owner = await deps.getUser(issuerUid);
@@ -212,11 +212,13 @@ async function managementMutation(
       classification: "sales_private", receiptId: key, issuerUid,
       requestId: stableRequestId, action, targetId, materialHash,
       result: changed.result, createdAt});
-    tx.create(auditRef, {actorUid: issuerUid, roles: ["adminOwner"],
-      action, targetPath, requestId: stableRequestId, materialHash,
-      beforeRevision: changed.beforeRevision,
-      afterRevision: changed.afterRevision,
-      createdAt, source: "salesAssistant"});
+    createAdminAuditLogInTransaction(tx, deps.db,
+      {uid: issuerUid, roles: ["adminOwner"]}, {
+        action, targetPath, requestId: stableRequestId,
+        before: {revision: changed.beforeRevision},
+        after: {revision: changed.afterRevision, materialHash,
+          source: "salesAssistant"},
+      }, {docId: `assistant_${key}`});
     return changed.result;
   });
 }

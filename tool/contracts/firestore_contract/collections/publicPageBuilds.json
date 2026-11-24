@@ -1,0 +1,26 @@
+{
+  "id": "publicPageBuilds",
+  "path": "publicPageBuilds/{organizerId}",
+  "rulesMatch": "/publicPageBuilds/{organizerId}",
+  "typescriptInterface": "PublicPageBuildDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps public page read models and build markers server-only"
+  ],
+  "owner": "Public page read model build ordering (CAT-250)",
+  "writerContext": "website",
+  "read": "server only; rebuild commits",
+  "write": "server only; each committed rebuild records when it read its sources",
+  "exportedFunctions": [
+    "dispatchOrganizers",
+    "dispatchEvents",
+    "onPublicPageExternalEventWritten",
+    "onPublicPageReviewWritten",
+    "refreshPublicPageFollowers",
+    "reconcilePublicPages"
+  ],
+  "migrationNotes": [
+    "Private marker; a rebuild that read older sources than the marker is discarded, so it cannot revive a withdrawn page."
+  ]
+}

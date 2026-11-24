@@ -7,7 +7,7 @@ import {functions} from "../../../../shared/api/firebaseFunctions";
 export type AiFallbackTestResult = AdminAiFallbackTestCallCallableResponse;
 
 const sampleResult: AiFallbackTestResult = {ok: true, dryRun: false, failedStep: null, refusal: null,
-  httpStatus: null, modelId: "claude-opus-5-5", inputTokens: 320, outputTokens: 30, costMicros: 1880,
+  httpStatus: null, modelId: "claude-haiku-5-5", inputTokens: 320, outputTokens: 30, costMicros: 1880,
   durationMs: 2400};
 
 /** One live test call through the AI fallback's federated sign-in (a fixed, fictional request). */

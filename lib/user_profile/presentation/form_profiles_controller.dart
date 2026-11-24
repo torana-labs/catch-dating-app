@@ -4,6 +4,8 @@ import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.
 import 'package:catch_dating_app/contexts/profiles/data/form_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/form_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/form_profile_photo_preview.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_tags.dart';
+import 'package:catch_platform/cache/cache_tags.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -28,6 +30,7 @@ class FormProfilesController extends _$FormProfilesController {
   @override
   Future<FormProfilesState> build() async {
     _generation++;
+    ref.providesTags({ProfileTags.formProfiles});
     final uid = await ref.watch(uidProvider.future);
     if (uid == null) {
       throw const SignInRequiredException('review form profiles');
@@ -148,7 +151,7 @@ class FormProfileClaimController extends _$FormProfileClaimController {
     }
     await ref.read(formProfileRepositoryProvider).claim(request);
     if (!ref.mounted || ref.read(uidProvider).asData?.value != uid) return;
-    ref.invalidate(formProfilesControllerProvider);
+    ref.read(cacheTagsProvider).invalidate({ProfileTags.formProfiles});
   }
 }
 

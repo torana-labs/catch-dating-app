@@ -30,8 +30,10 @@ import {
   type LifecycleResult,
   type MomentDefinition,
 } from "../moments/momentModel";
+import {stepAsideEventFeedbackPrompt} from "../moments/momentDefaults";
 import {DEFAULT_SCOPE_TIMEZONE} from "../moments/momentPlanning";
 import {replanMoment} from "../moments/momentRunner";
+import {closeOutThankYouMomentId} from "../moments/momentTemplates";
 import {requireEventManager} from "./liveControl";
 import {
   liveCommandReceiptRef,
@@ -43,10 +45,11 @@ import {
 /**
  * Close-out: the host's after-the-night choices, saved on
  * `eventCloseOuts/{eventId}`. The thank-you is an event-scope moment (a
- * scheduled push to everyone booked), armed when chosen and paused when
- * not; no new scheduler. Stay-in-touch picks and the no-show note are
- * recorded only: nothing reads them yet (no picks backend, no no-show
- * moment audience).
+ * scheduled feedback request to checked-in guests), armed when chosen and
+ * paused when not; no new scheduler. Either choice pauses the default
+ * feedback request, so a guest never gets both. Stay-in-touch picks and
+ * the no-show note are recorded only: nothing reads them yet (no picks
+ * backend, no no-show moment audience).
  *
  * The moment changes run before the close-out transaction, and are
  * idempotent, so a retry with the same requestId converges.
@@ -74,7 +77,7 @@ const defaultDeps: CloseOutDeps = {
 
 /** The thank-you moment's id for an event. */
 export function thankYouMomentId(eventId: string): string {
-  return `${eventId}_close_out_thank_you`;
+  return closeOutThankYouMomentId(eventId);
 }
 
 /**
@@ -109,7 +112,9 @@ export function thankYouMoment(
     name: "Thanks for coming",
     initiation: {kind: "scheduled", atMillis},
     sense: "individual",
-    audience: {kind: "eventParticipants", statuses: ["signedUp"]},
+    // Its push is the eventFeedback request, and only checked-in guests
+    // can leave a review.
+    audience: {kind: "eventParticipants", statuses: ["attended"]},
     action: {
       kind: "push",
       notificationType: "eventFeedback",
@@ -148,6 +153,8 @@ export async function armDefaultThankYou(params: {
     replan: params.replan ?? defaultDeps.replan}, eventId, actorUid,
   thankYouSendAtMillis(eventEndMillis, DEFAULT_THANK_YOU_AT_LOCAL,
     nowMillis), nowMillis);
+  await pauseDefaultFeedback(db, params.replan ?? defaultDeps.replan,
+    eventId, nowMillis);
   return true;
 }
 
@@ -191,6 +198,7 @@ export async function setEventCloseOutHandler(
   const sendAtMs = payload.thankYou === null ? null :
     thankYouSendAtMillis(endMillis, payload.thankYou.sendAtLocal, now);
   await applyThankYouMoment(db, deps, payload.eventId, uid, sendAtMs, now);
+  await pauseDefaultFeedback(db, deps.replan, payload.eventId, now);
 
   const response = await db.runTransaction(async (transaction) => {
     const [receipt, current] = await Promise.all([
@@ -292,6 +300,22 @@ async function applyThankYouMoment(
   } catch (error) {
     // The moments sweep converges whatever this call misses.
     logger.warn("Thank-you replan deferred to sweep", {eventId, error});
+  }
+}
+
+/** The host's close-out choice owns the post-event message from here. */
+async function pauseDefaultFeedback(
+  db: Firestore,
+  replan: CloseOutDeps["replan"],
+  eventId: string,
+  now: number
+): Promise<void> {
+  const paused = await stepAsideEventFeedbackPrompt(db, eventId, now);
+  if (paused === null) return;
+  try {
+    await replan?.(db, paused, now);
+  } catch (error) {
+    logger.warn("Feedback pause replan deferred to sweep", {eventId, error});
   }
 }
 

@@ -7,7 +7,7 @@ import {
 } from "./getCrossPathsSuggestions";
 import {crossPathsProfileFingerprint} from "./showcaseEligibility";
 import {publishedEventSetup, withStoredEventPolicy} from
-  "../shared/testing/eventSetupFixture";
+  "../domain/events/testing/eventSetupFixture";
 
 type FakeData = Record<string, unknown>;
 
@@ -162,9 +162,9 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
   const docs: Record<string, FakeData | undefined> = {
     "users/viewer": user({gender: "man", interestedInGenders: ["woman"]}),
     "events/event-1": event(),
-    "eventParticipations/event-1_candidate-a": participation("candidate-a"),
-    "eventParticipations/event-1_candidate-b": participation("candidate-b"),
-    "eventParticipations/event-1_candidate-c": participation("candidate-c"),
+    "eventBookings/event-1_candidate-a": participation("candidate-a"),
+    "eventBookings/event-1_candidate-b": participation("candidate-b"),
+    "eventBookings/event-1_candidate-c": participation("candidate-c"),
   };
   for (const uid of ["candidate-a", "candidate-b", "candidate-c"]) {
     const publicProfile = profile(uid);
@@ -337,7 +337,7 @@ test("requires a current booking or immediately bookable event", async () => {
       bookedCount: 20,
       discoveryAvailability: "full",
     }),
-    "eventParticipations/event-1_viewer": participation("viewer"),
+    "eventBookings/event-1_viewer": participation("viewer"),
   });
   const response = await getCrossPathsSuggestionsHandler(
     request("viewer", {
@@ -369,8 +369,8 @@ test("contains synthetic suggestions to synthetic viewers and events",
       },
       "publicProfiles/candidate-a": syntheticPublic,
       "crossPathsShowcaseEligibility/candidate-a": showcase(syntheticPublic),
-      "eventParticipations/event-1_candidate-b": undefined,
-      "eventParticipations/event-1_candidate-c": undefined,
+      "eventBookings/event-1_candidate-b": undefined,
+      "eventBookings/event-1_candidate-c": undefined,
     });
     assert.deepEqual((await getCrossPathsSuggestionsHandler(
       request("viewer", {
@@ -406,8 +406,8 @@ test("contains synthetic suggestions within one exact seed world", async () => {
     "publicProfiles/candidate-a": syntheticPublic,
     "crossPathsShowcaseEligibility/candidate-a": showcase(syntheticPublic),
     "events/event-1": event({synthetic: true, seedPrefix}),
-    "eventParticipations/event-1_candidate-b": undefined,
-    "eventParticipations/event-1_candidate-c": undefined,
+    "eventBookings/event-1_candidate-b": undefined,
+    "eventBookings/event-1_candidate-c": undefined,
   });
 
   const response = await getCrossPathsSuggestionsHandler(
@@ -442,8 +442,8 @@ test("never exceeds two people exposed in one Explore session", async () => {
       sessionIdHash,
       shownAt: timestamp(nowMillis),
     },
-    "eventParticipations/event-1_candidate-a": undefined,
-    "eventParticipations/event-1_candidate-b": undefined,
+    "eventBookings/event-1_candidate-a": undefined,
+    "eventBookings/event-1_candidate-b": undefined,
   });
   const response = await getCrossPathsSuggestionsHandler(
     request("viewer", {eventIds: ["event-1"], sessionId}),

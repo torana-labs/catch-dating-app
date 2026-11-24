@@ -18,6 +18,7 @@ const repository = vi.hoisted(() => ({
   getListingEventReview: vi.fn(),
   publishListingEvent: vi.fn(),
   nominateOrganizer: vi.fn(),
+  sendLeadFollowUp: vi.fn(),
 }));
 vi.mock("../api/inboxRepository", () => repository);
 
@@ -106,6 +107,31 @@ describe("useInboxController", () => {
     });
     expect(repository.linkEnquiry.mock.calls[0]![0]).toEqual({intentId: "intent-1", organizerId: "quayside-supper"});
     expect(onNotice).toHaveBeenCalledWith("Linked to Quayside Supper Club. Their Sales work is open.");
+  });
+
+  it("sends a lead's follow-up once, reusing its request id only after a lost answer", async () => {
+    repository.sendLeadFollowUp.mockRejectedValueOnce(Object.assign(new Error("deadline"), {code: "functions/deadline-exceeded"}));
+    repository.sendLeadFollowUp.mockResolvedValueOnce({replayed: false});
+    repository.sendLeadFollowUp.mockRejectedValueOnce(Object.assign(new Error("A follow-up went to this number on 20 Nov."),
+      {code: "functions/failed-precondition"}));
+    repository.sendLeadFollowUp.mockResolvedValueOnce({replayed: false});
+    const {wrapper} = createQueryHarness();
+    const onNotice = vi.fn();
+    const onError = vi.fn();
+    const {result} = renderHook(() => useInboxController({onError, onNotice,
+      selectedItemId: "moonmoth", onSelect: vi.fn()}), {wrapper});
+    await act(async () => {
+      expect(await result.current.sendFollowUp("intent-1")).toBe(false);
+      expect(await result.current.sendFollowUp("intent-1")).toBe(true);
+      expect(await result.current.sendFollowUp("intent-1")).toBe(false);
+      expect(await result.current.sendFollowUp("intent-1")).toBe(true);
+    });
+    const ids = repository.sendLeadFollowUp.mock.calls.map(([input]) => (input as {clientRequestId: string}).clientRequestId);
+    expect(ids[1]).toBe(ids[0]);
+    expect(ids[2]).not.toBe(ids[1]);
+    expect(ids[3]).not.toBe(ids[2]);
+    expect(onError).toHaveBeenCalledWith("A follow-up went to this number on 20 Nov.");
+    expect(onNotice).toHaveBeenCalledWith("Follow-up sent on WhatsApp. It's in their Support thread.");
   });
 
   it("opens a listing's review and approves it once, replaying the same request id on a retry", async () => {

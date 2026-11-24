@@ -1,4 +1,5 @@
-import {runAssistanceTransaction as transact} from "./transactionCallback";
+import {runAssistanceTransaction as transact} from
+  "../../platform/transactionCallback";
 import {createHash} from "node:crypto";
 import {getFirestore, Firestore, Transaction} from "firebase-admin/firestore";
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
@@ -19,7 +20,8 @@ import {AutomationWhatsappDeliveryStore} from
 import {WHATSAPP_DISPATCHES} from "../../delivery/whatsappDispatches";
 import {WhatsappReplyStore} from "./whatsappReplyStore";
 import {whatsappAttemptFromReplyId} from "./whatsappReplyProtocol";
-import {whatsappAttemptFromStatus} from "./whatsappDeliveryProtocol";
+import {whatsappAttemptFromStatus} from
+  "../../platform/delivery/whatsappDeliveryProtocol";
 
 type Processing = NonNullable<QueueEvent["assistanceProcessing"]>;
 export type WhatsappProcessingOutcome = Processing["outcome"];

@@ -5,8 +5,7 @@ import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import {eventId, contactId, offerId, responseId} from
   "../../organizerFormAdmission/admissionTestFixture";
-import {CHECKOUT_HOLD_MILLIS} from
-  "../../events/seatAuthority/seatAuthority";
+import {CHECKOUT_HOLD_MILLIS} from "../../domain/payments/checkoutHold";
 import {OFFER_PAYMENT_COLLECTION} from
   "./offerPaymentReservation";
 import {setup, capturedFixture, uid, phone, now} from
@@ -68,8 +67,8 @@ test("changed routing, source, quotas or unavailable seats never reserve",
         h.store.get(`events/${eventId}`)!.constraints = {maxMen: 1};
       },
       (h) => {
-        h.store.get(`eventSeatMigrationFences/${eventId}`)!
-          .state = "locked";
+        h.store.get(`eventSeatLedgers/${eventId}`)!
+          .state = "revoked";
       },
       (h) => {
         h.store.put(`deletedUsers/${uid}`, {status: "processing"});

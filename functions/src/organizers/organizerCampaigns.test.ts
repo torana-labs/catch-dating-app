@@ -3,7 +3,6 @@ import test from "node:test";
 import type {
   EventDocument,
   OrganizerCampaignDocument,
-  OrganizerCommunicationPreferenceDocument,
   OrganizerContactDocument,
   OrganizerContactTraitDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -15,6 +14,19 @@ import {
 } from "./organizerCampaigns";
 import * as admin from "firebase-admin";
 import {BRAND} from "../shared/generated/brand";
+import {effectiveContactKeys, type ContactGrant, type ContactPermission} from
+  "../shared/contactPermissions";
+
+function marketing(grant: Partial<ContactGrant> = {}): ContactPermission {
+  const grants = {"whatsapp:marketing": {status: "optedIn" as const,
+    endpointE164: "+919876543210", receiptId: "receipt-1",
+    termsVersion: "organizer-updates-v1",
+    source: "publicEventRegistration" as const,
+    updatedAt: admin.firestore.Timestamp.fromMillis(9_000), ...grant}};
+  return {senderKind: "organizer", senderId: "organizer-1", grants,
+    granted: effectiveContactKeys(grants),
+    updatedAt: admin.firestore.Timestamp.fromMillis(9_000)};
+}
 
 test("campaign preview rejects empty and fully excluded audiences", () => {
   assert.equal(hasReachableCampaignRecipient([]), false);
@@ -58,60 +70,42 @@ test(
   }
 );
 
-test("campaign eligibility fails closed for an incomplete legacy grant", () => {
-  const now = admin.firestore.Timestamp.fromMillis(10_000);
-  const contact = {
-    organizerId: "organizer-1",
-    linkedUid: "user-1",
-    phoneE164: "+919876543210",
-    identityState: "verified",
-    identityConfidence: "verified",
-    deletedAt: null,
-    hiddenAt: null,
-  } as OrganizerContactDocument;
-  const trait = {
-    segmentIds: ["repeat_attendee"],
-  } as OrganizerContactTraitDocument;
-  const preference = {
-    organizerId: "organizer-1",
-    uid: "user-1",
-    whatsapp: {
-      status: "optedIn",
-      evidenceStatus: "incomplete",
-      currentReceiptId: "legacy-receipt",
-      termsVersion: "organizer-updates-v1",
-      source: "publicEventRegistration",
-    },
-  } as OrganizerCommunicationPreferenceDocument;
-  const [row] = evaluateAudienceRows([{
-    contactId: "contact-1",
-    contact,
-    trait,
-    preference,
-    channelState: null,
-  }], now, ["repeat_attendee"]);
-  assert.equal(row.eligibility, "excluded");
-  assert.equal(row.exclusionReason, "unknownPermission");
-  preference.whatsapp.evidenceStatus = "complete";
-  const [eligible] = evaluateAudienceRows([{
-    contactId: "contact-1",
-    contact,
-    trait,
-    preference,
-    channelState: null,
-  }], now, ["repeat_attendee"]);
-  assert.equal(eligible.eligibility, "eligible");
-  for (const termsVersion of ["v1", "2026-08-30"]) {
-    const [ambiguous] = evaluateAudienceRows([{
-      contactId: "contact-1", contact, trait,
-      preference: {...preference, whatsapp: {...preference.whatsapp,
-        termsVersion}},
-      channelState: null,
-    }], now, ["repeat_attendee"]);
-    assert.equal(ambiguous.eligibility, "excluded");
-    assert.equal(ambiguous.exclusionReason, "unknownPermission");
-  }
-});
+test("campaign eligibility needs an effective grant for the contact's number",
+  () => {
+    const now = admin.firestore.Timestamp.fromMillis(10_000);
+    const contact = {
+      organizerId: "organizer-1",
+      linkedUid: "user-1",
+      phoneE164: "+919876543210",
+      identityState: "verified",
+      identityConfidence: "verified",
+      deletedAt: null,
+      hiddenAt: null,
+    } as OrganizerContactDocument;
+    const trait = {
+      segmentIds: ["repeat_attendee"],
+    } as OrganizerContactTraitDocument;
+    const evaluate = (permission: ContactPermission | null) =>
+      evaluateAudienceRows([{contactId: "contact-1", contact, trait,
+        permission, channelState: null}], now, ["repeat_attendee"])[0];
+    assert.equal(evaluate(marketing()).eligibility, "eligible");
+    for (const permission of [
+      null,
+      marketing({receiptId: null}),
+      marketing({endpointE164: "+919800000002"}),
+      marketing({endpointE164: null}),
+      marketing({source: "hostFormResponse",
+        termsVersion: "form-whatsapp-v2"}),
+      {...marketing(), senderId: "organizer-2"},
+    ]) {
+      const row = evaluate(permission);
+      assert.equal(row.eligibility, "excluded");
+      assert.equal(row.exclusionReason, "unknownPermission");
+    }
+    const stopped = evaluate(marketing({status: "optedOut",
+      endpointE164: null, source: "inboundStop", termsVersion: null}));
+    assert.equal(stopped.exclusionReason, "optedOut");
+  });
 
 test(
   "campaign audience snapshots are order-stable and consent-sensitive",
@@ -129,31 +123,20 @@ test(
     const trait = {
       segmentIds: ["repeat_attendee"],
     } as OrganizerContactTraitDocument;
-    const preference = {
-      organizerId: "organizer-1",
-      uid: "user-1",
-      whatsapp: {
-        status: "optedIn",
-        evidenceStatus: "complete",
-        currentReceiptId: "receipt-1",
-        termsVersion: "organizer-updates-v1",
-        source: "publicEventRegistration",
-        updatedAt: admin.firestore.Timestamp.fromMillis(9_000),
-      },
-    } as OrganizerCommunicationPreferenceDocument;
+    const permission = marketing();
     const rows = evaluateAudienceRows([
       {
         contactId: "contact-b",
         contact: {...contact, phoneE164: "+919876543211"},
         trait,
-        preference,
+        permission,
         channelState: null,
       },
       {
         contactId: "contact-a",
         contact,
         trait,
-        preference,
+        permission,
         channelState: null,
       },
     ], now, ["repeat_attendee"]);
@@ -167,10 +150,7 @@ test(
       contactId: "contact-a",
       contact,
       trait,
-      preference: {
-        ...preference,
-        whatsapp: {...preference.whatsapp, evidenceStatus: "incomplete"},
-      },
+      permission: marketing({receiptId: null}),
       channelState: null,
     }], now, ["repeat_attendee"]);
     assert.notEqual(

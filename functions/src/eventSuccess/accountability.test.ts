@@ -5,14 +5,16 @@ import {HttpsError} from "firebase-functions/v2/https";
 import {
   currentAccountabilityResolution,
   requireAccountabilityAcknowledgement,
-  requireCurrentAccountabilityCheckIn,
   unresolvedAccountabilityCount,
-  accountabilityResolutionFields,
 } from "./accountability";
+import {
+  accountabilityResolutionFields,
+  requireCurrentAccountabilityCheckIn,
+} from "../domain/bookings/attendeeAccountability";
 import {
   defaultAccountabilityFor,
   eventSuccessPrimitivesFor,
-} from "./formatPrimitives";
+} from "../domain/formats/formatPrimitives";
 
 const checkIn = admin.firestore.Timestamp.fromMillis(1_000);
 const laterCheckIn = admin.firestore.Timestamp.fromMillis(2_000);

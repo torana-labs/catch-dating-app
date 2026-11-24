@@ -3,6 +3,7 @@ import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {isDeepStrictEqual} from "node:util";
 import {PROGRAM_WHATSAPP_THREADS, programWhatsappThreadId} from "./ids";
 import {reconcileProgramWhatsappThreadView} from "./threadViews";
+import {defineProjections} from "../../platform/dispatch/runtime";
 
 const options = {retry: true};
 const fanoutLimit = 500;
@@ -49,19 +50,27 @@ export const onProgramWhatsappThreadViewHouseholdChanged = onDocumentWritten({
   }
 });
 
-/** The programme's side labels or organizer: every thread's row. */
-export const onProgramWhatsappThreadViewProgramChanged = onDocumentWritten({
-  ...options, document: "organizerPrograms/{programId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (unchanged(before, after, ["organizerId", "householdSideLabels"])) return;
-  const db = admin.firestore();
+/** Every WhatsApp thread row of a programme. */
+async function reconcileProgramThreadRows(db: FirebaseFirestore.Firestore,
+  programId: string): Promise<void> {
   // One equality filter keeps this off the composite index list.
   const threads = await db.collection(PROGRAM_WHATSAPP_THREADS)
-    .where("programId", "==", event.params.programId)
+    .where("programId", "==", programId)
     .limit(fanoutLimit).get();
   for (const doc of threads.docs) {
     await reconcileProgramWhatsappThreadView(db, doc.id);
   }
-});
+}
+
+/**
+ * The programme's side labels or organizer: every thread's row.
+ * Served by dispatchOrganizerPrograms (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
+ */
+export const programWhatsappThreadProgramProjections = defineProjections(
+  "organizerPrograms", [{
+    id: "programWhatsappThreadView", kind: "projection",
+    when: ({before, after}) =>
+      !(unchanged(before, after, ["organizerId", "householdSideLabels"])),
+    run: (change, ctx) => reconcileProgramThreadRows(ctx.db, change.documentId),
+  }]);

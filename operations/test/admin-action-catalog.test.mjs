@@ -30,7 +30,7 @@ test("catalog checker rejects GUI callable and workflow membership drift",
     const result = await checkAdminActionCatalog({
       catalog,
       adminApiSource,
-      functionsIndexSource: "export {adminUnknownAction};",
+      functionExportNames: ["adminUnknownAction"],
       validatorSource: '"strictRequests": ["adminUnknownAction"]',
     });
     assert.equal(result.ok, false);
@@ -56,7 +56,7 @@ test("catalog checker rejects mutations without explicit confirmation",
       catalog,
       adminApiSource: callables.map((callable) =>
         `(functions, "${callable}")`).join("\n"),
-      functionsIndexSource: callables.join("\n"),
+      functionExportNames: callables,
       validatorSource: `"strictRequests": ${JSON.stringify(callables)}`,
     });
     assert.equal(result.ok, false);
@@ -97,9 +97,11 @@ test("Catch WhatsApp GUI actions keep strict validation and cannot run via CLI",
     assert.equal(send.confirmation, "action-and-target");
     assert.equal(send.targetField, "inboundEventId");
     let calls = 0;
+    assert.deepEqual(review.roles, ["support", "adminOwner"]);
+    // Support conversation replies are open to every support role.
+    assert.deepEqual(send.roles, ["admin", "adminOwner", "safetyReviewer", "support"]);
     for (const action of [review, send]) {
       assert.equal(action.controlPlane, true);
-      assert.deepEqual(action.roles, ["support", "adminOwner"]);
       assert.deepEqual(action.workflowIds, ["overview"]);
       assert.equal(action.guiPath, "/overview");
       assert.equal(catalog.validateRequest(action.actionId, action.example),

@@ -33,14 +33,7 @@
         "label": "Teaching for a company team? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "chip": {
-        "title": "Saturday wheel-throwing",
-        "rows": [
-          {"label": "Booked", "value": "12 of 12"},
-          {"label": "Waitlist", "value": "4"},
-          {"label": "Back again", "value": "5"}
-        ]
-      },
+      "fragments": ["host-door-arriving-new-guest", "host-door-arriving-regular"],
       "media": {"kind": "capture", "slot": "host-door-arriving"}
     },
     {
@@ -83,9 +76,9 @@
         {"time": "As they book", "title": "Details and a waitlist", "body": "Each guest answers your questions. When it’s full, new bookings join the waitlist."},
         {"time": "Day before", "title": "Ready for the day", "body": "Where, when and what to bring are on every booking; send a note from your own WhatsApp if you like. A drop-out’s seat goes to the waitlist."},
         {"time": "On the day", "title": "Check in", "body": "Guests check in at the door; first-timers are marked so you can say hello."},
-        {"time": "Next morning", "title": "Bring them back", "body": "Photos, a thank-you and a review request. Regulars hear about the next date first."}
+        {"time": "Next morning", "title": "Bring them back", "body": "Photos and a thank-you go out. Regulars hear about the next date first."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-workshops"}
     },
     {
       "type": "checklist",
@@ -144,11 +137,11 @@
       "ground": "yellow",
       "kicker": "Your next workshop",
       "title": "Fill the room. Then fill the next one.",
-      "lead": "Start the free trial, or leave your number and we’ll send the workshop setup guide on WhatsApp.",
+      "lead": "Start the free trial, or leave your number and a person from our team will message you on WhatsApp to help you set up.",
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
-      "leadForm": {"id": "workshop_setup_guide", "requestKind": "guide", "format": "workshops", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."}
+      "leadForm": {"id": "workshop_setup_guide", "requestKind": "guide", "format": "workshops", "label": "Your WhatsApp number", "submitLabel": "Message me"}
     }
   ]
 }

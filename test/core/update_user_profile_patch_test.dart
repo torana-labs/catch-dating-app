@@ -6,10 +6,9 @@ import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_kernel/brand.dart';
+import 'package:catch_test_support/contract_schemas.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
-
-import '../support/contract_schemas.dart';
 
 void main() {
   group('UpdateUserProfilePatch schema parity', () {

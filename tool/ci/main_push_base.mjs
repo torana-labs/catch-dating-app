@@ -5,13 +5,18 @@
 // running main run and one pending run, and a newer merge replaces only the
 // pending run. A replaced run never starts, so its commits must be covered by
 // the run that replaced it. Each run therefore plans from the commit of the
-// newest earlier main push run that actually ran (running, or finished other
-// than cancelled), not from its own push's `before` commit.
+// nearest earlier main push run that actually ran (running, or finished other
+// than cancelled) and whose commit is an ancestor of the head, not from its
+// own push's `before` commit.
+//
+// "Nearest" is by commit graph, not by run id: GitHub can create a batch of
+// queue merges' push runs out of order, so the newest earlier run may be for a
+// descendant commit. A descendant's run is skipped, never trusted to cover
+// this commit, because its own window may start after this commit.
 //
 // Prints `base_sha=<sha>` and `full=<true|false>` for $GITHUB_OUTPUT. When no
-// earlier run that ran can be found, or its commit is not an ancestor of the
-// head, the run validates everything (`full=true`, the nightly mode) rather
-// than guessing.
+// earlier run that ran is an ancestor of the head, the run validates
+// everything (`full=true`, the nightly mode) rather than guessing.
 //
 // Usage: node tool/ci/main_push_base.mjs --head <sha> --before <sha> --run-id <id>
 
@@ -31,8 +36,8 @@ const CI_PATH = ".github/workflows/ci.yml";
  * @param {number} input.runId This run's id; only earlier runs count.
  * @param {string} input.head This run's commit.
  * @param {string} input.before The push event's `before` commit.
- * @param {(sha: string) => boolean} input.isAncestor Whether a commit is an
- *   ancestor of the head.
+ * @param {(sha: string, of?: string) => boolean} input.isAncestor Whether a
+ *   commit is an ancestor of `of` (the head when omitted).
  */
 export function chooseMainPushBase({runs, runId, head, before, isAncestor}) {
   assert.match(head, SHA, "head must be a full commit SHA");
@@ -46,14 +51,18 @@ export function chooseMainPushBase({runs, runId, head, before, isAncestor}) {
     .filter((run) => Number(run.id) < runId && SHA.test(run.head_sha ?? "") && run.head_sha !== head)
     .filter(ran)
     .sort((left, right) => Number(right.id) - Number(left.id));
-  const previous = earlier[0];
-  if (!previous) return {baseSha: before, full: true, reason: "no_earlier_run_that_ran"};
-  if (previous.head_sha === before) return {baseSha: before, full: false, reason: "previous_push"};
-  if (!isAncestor(previous.head_sha)) {
-    return {baseSha: before, full: true, reason: "earlier_run_not_an_ancestor"};
-  }
-  return {baseSha: previous.head_sha, full: false, reason: "covers_replaced_runs",
-    previousRunId: Number(previous.id)};
+  if (!earlier.length) return {baseSha: before, full: true, reason: "no_earlier_run_that_ran"};
+  const ancestors = earlier.filter((run) => isAncestor(run.head_sha));
+  if (!ancestors.length) return {baseSha: before, full: true, reason: "earlier_run_not_an_ancestor"};
+  // Main's history is a chain, so the ancestors are totally ordered: keep the
+  // one every other ancestor precedes. Ties on a commit keep the newest run.
+  const nearest = ancestors.reduce((best, run) =>
+    (run.head_sha !== best.head_sha && isAncestor(best.head_sha, run.head_sha) ? run : best));
+  const skippedDescendantRuns = earlier.length - ancestors.length;
+  const extra = skippedDescendantRuns ? {skippedDescendantRuns} : {};
+  if (nearest.head_sha === before) return {baseSha: before, full: false, reason: "previous_push", ...extra};
+  return {baseSha: nearest.head_sha, full: false, reason: "covers_replaced_runs",
+    previousRunId: Number(nearest.id), ...extra};
 }
 
 function parseArgs(argv) {
@@ -82,9 +91,11 @@ function main() {
     console.error(`Could not list main push runs: ${response.stderr.trim()}`);
   }
   const decision = chooseMainPushBase({runs, runId, head, before,
-    isAncestor: (sha) => spawnSync("git", ["merge-base", "--is-ancestor", sha, head]).status === 0});
+    isAncestor: (sha, of = head) => spawnSync("git", ["merge-base", "--is-ancestor", sha, of]).status === 0});
   console.error(`Main push base: ${decision.baseSha} (${decision.reason}${
-    decision.previousRunId ? `, run ${decision.previousRunId}` : ""}${decision.full ? ", full validation" : ""})`);
+    decision.previousRunId ? `, run ${decision.previousRunId}` : ""}${
+    decision.skippedDescendantRuns ? `, skipped ${decision.skippedDescendantRuns} later commits' runs` : ""}${
+    decision.full ? ", full validation" : ""})`);
   process.stdout.write(`base_sha=${decision.baseSha}\nfull=${decision.full}\nreason=${decision.reason}\n`);
 }
 

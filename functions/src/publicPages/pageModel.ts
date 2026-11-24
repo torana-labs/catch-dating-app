@@ -17,13 +17,20 @@ import {pageOwnerLinks} from "../organizers/organizerLinks";
 import {projectPublicOrganizer, type HostListing} from "./publicOrganizer";
 import {publicEventAuthorized, publicEventListed} from "./publicReadPolicy";
 import {projectPublicReview, type PublicReview} from "./publicReview";
-import {eventWomenLed, organizerWomenLed} from "../organizers/womenLed";
+import {eventWomenLed, organizerWomenLed} from "../domain/events/womenLed";
+import {classifyOrganizerProfile} from
+  "../analytics/organizerProfileClassification";
+import {
+  organizerTrackingEventPolicyReason,
+  organizerTrackingPublicationPolicy,
+  trackingConfigurationEligible,
+} from "../analytics/organizerTrackingPublicationPolicy";
 
 /**
  * Assembles the organizer and event public page read models from one
  * organizer's source documents. Pure: the caller reads the sources and
  * writes the result. Publication, suppression and every public field come
- * from the projectors that mirror the website reader; this module only
+ * from the public projectors in this folder; this module only
  * arranges their output into pages and removes dating framing.
  */
 export type OrganizerPage =
@@ -34,6 +41,7 @@ export type PageEvent = OrganizerPage["upcomingEvents"][number];
 type EventCard = EventPage["moreEvents"][number];
 type ReviewSummary = OrganizerPage["reviewSummary"];
 type CompatListing = OrganizerPage["listing"];
+type PageTracking = NonNullable<OrganizerPage["tracking"]>;
 
 export interface SourceDocument {
   id: string;
@@ -99,8 +107,8 @@ export function buildOrganizerScope(
     listing.capabilities.publicReviews.readState === "enabled";
 
   // Women-led is resolved here, from the organizer's default and each Catch
-  // event's override; imported events follow the organizer. The website
-  // projections it mirrors stay unchanged.
+  // event's override; imported events follow the organizer. The listing
+  // projections stay unchanged.
   const womenLed = organizerWomenLed(organizer.data);
   const events: PageEvent[] = [
     ...sortById(sources.catchEvents).flatMap((doc) => {
@@ -118,6 +126,8 @@ export function buildOrganizerScope(
           eventWomenLed(organizer.data))] : [];
     }),
   ];
+  const catchEventData = new Map(sources.catchEvents.map((doc) =>
+    [doc.id, (doc.data ?? {}) as Record<string, unknown>]));
   // Link-only events keep their event page but stay off every list.
   const unlisted = new Set(sources.catchEvents
     .filter((doc) => !publicEventListed(doc.data)).map((doc) => doc.id));
@@ -134,13 +144,14 @@ export function buildOrganizerScope(
       const review = projectPublicReview(doc.id, doc.data, organizerId);
       return review ? [review] : [];
     });
-  // The website reader takes the newest documents first, then projects.
+  // The newest documents first, then projected.
   const organizerReviews = reviewsReadable ?
     projectReviews(sources.reviews.slice(0, pageLimits.latestReviews)) : [];
   const followerCount = listing.metrics?.followerCount ?? 0;
   const reviewSummary = summaryFor(reviewsReadable, sources.reviewCounts);
   const verified = isVerifiedListing(listing);
   const recommendable = isPubliclyReadable(listing) && verified;
+  const tracking = trackingInputs(sources);
 
   const organizerPage: OrganizerPage = {
     schemaVersion: 1,
@@ -182,6 +193,9 @@ export function buildOrganizerScope(
     listing: {...listing, ...(reviewsReadable ?
       {reviewReadState: "ready" as const} : {})},
     womenLed,
+    tracking: pageTracking(tracking,
+      organizerTrackingPublicationPolicy.blockedReason,
+      tracking.profileTagsEligible),
   };
 
   const card = {
@@ -221,9 +235,44 @@ export function buildOrganizerScope(
           reviewReadState: "ready" as const,
           reviews: newestFirst([...organizerReviews, ...eventReviews]),
         } : {})},
+        // External listings have no reviewed canonical classification.
+        tracking: pageTracking(tracking, item.source === "catch" ?
+          organizerTrackingEventPolicyReason(
+            catchEventData.get(item.eventId) ?? {}) :
+          "eventClassificationUnavailable", false),
       };
     });
   return {organizerPage, eventPages};
+}
+
+/**
+ * The pages' advertising-tag projection, as readPublicOrganizerTrackingSettings
+ * answered it (#2063): nothing for an organizer that may not configure tags;
+ * otherwise organiser IDs stay unpublished under the current policy, and
+ * Catch's own tags may cover the organiser page only when the organizer's
+ * published events classify it eligible. The page sources are exactly the
+ * events that classification reads, and a rebuild past their bound fails
+ * rather than truncating.
+ */
+function trackingInputs(sources: OrganizerScopeSources) {
+  const organizer = (sources.organizer?.data ?? {}) as
+    Parameters<typeof trackingConfigurationEligible>[0];
+  const available = trackingConfigurationEligible(organizer);
+  const profileTagsEligible = available && classifyOrganizerProfile({
+    native: sources.catchEvents.map((doc) =>
+      (doc.data ?? {}) as Record<string, unknown>),
+    external: sources.externalEvents.map((doc) =>
+      (doc.data ?? {}) as Record<string, unknown>),
+    truncated: false,
+  }, organizerTrackingPublicationPolicy, sources.now) === "eligible";
+  return {available, profileTagsEligible};
+}
+
+function pageTracking(inputs: {available: boolean},
+  policyReason: PageTracking["policyReason"], profileTagsEligible: boolean
+): PageTracking | null {
+  return inputs.available ? {enabled: false, metaPixelId: null,
+    googleMeasurementId: null, policyReason, profileTagsEligible} : null;
 }
 
 /** A copy of the value without the named keys. */

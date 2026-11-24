@@ -11,6 +11,7 @@ import {createHash} from "node:crypto";
 import {assertSalesStaffAccount, assertSalesStaffScope,
   isAssignedSalesStaff, SALES_STAFF_ACTIONS} from "./staffAccess";
 import {HttpsError} from "firebase-functions/v2/https";
+import {createAdminAuditLogInTransaction} from "../../platform/adminAudit";
 import {validateSalesAction, validateSalesRead} from "./schemas";
 import {newSalesAccount} from "./account";
 import {invalidateFitQueueInTransaction} from "../salesFitQueue/service";
@@ -450,17 +451,14 @@ export async function executeSalesAction(
       createdAt: timestamp,
       result: response,
     } satisfies SalesActionReceipt);
-    tx.create(db.collection("adminAuditLogs").doc(), {
-      actorUid: principal.uid,
-      roles: [...principal.roles],
+    createAdminAuditLogInTransaction(tx, db, principal, {
       action,
       targetPath: organizerId ?
         `${accountCollection}/${organizerId}` :
         fieldCollection,
-      createdAt: timestamp,
       requestId: input.requestId,
       ...(principal.delegationId ?
-        {delegationId: principal.delegationId} :
+        {after: {delegationId: principal.delegationId}} :
         {}),
     });
     return response;

@@ -5,7 +5,6 @@ import type {Firestore} from "firebase-admin/firestore";
 import {FakeFirestore} from "../../shared/testing/programFirestore";
 import {deps, now, request} from "../../shared/testing/programFixtures";
 import {
-  getProgramWhatsappThreadHandler,
   listProgramWhatsappThreadsHandler,
   markProgramWhatsappThreadReadHandler,
   sendProgramWhatsappReplyHandler,
@@ -56,19 +55,6 @@ test("the inbox lists threads with segment counts and the number",
       programId: "program-1", filter: "all"}, "stranger"), deps(db)),
     code("permission-denied"));
   });
-
-test("opening a thread shows the household and marks it read", async () => {
-  const db = await seeded();
-  const thread = await getProgramWhatsappThreadHandler(request({
-    programId: "program-1", threadId: "program-1_household-1"},
-  "manager-1"), deps(db));
-  assert.equal(thread.household?.label, "The Mehra family");
-  assert.equal(thread.messages.length, 1);
-  assert.equal(thread.messages[0].author, "guest");
-  assert.equal(thread.thread.serviceWindowOpen, true);
-  assert.equal(db.getDoc("programWhatsappThreads/program-1_household-1")!
-    .unreadCount, 0);
-});
 
 test("marking a thread read is a command with the inbox's access rules",
   async () => {

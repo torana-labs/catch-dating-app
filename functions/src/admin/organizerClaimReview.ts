@@ -9,7 +9,7 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireDoc} from "../shared/validation";
-import {requireAdminRole} from "./adminAuth";
+import {requireAdminRole} from "../platform/adminAuth";
 
 const claimReviewRoles = ["admin", "adminOwner", "support"] as const;
 const claimRequestIdPattern = /^[A-Za-z0-9_-]{1,200}$/u;

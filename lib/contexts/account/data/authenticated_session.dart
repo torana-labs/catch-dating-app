@@ -40,7 +40,8 @@ final class AuthenticatedSession implements CacheSession {
   }
 }
 
-// keepalive: Long-lived feature providers share one authenticated account view.
+// keepalive: session-root: one signed-in period; it ends at sign-out, on an
+// account change or an auth failure, and session-lifetime reads end with it.
 @Riverpod(keepAlive: true)
 AsyncValue<AuthenticatedSession> authenticatedSession(Ref ref) {
   final auth = ref.watch(uidProvider);
@@ -56,4 +57,24 @@ AsyncValue<AuthenticatedSession> authenticatedSession(Ref ref) {
   final session = AuthenticatedSession._(uid);
   ref.onDispose(session._end);
   return AsyncData(session);
+}
+
+/// Session lifetime for per-account state that is not a read: a search box,
+/// a selected organizer, a flow's draft, a set of pending references.
+extension SessionStateRef on Ref {
+  /// Keeps this provider while the signed-in account stays the same, and
+  /// starts it over when that period ends: at sign-out, on an account change
+  /// or after an auth failure, the provider rebuilds from scratch, so nothing
+  /// one account entered reaches the next. A guest's state is kept the same
+  /// way while signed out, and a first sign-in keeps what the guest entered,
+  /// which belongs to no account.
+  void retainForCurrentSession() {
+    keepAlive();
+    listen(authenticatedSessionProvider, (before, after) {
+      final previous = before?.asData?.value;
+      if (previous != null && !identical(previous, after.asData?.value)) {
+        invalidateSelf();
+      }
+    });
+  }
 }

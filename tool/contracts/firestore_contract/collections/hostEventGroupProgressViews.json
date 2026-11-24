@@ -1,0 +1,32 @@
+{
+  "id": "hostEventGroupProgressViews",
+  "path": "hostEventGroupProgressViews/{progressId}",
+  "rulesMatch": "/hostEventGroupProgressViews/{progressId}",
+  "typescriptInterface": "HostEventGroupProgressViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers read live movement views and nothing else"
+  ],
+  "owner": "Live movement view evaluator: hostReadModels movement view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get and list their own organizer's views (the live console gets one group's view by id)",
+  "write": "server only; one per configured group of an event with an eventFormat and an endTime, deleted with the group or the event",
+  "exportedFunctions": [
+    "dispatchEvents",
+    "onHostMovementViewPlanChanged",
+    "onHostMovementViewProgressChanged",
+    "onHostMovementViewRosterChanged",
+    "onHostMovementViewCheckpointChanged",
+    "dispatchEventAttendees",
+    "onHostMovementViewGuestChanged",
+    "onHostMovementViewMembershipChanged",
+    "onHostMovementViewWorkItemChanged",
+    "onHostMovementViewStaffGrantChanged",
+    "dispatchOrganizers"
+  ],
+  "migrationNotes": [
+    "eventOpen is evaluated one millisecond before eventEndAtMillis; the phone ANDs it, and the guidance it gates, with the app clock.",
+    "A missing document or sourceCoverage invalidSource with its incompleteSource means the phone shows the unavailable state."
+  ]
+}

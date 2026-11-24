@@ -17,7 +17,7 @@ import {genericFormApplicationId} from
   "../organizers/organizerApplicationAccess";
 
 import {commitOrganizerFormAdmission} from "./admissionService";
-import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
+import {publishedEventSetup} from "../domain/events/testing/eventSetupFixture";
 
 export type Row = Record<string, unknown>;
 export const org = "org1";
@@ -47,7 +47,7 @@ export class Store {
         direction]),
       limit: (count: number) => ({collection: name, filters, count, order}),
     });
-    return {doc: (id: string) => ({path: `${name}/${id}`,
+    return {doc: (id: string) => ({path: `${name}/${id}`, id,
       collection: (child: string) =>
         this.collection(`${name}/${id}/${child}`)}),
     where: (field: string, op: string, value: unknown) =>
@@ -145,8 +145,6 @@ export function fixture() {
     archived: false, status: "active"});
   store.put(`users/${actorUid}`, {deleted: false, deletedAt: null});
   store.put(`events/${eventId}`, event);
-  store.put(`eventSeatMigrationFences/${eventId}`,
-    {eventId, state: "ready", migrationRevision: 1});
   store.put(`eventSeatLedgers/${eventId}`, {eventId, capacity: 2,
     occupied: 0, revision: 3, capacityRevision: 1,
     policyVersion: policy.policyVersion, policyHash: policy.policyHash,

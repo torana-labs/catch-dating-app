@@ -1,0 +1,18 @@
+{
+  "id": "catchWhatsappEndpointStops",
+  "path": "catchWhatsappEndpointStops/{stopId}",
+  "rulesMatch": "/catchWhatsappEndpointStops/{stopId}",
+  "typescriptInterface": "CatchWhatsappEndpointStopDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Catch support reply service",
+  "writerContext": "messaging",
+  "read": "server only; exact controlled support/adminOwner callable scope",
+  "write": "server only; atomic ingress suppression with no TTL or reset",
+  "exportedFunctions": [
+    "adminReviewCatchWhatsappInbound",
+    "adminSendCatchWhatsappReply",
+    "onCatchWhatsappWebhookEventCreated",
+    "onCatchWhatsappReplyOperationWritten"
+  ]
+}

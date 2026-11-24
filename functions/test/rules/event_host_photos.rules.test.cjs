@@ -54,13 +54,13 @@ describe("firestore.rules", () => {
       }));
       await seed(["events", "event-1"], event());
       await seed(["eventHostPhotos", photoId], hostPhoto());
-      await seed(["eventParticipations", "event-1_attended-1"], {
+      await seed(["eventBookings", "event-1_attended-1"], {
         eventId: "event-1", uid: "attended-1", status: "attended",
       });
-      await seed(["eventParticipations", "event-1_booked-1"], {
+      await seed(["eventBookings", "event-1_booked-1"], {
         eventId: "event-1", uid: "booked-1", status: "signedUp",
       });
-      await seed(["eventParticipations", "event-1_waitlisted-1"], {
+      await seed(["eventBookings", "event-1_waitlisted-1"], {
         eventId: "event-1", uid: "waitlisted-1", status: "waitlisted",
       });
       await seed(["eventRuntimeParticipants", "event-1_door-1"], {
@@ -111,7 +111,7 @@ describe("firestore.rules", () => {
     it("denies a checked-in guest of another event", async () => {
       await seedHostPhotoEvent();
       await seed(["events", "event-2"], event());
-      await seed(["eventParticipations", "event-2_other-1"], {
+      await seed(["eventBookings", "event-2_other-1"], {
         eventId: "event-2", uid: "other-1", status: "attended",
       });
 

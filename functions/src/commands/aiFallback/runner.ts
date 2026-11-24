@@ -3,7 +3,7 @@ import {pathToFileURL} from "node:url";
 import * as admin from "firebase-admin";
 import {logger} from "firebase-functions";
 import {anthropicFederationConfig, tokenSourceFor} from
-  "../../programs/assistant/provider";
+  "../../platform/anthropicIdentity";
 import {
   AiFallbackRefusal,
   type AiFallbackRefusalReason,

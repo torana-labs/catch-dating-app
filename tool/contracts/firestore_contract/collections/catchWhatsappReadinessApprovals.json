@@ -1,0 +1,16 @@
+{
+  "id": "catchWhatsappReadinessApprovals",
+  "path": "catchWhatsappReadinessApprovals/{approvalId}",
+  "rulesMatch": "/catchWhatsappReadinessApprovals/{approvalId}",
+  "typescriptInterface": "CatchWhatsappReadinessApprovalDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/src/catchMessaging/whatsappReadinessFirestore.emulator.test.ts",
+  "rulesTestNames": [
+    "readiness control documents deny every SDK client including staff"
+  ],
+  "owner": "Catch support readiness provisioning",
+  "writerContext": "messaging",
+  "read": "server only; protected review, bounded current Auth observation and Firestore authority read sets",
+  "write": "disconnected provisioning transaction only; no deployed writer or client authority",
+  "exportedFunctions": []
+}

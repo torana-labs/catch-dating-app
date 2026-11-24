@@ -163,7 +163,7 @@ export async function loadCollections(firestore, maxDocs, {includeScheduleLocks 
     "organizers",
     "organizerFollows",
     "events",
-    "eventParticipations",
+    "eventBookings",
     "savedEvents",
     "reviews",
     "matches",
@@ -183,11 +183,18 @@ export async function loadCollections(firestore, maxDocs, {includeScheduleLocks 
     firestore.collectionGroup("outgoing"),
     maxDocs
   );
-  result.messages = await readQuery(
+  result.messages = chatMessagesOnly(await readQuery(
     firestore.collectionGroup("messages"),
     maxDocs
-  );
+  ));
   return result;
+}
+
+// The "messages" collection group also holds support conversations
+// (supportConversations/{id}/messages), which have their own shape; only
+// match chat messages (and legacy chats/{id}/messages) are checked here.
+export function chatMessagesOnly(docs) {
+  return docs.filter((doc) => /^(?:matches|chats)\/[^/]+\/messages\/[^/]+$/.test(doc.path));
 }
 
 async function readQuery(query, maxDocs) {
@@ -227,7 +234,7 @@ export function validateAll(collections, currentReport, {checkScheduleLocks = fa
   const publicProfiles = byId(collections.publicProfiles);
   const organizers = byId(collections.organizers);
   const events = byId(collections.events);
-  const eventParticipations = byId(collections.eventParticipations);
+  const eventBookings = byId(collections.eventBookings);
   const matches = byId(collections.matches);
 
   for (const [name, docs] of Object.entries(collections)) {
@@ -263,7 +270,7 @@ export function validateAll(collections, currentReport, {checkScheduleLocks = fa
     validateOrganizerFollow(doc, users, organizers, currentReport);
   }
   for (const doc of collections.events) validateRun(doc, organizers, currentReport);
-  for (const doc of collections.eventParticipations) {
+  for (const doc of collections.eventBookings) {
     validateEventParticipation(doc, users, events, currentReport);
   }
   for (const doc of collections.savedEvents) {
@@ -273,7 +280,7 @@ export function validateAll(collections, currentReport, {checkScheduleLocks = fa
     validateReview(doc, users, organizers, events, currentReport);
   }
   for (const doc of collections.outgoing) {
-    validateSwipe(doc, users, publicProfiles, events, eventParticipations,
+    validateSwipe(doc, users, publicProfiles, events, eventBookings,
       currentReport);
   }
   for (const doc of collections.matches) validateMatch(doc, users, currentReport);
@@ -290,7 +297,7 @@ export function validateAll(collections, currentReport, {checkScheduleLocks = fa
   );
   validateRunAggregateCounts(
     collections.events,
-    collections.eventParticipations,
+    collections.eventBookings,
     currentReport
   );
   validateOrganizerHostProfileProjections(
@@ -623,7 +630,7 @@ function validateEventParticipation(doc, users, events, currentReport) {
       isTimestamp(event.data.startTime) &&
       event.data.startTime.toMillis() > Date.now()) {
     issue(currentReport, "error", doc.path, "future-event-attended",
-      "future events cannot have attended eventParticipations.");
+      "future events cannot have attended eventBookings.");
   }
   if (data.uid && !users.has(data.uid)) {
     issue(currentReport, "warning", doc.path, "missing-participation-user",
@@ -696,7 +703,7 @@ function validateReview(doc, users, organizers, events, currentReport) {
   }
 }
 
-function validateSwipe(doc, users, publicProfiles, events, eventParticipations,
+function validateSwipe(doc, users, publicProfiles, events, eventBookings,
   currentReport) {
   const data = doc.data;
   const pathMatch = /^(?:profileDecisions|swipes)\/([^/]+)\/outgoing\/([^/]+)$/.exec(doc.path);
@@ -728,16 +735,16 @@ function validateSwipe(doc, users, publicProfiles, events, eventParticipations,
   if (!event) {
     issue(currentReport, "error", doc.path, "missing-swipe-event",
       `eventId references missing events/${data.eventId}.`);
-  } else if (!hasAttendedRun(eventParticipations, data.eventId, data.swiperId) ||
-      !hasAttendedRun(eventParticipations, data.eventId, data.targetId)) {
+  } else if (!hasAttendedRun(eventBookings, data.eventId, data.swiperId) ||
+      !hasAttendedRun(eventBookings, data.eventId, data.targetId)) {
     issue(currentReport, "error", doc.path, "swipe-event-attendance-mismatch",
-      "swiperId and targetId must both have attended eventParticipations for the swipe event.");
+      "swiperId and targetId must both have attended eventBookings for the swipe event.");
   }
 }
 
-function hasAttendedRun(eventParticipations, eventId, uid) {
+function hasAttendedRun(eventBookings, eventId, uid) {
   if (!eventId || !uid) return false;
-  const participation = eventParticipations.get(`${eventId}_${uid}`);
+  const participation = eventBookings.get(`${eventId}_${uid}`);
   return participation?.data?.status === "attended";
 }
 
@@ -823,9 +830,9 @@ function validateOrganizerFollowerCountAggregates(
   }
 }
 
-function validateRunAggregateCounts(events, eventParticipations, currentReport) {
+function validateRunAggregateCounts(events, eventBookings, currentReport) {
   const aggregates = new Map();
-  for (const doc of eventParticipations) {
+  for (const doc of eventBookings) {
     const data = doc.data;
     if (typeof data.eventId !== "string") continue;
     const aggregate = runAggregate(aggregates, data.eventId);
@@ -845,14 +852,14 @@ function validateRunAggregateCounts(events, eventParticipations, currentReport) 
     for (const field of ["bookedCount", "checkedInCount", "waitlistedCount"]) {
       if (doc.data[field] !== expected[field]) {
         issue(currentReport, "error", doc.path, "event-count-drift",
-          `${field} is ${doc.data[field]}, but eventParticipations imply ` +
+          `${field} is ${doc.data[field]}, but eventBookings imply ` +
           `${expected[field]}.`);
       }
     }
     if (JSON.stringify(normalizeObject(doc.data.genderCounts ?? {})) !==
         JSON.stringify(normalizeObject(expected.genderCounts))) {
       issue(currentReport, "error", doc.path, "event-gender-count-drift",
-        "genderCounts does not match signedUp/attended eventParticipations.");
+        "genderCounts does not match signedUp/attended eventBookings.");
     }
   }
 }
@@ -911,7 +918,7 @@ function validateSchedulePolicy(collections, currentReport, {checkScheduleLocks}
   const unscheduled = new Set(collections.events.filter((doc) =>
     doc.data.publicationState === "private" && !Object.hasOwn(doc.data, "endTime"))
     .map((doc) => doc.id));
-  for (const doc of collections.eventParticipations) {
+  for (const doc of collections.eventBookings) {
     if (unscheduled.has(doc.data.eventId) &&
         ["signedUp", "waitlisted", "attended"].includes(doc.data.status)) {
       issue(currentReport, "error", doc.path, "participation-event-unscheduled",
@@ -920,7 +927,7 @@ function validateSchedulePolicy(collections, currentReport, {checkScheduleLocks}
   }
   const issues = scheduleComplianceIssues({
     events: collections.events.filter((doc) => !unscheduled.has(doc.id)),
-    participations: collections.eventParticipations.filter((doc) =>
+    participations: collections.eventBookings.filter((doc) =>
       !unscheduled.has(doc.data.eventId)),
     scheduleLocks: collections.scheduleLocks,
     checkLocks: checkScheduleLocks,

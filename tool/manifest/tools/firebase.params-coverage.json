@@ -1,0 +1,29 @@
+{
+  "id": "firebase:params-coverage",
+  "category": "firebase",
+  "path": "tool/firebase/check_functions_params_coverage.mjs",
+  "command": "node tool/firebase/check_functions_params_coverage.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "impactPaths": [
+    "functions/src/**",
+    ".github/workflows/_backend-deploy.yml",
+    ".github/workflows/functions-ci.yml",
+    "tool/firebase/check_functions_params_coverage.test.mjs",
+    "tool/firebase/prepare_functions_params_for_deploy.mjs"
+  ],
+  "description": "Parses non-secret Functions parameter declarations without executing source and rejects gaps in the deploy materializer or the exact deployment dotenv file before mutation.",
+  "checks": [
+    "node tool/firebase/check_functions_params_coverage.mjs",
+    "node --test tool/firebase/check_functions_params_coverage.test.mjs"
+  ],
+  "role": "gate",
+  "queueGate": "always"
+}

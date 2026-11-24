@@ -1,0 +1,9 @@
+analyzer:
+  exclude:
+    - build/**
+  errors:
+    # This package is test code that the root, app and Widgetbook suites
+    # import, so its helpers call test-only APIs such as
+    # SharedPreferences.setMockInitialValues.
+    invalid_use_of_visible_for_testing_member: ignore
+include: ../../analysis_options.yaml

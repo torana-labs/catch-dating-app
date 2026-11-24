@@ -49,7 +49,8 @@ test("the owner is a manager with no expiry and no identity fields", () => {
     "expiresAtMillis", "functionAll",
     "functionScoped", "grantExpiresAtMillis", "hotelAll", "hotelScoped",
     "organizerId", "organizerManager", "ownerUid",
-    "pickupAll", "pickupScoped", "programId", "revision", "role", "status",
+    "pickupAll", "pickupScoped", "programAll", "programId", "revision",
+    "role", "status",
     "tripRoutes", "uid", "version", "workFunction", "workHotel",
     "workPickup"]);
 });
@@ -194,6 +195,31 @@ test("a coordinator holds every duty but programAdmin, program-wide", () => {
       duty === "programAdmin" ? undefined : now + hour, duty);
   }
   assert.equal(view.functionAll.functionLead, now + hour);
+  assert.equal(view.programAll.guestRelations, now + hour);
+  assert.equal(view.programAll.programAdmin, undefined);
+});
+
+test("programAll needs one assignment to cover the whole programme", () => {
+  // Every pickup point from one assignment and every hotel from another is
+  // not the whole programme: the guest directory stays closed.
+  const split = staffProgramAccessView(program, "program-1", grant({
+    duties: [
+      {duty: "guestRelations", pickupPointIds: [], hotelIds: ["h-1"],
+        expiresAtMillis: now + hour},
+      {duty: "guestRelations", pickupPointIds: ["pp-1"], hotelIds: [],
+        expiresAtMillis: now + hour},
+    ]}), now)!;
+  assert.equal(split.pickupAll.guestRelations, now + hour);
+  assert.equal(split.hotelAll.guestRelations, now + hour);
+  assert.deepEqual(split.programAll, {});
+  const whole = staffProgramAccessView(program, "program-1", grant({
+    duties: [
+      {duty: "guestRelations", pickupPointIds: ["pp-1"], hotelIds: [],
+        expiresAtMillis: now + 2 * hour},
+      {duty: "guestRelations", pickupPointIds: [], hotelIds: [],
+        expiresAtMillis: now + hour},
+    ]}), now)!;
+  assert.deepEqual(whole.programAll, {guestRelations: now + hour});
 });
 
 test("independent assignments keep independent expiries", () => {

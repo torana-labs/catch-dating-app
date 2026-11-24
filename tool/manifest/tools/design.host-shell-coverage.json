@@ -1,0 +1,30 @@
+{
+  "id": "design:host-shell-coverage",
+  "category": "design",
+  "path": "tool/design/check_host_shell_coverage.mjs",
+  "impactPaths": [
+    "tool/design/check_host_shell_coverage.test.mjs",
+    "design/source_packs/host-v2/host-coverage-manifest.json",
+    "docs/design_parity/host_shell_route_ui_audit.md",
+    "lib/routing/shell/host_shell_navigation.dart",
+    "tool/ui_capture/route_inventory.json",
+    "tool/ui_capture/capture_coverage.json"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "command": "node tool/design/check_host_shell_coverage.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Checks the four ordered Host shell destinations against runtime routes, production sources, and canonical UI capture ownership.",
+  "checks": [
+    "node --check tool/design/check_host_shell_coverage.mjs",
+    "node --test tool/design/check_host_shell_coverage.test.mjs",
+    "node tool/design/check_host_shell_coverage.mjs"
+  ],
+  "role": "gate",
+  "queueGate": "always"
+}

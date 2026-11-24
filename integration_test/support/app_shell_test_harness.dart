@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/app.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/force_update_provider.dart';
@@ -16,6 +14,8 @@ import 'package:catch_dating_app/contexts/connections/data/swipe_candidate_repos
 import 'package:catch_dating_app/contexts/connections/data/swipe_repository.dart';
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
+import 'package:catch_dating_app/contexts/discovery/actions/profile_location_initializer.dart';
+import 'package:catch_dating_app/contexts/discovery/data/city_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/data/event_discovery_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
@@ -39,7 +39,6 @@ import 'package:catch_dating_app/contexts/payments/data/payment_history_reposito
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/onboarding_draft_repository.dart';
-import 'package:catch_dating_app/contexts/profiles/data/profile_location_initializer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
@@ -51,13 +50,15 @@ import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/explore/explore.dart';
 import 'package:catch_dating_app/pages/celebration/celebration_effects_controller.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/pages/frame/app.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/routing/consumer_router.dart';
+import 'package:catch_dating_app/routing/router_frame.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_kernel/city_data.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
-import 'package:catch_platform/cities/city_repository.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_platform/device/device_location.dart';
 import 'package:catch_platform/errors/error_logger.dart';
@@ -65,6 +66,8 @@ import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:catch_platform/firebase/push_installation_store.dart';
 import 'package:catch_platform/push/fcm_service.dart';
 import 'package:catch_platform/routing/route_contract.dart';
+import 'package:catch_test_support/empty_event_chat_repository.dart';
+import 'package:catch_test_support/event_organizer_summary_fixture.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' show User;
@@ -80,8 +83,6 @@ import '../../test/onboarding/onboarding_test_helpers.dart'
     as onboarding_helpers;
 import '../../test/organizers/organizers_test_helpers.dart'
     as organizer_helpers;
-import '../../test/support/empty_event_chat_repository.dart';
-import '../../test/support/event_organizer_summary_fixture.dart';
 
 const testShellCity = CityData(
   name: 'mumbai',
@@ -94,7 +95,8 @@ const _appShellTestFrame = Duration(milliseconds: 100);
 const _mutationPresentationInterval = Duration(milliseconds: 350);
 
 /// Pumps the installable app root. Host journeys pass the Host entrypoint's
-/// [hostGoRouterProvider]; consumer journeys keep the role-selected default.
+/// `hostGoRouterProvider`; consumer journeys default to the guest app's
+/// [consumerGoRouterProvider].
 Future<void> pumpCatchAppShell(
   WidgetTester tester, {
   String initialRoute = '/',
@@ -113,7 +115,7 @@ Future<void> pumpCatchAppShell(
         initialAppLocationProvider.overrideWithValue(initialRoute),
         ...overrides.cast(),
       ],
-      child: MyApp(routerProvider: routerProvider ?? goRouterProvider),
+      child: MyApp(routerProvider: routerProvider ?? consumerGoRouterProvider),
     ),
   );
   await pumpAppShellFrames(tester);

@@ -12,13 +12,14 @@ import {
   reconcileOrganizerAttention,
   sweepDueOrganizerAttention,
 } from "./attentionStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 
 export type AttentionSource =
   | "organizers"
   | "events"
-  | "eventParticipations"
+  | "eventBookings"
   | "eventAssistanceCases"
   | "operationWorkItems"
   | "organizerApplications"
@@ -89,7 +90,7 @@ const routes: Record<FieldRoutedSource, AttentionRoute> = {
     skipUpdate: (before, after) => attentionEventFields.every((field) =>
       isDeepStrictEqual(before?.[field], after?.[field])),
   },
-  eventParticipations: {
+  eventBookings: {
     organizerIds: organizerIdsAt("organizerId"),
     skipUpdate: neither((data) => data?.hostApprovalStatus === "pending"),
   },
@@ -166,29 +167,53 @@ async function organizersOwnedBy(
 const options = {retry: true, memory: "512MiB" as const};
 
 /** Re-evaluates every organizer a source write can affect. */
-async function reconcileForWrite(
-  source: AttentionSource,
-  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
-    {documentId: string}>
-): Promise<void> {
+async function reconcileForChange(source: AttentionSource,
+  documentId: string,
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): Promise<void> {
   const db = admin.firestore();
   const organizerIds = await resolveAttentionOrganizerIds(db, source,
-    event.params.documentId, event.data?.before.data(),
-    event.data?.after.data());
+    documentId, before,
+    after);
   for (const organizerId of organizerIds) {
     await reconcileOrganizerAttention(db, organizerId);
   }
 }
 
-export const onOrganizerAttentionOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{documentId}",
-}, (event) => reconcileForWrite("organizers", event));
-export const onOrganizerAttentionEventChanged = onDocumentWritten({
-  ...options, document: "events/{documentId}",
-}, (event) => reconcileForWrite("events", event));
+async function reconcileForWrite(
+  source: AttentionSource,
+  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
+    {documentId: string}>
+): Promise<void> {
+  await reconcileForChange(source, event.params.documentId,
+    event.data?.before.data(), event.data?.after.data());
+}
+
+/**
+ * An organizer write re-evaluates its attention queue.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const organizerAttentionProjections = defineProjections("organizers", [{
+  id: "organizerAttention", kind: "projection", when: () => true,
+  run: (change) => reconcileForChange("organizers", change.documentId,
+    change.before, change.after),
+}]);
+
+/**
+ * An event write re-evaluates its organizers' attention queues.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const organizerAttentionEventProjections = defineProjections("events", [{
+  id: "organizerAttention", kind: "projection",
+  when: () => true,
+  run: (change) => reconcileForChange("events", change.documentId,
+    change.before, change.after),
+}]);
 export const onOrganizerAttentionParticipationChanged = onDocumentWritten({
-  ...options, document: "eventParticipations/{documentId}",
-}, (event) => reconcileForWrite("eventParticipations", event));
+  ...options, document: "eventBookings/{documentId}",
+}, (event) => reconcileForWrite("eventBookings", event));
 export const onOrganizerAttentionAssistanceCaseChanged = onDocumentWritten({
   ...options, document: "eventAssistanceCases/{documentId}",
 }, (event) => reconcileForWrite("eventAssistanceCases", event));

@@ -1,14 +1,14 @@
-import 'dart:async';
-
 import 'package:catch_dating_app/contexts/events/events.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_callable_responses.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_signup_source.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/firestore_converters.dart';
+import 'package:catch_platform/firebase/permission_fallback.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart'
     show
@@ -21,7 +21,6 @@ import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.
         TransferOrganizerOwnershipCallableRequest;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'organizers_repository.g.dart';
@@ -240,6 +239,7 @@ class OrganizersRepository {
     String? phoneNumber,
     String? email,
     OrganizerHostDefaults? hostDefaults,
+    OrganizerSignupSource? signupSource,
   }) => withBackendErrorContext(
     () async {
       final result = await _functions
@@ -257,6 +257,7 @@ class OrganizersRepository {
               instagramHandle: instagramHandle,
               phoneNumber: phoneNumber,
               email: email,
+              signupSource: signupSource?.name,
               hostDefaults: hostDefaults?.toJson(),
             ).toJson(),
           );
@@ -425,8 +426,8 @@ class OrganizersRepository {
   );
 }
 
-// keepalive: club repository is a shared Firestore/Functions facade reused by
-// discovery, hosting, and route guards.
+// keepalive: account-free: club repository is a shared Firestore/Functions
+// facade reused by discovery, hosting, and route guards.
 @Riverpod(keepAlive: true)
 OrganizersRepository organizersRepository(Ref ref) => OrganizersRepository(
   ref.watch(firebaseFirestoreProvider),
@@ -552,56 +553,4 @@ class OrganizersByIdQuery {
 
   @override
   int get hashCode => _equality.hash(organizerIds);
-}
-
-bool _isPermissionDenied(Object error) =>
-    error is FirebaseException && error.code == 'permission-denied';
-
-/// Listens to [primary]; if rules deny it, switches to [fallback] once.
-/// Any other error, or an error from the fallback, is forwarded.
-@visibleForTesting
-Stream<T> watchWithPermissionFallback<T>({
-  required Stream<T> Function() primary,
-  required Stream<T> Function() fallback,
-}) {
-  StreamSubscription<T>? subscription;
-  late final StreamController<T> controller;
-  void listen(Stream<T> source, {required bool canFallBack}) {
-    subscription = source.listen(
-      controller.add,
-      onError: (Object error, StackTrace stackTrace) {
-        if (canFallBack && _isPermissionDenied(error)) {
-          unawaited(subscription?.cancel());
-          listen(fallback(), canFallBack: false);
-          return;
-        }
-        controller.addError(error, stackTrace);
-      },
-      onDone: () {
-        if (!controller.isClosed) unawaited(controller.close());
-      },
-    );
-  }
-
-  controller = StreamController<T>(
-    onListen: () => listen(primary(), canFallBack: true),
-    onPause: () => subscription?.pause(),
-    onResume: () => subscription?.resume(),
-    onCancel: () => subscription?.cancel(),
-  );
-  return controller.stream;
-}
-
-/// Reads [primary]; if rules deny it, reads [fallback] instead.
-@visibleForTesting
-Future<T> fetchWithPermissionFallback<T>({
-  required Future<T> Function() primary,
-  required Future<T> Function() fallback,
-}) async {
-  try {
-    return await primary();
-  } on FirebaseException catch (error) {
-    if (!_isPermissionDenied(error)) rethrow;
-    return fallback();
-  }
 }

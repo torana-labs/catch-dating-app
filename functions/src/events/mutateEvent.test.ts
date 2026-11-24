@@ -18,7 +18,8 @@ import {EVENT_PLAN_CHANGES, eventPlanChangeSourceId} from
 import {requireCatchBookingAuthority} from "./eventOrigin";
 import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import {publishedEventSetup, withStoredEventPolicy} from
-  "../shared/testing/eventSetupFixture";
+  "../domain/events/testing/eventSetupFixture";
+import {withEventSeatLedgers} from "./seatAuthority/eventSeatLedgerTestSupport";
 
 type FakeData = Record<string, unknown>;
 
@@ -230,7 +231,7 @@ class FakeTransaction {
 }
 
 function harness(initialDocs: Record<string, FakeData | undefined>) {
-  const firestore = new FakeFirestore(initialDocs);
+  const firestore = new FakeFirestore(withEventSeatLedgers(initialDocs));
   const rateLimitCalls: string[] = [];
   const notifications: FcmParams[] = [];
   const deletedStoragePaths: string[] = [];
@@ -1287,6 +1288,29 @@ test("deleteEvent removes an unused published event whatever created it",
     assert.equal(h.firestore.get("events/event-1"), undefined);
   });
 
+test("createEvent starts the event on an empty, ready seat ledger",
+  async () => {
+    const h = harness({"organizers/club-1": organizer()});
+    await createEventHandler(request("host-1", payload()), h.deps);
+    const created = h.firestore.get("events/event-1")!;
+    const policy = deriveEventSeatPolicy(created);
+    assert.deepEqual(h.firestore.get("eventSeatLedgers/event-1"), {
+      eventId: "event-1", capacity: policy.capacity, occupied: 0,
+      checkoutHeld: 0, revision: 1, capacityRevision: 1,
+      policyVersion: policy.policyVersion, policyHash: policy.policyHash,
+      migrationRevision: 1, state: "ready"});
+  });
+
+test("deleteEvent removes an empty seat ledger with the event",
+  async () => {
+    const h = harness({"organizers/club-1": organizer(),
+      "events/event-1": event(), ...readySeatDocs()});
+    assert.deepEqual(await deleteEventHandler(request("host-1",
+      {eventId: "event-1"}), h.deps), {deleted: true});
+    assert.equal(h.firestore.get("events/event-1"), undefined);
+    assert.equal(h.firestore.get("eventSeatLedgers/event-1"), undefined);
+  });
+
 test("deleteEvent removes the event's setup preferences and invite code",
   async () => {
     const h = harness({"organizers/club-1": organizer(),
@@ -1421,7 +1445,7 @@ test("full form saves can change copy with guests when schedule is unchanged",
     const original = publishedProgressiveEvent();
     const h = harness({"organizers/club-1": organizer(),
       "events/event-1": original,
-      "eventParticipations/event-1_runner-1": {eventId: "event-1",
+      "eventBookings/event-1_runner-1": {eventId: "event-1",
         organizerId: "club-1", uid: "runner-1", status: "signedUp"},
       "users/runner-1": {prefsRunStatusUpdates: true},
       ...guestInstallation("runner-1", "token-1")});
@@ -1559,19 +1583,19 @@ test("updateEventHandler notifies participants for location changes",
     const h = harness({
       "organizers/club-1": organizer(),
       "events/event-1": event(),
-      "eventParticipations/event-1_runner-1": {
+      "eventBookings/event-1_runner-1": {
         eventId: "event-1",
         organizerId: "club-1",
         uid: "runner-1",
         status: "signedUp",
       },
-      "eventParticipations/event-1_runner-2": {
+      "eventBookings/event-1_runner-2": {
         eventId: "event-1",
         organizerId: "club-1",
         uid: "runner-2",
         status: "waitlisted",
       },
-      "eventParticipations/event-1_runner-3": {
+      "eventBookings/event-1_runner-3": {
         eventId: "event-1",
         organizerId: "club-1",
         uid: "runner-3",
@@ -1638,7 +1662,7 @@ test("updateEventHandler rejects schedule changes once participants exist",
     const h = harness({
       "organizers/club-1": organizer(),
       "events/event-1": event(),
-      "eventParticipations/event-1_runner-1": {
+      "eventBookings/event-1_runner-1": {
         eventId: "event-1",
         organizerId: "club-1",
         uid: "runner-1",
@@ -1677,7 +1701,7 @@ test("updateEventHandler skips participant notifications for copy-only edits",
     const h = harness({
       "organizers/club-1": organizer(),
       "events/event-1": event(),
-      "eventParticipations/event-1_runner-1": {
+      "eventBookings/event-1_runner-1": {
         eventId: "event-1",
         organizerId: "club-1",
         uid: "runner-1",
@@ -1737,13 +1761,13 @@ test("cancelEventHandler marks the event cancelled and notifies participants",
     const h = harness({
       "organizers/club-1": organizer(),
       "events/event-1": event(),
-      "eventParticipations/event-1_runner-1": {
+      "eventBookings/event-1_runner-1": {
         eventId: "event-1",
         organizerId: "club-1",
         uid: "runner-1",
         status: "signedUp",
       },
-      "eventParticipations/event-1_runner-2": {
+      "eventBookings/event-1_runner-2": {
         eventId: "event-1",
         organizerId: "club-1",
         uid: "runner-2",
@@ -1825,7 +1849,7 @@ test("deleteEventHandler rejects events with user activity", async () => {
   const h = harness({
     "organizers/club-1": organizer(),
     "events/event-1": event(),
-    "eventParticipations/event-1_runner-1": {
+    "eventBookings/event-1_runner-1": {
       eventId: "event-1",
       uid: "runner-1",
       status: "signedUp",
@@ -1890,8 +1914,6 @@ test("updateEventHandler rejects cancelled events", async () => {
 function readySeatDocs(occupied = 0): Record<string, FakeData> {
   const policy = deriveEventSeatPolicy(event());
   return {
-    "eventSeatMigrationFences/event-1": {eventId: "event-1",
-      migrationRevision: 1, state: "ready"},
     "eventSeatLedgers/event-1": {eventId: "event-1", capacity: 20,
       occupied, revision: 3, capacityRevision: 1, migrationRevision: 1,
       policyHash: policy.policyHash, policyVersion: policy.policyVersion,
@@ -1913,28 +1935,6 @@ test("Host roster and event offers prevent legacy policy or schedule edits",
         (error) => assertHttpsCode(error, "failed-precondition"));
         assert.deepEqual(h.firestore.get("events/event-1"), event());
         assert.deepEqual(h.notifications, []);
-      }
-    }
-  });
-
-test("migration fence stops update, cancel and delete before any effects",
-  async () => {
-    for (const state of ["locked", "missing-ledger"]) {
-      for (const handler of [updateEventHandler, cancelEventHandler,
-        deleteEventHandler]) {
-        const h = harness({"organizers/club-1": organizer(),
-          "events/event-1": event(),
-          "eventSeatMigrationFences/event-1": {eventId: "event-1",
-            migrationRevision: 1, state}});
-        await assert.rejects(handler(request("host-1", {
-          eventId: "event-1",
-          ...(handler === updateEventHandler ?
-            {fields: {description: "Changed"}} : {}),
-        }), h.deps), (error) => assertHttpsCode(error,
-          "failed-precondition"));
-        assert.deepEqual(h.firestore.get("events/event-1"), event());
-        assert.deepEqual(h.notifications, []);
-        assert.deepEqual(h.deletedStoragePaths, []);
       }
     }
   });
@@ -2005,7 +2005,9 @@ test("delete preserves imported, offer, admission and migrated seat history",
       {"eventAttendees/guest": {eventId: "event-1", status: "cancelled"}},
       {"organizerEventOffers/offer": {eventId: "event-1"}},
       {"organizerFormAdmissions/admission": {eventId: "event-1"}},
-      readySeatDocs(),
+      readySeatDocs(1),
+      {...readySeatDocs(), "eventSeatReservations/seat": {eventId: "event-1",
+        active: false}},
     ]) {
       const h = harness({"organizers/club-1": organizer(),
         "events/event-1": event(), ...history});

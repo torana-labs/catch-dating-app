@@ -15,6 +15,7 @@ import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {REPORTING_LANES, REQUIRED_CI_JOB, laneOfJob} from "./required_ci_floor.mjs";
+import {MOBILE_BLOCK_JOBS} from "./golden_policy.mjs";
 
 export const ISSUE_TITLE = "Main CI is red";
 export const FLOOR_EXIT_TITLE = "Main CI green for 7 days: reporting lanes can block again";
@@ -112,11 +113,27 @@ export function decideAlert({run, jobs, openIssue, nightlies = null, owed = null
 }
 
 /**
+ * Whether failed jobs are only the macOS golden and capture jobs, with the
+ * Required CI job that fails because of them. Owner decision, 22 Nov 2026:
+ * those failures block mobile releases (tool/ci/golden_policy.mjs) but do not
+ * restart the sprint floor's green week.
+ */
+export function onlyMobileBlockFailures(names) {
+  const rest = names.filter((name) => name !== REQUIRED_CI_JOB);
+  return rest.length > 0 && rest.every((name) => MOBILE_BLOCK_JOBS.includes(name));
+}
+
+/** The names of a run's failed jobs. */
+export const failedJobNames = (jobs) => jobs.filter((job) => FAILED.has(job.conclusion)).map((job) => job.name);
+
+/**
  * Whether the sprint floor can end. Owner decision, 14 Nov 2026: the reporting
  * lanes (REPORTING_LANES) block merges again once main stays green for a week.
  * Green means every completed main push and nightly CI run concluded success,
  * reporting lanes included; cancelled and skipped runs neither break nor make
- * the streak. Pure, so every case is testable.
+ * the streak. A run whose only failures were the macOS golden and capture jobs
+ * (onlyMobileBlockFailures) does not break it either (owner decision, 22 Nov
+ * 2026). Pure, so every case is testable.
  *
  * @param {object} input
  * @param {Array<{created_at:string, conclusion:string|null, status:string, event:string}>} input.runs
@@ -126,8 +143,11 @@ export function decideAlert({run, jobs, openIssue, nightlies = null, owed = null
  * @param {boolean} [input.alertOpen] Whether a "Main CI is red" issue is still open: main
  *   is not proven green while a failed job has not passed again.
  * @param {readonly string[]} [input.reportingLanes]
+ * @param {ReadonlySet<number>} [input.mobileOnly] Ids of failed runs whose only failures were the
+ *   macOS golden and capture jobs.
  */
-export function decideFloorExit({runs, now, openIssue, alertOpen = false, reportingLanes = REPORTING_LANES}) {
+export function decideFloorExit({runs, now, openIssue, alertOpen = false, reportingLanes = REPORTING_LANES,
+  mobileOnly = new Set()}) {
   if (reportingLanes.length === 0 || openIssue) return {action: "none"};
   if (alertOpen) return {action: "none", reason: "alert_open"};
   const since = now - FLOOR_EXIT_DAYS * DAY;
@@ -135,7 +155,7 @@ export function decideFloorExit({runs, now, openIssue, alertOpen = false, report
     !["cancelled", "skipped", "neutral", null].includes(run.conclusion));
   // The history must reach past the window, or a red run just before it could hide.
   if (!counted.some((run) => Date.parse(run.created_at) < since)) return {action: "none", reason: "history_too_short"};
-  const lastRed = counted.filter((run) => run.conclusion !== "success")
+  const lastRed = counted.filter((run) => run.conclusion !== "success" && !mobileOnly.has(Number(run.id)))
     .reduce((latest, run) => Math.max(latest, Date.parse(run.created_at)), -Infinity);
   if (lastRed >= since) return {action: "none", reason: "red_within_window"};
   const nightlies = counted.filter((run) => run.event === "schedule" && Date.parse(run.created_at) >= since).length;
@@ -171,6 +191,95 @@ export function nightlyWindow({run, nightlies}) {
   const range = `${green.head_sha.slice(0, 8)}..${run.head_sha.slice(0, 8)}`;
   return `Commits since the last green nightly: ${range}` +
     (repository ? ` (${repository}/compare/${green.head_sha}...${run.head_sha})` : "");
+}
+
+// A main push run that a newer merge replaced never starts, and the run that
+// replaced it can be for an earlier commit when GitHub creates a queue batch's
+// runs out of order. The replaced commit is then validated only by the next
+// main push or the nightly. Reported, never triggered (RE decision, 22 Nov 2026).
+const UNCOVERED_MARKER = /<!-- main-push-uncovered ([0-9a-f]{40}) -->/gu;
+const SHA = /^[0-9a-f]{40}$/u;
+const HOUR = 60 * 60 * 1000;
+// Runs for later commits can be created this long before an earlier commit's run.
+const OUT_OF_ORDER_MS = 10 * 60 * 1000;
+const ranOrWill = (run) => run.status !== "completed" || !["cancelled", "skipped"].includes(run.conclusion);
+
+/** The commits already reported uncovered in an issue's texts (body, then comments). */
+export function reportedUncovered(texts) {
+  return new Set(texts.flatMap((text) => [...String(text ?? "").matchAll(UNCOVERED_MARKER)].map((match) => match[1])));
+}
+
+// A commit is reported at most this often across the open and recently closed
+// alert issues: once, and once more if a green run of an earlier commit closed
+// the issue before the commit was covered. Never a loop.
+export const UNCOVERED_REPORT_LIMIT = 2;
+
+/** How often each commit has been reported, across every issue's texts. */
+export function uncoveredReportCounts(texts) {
+  const counts = new Map();
+  for (const text of texts) {
+    for (const match of String(text ?? "").matchAll(UNCOVERED_MARKER)) counts.set(match[1], (counts.get(match[1]) ?? 0) + 1);
+  }
+  return counts;
+}
+
+/**
+ * Commits whose main push run was cancelled (replaced while pending) and that
+ * no run that ran, or is still to run, covers. Pure, so every case is testable.
+ *
+ * @param {object} input
+ * @param {Array<object>} input.runs Recent CI runs for push events on main.
+ * @param {number} input.now Milliseconds since the epoch.
+ * @param {(descendant: string, sha: string) => boolean | null} input.contains
+ *   Whether `descendant` is `sha` or a later commit on main; null when unknown.
+ * @returns {{uncovered: Array<{sha:string, runId:number, html_url:string}>, unknown: string[]}}
+ */
+export function uncoveredCommits({runs, now, contains}) {
+  const push = runs.filter((run) => run.event === "push" && run.head_branch === "main" &&
+    run.path === ".github/workflows/ci.yml" && SHA.test(String(run.head_sha ?? "")));
+  const uncovered = [];
+  const unknown = [];
+  const seen = new Set();
+  // The nightly validates everything, so a replaced run older than a day is settled.
+  const replaced = push.filter((run) => run.status === "completed" && run.conclusion === "cancelled" &&
+    now - Date.parse(run.created_at) <= 26 * HOUR).sort((left, right) => Number(right.id) - Number(left.id));
+  for (const run of replaced) {
+    const sha = run.head_sha;
+    if (seen.has(sha)) continue;
+    seen.add(sha);
+    if (push.some((other) => other.head_sha === sha && ranOrWill(other))) continue;
+    const created = Date.parse(run.created_at);
+    const candidates = push.filter((other) => other.head_sha !== sha && ranOrWill(other) &&
+      Date.parse(other.created_at) >= created - OUT_OF_ORDER_MS);
+    const answers = candidates.map((other) => contains(other.head_sha, sha));
+    if (answers.includes(true)) continue;
+    if (answers.includes(null)) unknown.push(sha);
+    else uncovered.push({sha, runId: Number(run.id), html_url: run.html_url});
+  }
+  return {uncovered, unknown};
+}
+
+/**
+ * Reports uncovered commits on the "Main CI is red" issue: opens it, or
+ * comments on the open one: once per commit while the issue stays open, and at
+ * most UNCOVERED_REPORT_LIMIT times overall (`counts`). Opening owes Required CI, so the
+ * next green main push, whose run plans from the nearest earlier run that ran
+ * and so covers the commit, closes it.
+ */
+export function decideUncovered({uncovered, openIssue, reported = new Set(), counts = new Map()}) {
+  const fresh = uncovered.filter((commit) => !reported.has(commit.sha) &&
+    (counts.get(commit.sha) ?? 0) < UNCOVERED_REPORT_LIMIT);
+  if (!fresh.length) return {action: "none"};
+  const lines = fresh.map((commit) => `- \`${commit.sha.slice(0, 8)}\`: its run ${commit.html_url} was replaced before it ran`);
+  const body = [
+    `Main CI has not validated ${fresh.length === 1 ? "this commit" : "these commits"}, and no later main push run covers ${fresh.length === 1 ? "it" : "them"}:`,
+    ...lines,
+    "", "The next push to main validates them (its run plans from the nearest earlier run that ran), as does the nightly. " +
+      "Nothing was triggered automatically.",
+  ].join("\n") + fresh.map((commit) => `\n<!-- main-push-uncovered ${commit.sha} -->`).join("");
+  return openIssue ?
+    {action: "comment", issue: openIssue.number, body: body + FOOTER} :
+    {action: "open", title: ISSUE_TITLE, body: body + owedMarker([REQUIRED_CI_JOB]) + FOOTER};
 }
 
 function gh(args, input) {
@@ -211,7 +320,53 @@ function main() {
   }
   console.log(`Main CI alert: ${decision.action}${decision.reason ? ` (${decision.reason})` : ""} ` +
     `(run ${runId}, ${run.conclusion})`);
-  if (run.conclusion === "success") floorExit(repository, issues, openIssue && decision.action !== "close");
+  // An alert that owes only the golden and capture jobs does not hold the floor.
+  const owedAfter = (decision.body && owedFromIssue([decision.body])) || owed;
+  const mobileOwed = Boolean(owedAfter && !owedAfter.unknown && onlyMobileBlockFailures(owedAfter.jobs));
+  if (run.conclusion === "success") floorExit(repository, issues, Boolean(openIssue && decision.action !== "close" && !mobileOwed));
+  if (run.event === "push") {
+    try {
+      uncoveredTip(repository);
+    } catch (error) {
+      console.log(`Uncovered main commits: not checked (${error.message.split("\n")[0]})`);
+    }
+  }
+}
+
+function uncoveredTip(repository) {
+  const runs = JSON.parse(gh(["api", "-H", "Cache-Control: no-cache",
+    `repos/${repository}/actions/workflows/ci.yml/runs?branch=main&event=push&per_page=100`])).workflow_runs ?? [];
+  const memo = new Map();
+  const contains = (descendant, sha) => {
+    const key = `${sha}...${descendant}`;
+    if (!memo.has(key)) {
+      const result = spawnSync("gh", ["api", `repos/${repository}/compare/${key}`, "--jq", ".status"], {encoding: "utf8"});
+      const status = result.status === 0 ? result.stdout.trim() : "";
+      memo.set(key, ["ahead", "identical"].includes(status) ? true : ["behind", "diverged"].includes(status) ? false : null);
+    }
+    return memo.get(key);
+  };
+  const {uncovered, unknown} = uncoveredCommits({runs, now: Date.now(), contains});
+  // Read the issue afresh: the alert above may have opened or closed it.
+  const issues = JSON.parse(gh(["api", `repos/${repository}/issues?state=open&creator=github-actions%5Bbot%5D&per_page=100`]));
+  const openIssue = issues.find((issue) => issue.title === ISSUE_TITLE && !issue.pull_request) ?? null;
+  const texts = (issue) => [issue.body, ...JSON.parse(gh(["api", "--paginate", "--slurp",
+    `repos/${repository}/issues/${issue.number}/comments?per_page=100`])).flat().map((comment) => comment.body)];
+  const reported = openIssue ? reportedUncovered(texts(openIssue)) : new Set();
+  // Alert issues closed in the last 3 days, so a commit reported before an early close is counted.
+  const since = new Date(Date.now() - 3 * 24 * HOUR).toISOString();
+  const closed = JSON.parse(gh(["api",
+    `repos/${repository}/issues?state=closed&creator=github-actions%5Bbot%5D&since=${since}&per_page=100`]))
+    .filter((issue) => issue.title === ISSUE_TITLE && !issue.pull_request);
+  const counts = uncoveredReportCounts([...(openIssue ? texts(openIssue) : []), ...closed.flatMap(texts)]);
+  const decision = decideUncovered({uncovered, openIssue, reported, counts});
+  if (decision.action === "open") {
+    gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${decision.title}`, "-F", "body=@-"], decision.body);
+  } else if (decision.action === "comment") {
+    gh(["api", "-X", "POST", `repos/${repository}/issues/${decision.issue}/comments`, "-F", "body=@-"], decision.body);
+  }
+  console.log(`Uncovered main commits: ${decision.action} (${uncovered.length} uncovered` +
+    `${unknown.length ? `, ${unknown.length} unknown` : ""})`);
 }
 
 function floorExit(repository, issues, alertOpen) {
@@ -221,7 +376,21 @@ function floorExit(repository, issues, alertOpen) {
     `repos/${repository}/actions/workflows/ci.yml/runs?branch=main&created=%3E%3D${from}&per_page=100`]))
     .flatMap((page) => page.workflow_runs ?? []);
   const openIssue = issues.find((issue) => issue.title === FLOOR_EXIT_TITLE && !issue.pull_request) ?? null;
-  const decision = decideFloorExit({runs, now, openIssue, alertOpen});
+  // Read the jobs of failed runs in the window; a run that cannot be read still counts as red.
+  const since = now - FLOOR_EXIT_DAYS * DAY;
+  const mobileOnly = new Set();
+  for (const run of runs) {
+    if (!["push", "schedule"].includes(run.event) || run.status !== "completed" || !FAILED.has(run.conclusion) ||
+      Date.parse(run.created_at) < since) continue;
+    try {
+      const jobs = JSON.parse(gh(["api", "--paginate", "--slurp",
+        `repos/${repository}/actions/runs/${run.id}/jobs?per_page=100&filter=latest`])).flatMap((page) => page.jobs ?? []);
+      if (onlyMobileBlockFailures(failedJobNames(jobs))) mobileOnly.add(Number(run.id));
+    } catch {
+      // Counted as red.
+    }
+  }
+  const decision = decideFloorExit({runs, now, openIssue, alertOpen, mobileOnly});
   if (decision.action === "open") {
     gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${decision.title}`, "-F", "body=@-"], decision.body);
   }

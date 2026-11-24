@@ -11,7 +11,6 @@ import {
   CatchField,
   CatchGroundCard,
   CatchHeroSection,
-  CatchLinkedText,
   CatchReviewItem,
   CatchSiteDock,
   CatchSplitSection,
@@ -32,7 +31,6 @@ import {captureSlot, type CaptureSlots} from "../../../shared/media/captureSlot"
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {Form} from "../../../shared/ui/primitives";
 import {AppDownloadQr} from "../../marketing/AppDownloadQr";
-import {linkedParts} from "../../../shared/text/linkedParts";
 import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
 import {useFoundingHostOffer} from "../../marketing/useFoundingHostOffer";
 import {CityPicker} from "./CityPicker";
@@ -223,21 +221,15 @@ function HomePlans({home}: {home: Home}) {
 
 /**
  * A city with nothing in the next two weeks: the WhatsApp sign-up for its
- * first plans, then a line for hosts. One column: the words, the number and
- * button on their own row, the fine print, the host line.
+ * first plans. One column: the words, the number and button on one row, and
+ * the fine print. The page's host band speaks to hosts.
  */
 function HomeSignUp({home}: {home: Home}) {
   const city = home.city.label;
   const words = copy.week;
   return (
     <CatchCtaSection
-      capture={(
-        <CatchStack gap={16}>
-          <CityAlertsForm home={home} />
-          <CatchLinkedText parts={linkedParts(words.emptyHost, {host: {label: words.emptyHostLink, href: "/host/", arrow: true}})
-            .map((part) => typeof part === "string" && part.includes("{city}") ? fill(part, {city}) : part)} />
-        </CatchStack>
-      )}
+      capture={<CityAlertsForm home={home} />}
       ground="paper"
       id="whats-on"
       kicker={fill(words.eyebrowNew, {city})}
@@ -295,8 +287,8 @@ function CityAlertsForm({home}: {home: Home}) {
       {alerts.sent ? null : (
         <Form aria-label={words.title} noValidate onSubmit={alerts.handleSubmit} pending={alerts.submitting}>
           <CatchStack gap={8}>
-            <CatchStack align="center" collapseBelow="medium" direction="row" gap={8} railWidth="fit">
-              <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} errorText={alerts.phoneProblem} inputHint={words.phone}
+            <CatchStack direction="row" gap={8} railWidth="fit">
+              <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} errorText={alerts.phoneProblem} inputHint={words.phoneHint}
                 inputMode={alerts.submitting ? "inactive" : "editable"} labelMode="hidden" onChanged={alerts.setPhone}
                 recipe="phone" required title={words.phone} value={alerts.phone} />
               <CatchButton label={alerts.sendProblem ? words.retry : words.action} onPressed={() => undefined}

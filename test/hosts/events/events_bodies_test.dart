@@ -16,12 +16,12 @@ import 'package:catch_dating_app/hosts/events/events_state.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_body.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_state.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../support/catch_test_fonts.dart';
 import 'events_fixtures.dart';
 
 Future<void> _pump(
@@ -276,6 +276,32 @@ void main() {
     testWidgets('an empty list says so', (tester) async {
       await pumpGuests(tester, guestsReady(), HostEventGuestList.cancelled);
       expect(find.text('Nobody here yet.'), findsOneWidget);
+    });
+
+    testWidgets('Blocked from your events shows only with a callback and '
+        'opens the list', (tester) async {
+      await pumpGuests(tester, guestsReady(), HostEventGuestList.booked);
+      expect(find.text('Blocked from your events'), findsNothing);
+
+      var opened = 0;
+      await _pump(
+        tester,
+        HostEventGuestsBody(
+          state: guestsReady(),
+          list: HostEventGuestList.booked,
+          onView: (_) {},
+          onList: (_) {},
+          onLetIn: (_) {},
+          onOffer: (_) {},
+          onMessageAll: () {},
+          onDownload: () {},
+          onRetry: () {},
+          onBlocked: () => opened++,
+        ),
+      );
+      await tester.ensureVisible(find.text('Blocked from your events'));
+      await tester.tap(find.text('Blocked from your events'));
+      expect(opened, 1);
     });
   });
 

@@ -264,21 +264,7 @@ function readJson(relativePath) {
 }
 
 function sourceFunctionTargets() {
-  const source = fs.readFileSync(
-    path.join(repoRoot, "functions/src/index.ts"),
-    "utf8",
-  );
-  const names = [];
-  for (const match of source.matchAll(/export\s*\{([\s\S]*?)\}\s*from\s*["']/g)) {
-    for (const rawPart of match[1].split(",")) {
-      const part = rawPart.trim();
-      if (!part) continue;
-      const alias = part.match(/\s+as\s+([A-Za-z_$][\w$]*)$/)?.[1];
-      const name = alias ?? part.match(/^([A-Za-z_$][\w$]*)/)?.[1];
-      if (name) names.push(`functions:${name}`);
-    }
-  }
-  return names;
+  return listFirebaseFunctionExports(repoRoot);
 }
 
 function parseArgs(argv) {

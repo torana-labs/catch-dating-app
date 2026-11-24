@@ -1,0 +1,22 @@
+{
+  "id": "organizerTrackingSettings",
+  "path": "organizerTrackingSettings/{organizerId}",
+  "rulesMatch": "/organizerTrackingSettings/{organizerId}",
+  "typescriptInterface": "OrganizerTrackingSettingsDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/host_organizer_views.rules.test.cjs",
+  "rulesTestNames": [
+    "lets current managers get tracking settings and nothing else"
+  ],
+  "owner": "organizer analytics tracking settings callables",
+  "writerContext": "insights",
+  "read": "current organizer managers get it directly while their account is not deleted (a document never saved reads as missing); older Host builds and the website read the getOrganizerTrackingSettings callable projection",
+  "write": "server only; setOrganizerTrackingSettings",
+  "exportedFunctions": [
+    "getOrganizerTrackingSettings",
+    "setOrganizerTrackingSettings"
+  ],
+  "migrationNotes": [
+    "Pixel and GA4 ids are configuration, not credentials. The Host app derives canEdit from the organizer it already listens to, as trackingConfigurationEligible does on the server."
+  ]
+}

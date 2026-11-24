@@ -1,0 +1,48 @@
+{
+  "id": "marketing:hosted-capture-import",
+  "category": "marketing",
+  "path": "tool/marketing/import_hosted_captures.mjs",
+  "command": "node tool/marketing/import_hosted_captures.mjs",
+  "surface": "remote-read",
+  "checkSafety": "local-readonly",
+  "status": "active",
+  "role": "generator",
+  "description": "Imports exact-id/source/run/attempt/digest-bound canonical captures and verifies website dist bytes. Offline checks use Node, Git and Python 3 standard-library ZIP support; synthetic renderer commands do not invoke Flutter or providers. The real import additionally requires gh and read-only Actions access.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/marketing/import_hosted_captures.test.mjs",
+    "tool/marketing/export_hosted_captures.mjs",
+    "tool/marketing/export_hosted_captures_a.test.mjs",
+    "tool/marketing/export_hosted_captures_b.test.mjs",
+    "tool/marketing/export_hosted_captures_c.test.mjs",
+    "tool/marketing/lib/hosted_capture_support.test.mjs",
+    "tool/marketing/lib/capture_provenance.mjs",
+    "tool/marketing/sync_website_media.mjs",
+    "tool/marketing/export_app_screenshots.mjs",
+    "tool/ui_capture/run_captures.mjs",
+    "tool/ci/toolchain.env",
+    "tool/lib/repo_paths.mjs",
+    "tool/design/generate_widget_catalog.mjs",
+    "tool/design/generate_widget_classification.mjs",
+    "tool/design/component_concepts.mjs",
+    "tool/design/lib/component_naming.mjs",
+    "tool/design/lib/new_widget_inventory_declarations.mjs",
+    "tool/design/lib/production_widget_roots.mjs",
+    ".github/workflows/_web-hosting-build.yml",
+    ".github/workflows/react-surface-validation.yml",
+    ".github/workflows/tools-ci.yml",
+    ".github/workflows/marketing-captures.yml",
+    "tool/ui_capture/lib/capture_catalog_sources.mjs"
+  ],
+  "checks": [
+    "node --check tool/marketing/import_hosted_captures.mjs",
+    "node --test tool/marketing/import_hosted_captures.test.mjs",
+    "node --test tool/marketing/export_hosted_captures_a.test.mjs tool/marketing/export_hosted_captures_b.test.mjs tool/marketing/export_hosted_captures_c.test.mjs"
+  ],
+  "runbook": "docs/marketing_app_media_pipeline.md#ci-behavior"
+}

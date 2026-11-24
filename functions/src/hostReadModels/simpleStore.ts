@@ -7,7 +7,7 @@ import type {HostFormSummaryDocument, HostEventSummaryDocument,
   HostGroupSummaryDocument} from "../shared/generated/firestoreAdminTypes";
 import {projectSummary} from "../organizers/organizerForms";
 import {projectPrivateEventSetupSummary} from
-  "../events/progressiveSetup/listPrivateEventSetups";
+  "../events/progressiveSetup/setupSummaryProjection";
 import {FieldPath} from "firebase-admin/firestore";
 import * as logger from "firebase-functions/logger";
 import {emptyDirectory} from "./contactStore";

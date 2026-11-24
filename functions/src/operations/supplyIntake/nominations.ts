@@ -8,10 +8,10 @@ import type {AdminNominateOrganizerCallablePayload} from "../../shared/generated
 import {validateAdminNominateOrganizerCallablePayload} from "../../shared/generated/validators/adminNominateOrganizerInput";
 import {checkRateLimit as defaultCheckRateLimit} from "../../shared/rateLimit";
 import {validateCallableWithAjv} from "../../shared/validation";
-import {requireAdminRole} from "../../admin/adminAuth";
-import {setAdminAuditLogInTransaction} from "../../admin/adminAudit";
-import {categoriesForFormats} from "../../admin/listingProgram/formats";
-import {assertListingProgramOpen} from "../../admin/listingProgram/settings";
+import {requireAdminRole} from "../../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../../platform/adminAudit";
+import {categoriesForFormats} from "../../domain/supply/listingProgramFormats";
+import {assertListingProgramOpen} from "../../domain/supply/listingProgramState";
 import {
   createSupplyIntakeRequest,
   intakeMarket,

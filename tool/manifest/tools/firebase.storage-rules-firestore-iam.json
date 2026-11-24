@@ -1,0 +1,30 @@
+{
+  "id": "firebase:storage-rules-firestore-iam",
+  "category": "firebase",
+  "path": "tool/firebase/storage_rules_firestore_iam.mjs",
+  "command": "node tool/firebase/storage_rules_firestore_iam.mjs --all",
+  "surface": "remote-write",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "description": "Checks and idempotently provisions the Firebase Storage service-agent role required for Storage rules to read Firestore.",
+  "checks": [
+    "node --check tool/firebase/storage_rules_firestore_iam.mjs",
+    "node --test tool/firebase/storage_rules_firestore_iam.test.mjs"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "STORAGE-IAM-001",
+      "title": "Storage rules cross-service dependencies stay provisioned and live-probed",
+      "appliesTo": [
+        "storage.rules",
+        "tool/firebase/storage_rules_firestore_iam.mjs",
+        "tool/firebase/probe_chat_storage_rules.mjs",
+        "tool/deploy_firebase_targets.sh",
+        "docs/release_operations.md"
+      ],
+      "instruction": "Storage rules that call firestore.get or firestore.exists require roles/firebaserules.firestoreServiceAgent on every environment's Firebase Storage service agent. Storage deploys must fail their IAM preflight when it is absent, and authenticated upload/delete behavior must remain live-probeable without weakening participant rules."
+    }
+  ],
+  "runbook": "docs/release_operations.md#storage-rules-cross-service-readiness"
+}

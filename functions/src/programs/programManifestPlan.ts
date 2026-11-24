@@ -15,7 +15,14 @@ export type ManifestRow =
 export interface RowIssue {
   index: number;
   message: string;
+  /** The journey whose party blocks the row, for detachProgramTravelLeg. */
+  partyJourney?: {legId: string; revision: number};
 }
+
+const PARTY_ROUTE_BLOCK =
+  "Remove this journey from its party before changing route.";
+const PARTY_MOVE_BLOCK =
+  "Remove this journey from its old party before moving it.";
 
 export interface RowPlan {
   index: number;
@@ -31,6 +38,22 @@ export interface RowPlan {
   pickupPointId: string | null;
   hotelId: string | null;
   groupIds: string[];
+}
+
+/**
+ * The row's existing journey when detaching it from its party would clear a
+ * party block: the party lists it and it has not departed.
+ */
+function detachableJourney(plan: RowPlan,
+  parties: Map<string, ProgramTravelPartyDocument>,
+): RowIssue["partyJourney"] | undefined {
+  const leg = plan.existingLeg;
+  if (!leg?.partyId || !plan.legId ||
+      leg.readiness === "dispatched" || leg.readiness === "arrived" ||
+      !parties.get(leg.partyId)?.legIds?.includes(plan.legId)) {
+    return undefined;
+  }
+  return {legId: plan.legId, revision: leg.revision};
 }
 
 function normalizeLabel(value: string | null | undefined): string | null {
@@ -346,8 +369,7 @@ export function buildManifestPlans(
         rowErrors.push("Party and journey membership need reconciliation.");
       }
       if (route !== travelPartyRouteKey(plan.existingLeg)) {
-        rowErrors.push(
-          "Remove this journey from its party before changing route.");
+        rowErrors.push(PARTY_ROUTE_BLOCK);
       }
     }
     const partyLabel = normalizeLabel(row.partyLabel);
@@ -364,8 +386,7 @@ export function buildManifestPlans(
         rowErrors.push("This party already departed; use a new party label.");
       }
       if (plan.existingLeg?.partyId && plan.existingLeg.partyId !== partyId) {
-        rowErrors.push(
-          "Remove this journey from its old party before moving it.");
+        rowErrors.push(PARTY_MOVE_BLOCK);
       }
       if (partyRoutes.has(partyLabel) &&
           partyRoutes.get(partyLabel) !== route) {
@@ -388,7 +409,12 @@ export function buildManifestPlans(
     partyKeysByRow.set(index, [...partyKeys]);
     // An errored row never creates groups or alters existing membership.
     if (rowErrors.length > 0) {
-      for (const message of rowErrors) issues.push({index, message});
+      const partyJourney = detachableJourney(plan, parties);
+      for (const message of rowErrors) {
+        issues.push(partyJourney && (message === PARTY_ROUTE_BLOCK ||
+          message === PARTY_MOVE_BLOCK) ?
+          {index, message, partyJourney} : {index, message});
+      }
       continue;
     }
     if (normalizeLabel(row.householdLabel)) {

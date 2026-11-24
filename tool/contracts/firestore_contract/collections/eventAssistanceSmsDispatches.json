@@ -1,0 +1,13 @@
+{
+  "id": "eventAssistanceSmsDispatches",
+  "path": "eventAssistanceSmsDispatches/{attemptId}",
+  "rulesMatch": "/eventAssistanceSmsDispatches/{attemptId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted event-assistance SMS worker",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Sender provisioning and provider activation remain separate gates. Verified participant callables record event-service consent; direct client writes remain denied."
+  ]
+}

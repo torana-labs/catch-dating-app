@@ -1,0 +1,11 @@
+{
+  "id": "eventSuccessFeedback",
+  "path": "eventSuccessFeedback/{feedbackId}",
+  "rulesMatch": "/eventSuccessFeedback/{feedbackId}",
+  "typescriptInterface": "EventSuccessFeedbackDocument",
+  "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+  "owner": "attendee direct write after attended event; attendee read; backend aggregate",
+  "writerContext": "insights",
+  "read": "the guest who wrote it",
+  "write": "the guest creates and updates validated feedback; delete server only"
+}

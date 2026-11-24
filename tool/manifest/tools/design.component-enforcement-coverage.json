@@ -1,0 +1,29 @@
+{
+  "id": "design:component-enforcement-coverage",
+  "category": "design",
+  "path": "tool/design/check_component_enforcement_coverage.mjs",
+  "command": "node tool/design/check_component_enforcement_coverage.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Requires every component to have static enforcement, executable contract verification, or an exceptional unexpired waiver, and every plugin/checker code to have a catalog owner.",
+  "checks": [
+    "node --test tool/design/check_component_enforcement_coverage.test.mjs",
+    "node tool/design/check_component_enforcement_coverage.mjs"
+  ],
+  "impactPaths": [
+    "tool/design/check_component_enforcement_coverage.test.mjs",
+    "tool/design/generated/enforcement_expectations.json",
+    "widgetbook/lib/main.directories.g.dart"
+  ],
+  "role": "gate",
+  "alsoEnforces": [
+    "UI-LINT-001"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "queueGate": "always"
+}

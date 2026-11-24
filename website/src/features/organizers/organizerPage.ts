@@ -33,6 +33,8 @@ export interface OrganizerPageRecord {
   profile: Pick<HostListing, "listingVariant" | "facts" | "sources" | "host">;
   /** The organiser's resolved women-led label; pages built before the field existed read as false. */
   womenLed: boolean;
+  /** The advertising-tag projection (#2063); null, also for pages built before it, keeps every tag off. */
+  tracking: NonNullable<PageDocument["tracking"]> | null;
 }
 
 const pastLimit = 24;
@@ -55,12 +57,12 @@ export function organizerPageRecord(page: PageDocument, readAt: number): Organiz
     profile: {listingVariant: listing.listingVariant, facts: listing.facts, sources: listing.sources,
       ...(listing.host ? {host: listing.host} : {})},
     womenLed: page.womenLed === true,
+    tracking: page.tracking ?? null,
   }, readAt);
 }
 
 /**
- * The same record from a listing, for pages assembled from their sources
- * until every environment has read models, and for the static build. It
+ * The same record from a listing, for the static Vite rollback build. It
  * follows the read model's rules in functions/src/publicPages/pageModel.ts.
  * The listing projection carries no women-led field, so only a page built
  * from the read model shows the label.
@@ -108,6 +110,7 @@ export function organizerPageFromListing(listing: HostListing, readAt: number): 
     profile: {listingVariant: listing.listingVariant, facts: listing.facts, sources: listing.sources,
       ...(listing.host ? {host: listing.host} : {})},
     womenLed: false,
+    tracking: null,
   }, readAt);
 }
 

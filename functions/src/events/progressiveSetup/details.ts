@@ -2,7 +2,6 @@ import {normalizeEventItinerary, assertValidEventItinerary} from
   "../event_itinerary";
 import {normalizeUploadedPhotosForFirestore} from
   "../../shared/uploadedPhotoNormalization";
-import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventDocument, OrganizerEventVenueDocument} from
@@ -13,7 +12,8 @@ import {requireDoc} from "../../shared/validation";
 import {EVENT_MAX_DURATION_MINUTES} from "../../shared/businessRules";
 import {organizerEventVenueDocumentId,
   assertOrganizerEventVenueSource} from "../organizerEventVenues";
-import {canonicalJson} from "../eventSetupPreferences/resolve";
+import {canonicalJson} from
+  "../../domain/formats/eventSetupPreferences/resolve";
 import {projectManagerEventSetupDefaults} from
   "../../organizers/eventSetupDefaults/service";
 import {eventSetupDefaultsDependencies} from
@@ -108,7 +108,6 @@ export async function updatePrivateEventDetails(params: {
         setupRevision: receipt.appliedRevision,
         replayed: true};
     }
-    await readSeatMigrationWriterFence({db, tx, eventId: command.eventId});
     if (!validateEventDocument(event) ||
         event.publicationState !== "private" ||
         event.publicRegistrationEnabled !== false ||
@@ -286,10 +285,6 @@ export async function updatePrivateEventDetails(params: {
       tx.set(db.collection("eventSeatLedgers").doc(command.eventId),
         ledger.ledger);
     }
-    if (ledger?.fence) {
-      tx.create(db.collection("eventSeatMigrationFences")
-        .doc(command.eventId), ledger.fence);
-    }
     tx.update(eventRef, {...patch, setupRevision: revision + 1,
       updatedAt: deps.serverTimestamp()});
     tx.create(receiptRef, {operation: "details", actorUid,
@@ -303,7 +298,7 @@ export async function updatePrivateEventDetails(params: {
 
 
 /** Only use after the transaction established no receipt and no active run. */
-export function privateDetailsReviewStale(
+function privateDetailsReviewStale(
   command: UpdatePrivateEventDetailsCommand
 ): HttpsError {
   return new HttpsError("aborted", "Event settings changed. Review them again.",
@@ -315,7 +310,7 @@ export function privateDetailsReviewStale(
 
 
 /** Durable rejection blocks delayed sends of a discarded command. */
-export function isDiscardedDetailsReceipt(raw: Record<string, unknown>,
+function isDiscardedDetailsReceipt(raw: Record<string, unknown>,
   actorUid: string, command: UpdatePrivateEventDetailsCommand): boolean {
   if (raw.outcome !== "discarded") return false;
   if (raw.operation !== "details" || raw.actorUid !== actorUid ||

@@ -1,0 +1,13 @@
+{
+  "id": "config_cities",
+  "path": "config/cities",
+  "rulesMatch": "/config/cities",
+  "rulesTestFile": "functions/test/rules/public_config.rules.test.cjs",
+  "owner": "public read, server/admin write",
+  "writerContext": "platform",
+  "read": "any user, authenticated or not",
+  "write": "server/admin only",
+  "migrationNotes": [
+    "Rules fall back to the hard-coded city enum when this document is absent."
+  ]
+}

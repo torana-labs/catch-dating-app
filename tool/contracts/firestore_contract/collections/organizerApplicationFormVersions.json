@@ -1,0 +1,11 @@
+{
+  "id": "organizerApplicationFormVersions",
+  "path": "organizerApplicationFormVersions/{versionId}",
+  "rulesMatch": "/organizerApplicationFormVersions/{versionId}",
+  "typescriptInterface": "OrganizerApplicationFormVersionDocument",
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "organizer application form publish and import callables",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

@@ -1,6 +1,8 @@
 import {randomUUID} from "node:crypto";
 import {FieldPath, Firestore, Transaction} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
+import {stageRunAndWorkItemCreate, stageRunSet} from
+  "../../operations/transactionalWrites";
 import {operationActionId, operationContentHash} from
   "../../operations/durableActions";
 import {operationResourceLeaseId} from
@@ -9,7 +11,8 @@ import {FirestoreOperationsRepository} from
   "../../operations/firestoreRepository";
 import type {OperationActionReceipt, OperationLease} from
   "../../operations/models";
-import {runAssistanceTransaction as transact} from "./transactionCallback";
+import {runAssistanceTransaction as transact} from
+  "../../platform/transactionCallback";
 import {advanceFanoutPage} from "./boundedFanout";
 import {ensureCurrentGuestEnrollment} from "./currentGuestEnrollment";
 import {requireDocumentId} from "./guestRecords";
@@ -71,8 +74,7 @@ export class OperationalNoticeFanoutStore {
       const current = await readOperationalNoticeFanoutAuthority(this.db, tx,
         frozen, authority.binding, committedAt);
       if (current.kind !== "ready") return current;
-      tx.create(runRef, proposed.run);
-      tx.create(itemRef, proposed.item);
+      stageRunAndWorkItemCreate(this.db, tx, proposed);
       return {...proposed, kind: "queued" as const, replayed: false};
     });
   }
@@ -245,7 +247,7 @@ export class OperationalNoticeFanoutStore {
       const prepared = await this.operations.prepareWorkItemAction(tx,
         {workItem: item, receipt, lease});
       prepared.commit();
-      tx.set(this.db.collection(operationCollections.runs).doc(run.runId), run);
+      stageRunSet(this.db, tx, run);
       return next;
     });
   }

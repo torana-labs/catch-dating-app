@@ -1,11 +1,14 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/discovery/data/city_repository.dart';
+import 'package:catch_dating_app/contexts/discovery/data/explore_recommendations_repository.dart';
+import 'package:catch_dating_app/contexts/discovery/data/explore_search_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/organizers/actions/organizer_follow_controller.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
-import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/explore/presentation/explore_chrome_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_city_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_cross_paths_provider.dart';
@@ -21,14 +24,13 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_feed_skele
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_screen_empty_state.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_follow_controller.dart';
+import 'package:catch_dating_app/pages/event/event_detail_route_transition.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
 import 'package:catch_kernel/city_data.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/cache/cache_policies.dart';
-import 'package:catch_platform/cities/city_repository.dart';
 import 'package:catch_platform/device/device_location.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
@@ -191,13 +193,13 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           );
         case ExploreScreenRetryTarget.explore:
         case null:
+          // The read owners; the organizer and feed compositions rebuild
+          // from them.
           ref.invalidate(
             watchOrganizersByLocationProvider(city.effectiveMarketId),
           );
-          ref.invalidate(exploreOrganizersViewModelProvider);
-          ref.invalidate(exploreSourceOrganizersProvider);
+          ref.invalidate(exploreServerSearchProvider);
           ref.invalidate(exploreDiscoveryWindowProvider);
-          ref.invalidate(exploreFeedViewModelProvider);
       }
     }
 
@@ -701,10 +703,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     ref.invalidate(exploreDiscoveryReferenceNowProvider);
     ref.invalidate(exploreDiscoveryWindowProvider);
     ref.invalidate(watchOrganizersByLocationProvider);
-    ref.invalidate(exploreSourceOrganizersProvider);
-    ref.invalidate(exploreOrganizersViewModelProvider);
-    ref.invalidate(exploreFeedViewModelProvider);
-    ref.invalidate(exploreRecommendationsProvider);
+    // The one-shot reads under the organizer, feed and recommendation
+    // compositions; the compositions rebuild from them.
+    ref.invalidate(exploreServerSearchProvider);
+    ref.invalidate(exploreRecommendedEventsProvider);
 
     // The feed is a synchronous composition with no `.future`: wait for the
     // recomposed feed to leave loading, at most the refresh deadline.

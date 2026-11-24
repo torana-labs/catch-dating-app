@@ -1,0 +1,22 @@
+{
+  "id": "hostOrganizerBillViews",
+  "path": "hostOrganizerBillViews/{billId}",
+  "rulesMatch": "/hostOrganizerBillViews/{billId}",
+  "typescriptInterface": "HostOrganizerBillViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/host_organizer_views.rules.test.cjs",
+  "rulesTestNames": [
+    "lets only the organizer's owner list its bill views"
+  ],
+  "owner": "Host read model projector: hostReadModels organizer bill view trigger",
+  "writerContext": "host",
+  "read": "the organizer's current owner (ownerUserId, else the primary host) gets and lists (organizerId equality) while their account is not deleted",
+  "write": "server only; written from each organizerBills document once it is sent, deleted with it",
+  "exportedFunctions": [
+    "onHostOrganizerBillViewBillChanged"
+  ],
+  "migrationNotes": [
+    "bill equals what listOrganizerBills returns for the bill: no staff ids, reminders, history or link id, and the payment link only while unpaid. The host-organizer-bill-views copy-forward migration creates views for bills sent before the trigger.",
+    "listOrganizerBills stays deployed for older Host builds only; current Host builds and the website billing portal read these views."
+  ]
+}

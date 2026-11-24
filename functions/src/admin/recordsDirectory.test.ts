@@ -37,7 +37,9 @@ function seed(): FakeFirestore {
     publicCategoryLabel: "Trivia", createdAt: at("2026-08-14T08:00:00Z"),
     hostName: "Meher", imageUrl: "https://example.com/lantern.jpg",
     claim: {state: "claimed", claimHref: null, lastClaimRequestId: null},
-    ownership: {claimedAt: at("2026-08-20T08:00:00Z")}});
+    ownership: {claimedAt: at("2026-08-20T08:00:00Z")},
+    signupSource: {source: "friendOrHost",
+      answeredAt: at("2026-08-14T08:00:00Z")}});
   organizer("bandra", {name: "Sandbar Runners", organizerType: "club",
     appVisibility: "hidden", createdAt: at("2026-10-02T08:00:00Z")});
   organizer("indore", {name: "MOON MOTH", locationMarketId: "in-mp-indore",
@@ -235,6 +237,7 @@ test("organizer overview reads the journey from nomination on", async () => {
   ]);
   assert.equal(response.nextStep, "claim");
   assert.equal(response.growth, null);
+  assert.equal(response.signupSource, null);
   assert.deepEqual(response.upcomingEvents.map((event) =>
     [event.key, event.status]),
   [["imported:nightfall", "live"], ["imported:neon", "needsCheck"]]);
@@ -261,6 +264,8 @@ test("organizer overview shows a waiting claim and a host", async () => {
   assert.deepEqual(lantern.growth, {channel: "partner",
     nominator: {uid: "neha", name: null, role: "partner"},
     firstPaidBookingAt: "2026-08-25T10:00:00.000Z"});
+  assert.deepEqual(lantern.signupSource, {source: "friendOrHost",
+    answeredAt: "2026-08-14T08:00:00.000Z"});
   assert.equal(lantern.upcomingEventCount, 2);
 
   await assert.rejects(adminGetOrganizerOverviewHandler(

@@ -77,6 +77,8 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
   };
   const seeds = new Map();
   const sources = [];
+  // The native font of the seeds, when any were taken: the font CI renders with.
+  let seedFont = null;
   {
     const repositoryId = (await request(`repos/${repository}`)).id;
     const workflowIds = new Map();
@@ -124,8 +126,28 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
         sources.push({artifactId: artifact.id, runId: producer.id, event: producer.event, sourceSha: producer.head_sha});
       }
     }
+    seedFont = font;
   }
   let renderIds = [...stale()];
+  // A committed PNG can carry another machine's native font: a local render
+  // committed by hand keeps its inputs current, so nothing above calls it
+  // stale. Reused beside seeds from CI's runners it would mix two fonts in one
+  // bundle, which the reuse job refuses ("Reused captures mix native fonts").
+  // Send it to the renderer, which stamps the runner's font. Without seeds,
+  // the font most committed PNGs share is the one the bundle keeps.
+  const committedFonts = new Map();
+  for (const capture of captures) {
+    if (renderIds.includes(capture.id) || seeds.has(capture.id)) continue;
+    try {
+      committedFonts.set(capture.id, readProvenance(fs.readFileSync(path.join(root, capture.sourcePath))).nativeFontSha256);
+    } catch { /* No provenance: stale() already sent it to the renderer. */ }
+  }
+  const counts = new Map();
+  for (const value of committedFonts.values()) counts.set(value, (counts.get(value) ?? 0) + 1);
+  const bundleFont = seedFont ?? [...counts].sort((left, right) => right[1] - left[1])[0]?.[0] ?? null;
+  for (const [id, committedFont] of committedFonts) {
+    if (bundleFont && committedFont !== bundleFont) renderIds.push(id);
+  }
   let nativeChanged = false;
   if (eventName === "schedule") {
     // Linux cannot see the macOS font or image, so the nightly asks the probe.
@@ -145,11 +167,49 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
     seeds, seedIds: [...seeds.keys()], seedSources: sources};
 }
 
-function githubRequest(endpoint, {binary = false} = {}) {
-  const result = spawnSync("gh", ["api", "-H", "Cache-Control: no-cache", endpoint],
-    {encoding: binary ? null : "utf8", maxBuffer: 256 * 1024 * 1024, timeout: 120_000});
-  assert.equal(result.status, 0, result.stderr?.toString() || "Cannot read capture bundles.");
-  return binary ? result.stdout : JSON.parse(result.stdout);
+export const GH_API_TIMEOUT_MS = 120_000;
+export const GH_API_ATTEMPTS = 3;
+// Waits before the second and third attempts.
+export const GH_API_BACKOFF_MS = Object.freeze([5_000, 20_000]);
+// Failures worth another attempt: rate limits, server errors and network
+// trouble. A 404, a 403 that is not a rate limit, or bad JSON fails at once.
+const transientGhFailure = /\bHTTP (?:429|5\d\d)\b|rate limit|timed? ?out|connection (?:reset|refused)|ECONNRESET|EOF|TLS handshake|could not resolve|no such host|temporary failure in name resolution|network is unreachable/iu;
+
+/**
+ * One `gh api` call, retried on transient failures. A call that hits the
+ * timeout is reported as a timeout, not as a missing exit status.
+ */
+export async function githubRequest(endpoint, {binary = false, spawn = spawnSync,
+  sleep = ms => new Promise(resolve => setTimeout(resolve, ms)), log = message => console.error(message)} = {}) {
+  let failure = "";
+  for (let attempt = 1; ; attempt += 1) {
+    if (attempt > 1) {
+      const wait = GH_API_BACKOFF_MS[attempt - 2];
+      log(`${failure} Retrying in ${wait / 1000} s (attempt ${attempt} of ${GH_API_ATTEMPTS}).`);
+      await sleep(wait);
+    }
+    const result = spawn("gh", ["api", "-H", "Cache-Control: no-cache", endpoint],
+      {encoding: binary ? null : "utf8", maxBuffer: 256 * 1024 * 1024, timeout: GH_API_TIMEOUT_MS});
+    if (result.status === 0 && !result.error) return binary ? result.stdout : JSON.parse(result.stdout);
+    const stderr = result.stderr?.toString().trim() ?? "";
+    let transient;
+    if (result.error?.code === "ETIMEDOUT") {
+      failure = `gh api ${endpoint} timed out after ${GH_API_TIMEOUT_MS / 1000} s.`;
+      transient = true;
+    } else if (result.error) {
+      failure = `gh api ${endpoint} could not run: ${result.error.message}`;
+      transient = false;
+    } else {
+      failure = `gh api ${endpoint} failed (exit ${result.status ?? `signal ${result.signal}`}): ${stderr || "no error output"}`;
+      transient = transientGhFailure.test(stderr);
+    }
+    if (!transient) break;
+    if (attempt === GH_API_ATTEMPTS) {
+      failure += ` Gave up after ${GH_API_ATTEMPTS} attempts.`;
+      break;
+    }
+  }
+  throw new Error(`${failure} Cannot read capture bundles.`);
 }
 
 /**

@@ -877,14 +877,16 @@ final class ProgramWhatsappInboxFamily extends $Family
   String toString() => r'programWhatsappInboxProvider';
 }
 
-/// The wedding's WhatsApp number for the inbox header, or null when it
-/// cannot be read now.
+/// The wedding's WhatsApp number for the inbox header from
+/// `programSenderViews` (#2306), or null when there is none or it cannot be
+/// read now.
 
 @ProviderFor(programWhatsappSender)
 final programWhatsappSenderProvider = ProgramWhatsappSenderFamily._();
 
-/// The wedding's WhatsApp number for the inbox header, or null when it
-/// cannot be read now.
+/// The wedding's WhatsApp number for the inbox header from
+/// `programSenderViews` (#2306), or null when there is none or it cannot be
+/// read now.
 
 final class ProgramWhatsappSenderProvider
     extends
@@ -896,8 +898,9 @@ final class ProgramWhatsappSenderProvider
     with
         $FutureModifier<ProgramWhatsappSender?>,
         $FutureProvider<ProgramWhatsappSender?> {
-  /// The wedding's WhatsApp number for the inbox header, or null when it
-  /// cannot be read now.
+  /// The wedding's WhatsApp number for the inbox header from
+  /// `programSenderViews` (#2306), or null when there is none or it cannot be
+  /// read now.
   ProgramWhatsappSenderProvider._({
     required ProgramWhatsappSenderFamily super.from,
     required String super.argument,
@@ -943,10 +946,11 @@ final class ProgramWhatsappSenderProvider
 }
 
 String _$programWhatsappSenderHash() =>
-    r'2c9b0510d69191eaa47515f14715cc704da323a2';
+    r'3e576a9943df6fcc9b50bbe27a70415baf1540f6';
 
-/// The wedding's WhatsApp number for the inbox header, or null when it
-/// cannot be read now.
+/// The wedding's WhatsApp number for the inbox header from
+/// `programSenderViews` (#2306), or null when there is none or it cannot be
+/// read now.
 
 final class ProgramWhatsappSenderFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ProgramWhatsappSender?>, String> {
@@ -959,8 +963,9 @@ final class ProgramWhatsappSenderFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The wedding's WhatsApp number for the inbox header, or null when it
-  /// cannot be read now.
+  /// The wedding's WhatsApp number for the inbox header from
+  /// `programSenderViews` (#2306), or null when there is none or it cannot be
+  /// read now.
 
   ProgramWhatsappSenderProvider call(String programId) =>
       ProgramWhatsappSenderProvider._(argument: programId, from: this);
@@ -1153,12 +1158,14 @@ final class ProgramCannedRepliesFamily extends $Family
   String toString() => r'programCannedRepliesProvider';
 }
 
-/// The assistant settings and the wedding's number.
+/// The assistant settings and the wedding's number, live from
+/// `programAssistantSettingViews` and `programSenderViews` (#2306).
 
 @ProviderFor(programAssistantSettings)
 final programAssistantSettingsProvider = ProgramAssistantSettingsFamily._();
 
-/// The assistant settings and the wedding's number.
+/// The assistant settings and the wedding's number, live from
+/// `programAssistantSettingViews` and `programSenderViews` (#2306).
 
 final class ProgramAssistantSettingsProvider
     extends
@@ -1170,7 +1177,8 @@ final class ProgramAssistantSettingsProvider
     with
         $FutureModifier<ProgramReadView<ProgramAssistantSettings>>,
         $FutureProvider<ProgramReadView<ProgramAssistantSettings>> {
-  /// The assistant settings and the wedding's number.
+  /// The assistant settings and the wedding's number, live from
+  /// `programAssistantSettingViews` and `programSenderViews` (#2306).
   ProgramAssistantSettingsProvider._({
     required ProgramAssistantSettingsFamily super.from,
     required String super.argument,
@@ -1216,9 +1224,10 @@ final class ProgramAssistantSettingsProvider
 }
 
 String _$programAssistantSettingsHash() =>
-    r'a4f8b07aebe56df70af8fed478e435b526e7790b';
+    r'7e99a41094199e693793df81351352ffaeca08dd';
 
-/// The assistant settings and the wedding's number.
+/// The assistant settings and the wedding's number, live from
+/// `programAssistantSettingViews` and `programSenderViews` (#2306).
 
 final class ProgramAssistantSettingsFamily extends $Family
     with
@@ -1235,7 +1244,8 @@ final class ProgramAssistantSettingsFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The assistant settings and the wedding's number.
+  /// The assistant settings and the wedding's number, live from
+  /// `programAssistantSettingViews` and `programSenderViews` (#2306).
 
   ProgramAssistantSettingsProvider call(String programId) =>
       ProgramAssistantSettingsProvider._(argument: programId, from: this);

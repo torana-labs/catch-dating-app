@@ -52,7 +52,7 @@ export interface EventMetaCopy {
 export interface WebsiteMetaCopy {
   readonly routes: Readonly<
     Record<
-      "sales_demo" | "home" | "visitor_discovery" | "cities" | "host" | "weddings" | "weddings_apply" |  "event_runtime" | "event_rehearsal" | "event_assistance" | "event_offer" | "event_booking" | "event_invite" | "household_rsvp" | "programme_link" | "account" | "host_billing" | "public_form" | "organizers" | "claim" | "listing_requests" | "listing_policy" | "takedown_policy" | "privacy" | "terms" | "help" | "account_deletion" | "refunds" | "contact" | "not_found",
+      "sales_demo" | "home" | "visitor_discovery" | "cities" | "host" | "weddings" | "weddings_apply" |  "event_runtime" | "event_rehearsal" | "event_assistance" | "event_offer" | "event_booking" | "event_invite" | "household_rsvp" | "programme_link" | "account" | "host_billing" | "walkthrough_manage" | "public_form" | "organizers" | "claim" | "listing_requests" | "listing_policy" | "takedown_policy" | "privacy" | "terms" | "help" | "account_deletion" | "refunds" | "contact" | "not_found",
       StaticPageMetaCopy
     >
   >;
@@ -64,6 +64,8 @@ export type PublishedLegalPath = "/help/" | "/privacy/" | "/terms/" | "/delete-a
 export type PublishedLegalPageKey = "help" | "privacy" | "terms" | "account_deletion" | "refunds" | "contact";
 
 export interface PublishedLegalSection {
+  /** A fixed anchor that other pages link to, such as "ads" for /privacy/#ads. Without one the anchor follows the heading. */
+  readonly anchor?: string;
   readonly heading: string;
   readonly paragraphs: readonly string[];
   readonly bullets?: readonly string[];

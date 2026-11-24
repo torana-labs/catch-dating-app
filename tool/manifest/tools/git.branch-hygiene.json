@@ -1,0 +1,44 @@
+{
+  "id": "git:branch-hygiene",
+  "category": "git",
+  "path": "tool/git/branch_hygiene.mjs",
+  "command": "node tool/git/branch_hygiene.mjs --help",
+  "surface": "remote-destructive",
+  "guard": "apply-flag",
+  "guardReason": "Deletes remote branches only with --prune; the default run audits and reports.",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/git/branch_hygiene.test.mjs",
+    ".github/workflows/branch-hygiene.yml",
+    ".github/workflows/branch-prune.yml"
+  ],
+  "description": "Classifies remote or local branches using ancestry, exact tree history, exact merged-PR identity, final changed-path identity, age, and open-PR state so completed refs can be pruned without hiding abandoned code.",
+  "checks": [
+    "node --check tool/git/branch_hygiene.mjs",
+    "node --test tool/git/branch_hygiene.test.mjs",
+    "node tool/git/branch_hygiene.mjs --help"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "GIT-BRANCH-HYGIENE-001",
+      "title": "Keep completed branches disposable and surface abandoned code",
+      "appliesTo": [
+        ".github/workflows/branch-hygiene.yml",
+        "docs/release_operations.md",
+        "tool/git/branch_hygiene.mjs",
+        "tool/git/branch_hygiene.test.mjs",
+        "tool/manifest/**"
+      ],
+      "instruction": "Delete single-use branches after semantic integration is proven. Audit remote refs daily, never auto-delete open-PR or unique-looking work, and fail visibly when a branch remains outside main without an open PR beyond the review window."
+    }
+  ],
+  "runbook": "docs/release_operations.md#daily-orphan-branch-detection",
+  "checkSafety": "local-readonly"
+}

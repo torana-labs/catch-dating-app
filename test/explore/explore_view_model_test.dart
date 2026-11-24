@@ -28,14 +28,14 @@ import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/device/device_location.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
+import 'package:catch_test_support/event_organizer_summary_fixture.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart' as event_test;
 import '../organizers/organizers_test_helpers.dart';
-import '../support/event_organizer_summary_fixture.dart';
-import '../test_pump_helpers.dart';
 import 'explore_device_location_fakes.dart';
 
 final _l10n = AppLocalizationsEn();

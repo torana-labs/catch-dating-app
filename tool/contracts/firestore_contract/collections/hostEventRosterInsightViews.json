@@ -1,0 +1,27 @@
+{
+  "id": "hostEventRosterInsightViews",
+  "path": "hostEventRosterInsightViews/{eventId}",
+  "rulesMatch": "/hostEventRosterInsightViews/{eventId}",
+  "typescriptInterface": "HostEventRosterInsightViewDocument",
+  "dartModel": "lib/contexts/audience/domain/crm/host_event_roster_insights.dart",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers get their door read models and nothing else"
+  ],
+  "owner": "Host roster insight evaluator: hostReadModels roster insight view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get their event's document; a view not written yet reads as missing; nobody lists the collection",
+  "write": "server only; written by every evaluation that changes it, frozen a day after the event ends, deleted with the event or its organizer",
+  "exportedFunctions": [
+    "dispatchEvents",
+    "dispatchEventAttendees",
+    "onHostRosterInsightEdgeChanged",
+    "onHostRosterInsightContactChanged",
+    "onHostRosterInsightTraitsChanged",
+    "onHostRosterInsightBookingPaymentChanged"
+  ],
+  "migrationNotes": [
+    "Rows are the retired getEventRosterInsights rows except that top_catch_spender is left to the phone (from hostOrganizerSpendProjections) and member is always stored.",
+    "Labels use history from before the event's start, so a view is frozen 24 hours after the event ends (its start when it has no end)."
+  ]
+}

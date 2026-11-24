@@ -56,10 +56,28 @@ paused, so the retain window starts only when a listener is removed. A return
 or a hidden tab becoming visible refetches once in the background when the
 data is older than `staleAfter`.
 
-`@Riverpod(keepAlive: true)` stays reserved for account-free infrastructure:
-SDK singletons, stateless repositories, platform facades, routers and durable
-stores keyed inside by account. A kept-alive read owner names its account-free
-decision in its `// keepalive:` marker.
+Per-account state that is not a read, such as a search box, the selected
+organizer, a flow's draft or a set of pending references, also takes the
+session lifetime: its `build` calls `ref.retainForCurrentSession()`
+(`lib/contexts/account/data/authenticated_session.dart`). The provider stays
+while the signed-in account stays the same, and a sign-out, an account change
+or an auth failure rebuilds it from scratch, so nothing one account entered
+reaches the next and nothing has to be reset by hand at sign-out. A guest's
+state is kept the same way while signed out, and a first sign-in keeps it,
+because it belongs to no account.
+
+`@Riverpod(keepAlive: true)` stays reserved for two scopes, and its
+`// keepalive:` marker names one of them first:
+
+- `account-free:` holds nothing that belongs to one account: SDK singletons,
+  stateless repositories, platform facades, routers, app-wide UI state, public
+  configuration and durable stores keyed inside by account.
+- `session-root:` is the signed-in identity, or follows it, and kept-alive
+  infrastructure reads it: the auth stream, `uid`, the authenticated session
+  and the signed-in account's own profile, which the router reads. Riverpod
+  forbids a kept-alive provider reading an auto-dispose one, so the router's
+  inputs stay kept alive; each follows the uid and reads null while signed
+  out.
 
 ## The owner's freshness table
 
@@ -211,26 +229,24 @@ counting fake, as `test/platform/cache/cache_lifetime_test.dart` does.
 ## Enforcement
 
 `tool/architecture/provider_graph.dart` (`audit:provider-graph`) holds the
-rules. They run in report-only mode: the findings that existed when the rules
-landed are listed by exact rule, path, symbol and detail in
-`tool/architecture/provider_graph_baseline.json`, and the check fails only
-when a finding is not listed. Each context's migration PR deletes the entries
-it fixes, so the list only shrinks.
+rules, and they gate: every finding fails the check, and there is no
+baseline. The last column records what each rule found when it landed in
+report-only mode.
 
 | Rule | Fails when | Listed at landing |
 |---|---|---|
-| CACHE-LIFETIME-001 | A read owner declares more than one lifetime, or is `keepAlive: true` without an account-free `// keepalive:` decision | 3 |
+| CACHE-LIFETIME-001 | A read owner declares more than one lifetime, or is `keepAlive: true` without an `account-free:` or `session-root:` decision | 3 |
 | CACHE-POLICY-001 | A lifetime gets anything but a `CachePolicies` member, or a `CachePolicy` is built outside the table | 0 |
 | CACHE-ACCOUNT-001 | A timed or session read owner of account data has no `AuthenticatedSession` in its key | 0 |
 | CACHE-KEY-001 | A timed or session read owner's key holds a raw `DateTime` | 0 |
 | CACHE-INVALIDATE-001 | Presentation code invalidates or refreshes a read owner outside a retry or pull-to-refresh, or a retry targets a composition instead of the read owner | 120 |
 | CACHE-LISTENER-001 | A write invalidates a Firestore listener provider, or a listener declares tags | 9 |
 | KEEPALIVE-MANUAL-001 | A handwritten provider without `.autoDispose` lacks a `// keepalive:` marker | 5 |
+| KEEPALIVE-SCOPE-001 | A kept-alive provider's marker names no scope; a `session-root:` reads no identity (`uid`, the session, the auth stream or repository, `currentUser`); or an `account-free:` notifier reads the signed-in account, which makes it per-account state that needs the session lifetime | added 22 November 2026 with every marker scoped |
 
 ```sh
 dart run tool/architecture/provider_graph.dart --check
 dart run tool/architecture/provider_graph.dart --json   # readOwner, readKinds, lifetime per provider
-dart run tool/architecture/provider_graph.dart --write-cache-baseline   # reviewed reset only
 ```
 
 The pass reads parsed source, not resolved types. It follows a repository
@@ -245,36 +261,31 @@ or `uid` parameter. A retry is a closure passed as `onRetry`, `onRefresh` or
 
 ### Phase 1: foundations, report-only
 
-The pieces above land with no read owner migrated, and the rules list today's
-findings instead of failing on them.
+The pieces above landed with no read owner migrated, and the rules listed the
+findings of the time in a baseline instead of failing on them.
 
-### Phase 2: context migrations empty the baseline
+### Phase 2: context migrations emptied the baseline
 
-Code that survives the redesign is on the contract: the listener and
-keep-alive findings are gone, and so are the invalidations outside legacy
-screens. One lifetime finding stays: `watchUserProfileProvider` holds account
-data but is kept alive, because the kept-alive onboarding controller reads it
-(Riverpod forbids a kept-alive provider reading an auto-dispose one), and a
-session key would change its 27 callers. It moves when onboarding is redrawn
-(P6 onboarding) or with a session-keyed profile read. Everything else the
-baseline lists is `CACHE-INVALIDATE-001` in screens the redesign deletes, so
-each screen PR deletes its entries with the screen. When the baseline is
-empty, the rules gate with no list.
+Code that survives the redesign moved onto the contract context by context,
+and on 22 November 2026 the rest followed:
 
-| Legacy code | Entries | Call sites | Deleted by |
-|---|---|---|---|
-| `lib/hosts/today/personalization` | 2 | 2 | P3.1 Today |
-| `lib/event_success/presentation` (departure controller, attendance disposition editor) | 3 | 3 | P3.4 Live |
-| `lib/event_rehearsal/presentation` (start screen source refresh) | 1 | 1 | P5 events workspace |
-| `lib/hosts/presentation/customers` | 22 | 23 | P5 people |
-| `lib/hosts/presentation/inbox` | 10 | 10 | P5 people |
-| `lib/hosts/presentation/forms` | 12 | 14 | P5 forms |
-| `lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart`, `host_tracking_settings_section.dart` | 5 | 5 | P5 organizer |
-| `lib/programs/presentation` | 11 | 12 | P5 programmes |
-| `lib/explore/presentation` | 7 | 7 | P6 explore |
-| `lib/chats/presentation/chat_retry_controller.dart`, `lib/swipes/presentation` | 5 | 5 | P6 after and chats |
-| `lib/user_profile/presentation` | 2 | 2 | P6 you |
-| Total | 81 | 85 | |
+- Every kept-alive provider was classified: about 110 are `account-free:`
+  infrastructure, and four are `session-root:` (the auth stream, `uid`, the
+  authenticated session and `watchUserProfileProvider`, which the router
+  reads).
+- Fourteen that held per-account state moved to the session lifetime: the
+  Chats and Explore search and filter state, the selected Explore city and its
+  guard, the Host organizer selection, the five pending rehearsal and
+  assistance reference sets, the foreground notification controller, the
+  companion launch registry and the onboarding controller. Sign-out no longer
+  resets Explore by hand.
+- The last legacy invalidations were fixed. Retries now reach read owners
+  rather than compositions. The WhatsApp setup and form profile claim writes
+  declare `AudienceTags` and `ProfileTags`. Read-backs before a command read
+  the repository and never refresh a kept read.
+
+The baseline file and `--write-cache-baseline` are gone, and the rules gate
+with no list.
 
 ## Code map
 

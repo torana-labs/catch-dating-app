@@ -1,13 +1,15 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/auth/presentation/host_auth_card.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_controller.dart';
 import 'package:catch_dating_app/pages/startup/splash_screen.dart';
 import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:country_code_picker/country_code_picker.dart';
@@ -15,9 +17,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../onboarding/onboarding_test_helpers.dart';
-import '../../test_pump_helpers.dart';
 
 Future<void> pumpAuthScreen(
   WidgetTester tester, {
@@ -359,6 +361,52 @@ void main() {
       expect(find.byType(CatchStepHeader), findsOneWidget);
       expect(find.text("What's your number?"), findsOneWidget);
       expect(find.text('Send code'), findsOneWidget);
+    });
+
+    testWidgets('sign-up carries the terms line and no separate ad notice', (
+      tester,
+    ) async {
+      AppConfig.overrideLegalUrlDefinesForTesting(const {
+        'CATCH_PRIVACY_POLICY_URL': 'https://catch.example/privacy/',
+        'CATCH_TERMS_URL': 'https://catch.example/terms/',
+      });
+      addTearDown(AppConfig.resetLegalUrlDefinesOverrideForTesting);
+      final repository = FakeAuthRepository();
+      final opened = <Uri>[];
+      final container = ProviderContainer(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(repository),
+          authInitialCountryDialCodeProvider.overrideWithValue('+91'),
+          externalUrlLauncherProvider.overrideWithValue((
+            uri, {
+            mode = LaunchMode.platformDefault,
+          }) async {
+            opened.add(uri);
+            return true;
+          }),
+        ],
+      );
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+
+      await pumpAuthScreen(tester, container: container);
+
+      expect(
+        find.text(
+          'By continuing you agree to Catch’s terms and privacy policy.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Google and Meta'), findsNothing);
+      for (final label in ['Terms', 'Privacy policy']) {
+        await tester.ensureVisible(find.text(label));
+        await tester.tap(find.text(label));
+        await tester.pump();
+      }
+      expect(opened, [
+        Uri.parse('https://catch.example/terms/'),
+        Uri.parse('https://catch.example/privacy/'),
+      ]);
     });
 
     testWidgets('defaults the country picker to India', (tester) async {

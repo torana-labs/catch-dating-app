@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_observation.dart';
@@ -9,10 +8,11 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_plan.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_help_requests.dart';
+import 'package:catch_test_support/contract_schemas.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
-import '../support/contract_schemas.dart';
 import 'event_rehearsal_accountability_fixtures.dart';
 import 'event_rehearsal_assistance_fixtures.dart';
 import 'event_rehearsal_delivery_fixtures.dart';
@@ -22,7 +22,7 @@ void main() {
   final guidance = practicePlan().toJson()['guidance'];
   final shared =
       jsonDecode(
-            File(
+            repoFile(
               'contracts/shared/event_rehearsal_assistance.schema.json',
             ).readAsStringSync(),
           )

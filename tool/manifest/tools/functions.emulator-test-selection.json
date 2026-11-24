@@ -1,0 +1,25 @@
+{
+  "id": "functions:emulator-test-selection",
+  "category": "ci",
+  "path": "tool/impact/emulator_test_selection.mjs",
+  "command": "node tool/impact/emulator_test_selection.mjs --base origin/main",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Chooses the strict Firestore/Storage emulator tests a pull request can reach, from the dependency-cruiser graph of functions/ plus the data files tests name; shared inputs and rules changes keep the full list, and only pull requests narrow.",
+  "impactPaths": [
+    "tool/lib/functions_test_selection.mjs",
+    "tool/lib/functions_test_selection.test.mjs",
+    "tool/lib/functions_test_reads.mjs",
+    "tool/lib/functions_test_reads.test.mjs",
+    "tool/lib/contract_reads.mjs",
+    "tool/lib/contract_reads.test.mjs",
+    "tool/lib/dependency_cruiser.mjs",
+    "tool/impact/package.json",
+    "tool/impact/package-lock.json"
+  ],
+  "checks": [
+    "node --check tool/impact/emulator_test_selection.mjs",
+    "node --test tool/lib/functions_test_selection.test.mjs tool/lib/functions_test_reads.test.mjs tool/lib/contract_reads.test.mjs"
+  ],
+  "role": "generator"
+}

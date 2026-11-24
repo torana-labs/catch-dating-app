@@ -4,9 +4,9 @@ import 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.da
 import 'package:catch_dating_app/contexts/events/parts/event_card.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_thumbnail.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/locations/shared/map_preview.dart';
-import 'package:catch_dating_app/organizers/shared/organizer_cover.dart';
-import 'package:catch_dating_app/organizers/shared/organizer_placeholder_cover.dart';
+import 'package:catch_dating_app/pages/event/location/map_preview.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_cover.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_placeholder_cover.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_tokens/catch_tokens.dart';

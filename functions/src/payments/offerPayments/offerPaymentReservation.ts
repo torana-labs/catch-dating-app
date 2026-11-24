@@ -2,7 +2,7 @@ import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 import {offerCancellationPolicy, assertReviewedCancellationPolicy,
   type OfferCancellationPolicy} from "./offerCancellationPolicy";
 import {assertUnpartitionedAdmission} from
-  "../../organizerFormAdmission/admissionEligibility";
+  "../../domain/events/admissionEligibility";
 import {createHash} from "node:crypto";
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -14,11 +14,11 @@ import {readVerifiedOfferRecipient, type LoadRecipientAuth} from
   "../../organizerEventOfferRecipients/recipientGrant";
 import {prepareCrmOriginSeatIdentity} from
   "../../events/seatIdentityAuthority";
-import {readSeatMigrationWriterFence} from "../../events/seatMigrationPaged";
 import {FirestoreSeatTransaction, assertCurrentReadySeatSnapshot} from
   "../../events/seatAuthority/firestoreAdapter";
-import {CHECKOUT_HOLD_MILLIS, heldSeatCount} from
+import {fitsSeatCapacity, heldSeatCount} from
   "../../events/seatAuthority/seatAuthority";
+import {CHECKOUT_HOLD_MILLIS} from "../../domain/payments/checkoutHold";
 import {prepareCheckoutHold, applyCheckoutHold} from
   "../../events/seatAuthority/checkoutSeatHold";
 import {rosterWithReservedWaitlistOffersInTransaction} from
@@ -134,9 +134,6 @@ export async function reserveOfferPayment(params: {
         formConversionReceiptId(responseId, "eventAttendeeProposal", eventId))),
     ]);
     if (ownership.exists || legacyAdmission.exists) unavailable();
-    if (await readSeatMigrationWriterFence({db, tx, eventId}) !== "ready") {
-      unavailable();
-    }
     const identity = await prepareCrmOriginSeatIdentity({db, tx, eventId,
       organizerId, originId, responseId,
       verifiedOfferRecipient: {grantId, uid,
@@ -156,7 +153,9 @@ export async function reserveOfferPayment(params: {
       tx, db, eventId, {bookedCountsByCohort: {},
         waitlistedCountsByCohort: {},
         totalBooked: ledger.occupied + heldSeatCount(ledger)}, {nowMillis});
-    if (withOffers.totalBooked >= ledger.capacity) unavailable();
+    if (!fitsSeatCapacity(ledger.capacity, withOffers.totalBooked + 1)) {
+      unavailable();
+    }
     const hold = await prepareCheckoutHold({tx: seatTx,
       command: {eventId, subject: identity.identity,
         operation: "checkoutHold", paymentId, requestId: `hold_${paymentId}`,

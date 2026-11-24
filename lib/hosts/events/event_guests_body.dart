@@ -14,6 +14,8 @@ import 'package:flutter/widgets.dart';
 ///
 /// Tapping a guest opens them ([onGuest]); on the waitlist, Offer the next
 /// places offers every open place at once when there are two or more.
+/// Blocked from your events, under the actions, opens who the organiser has
+/// stopped booking ([onBlocked]).
 class HostEventGuestsBody extends StatelessWidget {
   const HostEventGuestsBody({
     super.key,
@@ -31,6 +33,7 @@ class HostEventGuestsBody extends StatelessWidget {
     this.offeringAll = false,
     this.onOfferAll,
     this.onGuest,
+    this.onBlocked,
   });
 
   final HostEventGuestsState state;
@@ -45,6 +48,9 @@ class HostEventGuestsBody extends StatelessWidget {
 
   /// Opens a guest who has an account; null leaves the rows still.
   final ValueChanged<HostEventGuest>? onGuest;
+
+  /// Opens who the organiser has blocked from their events; null hides it.
+  final VoidCallback? onBlocked;
   final VoidCallback onMessageAll;
   final VoidCallback onDownload;
   final VoidCallback onRetry;
@@ -184,6 +190,13 @@ class HostEventGuestsBody extends StatelessWidget {
               ),
             ],
           ),
+          if (onBlocked case final onBlocked?)
+            CatchButton(
+              key: const ValueKey<String>('host-event-guests-blocked'),
+              label: l10n.hostEventsGuestsBlockedLink,
+              variant: CatchButtonVariant.quiet,
+              onPressed: onBlocked,
+            ),
         ],
       ),
     );

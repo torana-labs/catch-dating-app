@@ -1,0 +1,11 @@
+{
+  "id": "salesTasks",
+  "path": "salesTasks/{taskId}",
+  "rulesMatch": "/salesTasks/{privateDocument=**}",
+  "typescriptInterface": "SalesTaskDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales task service and organizer claim projection",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

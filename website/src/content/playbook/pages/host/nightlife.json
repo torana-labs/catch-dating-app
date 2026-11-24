@@ -33,14 +33,7 @@
         "label": "Running nights in several cities or for a brand? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "chip": {
-        "title": "Friday Bandra Pub Crawl",
-        "rows": [
-          {"label": "Booked", "value": "40"},
-          {"label": "At stop 3", "value": "37"},
-          {"label": "Groups", "value": "4 of 10"}
-        ]
-      },
+      "fragments": ["host-formats-crawl-move-map", "host-formats-crawl-move-message"],
       "media": {"kind": "capture", "slot": "host-formats-crawl-move"}
     },
     {
@@ -143,12 +136,12 @@
       "ground": "magenta",
       "kicker": "Your next night",
       "title": "Everyone mixing. Everyone accounted for.",
-      "lead": "Start the free trial, or leave your number and we’ll send the social night setup guide on WhatsApp.",
+      "lead": "Start the free trial, or leave your number and a person from our team will message you on WhatsApp to help you set up.",
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
-      "leadForm": {"id": "social_night_setup_guide", "requestKind": "guide", "format": "nightlife", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
-      "media": {"kind": "capture", "slot": "guest-explore"}
+      "leadForm": {"id": "social_night_setup_guide", "requestKind": "guide", "format": "nightlife", "label": "Your WhatsApp number", "submitLabel": "Message me"},
+      "media": {"kind": "capture", "slot": "host-create-nightlife"}
     }
   ]
 }

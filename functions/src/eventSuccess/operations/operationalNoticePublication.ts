@@ -1,5 +1,6 @@
 import type {Firestore, Transaction} from "firebase-admin/firestore";
-import {runAssistanceTransaction as transact} from "./transactionCallback";
+import {runAssistanceTransaction as transact} from
+  "../../platform/transactionCallback";
 import {operationContentHash} from "../../operations/durableActions";
 import type {EventAssistanceOperationalNoticeQuotaDocument as Quota} from
   "../../shared/generated/eventAssistanceOperationalNoticeQuotaDocument";

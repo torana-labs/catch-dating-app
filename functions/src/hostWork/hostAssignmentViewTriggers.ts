@@ -6,6 +6,7 @@ import {
   reconcileProgramAssignmentView,
   reconcileTeamAssignmentView,
 } from "./hostAssignmentViews";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true};
 const fanoutLimit = 600;
@@ -36,26 +37,30 @@ export const onHostAssignmentProgramGrantChanged = onDocumentWritten({
   }
 });
 
-/**
- * A programme's title, status, organizer or owner: every staff row of it.
- * Other programme writes leave the rows alone.
- */
-export const onHostAssignmentProgramChanged = onDocumentWritten({
-  ...options, document: "organizerPrograms/{programId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (unchanged(before, after, ["title", "status", "organizerId",
-    "createdBy"])) return;
-  const db = admin.firestore();
-  const programId = event.params.programId;
+/** Every staff row of a programme. */
+async function reconcileProgramStaffRows(db: FirebaseFirestore.Firestore,
+  programId: string): Promise<void> {
   const grants = await db.collection("programStaffGrants")
     .where("programId", "==", programId).limit(fanoutLimit).get();
   for (const grant of grants.docs) {
     const uid = grant.data().uid;
     if (text(uid)) await reconcileProgramAssignmentView(db, uid, programId);
   }
-});
+}
+
+/**
+ * A programme's title, status, organizer or owner.
+ * Served by dispatchOrganizerPrograms (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
+ */
+export const hostAssignmentProgramProjections = defineProjections(
+  "organizerPrograms", [{
+    id: "hostAssignmentView", kind: "projection",
+    when: ({before, after}) =>
+      !(unchanged(before, after, ["title", "status", "organizerId",
+        "createdBy"])),
+    run: (change, ctx) => reconcileProgramStaffRows(ctx.db, change.documentId),
+  }]);
 
 /** An event grant, renewal or revocation: that account's row. */
 export const onHostAssignmentEventGrantChanged = onDocumentWritten({
@@ -69,20 +74,27 @@ export const onHostAssignmentEventGrantChanged = onDocumentWritten({
     before);
 });
 
-/** An event's name, or the event appearing or vanishing: its staff rows. */
-export const onHostAssignmentEventChanged = onDocumentWritten({
-  ...options, document: "events/{eventId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (unchanged(before, after, ["name"])) return;
-  const db = admin.firestore();
+/** Every staff row that names an event. */
+async function reconcileEventNameRows(
+  db: FirebaseFirestore.Firestore, eventId: string
+): Promise<void> {
   const grants = await db.collection("eventStaffGrants")
-    .where("eventId", "==", event.params.eventId).limit(fanoutLimit).get();
+    .where("eventId", "==", eventId).limit(fanoutLimit).get();
   for (const grant of grants.docs) {
     await reconcileEventAssignmentView(db, grant.id);
   }
-});
+}
+
+/**
+ * An event's name, or the event appearing or vanishing.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostAssignmentEventProjections = defineProjections("events", [{
+  id: "hostAssignmentView", kind: "projection",
+  when: (change) => !unchanged(change.before, change.after, ["name"]),
+  run: (change, ctx) => reconcileEventNameRows(ctx.db, change.documentId),
+}]);
 
 /** A team membership joining, leaving or changing: that account's row. */
 export const onHostAssignmentMembershipChanged = onDocumentWritten({
@@ -95,15 +107,10 @@ export const onHostAssignmentMembershipChanged = onDocumentWritten({
     event.params.membershipId, before);
 });
 
-/** An organiser's name: every programme, event and team row naming it. */
-export const onHostAssignmentOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{organizerId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (unchanged(before, after, ["name"])) return;
-  const db = admin.firestore();
-  const organizerId = event.params.organizerId;
+/** Every programme, event and team row that names an organiser. */
+async function reconcileOrganizerNameRows(
+  db: FirebaseFirestore.Firestore, organizerId: string
+): Promise<void> {
   // One equality filter each keeps these off the composite index list.
   const [programGrants, eventGrants, memberships] = await Promise.all([
     db.collection("programStaffGrants").where("organizerId", "==",
@@ -125,4 +132,17 @@ export const onHostAssignmentOrganizerChanged = onDocumentWritten({
   for (const membership of memberships.docs) {
     await reconcileTeamAssignmentView(db, membership.id);
   }
-});
+}
+
+/**
+ * An organiser's name: every programme, event and team row naming it.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostAssignmentViewProjections = defineProjections(
+  "organizers", [{
+    id: "hostAssignmentView", kind: "projection",
+    when: (change) => !unchanged(change.before, change.after, ["name"]),
+    run: (change, ctx) => reconcileOrganizerNameRows(ctx.db,
+      change.documentId),
+  }]);

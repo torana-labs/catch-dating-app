@@ -33,14 +33,7 @@
         "label": "Several locations? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "chip": {
-        "title": "Tuesday pickleball social",
-        "rows": [
-          {"label": "Booked", "value": "32"},
-          {"label": "Courts", "value": "4"},
-          {"label": "Members", "value": "18"}
-        ]
-      },
+      "fragments": ["host-formats-courts-court", "host-formats-courts-sitting-out"],
       "media": {"kind": "capture", "slot": "host-formats-courts"}
     },
     {
@@ -85,7 +78,7 @@
         {"time": "4:00 PM", "title": "Court time, counted", "body": "You see every player’s minutes on court and on the bench. Anyone sitting out is pointed to the café to mix."},
         {"time": "That evening", "title": "Standings, then the photos", "body": "Reveal the final standings at the end, and the photos follow. Your guest records show which non-members keep coming."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-facilities"}
     },
     {
       "type": "checklist",
@@ -144,11 +137,11 @@
       "ground": "indigo",
       "kicker": "Your quiet hours",
       "title": "Turn off-peak into the best night of the week.",
-      "lead": "Start the free trial, or leave your number and we’ll send the facility setup guide on WhatsApp.",
+      "lead": "Start the free trial, or leave your number and a person from our team will message you on WhatsApp to help you set up.",
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
-      "leadForm": {"id": "facility_setup_guide", "requestKind": "guide", "format": "facilities", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."}
+      "leadForm": {"id": "facility_setup_guide", "requestKind": "guide", "format": "facilities", "label": "Your WhatsApp number", "submitLabel": "Message me"}
     }
   ]
 }

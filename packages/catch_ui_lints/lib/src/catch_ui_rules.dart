@@ -7,6 +7,7 @@ import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/error/error.dart';
+import 'package:analyzer/error/listener.dart';
 
 import 'catch_drawing_migration.dart';
 import 'catch_text_migration.dart';
@@ -15,6 +16,7 @@ import 'catch_ui_surface_geometry.dart';
 import 'migration_scope.dart';
 
 part 'catch_new_root_rules.dart';
+part 'catch_new_root_shadow.dart';
 part 'catch_ui_test_rules.dart';
 part 'catch_ui_mutation_rules.dart';
 part 'catch_ui_feedback_rules.dart';
@@ -22,8 +24,13 @@ part 'catch_ui_text_rules.dart';
 
 const _eventDetailPathFragments = <String>[
   '/lib/events/presentation/widgets/event_detail_',
-  '/lib/events/presentation/widgets/event_photo_header.dart',
+  '/lib/pages/event/widgets/event_photo_header.dart',
 ];
+
+// Shared test support (pump helpers, golden support, design fixtures) is test
+// code although it sits in a package's lib/: the root, app and Widgetbook
+// suites import it.
+const _testSupportPackage = '/packages/catch_test_support/';
 
 const _excludedPathFragments = <String>[
   '/packages/catch_tokens/lib/',
@@ -591,24 +598,14 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     }
     if (!_isAppPath(path)) return;
 
-    // Every screen rule holds under the D24 roots, whatever the folder is named.
-    final isZeroDrawingPath = zeroDrawingPath(path);
-    final visitor = _CatchUiLayoutVisitor(
+    final visitor = _layoutVisitor(
       this,
-      ruleContext: context,
-      source: context.definingUnit.content,
-      path: path,
-      isEventDetailPath: _isEventDetailPath(path),
-      isColorExemptPath: false,
-      isFeaturePresentationPath:
-          isZeroDrawingPath || _isFeaturePresentationPath(path),
-      isPresentationPath: isZeroDrawingPath || _isPresentationPath(path),
-      isSizingScannerPath: _isSizingScannerPath(path),
-      isUiSystemScannerPath: isZeroDrawingPath || _isUiSystemScannerPath(path),
-      isZeroDrawingPath: isZeroDrawingPath,
-      isNewRootLegacyPath: newRootLegacyPath(path),
-      allowRawControlConstructors: _isRawChromeExceptionPath(path),
+      context,
+      path,
+      carriedFrom: carriedFrom(path),
+      isZeroDrawingPath: zeroDrawingPath(path),
     );
+    // _NewRootShadowWalk forwards the same node kinds: keep the two in step.
     registry.addInstanceCreationExpression(this, visitor);
     registry.addNamedArgument(this, visitor);
     registry.addBinaryExpression(this, visitor);
@@ -637,7 +634,9 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
   }
 
   bool _isTestPath(String path) {
-    return (path.contains('/test/') || path.contains('/integration_test/')) &&
+    return (path.contains('/test/') ||
+            path.contains('/integration_test/') ||
+            path.contains(_testSupportPackage)) &&
         (!path.contains('/tool/') ||
             path.contains('/tool/catch_ui_lints_probe/')) &&
         !path.endsWith('.g.dart') &&
@@ -676,10 +675,10 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   bool _isRawChromeExceptionPath(String path) {
     return path.endsWith(
-          '/lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart',
+          '/lib/pages/organizer/widgets/organizer_hero_top_bar.dart',
         ) ||
         path.endsWith(
-          '/lib/events/presentation/widgets/event_detail_hero_top_bar.dart',
+          '/lib/pages/event/widgets/event_detail_hero_top_bar.dart',
         );
   }
 }
@@ -697,7 +696,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     required this.isSizingScannerPath,
     required this.isUiSystemScannerPath,
     required this.isZeroDrawingPath,
-    required this.isNewRootLegacyPath,
+    required this.keepsFirstScanDebt,
     required this.allowRawControlConstructors,
   }) : _lineStarts = _computeLineStarts(source);
 
@@ -712,7 +711,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   final bool isSizingScannerPath;
   final bool isUiSystemScannerPath;
   final bool isZeroDrawingPath;
-  final bool isNewRootLegacyPath;
+  final bool keepsFirstScanDebt;
   final bool allowRawControlConstructors;
   final List<int> _lineStarts;
   Set<String> _locallyShadowedTokenNames = const <String>{};
@@ -1109,13 +1108,13 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     // The scan runs on the files that predate D24; what it found there when it
     // reached them is these two rules, and the list holds them until the redraw.
     if (isUiSystemScannerPath &&
-        !isNewRootLegacyPath &&
+        !keepsFirstScanDebt &&
         _isRawIconSizeNamedArgument(node)) {
       _reportAtNode(node.argumentExpression, CatchUiLayoutRules.noRawIconSize);
     }
 
     if (isUiSystemScannerPath &&
-        !isNewRootLegacyPath &&
+        !keepsFirstScanDebt &&
         _isRawAlphaNamedArgument(node)) {
       _reportAtNode(node.argumentExpression, CatchUiLayoutRules.noRawAlpha);
     }

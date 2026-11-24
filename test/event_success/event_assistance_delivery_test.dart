@@ -1,14 +1,14 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_deliveries_page.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_scope.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/repair_event_assistance_delivery_callable_request.g.dart';
+import 'package:catch_test_support/contract_schemas.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
-import '../support/contract_schemas.dart';
 import 'event_assistance_deliveries_fixtures.dart';
 
 void main() {
@@ -179,7 +179,7 @@ void main() {
     () {
       final schema =
           jsonDecode(
-                File(
+                repoFile(
                   'contracts/shared/event_assistance_delivery_review.schema.json',
                 ).readAsStringSync(),
               )
@@ -209,7 +209,7 @@ void main() {
     () {
       final source =
           jsonDecode(
-                File(
+                repoFile(
                   'contracts/operations/event_assistance_delivery_work.schema.json',
                 ).readAsStringSync(),
               )

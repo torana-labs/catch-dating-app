@@ -14,8 +14,6 @@ function assert(condition, message) {
 // unmaterialized param fails the whole Delivery lane. The colocated coverage
 // scanner fails closed when source declarations drift from this list.
 export const materializedNonSecretParams = [
-  "CATCH_HOST_OPERATOR_ALERTS_ENABLED",
-  "CATCH_HOST_OPERATOR_ALERTS_SINCE",
   "ALGOLIA_APPLICATION_ID",
   "RAZORPAY_PUBLIC_KEY_ID",
   "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION",
@@ -26,6 +24,10 @@ export const materializedNonSecretParams = [
   "CATCH_WHATSAPP_WEBHOOK_ENABLED",
   "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED",
   "CATCH_WHATSAPP_REPLIES_ENABLED",
+  "CATCH_WHATSAPP_HOST_APP_LINK_ENABLED",
+  "CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED",
+  "CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED",
+  "CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED",
   "CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY",
   "CATCH_WHATSAPP_REPLY_ACTOR_UID",
   "CATCH_WHATSAPP_REPLY_RECIPIENT_UID",
@@ -60,6 +62,7 @@ export const materializedNonSecretParams = [
   "AD_CONVERSIONS_META_TEST_EVENT_CODE",
   "AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT",
   "AD_AUDIENCES_MODE",
+  "AD_SPEND_IMPORT_MODE",
   "META_LEADGEN_CREDENTIAL_VERSION",
   "META_LEADGEN_PAGE_IDS",
 ];
@@ -115,21 +118,42 @@ function normalizedProviderParams(environment = process.env, projectId) {
     environment, "CATCH_WHATSAPP_REPLIES_ENABLED");
   const catchAtomicIngressReady = normalizedBooleanParam(
     environment, "CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY");
+  // The automatic host_app_link template to "Text me the link" leads. Off
+  // by default; it sends with the Support reply sender, so it needs replies.
+  const catchHostAppLinkEnabled = normalizedBooleanParam(
+    environment, "CATCH_WHATSAPP_HOST_APP_LINK_ENABLED");
+  // The automatic host_lead_welcome to new host leads, and separately to
+  // Meta lead-form leads (whose form mentions WhatsApp only after it is
+  // sent), and host_walkthrough_booked when a walkthrough is booked or
+  // moved. All off by default; they send with the Support reply sender.
+  const catchHostLeadWelcomeEnabled = normalizedBooleanParam(
+    environment, "CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED");
+  const catchHostLeadWelcomeMetaEnabled = normalizedBooleanParam(
+    environment, "CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED");
+  const catchWalkthroughBookedEnabled = normalizedBooleanParam(
+    environment, "CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED");
   // These are configuration checks, not historical STOP attestation or sending
   // authority. The runtime still requires current Auth/App Check, independently
   // reviewed readiness, verified recipient consent and an atomic one-shot claim.
-  const catchReplyScope = Object.fromEntries([
+  // Support conversation replies need only the pinned sender credential and
+  // Graph version; the four trial fields scope the one-recipient reply trial
+  // and are complete or entirely unconfigured on their own.
+  const catchReplySender = Object.fromEntries([
+    "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
+    "CATCH_WHATSAPP_REPLY_GRAPH_VERSION",
+  ].map((name) => [name, environment[name]?.trim() ?? ""]));
+  const catchReplyTrial = Object.fromEntries([
     "CATCH_WHATSAPP_REPLY_ACTOR_UID",
     "CATCH_WHATSAPP_REPLY_RECIPIENT_UID",
     "CATCH_WHATSAPP_REPLY_RECIPIENT_E164",
-    "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
-    "CATCH_WHATSAPP_REPLY_GRAPH_VERSION",
     "CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256",
   ].map((name) => [name, environment[name]?.trim() ?? ""]));
+  const catchReplyScope = {...catchReplySender, ...catchReplyTrial};
+  const hasReplyTrial = Object.values(catchReplyTrial).some(Boolean);
   const hasReplyScope = Object.values(catchReplyScope).some(Boolean);
-  if (hasReplyScope || catchRepliesEnabled === "true") {
-    assert(Object.values(catchReplyScope).every(Boolean),
-      "Catch reply scope must be complete or entirely unconfigured");
+  if (hasReplyTrial) {
+    assert(Object.values(catchReplyTrial).every(Boolean),
+      "Catch reply trial scope must be complete or entirely unconfigured");
     for (const name of ["CATCH_WHATSAPP_REPLY_ACTOR_UID",
       "CATCH_WHATSAPP_REPLY_RECIPIENT_UID"]) {
       assert(/^[A-Za-z0-9_-]{1,128}$/.test(catchReplyScope[name]),
@@ -138,6 +162,14 @@ function normalizedProviderParams(environment = process.env, projectId) {
     assert(/^\+[1-9][0-9]{6,14}$/.test(
       catchReplyScope.CATCH_WHATSAPP_REPLY_RECIPIENT_E164),
     "CATCH_WHATSAPP_REPLY_RECIPIENT_E164 must be an E.164 endpoint");
+    assert(/^[a-f0-9]{64}$/.test(
+      catchReplyScope.CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256),
+    "CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256 must be a lowercase SHA-256 digest");
+  }
+  if (hasReplyScope || catchRepliesEnabled === "true") {
+    assert(Object.values(catchReplySender).every(Boolean),
+      "Catch reply sender credential and Graph version must be complete " +
+        "or entirely unconfigured");
     const credentialPrefix = secretPrefix +
       "CATCH_WHATSAPP_ACCESS_TOKEN/versions/";
     const credential = catchReplyScope.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION;
@@ -148,9 +180,6 @@ function normalizedProviderParams(environment = process.env, projectId) {
     assert(/^v[1-9][0-9]*\.[0-9]+$/.test(
       catchReplyScope.CATCH_WHATSAPP_REPLY_GRAPH_VERSION),
     "CATCH_WHATSAPP_REPLY_GRAPH_VERSION must be an explicit Graph version");
-    assert(/^[a-f0-9]{64}$/.test(
-      catchReplyScope.CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256),
-    "CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256 must be a lowercase SHA-256 digest");
   }
   const catchWabaId = environment.CATCH_WHATSAPP_WABA_ID?.trim() ?? "";
   const catchPhoneNumberId = environment.CATCH_WHATSAPP_PHONE_NUMBER_ID
@@ -180,6 +209,19 @@ function normalizedProviderParams(environment = process.env, projectId) {
     assert(catchWebhookConfigured && catchAtomicIngressReady === "true" &&
       catchConsumersEnabled === "true",
     "CATCH_WHATSAPP_REPLIES_ENABLED requires configured atomic ingress and consumers");
+  }
+  for (const [name, value] of [
+    ["CATCH_WHATSAPP_HOST_APP_LINK_ENABLED", catchHostAppLinkEnabled],
+    ["CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED", catchHostLeadWelcomeEnabled],
+    ["CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED", catchWalkthroughBookedEnabled],
+  ]) {
+    if (value === "true") {
+      assert(catchRepliesEnabled === "true", `${name} requires CATCH_WHATSAPP_REPLIES_ENABLED`);
+    }
+  }
+  if (catchHostLeadWelcomeMetaEnabled === "true") {
+    assert(catchHostLeadWelcomeEnabled === "true",
+      "CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED requires CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED");
   }
 
   const eventAssistance = {
@@ -283,9 +325,6 @@ function normalizedProviderParams(environment = process.env, projectId) {
   "ANTHROPIC_ORGANIZATION_ID must be an Anthropic organization UUID");
   assert(programAssistantEnabled === "false" || federationRuleId && anthropicOrganizationId,
     "PROGRAM_ASSISTANT_ENABLED requires PROGRAM_ASSISTANT_FEDERATION_RULE_ID and ANTHROPIC_ORGANIZATION_ID");
-  assert(normalizedBooleanParam(environment, "CATCH_HOST_OPERATOR_ALERTS_ENABLED") === "false" &&
-    !environment.CATCH_HOST_OPERATOR_ALERTS_SINCE?.trim(),
-  "Host operator alerts require a separately reviewed runtime activation");
   // Ad conversions stay off unless an environment names a mode and both
   // credentials (docs/ads_conversion_spec.md, Server delivery).
   const adMode = environment.AD_CONVERSIONS_MODE?.trim() || "off";
@@ -319,6 +358,14 @@ function normalizedProviderParams(environment = process.env, projectId) {
     "AD_AUDIENCES_MODE must be off or live");
   assert(audiencesMode === "off" || adTokenVersion,
     "AD_AUDIENCES_MODE live requires AD_CONVERSIONS_META_TOKEN_VERSION");
+  // The daily ad spend import stays off unless an environment turns it on;
+  // it reads Meta with the same pinned CatchAds token and Google Ads as the
+  // same ads service account (functions/src/money/adSpendImport.ts).
+  const spendImportMode = environment.AD_SPEND_IMPORT_MODE?.trim() || "off";
+  assert(["off", "live"].includes(spendImportMode),
+    "AD_SPEND_IMPORT_MODE must be off or live");
+  assert(spendImportMode === "off" || adTokenVersion && adServiceAccount,
+    "AD_SPEND_IMPORT_MODE live requires AD_CONVERSIONS_META_TOKEN_VERSION and AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT");
   // Meta host lead forms: one pinned webhook credential and numeric page IDs.
   const leadgenCredential = environment.META_LEADGEN_CREDENTIAL_VERSION?.trim() || "";
   const leadgenPages = environment.META_LEADGEN_PAGE_IDS?.trim() || "";
@@ -329,8 +376,6 @@ function normalizedProviderParams(environment = process.env, projectId) {
   assert(!leadgenPages || /^[0-9]{5,20}(,[0-9]{5,20})*$/.test(leadgenPages.replace(/\s+/g, "")),
     "META_LEADGEN_PAGE_IDS must be comma-separated Facebook page IDs");
   const params = {
-    CATCH_HOST_OPERATOR_ALERTS_ENABLED: "false",
-    CATCH_HOST_OPERATOR_ALERTS_SINCE: " ",
     // Distinct names coexist with the SecretParams in immutable older packages.
     ALGOLIA_APPLICATION_ID: algoliaApplicationId,
     RAZORPAY_PUBLIC_KEY_ID: razorpayPublicKeyId,
@@ -347,6 +392,10 @@ function normalizedProviderParams(environment = process.env, projectId) {
     CATCH_WHATSAPP_WEBHOOK_ENABLED: catchWebhookConfigured ? "true" : "false",
     CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: catchConsumersEnabled,
     CATCH_WHATSAPP_REPLIES_ENABLED: catchRepliesEnabled,
+    CATCH_WHATSAPP_HOST_APP_LINK_ENABLED: catchHostAppLinkEnabled,
+    CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED: catchHostLeadWelcomeEnabled,
+    CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED: catchHostLeadWelcomeMetaEnabled,
+    CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED: catchWalkthroughBookedEnabled,
     CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: catchAtomicIngressReady,
     CATCH_WHATSAPP_REPLY_ACTOR_UID:
       catchReplyScope.CATCH_WHATSAPP_REPLY_ACTOR_UID || " ",
@@ -386,6 +435,7 @@ function normalizedProviderParams(environment = process.env, projectId) {
     AD_CONVERSIONS_META_TEST_EVENT_CODE: adTestCode || " ",
     AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT: adServiceAccount || " ",
     AD_AUDIENCES_MODE: audiencesMode,
+    AD_SPEND_IMPORT_MODE: spendImportMode,
     META_LEADGEN_CREDENTIAL_VERSION: leadgenCredential || " ",
     META_LEADGEN_PAGE_IDS: leadgenPages.replace(/\s+/g, "") || " ",
   };

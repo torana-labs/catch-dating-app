@@ -1,0 +1,11 @@
+{
+  "id": "salesSuppressionDecisions",
+  "path": "salesSuppressionDecisions/{decisionId}",
+  "rulesMatch": "/salesSuppressionDecisions/{privateDocument=**}",
+  "typescriptInterface": "SalesSuppressionDecisionDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales suppression and contactability service",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

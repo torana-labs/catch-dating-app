@@ -1,4 +1,5 @@
 import {CatchAdaptiveSheet, CatchButton, CatchField, CatchIndexRow, CatchSection, CatchStack, CatchText, useCatchAdaptiveSheetAnchor} from "@catch/web-ui";
+import {TermsLine} from "./TermsLine";
 import {interpolateContent as fill} from "@content/interpolate";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
 import {useEffect, useMemo, useState, type ReactNode, type RefObject} from "react";
@@ -48,7 +49,7 @@ export function SignInSheetView({open, onClose, sheet, anchor, align, trigger}: 
 }) {
   return (
     <CatchAdaptiveSheet align={align} anchor={anchor} closeLabel={copy.close} onClose={onClose} open={open} subtitle={copy.subtitle} title={copy.title}
-      footer={<CatchText as="p" tone="secondary" variant="body-small">{copy.privacy}</CatchText>} trigger={trigger} wide="dropdown" width={380}>
+      trigger={trigger} wide="dropdown" width={380}>
       <CatchStack gap={12}>
         <SignInSteps sheet={sheet} />
         <CatchText as="p" role="status" tone={sheet.status.tone === "is-error" ? "danger" : "secondary"} variant="body-small">
@@ -64,7 +65,7 @@ function SignInSteps({sheet}: {sheet: SignInSheetController}) {
   const busy = sheet.pending ? "loading" : "idle";
   if (sheet.stage === "code") {
     return (
-      <Form noValidate onSubmit={sheet.verify} pending={sheet.pending}>
+      <Form data-fields="boxed" noValidate onSubmit={sheet.verify} pending={sheet.pending}>
         <CatchStack gap={12}>
           <CatchSection container="tile">
             <CatchIndexRow density="compact" subtitle={copy.lockedPhone} title={sheet.phone}
@@ -86,12 +87,12 @@ function SignInSteps({sheet}: {sheet: SignInSheetController}) {
     );
   }
   return (
-    <Form noValidate onSubmit={sheet.sendCode} pending={sheet.pending}>
+    <Form data-fields="boxed" noValidate onSubmit={sheet.sendCode} pending={sheet.pending}>
       <CatchStack gap={12}>
         <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} inputMode={sheet.pending ? "inactive" : "editable"}
-          onChanged={sheet.setPhone} recipe="phone" title={copy.phone} value={sheet.phone} />
+          inputHint={copy.phoneHint} onChanged={sheet.setPhone} recipe="phone" title={copy.phone} value={sheet.phone} />
         <CatchButton fullWidth label={copy.sendCode} onPressed={noop} status={busy} type="submit" />
-        <CatchText align="center" as="p" variant="body-small">{copy.noPasswords}</CatchText>
+        <TermsLine />
       </CatchStack>
     </Form>
   );

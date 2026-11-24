@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
 import {planAffected} from "../harness/lib/component_graph.mjs";
 import {matchesGlobPath} from "./path_glob.mjs";
@@ -9,6 +11,9 @@ import {
   formatAffectedToolGithubOutputs,
   hasExecutableChecks,
   planAffectedToolChecks,
+  prerequisiteFingerprint,
+  SHARED_CHECK_PREREQUISITES,
+  splitSharedPrerequisite,
   projectToolCiRequirements,
   supportedToolCheckSafety,
   supportedToolSetupRequirements,
@@ -16,13 +21,12 @@ import {
   validateToolCheckSafety,
   validateToolCiRequirements,
 } from "./tool_impact.mjs";
+import {loadToolsManifest} from "./tools_manifest.mjs";
 
 const productionGraph = JSON.parse(
   fs.readFileSync(new URL("../harness/component_graph.json", import.meta.url), "utf8"),
 );
-const productionManifest = JSON.parse(
-  fs.readFileSync(new URL("../tools_manifest.json", import.meta.url), "utf8"),
-);
+const productionManifest = loadToolsManifest();
 
 function componentGraph() {
   return productionGraph;
@@ -403,7 +407,7 @@ test("layout siblings, shared controls and explicit full cannot borrow narrow ow
   for (const path of [
     "tool/design/unknown_companion.test.mjs",
     "tool/design/fixtures/screen_gutters/unreviewed.dart",
-    "tool/lib/repo_paths.mjs", "tool/lib/tool_impact.mjs", "tool/tools_manifest.json",
+    "tool/lib/repo_paths.mjs", "tool/lib/tool_impact.mjs", "tool/manifest/manifest.json",
     "tool/harness/component_graph.json", ".github/workflows/ci.yml",
   ]) {
     const plan = layoutPlan([...layoutPaths, path]);
@@ -888,6 +892,7 @@ test("canonical harness full paths come only from the component graph", () => {
     "tool/harness/**",
     "tool/harness.mjs",
     "tool/repository_root_manifest.json",
+    "tool/manifest/**",
     "tool/tools_manifest.json",
     "tool/lib/path_glob.mjs",
     "tool/lib/tool_impact.mjs",
@@ -1040,4 +1045,51 @@ test("a change no Tools-lane path owns runs the mandatory checks, not the full m
     componentGraph: productionGraph});
   assert.equal(empty.mode, "full");
   assert.deepEqual(empty.fullReasons, ["no changed paths were resolved"]);
+});
+
+test("a check's shared Functions build splits from the work after it", () => {
+  const [build] = SHARED_CHECK_PREREQUISITES;
+  assert.equal(build.command, "npm --prefix functions run build");
+  assert.deepEqual(splitSharedPrerequisite("npm --prefix functions run build && node --test tool/data/x.test.mjs"),
+    {prerequisite: build, rest: "node --test tool/data/x.test.mjs"});
+  assert.deepEqual(splitSharedPrerequisite("npm --prefix functions run build"), {prerequisite: build, rest: null});
+  // Only the exact leading command counts: anything else runs as written.
+  for (const command of ["node --test a.mjs", "npm --prefix functions run build:watch && node a.mjs",
+    "npm --prefix functions run lint && npm --prefix functions run build", "npm --prefix functions run build; node a.mjs"]) {
+    assert.deepEqual(splitSharedPrerequisite(command), {prerequisite: null, rest: command});
+  }
+});
+
+test("every manifest check that starts with the Functions build keeps the rest of its command", () => {
+  const manifest = loadToolsManifest();
+  const split = manifest.tools.filter((tool) => tool.status === "active").flatMap((tool) => tool.checks ?? [])
+    .map((command) => ({command, ...splitSharedPrerequisite(command)})).filter((row) => row.prerequisite);
+  assert.ok(split.length >= 5, "the data checks that build Functions first");
+  for (const row of split) {
+    assert.equal(row.rest === null ? row.prerequisite.command : `${row.prerequisite.command} && ${row.rest}`,
+      row.command);
+  }
+});
+
+test("the shared build's fingerprint changes when an input or the output changes", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "prerequisite-"));
+  try {
+    const prerequisite = {command: "build", inputs: ["src", "tsconfig.json"], output: "lib"};
+    fs.mkdirSync(path.join(root, "src/nested"), {recursive: true});
+    fs.writeFileSync(path.join(root, "src/nested/a.ts"), "export const a = 1;\n");
+    fs.writeFileSync(path.join(root, "tsconfig.json"), "{}\n");
+    fs.mkdirSync(path.join(root, "lib"));
+    const first = prerequisiteFingerprint(prerequisite, root);
+    assert.equal(prerequisiteFingerprint(prerequisite, root), first);
+    fs.writeFileSync(path.join(root, "src/nested/b.ts"), "export const b = 2;\n");
+    const added = prerequisiteFingerprint(prerequisite, root);
+    assert.notEqual(added, first);
+    fs.writeFileSync(path.join(root, "src/nested/a.ts"), "export const a = 10;\n");
+    assert.notEqual(prerequisiteFingerprint(prerequisite, root), added);
+    const edited = prerequisiteFingerprint(prerequisite, root);
+    fs.rmSync(path.join(root, "lib"), {recursive: true});
+    assert.notEqual(prerequisiteFingerprint(prerequisite, root), edited);
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
 });

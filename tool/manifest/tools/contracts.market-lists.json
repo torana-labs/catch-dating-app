@@ -1,0 +1,20 @@
+{
+  "id": "contracts:market-lists",
+  "category": "contracts",
+  "path": "tool/contracts/generate_market_catalog.mjs",
+  "command": "node tool/contracts/generate_market_catalog.mjs --check --without-schema",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "role": "gate",
+  "description": "Runs on every change: fails when a generated market-catalog copy is stale, when the catalog breaks a cross-record lifecycle rule, or when tracked source names three or more catalog cities outside the shrink-only tool/contracts/market_list_allowlist.json. Needs no installed packages; contracts:market-catalog adds JSON Schema validation whenever the catalog changes.",
+  "checks": [
+    "node tool/contracts/generate_market_catalog.mjs --check --without-schema"
+  ],
+  "queueGate": "always"
+}

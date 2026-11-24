@@ -1,10 +1,9 @@
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/push/fcm_service.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-
-import '../test_pump_helpers.dart';
 
 void main() {
   group('chatRouteFromMessageData', () {
@@ -40,6 +39,33 @@ void main() {
       expect(
         eventCompanionRouteFromMessageData({
           'type': 'eventReminder',
+          'organizerId': 'club-1',
+          'eventId': 'event-7',
+        }),
+        isNull,
+      );
+    });
+  });
+
+  group('eventDetailRouteFromMessageData', () {
+    tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
+    test('a feedback request opens the event page with its review action', () {
+      expect(
+        routeFromMessageData({
+          'type': 'eventFeedback',
+          'organizerId': 'club-1',
+          'eventId': 'event-7',
+        }),
+        '/organizers/club-1/events/event-7',
+      );
+    });
+
+    test('the Host app ignores a feedback request', () {
+      AppConfig.configureEntrypointRole(AppRole.host);
+      expect(
+        eventDetailRouteFromMessageData({
+          'type': 'eventFeedback',
           'organizerId': 'club-1',
           'eventId': 'event-7',
         }),

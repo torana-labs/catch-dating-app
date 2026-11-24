@@ -265,8 +265,6 @@ final class ProviderGraph {
     required this.unreviewedCandidateIds,
     required this.staleReviewIds,
     this.cacheFindings = const [],
-    this.unlistedCacheFindings = const [],
-    this.staleCacheBaselineEntries = const [],
   });
 
   final int sourceFiles;
@@ -284,14 +282,9 @@ final class ProviderGraph {
   final List<String> unreviewedCandidateIds;
   final List<String> staleReviewIds;
 
-  /// Every screen-data caching finding, report-only (see [cacheRuleIds]).
+  /// Every screen-data caching finding (see [cacheRuleIds]). Each one fails
+  /// the check; there is no baseline.
   final List<CacheFinding> cacheFindings;
-
-  /// Findings the committed baseline does not list: the list grew.
-  final List<CacheFinding> unlistedCacheFindings;
-
-  /// Baseline entries that no longer occur and can be deleted.
-  final List<CacheFinding> staleCacheBaselineEntries;
 
   Iterable<ProviderGraphEdge> get providerEdges =>
       edges.where((edge) => edge.isProviderEdge);
@@ -374,8 +367,6 @@ final class ProviderGraph {
               .where((finding) => finding.rule == rule)
               .fold<int>(0, (sum, finding) => sum + finding.count),
       },
-      'unlistedCacheFindings': unlistedCacheFindings.length,
-      'staleCacheBaselineEntries': staleCacheBaselineEntries.length,
     };
   }
 
@@ -386,7 +377,7 @@ final class ProviderGraph {
       reactiveCycles.isEmpty &&
       unreviewedCandidateIds.isEmpty &&
       staleReviewIds.isEmpty &&
-      unlistedCacheFindings.isEmpty;
+      cacheFindings.isEmpty;
 
   Map<String, Object?> get health => {
     'healthy': isHealthy,
@@ -397,9 +388,7 @@ final class ProviderGraph {
     'allOperationCycles': allOperationCycles,
     'unreviewedArchitectureCandidateIds': unreviewedCandidateIds,
     'staleArchitectureReviewIds': staleReviewIds,
-    'unlistedCacheFindings': [
-      for (final finding in unlistedCacheFindings) finding.toJson(),
-    ],
+    'cacheFindings': [for (final finding in cacheFindings) finding.toJson()],
   };
 
   Map<String, Object?> toJson() {
@@ -453,12 +442,8 @@ final class ProviderGraph {
         ],
       },
       'cacheReview': {
-        'mode': 'report-only',
-        'baseline': cacheBaselinePath,
+        'mode': 'enforcing',
         'findings': [for (final finding in cacheFindings) finding.toJson()],
-        'staleBaselineEntries': [
-          for (final finding in staleCacheBaselineEntries) finding.toJson(),
-        ],
       },
       'providers': providers.map((provider) => provider.toJson()).toList(),
       'mutations': mutations.map((mutation) => mutation.toJson()).toList(),
@@ -805,7 +790,6 @@ Future<ProviderGraph> buildProviderGraph(Directory root) async {
   final stale =
       decisions.keys.where((id) => !candidateIds.contains(id)).toList()..sort();
   final cache = _analyseCache(scannedFiles, providers, edges);
-  final baseline = await readCacheBaseline(absoluteRoot);
   final cacheProviders = [
     for (final provider in providers)
       if (cache.facts[provider.name] case final facts?)
@@ -832,11 +816,6 @@ Future<ProviderGraph> buildProviderGraph(Directory root) async {
     unreviewedCandidateIds: unreviewed,
     staleReviewIds: stale,
     cacheFindings: cache.findings,
-    unlistedCacheFindings: unlistedCacheFindings(cache.findings, baseline),
-    staleCacheBaselineEntries: staleCacheBaselineEntries(
-      cache.findings,
-      baseline,
-    ),
   );
 }
 
@@ -1718,7 +1697,8 @@ List<ArchitectureCandidate> _architectureCandidates(
     }
     if (source.feature != target.feature &&
         source.layer == 'presentation' &&
-        target.layer == 'presentation') {
+        target.layer == 'presentation' &&
+        !_isScreenRoot(source.path)) {
       candidates.add(
         ArchitectureCandidate(
           id: 'cross-feature-presentation:${edge.source}->${edge.target}',
@@ -1842,18 +1822,18 @@ List<String> providerGraphCheckFailures(ProviderGraph graph) => [
     (id) => 'unreviewed architecture candidate $id',
   ),
   ...graph.staleReviewIds.map((id) => 'stale architecture review $id'),
-  ...graph.unlistedCacheFindings.map(
+  ...graph.cacheFindings.map(
     (finding) =>
-        'unlisted cache finding ${finding.rule} ${finding.path}#'
+        'cache finding ${finding.rule} ${finding.path}#'
         '${finding.symbol} ${finding.detail}'
         '${finding.count > 1 ? ' x${finding.count}' : ''} '
-        '(fix it, or review it into $cacheBaselinePath)',
+        '(see docs/screen_data_caching.md#enforcement)',
   ),
 ];
 
 const providerGraphUsage =
     'Usage: dart run tool/architecture/provider_graph.dart '
-    '[--check] [--json|--summary] [--write-cache-baseline] [--root PATH]';
+    '[--check] [--json|--summary] [--root PATH]';
 
 final class ProviderGraphCliOptions {
   const ProviderGraphCliOptions({
@@ -1861,17 +1841,12 @@ final class ProviderGraphCliOptions {
     required this.check,
     required this.json,
     required this.summary,
-    this.writeCacheBaseline = false,
   });
 
   final Directory root;
   final bool check;
   final bool json;
   final bool summary;
-
-  /// Rewrites the cache baseline from today's findings. Only for a reviewed
-  /// reset; a migration PR deletes its own entries instead.
-  final bool writeCacheBaseline;
 }
 
 ProviderGraphCliOptions parseProviderGraphCliOptions(
@@ -1883,14 +1858,11 @@ ProviderGraphCliOptions parseProviderGraphCliOptions(
   var check = false;
   var json = false;
   var summary = false;
-  var writeCacheBaseline = false;
 
   for (var index = 0; index < args.length; index++) {
     switch (args[index]) {
       case '--check':
         check = true;
-      case '--write-cache-baseline':
-        writeCacheBaseline = true;
       case '--json':
         json = true;
       case '--summary':
@@ -1912,10 +1884,9 @@ ProviderGraphCliOptions parseProviderGraphCliOptions(
   if (json && summary) {
     throw const FormatException('Choose either --json or --summary.');
   }
-  if (!check && !json && !summary && !writeCacheBaseline) {
+  if (!check && !json && !summary) {
     throw const FormatException(
-      'Choose --check, --json, --summary, --write-cache-baseline, or a '
-      'compatible combination.',
+      'Choose --check, --json, --summary, or a compatible combination.',
     );
   }
 
@@ -1924,7 +1895,6 @@ ProviderGraphCliOptions parseProviderGraphCliOptions(
     check: check,
     json: json,
     summary: summary,
-    writeCacheBaseline: writeCacheBaseline,
   );
 }
 
@@ -1940,14 +1910,6 @@ Future<void> main(List<String> args) async {
   }
 
   final graph = await buildProviderGraph(options.root);
-  if (options.writeCacheBaseline) {
-    await writeCacheBaseline(options.root, graph.cacheFindings);
-    stdout.writeln(
-      'Wrote ${graph.cacheFindings.length} cache findings to '
-      '$cacheBaselinePath.',
-    );
-    if (!options.check && !options.json && !options.summary) return;
-  }
   if (options.json) {
     stdout.write(renderProviderGraphJson(graph.toJson()));
   } else if (options.summary) {
@@ -1974,22 +1936,9 @@ Future<void> main(List<String> args) async {
       'no reactive cycles).',
     );
     stdout.writeln(
-      'Screen-data caching rules (report-only): '
-      '${graph.cacheFindings.fold<int>(0, (sum, f) => sum + f.count)} '
-      'findings, all listed in $cacheBaselinePath.',
+      'Screen-data caching rules: no findings '
+      '(${cacheRuleIds.length} rules, enforcing).',
     );
-    final stale = graph.staleCacheBaselineEntries;
-    if (stale.isNotEmpty) {
-      stdout.writeln(
-        '${stale.length} cache baseline entries no longer occur; delete them:',
-      );
-      for (final finding in stale) {
-        stdout.writeln(
-          '- ${finding.rule} ${finding.path}#${finding.symbol} '
-          '${finding.detail}',
-        );
-      }
-    }
   }
 }
 
@@ -2037,6 +1986,12 @@ bool _isKeepAlive(List<Annotation> metadata) => metadata.any(
 // providers by hand and must not depend on feature data.
 bool _isPlatformFeature(String feature) =>
     feature == 'core' || feature == 'platform';
+
+// apps/*/lib and lib/pages compose screens from several features by design,
+// so a provider there reading another feature's presentation provider is the
+// screen's job, not a cross-feature reach.
+bool _isScreenRoot(String relativePath) =>
+    RegExp(r'^(?:apps/[^/]+/lib|lib/pages)/').hasMatch(relativePath);
 
 String _featureFor(String relativePath) {
   final parts = relativePath.split('/');
@@ -2210,15 +2165,11 @@ int _compareEdges(ProviderGraphEdge a, ProviderGraphEdge b) {
 //
 // A read owner is a provider whose own body, or a repository method it calls,
 // reaches `.snapshots()`, a Firestore `.get()`, `httpsCallable` or
-// `callHostCrm`. The seven rules run in report-only mode: today's findings
-// are listed by exact path, symbol and detail in [cacheBaselinePath], and the
-// check fails only when a finding is not listed there. Each migration PR
-// deletes its entries, so the list only shrinks. Like the rest of the graph,
-// this reads parsed source, not resolved types: it follows a repository call
-// through the provider's declared return type, typed locals, fields and
-// same-class helpers, and misses dynamic dispatch and untyped hand-offs.
-
-const cacheBaselinePath = 'tool/architecture/provider_graph_baseline.json';
+// `callHostCrm`. The rules gate: every finding fails the check, and there is
+// no baseline. Like the rest of the graph, this reads parsed source, not
+// resolved types: it follows a repository call through the provider's
+// declared return type, typed locals, fields and same-class helpers, and
+// misses dynamic dispatch and untyped hand-offs.
 
 const cacheRuleIds = [
   'CACHE-LIFETIME-001',
@@ -2228,13 +2179,14 @@ const cacheRuleIds = [
   'CACHE-INVALIDATE-001',
   'CACHE-LISTENER-001',
   'KEEPALIVE-MANUAL-001',
+  'KEEPALIVE-SCOPE-001',
 ];
 
 const _readKindListener = 'listener';
 const _readKindGet = 'get';
 const _readKindCallable = 'callable';
 
-/// One report-only caching finding, keyed by rule, path, symbol and detail.
+/// One caching finding, keyed by rule, path, symbol and detail.
 final class CacheFinding {
   const CacheFinding({
     required this.rule,
@@ -2243,14 +2195,6 @@ final class CacheFinding {
     required this.detail,
     this.count = 1,
   });
-
-  factory CacheFinding.fromJson(Map<String, Object?> json) => CacheFinding(
-    rule: json['rule']! as String,
-    path: json['path']! as String,
-    symbol: json['symbol']! as String,
-    detail: json['detail']! as String,
-    count: json['count'] as int? ?? 1,
-  );
 
   final String rule;
   final String path;
@@ -2289,74 +2233,6 @@ int _compareCacheFindings(CacheFinding a, CacheFinding b) {
     if (comparison != 0) return comparison;
   }
   return 0;
-}
-
-/// The reviewed findings in [cacheBaselinePath]; empty when the file is
-/// missing, so an unlisted finding fails closed.
-Future<List<CacheFinding>> readCacheBaseline(Directory root) async {
-  final file = File('${root.path}/$cacheBaselinePath');
-  if (!file.existsSync()) return const [];
-  final json = jsonDecode(await file.readAsString()) as Map<String, Object?>;
-  return [
-    for (final entry in json['findings']! as List<Object?>)
-      CacheFinding.fromJson(entry! as Map<String, Object?>),
-  ];
-}
-
-Future<void> writeCacheBaseline(
-  Directory root,
-  List<CacheFinding> findings,
-) async {
-  final file = File('${root.path}/$cacheBaselinePath');
-  await file.writeAsString(renderCacheBaseline(findings));
-}
-
-String renderCacheBaseline(List<CacheFinding> findings) {
-  final sorted = [...findings]..sort(_compareCacheFindings);
-  return renderProviderGraphJson({
-    'owner': 'app_architecture',
-    'targetPhase':
-        'docs/screen_data_caching.md'
-        '#phase-2-context-migrations-empty-the-baseline',
-    'version': 1,
-    'doc': 'docs/screen_data_caching.md',
-    'mode': 'report-only',
-    'description':
-        'Screen-data caching findings that existed when the rules landed, by '
-        'exact rule, path, symbol and detail. The provider graph check fails '
-        'only when a finding is not listed here (or occurs more often than '
-        'its count). A context migration PR deletes the entries it fixes, so '
-        'the list only shrinks; never add an entry to admit new code.',
-    'countsByRule': {
-      for (final rule in cacheRuleIds)
-        rule: sorted
-            .where((finding) => finding.rule == rule)
-            .fold<int>(0, (sum, finding) => sum + finding.count),
-    },
-    'findings': [for (final finding in sorted) finding.toJson()],
-  });
-}
-
-List<CacheFinding> unlistedCacheFindings(
-  List<CacheFinding> findings,
-  List<CacheFinding> baseline,
-) {
-  final allowed = {for (final entry in baseline) entry.key: entry.count};
-  return [
-    for (final finding in findings)
-      if ((allowed[finding.key] ?? 0) < finding.count) finding,
-  ];
-}
-
-List<CacheFinding> staleCacheBaselineEntries(
-  List<CacheFinding> findings,
-  List<CacheFinding> baseline,
-) {
-  final current = {for (final finding in findings) finding.key: finding.count};
-  return [
-    for (final entry in baseline)
-      if ((current[entry.key] ?? 0) < entry.count) entry,
-  ]..sort(_compareCacheFindings);
 }
 
 final class _ReadFacts {
@@ -2423,9 +2299,41 @@ final class _ReadFacts {
       );
     }
 
+    // KEEPALIVE-SCOPE-001: a kept-alive provider names its scope, and only a
+    // scope the code bears out. A handwritten provider with no marker at all
+    // is already KEEPALIVE-MANUAL-001.
+    if (provider.keepAlive && provider.kind != 'alias') {
+      final scope = _keepAliveScope(file, provider.start);
+      final declaration = _declarationSource(file, provider.start);
+      if (scope == null) {
+        if (provider.kind != 'manual' ||
+            _hasMarkerAbove(file, provider.start, _keepAliveMarker)) {
+          add('KEEPALIVE-SCOPE-001', provider.path, provider.name, 'no-scope');
+        }
+      } else if (scope == _scopeSessionRoot &&
+          !_identitySources.hasMatch(declaration)) {
+        add(
+          'KEEPALIVE-SCOPE-001',
+          provider.path,
+          provider.name,
+          'session-root-without-identity',
+        );
+      } else if (scope == _scopeAccountFree &&
+          provider.kind == 'generated-class' &&
+          _accountReads.hasMatch(declaration)) {
+        add(
+          'KEEPALIVE-SCOPE-001',
+          provider.path,
+          provider.name,
+          'account-state',
+        );
+      }
+    }
+
     if (!readOwner) continue;
 
-    // CACHE-LIFETIME-001: one lifetime; keepAlive only when account-free.
+    // CACHE-LIFETIME-001: one lifetime; keepAlive only when account-free or
+    // a session root.
     if (declared.length > 1) {
       add(
         'CACHE-LIFETIME-001',
@@ -2565,10 +2473,49 @@ Set<String> _composesReadOwner(
 }
 
 final _keepAliveMarker = RegExp(r'//\s*keepalive:\s*\S');
+
+/// A kept-alive read owner may hold data only when it is account-free or a
+/// session root (see [_keepAliveScope]).
 final _accountFreeMarker = RegExp(
-  r'//\s*keepalive:.*account-free',
-  caseSensitive: false,
+  r'//\s*keepalive:\s*(?:account-free|session-root):',
 );
+
+const _scopeAccountFree = 'account-free';
+const _scopeSessionRoot = 'session-root';
+
+/// Reading these means a provider holds or follows the signed-in account.
+final _accountReads = RegExp(
+  r'\b(?:uidProvider|authenticatedSessionProvider|currentUser|'
+  r'requireSignedInUid)\b',
+);
+
+/// A session root follows the signed-in identity, so it reads one of these.
+final _identitySources = RegExp(
+  r'\b(?:uidProvider|authenticatedSessionProvider|authStateChangesProvider|'
+  r'authRepositoryProvider|firebaseAuthProvider|currentUser|'
+  r'requireSignedInUid)\b',
+);
+
+/// The scope a kept-alive provider's `// keepalive:` marker declares:
+/// `account-free` (it holds nothing that belongs to one account) or
+/// `session-root` (it is the signed-in identity, or follows it, and kept-alive
+/// infrastructure such as the router reads it). Null when the marker names
+/// neither.
+String? _keepAliveScope(_ScannedFile file, int offset) {
+  for (final scope in [_scopeAccountFree, _scopeSessionRoot]) {
+    final marker = RegExp(r'//\s*keepalive:\s*' + scope + r':\s*\S');
+    if (_hasMarkerAbove(file, offset, marker)) return scope;
+  }
+  return null;
+}
+
+/// The source of the declaration at [offset], or empty when none starts there.
+String _declarationSource(_ScannedFile file, int offset) =>
+    file.unit.declarations
+        .where((d) => d.offset == offset)
+        .firstOrNull
+        ?.toSource() ??
+    '';
 
 /// Whether one of the three lines above the declaration at [offset] (or
 /// above its doc comment and annotations) matches [marker].
@@ -2957,6 +2904,8 @@ final class _ReadSiteVisitor extends RecursiveAstVisitor<void> {
         if (arguments.isNotEmpty) {
           node.policyArguments.add(arguments.first.toSource());
         }
+      case 'retainForCurrentSession':
+        node.lifetimes.add('session');
       case 'retainForSession':
         node.lifetimes.add('session');
         if (arguments.length > 1) {

@@ -1,4 +1,4 @@
-// What a tools_manifest.json edit changes, by entry, so pull requests and
+// What a tools manifest (tool/manifest/) edit changes, by entry, so pull requests and
 // queue groups select the lanes that run those entries instead of every lane
 // (release-engineering design, 14 Nov). The logic that decides selection
 // (tool_impact.mjs, the planner, tool/nx/**, ci.yml) stays a selector; only
@@ -8,17 +8,18 @@
 // that fails to parse, a change outside `tools[]` (bookkeeping `version` and
 // `updated` aside), a duplicate id, or an entry field outside knownEntryFields.
 
-export const manifestFile = "tool/tools_manifest.json";
+import {isToolsManifestPath, touchesToolsManifest} from "../lib/tools_manifest.mjs";
 
 // Entry fields the diff understands. A change to any of them marks the entry
 // changed; a field outside this list selects every lane until it is added here.
 // `safety` is the name `surface` replaced; it stays known so a diff against a
 // base from before the rename still selects by entry (meta:tool-manifest
-// rejects it in a head manifest).
+// rejects it in a head manifest). `queueGate` marks a merge-queue semantic gate
+// (tool/lib/semantic_gates.mjs); like any field, a change to it selects by entry.
 export const knownEntryFields = new Set(["id", "category", "path", "command", "surface", "guard", "guardWorkflow",
   "guardReason", "safety", "status", "description", "checks", "impactPaths", "ciRequirements", "role", "rules",
   "alsoEnforces", "alsoCheckIds", "checkSafety", "baseline", "platforms", "runbook", "retiredOn", "reason",
-  "lastCommit"]);
+  "lastCommit", "queueGate"]);
 const bookkeepingKeys = new Set(["version", "updated"]);
 
 /** JSON with object keys sorted at every level, so key order and whitespace never count as a change. */
@@ -101,8 +102,8 @@ export function manifestChange(baseText, headText, {bookkeeping = bookkeepingKey
  */
 export function manifestPlannerLanes({mode, changedFiles, change, graph, planOthers, allLanes, queueOnly = [],
   isSelector, manifestLanes}) {
-  if (!changedFiles.includes(manifestFile) || !change || change.all) return null;
-  const others = changedFiles.filter((file) => file !== manifestFile);
+  if (!touchesToolsManifest(changedFiles) || !change || change.all) return null;
+  const others = changedFiles.filter((file) => !isToolsManifestPath(file));
   if (others.some((file) => isSelector(file, graph))) return null;
   const lanes = manifestLanes(change, {graph, allLanes});
   if (lanes.size === allLanes.length) return null;

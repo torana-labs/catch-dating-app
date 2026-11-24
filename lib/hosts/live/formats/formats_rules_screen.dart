@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/live/actions/event_success_controller.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment_features.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_rules_body.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_rules_controller.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_rules_state.dart';

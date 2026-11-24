@@ -20,6 +20,16 @@ const screenScaffoldOwnershipCode = 'catch_screen_scaffold_ownership';
 const screenLayoutConstructorVocabularyCode =
     'catch_screen_layout_constructor_vocabulary';
 
+/// The files that build the apps' GoRouter graphs, in route-inventory order
+/// (tool/ui_capture/check_route_inventory.mjs). Only these may construct a
+/// GoRoute; a shared page is declared once in each graph that mounts it, and
+/// its inventory row comes from the first graph.
+const canonicalRouterFiles = <String>[
+  'lib/routing/consumer_router.dart',
+  'lib/routing/host_router.dart',
+];
+const _hostWorkspaceDestinationLibrary =
+    'package:catch_dating_app/routing/host_router.dart';
 const _registryPath = 'design/screens/catch.screens.json';
 const _screenCoveragePath = 'design/screens/screen_coverage.json';
 const _routeInventoryPath = 'tool/ui_capture/route_inventory.json';
@@ -2036,7 +2046,8 @@ Future<({int renderedRoutes, int ownerBindings})> _validateRouteOwnerBindings({
   }
 
   final resolvedByRoute = <String, _ResolvedRoutePresentation>{};
-  final resolvedRouteIds = <String>{};
+  final resolvedRouteFiles = <String, Set<String>>{};
+  final resolvedRouteRanks = <String, int>{};
   final units = await productionAnalysis.units();
   for (final unresolved in productionAnalysis.unresolvedPaths) {
     hardFailures.add(
@@ -2051,14 +2062,17 @@ Future<({int renderedRoutes, int ownerBindings})> _validateRouteOwnerBindings({
     unit.result.unit.accept(visitor);
     for (final construction in visitor.constructions) {
       final location = '${construction.relativePath}:${construction.line}';
-      if (construction.relativePath != 'lib/routing/go_router.dart') {
+      final routerRank = canonicalRouterFiles.indexOf(
+        construction.relativePath,
+      );
+      if (routerRank == -1) {
         hardFailures.add(
-          '$screenRouteOwnerBindingCode $location: GoRoute construction is outside the canonical route graph',
+          '$screenRouteOwnerBindingCode $location: GoRoute construction is outside the canonical route graphs',
         );
       }
       if (construction.kind != _RouteConstructionKind.constructor) {
         hardFailures.add(
-          '$screenRouteOwnerBindingCode $location: ${construction.kind.label} returning GoRoute is not inventory-safe; construct GoRoute directly in lib/routing/go_router.dart',
+          '$screenRouteOwnerBindingCode $location: ${construction.kind.label} returning GoRoute is not inventory-safe; construct GoRoute directly in ${canonicalRouterFiles.join(' or ')}',
         );
       } else if (!construction.inventorySafeConstructor) {
         hardFailures.add(
@@ -2070,16 +2084,28 @@ Future<({int renderedRoutes, int ownerBindings})> _validateRouteOwnerBindings({
       }
       final routeId = construction.routeId;
       if (routeId == null) continue;
-      if (!resolvedRouteIds.add(routeId)) {
+      // A shared page is constructed once per route graph.
+      if (!(resolvedRouteFiles[routeId] ??= <String>{}).add(
+        construction.relativePath,
+      )) {
         hardFailures.add(
-          '$screenRouteOwnerBindingCode route.$routeId: analyzer resolved more than one named GoRoute construction',
+          '$screenRouteOwnerBindingCode route.$routeId: analyzer resolved more than one named GoRoute construction in ${construction.relativePath}',
         );
         continue;
       }
+      // The inventory row holds the first graph's presentation.
       final presentation = construction.presentation;
-      if (presentation != null) resolvedByRoute[routeId] = presentation;
+      final rank = routerRank == -1 ? canonicalRouterFiles.length : routerRank;
+      if (presentation != null &&
+          rank <
+              (resolvedRouteRanks[routeId] ??
+                  canonicalRouterFiles.length + 1)) {
+        resolvedByRoute[routeId] = presentation;
+        resolvedRouteRanks[routeId] = rank;
+      }
     }
   }
+  final resolvedRouteIds = resolvedRouteFiles.keys.toSet();
 
   for (final routeId in resolvedRouteIds.difference(
     inventoryByRoute.keys.toSet(),
@@ -3418,7 +3444,7 @@ final class _GoRoutePresentationVisitor extends RecursiveAstVisitor<void> {
                   _isCanonicalGoRouteSpelling(routeType)) ||
               (element.displayName == 'HostWorkspaceDestination' &&
                   element.library.uri.toString() ==
-                      'package:catch_dating_app/routing/go_router.dart' &&
+                      _hostWorkspaceDestinationLibrary &&
                   node.argumentList.arguments.whereType<NamedArgument>().any(
                     (argument) =>
                         argument.name.lexeme == 'root' &&
@@ -3561,7 +3587,7 @@ bool _isCanonicalGoRouterExecutable(Element? element) {
     '\\',
     '/',
   );
-  return source.endsWith('/lib/routing/go_router.dart');
+  return canonicalRouterFiles.any((file) => source.endsWith('/$file'));
 }
 
 String? _routeIdFromNameExpression(Expression? expression) {

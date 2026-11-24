@@ -1,0 +1,11 @@
+{
+  "id": "operationActionReceipts",
+  "path": "operationActionReceipts/{actionId}",
+  "rulesMatch": "/operationActionReceipts/{actionId}",
+  "schemaContract": "contracts/operations/action_receipt.schema.json",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted operations workers",
+  "writerContext": "platform",
+  "read": "server only",
+  "write": "server only"
+}

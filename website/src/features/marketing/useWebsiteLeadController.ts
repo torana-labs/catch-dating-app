@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {trackWebsiteLeadFormEvent, type WebsiteLeadFormIdentity} from "../../analytics";
 import type {WebsiteLeadForm, WebsiteLeadProblem, WebsiteLeadSubmission} from "../../shared/api/websiteLead";
 import {createSiteLeadSubmission} from "./websiteLead";
@@ -25,6 +25,20 @@ export function useLeadFormViewed({kind, formId}: WebsiteLeadFormIdentity) {
 }
 
 /**
+ * Returns a callback that records, once per form and after analytics consent,
+ * that the person began answering a website lead form (`lead_form_started`):
+ * its lead kind and form id, never the answer.
+ */
+export function useLeadFormStarted({kind, formId}: WebsiteLeadFormIdentity) {
+  const recorded = useRef<string | null>(null);
+  return useCallback(() => {
+    const key = `${kind}:${formId}`;
+    if (recorded.current === key) return;
+    if (trackWebsiteLeadFormEvent("started", {kind, formId})) recorded.current = key;
+  }, [kind, formId]);
+}
+
+/**
  * One website lead form's send: idle, submitting, sent, or failed with the
  * lead client's problem and its words. The submission is made once for the
  * form's life, so sending the same answers again after a failure reuses the
@@ -34,6 +48,7 @@ export function useLeadFormViewed({kind, formId}: WebsiteLeadFormIdentity) {
  */
 export function useWebsiteLeadController(identity: WebsiteLeadFormIdentity, submission?: WebsiteLeadSubmission) {
   useLeadFormViewed(identity);
+  const started = useLeadFormStarted(identity);
   const [lead] = useState(() => submission ?? createSiteLeadSubmission());
   const [state, setState] = useState<LeadState>(idle);
   const inFlight = useRef(false);
@@ -54,8 +69,12 @@ export function useWebsiteLeadController(identity: WebsiteLeadFormIdentity, subm
   const failed = state.phase === "failed";
   return {
     send,
-    /** Clears a shown failure, as when the person edits an answer. */
+    /**
+     * Clears a shown failure, as when the person edits an answer. The first
+     * edit also records the form as started.
+     */
     clearProblem: () => {
+      started();
       if (failed) setState(idle);
     },
     submitting: state.phase === "submitting",

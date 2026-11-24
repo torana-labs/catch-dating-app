@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_assistant_setting_views.schema.json",
+  "title": "ProgramAssistantSettingViewDocument",
+  "description": "Server-maintained assistant settings of one programme, at programAssistantSettingViews/{programId}: exactly the settings getProgramAssistantSettings returned (the stored ones, else the defaults with usesDefaults true), and the staff who can take escalations with each grant's expiry, so the phone stops listing a grant when it ends. The programme's sender is in programSenderViews. Written by triggers on organizerPrograms, programAssistantSettings and programStaffGrants. Never the request ids or hashes, the editor's uid or any grant field beyond uid, display name and expiry, and never identity, permission or mutation authority. Readable by the programme owner and the coordinator duty, as requireSettingsAccess admits them. Staff display names are personal data; archive anonymization reaches them through the grant trigger.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programAssistantSettingViews",
+  "x-firestore-path": "programAssistantSettingViews/{programId}",
+  "x-document-id-field": "programId",
+  "x-owner": "Programme read model projector (programWhatsapp settingViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "enabled",
+    "languages",
+    "replyWithin",
+    "escalationStaffUids",
+    "neverDoes",
+    "tone",
+    "dailyTokenBudget",
+    "answerTopics",
+    "attachmentReads",
+    "revision",
+    "usesDefaults",
+    "staff",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "enabled": {
+      "$ref": "../callable_responses/program_assistant_settings_response.schema.json#/properties/enabled"
+    },
+    "languages": {
+      "$ref": "../callable_responses/program_assistant_settings_response.schema.json#/properties/languages"
+    },
+    "replyWithin": {
+      "$ref": "../callable_responses/program_assistant_settings_response.schema.json#/properties/replyWithin"
+    },
+    "escalationStaffUids": {
+      "$ref": "../callable_responses/program_assistant_settings_response.schema.json#/properties/escalationStaffUids"
+    },
+    "neverDoes": {
+      "$ref": "../callable_responses/program_assistant_settings_response.schema.json#/properties/neverDoes"
+    },
+    "tone": {
+      "$ref": "../callable_responses/program_assistant_settings_response.schema.json#/properties/tone"
+    },
+    "dailyTokenBudget": {
+      "$ref": "../callable_responses/program_assistant_settings_response.schema.json#/properties/dailyTokenBudget"
+    },
+    "answerTopics": {
+      "$ref": "../callable_responses/program_assistant_settings_response.schema.json#/properties/answerTopics"
+    },
+    "attachmentReads": {
+      "$ref": "../callable_responses/program_assistant_settings_response.schema.json#/properties/attachmentReads"
+    },
+    "revision": {
+      "$ref": "../callable_responses/program_assistant_settings_response.schema.json#/properties/revision",
+      "description": "The settings revision, the expectedRevision fence of updateProgramAssistantSettings; 0 while the programme runs on the defaults."
+    },
+    "usesDefaults": {
+      "$ref": "../callable_responses/program_assistant_settings_response.schema.json#/properties/usesDefaults"
+    },
+    "staff": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "displayName",
+          "expiresAtMillis"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120,
+            "description": "Null after archive anonymization."
+          },
+          "expiresAtMillis": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "description": "The grant's expiry; the phone lists the grant only before it."
+          }
+        }
+      },
+      "description": "Active, unrevoked staff grants who can take escalations, in name order, each with its expiry instead of the callable's clock filter."
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

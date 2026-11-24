@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/walkthrough_bookings.schema.json",
   "title": "WalkthroughBookingDocument",
-  "description": "A prospective host's walkthrough booking: the slot it holds, the WhatsApp number its booker verified with a one-time code, and every change. It opens a task in the Admin Inbox; a person confirms on WhatsApp (decision 28: nothing is sent automatically). Server-only.",
+  "description": "A prospective host's walkthrough booking: the slot it holds, the WhatsApp number its booker verified with a one-time code, and every change. It opens a task in the Admin Inbox, where a person confirms the time on WhatsApp; while CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED is on, Catch's WhatsApp number also sends the approved host_walkthrough_booked template for each slot it is booked or moved to (bookedWhatsapp). Server-only.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "walkthroughBookings",
@@ -105,6 +105,24 @@
           }
         }
       ]
+    },
+    "bookedWhatsapp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["templateName", "slotStartAt", "state", "skipReason", "conversationId", "messageId", "providerMessageId",
+        "deliveryErrorCode", "attemptedAt"],
+      "description": "The latest automatic host_walkthrough_booked template from Catch's WhatsApp number, for the slot it names: written when Catch claims the send (state sending), then settled, or skipped. One per booking and slot, so a move sends again for the new time and a retry never sends twice. sending: claimed, WhatsApp not yet answered. accepted: WhatsApp took it (providerMessageId); delivery shows on the Support message (supportConversations/{conversationId}/messages/{messageId}). failed: WhatsApp refused it (deliveryErrorCode). unknown: no answer, so it may have been sent; never retried. skipped: not sent (stopped: they sent STOP; unavailable: no sender credential or ids here). Absent while CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED is off and for internal test bookings.",
+      "properties": {
+        "templateName": {"const": "host_walkthrough_booked"},
+        "slotStartAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/slotStart"},
+        "state": {"enum": ["sending", "accepted", "failed", "unknown", "skipped"]},
+        "skipReason": {"anyOf": [{"enum": ["stopped", "unavailable"]}, {"type": "null"}]},
+        "conversationId": {"anyOf": [{"type": "string", "pattern": "^whatsapp-[a-f0-9]{64}$"}, {"type": "null"}]},
+        "messageId": {"anyOf": [{"type": "string", "minLength": 8, "maxLength": 160}, {"type": "null"}]},
+        "providerMessageId": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 240}, {"type": "null"}]},
+        "deliveryErrorCode": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 999999999}, {"type": "null"}]},
+        "attemptedAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/instant"}
+      }
     },
     "createdAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/instant"},
     "updatedAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/instant"}

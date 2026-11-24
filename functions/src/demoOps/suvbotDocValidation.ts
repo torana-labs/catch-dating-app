@@ -10,11 +10,23 @@ import {
   validateEventDocument,
 } from "../shared/generated/validators/eventDocument";
 import {
-  validateEventParticipationDocument,
-} from "../shared/generated/validators/eventParticipationDocument";
+  validateEventBookingDocument,
+} from "../shared/generated/validators/eventBookingDocument";
 import {
   validateEventAttendeeDocument,
 } from "../shared/generated/validators/eventAttendeeDocument";
+import {
+  validateEventSeatIdentityAliasDocument,
+} from "../shared/generated/validators/eventSeatIdentityAliasDocument";
+import {
+  validateEventSeatLedgerDocument,
+} from "../shared/generated/validators/eventSeatLedgerDocument";
+import {
+  validateEventSeatReservationDocument,
+} from "../shared/generated/validators/eventSeatReservationDocument";
+import {
+  validateEventSeatVerifiedPhoneDocument,
+} from "../shared/generated/validators/eventSeatVerifiedPhoneDocument";
 import {
   validateMatchDocument,
 } from "../shared/generated/validators/matchDocument";
@@ -54,12 +66,29 @@ const contractedPaths: ReadonlyArray<{
   {pattern: /^organizers\/[^/]+$/u, validate: validateOrganizerDocument},
   {pattern: /^events\/[^/]+$/u, validate: validateEventDocument},
   {
-    pattern: /^eventParticipations\/[^/]+$/u,
-    validate: validateEventParticipationDocument,
+    pattern: /^eventBookings\/[^/]+$/u,
+    validate: validateEventBookingDocument,
   },
   {
     pattern: /^eventAttendees\/[^/]+$/u,
     validate: validateEventAttendeeDocument,
+  },
+  // A demo event's seat records, as booking writes them.
+  {
+    pattern: /^eventSeatLedgers\/[^/]+$/u,
+    validate: validateEventSeatLedgerDocument,
+  },
+  {
+    pattern: /^eventSeatIdentityAliases\/[^/]+$/u,
+    validate: validateEventSeatIdentityAliasDocument,
+  },
+  {
+    pattern: /^eventSeatVerifiedPhones\/[^/]+$/u,
+    validate: validateEventSeatVerifiedPhoneDocument,
+  },
+  {
+    pattern: /^eventSeatReservations\/[^/]+$/u,
+    validate: validateEventSeatReservationDocument,
   },
   {pattern: /^savedEvents\/[^/]+$/u, validate: validateSavedEventDocument},
   {

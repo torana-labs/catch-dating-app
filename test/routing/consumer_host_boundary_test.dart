@@ -1,10 +1,23 @@
-import 'dart:io';
-
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('shared router does not import host management form implementations', () {
-    final router = File('lib/routing/go_router.dart').readAsStringSync();
+  test('the guest router imports no Host screens', () {
+    final router = repoFile(
+      'lib/routing/consumer_router.dart',
+    ).readAsStringSync();
+
+    expect(router, isNot(contains('package:catch_dating_app/hosts/')));
+    expect(
+      router,
+      isNot(
+        contains("import 'package:catch_dating_app/routing/host_router.dart'"),
+      ),
+    );
+  });
+
+  test('host router does not import host management form implementations', () {
+    final router = repoFile('lib/routing/host_router.dart').readAsStringSync();
 
     expect(router, isNot(contains('organizers/presentation/create/')));
     expect(
@@ -35,37 +48,43 @@ void main() {
 
   test('host management implementation files live outside consumer folders', () {
     expect(
-      File(
+      repoFile(
         'lib/organizers/presentation/create/create_organizer_screen.dart',
       ).existsSync(),
       isFalse,
     );
     expect(
-      File('lib/events/presentation/create_event_screen.dart').existsSync(),
+      repoFile('lib/events/presentation/create_event_screen.dart').existsSync(),
       isFalse,
     );
     expect(
-      File(
+      repoFile(
         'lib/organizers/presentation/detail/organizer_host_management_controller.dart',
       ).existsSync(),
       isFalse,
     );
     expect(
-      File(
+      repoFile(
         'lib/payments/presentation/host_payment_account_card.dart',
       ).existsSync(),
       isFalse,
     );
-    expect(File('lib/hosts/onboarding/setup_screen.dart').existsSync(), isTrue);
-    expect(File('lib/hosts/create/create_screen.dart').existsSync(), isTrue);
     expect(
-      File(
+      repoFile('lib/hosts/onboarding/setup_screen.dart').existsSync(),
+      isTrue,
+    );
+    expect(
+      repoFile('lib/hosts/create/create_screen.dart').existsSync(),
+      isTrue,
+    );
+    expect(
+      repoFile(
         'lib/hosts/presentation/organizer_management/host_team_management_controller.dart',
       ).existsSync(),
       isTrue,
     );
     expect(
-      File(
+      repoFile(
         'lib/hosts/presentation/payments/host_payment_account_card.dart',
       ).existsSync(),
       isTrue,

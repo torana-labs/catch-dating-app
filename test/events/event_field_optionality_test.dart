@@ -1,18 +1,18 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_fact_list.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_itinerary_editor.dart';
+import 'package:catch_dating_app/pages/event/event_detail_information_state.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_detail_fact_list.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_detail_overview_section.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test_pump_helpers.dart';
 import 'events_test_helpers.dart';
 
 void main() {

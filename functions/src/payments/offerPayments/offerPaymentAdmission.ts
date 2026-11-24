@@ -1,5 +1,7 @@
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
+import {updateEventBookingCounters} from
+  "../../domain/events/eventDocumentWrites";
 import type {OrganizerFormAdmissionReceiptDocument as Receipt} from
   "../../shared/generated/organizerFormAdmissionReceiptDocument";
 import {validateOrganizerFormAdmissionReceiptDocument} from
@@ -11,12 +13,12 @@ import {validateEventAttendeeDocument} from
 import {readVerifiedOfferRecipient, type LoadRecipientAuth} from
   "../../organizerEventOfferRecipients/recipientGrant";
 import {OfferDomainError} from "../../organizerEventOffers/eventOfferDomain";
-import {canonicalJson} from "../../events/eventSetupPreferences/resolve";
+import {canonicalJson} from
+  "../../domain/formats/eventSetupPreferences/resolve";
 import {prepareCrmOriginSeatIdentity, SeatIdentityAuthorityError,
   seatIdentityAliasId, seatIdentityValueHash} from
   "../../events/seatIdentityAuthority";
 import {eventAttendeeId} from "../../events/eventAttendees";
-import {readSeatMigrationWriterFence} from "../../events/seatMigrationPaged";
 import {FirestoreSeatTransaction, assertCurrentReadySeatSnapshot} from
   "../../events/seatAuthority/firestoreAdapter";
 import {SeatAuthorityError} from "../../events/seatAuthority/seatAuthority";
@@ -28,12 +30,14 @@ import {admissionRequestHash, AdmissionPolicyError} from
   "../../organizerFormAdmission/admissionPolicy";
 import {newFormAttendee} from "../../organizerFormAdmission/admissionRoster";
 import {assertUnpartitionedAdmission} from
-  "../../organizerFormAdmission/admissionEligibility";
+  "../../domain/events/admissionEligibility";
 import {formConversionReceiptId} from
   "../../organizers/organizerFormAdmissionIdentity";
 import {OFFER_PAYMENT_COLLECTION, parseOfferPayment} from
   "./offerPaymentReservation";
 import {releaseOfferPaymentHold} from "./offerPaymentExpiry";
+import {markEventPaymentAdmitted, markEventPaymentRefundPending} from
+  "../eventCheckout/eventPaymentState";
 
 import {assertPaidOfferAdmission} from "./offerPaymentAdmissionProof";
 
@@ -87,8 +91,7 @@ export async function finalizeCapturedOfferPayment(params: {
       refundEligible = true;
       if (receiptSnap.exists || ownershipSnap.exists) unavailable();
       if (payment.reservationReleased) {
-        tx.update(paymentRef, {status: "refundPending",
-          updatedAt: Timestamp.fromMillis(nowMillis)});
+        markEventPaymentRefundPending(tx, paymentRef, nowMillis);
         return "refundPending";
       }
       const {grant, source} = await readVerifiedOfferRecipient({db, tx,
@@ -109,8 +112,7 @@ export async function finalizeCapturedOfferPayment(params: {
         .collection("organizerFormConversionReceipts")
         .doc(formConversionReceiptId(responseId, "eventAttendeeProposal",
           eventId)));
-      if (legacy.exists || await readSeatMigrationWriterFence({db, tx,
-        eventId}) !== "ready") unavailable();
+      if (legacy.exists) unavailable();
       const identity = await prepareCrmOriginSeatIdentity({db, tx, eventId,
         organizerId, originId: payment.originId, responseId,
         verifiedOfferRecipient: {grantId: payment.grantId, uid,
@@ -190,7 +192,7 @@ export async function finalizeCapturedOfferPayment(params: {
       }
       identity.apply();
       applyCheckoutHold(seatTx, confirm);
-      tx.update(db.collection("events").doc(eventId),
+      updateEventBookingCounters(tx, db.collection("events").doc(eventId),
         {bookedCount: ledger.occupied + 1});
       tx.create(attendeeRef, attendee);
       for (const alias of aliases) {
@@ -202,14 +204,8 @@ export async function finalizeCapturedOfferPayment(params: {
       }
       tx.create(receiptRef, receipt);
       tx.create(ownershipRef, ownership);
-      tx.update(paymentRef, {status: "admitted", admissionReceiptId: receiptId,
-        admittedAt: now, updatedAt: now, lastErrorCode: null,
-        ...(payment.routing.selection.route === "razorpayRoute" ? {
-          settlement: {state: "waiting", transferId: null,
-            nextAttemptAtMillis: nowMillis, leaseUntilMillis: 0, leaseId: null,
-            authorizedAtMillis: null, completedAtMillis: null,
-            releasedAtMillis: null, settledAtMillis: null},
-        } : {})});
+      markEventPaymentAdmitted(tx, paymentRef, {routing: payment.routing,
+        admissionReceiptId: receiptId, nowMillis});
       return "admitted";
     });
   } catch (error) {

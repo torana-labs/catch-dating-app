@@ -6,7 +6,17 @@ import {fileURLToPath} from "node:url";
 import {findBalancedEnd} from "../lib/dart_call_blocks.mjs";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 
-const routerPath = fromRepo("lib/routing/go_router.dart");
+/**
+ * The files that build the apps' GoRouter graphs, in inventory order. Each
+ * holds one `GoRouter(` configuration, and only these files may construct a
+ * GoRoute, so no imported route escapes the inventory. Shared pages appear in
+ * each graph that mounts them; a route's runtime fields come from the first
+ * graph that wires it.
+ */
+export const canonicalRouterFiles = [
+  "lib/routing/consumer_router.dart",
+  "lib/routing/host_router.dart",
+];
 const routeContractPath = fromRepo("packages/platform/lib/routing/route_contract.dart");
 const inventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
 const productionDartRoots = ["lib", "packages/platform/lib", "apps/consumer/lib", "apps/host/lib"];
@@ -57,7 +67,7 @@ function checkInventory() {
   const actual = fs.readFileSync(inventoryPath, "utf8");
   if (actual !== expected) {
     fail([
-      `${relativeToRepo(inventoryPath)} is stale for ${relativeToRepo(routerPath)}.`,
+      `${relativeToRepo(inventoryPath)} is stale for ${canonicalRouterFiles.join(", ")}.`,
       "Run node tool/ui_capture/check_route_inventory.mjs --update and review the route/capture inventory impact.",
     ]);
   }
@@ -75,8 +85,11 @@ function listInventory() {
 export function buildInventory({
   repoRoot = fromRepo("."),
   routeContractSource = fs.readFileSync(path.join(repoRoot, "packages/platform/lib/routing/route_contract.dart"), "utf8"),
-  routerSource = fs.readFileSync(path.join(repoRoot, "lib/routing/go_router.dart"), "utf8"),
-  imperativePageRoutes = extractImperativePageRouteInventory(repoRoot),
+  routers = canonicalRouterFiles.map((routerFile) => ({
+    path: routerFile,
+    source: fs.readFileSync(path.join(repoRoot, routerFile), "utf8"),
+  })),
+  imperativePageRoutes = extractImperativePageRouteInventory(repoRoot, routers.map((router) => router.path)),
 } = {}) {
   const enumBlock = extractBalancedBlock(
     routeContractSource,
@@ -84,38 +97,50 @@ export function buildInventory({
     "{",
     "}",
   );
-  const goRouterBlock = extractGoRouterConfigurationBlock(routerSource);
-  const routeGraph = extractRuntimeRouteGraph(routerSource, goRouterBlock);
   const routes = extractRouteEnumEntries(enumBlock.body);
-  const runtimeRoutes = extractRuntimeRouteEntries(routeGraph.text, routes);
-  validateRuntimeRoutes(routes, runtimeRoutes);
+  const graphs = routers.map((router) => {
+    const goRouterBlock = extractGoRouterConfigurationBlock(router.source, router.path);
+    const routeGraph = extractRuntimeRouteGraph(router.source, goRouterBlock);
+    return {
+      ...router,
+      goRouterBlock,
+      routeGraph,
+      runtimeRoutes: extractRuntimeRouteEntries(routeGraph.text, routes),
+    };
+  });
+  validateRuntimeRoutes(routes, graphs);
   const routeContract = normalizePresentationExpression(
-    `${enumBlock.text}\n${extractRouterSemanticClosure(routerSource, goRouterBlock)}`,
+    [
+      enumBlock.text,
+      ...graphs.map((graph) => extractRouterSemanticClosure(graph.source, graph.goRouterBlock)),
+    ].join("\n"),
   );
+  const routeGraphText = graphs.map((graph) => graph.routeGraph.text).join("\n");
   const routeReferences = uniqueSorted(
-    [...routeGraph.text.matchAll(/\bRoutes\.([A-Za-z0-9_]+)/g)].map(
+    [...routeGraphText.matchAll(/\bRoutes\.([A-Za-z0-9_]+)/g)].map(
       (match) => match[1]
     )
   );
   const routeReferenceIds = new Set(routeReferences);
-  const runtimeRoutesById = new Map(
-    runtimeRoutes.map((route) => [route.id, route])
-  );
+  const runtimeRoutesById = new Map();
+  for (const route of graphs.flatMap((graph) => graph.runtimeRoutes)) {
+    if (!runtimeRoutesById.has(route.id)) runtimeRoutesById.set(route.id, route);
+  }
 
   return {
-    version: 5,
+    version: 6,
     generatedBy: "tool/ui_capture/check_route_inventory.mjs",
     source: {
       path: "packages/platform/lib/routing/route_contract.dart",
-      runtimePath: "lib/routing/go_router.dart",
+      runtimePaths: graphs.map((graph) => graph.path),
       routeContractSha256: sha256(routeContract),
-      goRouteCount: countMatches(routeGraph.text, /\b(?:GoRoute|HostWorkspaceDestination)\s*\(/g),
-      shellBranchCount: countMatches(routeGraph.text, /\bStatefulShellBranch\s*\(/g),
+      goRouteCount: countMatches(routeGraphText, /\b(?:GoRoute|HostWorkspaceDestination)\s*\(/g),
+      shellBranchCount: countMatches(routeGraphText, /\bStatefulShellBranch\s*\(/g),
       enumRouteCount: routes.length,
       referencedRouteCount: routeReferences.length,
-      runtimeRouteCount: runtimeRoutes.length,
-      routeHelperCount: routeGraph.routeHelperNames.length,
-      routeHelpers: routeGraph.routeHelperNames,
+      runtimeRouteCount: graphs.reduce((count, graph) => count + graph.runtimeRoutes.length, 0),
+      routeHelperCount: graphs.reduce((count, graph) => count + graph.routeGraph.routeHelperNames.length, 0),
+      routeHelpers: graphs.flatMap((graph) => graph.routeGraph.routeHelperNames),
       imperativePageRouteCount: imperativePageRoutes.length,
       imperativePageTargetCount: new Set(
         imperativePageRoutes.map((route) => route.presentationTarget),
@@ -142,7 +167,7 @@ export function buildInventory({
   };
 }
 
-function extractImperativePageRouteInventory(repoRoot = fromRepo(".")) {
+function extractImperativePageRouteInventory(repoRoot = fromRepo("."), routerFiles = canonicalRouterFiles) {
   const entries = [];
   for (const root of productionDartRoots) {
     const absoluteRoot = path.join(repoRoot, root);
@@ -150,7 +175,7 @@ function extractImperativePageRouteInventory(repoRoot = fromRepo(".")) {
     for (const absolutePath of dartFilesUnder(absoluteRoot)) {
       const relativePath = path.relative(repoRoot, absolutePath).split(path.sep).join("/");
       const source = fs.readFileSync(absolutePath, "utf8");
-      validateRouteSourceForInventory(source, relativePath);
+      validateRouteSourceForInventory(source, relativePath, routerFiles);
       const routes = extractImperativePageRoutesFromSource(source, relativePath);
       entries.push(...routes);
     }
@@ -206,7 +231,7 @@ export function extractImperativePageRoutesFromSource(source, sourcePath) {
   });
 }
 
-export function validateRouteSourceForInventory(source, sourcePath) {
+export function validateRouteSourceForInventory(source, sourcePath, routerFiles = canonicalRouterFiles) {
   const routeAlias = source.match(
     /\btypedef\s+[A-Za-z_$][A-Za-z0-9_$]*(?:\s*<[^;=>]+>)?\s*=\s*(?:(?:[A-Za-z_$][A-Za-z0-9_$]*)\.)?(GoRoute|MaterialPageRoute|CupertinoPageRoute|PageRouteBuilder)\b/u,
   );
@@ -216,11 +241,11 @@ export function validateRouteSourceForInventory(source, sourcePath) {
     );
   }
 
-  if (sourcePath !== "lib/routing/go_router.dart") {
+  if (!routerFiles.includes(sourcePath)) {
     const goRoutes = extractCallBlocks(source, "GoRoute");
     if (goRoutes.length > 0) {
       throw new Error(
-        `${sourcePath}:${lineNumberAt(source, goRoutes[0].labelIndex)} GoRoute construction is outside lib/routing/go_router.dart. Route definitions must remain in the canonical route graph so inventory generation cannot omit imported routes.`,
+        `${sourcePath}:${lineNumberAt(source, goRoutes[0].labelIndex)} GoRoute construction is outside the canonical router files (${routerFiles.join(", ")}). Route definitions must remain in a canonical route graph so inventory generation cannot omit imported routes.`,
       );
     }
   }
@@ -974,47 +999,53 @@ function normalizeRuntimePath(routePath) {
   return routePath.replace(/\/+/gu, "/").replace(/\/$/u, "");
 }
 
-function validateRuntimeRoutes(enumRoutes, runtimeRoutes) {
+function validateRuntimeRoutes(enumRoutes, graphs) {
   const errors = [];
   const enumRoutesById = new Map(enumRoutes.map((route) => [route.id, route]));
-  const seenRuntimeIds = new Set();
+  const wiredIds = new Set();
 
-  for (const runtimeRoute of runtimeRoutes) {
-    if (seenRuntimeIds.has(runtimeRoute.id)) {
-      errors.push(`Routes.${runtimeRoute.id} is wired by more than one GoRoute.`);
-      continue;
-    }
-    seenRuntimeIds.add(runtimeRoute.id);
+  for (const graph of graphs) {
+    // A shared page may be mounted by each graph, but once per graph.
+    const seenRuntimeIds = new Set();
+    const where = graphs.length > 1 ? ` in ${graph.path}` : "";
+    for (const runtimeRoute of graph.runtimeRoutes) {
+      if (seenRuntimeIds.has(runtimeRoute.id)) {
+        errors.push(`Routes.${runtimeRoute.id} is wired by more than one GoRoute${where}.`);
+        continue;
+      }
+      seenRuntimeIds.add(runtimeRoute.id);
+      wiredIds.add(runtimeRoute.id);
 
-    const enumRoute = enumRoutesById.get(runtimeRoute.id);
-    if (!enumRoute) {
-      errors.push(`GoRoute references Routes.${runtimeRoute.id}, but the enum entry is missing.`);
-      continue;
-    }
-    if (runtimeRoute.runtimePath !== enumRoute.path) {
-      errors.push(
-        `Routes.${runtimeRoute.id} enum path is ${enumRoute.path}, but the composed runtime path is ${runtimeRoute.runtimePath}.`
-      );
-    }
-    if (runtimeRoute.renderKind === "missing") {
-      errors.push(
-        `Routes.${runtimeRoute.id} has no builder, pageBuilder, or redirect presentation.`,
-      );
-    }
-    if (!runtimeRoute.presentationExpression) {
-      errors.push(
-        `Routes.${runtimeRoute.id} has no normalized presentation expression.`,
-      );
-    }
-    if (!runtimeRoute.presentationTarget) {
-      errors.push(
-        `Routes.${runtimeRoute.id} presentation does not expose a deterministic presentation target.`,
-      );
+      const enumRoute = enumRoutesById.get(runtimeRoute.id);
+      if (!enumRoute) {
+        errors.push(`GoRoute references Routes.${runtimeRoute.id}, but the enum entry is missing.`);
+        continue;
+      }
+      if (runtimeRoute.runtimePath !== enumRoute.path) {
+        errors.push(
+          `Routes.${runtimeRoute.id} enum path is ${enumRoute.path}, but the composed runtime path${where} is ${runtimeRoute.runtimePath}.`
+        );
+      }
+      if (runtimeRoute.renderKind === "missing") {
+        errors.push(
+          `Routes.${runtimeRoute.id} has no builder, pageBuilder, or redirect presentation${where}.`,
+        );
+      }
+      if (!runtimeRoute.presentationExpression) {
+        errors.push(
+          `Routes.${runtimeRoute.id} has no normalized presentation expression${where}.`,
+        );
+      }
+      if (!runtimeRoute.presentationTarget) {
+        errors.push(
+          `Routes.${runtimeRoute.id} presentation does not expose a deterministic presentation target${where}.`,
+        );
+      }
     }
   }
 
   for (const enumRoute of enumRoutes) {
-    if (!seenRuntimeIds.has(enumRoute.id)) {
+    if (!wiredIds.has(enumRoute.id)) {
       errors.push(`Routes.${enumRoute.id} is declared but not wired by a GoRoute.`);
     }
   }
@@ -1035,7 +1066,7 @@ function extractRouteEnumEntries(enumBody) {
   ];
 
   if (matches.length === 0) {
-    throw new Error("No Routes enum entries found in lib/routing/go_router.dart.");
+    throw new Error("No Routes enum entries found in packages/platform/lib/routing/route_contract.dart.");
   }
 
   return matches.map((match) => ({
@@ -1057,14 +1088,14 @@ function isDevRoute(routePath) {
   return routePath.startsWith("/dev/");
 }
 
-export function extractGoRouterConfigurationBlock(source) {
+export function extractGoRouterConfigurationBlock(source, sourcePath = "the router file") {
   const constructorMatch =
     /\b(?:return\s+|(?:final|var)\s+[A-Za-z_$][\w$]*\s*=\s*)GoRouter\s*\(/u.exec(
       source,
     );
   if (constructorMatch == null) {
     throw new Error(
-      "Could not find a returned or locally owned `GoRouter(` configuration in lib/routing/go_router.dart.",
+      `Could not find a returned or locally owned \`GoRouter(\` configuration in ${sourcePath}.`,
     );
   }
   return extractBalancedBlock(
@@ -1157,7 +1188,7 @@ function printHelp() {
   console.log(`Usage: node tool/ui_capture/check_route_inventory.mjs <command>
 
 Commands:
-  --update  Regenerate tool/ui_capture/route_inventory.json from the route contract and runtime router.
+  --update  Regenerate tool/ui_capture/route_inventory.json from the route contract and the canonical router files.
   --check   Fail if the route inventory is stale.
   --list    Print the current route ids and paths.
   --locations Print live imperative route source locations (not stored in the inventory).

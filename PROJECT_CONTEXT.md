@@ -33,7 +33,7 @@ features.
 
 ## Runtime architecture
 
-Flutter code is organized into bounded contexts placed by `tool/architecture/context_map.json` (see the Bounded Context Contract in [docs/app_architecture.md](docs/app_architecture.md#bounded-context-contract)). Screens compose feature-owned controllers/providers, repositories own remote access, and shared UI belongs in canonical `Catch*` primitives when the concept repeats. `apps/<role>/lib/main*.dart` entrypoints build each application shell through `lib/app_bootstrap.dart`; route, authentication, onboarding, force-update, and role gates determine the visible feature graph.
+Flutter code is organized into bounded contexts placed by `tool/architecture/context_map.json` (see the Bounded Context Contract in [docs/app_architecture.md](docs/app_architecture.md#bounded-context-contract)). Screens compose feature-owned controllers/providers, repositories own remote access, and shared UI belongs in canonical `Catch*` primitives when the concept repeats. `apps/<role>/lib/main*.dart` entrypoints build each application shell through `lib/pages/frame/app_bootstrap.dart`; route, authentication, onboarding, force-update, and role gates determine the visible feature graph.
 
 Firebase Auth is phone-first. Profile creation is an onboarding responsibility, not an incidental auth side effect. Firestore is the operational store; callable Functions own privileged mutations and cross-document invariants. Generated schemas/types keep app, Functions, rules, admin, and website boundaries aligned.
 
@@ -82,7 +82,7 @@ Use [docs/release_operations.md](docs/release_operations.md) for exact CI, signi
 
 ## Generated and local-only content
 
-Generated artifacts must have a named source and drift check. The tool manifest at `tool/tools_manifest.json` owns runnable automation. The root manifest at `tool/repository_root_manifest.json` classifies every allowed root entry.
+Generated artifacts must have a named source and drift check. The tool manifest in `tool/manifest/` (one file per tool) owns runnable automation. The root manifest at `tool/repository_root_manifest.json` classifies every allowed root entry.
 
 Common local-only state includes build outputs, package caches, IDE metadata, emulator exports, debug logs, `.env*`, and `.claude/worktrees/`. Inspect or clean regenerable state with `node tool/repository_hygiene.mjs`; never use a broad `git clean` command. Curated visual evidence follows [artifacts/README.md](artifacts/README.md).
 

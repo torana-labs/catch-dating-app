@@ -1,0 +1,28 @@
+{
+  "id": "ci:web-hosting-delivery-package",
+  "category": "ci",
+  "path": "tool/ci/package_web_hosting.mjs",
+  "command": "node --test tool/ci/package_web_hosting.test.mjs",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/ci/package_web_hosting.test.mjs",
+    "firebase.json",
+    ".firebaserc"
+  ],
+  "alsoCheckIds": [
+    "ci:web-hosting-delivery-workflow"
+  ],
+  "description": "Projects one production Admin, Host Flutter web, or Marketing Hosting bundle into a bounded lifecycle-hook-free Firebase package for the exact Catch production project and surface site, with exact workflow/run/source binding and a strict per-file digest inventory.",
+  "checks": [
+    "node --check tool/ci/package_web_hosting.mjs",
+    "node --test tool/ci/package_web_hosting.test.mjs"
+  ],
+  "role": "generator"
+}

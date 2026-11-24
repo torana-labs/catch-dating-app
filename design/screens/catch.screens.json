@@ -20,7 +20,7 @@
             "dashboardEventDetailScreen",
             "hostAppEventDetailScreen"
           ],
-          "file": "lib/events/presentation/event_detail_screen.dart",
+          "file": "lib/pages/event/event_detail_screen.dart",
           "symbol": "_EventDetailScreenState",
           "family": "media-hero",
           "expression": "CatchScaffold.workspace",
@@ -35,7 +35,7 @@
             "dashboardEventDetailScreen",
             "hostAppEventDetailScreen"
           ],
-          "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
+          "file": "lib/pages/event/widgets/event_detail_loading_skeleton.dart",
           "symbol": "EventDetailLoadingScreen",
           "family": "media-hero",
           "expression": "CatchScaffold.workspace",
@@ -51,7 +51,7 @@
           "routes": [
             "organizerDetailScreen"
           ],
-          "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+          "file": "lib/pages/organizer/organizer_detail_screen.dart",
           "symbol": "OrganizerDetailScreen",
           "family": "media-hero",
           "expression": "CatchScaffold.workspace",
@@ -213,7 +213,7 @@
           "routes": [
             "chatScreen"
           ],
-          "file": "lib/chats/presentation/chat_screen.dart",
+          "file": "lib/pages/chat/chat_screen.dart",
           "symbol": "_ChatScreenState",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
@@ -383,7 +383,7 @@
           "routes": [
             "hostOrganizerDetailScreen"
           ],
-          "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+          "file": "lib/pages/organizer/organizer_detail_screen.dart",
           "symbol": "OrganizerDetailScreen",
           "family": "media-hero",
           "expression": "CatchScaffold.workspace",
@@ -741,7 +741,7 @@
           "routes": [
             "hostChatScreen"
           ],
-          "file": "lib/chats/presentation/chat_screen.dart",
+          "file": "lib/pages/chat/chat_screen.dart",
           "symbol": "_ChatScreenState",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
@@ -757,7 +757,7 @@
           "routes": [
             "startScreen"
           ],
-          "file": "lib/onboarding/presentation/start_welcome_route_screen.dart",
+          "file": "lib/pages/start/start_welcome_route_screen.dart",
           "symbol": "StartWelcomeRouteScreen",
           "family": "standalone",
           "expression": "CatchScaffold.standalone",
@@ -1215,8 +1215,8 @@
           "routes": [
             "loadingScreen"
           ],
-          "file": "lib/routing/go_router.dart",
-          "symbol": "_RouteLoadingScreen",
+          "file": "lib/routing/router_frame.dart",
+          "symbol": "RouteLoadingScreen",
           "family": "standalone",
           "expression": "CatchScaffold.standalone",
           "bodyGeometry": "full-bleed",
@@ -1312,7 +1312,7 @@
           "routes": [
             "eventChatParticipantsScreen"
           ],
-          "file": "lib/chats/presentation/event_chat_participants_screen.dart",
+          "file": "lib/pages/chat/event_chat_participants_screen.dart",
           "symbol": "_EventChatParticipantsScreenState",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
@@ -1328,7 +1328,7 @@
           "routes": [
             "eventChatScreen"
           ],
-          "file": "lib/chats/presentation/event_chat_screen.dart",
+          "file": "lib/pages/chat/event_chat_screen.dart",
           "symbol": "_EventChatScreenState",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
@@ -1360,7 +1360,7 @@
           "routes": [
             "eventProfileSharingScreen"
           ],
-          "file": "lib/chats/presentation/event_profile_screen.dart",
+          "file": "lib/pages/chat/event_profile_screen.dart",
           "symbol": "_EventProfileScreenState",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
@@ -1376,7 +1376,7 @@
           "routes": [
             "eventParticipantProfileScreen"
           ],
-          "file": "lib/chats/presentation/event_profile_screen.dart",
+          "file": "lib/pages/chat/event_profile_screen.dart",
           "symbol": "_EventProfileScreenState",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
@@ -2269,32 +2269,32 @@
         }
       ],
       "source": {
-        "file": "lib/events/presentation/event_detail_screen.dart",
+        "file": "lib/pages/event/event_detail_screen.dart",
         "symbol": "EventDetailScreen"
       },
       "stateController": {
         "primary": "eventDetailViewModelProvider",
         "files": [
           {
-            "file": "lib/events/presentation/event_detail_view_model.dart",
+            "file": "lib/pages/event/event_detail_view_model.dart",
             "symbol": "eventDetailViewModel"
           },
           {
-            "file": "lib/events/presentation/widgets/event_detail_body.dart",
+            "file": "lib/pages/event/widgets/event_detail_body.dart",
             "symbol": "EventDetailBody"
           },
           {
-            "file": "lib/cross_paths/presentation/cross_paths_event_consent_state.dart",
+            "file": "lib/pages/event/cross_paths_event_consent_state.dart",
             "symbol": "CrossPathsEventConsentSectionState"
           }
         ],
         "mutationOwners": [
           {
-            "file": "lib/events/presentation/event_detail_controller.dart",
+            "file": "lib/pages/event/event_detail_controller.dart",
             "symbol": "EventDetailController"
           },
           {
-            "file": "lib/events/presentation/event_booking_controller.dart",
+            "file": "lib/contexts/bookings/actions/event_booking_controller.dart",
             "symbol": "EventBookingController"
           },
           {
@@ -2302,7 +2302,7 @@
             "symbol": "EventCalendarController"
           },
           {
-            "file": "lib/cross_paths/presentation/cross_paths_event_consent_controller.dart",
+            "file": "lib/pages/event/cross_paths_event_consent_controller.dart",
             "symbol": "CrossPathsEventConsentController"
           }
         ],
@@ -2592,7 +2592,7 @@
           "status": "captured",
           "source": "Host role suppresses consumer booking actions and treats hosted clubs as host context.",
           "tests": [
-            "test/events/event_detail_controller_test.dart",
+            "test/pages/event/event_detail_controller_test.dart",
             "test/events/event_detail_widgets_test.dart"
           ],
           "nextAction": "Keep host app Event Detail in this read-only detail contract; host management actions belong to the future host event management contract.",
@@ -2616,7 +2616,7 @@
             "EventDetailBody/Prompt states"
           ],
           "tests": [
-            "test/events/event_detail_screen_state_test.dart",
+            "test/pages/event/event_detail_screen_state_test.dart",
             "test/events/event_detail_widgets_test.dart"
           ],
           "nextAction": "Signed-up booking-dock mode derivation now maps through EventDetailBookingDockState; continue visual comparison only if the captured dock diverges from the booking dock reference."
@@ -2630,7 +2630,7 @@
             "EventBookingDock/BookingDock states"
           ],
           "tests": [
-            "test/events/event_detail_screen_state_test.dart",
+            "test/pages/event/event_detail_screen_state_test.dart",
             "test/events/event_detail_widgets_test.dart"
           ],
           "captureIds": [
@@ -2648,7 +2648,7 @@
             "EventBookingDock/BookingDock states"
           ],
           "tests": [
-            "test/events/event_detail_screen_state_test.dart",
+            "test/pages/event/event_detail_screen_state_test.dart",
             "test/events/event_detail_widgets_test.dart"
           ],
           "captureIds": [
@@ -2668,7 +2668,7 @@
             "EventBookingDock/BookingDock states"
           ],
           "tests": [
-            "test/events/event_detail_screen_state_test.dart",
+            "test/pages/event/event_detail_screen_state_test.dart",
             "test/events/event_detail_widgets_test.dart"
           ],
           "nextAction": "Split waitlist, offer, full, attended, cancelled, and past states into separate BookingDock adapter states after the adapter exists.",
@@ -2743,7 +2743,7 @@
               "EventHero"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_hero_top_bar.dart",
+              "file": "lib/pages/event/widgets/event_detail_hero_top_bar.dart",
               "symbol": "EventDetailHeroTopBar"
             },
             "currentOwner": "EventDetailBody",
@@ -2774,7 +2774,7 @@
               "TicketStub"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailTicketStubRow"
             },
             "currentOwner": "EventDetailBody",
@@ -2803,7 +2803,7 @@
               "Section"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
+              "file": "lib/pages/event/widgets/event_detail_overview_section.dart",
               "symbol": "EventDetailOverviewSection"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2830,7 +2830,7 @@
               "HintList"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailHintList"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2857,7 +2857,7 @@
               "Itinerary"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailItineraryList"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2884,7 +2884,7 @@
               "PhotoStrip"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailPhotoGrid"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2911,7 +2911,7 @@
               "MapCard"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailMapCard"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2939,7 +2939,7 @@
               "MechanismList"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailMechanismList"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2967,7 +2967,7 @@
               "Section"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailGoodToKnowList"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2995,7 +2995,7 @@
               "HostCard"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_body.dart",
+              "file": "lib/pages/event/widgets/event_detail_body.dart",
               "symbol": "EventDetailHostsSection"
             },
             "currentOwner": "EventDetailBody",
@@ -3026,7 +3026,7 @@
               "AvatarStack"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_social_section.dart",
+              "file": "lib/pages/event/widgets/event_detail_social_section.dart",
               "symbol": "EventDetailSocialSection"
             },
             "currentOwner": "EventDetailSocialSection",
@@ -3054,7 +3054,7 @@
               "Section"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_social_section.dart",
+              "file": "lib/pages/event/widgets/event_detail_social_section.dart",
               "symbol": "EventDetailSocialSection"
             },
             "currentOwner": "EventDetailSocialSection",
@@ -3082,7 +3082,7 @@
               "Section"
             ],
             "flutter": {
-              "file": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+              "file": "lib/pages/event/cross_paths_event_consent_section.dart",
               "symbol": "CrossPathsEventConsentSection"
             },
             "currentOwner": "EventDetailScreen + CrossPathsEventConsentSection",
@@ -3114,7 +3114,7 @@
               "Section"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_body.dart",
+              "file": "lib/pages/event/widgets/event_detail_body.dart",
               "symbol": "EventCompanionCard"
             },
             "currentOwner": "EventDetailBody",
@@ -3142,7 +3142,7 @@
               "BookingDock"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_dock.dart",
+              "file": "lib/pages/event/widgets/event_detail_dock.dart",
               "symbol": "EventBookingDock"
             },
             "currentOwner": "EventDetailBody",
@@ -3229,36 +3229,36 @@
         }
       ],
       "source": {
-        "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+        "file": "lib/pages/organizer/organizer_detail_screen.dart",
         "symbol": "OrganizerDetailScreen"
       },
       "stateController": {
         "primary": "organizerDetailViewModelProvider",
         "files": [
           {
-            "file": "lib/organizers/presentation/detail/organizer_detail_screen_state.dart",
+            "file": "lib/pages/organizer/organizer_detail_screen_state.dart",
             "symbol": "HostOrganizerDetailScreenState"
           },
           {
-            "file": "lib/organizers/presentation/detail/organizer_detail_view_model.dart",
+            "file": "lib/pages/organizer/organizer_detail_view_model.dart",
             "symbol": "organizerDetailViewModel"
           },
           {
-            "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+            "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
             "symbol": "OrganizerDetailBody"
           },
           {
-            "file": "lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart",
+            "file": "lib/pages/organizer/widgets/organizer_detail_dock.dart",
             "symbol": "OrganizerMembershipDock"
           }
         ],
         "mutationOwners": [
           {
-            "file": "lib/organizers/presentation/detail/organizer_follow_controller.dart",
+            "file": "lib/contexts/organizers/actions/organizer_follow_controller.dart",
             "symbol": "OrganizerFollowController"
           },
           {
-            "file": "lib/organizers/presentation/detail/organizer_host_contact_controller.dart",
+            "file": "lib/pages/organizer/organizer_host_contact_controller.dart",
             "symbol": "OrganizerHostContactController"
           }
         ],
@@ -3571,7 +3571,7 @@
               "OrganizerHero"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart",
+              "file": "lib/pages/organizer/widgets/organizer_hero_top_bar.dart",
               "symbol": "OrganizerHeroTopBar"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -3602,7 +3602,7 @@
               "MetricStrip"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+              "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
               "symbol": "CatchMetricSection"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -3630,7 +3630,7 @@
               "HostCard"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_host_section.dart",
+              "file": "lib/pages/organizer/widgets/organizer_host_section.dart",
               "symbol": "OrganizerHostSection"
             },
             "currentOwner": "OrganizerHostSection",
@@ -3662,7 +3662,7 @@
               "TagList"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+              "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
               "symbol": "OrganizerDetailBody"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -3690,7 +3690,7 @@
               "PhotoStrip"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_photo_rail.dart",
+              "file": "lib/pages/organizer/widgets/organizer_photo_rail.dart",
               "symbol": "OrganizerPhotoRail"
             },
             "currentOwner": "OrganizerPhotoRail",
@@ -3718,7 +3718,7 @@
               "ContactList"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_contact_section.dart",
+              "file": "lib/pages/organizer/widgets/organizer_contact_section.dart",
               "symbol": "OrganizerContactSection"
             },
             "currentOwner": "OrganizerContactSection",
@@ -3747,7 +3747,7 @@
               "EventTicket"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart",
+              "file": "lib/pages/organizer/widgets/organizer_schedule_section.dart",
               "symbol": "OrganizerScheduleSection"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -3775,7 +3775,7 @@
               "ReviewList"
             ],
             "flutter": {
-              "file": "lib/reviews/shared/reviews_section.dart",
+              "file": "lib/pages/reviews/reviews_section.dart",
               "symbol": "OrganizerReviewsSection"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -3803,7 +3803,7 @@
               "OrganizerDock"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart",
+              "file": "lib/pages/organizer/widgets/organizer_detail_dock.dart",
               "symbol": "OrganizerMembershipDock"
             },
             "currentOwner": "OrganizerDetailScreen",
@@ -3976,7 +3976,7 @@
           "source": "Accepted invitation exposes the temporary event plan and an explicit cancel-plan inverse without creating dating-match UI.",
           "tests": [
             "test/cross_paths/cross_paths_invitation_screen_test.dart",
-            "test/chats/chat_screen_test.dart",
+            "test/pages/chat/chat_screen_test.dart",
             "test/chats/chat_inbox_screen_test.dart"
           ],
           "previewIds": [
@@ -4151,7 +4151,7 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/organizers/presentation/detail/organizer_follow_controller.dart",
+            "file": "lib/contexts/organizers/actions/organizer_follow_controller.dart",
             "symbol": "OrganizerFollowController"
           }
         ],
@@ -5037,7 +5037,7 @@
             "symbol": "DashboardEventFocusController"
           },
           {
-            "file": "lib/events/presentation/event_booking_controller.dart",
+            "file": "lib/contexts/bookings/actions/event_booking_controller.dart",
             "symbol": "EventBookingController"
           }
         ],
@@ -5730,11 +5730,11 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/event_success/presentation/event_success_controller.dart",
+            "file": "lib/contexts/live/actions/event_success_controller.dart",
             "symbol": "EventSuccessController"
           },
           {
-            "file": "lib/events/presentation/event_booking_controller.dart",
+            "file": "lib/contexts/bookings/actions/event_booking_controller.dart",
             "symbol": "EventBookingController"
           }
         ],
@@ -6825,27 +6825,27 @@
             "symbol": "ChatsListScreen"
           },
           {
-            "file": "lib/chats/presentation/inbox/chats_list_screen_state.dart",
+            "file": "lib/pages/inbox/chats_list_screen_state.dart",
             "symbol": "HostInboxScreenState"
           },
           {
-            "file": "lib/chats/presentation/inbox/chats_list_screen_state.dart",
+            "file": "lib/pages/inbox/chats_list_screen_state.dart",
             "symbol": "ChatsListDisplayState"
           },
           {
-            "file": "lib/chats/presentation/inbox/chats_list_celebration_controller.dart",
+            "file": "lib/pages/inbox/chats_list_celebration_controller.dart",
             "symbol": "ChatsListCelebrationController"
           },
           {
-            "file": "lib/chats/presentation/inbox/chats_search_header_controller.dart",
+            "file": "lib/pages/inbox/chats_search_header_controller.dart",
             "symbol": "ChatsSearchHeaderController"
           },
           {
-            "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
+            "file": "lib/pages/inbox/chats_list_view_model.dart",
             "symbol": "ChatsListViewModel"
           },
           {
-            "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
+            "file": "lib/pages/inbox/chats_list_view_model.dart",
             "symbol": "ChatSearchQuery"
           },
           {
@@ -7161,7 +7161,7 @@
               "HostFilter"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
+              "file": "lib/pages/inbox/widgets/chats_sliver_header.dart",
               "symbol": "ChatsBrowseHeader"
             },
             "currentOwner": "ChatsListScreen",
@@ -7193,7 +7193,7 @@
               "ChatsListStates"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/inbox/chats_list_screen_state.dart",
+              "file": "lib/pages/inbox/chats_list_screen_state.dart",
               "symbol": "ChatsListDisplayState"
             },
             "currentOwner": "HostInboxScreenState + ChatsListDisplayState",
@@ -7224,7 +7224,7 @@
               "ThreadSectionLabel"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
+              "file": "lib/pages/inbox/widgets/chats_list_body.dart",
               "symbol": "ChatsListBody"
             },
             "currentOwner": "ChatsList",
@@ -7289,7 +7289,7 @@
               "NoUnreadQueries"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
+              "file": "lib/pages/inbox/widgets/chats_empty_state.dart",
               "symbol": "ChatsEmptyState"
             },
             "currentOwner": "ChatsList",
@@ -7318,7 +7318,7 @@
               "MatchCelebrationDialog"
             ],
             "flutter": {
-              "file": "lib/matches/shared/match_celebration_dialog.dart",
+              "file": "lib/pages/inbox/match_celebration_dialog.dart",
               "symbol": "MatchCelebrationDialog"
             },
             "currentOwner": "ChatsList",
@@ -7399,34 +7399,34 @@
         }
       ],
       "source": {
-        "file": "lib/chats/presentation/chat_screen.dart",
+        "file": "lib/pages/chat/chat_screen.dart",
         "symbol": "ChatScreen"
       },
       "stateController": {
         "primary": "ChatRouteState + HostChatScreenState + ChatReadMarkerController + ChatScrollCoordinator + ChatThreadActionController + ChatRetryController + ChatController",
         "files": [
           {
-            "file": "lib/chats/presentation/chat_screen.dart",
+            "file": "lib/pages/chat/chat_screen.dart",
             "symbol": "ChatScreen"
           },
           {
-            "file": "lib/chats/presentation/chat_route_state.dart",
+            "file": "lib/pages/chat/chat_route_state.dart",
             "symbol": "ChatRouteState"
           },
           {
-            "file": "lib/chats/presentation/host_chat_screen_state.dart",
+            "file": "lib/pages/chat/host_chat_screen_state.dart",
             "symbol": "HostChatScreenState"
           },
           {
-            "file": "lib/chats/presentation/chat_thread_lookup_state.dart",
+            "file": "lib/pages/chat/chat_thread_lookup_state.dart",
             "symbol": "ChatThreadLookupState"
           },
           {
-            "file": "lib/chats/presentation/chat_controller.dart",
+            "file": "lib/pages/chat/chat_controller.dart",
             "symbol": "ChatController"
           },
           {
-            "file": "lib/chats/presentation/suvbot_controller.dart",
+            "file": "lib/pages/chat/suvbot_controller.dart",
             "symbol": "SuvbotController"
           },
           {
@@ -7434,23 +7434,23 @@
             "symbol": "watchConversationMessages"
           },
           {
-            "file": "lib/chats/presentation/chat_read_marker_state.dart",
+            "file": "lib/pages/chat/chat_read_marker_state.dart",
             "symbol": "ChatReadMarkerState"
           },
           {
-            "file": "lib/chats/presentation/chat_read_marker_controller.dart",
+            "file": "lib/pages/chat/chat_read_marker_controller.dart",
             "symbol": "ChatReadMarkerController"
           },
           {
-            "file": "lib/chats/presentation/chat_scroll_coordinator.dart",
+            "file": "lib/pages/chat/chat_scroll_coordinator.dart",
             "symbol": "ChatScrollCoordinator"
           },
           {
-            "file": "lib/chats/presentation/chat_thread_action_controller.dart",
+            "file": "lib/pages/chat/chat_thread_action_controller.dart",
             "symbol": "ChatThreadActionController"
           },
           {
-            "file": "lib/chats/presentation/chat_retry_controller.dart",
+            "file": "lib/pages/chat/chat_retry_controller.dart",
             "symbol": "ChatRetryController"
           },
           {
@@ -7464,11 +7464,11 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/chats/presentation/chat_controller.dart",
+            "file": "lib/pages/chat/chat_controller.dart",
             "symbol": "ChatController"
           },
           {
-            "file": "lib/chats/presentation/suvbot_controller.dart",
+            "file": "lib/pages/chat/suvbot_controller.dart",
             "symbol": "SuvbotController"
           },
           {
@@ -7615,7 +7615,7 @@
           "status": "captured",
           "source": "ChatMessageList renders Messages unavailable error with retry callback.",
           "tests": [
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/chat_screen_test.dart"
           ],
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
@@ -7634,8 +7634,8 @@
             "match_chat_context"
           ],
           "tests": [
-            "test/chats/message_bubble_test.dart",
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/widgets/message_bubble_test.dart",
+            "test/pages/chat/chat_screen_test.dart"
           ],
           "nextAction": "Compare populated thread hierarchy against exported chat references.",
           "previewIds": [
@@ -7648,7 +7648,7 @@
           "status": "captured",
           "source": "Empty message stream renders Say hi copy grounded in profile and shared event context.",
           "tests": [
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/chat_screen_test.dart"
           ],
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
@@ -7664,7 +7664,7 @@
           "status": "captured",
           "source": "ChatEventContextHeader renders activity-aware stamp and event date when event data is available.",
           "tests": [
-            "test/chats/chat_event_context_header_test.dart"
+            "test/pages/chat/widgets/chat_event_context_header_test.dart"
           ],
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
@@ -7680,7 +7680,7 @@
           "status": "captured",
           "source": "ChatEventContextHeader renders neutral fallback while event context is missing/loading.",
           "tests": [
-            "test/chats/chat_event_context_header_test.dart"
+            "test/pages/chat/widgets/chat_event_context_header_test.dart"
           ],
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
@@ -7696,7 +7696,7 @@
           "status": "tested",
           "source": "ChatScreen trims message text, runs ChatController.sendMessageMutation, clears only after success, and animates to bottom.",
           "tests": [
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/chat_screen_test.dart"
           ],
           "nextAction": "Route test now proves pending send spinner, disabled composer controls, duplicate-send guard, success clearing, and retained draft on failure. Continue only capture/reference variants.",
           "previewIds": [
@@ -7709,7 +7709,7 @@
           "status": "captured",
           "source": "Failed text send keeps composed text and surfaces shared snackbar feedback.",
           "tests": [
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/chat_screen_test.dart"
           ],
           "nextAction": "Capture registered; keep composer text-retention proof when chat sending is refactored.",
           "previewIds": [
@@ -7725,7 +7725,7 @@
           "status": "tested",
           "source": "ChatController.sendImage picks and uploads an image, then sends image message metadata.",
           "tests": [
-            "test/chats/chat_controller_test.dart"
+            "test/pages/chat/chat_controller_test.dart"
           ],
           "nextAction": "Add composer image pending/cancel/success/failure UI states.",
           "previewIds": [
@@ -7738,7 +7738,7 @@
           "status": "tested",
           "source": "ChatController.sendImage deletes the uploaded image when the message write fails.",
           "tests": [
-            "test/chats/chat_controller_test.dart"
+            "test/pages/chat/chat_controller_test.dart"
           ],
           "nextAction": "Keep image cleanup proof when image upload UI is refactored.",
           "previewIds": [
@@ -7751,7 +7751,7 @@
           "status": "tested",
           "source": "ChatReadMarkerController executes read-marker side effects from ChatReadMarkerState decisions when uid becomes available, incoming messages arrive, or the screen disposes.",
           "tests": [
-            "test/chats/chat_screen_test.dart",
+            "test/pages/chat/chat_screen_test.dart",
             "test/chats/match_repository_test.dart"
           ],
           "nextAction": "Closed by ChatReadMarkerState and ChatReadMarkerController coverage.",
@@ -7791,7 +7791,7 @@
           "status": "captured",
           "source": "CatchLegacyTopBar.identity opens profile from identity title and exposes share/report/block overflow actions without duplicating profile in menu.",
           "tests": [
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/chat_screen_test.dart"
           ],
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
@@ -7807,7 +7807,7 @@
           "status": "captured",
           "source": "ChatShareCard renders anonymized activity-aware share card and ignores image-only messages.",
           "tests": [
-            "test/chats/chat_share_card_test.dart"
+            "test/pages/chat/widgets/chat_share_card_test.dart"
           ],
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
@@ -7823,7 +7823,7 @@
           "status": "captured",
           "source": "ChatScreen routes report/block actions through typed safety effects, surfaces report failure feedback, and confirms block before executing.",
           "tests": [
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/chat_screen_test.dart"
           ],
           "nextAction": "Captures registered for report failure and block confirmation; keep success/failure feedback proof when safety actions move again.",
           "previewIds": [
@@ -7840,7 +7840,7 @@
           "status": "captured",
           "source": "Suvbot conversations replace the normal composer with SuvbotDock controls.",
           "tests": [
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/chat_screen_test.dart"
           ],
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
@@ -7856,7 +7856,7 @@
           "status": "captured",
           "source": "SuvbotController delegates action/text requests to SuvbotRepository and SuvbotDock handles pending/error/retry states.",
           "tests": [
-            "test/chats/suvbot_controller_test.dart"
+            "test/pages/chat/suvbot_controller_test.dart"
           ],
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
@@ -7977,7 +7977,7 @@
               "ActivityStamp"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/chat_event_context_header.dart",
+              "file": "lib/pages/chat/widgets/chat_event_context_header.dart",
               "symbol": "ChatEventContextHeader"
             },
             "currentOwner": "ChatScreen",
@@ -8008,7 +8008,7 @@
               "MessageError"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/chat_message_list.dart",
+              "file": "lib/pages/chat/widgets/chat_message_list.dart",
               "symbol": "ChatMessageList"
             },
             "currentOwner": "ChatScreen",
@@ -8040,7 +8040,7 @@
               "ImageMessage"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/message_bubble.dart",
+              "file": "lib/pages/chat/widgets/message_bubble.dart",
               "symbol": "MessageBubble"
             },
             "currentOwner": "ChatMessageList",
@@ -8074,7 +8074,7 @@
               "SendAction"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/chat_input.dart",
+              "file": "lib/pages/chat/widgets/chat_input.dart",
               "symbol": "ChatInput"
             },
             "currentOwner": "ChatScreen",
@@ -8107,7 +8107,7 @@
               "ShareSheet"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/chat_share_card.dart",
+              "file": "lib/pages/chat/widgets/chat_share_card.dart",
               "symbol": "ChatShareCard"
             },
             "currentOwner": "ChatScreen",
@@ -8138,7 +8138,7 @@
               "DemoActionSheet"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/suvbot_dock.dart",
+              "file": "lib/pages/chat/widgets/suvbot_dock.dart",
               "symbol": "SuvbotDock"
             },
             "currentOwner": "ChatScreen",
@@ -8170,7 +8170,7 @@
               "MutationErrorSurface"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/chat_screen.dart",
+              "file": "lib/pages/chat/chat_screen.dart",
               "symbol": "ChatScreen"
             },
             "currentOwner": "ChatScreen",
@@ -10308,7 +10308,7 @@
             "symbol": "watchOrganizersHostedBy"
           },
           {
-            "file": "lib/auth/presentation/auth_session_controller.dart",
+            "file": "lib/pages/account/auth_session_controller.dart",
             "symbol": "AuthSessionController"
           }
         ],
@@ -11912,52 +11912,52 @@
         }
       ],
       "source": {
-        "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+        "file": "lib/pages/organizer/organizer_detail_screen.dart",
         "symbol": "OrganizerDetailScreen"
       },
       "stateController": {
         "primary": "HostOrganizerDetailScreenState.fromState + organizerDetailViewModelProvider",
         "files": [
           {
-            "file": "lib/organizers/presentation/detail/organizer_detail_screen_state.dart",
+            "file": "lib/pages/organizer/organizer_detail_screen_state.dart",
             "symbol": "HostOrganizerDetailScreenState"
           },
           {
-            "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+            "file": "lib/pages/organizer/organizer_detail_screen.dart",
             "symbol": "OrganizerDetailScreen"
           },
           {
-            "file": "lib/organizers/presentation/detail/organizer_detail_view_model.dart",
+            "file": "lib/pages/organizer/organizer_detail_view_model.dart",
             "symbol": "organizerDetailViewModel"
           },
           {
-            "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+            "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
             "symbol": "OrganizerDetailBody"
           },
           {
-            "file": "lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart",
+            "file": "lib/pages/organizer/widgets/organizer_hero_top_bar.dart",
             "symbol": "OrganizerHeroTopBar"
           },
           {
-            "file": "lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart",
+            "file": "lib/pages/organizer/widgets/organizer_schedule_section.dart",
             "symbol": "OrganizerScheduleSection"
           },
           {
-            "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+            "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
             "symbol": "CatchMetricSection"
           },
           {
-            "file": "lib/reviews/shared/reviews_section.dart",
+            "file": "lib/pages/reviews/reviews_section.dart",
             "symbol": "OrganizerReviewsSection"
           }
         ],
         "mutationOwners": [
           {
-            "file": "lib/organizers/presentation/detail/organizer_follow_controller.dart",
+            "file": "lib/contexts/organizers/actions/organizer_follow_controller.dart",
             "symbol": "OrganizerFollowController"
           },
           {
-            "file": "lib/organizers/presentation/detail/organizer_host_contact_controller.dart",
+            "file": "lib/pages/organizer/organizer_host_contact_controller.dart",
             "symbol": "OrganizerHostContactController"
           }
         ],
@@ -12356,7 +12356,7 @@
               "HostOrganizerDetailScreenState"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/organizer_detail_screen_state.dart",
+              "file": "lib/pages/organizer/organizer_detail_screen_state.dart",
               "symbol": "HostOrganizerDetailScreenState"
             },
             "currentOwner": "HostOrganizerDetailScreenState",
@@ -12387,7 +12387,7 @@
               "OrganizerDetailBody"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+              "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
               "symbol": "OrganizerDetailBody"
             },
             "currentOwner": "OrganizerDetailScreen",
@@ -12416,7 +12416,7 @@
               "OrganizerHeroTopBar"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart",
+              "file": "lib/pages/organizer/widgets/organizer_hero_top_bar.dart",
               "symbol": "OrganizerHeroTopBar"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -12446,7 +12446,7 @@
               "CatchMetricSection"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+              "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
               "symbol": "CatchMetricSection"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -12475,7 +12475,7 @@
               "OrganizerHostRow"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+              "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
               "symbol": "OrganizerHostSection"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -12508,7 +12508,7 @@
               "OrganizerContactSection"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+              "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
               "symbol": "OrganizerContactSection"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -12540,7 +12540,7 @@
               "HostScheduleRows"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart",
+              "file": "lib/pages/organizer/widgets/organizer_schedule_section.dart",
               "symbol": "OrganizerScheduleSection"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -12569,7 +12569,7 @@
               "OrganizerReviewsSection"
             ],
             "flutter": {
-              "file": "lib/reviews/shared/reviews_section.dart",
+              "file": "lib/pages/reviews/reviews_section.dart",
               "symbol": "OrganizerReviewsSection"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -12597,7 +12597,7 @@
               "HostOrganizerDetailActions"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+              "file": "lib/pages/organizer/organizer_detail_screen.dart",
               "symbol": "OrganizerDetailScreen"
             },
             "currentOwner": "OrganizerDetailScreen",
@@ -12628,7 +12628,7 @@
               "HostOrganizerDetailErrorState"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+              "file": "lib/pages/organizer/organizer_detail_screen.dart",
               "symbol": "OrganizerDetailScreen"
             },
             "currentOwner": "HostOrganizerDetailScreenState",
@@ -14018,15 +14018,15 @@
             "symbol": "resolveHostInboxScope"
           },
           {
-            "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
+            "file": "lib/pages/inbox/chats_list_view_model.dart",
             "symbol": "ChatsListViewModel"
           },
           {
-            "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
+            "file": "lib/pages/inbox/chats_list_view_model.dart",
             "symbol": "chatsListViewModel"
           },
           {
-            "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
+            "file": "lib/pages/inbox/chats_list_view_model.dart",
             "symbol": "ChatSearchQuery"
           },
           {
@@ -14038,7 +14038,7 @@
             "symbol": "watchEventParticipationsForEvent"
           },
           {
-            "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
+            "file": "lib/pages/inbox/widgets/chats_sliver_header.dart",
             "symbol": "ChatsBrowseHeader"
           },
           {
@@ -14046,15 +14046,15 @@
             "symbol": "HostBroadcastComposerSheet"
           },
           {
-            "file": "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
+            "file": "lib/pages/inbox/widgets/chats_list_body.dart",
             "symbol": "ChatsListBody"
           },
           {
-            "file": "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
+            "file": "lib/pages/inbox/widgets/chat_conversations_list.dart",
             "symbol": "ChatConversationsList"
           },
           {
-            "file": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
+            "file": "lib/pages/inbox/widgets/chats_empty_state.dart",
             "symbol": "ChatsEmptyState"
           },
           {
@@ -14124,7 +14124,7 @@
             "symbol": "HostOrganizerPostController"
           }
         ],
-        "notes": "HostInboxScreen is the Host-owned Inbox destination and follows the shell-selected organizer. Inbox selects that organizer's live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by organizer and event, classifies Booked and Prospective rows, and derives broadcast counts from eventParticipations rather than conversation count. The user-facing Sends workspace owns mixed Campaign/Announcement/Follower update history, groups every registered route under In Catch or WhatsApp, owns the route-specific follower composer and durable personal-WhatsApp handoff queue, and owns the complete campaign lifecycle; its compatibility wire value remains campaigns. Manual handoffs distinguish queued, device-opened and explicit host-asserted states, revalidate a stored endpoint immediately before every queue launch, and never claim provider delivery or read evidence. WhatsApp sender setup lives on the dedicated organizer messaging route. Event broadcasts and follower updates create durable Activity plus preference-gated push and never create chat fan-out. Person rows combine only server-verified organizer-scoped identity. Every reply chooses one authorized route; paging, read receipts and drafts retain source identity and account generation. New message selects a person before resolving available routes."
+        "notes": "HostInboxScreen is the Host-owned Inbox destination and follows the shell-selected organizer. Inbox selects that organizer's live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by organizer and event, classifies Booked and Prospective rows, and derives broadcast counts from eventBookings rather than conversation count. The user-facing Sends workspace owns mixed Campaign/Announcement/Follower update history, groups every registered route under In Catch or WhatsApp, owns the route-specific follower composer and durable personal-WhatsApp handoff queue, and owns the complete campaign lifecycle; its compatibility wire value remains campaigns. Manual handoffs distinguish queued, device-opened and explicit host-asserted states, revalidate a stored endpoint immediately before every queue launch, and never claim provider delivery or read evidence. WhatsApp sender setup lives on the dedicated organizer messaging route. Event broadcasts and follower updates create durable Activity plus preference-gated push and never create chat fan-out. Person rows combine only server-verified organizer-scoped identity. Every reply chooses one authorized route; paging, read receipts and drafts retain source identity and account generation. New message selects a person before resolving available routes."
       },
       "designRefs": [
         {
@@ -14333,8 +14333,8 @@
           "source": "Host Inbox renders attendee-query rows plus a host broadcast card for host-mode conversations. At capable route-body widths, CatchAdaptiveMasterDetailLayout keeps a semantic selected row beside a thread keyed by match id.",
           "tests": [
             "test/chats/chat_inbox_screen_test.dart",
-            "test/chats/chat_conversations_list_test.dart",
-            "test/chats/chat_screen_test.dart",
+            "test/pages/inbox/widgets/chat_conversations_list_test.dart",
+            "test/pages/chat/chat_screen_test.dart",
             "test/core/catch_master_detail_layout_test.dart",
             "test/hosts/host_inbox_screen_test.dart"
           ],
@@ -14415,7 +14415,7 @@
           "id": "roster_without_threads",
           "kind": "empty",
           "status": "captured",
-          "source": "HostInboxViewModel derives broadcast counts from eventParticipations, independently of personal inquiry thread count.",
+          "source": "HostInboxViewModel derives broadcast counts from eventBookings, independently of personal inquiry thread count.",
           "nextAction": "Keep roster and thread count assertions separate when audience policy evolves.",
           "previewIds": [
             "HostInboxScreen/Event-scoped states"
@@ -14876,7 +14876,7 @@
               "CatchBrowseHeader"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
+              "file": "lib/pages/inbox/widgets/chats_sliver_header.dart",
               "symbol": "ChatsBrowseHeader"
             },
             "currentOwner": "ChatsSliverHeader",
@@ -14923,7 +14923,7 @@
               "prospective",
               "roster_without_threads"
             ],
-            "migration": "Implemented. Typed scope never uses General as an event-id sentinel, and audience counts come from eventParticipations rather than conversation totals.",
+            "migration": "Implemented. Typed scope never uses General as an event-id sentinel, and audience counts come from eventBookings rather than conversation totals.",
             "previewIds": [
               "HostInboxScreen/Event-scoped states"
             ]
@@ -14937,7 +14937,7 @@
               "HostInboxAsyncBody"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
+              "file": "lib/pages/inbox/widgets/chats_list.dart",
               "symbol": "ChatsList"
             },
             "currentOwner": "ChatsListDisplayState + ChatsList",
@@ -14967,7 +14967,7 @@
               "HostAttendeeQueriesSection"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
+              "file": "lib/pages/inbox/widgets/chats_list_body.dart",
               "symbol": "ChatsListBody"
             },
             "currentOwner": "ChatsListBody",
@@ -15150,7 +15150,7 @@
               "HostInboxEmptyState"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
+              "file": "lib/pages/inbox/widgets/chats_empty_state.dart",
               "symbol": "ChatsEmptyState"
             },
             "currentOwner": "ChatsEmptyState",
@@ -15237,38 +15237,38 @@
         }
       ],
       "source": {
-        "file": "lib/chats/presentation/chat_screen.dart",
+        "file": "lib/pages/chat/chat_screen.dart",
         "symbol": "ChatScreen"
       },
       "stateController": {
         "primary": "ChatRouteState + HostChatScreenState + ChatReadMarkerController + ChatScrollCoordinator + ChatThreadActionController + ChatRetryController + ChatScreen + ChatController",
         "files": [
           {
-            "file": "lib/chats/presentation/chat_route_state.dart",
+            "file": "lib/pages/chat/chat_route_state.dart",
             "symbol": "ChatRouteState"
           },
           {
-            "file": "lib/chats/presentation/host_chat_screen_state.dart",
+            "file": "lib/pages/chat/host_chat_screen_state.dart",
             "symbol": "HostChatScreenState"
           },
           {
-            "file": "lib/chats/presentation/chat_read_marker_controller.dart",
+            "file": "lib/pages/chat/chat_read_marker_controller.dart",
             "symbol": "ChatReadMarkerController"
           },
           {
-            "file": "lib/chats/presentation/chat_scroll_coordinator.dart",
+            "file": "lib/pages/chat/chat_scroll_coordinator.dart",
             "symbol": "ChatScrollCoordinator"
           },
           {
-            "file": "lib/chats/presentation/chat_thread_action_controller.dart",
+            "file": "lib/pages/chat/chat_thread_action_controller.dart",
             "symbol": "ChatThreadActionController"
           },
           {
-            "file": "lib/chats/presentation/chat_retry_controller.dart",
+            "file": "lib/pages/chat/chat_retry_controller.dart",
             "symbol": "ChatRetryController"
           },
           {
-            "file": "lib/chats/presentation/chat_screen.dart",
+            "file": "lib/pages/chat/chat_screen.dart",
             "symbol": "ChatScreen"
           },
           {
@@ -15292,7 +15292,7 @@
             "symbol": "watchPublicProfile"
           },
           {
-            "file": "lib/chats/presentation/chat_controller.dart",
+            "file": "lib/pages/chat/chat_controller.dart",
             "symbol": "ChatController"
           },
           {
@@ -15300,21 +15300,21 @@
             "symbol": "CatchLegacyTopBar.identity"
           },
           {
-            "file": "lib/chats/presentation/widgets/chat_event_context_header.dart",
+            "file": "lib/pages/chat/widgets/chat_event_context_header.dart",
             "symbol": "ChatEventContextHeader"
           },
           {
-            "file": "lib/chats/presentation/widgets/chat_message_list.dart",
+            "file": "lib/pages/chat/widgets/chat_message_list.dart",
             "symbol": "ChatMessageList"
           },
           {
-            "file": "lib/chats/presentation/widgets/chat_input.dart",
+            "file": "lib/pages/chat/widgets/chat_input.dart",
             "symbol": "ChatInput"
           }
         ],
         "mutationOwners": [
           {
-            "file": "lib/chats/presentation/chat_controller.dart",
+            "file": "lib/pages/chat/chat_controller.dart",
             "symbol": "ChatController"
           },
           {
@@ -15329,14 +15329,14 @@
           "id": "repo.chat-screen-tests",
           "kind": "repo",
           "status": "available",
-          "path": "test/chats/chat_screen_test.dart",
+          "path": "test/pages/chat/chat_screen_test.dart",
           "notes": "Chat screen tests cover routed profile fallback, ChatThreadLookupState lookup policy, event-grounded empty thread copy, read marker resets, ChatReadMarkerState policy, ChatReadMarkerController mark-read execution, ChatScrollCoordinator initial/appended/send-success-message state, ChatThreadActionController profile/share/report/block execution, ChatRetryController route/message/Suvbot retry execution through the screen, HostChatActionIntent top-bar policy, empty-share feedback, send success/failure, incoming-message read reset, message load error, and Suvbot separation."
         },
         {
           "id": "repo.chat-top-bar-tests",
           "kind": "repo",
           "status": "available",
-          "path": "test/chats/chat_screen_test.dart",
+          "path": "test/pages/chat/chat_screen_test.dart",
           "notes": "Top bar tests cover chat title/action behavior shared by professional host conversations."
         },
         {
@@ -15504,7 +15504,7 @@
             "ChatScreen/Host chat states"
           ],
           "tests": [
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/chat_screen_test.dart"
           ],
           "captureIds": [
             "host_chat_inquiry"
@@ -15520,7 +15520,7 @@
             "ChatScreen/Host chat states"
           ],
           "tests": [
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/chat_screen_test.dart"
           ]
         },
         {
@@ -15533,7 +15533,7 @@
             "ChatScreen/Host chat states"
           ],
           "tests": [
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/chat_screen_test.dart"
           ]
         },
         {
@@ -15542,7 +15542,7 @@
           "status": "tested",
           "source": "ChatEventContextHeader renders latest shared event context when watchEventProvider resolves the match latestEventId.",
           "tests": [
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/chat_screen_test.dart"
           ],
           "nextAction": "Add host inquiry capture with event-grounded context and professional copy.",
           "previewIds": [
@@ -15581,7 +15581,7 @@
           "status": "captured",
           "source": "ChatMessageList renders Messages unavailable / Unable to load messages with retry intent supplied through HostChatScreenState and invalidation dispatched by _ChatContent.",
           "tests": [
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/chat_screen_test.dart"
           ],
           "nextAction": "Keep message retry typed while moving remaining retry dispatch side effects out of _ChatContent.",
           "previewIds": [
@@ -15597,7 +15597,7 @@
           "status": "captured",
           "source": "Empty threads render CatchEmptyState with Say hi copy grounded in the latest shared event and other participant name.",
           "tests": [
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/chat_screen_test.dart"
           ],
           "nextAction": "Decide whether host inquiry empty copy should use attendee-query language instead of Say hi.",
           "previewIds": [
@@ -15627,7 +15627,7 @@
           "status": "tested",
           "source": "ChatScreen delegates read-marker execution to ChatReadMarkerController for uid availability, incoming latest messages, and dispose. ChatScrollCoordinator owns initial, appended, and send-success message list auto-scroll state. ChatRetryController owns typed route/message/Suvbot retry invalidation. ChatReadMarkerState owns duplicate, forced, incoming-latest, and dispose read-marker decisions.",
           "tests": [
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/chat_screen_test.dart"
           ],
           "nextAction": "Closed for current Host Chat architecture; reopen only if future product-specific scroll or retry policy needs a new adapter seam.",
           "previewIds": [
@@ -15640,7 +15640,7 @@
           "status": "captured",
           "source": "ChatInput is enabled for active non-blocked matches and sends trimmed text through ChatController.sendMessageMutation.",
           "tests": [
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/chat_screen_test.dart"
           ],
           "nextAction": "Keep draft seeding available for deterministic route captures while moving send callback execution into the adapter/controller seam.",
           "previewIds": [
@@ -15698,7 +15698,7 @@
           "status": "tested",
           "source": "Send failures keep composed text in the field and surface through Chat mutation listeners/snackbar.",
           "tests": [
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/chat_screen_test.dart"
           ],
           "nextAction": "Add deterministic send-failure capture with mapped copy and retained draft text.",
           "previewIds": [
@@ -15728,7 +15728,7 @@
             "ChatScreen/Host chat states"
           ],
           "tests": [
-            "test/chats/chat_screen_test.dart"
+            "test/pages/chat/chat_screen_test.dart"
           ],
           "captureIds": [
             "host_chat_safety_pending_menu"
@@ -15855,7 +15855,7 @@
               "HostChatScreenState"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/chat_route_state.dart",
+              "file": "lib/pages/chat/chat_route_state.dart",
               "symbol": "ChatRouteState"
             },
             "currentOwner": "ChatRouteState + HostChatScreenState + _ChatContent",
@@ -15917,7 +15917,7 @@
               "HostChatEventContextHeader"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/chat_event_context_header.dart",
+              "file": "lib/pages/chat/widgets/chat_event_context_header.dart",
               "symbol": "ChatEventContextHeader"
             },
             "currentOwner": "ChatScreen",
@@ -15945,7 +15945,7 @@
               "HostChatMessageList"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/chat_message_list.dart",
+              "file": "lib/pages/chat/widgets/chat_message_list.dart",
               "symbol": "ChatMessageList"
             },
             "currentOwner": "ChatMessageList",
@@ -15976,7 +15976,7 @@
               "HostChatBubble"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/message_bubble.dart",
+              "file": "lib/pages/chat/widgets/message_bubble.dart",
               "symbol": "MessageBubble"
             },
             "currentOwner": "MessageBubble",
@@ -16007,7 +16007,7 @@
               "HostChatComposer"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/chat_input.dart",
+              "file": "lib/pages/chat/widgets/chat_input.dart",
               "symbol": "ChatInput"
             },
             "currentOwner": "ChatInput",
@@ -16040,7 +16040,7 @@
               "HostChatSafetyActions"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/chat_screen.dart",
+              "file": "lib/pages/chat/chat_screen.dart",
               "symbol": "ChatScreen"
             },
             "currentOwner": "_ChatContent",
@@ -16072,7 +16072,7 @@
               "HostChatMutationBoundary"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/chat_screen.dart",
+              "file": "lib/pages/chat/chat_screen.dart",
               "symbol": "ChatScreen"
             },
             "currentOwner": "_ChatMutationListeners",
@@ -16100,7 +16100,7 @@
               "HostChatAccessState"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/chat_screen.dart",
+              "file": "lib/pages/chat/chat_screen.dart",
               "symbol": "ChatScreen"
             },
             "currentOwner": "_ChatContent",
@@ -16187,14 +16187,14 @@
         }
       ],
       "source": {
-        "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+        "file": "lib/pages/start/onboarding_welcome_body.dart",
         "symbol": "OnboardingWelcomeBody"
       },
       "stateController": {
         "primary": "OnboardingWelcomeBody + local welcome animation controllers + appAnalyticsProvider",
         "files": [
           {
-            "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+            "file": "lib/pages/start/onboarding_welcome_body.dart",
             "symbol": "OnboardingWelcomeBody"
           },
           {
@@ -16353,7 +16353,7 @@
               "StartWelcomeScreenState"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+              "file": "lib/pages/start/onboarding_welcome_body.dart",
               "symbol": "OnboardingWelcomeBody"
             },
             "currentOwner": "OnboardingWelcomeBody",
@@ -16378,7 +16378,7 @@
               "WelcomeSceneLayout"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+              "file": "lib/pages/start/onboarding_welcome_body.dart",
               "symbol": "WelcomeSceneLayout"
             },
             "currentOwner": "OnboardingWelcomeBody",
@@ -16403,7 +16403,7 @@
               "WelcomeActions"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+              "file": "lib/pages/start/onboarding_welcome_body.dart",
               "symbol": "OnboardingWelcomeBody"
             },
             "currentOwner": "OnboardingWelcomeBody",
@@ -16482,23 +16482,23 @@
             "symbol": "AuthScreen"
           },
           {
-            "file": "lib/auth/presentation/auth_controller.dart",
+            "file": "lib/pages/sign_in/auth_controller.dart",
             "symbol": "AuthController"
           },
           {
-            "file": "lib/auth/presentation/auth_controller.dart",
+            "file": "lib/pages/sign_in/auth_controller.dart",
             "symbol": "AuthScreenState"
           },
           {
-            "file": "lib/auth/presentation/auth_controller.dart",
+            "file": "lib/pages/sign_in/auth_controller.dart",
             "symbol": "AuthStep"
           },
           {
-            "file": "lib/auth/presentation/auth_presentation_state.dart",
+            "file": "lib/pages/sign_in/auth_presentation_state.dart",
             "symbol": "AuthPhoneEntryViewState"
           },
           {
-            "file": "lib/auth/presentation/auth_presentation_state.dart",
+            "file": "lib/pages/sign_in/auth_presentation_state.dart",
             "symbol": "AuthOtpEntryViewState"
           },
           {
@@ -16516,7 +16516,7 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/auth/presentation/auth_controller.dart",
+            "file": "lib/pages/sign_in/auth_controller.dart",
             "symbol": "AuthController"
           },
           {
@@ -16538,7 +16538,7 @@
           "id": "repo.auth-input-tests",
           "kind": "repo",
           "status": "available",
-          "path": "test/auth/presentation/auth_input_test.dart",
+          "path": "test/pages/sign_in/auth_input_test.dart",
           "notes": "Auth input tests cover phone and OTP validation/normalization logic used by the visible form states."
         },
         {
@@ -16708,7 +16708,7 @@
             "auth_phone_validation_error"
           ],
           "tests": [
-            "test/auth/presentation/auth_input_test.dart",
+            "test/pages/sign_in/auth_input_test.dart",
             "test/auth/presentation/auth_screen_test.dart"
           ],
           "nextAction": "Phone validation-error UI is captured; add incomplete-OTP validation capture only if product treats it as visually distinct."
@@ -16813,7 +16813,7 @@
               "AuthScreenState"
             ],
             "flutter": {
-              "file": "lib/auth/presentation/auth_presentation_state.dart",
+              "file": "lib/pages/sign_in/auth_presentation_state.dart",
               "symbol": "AuthPhoneEntryViewState"
             },
             "currentOwner": "AuthScreen + AuthController + AuthPhoneEntryViewState + AuthOtpEntryViewState",
@@ -16978,15 +16978,15 @@
             "symbol": "OnboardingScreen"
           },
           {
-            "file": "lib/onboarding/presentation/onboarding_controller.dart",
+            "file": "lib/pages/onboarding/onboarding_controller.dart",
             "symbol": "OnboardingController"
           },
           {
-            "file": "lib/onboarding/presentation/onboarding_controller.dart",
+            "file": "lib/pages/onboarding/onboarding_controller.dart",
             "symbol": "OnboardingData"
           },
           {
-            "file": "lib/onboarding/presentation/onboarding_step.dart",
+            "file": "lib/pages/onboarding/onboarding_step.dart",
             "symbol": "OnboardingStep"
           },
           {
@@ -16998,7 +16998,7 @@
             "symbol": "OnboardingTopBarState"
           },
           {
-            "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+            "file": "lib/pages/start/onboarding_welcome_body.dart",
             "symbol": "OnboardingWelcomeBody"
           },
           {
@@ -17076,7 +17076,7 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/onboarding/presentation/onboarding_controller.dart",
+            "file": "lib/pages/onboarding/onboarding_controller.dart",
             "symbol": "OnboardingController"
           },
           {
@@ -17102,7 +17102,7 @@
           "id": "repo.onboarding-controller-tests",
           "kind": "repo",
           "status": "available",
-          "path": "test/onboarding/onboarding_controller_test.dart",
+          "path": "test/pages/onboarding/onboarding_controller_test.dart",
           "notes": "Controller tests cover entry-step selection, draft resume, profile completion mode, run-preferences mode, saveProfile, and completion mutations."
         },
         {
@@ -17406,7 +17406,7 @@
             "onboarding_running_prefs"
           ],
           "tests": [
-            "test/onboarding/onboarding_controller_test.dart",
+            "test/pages/onboarding/onboarding_controller_test.dart",
             "test/onboarding/onboarding_widgets_test.dart"
           ],
           "nextAction": "Provider-free step adapter coverage validates pace label display, mode-specific copy, pending/error display, typed submit payload, and continue callback. Deterministic route captures cover run-preferences-only entry, completion pending/error, and text scale 2.0; the main Claude running-preferences reference is exported and masked. Add profile-completion, mutation, and accessibility references only if strict comparison needs them."
@@ -17442,7 +17442,7 @@
             "onboarding_saved_draft"
           ],
           "tests": [
-            "test/onboarding/onboarding_controller_test.dart",
+            "test/pages/onboarding/onboarding_controller_test.dart",
             "test/onboarding/onboarding_widgets_test.dart"
           ],
           "nextAction": "Deterministic route capture covers gender-interest draft resume. Add deeper draft-step/reference variants only where the resume UI diverges."
@@ -17461,7 +17461,7 @@
             "onboarding_save_profile_error"
           ],
           "tests": [
-            "test/onboarding/onboarding_controller_test.dart"
+            "test/pages/onboarding/onboarding_controller_test.dart"
           ],
           "nextAction": "Save pending and visible save failure captures are registered for the gender/interest step."
         },
@@ -17480,7 +17480,7 @@
             "onboarding_complete_run_prefs_error"
           ],
           "tests": [
-            "test/onboarding/onboarding_controller_test.dart"
+            "test/pages/onboarding/onboarding_controller_test.dart"
           ],
           "nextAction": "Run-preferences completion pending and visible failure captures are registered; add success-exit route assertions only if redirect behavior changes."
         },
@@ -17579,7 +17579,7 @@
               "OnboardingWelcomeStep"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+              "file": "lib/pages/start/onboarding_welcome_body.dart",
               "symbol": "OnboardingWelcomeBody"
             },
             "currentOwner": "OnboardingWelcomeBody",
@@ -19120,7 +19120,7 @@
             "symbol": "EventRecapController"
           },
           {
-            "file": "lib/organizers/presentation/detail/organizer_follow_controller.dart",
+            "file": "lib/contexts/organizers/actions/organizer_follow_controller.dart",
             "symbol": "OrganizerFollowController"
           }
         ],
@@ -19855,7 +19855,7 @@
             "symbol": "watchEvent"
           },
           {
-            "file": "lib/events/presentation/event_booking_controller.dart",
+            "file": "lib/contexts/bookings/actions/event_booking_controller.dart",
             "symbol": "EventBookingController"
           },
           {
@@ -19865,7 +19865,7 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/events/presentation/event_booking_controller.dart",
+            "file": "lib/contexts/bookings/actions/event_booking_controller.dart",
             "symbol": "EventBookingController"
           },
           {
@@ -20512,7 +20512,7 @@
             "symbol": "EventLocationMapState"
           },
           {
-            "file": "lib/events/presentation/event_detail_view_model.dart",
+            "file": "lib/pages/event/event_detail_view_model.dart",
             "symbol": "EventDetailViewModel"
           },
           {
@@ -21471,13 +21471,13 @@
             "symbol": "watchOwnEventCardsForEvents"
           },
           {
-            "file": "lib/reviews/shared/write_review_sheet.dart",
+            "file": "lib/pages/reviews/write_review_sheet.dart",
             "symbol": "showWriteReviewSheet"
           }
         ],
         "mutationOwners": [
           {
-            "file": "lib/reviews/shared/write_review_sheet.dart",
+            "file": "lib/pages/reviews/write_review_sheet.dart",
             "symbol": "showWriteReviewSheet"
           },
           {
@@ -21687,7 +21687,7 @@
           "source": "Event-backed own reviews open the shared Edit review sheet through showWriteReviewSheet; submit/delete pending freezes rating, comment, both write actions, and sheet dismissal while WriteReviewController returns the active write future to duplicate callers.",
           "tests": [
             "test/reviews/reviews_widgets_test.dart",
-            "test/reviews/write_review_controller_test.dart"
+            "test/pages/reviews/write_review_controller_test.dart"
           ],
           "nextAction": "Keep the frozen review snapshot intact while adding a dedicated sheet capture and later visual comparison.",
           "previewIds": [
@@ -21935,7 +21935,7 @@
             "symbol": "SettingsAccountState"
           },
           {
-            "file": "lib/safety/presentation/settings_controller.dart",
+            "file": "lib/pages/account/settings_controller.dart",
             "symbol": "SettingsController"
           },
           {
@@ -21951,17 +21951,17 @@
             "symbol": "PublicProfilesQuery"
           },
           {
-            "file": "lib/auth/presentation/auth_session_controller.dart",
+            "file": "lib/pages/account/auth_session_controller.dart",
             "symbol": "AuthSessionController"
           }
         ],
         "mutationOwners": [
           {
-            "file": "lib/safety/presentation/settings_controller.dart",
+            "file": "lib/pages/account/settings_controller.dart",
             "symbol": "SettingsController"
           },
           {
-            "file": "lib/auth/presentation/auth_session_controller.dart",
+            "file": "lib/pages/account/auth_session_controller.dart",
             "symbol": "AuthSessionController"
           },
           {
@@ -22237,7 +22237,7 @@
           ],
           "tests": [
             "test/safety/settings_screen_test.dart",
-            "test/safety/settings_controller_test.dart",
+            "test/pages/account/settings_controller_test.dart",
             "test/safety/settings_account_state_test.dart"
           ],
           "nextAction": "Keep whole-surface exclusivity intact while comparing the disabled-toggle pending affordance during visual polish.",
@@ -22336,7 +22336,7 @@
           ],
           "tests": [
             "test/safety/settings_screen_test.dart",
-            "test/safety/settings_controller_test.dart"
+            "test/pages/account/settings_controller_test.dart"
           ],
           "nextAction": "Compare unblock pending/error affordances during visual polish without weakening whole-surface exclusivity.",
           "previewIds": [
@@ -22354,7 +22354,7 @@
           ],
           "tests": [
             "test/safety/settings_screen_test.dart",
-            "test/safety/settings_controller_test.dart"
+            "test/pages/account/settings_controller_test.dart"
           ],
           "nextAction": "Add a dedicated confirm-dialog capture if destructive-dialog pixel parity becomes blocking.",
           "previewIds": [
@@ -22373,7 +22373,7 @@
           ],
           "tests": [
             "test/safety/settings_screen_test.dart",
-            "test/auth/presentation/auth_controller_test.dart"
+            "test/pages/sign_in/auth_controller_test.dart"
           ],
           "nextAction": "Compare sign-out pending/error affordances during visual polish without weakening whole-surface exclusivity.",
           "previewIds": [

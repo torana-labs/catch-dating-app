@@ -1,7 +1,6 @@
 import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {citiesPageCopy} from "@content/citiesPage";
-import {interpolateContent as fill} from "@content/interpolate";
 import {nightPlanTryItCopy} from "@content/nightPlanTryIt";
 import {websiteCities} from "@content/markets";
 import {playbookCopy} from "@content/playbook/playbookCopy";
@@ -10,6 +9,12 @@ import {loadPlaybookPage, resolvePlaybookPage} from "./playbookPages";
 import {PlaybookPage} from "./PlaybookPage";
 import {playbookStructuredData} from "./playbookStructuredData";
 import {playbookTryItTool} from "../tryIt/tryItModel";
+import fs from "node:fs";
+import path from "node:path";
+import type {CaptureSlots} from "../../shared/media/captureSlot";
+import {walkthroughBookingCopy} from "@content/walkthroughBooking";
+import {provideWalkthroughDeps} from "../walkthroughs/walkthroughClientContext";
+import {scriptedWalkthroughClient, walkthroughNoSlots} from "../../stories/fixtures/walkthroughBooking";
 
 vi.mock("../../firebase", () => ({getWebsiteAppCheckToken: vi.fn(async () => "site-token")}));
 
@@ -20,6 +25,11 @@ afterEach(() => {
 
 const page = (await loadPlaybookPage(resolvePlaybookPage("/host/run-clubs/")!))!;
 const captures = {};
+// The website's capture records, as the app shell bundles them.
+const marketingCaptures: CaptureSlots = Object.fromEntries(
+  (JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../public/assets/app-screenshots/manifest.json"), "utf8")) as
+    {captures: CaptureSlots[string][]}).captures.map((capture) => [capture.id, capture]),
+);
 
 describe("playbook page", () => {
   it("draws the run-clubs page: the host header with its breadcrumb, one h1, each band in order, and the site footer", () => {
@@ -34,6 +44,21 @@ describe("playbook page", () => {
     expect(screen.getByRole("contentinfo")).toBeTruthy();
   });
 
+  it("floats the hero's real cut-outs over its screen, with no caption under the phone", () => {
+    render(<PlaybookPage captures={marketingCaptures} page={page} />);
+    const hero = document.getElementById("top")!;
+    expect(hero.querySelector("figcaption")).toBeNull();
+    expect(within(hero).queryByText(marketingCaptures["host-formats-pods"].caption)).toBeNull();
+    const cutouts = [...hero.querySelectorAll("[aria-hidden='true'] li img")].map((image) => image.getAttribute("src"));
+    expect(cutouts).toEqual(["host-formats-pods-chatty", "host-formats-pods-needs-pod"].map((id) => marketingCaptures[id].webPath));
+  });
+
+  it("draws no cut-out that is not a fragment of the hero's own screen", () => {
+    const stray = {...marketingCaptures, "host-formats-pods-chatty": {...marketingCaptures["host-formats-pods-chatty"], fragmentOf: "host-people"}};
+    render(<PlaybookPage captures={stray} page={page} />);
+    expect(document.getElementById("top")!.querySelectorAll("[aria-hidden='true'] li img")).toHaveLength(1);
+  });
+
   it("sends the trial to /host/start/, and WhatsApp to a typed chat in a new tab", () => {
     render(<PlaybookPage captures={captures} page={page} />);
     const hero = within(document.getElementById("top")!);
@@ -46,10 +71,10 @@ describe("playbook page", () => {
 
   it("shows no lead form while its kind's slot is empty, and the slot's form once filled", () => {
     const {unmount} = render(<PlaybookPage captures={captures} leadForms={{}} page={page} />);
-    expect(screen.queryByText("Send the guide")).toBeNull();
+    expect(screen.queryByText("Send me the guide")).toBeNull();
     unmount();
     render(<PlaybookPage captures={captures} leadForms={{guide: ({form}) => <span>{form.submitLabel}</span>}} page={page} />);
-    expect(screen.getByText("Send the guide")).toBeTruthy();
+    expect(screen.getByText("Send me the guide")).toBeTruthy();
   });
 
   it("sends the run club setup guide request from the closing band, beside the trial, and retries the same request", async () => {
@@ -64,22 +89,22 @@ describe("playbook page", () => {
     }));
     render(<PlaybookPage captures={captures} page={page} />);
     const band = within(document.getElementById("start")!);
-    expect(band.getByText("Start the free trial, or leave your number and we’ll send the run club setup guide on WhatsApp.")).toBeTruthy();
+    expect(band.getByText("Start the free trial and read the run club guide. Or leave your number, and a person from our team will send it to you on WhatsApp.")).toBeTruthy();
     expect(band.getByRole("link", {name: "Start free trial"})).toBeTruthy();
-    const form = within(band.getByRole("form", {name: "Send the guide"}));
-    expect(form.getByText(fill(playbookCopy.leadForm.consent, {action: "Send the guide"}))).toBeTruthy();
-    expect(form.getByText("We’ll message you on WhatsApp with the guide.")).toBeTruthy();
+    expect(band.getByRole("link", {name: "Read the run club guide"}).getAttribute("href")).toBe("/playbooks/run-club/");
+    const form = within(band.getByRole("form", {name: "Send me the guide"}));
+    expect(form.getByText(playbookCopy.leadForm.consent)).toBeTruthy();
 
-    fireEvent.click(form.getByRole("button", {name: "Send the guide"}));
+    fireEvent.click(form.getByRole("button", {name: "Send me the guide"}));
     expect(await form.findByText(websiteLeadCopy.problems.invalid_phone)).toBeTruthy();
     expect(posts).toHaveLength(0);
 
     fireEvent.change(form.getByRole("textbox", {name: /Your WhatsApp number/u}), {target: {value: "98765 43210"}});
-    fireEvent.click(form.getByRole("button", {name: "Send the guide"}));
+    fireEvent.click(form.getByRole("button", {name: "Send me the guide"}));
     expect(await band.findByText(websiteLeadCopy.problems.failed)).toBeTruthy();
     fireEvent.click(form.getByRole("button", {name: playbookCopy.leadForm.retry}));
     expect(await band.findByText(playbookCopy.leadForm.sent.guide)).toBeTruthy();
-    expect(band.queryByRole("form", {name: "Send the guide"})).toBeNull();
+    expect(band.queryByRole("form", {name: "Send me the guide"})).toBeNull();
 
     expect(posts).toHaveLength(2);
     expect(posts[1].lead.requestId).toBe(posts[0].lead.requestId);
@@ -90,7 +115,7 @@ describe("playbook page", () => {
   it("draws a band whose form renders without a duplicate WhatsApp action: the venues list-your-space split and closing band", async () => {
     const venues = (await loadPlaybookPage(resolvePlaybookPage("/host/venues/")!))!;
     render(<PlaybookPage captures={captures} page={venues} />);
-    for (const [id, submit] of [["list-your-space", "List my space"], ["start", "Send the guide"]]) {
+    for (const [id, submit] of [["list-your-space", "List my space"], ["start", "Message me"]]) {
       const band = within(document.getElementById(id)!);
       expect(band.getByRole("form", {name: submit})).toBeTruthy();
       const chats = band.queryAllByRole("link").filter((link) => /^https:\/\/wa\.me\//u.test(link.getAttribute("href") ?? ""));
@@ -98,17 +123,28 @@ describe("playbook page", () => {
     }
   });
 
-  it("asks for a walkthrough on its request page: the minimal header with WhatsApp beside it, and a walkthrough lead", async () => {
+  it("books a walkthrough with the slot picker while times are open", async () => {
+    const walkthrough = (await loadPlaybookPage(resolvePlaybookPage("/host/walkthrough/")!))!;
+    render(<>{provideWalkthroughDeps({client: scriptedWalkthroughClient().client, timeZone: null},
+      <PlaybookPage captures={captures} page={walkthrough} />)}</>);
+    expect(await screen.findByRole("heading", {name: walkthroughBookingCopy.title})).toBeTruthy();
+    expect(screen.getByRole("radiogroup", {name: walkthroughBookingCopy.day})).toBeTruthy();
+    expect(screen.queryByRole("form", {name: "Book my walkthrough"})).toBeNull();
+  });
+
+  it("asks for a walkthrough on its request page when no time is open: the minimal header with WhatsApp beside it, and a walkthrough lead", async () => {
     const walkthrough = (await loadPlaybookPage(resolvePlaybookPage("/host/walkthrough/")!))!;
     const posts: {requestKind: string; fullName: string; lead: {entry: string; walkthrough: unknown}}[] = [];
     vi.stubGlobal("fetch", vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
       posts.push(JSON.parse(String(init?.body)));
       return new Response(JSON.stringify({ok: true, alreadyJoined: false, lead: {leadId: "0".repeat(64), requestKind: "walkthrough", isNew: true}}), {status: 200});
     }));
-    render(<PlaybookPage captures={captures} page={walkthrough} />);
+    render(<>{provideWalkthroughDeps({client: scriptedWalkthroughClient({slots: [walkthroughNoSlots]}).client},
+      <PlaybookPage captures={captures} page={walkthrough} />)}</>);
     expect(screen.getByRole("heading", {level: 1}).textContent).toBe("Book a 15-minute walkthrough.");
     expect(screen.queryByRole("navigation", {name: /breadcrumb/iu})).toBeNull();
     expect(within(screen.getByRole("banner")).getByRole("link", {name: "WhatsApp us"}).getAttribute("href")).toMatch(/^https:\/\/wa\.me\/\d+\?text=/u);
+    expect(await screen.findByText(walkthroughBookingCopy.problems.noSlots)).toBeTruthy();
     const form = within(screen.getByRole("form", {name: "Book my walkthrough"}));
     fireEvent.click(form.getByRole("button", {name: "Book my walkthrough"}));
     expect(await form.findByText(playbookCopy.leadForm.required.preferredTime)).toBeTruthy();
@@ -158,6 +194,39 @@ describe("playbook page", () => {
     const band = within(document.getElementById("get-app")!);
     expect(band.getByRole("link", {name: "Download on the App Store"}).getAttribute("href")).toMatch(/^https:\/\/apps\.apple\.com\//u);
     expect(band.getByRole("link", {name: "Book a 15-minute walkthrough"}).getAttribute("href")).toBe("/host/walkthrough/");
+  });
+
+  it("texts the host app link from the start page's store badges, then shows the link with the badges and QR still there", async () => {
+    const start = (await loadPlaybookPage(resolvePlaybookPage("/host/start/")!))!;
+    const posts: {requestKind: string; fullName?: string; lead: {entry: string; sourcePage: string; appLink: unknown; consent: unknown}}[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      posts.push(JSON.parse(String(init?.body)));
+      return new Response(JSON.stringify({ok: true, alreadyJoined: false, lead: {leadId: "0".repeat(64), requestKind: "app_link", isNew: true}}),
+        {status: 200});
+    }));
+    window.history.replaceState(null, "", "/host/start/");
+    render(<PlaybookPage captures={captures} page={start} />);
+    const band = within(document.getElementById("get-app")!);
+    const form = within(band.getByRole("form", {name: "Text me the link"}));
+    // The short line the other phone captures use, with the privacy policy linked, and nothing more.
+    expect(form.getByText("On WhatsApp, from Catch.")).toBeTruthy();
+    expect(form.getByRole("link", {name: playbookCopy.leadForm.privacy}).getAttribute("href")).toBe("/privacy/");
+    expect(form.queryByText(playbookCopy.leadForm.consent)).toBeNull();
+    // The form is the band's way to get the link: no WhatsApp button beside it, only the wide pages' QR line.
+    const chats = band.queryAllByRole("link").filter((link) => /^https:\/\/wa\.me\//u.test(link.getAttribute("href") ?? ""));
+    expect(chats).toHaveLength(1);
+
+    fireEvent.change(form.getByRole("textbox", {name: /Your WhatsApp number/u}), {target: {value: "98765 43210"}});
+    fireEvent.click(form.getByRole("button", {name: "Text me the link"}));
+    expect(await band.findByText("Here’s the link. We’ll also send it to you on WhatsApp.")).toBeTruthy();
+    expect(band.queryByRole("form", {name: "Text me the link"})).toBeNull();
+    expect(band.getByRole("link", {name: "Download on the App Store"})).toBeTruthy();
+    expect(band.getByRole("img", {name: /QR code that opens/u})).toBeTruthy();
+
+    expect(posts).toHaveLength(1);
+    expect(posts[0]).toMatchObject({requestKind: "app_link", lead: {entry: "host_app_link", sourcePage: "/host/start/", appLink: {app: "host"},
+      consent: {purpose: "leadFollowUp", version: "app-link-whatsapp-v1"}}});
+    expect(posts[0]).not.toHaveProperty("fullName");
   });
 
   it("draws a product page's live bands only: no try-it band or button, and the host footer", async () => {

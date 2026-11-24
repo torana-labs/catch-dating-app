@@ -1,7 +1,7 @@
 # Event seat authority core
 
-This module is unregistered server-only logic. It is not a migration, callable,
-Firestore schema, or deployed seat policy. The calling operation must prepare
+This module is server-only logic and the only seat path: every event has
+its ledger, and every seat writer goes through it. The calling operation must prepare
 the seat plan inside the **same Firestore transaction** as its organizer, event,
 admission and payment reads, then apply
 the frozen plan only after all other authority reads and before its confirmed
@@ -10,29 +10,39 @@ transaction. The adapter must map each event ledger, canonical identity
 reservation and request receipt to deterministic, client-denied documents; optimistic transaction retries serialize
 the ledger revision and capacity check. Its `createReceipt` must be create-only.
 
-`deriveEventSeatPolicy` is the shared migration/read projection. The adapter
-reads positive configured event capacity and raw admission policy
-inside the caller transaction. It compares their canonical hash and policy
-version with the migrated ledger; a changed admission policy closes the ledger
-until reconciliation, while an unrelated `bookedCount` update does not. The
-ledger also has an explicit migration-owned capacity revision, which the caller
-must supply as an expected revision. No capacity or revision is inferred.
-The ledger must be marked `ready` with a positive migration revision only after
-all historical Catch participations and Host/imported attendees have been
-reconciled into one occupied count and one reservation per unique person.
-Unknown, missing, revoked or unreconciled ledgers fail closed. The core cannot
-make a basic event free or assign capacity one from missing setup fields.
+`deriveEventSeatPolicy` is the shared read projection. The adapter reads the
+event's capacity (`capacityLimit`, or no limit while the host has set none)
+and raw admission policy inside the caller transaction. It compares their
+canonical hash and policy version with the ledger; a changed admission policy
+closes the ledger until it is updated with the event, while an unrelated
+`bookedCount` update does not. The ledger also has an explicit capacity
+revision, which the caller must supply as an expected revision. No capacity
+or revision is inferred.
+
+Every event is created with its ledger: `createPrivateEventSetup`,
+`createPrivateEventSeries` and `createEvent` write an empty, ready ledger in
+the transaction that creates the event, and every seat writer reads it with
+`requireEventSeatLedger` (`eventSeatLedgers.ts`). A ledger with no capacity
+takes any number of places, so a host can add guests before setting admission
+terms. The first
+terms of an event that had none may then be set while guests hold seats, as
+long as the capacity holds them; a capacity-only edit may run while places are
+reserved, never below them; any other admission policy change needs an event
+with no reserved places. An event whose ledger holds no place can be deleted
+with its ledger, and a try-it draft's ledger and seat records go with it.
+Events created before ledgers existed were moved onto them once by a
+backfill (one occupied count and one reservation per unique person); there
+is no other seat path. Missing or revoked ledgers fail closed. A ledger's
+`migrationRevision` stays 1; seat commands still check it.
 
 `resolveIdentity` is an adapter-required in-transaction authority. It must
 resolve all known verified phone, linked UID, imported reference and CRM merge
 aliases to one opaque stable key, and return a revision that changes on an
 identity merge. The current attendee ID algorithm can converge a phone import
 with a later Catch booking, while UID-only records may use another key. Never
-pass a raw row ID or assume those identities are disjoint. Identity merges,
-legacy count repairs, and capacity policy changes need a separately authorized
-reconciliation operation that updates reservations, occupied count, revisions,
-and readiness together before further reservations. This core cannot certify
-that reconciliation happened; the migration owner establishes the ready marker.
+pass a raw row ID or assume those identities are disjoint. Identity merges
+need a separately authorized operation (contact merge) that updates aliases,
+reservations and revisions together before further reservations.
 
 A reserve increments occupied once. A release decrements once and retains its
 reservation and immutable receipt. Exact request replay returns the historical
@@ -77,16 +87,14 @@ capacity checks include both. Hold-owner operations preserve the existing
 checkout receipt hash, and neither kind can replace or consume the other.
 
 Invitation acceptance prepares canonical UID identity and a temporary hold
-under the migration fence, applying both with its invitation/counter writes.
+against the event's ledger, applying both with its invitation/counter writes.
 Free and verified-paid signup convert that exact unexpired hold to occupied;
-ready-mode totals do not add the pair projection a second time. Legacy events
-retain their counter path until reconciliation. Active release returns held
+totals do not add the pair projection a second time. Active release returns held
 capacity; cancelling a confirmed pair only changes the pair projection and
 leaves the participant's seat to the normal cancellation owner. Expiry and its
 invitation invalidation commit together. Account deletion releases pair holds
 before retiring identity proof, and transactional deletion guards prevent new
-holds or bookings during cleanup. These source changes do not activate a
-production migration or release gate.
+holds or bookings during cleanup.
 
 Multi-place public checkout keeps one reservation per canonical identity and
 records the booking's place count on it as `places` (missing means 1). A

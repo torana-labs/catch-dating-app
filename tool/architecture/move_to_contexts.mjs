@@ -1,24 +1,35 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
-import {execFileSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {loadContextMap, placePath} from "./check_context_map.mjs";
+import {
+  barrelSource,
+  git,
+  holdsOnlyExports,
+  pathTextExcluded,
+  pathTextExtensions,
+  pruneLegacyEntries,
+  rewriteDartDirectives,
+  rewritePathMentions,
+  sortDirectives as sortPackageDirectives,
+  stripDirectives,
+  trackedFiles,
+  withBarrelExports,
+} from "./lib/dart_moves.mjs";
+
+// The shared move mechanics live in lib/dart_moves.mjs; the rename codemods
+// and older callers import them from here.
+export {
+  barrelSource,
+  pruneLegacyEntries,
+  rewriteDartDirectives,
+  rewritePathMentions,
+  withBarrelExports,
+};
 
 const contextMapPath = "tool/architecture/context_map.json";
-const appPackage = "package:catch_dating_app/";
-const pathTextExtensions = /\.(?:arb|json|md|mjs|js|ts|tsx|yaml|yml|sh|dart|template)$/u;
-// Scanner tests use legacy-shaped paths as synthetic fixtures; they are not
-// references to real files and must keep their shape.
-const pathTextExcluded = [
-  /(?:^|\/)node_modules\//u,
-  /\.test\.mjs$/u,
-  /\.(?:g|freezed)\.dart$/u,
-  /^tool\/architecture\/context_map\.json$/u,
-  // Vendored bundles are pinned by checksum; their comments stay as shipped.
-  /^design\/source_packs\//u,
-];
 
 // Rewritten URIs change import order; the analyzer's own fixes re-sort and
 // drop duplicates in every Dart package that imports this one.
@@ -81,7 +92,9 @@ export function planMoves(files, map) {
 function explicitTarget(file, map) {
   const source = file.replace(/\.(?:g|freezed)\.dart$/u, ".dart");
   const entry = map.legacy.find((candidate) => source.startsWith(candidate.path));
-  if (entry?.moveTo == null) return null;
+  // An entry with a group is a Phase 4 screen move, planned and applied by
+  // move_screens.mjs; this codemod leaves it alone.
+  if (entry?.moveTo == null || entry.group != null) return null;
   if (entry.path.endsWith("/")) return `${entry.moveTo}${file.slice(entry.path.length)}`;
   if (source !== entry.path) return null;
   return `${entry.moveTo.slice(0, -".dart".length)}${file.slice(source.length - ".dart".length)}`;
@@ -92,7 +105,7 @@ function explicitTarget(file, map) {
 // entry inside it is split and keeps its name.
 export function folderMoves(map) {
   return map.legacy
-    .filter((entry) => entry.moveTo != null && entry.path.endsWith("/"))
+    .filter((entry) => entry.moveTo != null && entry.group == null && entry.path.endsWith("/"))
     .filter((entry) => !map.legacy.some((other) =>
       other !== entry && other.path.startsWith(entry.path)))
     .map((entry) => [entry.path, entry.moveTo]);
@@ -101,196 +114,6 @@ export function folderMoves(map) {
 export function isFeatureBarrel(file) {
   const match = /^lib\/([^/]+)\/([^/]+)\.dart$/u.exec(file);
   return match != null && match[1] === match[2];
-}
-
-// Rewrites every directive URI in one Dart file for the moves. Cross-context
-// imports from bounded-context files go through the target context's public
-// API file; the files they need are recorded in barrelExports.
-export function rewriteDartDirectives({file, source, moves, map, barrelExports}) {
-  const newFile = moves.get(file) ?? file;
-  const fromContext = contextOf(newFile, map);
-  let changed = false;
-  const out = source.replace(
-    /^(import|export|part(?:\s+of)?)(\s[^;]*;)/gmu,
-    (statement, keyword, body) => {
-      const rewritten = body.replace(/(['"])([^'"]+)\1/gu, (literal, quote, uri) => {
-        const oldTarget = resolveUri(file, uri);
-        if (oldTarget == null) return literal;
-        const newTarget = moves.get(oldTarget) ?? oldTarget;
-        if (newTarget === oldTarget && newFile === file) return literal;
-        let target = newTarget;
-        const toContext = contextOf(newTarget, map);
-        if (!keyword.startsWith("part") && fromContext != null &&
-            toContext != null && toContext !== fromContext) {
-          const barrel = `${map.roots.contexts}${toContext}/${toContext}.dart`;
-          if (newTarget !== barrel) {
-            barrelExports.set(toContext, (barrelExports.get(toContext) ?? new Set()).add(newTarget));
-            target = barrel;
-          }
-        }
-        const next = formatUri({
-          keyword,
-          originalUri: uri,
-          fromFile: newFile,
-          target,
-        });
-        if (next !== uri) changed = true;
-        return `${quote}${next}${quote}`;
-      });
-      return `${keyword}${rewritten}`;
-    },
-  );
-  return {source: changed ? dedupeImports(out) : source, changed};
-}
-
-function contextOf(file, map) {
-  if (!file.startsWith(map.roots.contexts)) return null;
-  return file.slice(map.roots.contexts.length).split("/")[0];
-}
-
-function resolveUri(file, uri) {
-  if (uri.startsWith(appPackage)) return `lib/${uri.slice(appPackage.length)}`;
-  if (/^[A-Za-z][A-Za-z0-9+.-]*:/u.test(uri)) return null;
-  return path.posix.normalize(path.posix.join(path.posix.dirname(file), uri));
-}
-
-function formatUri({keyword, originalUri, fromFile, target}) {
-  const relative = () => path.posix.relative(path.posix.dirname(fromFile), target);
-  if (keyword.startsWith("part")) return relative();
-  const wasPackage = originalUri.startsWith(appPackage);
-  if (target.startsWith("lib/") && (wasPackage || keyword === "import" || fromFile.startsWith("lib/"))) {
-    if (!wasPackage && keyword === "export" &&
-        target.startsWith(`${path.posix.dirname(fromFile)}/`)) {
-      return relative();
-    }
-    return `${appPackage}${target.slice("lib/".length)}`;
-  }
-  return relative();
-}
-
-// Two imports of one context's files both become its public API file; keep
-// one directive, merging `show` lists and preferring an unrestricted import.
-function dedupeImports(source) {
-  const first = new Map();
-  const edits = [];
-  for (const match of source.matchAll(/^import\s+(['"])([^'"]+)\1([^;]*);\n/gmu)) {
-    const [statement, , uri, clause] = match;
-    if (/\bas\b|\bif\s*\(/u.test(clause)) continue;
-    const kept = first.get(uri);
-    if (kept == null) {
-      first.set(uri, {index: match.index, length: statement.length, uri, original: clause, clause});
-      continue;
-    }
-    kept.clause = mergeClauses(kept.clause, clause);
-    edits.push({index: match.index, length: statement.length, text: ""});
-  }
-  for (const kept of first.values()) {
-    if (kept.clause.trim() !== kept.original.trim()) {
-      edits.push({index: kept.index, length: kept.length, text: `import '${kept.uri}'${kept.clause};\n`});
-    }
-  }
-  let out = source;
-  for (const edit of edits.sort((x, y) => y.index - x.index)) {
-    out = out.slice(0, edit.index) + edit.text + out.slice(edit.index + edit.length);
-  }
-  return out;
-}
-
-function mergeClauses(a, b) {
-  const shows = (clause) => /^\s*show\s+(.+)$/su.exec(clause.trim())?.[1]
-    ?.split(",").map((name) => name.trim()).filter(Boolean);
-  const left = shows(a);
-  const right = shows(b);
-  if (left == null || right == null) return "";
-  return ` show ${[...new Set([...left, ...right])].sort().join(", ")}`;
-}
-
-export function barrelSource(context, targets, map) {
-  const root = `${map.roots.contexts}${context}/`;
-  const lines = [...targets]
-    .map((target) => target.slice(root.length))
-    .sort()
-    .map((relative) => `export '${relative}';`);
-  return [
-    `// Public API of the ${context} context: what other contexts may import.`,
-    "// Written by tool/architecture/move_to_contexts.mjs from the imports that",
-    "// crossed into this context; trim it as the context's API settles.",
-    ...lines,
-    "",
-  ].join("\n");
-}
-
-// Adds the exports a move needs to an existing public API file, leaving its
-// other lines as they are.
-export function withBarrelExports(source, context, targets, map) {
-  const root = `${map.roots.contexts}${context}/`;
-  const present = new Set([...source.matchAll(/^export\s+'([^']+)'/gmu)].map((match) => match[1]));
-  const missing = [...targets]
-    .map((target) => target.slice(root.length))
-    .filter((relative) => !present.has(relative))
-    .sort()
-    .map((relative) => `export '${relative}';\n`);
-  if (missing.length === 0) return source;
-  return `${source.replace(/\n*$/u, "\n")}${missing.join("")}`;
-}
-
-// Replaces whole-path mentions of moved files in text files, both as repo
-// paths (lib/...) and as package URIs (package:catch_dating_app/...), which
-// generators and templates embed in the Dart they write. A path may start
-// with a slash right after a quote, as the path fragments lints match do, or
-// climb to the repository root (../../lib/...); a path inside another folder
-// (apps/host/lib/...) is a different file. Mentions of a folder that moved
-// whole move with it.
-export function rewritePathMentions(source, moves, folders = []) {
-  const repoPathStart = "(?<![\\w.-])(?<!(?<!\\.\\.|['\"`\\s(])/)";
-  let out = source;
-  let count = 0;
-  const replace = (pattern, replacement) => {
-    out = out.replace(new RegExp(pattern, "gu"), () => {
-      count += 1;
-      return replacement;
-    });
-  };
-  for (const [from, to] of [...moves].sort((a, b) => b[0].length - a[0].length)) {
-    replace(`${repoPathStart}${escapeRegExp(from)}(?![\\w-])`, to);
-    if (from.startsWith("lib/") && to.startsWith("lib/")) {
-      replace(
-        `${escapeRegExp(`${appPackage}${from.slice("lib/".length)}`)}(?![\\w-])`,
-        `${appPackage}${to.slice("lib/".length)}`,
-      );
-    }
-  }
-  for (const [from, to] of [...folders].sort((a, b) => b[0].length - a[0].length)) {
-    replace(`${repoPathStart}${escapeRegExp(from.slice(0, -1))}(?![\\w.-])`, to.slice(0, -1));
-    if (from.startsWith("lib/") && to.startsWith("lib/")) {
-      replace(
-        escapeRegExp(`${appPackage}${from.slice("lib/".length)}`),
-        `${appPackage}${to.slice("lib/".length)}`,
-      );
-    }
-  }
-  return {source: out, count};
-}
-
-function escapeRegExp(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
-}
-
-// After the move, entries whose path no longer places any file are removed.
-export function pruneLegacyEntries(mapSource, files) {
-  const kept = [];
-  let removed = 0;
-  for (const line of mapSource.split("\n")) {
-    const match = /^\s*\{"path": "([^"]+)", "(?:context|layer)": "[^"]+"(?:, "moveTo": "[^"]+")?\},?$/u.exec(line);
-    if (match && !files.some((file) => file.startsWith(match[1]))) {
-      removed += 1;
-      continue;
-    }
-    kept.push(line);
-  }
-  let out = kept.join("\n");
-  out = out.replace(/,(\s*\n\s*\])/gu, "$1").replace(/\n{3,}/gu, "\n\n");
-  return {source: out, removed};
 }
 
 // A move commit may only move the planned files, change directive lines, swap
@@ -308,8 +131,7 @@ export function verifyMoveDiff({changes, moves, folders = [], read}) {
     if (status === "A" && !sources.has(file)) {
       if (!/^lib\/contexts\/([^/]+)\/\1\.dart$/u.test(file)) {
         problems.push(`added a file that is not a context public API: ${file}`);
-      } else if (!stripDirectives(read("new", file)).split("\n")
-        .every((line) => line.trim() === "" || line.trim().startsWith("//"))) {
+      } else if (!holdsOnlyExports(read("new", file))) {
         problems.push(`public API file holds more than exports: ${file}`);
       }
       continue;
@@ -335,23 +157,6 @@ export function verifyMoveDiff({changes, moves, folders = [], read}) {
     }
   }
   return problems;
-}
-
-// Directives and the blank lines that separate their sections carry no
-// behavior; everything else must match exactly.
-function stripDirectives(source) {
-  return source
-    .replace(/^(?:import|export|part(?:\s+of)?)\s[^;]*;\n?/gmu, "")
-    .replace(/^\s*\n/u, "")
-    .replace(/\n{3,}/gu, "\n\n");
-}
-
-function git(args, cwd) {
-  return execFileSync("git", args, {cwd, encoding: "utf8", maxBuffer: 1 << 28});
-}
-
-function trackedFiles(root) {
-  return git(["ls-files", "-z"], root).split("\0").filter(Boolean);
 }
 
 function applyMoves({root, moves, folders, map, rewriteOnly}) {
@@ -421,21 +226,12 @@ function applyMoves({root, moves, folders, map, rewriteOnly}) {
   return {files: files.length, dartFiles, pathMentions, barrels, written};
 }
 
-// The moves a commit made are the plan computed from its parent's map and
-// files, not git's rename guess.
 function sortDirectives(root) {
-  for (const dir of dartPackages) {
-    if (!fs.existsSync(path.join(root, dir, "pubspec.yaml"))) continue;
-    execFileSync("dart", [
-      "fix",
-      "--apply",
-      "--code=directives_ordering",
-      "--code=duplicate_import",
-      dir,
-    ], {cwd: root, stdio: "ignore"});
-  }
+  sortPackageDirectives(root, dartPackages);
 }
 
+// The moves a commit made are the plan computed from its parent's map and
+// files, not git's rename guess.
 function movesForCommit(root, commit) {
   const files = git(["ls-tree", "-r", "--name-only", `${commit}^`], root).split("\n").filter(Boolean);
   const map = loadContextMap(git(["show", `${commit}^:${contextMapPath}`], root));

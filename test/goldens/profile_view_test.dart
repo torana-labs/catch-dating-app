@@ -1,16 +1,15 @@
-import 'dart:io';
-
 import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_test_support/goldens/golden_pump.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../ui_captures/fixtures/sales_demo_synthetic_fixtures.dart';
-import 'support/golden_pump.dart';
 
 /// Phase 2 flagship Profile — golden-iterated in isolation, rendered in the
 /// Catches register (reactable) so the per-section like/comment controls and
@@ -19,7 +18,7 @@ import 'support/golden_pump.dart';
 /// Profile identity/copy comes from the checked sales demo persona projection so
 /// captures, seed data, and this flagship golden share the same persona source.
 /// Regenerate: flutter test --update-goldens test/goldens/profile_view_test.dart
-final _heroImage = FileImage(File('test/goldens/fixtures/portrait.jpg'));
+final _heroImage = FileImage(repoFile('test/goldens/fixtures/portrait.jpg'));
 final _persona = salesDemoSyntheticFixtures.publicProfile('nyc_maya_shah_001');
 
 void main() {

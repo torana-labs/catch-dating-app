@@ -11,7 +11,8 @@ import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 import {seatIdentityAliasId, seatIdentityValueHash,
   seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
 import {publishedEventSetup, withStoredEventPolicy} from
-  "../shared/testing/eventSetupFixture";
+  "../domain/events/testing/eventSetupFixture";
+import {withEventSeatLedgers} from "./seatAuthority/eventSeatLedgerTestSupport";
 
 type FakeData = Record<string, unknown>;
 
@@ -182,9 +183,22 @@ class FakeTransaction {
   }
 }
 
+/** Every event has its ledger. A fixture that seeds no seat records of its
+ * own also gets a verified seat identity for each seeded user. */
 function firestore(initialDocs: Record<string, FakeData | undefined>) {
-  return new FakeFirestore(initialDocs) as unknown as
-    FirebaseFirestore.Firestore;
+  const seeded = withEventSeatLedgers(initialDocs);
+  const source = initialDocs["events/event-1"];
+  if (source && !Object.keys(initialDocs).some((path) =>
+    path.startsWith("eventSeat"))) {
+    for (const uid of Object.keys(initialDocs)
+      .map((path) => /^users\/([^/]+)$/u.exec(path)?.[1])
+      .filter((uid): uid is string => uid !== undefined)) {
+      for (const [path, value] of Object.entries(readySeatDocs(source, uid))) {
+        if (!(path in seeded)) seeded[path] = value;
+      }
+    }
+  }
+  return new FakeFirestore(seeded) as unknown as FirebaseFirestore.Firestore;
 }
 
 function readySeatDocs(sourceEvent: FakeData, uid: string,
@@ -193,8 +207,6 @@ function readySeatDocs(sourceEvent: FakeData, uid: string,
   const key = `uid_${uid}`;
   const policy = deriveEventSeatPolicy(sourceEvent);
   const rows: Record<string, FakeData> = {
-    [`eventSeatMigrationFences/${eventId}`]: {eventId,
-      migrationRevision: 1, state: "ready"},
     [`eventSeatLedgers/${eventId}`]: {eventId,
       capacity: policy.capacity, occupied, revision: 1,
       capacityRevision: 1, policyVersion: policy.policyVersion,
@@ -210,6 +222,14 @@ function readySeatDocs(sourceEvent: FakeData, uid: string,
     },
   };
   return rows;
+}
+
+/** Sign-up as the tests run it: no Admin Auth, so no current Auth phone
+ * unless a test supplies one. */
+function signUp(...args: Parameters<typeof signUpUserForEvent>) {
+  const [db, eventId, uid, paymentId, options] = args;
+  return signUpUserForEvent(db, eventId, uid, paymentId,
+    {loadCurrentAuthPhone: async () => null, ...options});
 }
 
 function reservationPath(key: string): string {
@@ -331,13 +351,13 @@ test("signUpUserForEvent writes a signup activity notification", async () => {
     "users/runner-1": user(),
   });
 
-  await signUpUserForEvent(db, "event-1", "runner-1");
+  await signUp(db, "event-1", "runner-1");
 
   const fake = db as unknown as FakeFirestore;
   const notification = fake.get(
     "notifications/runner-1/items/eventSignup_event-1"
   );
-  const participation = fake.get("eventParticipations/event-1_runner-1");
+  const participation = fake.get("eventBookings/event-1_runner-1");
 
   assert.equal(notification?.uid, "runner-1");
   assert.equal(notification?.type, "eventSignup");
@@ -351,7 +371,7 @@ test("signUpUserForEvent writes a signup activity notification", async () => {
   assert.equal(notification?.readAt, null);
   assert.equal(participation?.status, "signedUp");
   // The roster row and the booking's link to it land in one transaction.
-  const pointer = fake.get("eventParticipations/event-1_runner-1");
+  const pointer = fake.get("eventBookings/event-1_runner-1");
   const row = fake.get(`eventAttendees/${pointer?.attendeeId}`) as
     {status?: string; linkedUid?: string; source?: string;
       booking?: {deletedAt: unknown}} | undefined;
@@ -372,14 +392,14 @@ test("ready seat ledger admits the last Catch seat once", async () => {
   const db = firestore({"events/event-1": sourceEvent,
     "users/runner-1": user(),
     ...readySeatDocs(sourceEvent, "runner-1")});
-  await signUpUserForEvent(db, "event-1", "runner-1", undefined,
+  await signUp(db, "event-1", "runner-1", undefined,
     {loadCurrentAuthPhone: async () => null});
-  await signUpUserForEvent(db, "event-1", "runner-1", undefined,
+  await signUp(db, "event-1", "runner-1", undefined,
     {loadCurrentAuthPhone: async () => null});
   const fake = db as unknown as FakeFirestore;
   assert.equal(fake.get("eventSeatLedgers/event-1")?.occupied, 1);
   assert.equal(fake.get(reservationPath("uid_runner-1"))?.active, true);
-  assert.equal(fake.get("eventParticipations/event-1_runner-1")?.status,
+  assert.equal(fake.get("eventBookings/event-1_runner-1")?.status,
     "signedUp");
 });
 
@@ -393,7 +413,7 @@ test("new verified Catch UID enrolls aliases and reserves atomically",
       "event-1", "uid", "runner-1")}`];
     const db = firestore({"events/event-1": sourceEvent,
       "users/runner-1": user(), ...rows});
-    await signUpUserForEvent(db, "event-1", "runner-1", undefined,
+    await signUp(db, "event-1", "runner-1", undefined,
       {loadCurrentAuthPhone: async () => "+919999999999"});
     const fake = db as unknown as FakeFirestore;
     assert.equal(fake.get("eventSeatLedgers/event-1")?.occupied, 1);
@@ -419,11 +439,11 @@ test("new Catch UID cannot take a second seat from an imported phone alias",
       migrationRevision: 1, state: "ready"};
     const db = firestore({"events/event-1": sourceEvent,
       "users/runner-1": user(), ...rows});
-    await assert.rejects(() => signUpUserForEvent(db, "event-1",
+    await assert.rejects(() => signUp(db, "event-1",
       "runner-1", undefined,
       {loadCurrentAuthPhone: async () => "+919999999999"}));
     const fake = db as unknown as FakeFirestore;
-    assert.equal(fake.get("eventParticipations/event-1_runner-1"),
+    assert.equal(fake.get("eventBookings/event-1_runner-1"),
       undefined);
     assert.equal(fake.get("eventSeatLedgers/event-1")?.occupied, 1);
   });
@@ -458,32 +478,17 @@ test("verified imported guest becomes a Catch signup without a second seat",
       reservedAtMillis: 1, releasedAtMillis: null};
     const db = firestore({"events/event-1": sourceEvent,
       "users/runner-1": user(), ...rows});
-    await signUpUserForEvent(db, "event-1", "runner-1", undefined,
+    await signUp(db, "event-1", "runner-1", undefined,
       {loadCurrentAuthPhone: async () => phone});
     const fake = db as unknown as FakeFirestore;
     assert.equal(fake.get("eventSeatLedgers/event-1")?.occupied, 1);
     assert.equal(fake.get("events/event-1")?.bookedCount, 1);
     assert.equal(fake.get("eventAttendees/guest-1")?.linkedUid, "runner-1");
     assert.equal(fake.get("eventAttendees/guest-1")?.source, "hostImport");
-    assert.equal(fake.get("eventParticipations/event-1_runner-1")?.attendeeId,
+    assert.equal(fake.get("eventBookings/event-1_runner-1")?.attendeeId,
       "guest-1");
-    assert.equal(fake.get("eventParticipations/event-1_runner-1")?.status,
+    assert.equal(fake.get("eventBookings/event-1_runner-1")?.status,
       "signedUp");
-  });
-
-test("locked seat migration denies Catch signup without source writes",
-  async () => {
-    const sourceEvent = event();
-    const rows = readySeatDocs(sourceEvent, "runner-1");
-    rows["eventSeatMigrationFences/event-1"].state = "locked";
-    const db = firestore({"events/event-1": sourceEvent,
-      "users/runner-1": user(), ...rows});
-    await assert.rejects(() =>
-      signUpUserForEvent(db, "event-1", "runner-1"));
-    const fake = db as unknown as FakeFirestore;
-    assert.equal(fake.get("eventParticipations/event-1_runner-1"),
-      undefined);
-    assert.equal(fake.get("events/event-1")?.bookedCount, 0);
   });
 
 test("signUpUserForEvent updates event discovery availability", async () => {
@@ -498,7 +503,7 @@ test("signUpUserForEvent updates event discovery availability", async () => {
     "users/runner-1": user(),
   });
 
-  await signUpUserForEvent(db, "event-1", "runner-1");
+  await signUp(db, "event-1", "runner-1");
 
   const fake = db as unknown as FakeFirestore;
   const updatedEvent = fake.get("events/event-1");
@@ -515,8 +520,8 @@ test("signUpUserForEvent updates event discovery availability", async () => {
   ]);
 });
 
-for (const mode of ["legacy", "ready-free", "ready-paid",
-  "ready-wrong-owner", "ready-expired", "ready-locked"] as const) {
+for (const mode of ["ready-free", "ready-paid", "ready-wrong-owner",
+  "ready-expired"] as const) {
   test(`signup converts a ${mode} pair hold into one booking and plan`,
     async () => {
       const start = Date.parse("2027-05-02T01:30:00.000Z");
@@ -534,26 +539,20 @@ for (const mode of ["legacy", "ready-free", "ready-paid",
       const heldAt = Date.now() - (mode === "ready-expired" ?
         16 * 60 * 1000 : 0);
       const expiresAt = heldAt + 15 * 60 * 1000;
-      const readyRows = mode === "legacy" ? {} :
-        readySeatDocs(sourceEvent, "runner-1", 1);
-      if (mode !== "legacy") {
-        readyRows["eventSeatLedgers/event-1"].temporaryHeld = 1;
-        readyRows[reservationPath("uid_runner-1")] = {eventId: "event-1",
-          canonicalKey: "uid_runner-1", identityRevision: 1, active: false,
-          revision: 1, reservedAtMillis: heldAt, releasedAtMillis: null,
-          temporaryHold: {ownerKind: "crossPathsPair",
-            ownerId: mode === "ready-wrong-owner" ?
-              "other-hold" : "hold-1",
-            expiresAtMillis: expiresAt}};
-      }
-      if (mode === "ready-locked") {
-        readyRows["eventSeatMigrationFences/event-1"].state = "locked";
-      }
+      const readyRows = readySeatDocs(sourceEvent, "runner-1", 1);
+      readyRows["eventSeatLedgers/event-1"].temporaryHeld = 1;
+      readyRows[reservationPath("uid_runner-1")] = {eventId: "event-1",
+        canonicalKey: "uid_runner-1", identityRevision: 1, active: false,
+        revision: 1, reservedAtMillis: heldAt, releasedAtMillis: null,
+        temporaryHold: {ownerKind: "crossPathsPair",
+          ownerId: mode === "ready-wrong-owner" ?
+            "other-hold" : "hold-1",
+          expiresAtMillis: expiresAt}};
       const db = firestore({
         ...readyRows,
         "events/event-1": sourceEvent,
         "users/runner-1": user(),
-        "eventParticipations/event-1_attendee-1": {
+        "eventBookings/event-1_attendee-1": {
           eventId: "event-1",
           organizerId: "club-1",
           uid: "attendee-1",
@@ -593,21 +592,20 @@ for (const mode of ["legacy", "ready-free", "ready-paid",
         },
       });
 
-      if (["ready-wrong-owner", "ready-expired", "ready-locked"]
-        .includes(mode)) {
-        await assert.rejects(signUpUserForEvent(db, "event-1", "runner-1",
+      if (["ready-wrong-owner", "ready-expired"].includes(mode)) {
+        await assert.rejects(signUp(db, "event-1", "runner-1",
           undefined, {crossPathsPairHoldId: "hold-1",
             loadCurrentAuthPhone: async () => null}),
         /does not own|no longer available|locked/u);
         const failed = db as unknown as FakeFirestore;
         assert.equal(failed.get("eventSeatLedgers/event-1")?.occupied, 1);
         assert.equal(failed.get("eventSeatLedgers/event-1")?.temporaryHeld, 1);
-        assert.equal(failed.get("eventParticipations/event-1_runner-1"),
+        assert.equal(failed.get("eventBookings/event-1_runner-1"),
           undefined);
         return;
       }
       for (let i = 0; i < 2; i++) {
-        await signUpUserForEvent(db, "event-1", "runner-1",
+        await signUp(db, "event-1", "runner-1",
           mode === "ready-paid" ? "verified-payment" : undefined, {
             crossPathsPairHoldId: "hold-1",
             loadCurrentAuthPhone: async () => null,
@@ -615,16 +613,14 @@ for (const mode of ["legacy", "ready-free", "ready-paid",
       }
 
       const fake = db as unknown as FakeFirestore;
-      if (mode !== "legacy") {
-        assert.equal(fake.get("eventSeatLedgers/event-1")?.occupied, 2);
-        assert.equal(fake.get("eventSeatLedgers/event-1")?.temporaryHeld, 0);
-        assert.equal(fake.get("eventSeatLedgers/event-1")?.revision, 2);
-        assert.equal(fake.get(reservationPath("uid_runner-1"))?.temporaryHold,
-          undefined);
-      }
+      assert.equal(fake.get("eventSeatLedgers/event-1")?.occupied, 2);
+      assert.equal(fake.get("eventSeatLedgers/event-1")?.temporaryHeld, 0);
+      assert.equal(fake.get("eventSeatLedgers/event-1")?.revision, 2);
+      assert.equal(fake.get(reservationPath("uid_runner-1"))?.temporaryHold,
+        undefined);
       assert.equal(fake.get("crossPathsPairHolds/hold-1")?.status, "confirmed");
       assert.equal(
-        fake.get("eventParticipations/event-1_runner-1")?.status,
+        fake.get("eventBookings/event-1_runner-1")?.status,
         "signedUp"
       );
       assert.equal(
@@ -635,7 +631,7 @@ for (const mode of ["legacy", "ready-free", "ready-paid",
       await releaseCrossPathsPairHold({db, holdId: "hold-1",
         reason: "cancelled"});
       assert.deepEqual(fake.get("eventSeatLedgers/event-1"), beforeRelease);
-      assert.equal(fake.get("eventParticipations/event-1_runner-1")?.status,
+      assert.equal(fake.get("eventBookings/event-1_runner-1")?.status,
         "signedUp");
     });
 }
@@ -647,7 +643,7 @@ test("signUpUserForEvent writes a waitlist promotion notification", async (
       waitlistedCount: 1,
     }),
     "users/runner-1": user(),
-    "eventParticipations/event-1_runner-1": {
+    "eventBookings/event-1_runner-1": {
       eventId: "event-1",
       organizerId: "club-1",
       uid: "runner-1",
@@ -655,7 +651,7 @@ test("signUpUserForEvent writes a waitlist promotion notification", async (
     },
   });
 
-  await signUpUserForEvent(db, "event-1", "runner-1");
+  await signUp(db, "event-1", "runner-1");
 
   const fake = db as unknown as FakeFirestore;
   const notification = fake.get(
@@ -681,7 +677,7 @@ test("signUpUserForEvent rejects cancelled events", async () => {
   });
 
   await assert.rejects(
-    () => signUpUserForEvent(db, "event-1", "runner-1"),
+    () => signUp(db, "event-1", "runner-1"),
     (error) =>
       error instanceof Error &&
       "code" in error &&
@@ -697,12 +693,12 @@ test("signUpUserForEvent never books a private event", async () => {
     "users/runner-1": user(),
   });
   await assert.rejects(
-    () => signUpUserForEvent(db, "event-1", "runner-1"),
+    () => signUp(db, "event-1", "runner-1"),
     (error) => error instanceof Error && "code" in error &&
       error.code === "failed-precondition"
   );
   assert.equal((db as unknown as FakeFirestore)
-    .get("eventParticipations/event-1_runner-1"), undefined);
+    .get("eventBookings/event-1_runner-1"), undefined);
 });
 
 test("signUpUserForEvent rejects missing account identity", async () => {
@@ -712,7 +708,7 @@ test("signUpUserForEvent rejects missing account identity", async () => {
   });
 
   await assert.rejects(
-    () => signUpUserForEvent(db, "event-1", "runner-1"),
+    () => signUp(db, "event-1", "runner-1"),
     (error) =>
       error instanceof Error &&
       "code" in error &&
@@ -729,7 +725,7 @@ test("signUpUserForEvent requires run preferences for run events", async () => {
   });
 
   await assert.rejects(
-    () => signUpUserForEvent(db, "event-1", "runner-1"),
+    () => signUp(db, "event-1", "runner-1"),
     (error) =>
       error instanceof Error &&
       "code" in error &&
@@ -752,11 +748,11 @@ test("signUpUserForEvent does not require run preferences for dinner events",
       }),
     });
 
-    await signUpUserForEvent(db, "event-1", "runner-1");
+    await signUp(db, "event-1", "runner-1");
 
     const fake = db as unknown as FakeFirestore;
     assert.equal(
-      fake.get("eventParticipations/event-1_runner-1")?.status,
+      fake.get("eventBookings/event-1_runner-1")?.status,
       "signedUp"
     );
   }
@@ -775,7 +771,7 @@ test("signUpUserForEvent rejects overlapping user bookings", async () => {
       ),
     }),
     "users/runner-1": user(),
-    "eventParticipations/event-2_runner-1": {
+    "eventBookings/event-2_runner-1": {
       eventId: "event-2",
       organizerId: "club-2",
       uid: "runner-1",
@@ -784,7 +780,7 @@ test("signUpUserForEvent rejects overlapping user bookings", async () => {
   });
 
   await assert.rejects(
-    () => signUpUserForEvent(db, "event-1", "runner-1"),
+    () => signUp(db, "event-1", "runner-1"),
     (error) =>
       error instanceof Error &&
       "code" in error &&
@@ -805,7 +801,7 @@ test("signUpUserForEvent allows adjacent user bookings", async () => {
       ),
     }),
     "users/runner-1": user(),
-    "eventParticipations/event-2_runner-1": {
+    "eventBookings/event-2_runner-1": {
       eventId: "event-2",
       organizerId: "club-2",
       uid: "runner-1",
@@ -813,11 +809,11 @@ test("signUpUserForEvent allows adjacent user bookings", async () => {
     },
   });
 
-  await signUpUserForEvent(db, "event-1", "runner-1");
+  await signUp(db, "event-1", "runner-1");
 
   const fake = db as unknown as FakeFirestore;
   assert.equal(
-    fake.get("eventParticipations/event-1_runner-1")?.status,
+    fake.get("eventBookings/event-1_runner-1")?.status,
     "signedUp"
   );
 });
@@ -834,12 +830,12 @@ test("Catch signup respects another checkout hold with zero confirmed bookings",
     rows["eventSeatLedgers/event-1"].checkoutHeld = 1;
     const db = firestore({"events/event-1": sourceEvent,
       "users/runner-1": user(), ...rows});
-    await assert.rejects(signUpUserForEvent(db, "event-1", "runner-1",
+    await assert.rejects(signUp(db, "event-1", "runner-1",
       undefined, {loadCurrentAuthPhone: async () => null}));
     const fake = db as unknown as FakeFirestore;
     assert.equal(fake.get("eventSeatLedgers/event-1")?.occupied, 0);
     assert.equal(fake.get("eventSeatLedgers/event-1")?.checkoutHeld, 1);
-    assert.equal(fake.get("eventParticipations/event-1_runner-1"), undefined);
+    assert.equal(fake.get("eventBookings/event-1_runner-1"), undefined);
   });
 
 const paidBooking = {userId: "runner-1", eventId: "event-1",
@@ -850,22 +846,22 @@ test("native paid signup commits atomically and rejects re-entry",
   async () => {
     const db = firestore({"events/event-1": event(),
       "users/runner-1": user()});
-    await signUpUserForEvent(db, "event-1", "runner-1", "pay_one",
+    await signUp(db, "event-1", "runner-1", "pay_one",
       {paidBooking});
     const fake = db as unknown as FakeFirestore;
     assert.equal(fake.get("guestPayments/pay_one")?.status, "completed");
-    assert.equal(fake.get("eventParticipations/event-1_runner-1")?.paymentId,
+    assert.equal(fake.get("eventBookings/event-1_runner-1")?.paymentId,
       "pay_one");
-    await assert.rejects(signUpUserForEvent(db, "event-1", "runner-1",
+    await assert.rejects(signUp(db, "event-1", "runner-1",
       "pay_one", {paidBooking}), /already finalized/);
   });
 
 test("another paid booking cannot claim an existing seat", async () => {
   const db = firestore({"events/event-1": event(),
     "users/runner-1": user(),
-    "eventParticipations/event-1_runner-1": {eventId: "event-1",
+    "eventBookings/event-1_runner-1": {eventId: "event-1",
       uid: "runner-1", status: "signedUp", paymentId: "pay_other"}});
-  await assert.rejects(signUpUserForEvent(db, "event-1", "runner-1",
+  await assert.rejects(signUp(db, "event-1", "runner-1",
     "pay_one", {paidBooking}), /Another booking/);
   assert.equal((db as unknown as FakeFirestore).get("guestPayments/pay_one"),
     undefined);
@@ -893,11 +889,11 @@ test("following does not grant a members-only seat", async () => {
     },
   });
   await assert.rejects(
-    signUpUserForEvent(db, "event-1", "runner-1"),
+    signUp(db, "event-1", "runner-1"),
     /Approved community membership/
   );
   const state = db as unknown as FakeFirestore;
-  assert.equal(state.get("eventParticipations/event-1_runner-1"), undefined);
+  assert.equal(state.get("eventBookings/event-1_runner-1"), undefined);
   assert.equal(state.get("events/event-1")?.bookedCount, 0);
 });
 
@@ -919,36 +915,36 @@ test("revocation preserves a booking and blocks new admission", async () => {
     ...communityMembershipRows("club-1", "runner-1"),
     ...communityMembershipRows("club-1", "runner-2", "revoked"),
   });
-  await signUpUserForEvent(db, "event-1", "runner-1");
+  await signUp(db, "event-1", "runner-1");
   const state = db as unknown as FakeFirestore;
-  const booked = state.get("eventParticipations/event-1_runner-1");
+  const booked = state.get("eventBookings/event-1_runner-1");
   assert.equal((booked?.communityMembershipAtSignup as FakeData).revision, 1);
   for (const [path, value] of Object.entries(
     communityMembershipRows("club-1", "runner-1", "revoked")
   )) {
     state.set(path, value);
   }
-  await signUpUserForEvent(db, "event-1", "runner-1");
-  assert.deepEqual(state.get("eventParticipations/event-1_runner-1"), booked);
+  await signUp(db, "event-1", "runner-1");
+  assert.deepEqual(state.get("eventBookings/event-1_runner-1"), booked);
   await assert.rejects(
-    signUpUserForEvent(db, "event-1", "runner-2"),
+    signUp(db, "event-1", "runner-2"),
     /Approved community membership/
   );
-  assert.equal(state.get("eventParticipations/event-1_runner-2"), undefined);
+  assert.equal(state.get("eventBookings/event-1_runner-2"), undefined);
 });
 
 test("a stale approved preflight cannot admit a declined request", async () => {
   const manual = pairInventoryPolicy();
   (manual.admission as FakeData).manualApprovalRequired = true;
   const records = {"events/event-1": event({eventPolicy: manual}),
-    "users/runner-1": user(), "eventParticipations/event-1_runner-1": {
+    "users/runner-1": user(), "eventBookings/event-1_runner-1": {
       eventId: "event-1", organizerId: "club-1", uid: "runner-1",
       status: "cancelled", hostApprovalStatus: "declined"}};
   const db = firestore(records);
-  await assert.rejects(signUpUserForEvent(db, "event-1", "runner-1",
+  await assert.rejects(signUp(db, "event-1", "runner-1",
     undefined, {hasHostApproval: true}), /Request to join/);
   assert.equal(records["events/event-1"].bookedCount, 0);
-  assert.equal(records["eventParticipations/event-1_runner-1"].status,
+  assert.equal(records["eventBookings/event-1_runner-1"].status,
     "cancelled");
 });
 
@@ -957,13 +953,13 @@ test("current persisted approval supplies the transactional review check",
     const manual = pairInventoryPolicy();
     (manual.admission as FakeData).manualApprovalRequired = true;
     const records = {"events/event-1": event({eventPolicy: manual}),
-      "users/runner-1": user(), "eventParticipations/event-1_runner-1": {
+      "users/runner-1": user(), "eventBookings/event-1_runner-1": {
         eventId: "event-1", organizerId: "club-1", uid: "runner-1",
         status: "waitlisted", hostApprovalStatus: "approved"}};
     const db = firestore(records);
-    await signUpUserForEvent(db, "event-1", "runner-1");
-    assert.equal(records["eventParticipations/event-1_runner-1"].status,
-      "signedUp");
+    await signUp(db, "event-1", "runner-1");
+    assert.equal((db as unknown as FakeFirestore)
+      .get("eventBookings/event-1_runner-1")?.status, "signedUp");
   });
 
 test("unrestricted signup accepts minimal identity without inventing gender",
@@ -979,10 +975,10 @@ test("unrestricted signup accepts minimal identity without inventing gender",
       "events/event-1": event(),
       "users/runner-1": minimal,
     });
-    await signUpUserForEvent(db, "event-1", "runner-1");
+    await signUp(db, "event-1", "runner-1");
     const fake = db as unknown as FakeFirestore;
     assert.equal(
-      fake.get("eventParticipations/event-1_runner-1")?.status,
+      fake.get("eventBookings/event-1_runner-1")?.status,
       "signedUp",
     );
     assert.deepEqual(fake.get("events/event-1")?.genderCounts, {});
@@ -1002,12 +998,12 @@ for (const constraints of [
         "users/runner-1": minimal,
       });
       await assert.rejects(
-        signUpUserForEvent(db, "event-1", "runner-1"),
+        signUp(db, "event-1", "runner-1"),
         /details this event requires/,
       );
       assert.equal(
         (db as unknown as FakeFirestore).get(
-          "eventParticipations/event-1_runner-1",
+          "eventBookings/event-1_runner-1",
         ),
         undefined,
       );
@@ -1021,7 +1017,7 @@ test("followers first refuses a non-follower until everyone can book",
       "events/event-1": event(open),
       "users/runner-1": user(),
     });
-    await assert.rejects(signUpUserForEvent(refused, "event-1", "runner-1"),
+    await assert.rejects(signUp(refused, "event-1", "runner-1"),
       (error: unknown) => (error as {code?: string}).code ===
         "failed-precondition" &&
         (error as {details?: {reason?: string}}).details?.reason ===
@@ -1033,13 +1029,13 @@ test("followers first refuses a non-follower until everyone can book",
       "organizerFollows/club-1_runner-1": {organizerId: "club-1",
         uid: "runner-1", status: "active"},
     });
-    await signUpUserForEvent(follower, "event-1", "runner-1");
+    await signUp(follower, "event-1", "runner-1");
     assert.equal((follower as unknown as FakeFirestore)
-      .get("eventParticipations/event-1_runner-1")?.status, "signedUp");
+      .get("eventBookings/event-1_runner-1")?.status, "signedUp");
 
     const later = firestore({
       "events/event-1": event({followersFirstUntilMs: Date.now() - 1000}),
       "users/runner-1": user(),
     });
-    await signUpUserForEvent(later, "event-1", "runner-1");
+    await signUp(later, "event-1", "runner-1");
   });

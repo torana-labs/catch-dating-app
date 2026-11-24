@@ -15,6 +15,7 @@ import {
   defaultMovementViewDeps,
   MovementViewDeps,
 } from "./movementViewSupport";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 
@@ -202,19 +203,37 @@ export async function reconcileMovementTargets(
 
 const options = {retry: true, memory: "512MiB" as const};
 
-async function reconcileForWrite(source: MovementViewSource,
-  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
-    {documentId: string}>): Promise<void> {
+async function reconcileForChange(source: MovementViewSource,
+  documentId: string,
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): Promise<void> {
   const db = admin.firestore();
   const targets = await resolveMovementTargets(db, source,
-    event.params.documentId, event.data?.before.data(),
-    event.data?.after.data());
+    documentId, before,
+    after);
   await reconcileMovementTargets(db, targets);
 }
 
-export const onHostMovementViewEventChanged = onDocumentWritten({
-  ...options, document: "events/{documentId}",
-}, (event) => reconcileForWrite("events", event));
+async function reconcileForWrite(
+  source: MovementViewSource,
+  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
+    {documentId: string}>
+): Promise<void> {
+  await reconcileForChange(source, event.params.documentId,
+    event.data?.before.data(), event.data?.after.data());
+}
+
+/**
+ * An event write: its group, roster and checkpoint views.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostMovementViewEventProjections = defineProjections("events", [{
+  id: "hostMovementView", kind: "projection",
+  when: () => true,
+  run: (change) => reconcileForChange("events", change.documentId,
+    change.before, change.after),
+}]);
 export const onHostMovementViewPlanChanged = onDocumentWritten({
   ...options, document: "eventSuccessPlans/{documentId}",
 }, (event) => reconcileForWrite("eventSuccessPlans", event));
@@ -227,9 +246,19 @@ export const onHostMovementViewRosterChanged = onDocumentWritten({
 export const onHostMovementViewCheckpointChanged = onDocumentWritten({
   ...options, document: "eventAssistanceCheckpoints/{documentId}",
 }, (event) => reconcileForWrite("eventAssistanceCheckpoints", event));
-export const onHostMovementViewAttendeeChanged = onDocumentWritten({
-  ...options, document: "eventAttendees/{documentId}",
-}, (event) => reconcileForWrite("eventAttendees", event));
+
+/**
+ * An attendee write: the checkpoint views it can change.
+ * Served by dispatchEventAttendees (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
+ */
+export const hostMovementViewAttendeeProjections = defineProjections(
+  "eventAttendees", [{
+    id: "hostMovementView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange("eventAttendees", change.documentId,
+      change.before, change.after),
+  }]);
 export const onHostMovementViewGuestChanged = onDocumentWritten({
   ...options, document: "eventAssistanceGuests/{documentId}",
 }, (event) => reconcileForWrite("eventAssistanceGuests", event));
@@ -242,6 +271,14 @@ export const onHostMovementViewWorkItemChanged = onDocumentWritten({
 export const onHostMovementViewStaffGrantChanged = onDocumentWritten({
   ...options, document: "eventStaffGrants/{documentId}",
 }, (event) => reconcileForWrite("eventStaffGrants", event));
-export const onHostMovementViewOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{documentId}",
-}, (event) => reconcileForWrite("organizers", event));
+
+/**
+ * An organizer's managers: its open checkpoint views.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
+ */
+export const hostMovementViewProjections = defineProjections("organizers", [{
+  id: "hostMovementView", kind: "projection", when: () => true,
+  run: (change) => reconcileForChange("organizers", change.documentId,
+    change.before, change.after),
+}]);

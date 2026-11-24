@@ -1,0 +1,36 @@
+{
+  "id": "design:platform-token-coverage",
+  "category": "design",
+  "path": "tool/design/check_platform_token_coverage.mjs",
+  "impactPaths": [
+    "design/tokens/**",
+    "packages/platform/lib/theme/**",
+    "packages/catch_tokens/lib/**",
+    "packages/catch_ui/**",
+    "tool/design_tokens.mjs",
+    "tool/design_tokens/**",
+    "tool/design/test/platform_token_coverage.test.mjs",
+    "test/core/catch_platform_tokens_test.dart",
+    "test/core/platform_typography_test.dart"
+  ],
+  "command": "node tool/design/check_platform_token_coverage.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Independently resolves pinned iOS/Android source constants, requires explicit semantic/runtime decisions, rejects incomplete native imports and competing raw functional typography.",
+  "checks": [
+    "node --check tool/design/check_platform_token_coverage.mjs",
+    "node --test tool/design/test/platform_token_coverage.test.mjs",
+    "node tool/design/check_platform_token_coverage.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "role": "gate",
+  "alsoEnforces": [
+    "UI-LINT-001"
+  ],
+  "queueGate": "always"
+}

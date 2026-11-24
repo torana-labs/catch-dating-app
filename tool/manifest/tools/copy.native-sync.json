@@ -1,0 +1,17 @@
+{
+  "id": "copy:native-sync",
+  "category": "generator",
+  "path": "tool/copy/sync_native_copy.mjs",
+  "command": "node tool/copy/sync_native_copy.mjs",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Keeps iOS permission copy generated from the marketing-reviewable native English catalog.",
+  "checks": [
+    "node --check tool/copy/sync_native_copy.mjs",
+    "node tool/copy/sync_native_copy.mjs"
+  ],
+  "role": "generator",
+  "alsoEnforces": [
+    "APP-COPY-001"
+  ]
+}

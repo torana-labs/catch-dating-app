@@ -1,0 +1,178 @@
+name: Test read map
+
+# Shadow read map (RE decision, 22 Nov 2026): each root or app-package Flutter
+# test file that imports dart:io or repoFile() runs in its own `flutter test`
+# under `strace -f`, and the repository paths its test runtime opened, listed and probed are
+# recorded, with the compiler's reads kept separate. Nothing consumes the map
+# yet: it changes no selection and never blocks anything. Linux, read-only;
+# it uploads one JSONL artifact per day. Scheduled runs start hours late, so it
+# also wakes after main's push CI; the gate job (tool/ci/daily_once_gate.mjs)
+# lets only the first wake of each UTC day work (24 Nov 2026). It also traces
+# the selector's always-run set, and the combine job compares that set with
+# the map (read-map selection shadow, report-only, 24 Nov 2026). Logic and
+# tests: tool/ci/test_read_map.mjs, tool/ci/read_map_selection_shadow.mjs. Operator guide: docs/release_operations.md,
+# "Test read map".
+
+on:
+  schedule:
+    # Fallback: scheduled runs start hours late, so main's push CI wakes it too.
+    - cron: "41 3 * * *"
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: test-read-map
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    name: Once a day
+    # A workflow_run wake counts only for main's own push CI runs, never a
+    # pull-request run (a fork's branch can also be called main), as in #2408.
+    if: >-
+      github.event_name != 'workflow_run' || (
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      # Read the checkout and list artifacts.
+      actions: read
+      contents: read
+    outputs:
+      run: ${{ steps.gate.outputs.run }}
+      day: ${{ steps.day.outputs.day }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            tool/ci
+            .github/actions/load-toolchain
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - id: day
+        run: echo "day=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+      - id: gate
+        name: Run only if today's artifact does not exist yet
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DAY: ${{ steps.day.outputs.day }}
+        run: node tool/ci/daily_once_gate.mjs --artifact "test-read-map-day-$DAY"
+
+  trace:
+    name: Read map (shard ${{ matrix.shard }}/4)
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Install strace
+        run: command -v strace || sudo apt-get install -y -qq strace
+      - uses: ./.github/actions/generate-contracts
+      - uses: ./.github/actions/setup-flutter
+      - run: flutter pub get
+      # The tests the selector keeps on every pull request (descriptive output;
+      # it selects nothing), so they are traced even when they read only
+      # through an imported helper, and the shadow below can compare them.
+      - name: List the selector's always-run set
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          set -euo pipefail
+          dart run tool/harness/lib/flutter_test_selection.dart --probes-only true \
+            --head "$(git rev-parse HEAD)" --output "$RUNNER_TEMP/probes-$SHARD.json"
+      - name: Trace each file-reading and always-run test file
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: >-
+          node tool/ci/test_read_map.mjs --shard "$SHARD" --shards 4
+          --out "$RUNNER_TEMP/read-map-$SHARD.jsonl" --also "$RUNNER_TEMP/probes-$SHARD.json"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-read-map-shard-${{ matrix.shard }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/read-map-${{ matrix.shard }}.jsonl
+            ${{ runner.temp }}/probes-${{ matrix.shard }}.json
+          retention-days: 14
+          if-no-files-found: error
+
+  combine:
+    name: Combine the read map
+    needs: [gate, trace]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      # Read the checkout, the previous day's marker and the compare API.
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            tool/ci
+            .github/actions/load-toolchain
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          pattern: test-read-map-shard-*-${{ github.run_id }}
+          merge-multiple: true
+          path: shards
+      - name: Merge shards and summarise
+        run: |
+          set -euo pipefail
+          cat shards/read-map-*.jsonl | jq -cs 'sort_by(.test) | .[]' > test-read-map.jsonl
+          jq -s '{files: length, failed: map(select(.exit != 0 and .exit != 79)) | length,
+            noRuntimeRepoReads: map(select((.runtime.opened + .runtime.listed) | all(test("^(NativeAssetsManifest\\.json|shaders/|packages/catch_ui/assets/fonts/)")))) | length,
+            listing: map(select(.runtime.listed | length > 0)) | length}' test-read-map.jsonl | tee summary.json
+          { echo '### Test read map'; echo '```json'; cat summary.json; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      # Report-only (RE, 24 Nov 2026): for each always-run test, its reads by
+      # kind, whether they are all named paths, and whether reads alone would
+      # have selected it for main's changes since the previous day's map.
+      - name: Compare the always-run set with the read map
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DAY: ${{ needs.gate.outputs.day }}
+        run: >-
+          node tool/ci/read_map_selection_shadow.mjs --read-map test-read-map.jsonl
+          --probes shards/probes-0.json --day "$DAY" --head "$GITHUB_SHA"
+          --out read-map-selection-shadow.json --summary "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-read-map-${{ github.run_id }}
+          path: |
+            test-read-map.jsonl
+            read-map-selection-shadow.json
+            shards/probes-0.json
+          retention-days: 30
+          if-no-files-found: error
+      # The once-a-day marker the gate looks for: today's map exists.
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-read-map-day-${{ needs.gate.outputs.day }}
+          path: summary.json
+          retention-days: 3
+          if-no-files-found: error

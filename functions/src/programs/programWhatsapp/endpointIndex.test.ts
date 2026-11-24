@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {FakeFirestore} from "../../shared/testing/programFirestore";
 import {contractValidator} from "../../shared/contractTestValidators";
-import {hashEndpoint} from "../../organizers/organizerCampaignModel";
+import {hashEndpoint} from "../../platform/delivery/endpointHash";
 import {
   applyEndpointClaimChange,
   guestEndpointClaim,

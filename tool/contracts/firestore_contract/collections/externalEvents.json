@@ -1,0 +1,11 @@
+{
+  "id": "externalEvents",
+  "path": "externalEvents/{eventId}",
+  "rulesMatch": "/externalEvents/{eventId}",
+  "typescriptInterface": "ExternalEventDocument",
+  "rulesTestFile": "functions/test/rules/events.rules.test.cjs",
+  "owner": "organizer intake import tooling after admin review; external source corrections and takedowns are admin-owned",
+  "writerContext": "supply",
+  "read": "public, only while public and active",
+  "write": "server only"
+}

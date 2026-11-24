@@ -33,14 +33,7 @@
         "label": "Running chapters in several cities? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "chip": {
-        "title": "Monthly meetup",
-        "rows": [
-          {"label": "Booked", "value": "22"},
-          {"label": "Members", "value": "14"},
-          {"label": "First-timers", "value": "5"}
-        ]
-      },
+      "fragments": ["host-people-regular", "host-people-drifting"],
       "media": {"kind": "capture", "slot": "host-people"}
     },
     {
@@ -87,9 +80,9 @@
         {"time": "Week 2", "title": "Bookings come in, paid", "body": "No chasing. Share one link in the group chat and see who booked through it."},
         {"time": "Day before", "title": "A note from you", "body": "Share where, when and this month’s book from your own WhatsApp. App users also get a reminder 15 minutes before it starts."},
         {"time": "The meetup", "title": "Everyone checked in", "body": "They scan in at the door. You see who’s new and say hello properly."},
-        {"time": "Next morning", "title": "Thank them, and set the next one", "body": "Photos and a thank-you go out, reviews come in, and regulars who aren’t members yet get an invitation."}
+        {"time": "Next morning", "title": "Thank them, and set the next one", "body": "Photos and a thank-you go out, guests can leave a review on your page, and your report shows who keeps coming back."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-communities"}
     },
     {
       "type": "checklist",
@@ -148,12 +141,12 @@
       "ground": "indigo",
       "kicker": "Your next meetup",
       "title": "Give your community a home.",
-      "lead": "Start the free trial, or leave your number and we’ll send the community setup guide on WhatsApp.",
+      "lead": "Start the free trial, or leave your number and a person from our team will message you on WhatsApp to help you set up.",
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
-      "leadForm": {"id": "community_setup_guide", "requestKind": "guide", "format": "communities", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
-      "media": {"kind": "capture", "slot": "guest-explore"}
+      "leadForm": {"id": "community_setup_guide", "requestKind": "guide", "format": "communities", "label": "Your WhatsApp number", "submitLabel": "Message me"},
+      "media": {"kind": "capture", "slot": "host-create-communities"}
     }
   ]
 }

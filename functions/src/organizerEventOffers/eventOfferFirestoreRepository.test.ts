@@ -2,17 +2,19 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {AudienceTestStore} from "../organizers/organizerAudienceTestStore";
 import {eventPaymentTermsFromPreferences} from
-  "../events/eventSetupPreferences/resolve";
+  "../domain/formats/eventSetupPreferences/resolve";
 import type {ResolvedEventPreferences} from
-  "../events/eventSetupPreferences/types";
+  "../domain/formats/eventSetupPreferences/types";
 import {formConversionReceiptId} from
   "../organizers/organizerFormAdmissionIdentity";
 import {organizerContactOriginId} from
   "../shared/organizerContactOrigins";
-import {organizerContactChannelStateId, hashEndpoint} from
-  "../organizers/organizerCampaignModel";
+import {
+  organizerContactChannelStateId,
+} from "../organizers/organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {whatsappStopId} from "../shared/organizerWhatsappStops";
-import {FirestoreEventOfferRepository, offerBatchReceiptId,
+import {FirestoreEventOfferRepository, offerBatchReceiptRef,
   offerBatchReceiptResult} from "./eventOfferFirestoreRepository";
 import {eventOfferId} from "./eventOfferDomain";
 import {buildCommandReceipt} from "../shared/commandReceipts";
@@ -91,8 +93,8 @@ test("actual adapter maps reviewed registration and buffers all writes",
     assert.equal(stored.status, "offered");
     assert.equal(Object.keys(store.docs).filter((path) =>
       path.startsWith("commandReceipts/mutateEventOffer_")).length, 2);
-    const batchReceipt = store.docs[`commandReceipts/${offerBatchReceiptId(
-      organizerId, "registration-batch-one")}`];
+    const batchReceipt = store.docs[offerBatchReceiptRef(store.asFirestore(),
+      organizerId, "registration-batch-one").path];
     assert.deepEqual(Object.keys(batchReceipt.result as object), ["results"]);
     assert.equal(Object.keys(store.docs).filter((path) =>
       path.startsWith("organizerEventOfferAudits/")).length, 2);

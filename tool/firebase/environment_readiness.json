@@ -16,8 +16,7 @@
       "remoteconfig"
     ],
     "capabilities": [
-      "cross-paths",
-      "host-operator-alerts"
+      "cross-paths"
     ]
   },
   "requirements": [
@@ -335,7 +334,7 @@
       "sourcePaths": [
         "functions/src/organizers/organizerCampaignDispatcher.ts",
         "functions/src/organizers/organizerMessagingSetup.ts",
-        "functions/src/organizers/organizerWhatsappProvider.ts"
+        "functions/src/platform/delivery/organizerWhatsappProvider.ts"
       ],
       "credentialClass": "provider-secret",
       "binding": {
@@ -691,35 +690,6 @@
       },
       "activationPolicy": "required-by-selected-consumer",
       "rotationCompatibility": "provider-overlap"
-    },
-    {
-      "id": "functions.secret.catch-host-operator-alerts-resend-key",
-      "kind": "secret-version",
-      "name": "CATCH_HOST_OPERATOR_ALERTS_RESEND_KEY",
-      "environments": [
-        "dev",
-        "prod"
-      ],
-      "requiredWhen": {
-        "anyCapability": [
-          "host-operator-alerts"
-        ]
-      },
-      "acceptedStates": [
-        "ENABLED"
-      ],
-      "owner": "host-acquisition",
-      "sourcePaths": [
-        "functions/src/hostAlerts/runtime.ts"
-      ],
-      "credentialClass": "provider-secret",
-      "binding": {
-        "kind": "firebase-secret-param",
-        "exactReference": "observed-numeric-version",
-        "identity": "observed-function-service-account"
-      },
-      "activationPolicy": "required-by-selected-consumer",
-      "rotationCompatibility": "provider-overlap"
     }
   ],
   "directReaders": [
@@ -731,7 +701,6 @@
       "owner": "program-transport",
       "credentialClass": "provider-envelope",
       "consumers": [
-        "refreshProgramTravelLeg",
         "refreshProgramFlightStatuses",
         "anonymizeDueProgramsSweep"
       ],
@@ -875,7 +844,7 @@
     {
       "id": "functions.reference.guest-keyring",
       "sourcePaths": [
-        "functions/src/eventSuccess/operations/guestLinkKeyStore.ts"
+        "functions/src/platform/guestLinkKeyStore.ts"
       ],
       "owner": "event-assistance",
       "credentialClass": "signing-keyring",
@@ -1003,7 +972,7 @@
     {
       "id": "functions.reference.organizer-token",
       "sourcePaths": [
-        "functions/src/organizers/organizerWhatsappProvider.ts"
+        "functions/src/platform/delivery/organizerWhatsappProvider.ts"
       ],
       "owner": "organizer-messaging",
       "credentialClass": "provider-token",
@@ -1089,14 +1058,16 @@
       "id": "functions.reference.ad-conversions-meta",
       "sourcePaths": [
         "functions/src/acquisition/adConversions/worker.ts",
-        "functions/src/acquisition/metaLeadgen/processing.ts"
+        "functions/src/acquisition/metaLeadgen/processing.ts",
+        "functions/src/money/adSpendImport.ts"
       ],
       "owner": "host-acquisition",
       "credentialClass": "provider-token",
       "consumers": [
         "sendAdConversions",
         "onMetaLeadgenEventCreated",
-        "syncMetaHostAudience"
+        "syncMetaHostAudience",
+        "importAdSpendDaily"
       ],
       "binding": {
         "kind": "parameter",
@@ -1188,6 +1159,27 @@
       "consumers": [
         "deliverOrganizerBillNotice",
         "retryOrganizerBillNoticesHourly"
+      ],
+      "binding": {
+        "kind": "record",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "per-record-runtime-authority",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": true
+    },
+    {
+      "id": "functions.reference.operator-alerts",
+      "sourcePaths": [
+        "functions/src/hostAlerts/runtime.ts"
+      ],
+      "owner": "host-acquisition",
+      "credentialClass": "provider-envelope",
+      "consumers": [
+        "alertOperatorOnSupportMessage",
+        "alertOperatorOnSalesLead",
+        "summariseOperatorAlertOverflow"
       ],
       "binding": {
         "kind": "record",

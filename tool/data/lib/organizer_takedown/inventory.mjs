@@ -38,10 +38,12 @@ export const BIGQUERY_CHANGELOGS = Object.freeze({
   events: "catch_analytics.events_raw_changelog",
   reviews: "catch_analytics.reviews_raw_changelog",
   savedEvents: "catch_analytics.saved_events_raw_changelog",
+  eventBookings: "catch_analytics.event_bookings_raw_changelog",
+  // The export moved to eventBookings on 22 Nov 2026; the old table keeps
+  // the changelog rows written before then, so a takedown clears both.
   eventParticipations: "catch_analytics.event_participations_raw_changelog",
   eventInviteLinks: "catch_analytics.event_invite_links_raw_changelog",
   eventSuccessScorecards: "catch_marketplace_metrics.event_success_scorecards_raw_changelog",
-  eventSuccessFeedback: "catch_marketplace_metrics.event_success_feedback_raw_changelog",
 });
 
 /** Tables Functions stream rows into, keyed by organizer_id. */
@@ -68,5 +70,9 @@ export function readSchemaInventory(schemaDir) {
   }
   // organizerIntakeReviewDecisions is keyed {entityId}, which is the organizer id.
   byId.add("organizerIntakeReviewDecisions");
+  // TRANSITIONAL: eventParticipations has no schema of its own while it is
+  // the legacy mirror of eventBookings (phase 1 of the rename). Scan it too,
+  // so a takedown also finds mirror rows whose booking was never copied.
+  byField.add("eventParticipations");
   return {byField: [...byField].sort(), byId: [...byId].sort()};
 }

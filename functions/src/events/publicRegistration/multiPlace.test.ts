@@ -11,13 +11,14 @@ import {validateManagePublicEventCheckoutCallablePayload as validInput} from
   "../../shared/generated/validators/managePublicEventCheckoutInput";
 import {validateEventAttendeeDocument} from
   "../../shared/generated/validators/eventAttendeeDocument";
-import {canonicalJson} from "../eventSetupPreferences/resolve";
+import {canonicalJson} from
+  "../../domain/formats/eventSetupPreferences/resolve";
 import {hostMembershipId} from "../../hostMemberships/ids";
 import {publicHostMembershipQuoteTerms} from
   "../../hostMemberships/publicCheckout";
 import {plan as membershipPlan, planId as membershipPlanId} from
   "../../hostMemberships/testFixture";
-import {CHECKOUT_HOLD_MILLIS} from "../seatAuthority/seatAuthority";
+import {CHECKOUT_HOLD_MILLIS} from "../../domain/payments/checkoutHold";
 import {deriveEventSeatPolicy} from "../seatAuthority/firestoreAdapter";
 import {cancelPaidEventAdmission} from
   "../../payments/eventCheckout/eventPaymentCancellation";
@@ -35,7 +36,7 @@ import {
   PUBLIC_ADMISSION_COLLECTION,
   parsePublicPayment,
   publicPaymentLedger,
-} from "./paymentLedger";
+} from "../../domain/payments/publicEventPayments";
 import {readPublicPaidAdmission} from "./admissionProof";
 import {finalizePublicPayment} from "./admission";
 import {projectPublicPayment} from "./projection";

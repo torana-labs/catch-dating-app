@@ -1,0 +1,11 @@
+{
+  "id": "organizerMomentSweepState",
+  "path": "organizerMomentSweepState/{sweepId}",
+  "rulesMatch": "/organizerMomentSweepState/{sweepId}",
+  "typescriptInterface": "OrganizerMomentSweepStateDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "moment runner",
+  "writerContext": "messaging",
+  "read": "server only",
+  "write": "server only"
+}

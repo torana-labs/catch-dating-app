@@ -1208,7 +1208,7 @@
       "staticOutput": "postbuild",
       "indexing": "noindex-follow",
       "sitemap": "excluded",
-      "notes": "The signed-in guest's account (no board; drawn from the system): Plans with passes (getEventTicketCode), Following, Reviews with verified state, Details, per-organiser Messages permissions and Privacy and data, read in one manageWebsiteAccount read with sections. Signed out it offers the sign-in sheet (phone code, Google, email link). Private shell: noindex, out of the sitemap, no analytics.",
+      "notes": "The signed-in guest's account (no board; drawn from the system): Plans with passes (getEventTicketCode), Following, Reviews with verified state, Details, per-organiser Messages permissions and Privacy and data, the plans, follows and reviews from listeners on the guest's own rows (guestEventStatuses, organizerFollows, reviews) named from publicOrganizers, and the messages from one manageWebsiteAccount read. Signed out it offers the sign-in sheet (phone code, Google, email link). Private shell: noindex, out of the sitemap, no analytics.",
       "review": {
         "priority": "p1",
         "status": "ready",
@@ -1265,7 +1265,7 @@
       "staticOutput": "postbuild",
       "indexing": "noindex-follow",
       "sitemap": "excluded",
-      "notes": "The organiser owner's billing on the web (no board; drawn from the system): the free trial, the plan (ticketing or tools-only) with Catch's prices, and bills with their Razorpay invoice to pay. Buying or cancelling tools-only happens only here (manageOrganizerBillingPlan); the native Host app shows status only (App Store 3.1.3(f)). Reads getOrganizerBillingStatus, manageOrganizerBillingPlan and listOrganizerBills for an organiser from listMyOwnedOrganizers (every organiser the signed-in user owns; a bill email's ?organizerId= preselects one). Signed out it offers the phone-code sign-in sheet. Private: noindex, out of the sitemap, no analytics.",
+      "notes": "The organiser owner's billing on the web (no board; drawn from the system): the free trial, the plan (ticketing or tools-only) with Catch's prices, and bills with their Razorpay invoice to pay. Buying or cancelling tools-only happens only here (manageOrganizerBillingPlan); the native Host app shows status only (App Store 3.1.3(f)). Reads getOrganizerBillingStatus and manageOrganizerBillingPlan, and listens to hostOrganizerBillViews, for an organiser from the owned-organiser listener (every organiser the signed-in user owns; a bill email's ?organizerId= preselects one). Signed out it offers the phone-code sign-in sheet. Private: noindex, out of the sitemap, no analytics.",
       "review": {
         "priority": "p1",
         "status": "ready",
@@ -1293,6 +1293,43 @@
             "tools-only-active",
             "not-owner",
             "failed"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
+      "id": "walkthrough_manage",
+      "kind": "static",
+      "path": "/start/walkthrough/manage/",
+      "pageKey": "walkthrough_manage",
+      "source": "website/src/features/walkthroughs/WalkthroughManagePage.tsx",
+      "metaKey": "walkthrough_manage",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "A walkthrough booking's manage page, which bookWalkthrough's managePath opens (?booking=wt-…; the confirmation adds the manage token as #t=…, which stays in the fragment). Reads, moves or cancels the booking through manageWalkthroughBooking; without a token the booker confirms the booked number on the phone-code sign-in sheet. Private: noindex, out of the sitemap, no analytics, private shell family start.",
+      "review": {
+        "priority": "p2",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "booked",
+          "confirmed",
+          "cancelled",
+          "sign-in",
+          "not-found"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "booked",
+            "confirmed",
+            "cancelled",
+            "sign-in",
+            "not-found"
           ],
           "manual": []
         }
@@ -2377,7 +2414,7 @@
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "Book a walkthrough, menu-free; a request form until the slot backend exists (decision 24).",
+      "notes": "Book a walkthrough, menu-free: the slot picker (features/walkthroughs) books an open India-time slot with getWalkthroughSlots and bookWalkthrough after a phone-code sign-in, and links the booking's manage page (walkthrough_manage); when no slot is open, booking is closed or the slots cannot be read, the request form stands below it (decision 24; D8 in #2304).",
       "review": {
         "priority": "p1",
         "status": "planned",

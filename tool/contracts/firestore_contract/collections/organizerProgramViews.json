@@ -1,0 +1,30 @@
+{
+  "id": "organizerProgramViews",
+  "path": "organizerProgramViews/{programId}",
+  "rulesMatch": "/organizerProgramViews/{programId}",
+  "dartModel": null,
+  "typescriptInterface": "OrganizerProgramViewDocument",
+  "rulesTestFile": "functions/test/rules/program_batch5_reads.rules.test.cjs",
+  "rulesTestNames": [
+    "admits the creator and the organizer's managers, by their queries",
+    "lets a live programAdmin duty read its one programme, not list",
+    "denies a deleted account and every write"
+  ],
+  "owner": "Programme read model projector: organizerProgramViewTriggers",
+  "writerContext": "programmes",
+  "read": "get for the creator, the organizer's current managers and a live programAdmin duty; list by a query naming createdBy (the creator) or organizerId (a current manager); never while deleted",
+  "write": "server only; written from organizerPrograms, programFunctions, programPickupPoints and programHotels; the list counts from programGuests and programTravelLegs and a nightly recount",
+  "exportedFunctions": [
+    "dispatchOrganizerPrograms",
+    "onOrganizerProgramFunctionChanged",
+    "onOrganizerProgramPickupPointChanged",
+    "onOrganizerProgramHotelChanged",
+    "onOrganizerProgramGuestCountChanged",
+    "onOrganizerProgramTravelLegCountChanged",
+    "reconcileOrganizerProgramCountsSweep"
+  ],
+  "migrationNotes": [
+    "The programme object getOrganizerProgram returns, its creator, the function count and the setup lists, without a function's live expected and checked-in counts (programResourceViews carries those) and without the sender connection, entitlement or request hash. The organizer-program-views copy-forward migration creates views for programmes that predate the triggers and leaves views the triggers wrote alone.",
+    "The planner list's counts now live in the view (#2306): guestCount, repliedGuestCount and flyingInCount, with listOrganizerPrograms' semantics; the phone derives repliedShare from them, so the Host app no longer calls listOrganizerPrograms (the callable stays deployed for older builds until #2174). Triggers on programGuests and programTravelLegs move them by each write's delta, once per event (a commandReceipts replay receipt) and only for writes after the fence of the last recount (guestCountsAsOfMicros, flyingInCountAsOfMicros, its query read times). A recount sets them when a view is created, nightly (reconcileOrganizerProgramCountsSweep) and from tool/data/recompute_organizer_program_counts.mjs, the backfill; until then a view has no counts and the row shows none. Household, journey detail and staff counts stay on getOrganizerProgram."
+  ]
+}

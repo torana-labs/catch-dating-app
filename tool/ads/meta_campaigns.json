@@ -7,7 +7,8 @@
   "leadForms": [
     {
       "name": "Catch Host | Organisers | v2",
-      "note": "Meta forms cannot be edited or renamed, and archived names stay taken (v1 was an archived test form). Change a question or line by adding the next version and pointing the campaign at it.",
+      "note": "Meta forms cannot be edited or renamed, and archived names stay taken (v1 was an archived test form). Change a question or line by adding the next version and pointing the campaign at it, and mark the old one retired: it stays here as history and is never created again.",
+      "retired": true,
       "introTitle": "Run your events on Catch Host",
       "introBullets": [
         "Sell tickets and take bookings in one app",
@@ -34,21 +35,53 @@
       "thankYouBody": "We'll message you on WhatsApp to help set up your first event. You can get the Catch Host app now.",
       "thankYouButton": "Get Catch Host",
       "thankYouPath": "/host/"
+    },
+    {
+      "name": "Catch Host | Organisers | v3",
+      "note": "v2 plus the WhatsApp consent line before Submit (v2 mentioned WhatsApp only on its thank-you screen, after Submit), so a lead from this form may get the automatic WhatsApp welcome. Its form id is in META_LEAD_FORM_WHATSAPP_CONSENT in functions/src/waitlist/hostLeadTemplates.ts; a later version that keeps the line is added there too.",
+      "introTitle": "Run your events on Catch Host",
+      "introBullets": [
+        "Sell tickets and take bookings in one app",
+        "Guests pay straight into your own Razorpay",
+        "Free for 30 days, then 5% capped every month"
+      ],
+      "questionsHeadline": "Tell us about your events",
+      "questions": [
+        {"type": "FULL_NAME"},
+        {"type": "PHONE"},
+        {"type": "EMAIL"},
+        {"type": "CITY"},
+        {"type": "CUSTOM", "key": "club_name", "label": "Club or community name"},
+        {"type": "CUSTOM", "key": "instagram_handle", "label": "Instagram handle or website"},
+        {
+          "type": "CUSTOM",
+          "key": "event_cadence",
+          "label": "How often do you run paid events?",
+          "options": ["Every week", "A few times a month", "Once a month or less", "Planning my first"]
+        }
+      ],
+      "consentTitle": "We'll reply on WhatsApp",
+      "consentLine": "At the phone number you gave.",
+      "privacyPath": "/privacy/",
+      "thankYouTitle": "Thanks, we'll be in touch",
+      "thankYouBody": "We'll help you set up your first event. You can get the Catch Host app now.",
+      "thankYouButton": "Get Catch Host",
+      "thankYouPath": "/host/"
     }
   ],
   "campaigns": [
     {
       "name": "Catch Host | Leads | Organisers",
       "status": "PAUSED",
-      "dailyBudgetInr": 1000,
+      "dailyBudgetInr": 500,
       "note": "Optimise for leads until Catch reports qualified hosts back as conversion leads (about 15 a month), then switch the ad set to conversion leads in Ads Manager.",
-      "leadForm": "Catch Host | Organisers | v2",
+      "leadForm": "Catch Host | Organisers | v3",
       "landingPath": "/host/",
       "targeting": {
         "adProgramme": "host",
         "ageMin": 21,
         "advantageAudience": true,
-        "excludeAudiences": ["Catch | Active hosts"]
+        "excludeAudiences": ["Catch | Active hosts", "Catch | Website host leads | 180d", "Catch | Lead form sent | 90d"]
       },
       "ads": [
         {
@@ -70,7 +103,7 @@
         {
           "name": "Regulars",
           "image": "fastlane/metadata/host/ios_screenshots/en-US/05_iphone_regulars.png",
-          "primaryText": "Message everyone booked in one tap and keep your regulars coming back. Free for 30 days, then 5% of ticket sales, capped every month.",
+          "primaryText": "Message your guests in one tap and keep your regulars coming back. Free for 30 days, then 5% of ticket sales, capped every month.",
           "headline": "Bring your regulars back",
           "description": "Free for 30 days",
           "callToAction": "SIGN_UP"

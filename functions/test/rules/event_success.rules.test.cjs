@@ -305,11 +305,11 @@ describe("firestore.rules", () => {
       await seed(["events", "event-1"], event());
       await seed(["eventSuccessPlans", "event-1"], eventSuccessPlan());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({status: "signedUp"}),
       );
       await seed(
-        ["eventParticipations", "event-1_runner-2"],
+        ["eventBookings", "event-1_runner-2"],
         eventParticipation({
           uid: "runner-2",
           status: "cancelled",
@@ -336,7 +336,7 @@ describe("firestore.rules", () => {
       await seed(["events", "event-1"], event({planVisibleToGuests: false}));
       await seed(["eventSuccessPlans", "event-1"], eventSuccessPlan());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({status: "signedUp"}),
       );
 
@@ -396,14 +396,14 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({
           status: "attended",
           attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
         }),
       );
       await seed(
-        ["eventParticipations", "event-1_runner-2"],
+        ["eventBookings", "event-1_runner-2"],
         eventParticipation({
           uid: "runner-2",
           status: "signedUp",
@@ -446,7 +446,7 @@ describe("firestore.rules", () => {
         }),
       );
       await seed(
-        ["eventParticipations", "event-future_runner-1"],
+        ["eventBookings", "event-future_runner-1"],
         eventParticipation({
           eventId: "event-future",
           status: "attended",
@@ -492,7 +492,7 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({
           status: "attended",
           attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
@@ -568,11 +568,11 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({status: "signedUp"}),
       );
       await seed(
-        ["eventParticipations", "event-1_runner-2"],
+        ["eventBookings", "event-1_runner-2"],
         eventParticipation({uid: "runner-2", status: "cancelled"}),
       );
 
@@ -630,11 +630,11 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({status: "signedUp"}),
       );
       await seed(
-        ["eventParticipations", "event-1_runner-2"],
+        ["eventBookings", "event-1_runner-2"],
         eventParticipation({uid: "runner-2", status: "cancelled"}),
       );
 
@@ -714,14 +714,14 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({
           status: "attended",
           attendedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
         }),
       );
       await seed(
-        ["eventParticipations", "event-1_runner-2"],
+        ["eventBookings", "event-1_runner-2"],
         eventParticipation({
           uid: "runner-2",
           status: "attended",
@@ -729,7 +729,7 @@ describe("firestore.rules", () => {
         }),
       );
       await seed(
-        ["eventParticipations", "event-1_runner-3"],
+        ["eventBookings", "event-1_runner-3"],
         eventParticipation({
           uid: "runner-3",
           status: "signedUp",
@@ -862,11 +862,11 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({status: "signedUp"}),
       );
       await seed(
-        ["eventParticipations", "event-1_runner-2"],
+        ["eventBookings", "event-1_runner-2"],
         eventParticipation({uid: "runner-2", status: "attended"}),
       );
       await seed(
@@ -948,11 +948,11 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({status: "signedUp"}),
       );
       await seed(
-        ["eventParticipations", "event-1_runner-2"],
+        ["eventBookings", "event-1_runner-2"],
         eventParticipation({uid: "runner-2", status: "signedUp"}),
       );
       await seed(
@@ -1030,7 +1030,7 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({status: "signedUp"}),
       );
       await seed(
@@ -1085,7 +1085,7 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({status: "attended"}),
       );
       const timestamp = Timestamp.fromDate(
@@ -1154,7 +1154,7 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({status: "signedUp"}),
       );
       await seed(
@@ -1249,7 +1249,7 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({status: "signedUp"}),
       );
       await seed(["eventSuccessScorecards", "event-1"], {

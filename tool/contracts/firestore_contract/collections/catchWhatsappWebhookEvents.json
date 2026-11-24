@@ -1,0 +1,18 @@
+{
+  "id": "catchWhatsappWebhookEvents",
+  "path": "catchWhatsappWebhookEvents/{eventId}",
+  "rulesMatch": "/catchWhatsappWebhookEvents/{eventId}",
+  "typescriptInterface": "CatchWhatsappWebhookEventDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps Catch WhatsApp webhook receipts server-only"
+  ],
+  "owner": "Catch-owned Meta WhatsApp webhook ingress",
+  "writerContext": "messaging",
+  "read": "server only; no client or organizer projection",
+  "write": "server only, immutable after exact app signature and sender validation",
+  "exportedFunctions": [
+    "catchWhatsappWebhook"
+  ]
+}

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import type {EventPaymentTerms} from
-  "../events/eventSetupPreferences/types";
+  "../domain/formats/eventSetupPreferences/types";
 import test from "node:test";
 import {
   EventOffer, eventOfferId, OfferActionReceipt, OfferDomainError,
@@ -10,7 +10,6 @@ import {
   OfferBatchInput, OfferBatchReceiptRecord, OfferContact, OfferEvent,
   OfferOrigin,
   OfferRepository, OfferSourceState, OfferTransaction, previewEventOffers,
-  getEventOffer, listEventOffers,
   prepareEventOfferHandoff,
 } from "./eventOfferService";
 import {parseStoredEventOffer} from "./eventOfferFirestoreRepository";
@@ -117,8 +116,9 @@ class AtomicStore implements OfferRepository {
       eventPreferences: async (id) => {
         const paymentTerms = next.paymentTerms.get(id);
         return paymentTerms ? {revision: paymentTerms.revision,
-          preferences: {} as import("../events/eventSetupPreferences/types")
-            .ResolvedEventPreferences, paymentTerms} : null;
+          preferences: {} as import(
+            "../domain/formats/eventSetupPreferences/types"
+          ).ResolvedEventPreferences, paymentTerms} : null;
       },
       handoffPresentation: async (offer) => ({
         event: {eventId: offer.eventId, title: "Saturday Social",
@@ -142,12 +142,6 @@ class AtomicStore implements OfferRepository {
           {kind: "replay" as const, results: stored.results} :
           {kind: "conflict" as const};
       },
-      listOffers: async (organizerId, eventId, cursor, limit) =>
-        [...next.offers.values()].filter((offer) =>
-          offer.organizerId === organizerId && offer.eventId === eventId &&
-          (!cursor || offer.offerId > cursor))
-          .sort((a, b) => a.offerId.localeCompare(b.offerId))
-          .slice(0, limit),
       hasMergedContactOffer: async (organizerId, eventId,
         canonicalContactId) =>
         [...next.origins.values()].some((origin) =>
@@ -375,58 +369,6 @@ test("stored offer parser rejects missing lifecycle evidence", async () => {
       reviewedAtMillis: now + 1, reviewNote: "Checked statement",
       bankReceiptChecked: false}}, offer.offerId), "conflict");
 });
-
-test("manager event list shows payment and effective expiry separately",
-  async () => {
-    const store = new AtomicStore();
-    const preview = await previewEventOffers({repository: store,
-      actor, input});
-    await commitEventOffers({repository: store, actor,
-      input: {...input, requestId: "batch-list-one",
-        planDigest: preview.planDigest}});
-    store.clockMillis = row.expiresAtMillis + 1;
-    const list = await listEventOffers({repository: store, actor,
-      organizerId: row.organizerId, eventId: row.eventId});
-    assert.equal(list.items.length, 1);
-    assert.equal(list.items[0].status, "offered");
-    assert.equal(list.items[0].effectiveStatus, "expired");
-    assert.equal(list.items[0].paymentStatus, "none");
-    assert.equal("evidenceReference" in list.items[0], false);
-    await assert.rejects(() => listEventOffers({repository: store,
-      actor: {uid: "outsider"}, organizerId: row.organizerId,
-      eventId: row.eventId}),
-    (error) => assertCode(error, "denied"));
-  });
-
-test("manager offer detail includes reference and rejects foreign access",
-  async () => {
-    const store = new AtomicStore();
-    const preview = await previewEventOffers({repository: store,
-      actor, input});
-    await commitEventOffers({repository: store, actor,
-      input: {...input, requestId: "batch-detail-one",
-        planDigest: preview.planDigest}});
-    const offered = [...store.state.offers.values()][0];
-    await mutateEventOffer({repository: store, actor, row,
-      action: {kind: "recordEvidence",
-        requestId: "detail-evidence-one",
-        expectedRevision: offered.revision,
-        expectedGeneration: offered.generation,
-        evidenceReference: "bank-reference-456"}});
-    const detail = await getEventOffer({repository: store, actor,
-      organizerId: row.organizerId, eventId: row.eventId,
-      contactId: row.contactId});
-    assert.equal(detail.offer.manualPayment.evidenceReference,
-      "bank-reference-456");
-    await assert.rejects(() => getEventOffer({repository: store,
-      actor: {uid: "outsider"}, organizerId: row.organizerId,
-      eventId: row.eventId, contactId: row.contactId}),
-    (error) => assertCode(error, "denied"));
-    await assert.rejects(() => getEventOffer({repository: store,
-      actor, organizerId: row.organizerId,
-      eventId: "another-event", contactId: row.contactId}),
-    (error) => assertCode(error, "denied"));
-  });
 
 test("submitted registration with CRM origin needs no application approval",
   async () => {

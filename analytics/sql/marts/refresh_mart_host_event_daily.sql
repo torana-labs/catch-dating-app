@@ -159,7 +159,7 @@ participations AS (
     COUNTIF(JSON_VALUE(data, '$.status') = 'attended') AS checked_in_count,
     COUNTIF(JSON_VALUE(data, '$.status') = 'waitlisted') AS waitlisted_count,
     COUNTIF(JSON_VALUE(data, '$.status') IN ('signedUp', 'attended', 'waitlisted')) AS demand_count
-  FROM `%s.%s.event_participations_raw_latest`
+  FROM `%s.%s.event_bookings_raw_latest`
   WHERE JSON_VALUE(data, '$.eventId') IS NOT NULL
   GROUP BY event_id
 ),
@@ -172,23 +172,31 @@ invite_links AS (
   GROUP BY event_id
 ),
 payments AS (
+  -- guestPayments holds every guest checkout (#1847). purpose names the flow:
+  -- Catch app bookings use the booking statuses and amountMinor; website and
+  -- offer checkouts use the shared checkout statuses and amountPaise. Form
+  -- payments carry no eventId and drop out of this per-event step.
   SELECT
     JSON_VALUE(data, '$.eventId') AS event_id,
     COUNT(*) AS checkout_started_count,
-    COUNTIF(JSON_VALUE(data, '$.status') IN ('pending', 'failed')) AS checkout_dropoff_count,
-    COUNTIF(JSON_VALUE(data, '$.status') = 'completed') AS payment_completed_count,
-    COUNTIF(JSON_VALUE(data, '$.status') IN ('failed', 'refundFailed')) AS payment_failed_count,
+    COUNTIF(JSON_VALUE(data, '$.status') IN (
+      'pending', 'failed', 'creatingOrder', 'orderUnknown', 'checkoutReady',
+      'verifying', 'expired', 'cancelled'
+    )) AS checkout_dropoff_count,
+    COUNTIF(JSON_VALUE(data, '$.status') IN ('completed', 'captured', 'admitted')) AS payment_completed_count,
+    COUNTIF(JSON_VALUE(data, '$.status') IN ('failed', 'refundFailed', 'reviewRequired')) AS payment_failed_count,
     COUNTIF(JSON_VALUE(data, '$.status') = 'refunded') AS payment_refunded_count,
     SUM(IF(
-      JSON_VALUE(data, '$.status') = 'completed',
+      JSON_VALUE(data, '$.status') IN ('completed', 'captured', 'admitted'),
       COALESCE(
         SAFE_CAST(JSON_VALUE(data, '$.amountMinor') AS INT64),
+        SAFE_CAST(JSON_VALUE(data, '$.amountPaise') AS INT64),
         SAFE_CAST(JSON_VALUE(data, '$.amount') AS INT64),
         0
       ),
       0
     )) AS gross_revenue_minor
-  FROM `%s.%s.payments_raw_latest`
+  FROM `%s.%s.guest_payments_raw_latest`
   WHERE JSON_VALUE(data, '$.eventId') IS NOT NULL
   GROUP BY event_id
 ),

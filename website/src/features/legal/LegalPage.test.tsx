@@ -23,3 +23,13 @@ it("renders section links as navigable anchors", () => {
     effectiveDate={publishedLegalContent.effectiveDate} />);
   expect(markup).toContain('href="/delete-account/"');
 });
+
+it("gives the privacy policy advertising section a stable anchor", () => {
+  const markup = renderToStaticMarkup(<LegalPage page={publishedLegalContent.pages.privacy}
+    effectiveDate={publishedLegalContent.effectiveDate} />);
+  const anchor = "ads";
+  expect(markup).toContain(`id="${anchor}"`);
+  const section = markup.slice(markup.indexOf(`id="${anchor}"`));
+  expect(section).toContain("Advertising partners.");
+  expect(section).toContain("stop sending your data to advertising partners");
+});

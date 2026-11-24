@@ -8,6 +8,7 @@ import {pathToFileURL} from "node:url";
 import {planAffected} from "../harness/lib/component_graph.mjs";
 import {compare, comparedLanes, contractsConsumerScanPrefixes, explain, explanationRules, isControlPlane, isQueueCaptureInput, laneForTask,
   narrowedPlanner, shadowExitCode, summary} from "./shadow_plan.mjs";
+import {toolsManifestPath} from "../lib/tools_manifest.mjs";
 
 const dart = {catch_dating_app: ["lang:dart"], catch_ui: ["lang:dart"], widget_dedupe: ["lang:dart"]};
 
@@ -32,12 +33,12 @@ test("a selector file selects every lane; a workflow selects the lanes that run 
   assert.equal(isControlPlane(".github/workflows/ci.yml"), true);
   assert.equal(isControlPlane("tool/nx/catch_projects.mjs"), true);
   // The manifest selects by semantic diff; without a readable diff it selects every lane.
-  assert.equal(isControlPlane("tool/tools_manifest.json"), false);
+  assert.equal(isControlPlane(toolsManifestPath), false);
   // Every lane but iOS: the queue (compare's default mode) builds iOS only for
   // a native or build input, and the manifest is not one.
-  assert.deepEqual(compare({plannerLanes: [], nxTasks: [], changedFiles: ["tool/tools_manifest.json"]}).nxLanes,
+  assert.deepEqual(compare({plannerLanes: [], nxTasks: [], changedFiles: [toolsManifestPath]}).nxLanes,
     comparedLanes.filter((lane) => lane !== "flutter_build_ios"));
-  assert.equal(compare({plannerLanes: [], nxTasks: [], changedFiles: ["tool/tools_manifest.json"], mode: "main"})
+  assert.equal(compare({plannerLanes: [], nxTasks: [], changedFiles: [toolsManifestPath], mode: "main"})
     .nxLanes.length, comparedLanes.length);
   assert.equal(isControlPlane(".github/workflows/flutter-ci.yml"), false);
   // A selector file selects every lane; in the queue (compare's default mode)
@@ -57,7 +58,7 @@ test("a selector file selects every lane; a workflow selects the lanes that run 
 // 229-commit replay were manifest edits the diff already narrows.
 test("a narrowed manifest edit compares with the planner's narrowed lanes and provenance", () => {
   const {lanes, sources} = narrowedPlanner({plannerLanes: ["docs", "policy_docs", "tools"], mode: "merge_group",
-    changedFiles: ["tool/tools_manifest.json", "docs/data_contracts.md"]});
+    changedFiles: [toolsManifestPath, "docs/data_contracts.md"]});
   assert.deepEqual(lanes, ["docs", "policy_docs", "tools"]);
   assert.ok(sources.some((entry) => entry.value === "docs" && entry.component !== "tools.manifest-diff"),
     "the other files keep the planner's own provenance");
@@ -126,7 +127,7 @@ const explanationFixtures = [
   {rule: "harness-script-outside-pr-ci", commit: "9180bc5f", lane: "flutter", side: "planner",
     sources: [source("repo.harness", "flutter")],
     changedFiles: [".github/workflows/main-red-alert.yml", ".github/zizmor.yml", "docs/release_operations.md",
-      "tool/ci/main_red_alert.mjs", "tool/ci/main_red_alert.test.mjs", "tool/tools_manifest.json"]},
+      "tool/ci/main_red_alert.mjs", "tool/ci/main_red_alert.test.mjs", toolsManifestPath]},
   {rule: "caller-closure-narrower", commit: "06b715db", lane: "functions", side: "planner",
     sources: [source("repo.harness", "functions")],
     changedFiles: ["TESTS.md", "docs/release_operations.md", "tool/ci/flutter_package_scope.mjs",
@@ -139,7 +140,7 @@ const explanationFixtures = [
     changedFiles: ["design/screens/catch.screens.json", "functions/test/rules/clubs.rules.test.cjs"]},
   {rule: "planner-app-design-coarse", commit: "c20f2462", lane: "flutter", side: "planner",
     sources: [source("app.design", "flutter")],
-    changedFiles: ["design/source_packs/host-v2/source-pack.json", "tool/tools_manifest.json"]},
+    changedFiles: ["design/source_packs/host-v2/source-pack.json", toolsManifestPath]},
   {rule: "planner-app-design-coarse", commit: "b438618a", lane: "flutter", side: "planner",
     sources: [source("app.design", "flutter"), source("marketing.capture-artifacts", "flutter")],
     changedFiles: ["artifacts/marketing/app-screenshots/host-live-console.png",
@@ -150,7 +151,7 @@ const explanationFixtures = [
     changedFiles: [".github/workflows/functions-ci.yml", ".github/workflows/main-red-alert.yml", "TESTS.md",
       "docs/release_operations.md", "functions/scripts/run-tests.cjs", "functions/scripts/run-tests.test.cjs",
       "tool/README.md", "tool/ci/selection_miss_report.mjs", "tool/ci/selection_miss_report.test.mjs",
-      "tool/tools_manifest.json"]},
+      toolsManifestPath]},
   {rule: "nx-contracts-app-consumers", commit: "2fec192d", lane: "flutter_web_smoke", side: "nx",
     nxTasks: ["lane-web-smoke:lane"], changedFiles: ["contracts/firestore/event_seat_ledgers.schema.json"]},
   {rule: "nx-root-lockfile", commit: "c2ae163a", lane: "flutter_build_ios", side: "nx",
@@ -171,6 +172,23 @@ const explanationFixtures = [
     sources: [source("operations.workflow-doc", "functions")], changedFiles: ["operations/README.md"]},
   {rule: "planner-contracts-source", commit: "(synthetic: contracts/admin)", lane: "flutter", side: "planner",
     sources: [source("contracts.source", "flutter")], changedFiles: ["contracts/admin/admin_action_catalog.json"]},
+  {rule: "planner-indexes-to-contracts", commit: "e300d2613", lane: "contracts", side: "planner",
+    sources: [source("backend.firestore-indexes", "contracts")], changedFiles: ["firestore.indexes.json"]},
+  {rule: "planner-contract-propagation", commit: "197b8574e", lane: "operations", side: "planner",
+    sources: [source("operations.contract-consumer", "operations", "affected")],
+    changedFiles: ["contracts/http/join_waitlist_request.schema.json", "functions/src/waitlist/joinWaitlist.ts"]},
+  {rule: "planner-contract-propagation", commit: "197b8574e", lane: "admin", side: "planner",
+    sources: [source("contracts.source", "admin"), source("web.admin", "admin", "affected")],
+    changedFiles: ["contracts/http/join_waitlist_request.schema.json", "website/src/content/site.ts"]},
+  {rule: "planner-shared-ui-test-only", commit: "5fe3e2966", lane: "marketing", side: "planner",
+    sources: [source("web.marketing", "marketing", "affected")],
+    changedFiles: ["packages/catch_ui/lib/src/components/catch_button.dart", "packages/web-ui/src/components/buttonParity.test.ts"]},
+  {rule: "planner-other-packages-coarse", commit: "e3bc551dc", lane: "capture_freshness", side: "planner",
+    sources: [source("repo.other-packages", "capture_freshness")],
+    changedFiles: ["packages/command-client/src/admin-catalog.mjs", "packages/command-client/src/index.mjs"]},
+  {rule: "main-native-builds-only", commit: "9cc568a23", lane: "flutter_build_ios", side: "planner", mode: "main",
+    sources: [source("app.source", "flutter_build_ios")],
+    changedFiles: ["lib/event_rehearsal/presentation/event_rehearsal_assistance_editor.dart", "firestore.rules"]},
   {rule: "nx-control-plane", commit: "ce8dda26", lane: "flutter", side: "nx", changedFiles: ["tool/nx/select_lanes.mjs"]},
   {rule: "docs-reads-every-markdown", commit: "32e79379", lane: "docs", side: "nx", changedFiles: ["functions/README.md"]},
   {rule: "contracts-scan-consumers", commit: "0284bd52", lane: "contracts", side: "nx",
@@ -227,6 +245,26 @@ test("a disagreement with no known cause stays unexplained", () => {
   assert.equal(explain({lane: "flutter_build_ios", side: "planner", sources: [source("app.ui", "flutter_build_ios")],
     changedFiles: ["packages/catch_ui/test/a_test.dart"]}), null);
 
+  // A native input builds on main, and the rule is main's alone.
+  assert.equal(explain({lane: "flutter_build_ios", side: "planner", mode: "main", sources: [source("app.source", "flutter_build_ios")],
+    changedFiles: ["lib/main.dart", "apps/consumer/ios/Podfile"]}), null);
+  assert.equal(explain({lane: "flutter_build_android", side: "planner", mode: "merge_group",
+    sources: [source("app.source", "flutter_build_android")], changedFiles: ["lib/main.dart"]}), null);
+  // Main-flip rules: each stops at the change that makes the lane read it.
+  assert.equal(explain({lane: "contracts", side: "planner",
+    sources: [source("backend.firestore-indexes", "contracts"), source("contracts.source", "contracts")],
+    changedFiles: ["firestore.indexes.json", "contracts/firestore/a.schema.json"]}), null);
+  assert.equal(explain({lane: "admin", side: "planner",
+    sources: [source("contracts.source", "admin"), source("web.admin", "admin", "affected")],
+    changedFiles: ["contracts/admin/admin_action_catalog.json", "admin/src/App.tsx"]}), null, "an Admin edit");
+  assert.equal(explain({lane: "operations", side: "planner",
+    sources: [source("operations.contract-consumer", "operations", "affected")],
+    changedFiles: ["contracts/http/a.schema.json", "packages/command-client/src/index.mjs"]}), null);
+  assert.equal(explain({lane: "marketing", side: "planner", sources: [source("web.marketing", "marketing", "affected")],
+    changedFiles: ["packages/web-ui/src/components/Button.tsx"]}), null, "a web-ui source is a website input");
+  assert.equal(explain({lane: "capture_freshness", side: "planner", sources: [source("repo.other-packages", "capture_freshness")],
+    changedFiles: ["packages/brand/brand.json"]}), null, "another package");
+
   const result = compare({plannerLanes: ["flutter"], nxTasks: ["lane-docs:lane"], changedFiles: ["README.md"],
     plannerSources: [source("app.source", "flutter")]});
   assert.deepEqual(result.unexplainedPlannerOnly, ["flutter"]);
@@ -275,7 +313,8 @@ registerHooks({resolve(specifier, context, next) {
 
 // #1767: app render inputs select capture production in the merge queue only.
 test("an app render input selects capture freshness in the merge queue, not on a pull request", () => {
-  for (const file of ["lib/app.dart", "test/app_test.dart", "packages/catch_ui/lib/catch_ui.dart", "pubspec.lock"]) {
+  for (const file of ["lib/app.dart", "test/app_test.dart", "packages/catch_ui/lib/catch_ui.dart",
+    "packages/catch_test_support/lib/repo_file.dart", "pubspec.lock"]) {
     const select = (mode) => compare({plannerLanes: [], nxTasks: [], changedFiles: [file], mode}).nxLanes;
     assert.ok(select("merge_group").includes("capture_freshness"), `${file} merge_group`);
     assert.ok(!select("pr").includes("capture_freshness"), `${file} pr`);

@@ -2,13 +2,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/billing_notice_settings.schema.json",
   "title": "BillingNoticeSettingsDocument",
-  "description": "How Catch emails organizers about their bills. email names the sender and a pinned Secret Manager version of a catch.transactional-email-credential/v1 secret (provider, accountId, apiKey), the same credential shape event approval emails use; the key itself is never stored here. Without this document, or with email null, bill emails are recorded as notConfigured and only push is sent. Server-only; set by the owner during production setup.",
+  "description": "How Catch sends its own transactional email. email names the sender and a pinned Secret Manager version of a catch.transactional-email-credential/v1 secret (provider, accountId, apiKey), the same credential shape event approval emails use; the key itself is never stored here. Bill notices: without this document, or with email null, bill emails are recorded as notConfigured and only push is sent. Operator alerts: the optional operatorAlerts field turns on staff emails about new support conversations and new leads through the same credential; when it is absent or enabled is false nothing is sent. Server-only; set by the owner during production setup.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "billingNoticeSettings",
   "x-firestore-path": "billingNoticeSettings/{settingsId}",
   "x-document-id-field": "settingsId",
-  "x-owner": "Catch owner (production setup); read by Functions bill notice delivery",
+  "x-owner": "Catch owner (production setup); read by Functions bill notice delivery and operator alerts",
   "required": ["schemaVersion", "email", "updatedAtMillis"],
   "properties": {
     "schemaVersion": {"const": 1},
@@ -27,6 +27,24 @@
           }
         }
       ]
+    },
+    "operatorAlerts": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Staff emails within a minute of a new support conversation, a support message after four quiet hours, or a new lead. Sent from the from address (on the verified sender domain) to every recipient through the email credential above. Nothing is sent while enabled is false, while email is null, or when this field is absent. At most hourlyCap alerts go out in a clock hour; the rest are listed in one summary email after that hour closes.",
+      "required": ["enabled", "recipients", "from", "hourlyCap"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "recipients": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[^\\s<>@]+@[^\\s<>@]+\\.[^\\s<>@]+$", "maxLength": 254}
+        },
+        "from": {"type": "string", "pattern": "^[^\\s<>@]+@[^\\s<>@]+\\.[^\\s<>@]+$", "maxLength": 254},
+        "hourlyCap": {"type": "integer", "minimum": 1, "maximum": 60}
+      }
     },
     "updatedAtMillis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}
   }

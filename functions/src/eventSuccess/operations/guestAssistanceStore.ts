@@ -1,4 +1,5 @@
-import {runAssistanceTransaction as transact} from "./transactionCallback";
+import {runAssistanceTransaction as transact} from
+  "../../platform/transactionCallback";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import type {EventAssistanceGuestViewCallableResponse as GuestView} from
@@ -25,8 +26,10 @@ import {
   requireDocumentId, Thread, threadIdentity, unavailable,
 } from "./guestRecords";
 import {
-  grantSecret, GuestLinkSigningKeys, guestSecretHash, matchesGuestSecret,
+  grantSecret, guestSecretHash, matchesGuestSecret,
 } from "./guestLinkTokens";
+import type {GuestLinkSigningKeys} from
+  "../../platform/guestLinkSigningKeys";
 
 interface ResolvedGuestView {
   grant: Grant;

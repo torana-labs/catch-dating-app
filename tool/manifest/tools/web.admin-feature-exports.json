@@ -1,0 +1,25 @@
+{
+  "id": "web:admin-feature-exports",
+  "category": "lint",
+  "path": "tool/web/check_admin_feature_exports.mjs",
+  "command": "node tool/web/check_admin_feature_exports.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Checks admin feature UI only exports route/workspace entry components; reusable panels/cards/lists must live in shared admin primitives or stay private.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "checks": [
+    "node --check tool/web/check_admin_feature_exports.mjs",
+    "node tool/web/check_admin_feature_exports.mjs --self-test",
+    "node tool/web/check_admin_feature_exports.mjs --check"
+  ],
+  "role": "gate",
+  "alsoEnforces": [
+    "WEB-UI-COMPONENT-001"
+  ],
+  "queueGate": "always"
+}

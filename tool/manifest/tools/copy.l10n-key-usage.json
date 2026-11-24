@@ -1,0 +1,34 @@
+{
+  "id": "copy:l10n-key-usage",
+  "category": "lint",
+  "path": "tool/copy/check_l10n_key_usage.mjs",
+  "impactPaths": [
+    "tool/copy/check_l10n_key_usage.test.mjs",
+    "tool/copy/fixtures/l10n_key_usage/**",
+    "packages/l10n/lib/app_en.arb",
+    "lib/**/*.dart",
+    "packages/platform/lib/**/*.dart",
+    "apps/*/lib/**/*.dart",
+    "tool/lib/flutter_source_roots.mjs"
+  ],
+  "command": "node tool/copy/check_l10n_key_usage.mjs --check",
+  "surface": "local-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "description": "Derives exact handwritten Flutter localization-key usage live and fails on missing catalog getters or any zero-use catalog key; complete JSON evidence is ephemeral.",
+  "checks": [
+    "node --check tool/copy/check_l10n_key_usage.mjs",
+    "node --test tool/copy/check_l10n_key_usage.test.mjs",
+    "node tool/copy/check_l10n_key_usage.mjs --check"
+  ],
+  "role": "gate",
+  "alsoEnforces": [
+    "APP-COPY-001"
+  ],
+  "queueGate": "always"
+}

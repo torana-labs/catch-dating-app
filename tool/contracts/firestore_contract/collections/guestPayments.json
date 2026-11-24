@@ -1,0 +1,28 @@
+{
+  "id": "guestPayments",
+  "path": "guestPayments/{paymentId}",
+  "rulesMatch": "/guestPayments/{paymentId}",
+  "dartModel": "lib/contexts/payments/domain/payment.dart",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps guest payment state server-only",
+    "lets a guest read only their own booking payments"
+  ],
+  "owner": "guest checkout server operations; purpose names the owning flow (publicEvent, form, offer, booking)",
+  "writerContext": "payments",
+  "read": "website, form and offer payments server only, through owner and manager callable projections; a guest reads their own in-app booking payments (purpose booking)",
+  "write": "server only",
+  "exportedFunctions": [
+    "managePublicEventCheckout",
+    "prepareOrganizerFormPayment",
+    "getOrganizerFormPayment",
+    "findOrganizerFormPayment",
+    "reconcileOrganizerFormPayments",
+    "createStripeCheckoutSession",
+    "onHostRosterInsightBookingPaymentChanged"
+  ],
+  "migrationNotes": [
+    "One ledger for every guest checkout since L6 (#1734); publicEventPayments, organizerFormPayments and organizerEventOfferPayments were copied forward and keep their documents under the legal hold, with no client access.",
+    "In-app Catch booking payments joined as purpose booking (L6b, 16 Nov 2026); payments was copied forward by the booking-payments migration and keeps its documents under the legal hold, with no client access."
+  ]
+}

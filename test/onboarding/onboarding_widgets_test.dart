@@ -10,10 +10,8 @@ import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid_keys.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_gender_interest_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_gender_interest_step_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_instagram_step.dart';
@@ -26,7 +24,9 @@ import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_profil
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_profile_prompts_step_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_running_prefs_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_running_prefs_step_state.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_controller.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_step.dart';
+import 'package:catch_dating_app/pages/start/onboarding_welcome_body.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
@@ -35,6 +35,7 @@ import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/routing/route_contract.dart' as app_router;
 import 'package:catch_platform/theme/activity_palette.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -1054,7 +1055,7 @@ File _welcomeStringsSource() {
     '${Platform.environment['HOME']}/Downloads/Catch Design System (2)/splash-welcome-handoff/strings.json',
   );
   if (handoff.existsSync()) return handoff;
-  return File('test/fixtures/splash_welcome_strings.json');
+  return repoFile('test/fixtures/splash_welcome_strings.json');
 }
 
 ActivityKind _welcomeActivityKind(String activity) => switch (activity) {

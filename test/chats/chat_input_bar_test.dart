@@ -1,11 +1,10 @@
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
+import 'package:catch_dating_app/pages/chat/widgets/chat_input.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets(

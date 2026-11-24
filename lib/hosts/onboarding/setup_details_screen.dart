@@ -52,6 +52,7 @@ class HostSetupDetailsScreen extends ConsumerWidget {
           onPickLogo: submit.isPending ? null : onPickLogo,
           onDescriptionChanged: setup.setDescription,
           onToggleFormat: setup.toggleFormat,
+          onSignupSourceChanged: setup.setSignupSource,
           createError: submit.hasError
               ? mutationErrorMessage(submit, l10n: l10n)
               : null,

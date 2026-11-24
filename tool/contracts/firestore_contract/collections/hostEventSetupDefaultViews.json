@@ -1,0 +1,22 @@
+{
+  "id": "hostEventSetupDefaultViews",
+  "path": "hostEventSetupDefaultViews/{organizerId}",
+  "rulesMatch": "/hostEventSetupDefaultViews/{organizerId}",
+  "typescriptInterface": "HostEventSetupDefaultViewDocument",
+  "dartModel": "lib/contexts/events/data/manager_event_setup_defaults_view.dart",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets active managers get their setup defaults view and nothing else"
+  ],
+  "owner": "Host event setup defaults evaluator: hostReadModels event setup default view triggers",
+  "writerContext": "host",
+  "read": "current managers of an active organizer get their organizer's document; a view not written yet reads as missing; nobody lists the collection",
+  "write": "server only; written by every evaluation that changes it and deleted with the organizer",
+  "exportedFunctions": [
+    "onHostEventSetupDefaultViewDefaultsChanged",
+    "dispatchOrganizers"
+  ],
+  "migrationNotes": [
+    "The view carries the basics, preferences and reviewed-defaults hashes the defaults update command and the first-save basics are fenced by; the client never recomputes them."
+  ]
+}

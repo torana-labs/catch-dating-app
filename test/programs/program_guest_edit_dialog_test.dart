@@ -3,12 +3,11 @@ import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart'
 import 'package:catch_dating_app/programs/presentation/program_guest_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../test_pump_helpers.dart';
 
 const _households = [
   ProgramHouseholdRow(
@@ -34,6 +33,28 @@ const _groups = [
     revision: 1,
   ),
 ];
+
+Widget _pageApp(_Repository repository) => ProviderScope(
+  // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
+  overrides: [programSetupRepositoryProvider.overrideWithValue(repository)],
+  child: MaterialApp(
+    theme: AppTheme.light,
+    home: const ProgramGuestsPageBody(
+      programId: 'program',
+      programTitle: 'Program',
+      functions: [],
+      hotels: [],
+      guestPage: ProgramGuestListPage(
+        programId: 'program',
+        guests: [],
+        households: [],
+        functionGuests: [],
+        groups: [],
+      ),
+      canManageGuests: true,
+    ),
+  ),
+);
 
 Widget _dialogApp(ValueChanged<ProgramGuestEditResult?> onResult) =>
     MaterialApp(
@@ -76,8 +97,20 @@ Future<void> _open(
 }
 
 class _Repository extends Fake implements ProgramSetupRepository {
+  _Repository({this.groups = const [], this.households = const []});
+
+  final List<ProgramGuestGroupRow> groups;
+  final List<ProgramHouseholdRow> households;
   ProgramGuestEditResult? saved;
   String? savedProgramId;
+
+  @override
+  Future<List<ProgramGuestGroupRow>> listGuestGroups(String programId) async =>
+      groups;
+
+  @override
+  Future<List<ProgramHouseholdRow>> listHouseholds(String programId) async =>
+      households;
 
   @override
   Future<ProgramMutationResult> upsertGuest({
@@ -168,31 +201,7 @@ void main() {
     'guest page maps the extracted editor result to the same upsert fields',
     (tester) async {
       final repository = _Repository();
-      await tester.pumpWidget(
-        ProviderScope(
-          // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
-          overrides: [
-            programSetupRepositoryProvider.overrideWithValue(repository),
-          ],
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: const ProgramGuestsPageBody(
-              programId: 'program',
-              programTitle: 'Program',
-              functions: [],
-              hotels: [],
-              guestPage: ProgramGuestListPage(
-                programId: 'program',
-                guests: [],
-                households: [],
-                functionGuests: [],
-                groups: [],
-              ),
-              canManageGuests: true,
-            ),
-          ),
-        ),
-      );
+      await tester.pumpWidget(_pageApp(repository));
       await pumpFeatureUi(tester);
       await tester.tap(find.text('Add guest'));
       await pumpFeatureUi(tester);
@@ -207,6 +216,39 @@ void main() {
         phoneE164: null,
         email: null,
       ));
+    },
+  );
+
+  testWidgets(
+    'guest editor picks empty groups and households the guest page never names',
+    (tester) async {
+      // The guest page carries no group or household because neither has a
+      // member on it; the full lists still offer both.
+      final repository = _Repository(groups: _groups, households: _households);
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(1200, 1400);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      await tester.pumpWidget(_pageApp(repository));
+      await pumpFeatureUi(tester);
+      expect(find.text('Zed'), findsOneWidget);
+      expect(find.text('Alpha'), findsOneWidget);
+      await tester.tap(find.text('Add guest'));
+      await pumpFeatureUi(tester);
+      expect(
+        find.descendant(
+          of: find.byType(ProgramGuestEditDialog),
+          matching: find.text('Family'),
+        ),
+        findsOneWidget,
+      );
+      await tester.enterText(_field('Guest name'), 'New Guest');
+      await tester.tap(find.text('Family'));
+      await tester.tap(find.text('Zed · side'));
+      await tester.tap(find.text('Save'));
+      await pumpFeatureUi(tester);
+      expect(repository.saved?.householdId, 'household');
+      expect(repository.saved?.groupIds, ['z-group']);
     },
   );
 }

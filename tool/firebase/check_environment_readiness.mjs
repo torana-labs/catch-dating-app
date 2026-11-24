@@ -497,9 +497,10 @@ function bindingRequirements(manifest) {
       requiredWhen: {anyDeployTarget: reader.consumers.map((name) => `functions:${name}`)}}))];
 }
 
-export function parseFirebaseFunctionTargets(indexSource) {
+/** Deploy targets from an entry source string or {sourceRoot}'s functions/src/index.ts. */
+export function parseFirebaseFunctionTargets(entry) {
   try {
-    return new Set(discoverFunctionExportNames(indexSource).map((name) => `functions:${name}`));
+    return new Set(discoverFunctionExportNames(entry).map((name) => `functions:${name}`));
   } catch (error) {
     throw new ReadinessUsageError(`Firebase Function exports require statically resolved explicit names. ${error.message}`);
   }
@@ -1330,11 +1331,7 @@ export function executeReadinessCli(argv, dependencies = {}) {
       readFile,
     });
     const declarations = discoverDefineSecretNames(sources);
-    const indexSource = dependencies.indexSource ?? readFile(
-      path.join(sourceRoot, "index.ts"),
-      "utf8",
-    );
-    functionTargets = parseFirebaseFunctionTargets(indexSource);
+    functionTargets = parseFirebaseFunctionTargets(dependencies.indexSource ?? {sourceRoot: repoRoot});
     // Unreadable source stops every mode: without it no secret has a consumer.
     let secretConsumers;
     try {

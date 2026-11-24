@@ -152,7 +152,7 @@ export const CityAlertsSent1280: Story = {
     const canvas = within(canvasElement);
     const bar = notifyBar(canvas);
     await userEvent.type(bar.getByRole("textbox", {name: /Your WhatsApp number/}), "98765 43210");
-    await userEvent.click(bar.getByRole("button", {name: "Notify me"}));
+    await userEvent.click(bar.getByRole("button", {name: "Get plans"}));
     await expect(await canvas.findByText("Done. We’ll message you on WhatsApp when new Mumbai plans go up.")).toBeInTheDocument();
   },
 };
@@ -166,10 +166,10 @@ export const CityAlertsRetry390: Story = {
     const bar = notifyBar(within(canvasElement));
     const phone = bar.getByRole("textbox", {name: /Your WhatsApp number/});
     await userEvent.type(phone, "98765");
-    await userEvent.click(bar.getByRole("button", {name: "Notify me"}));
+    await userEvent.click(bar.getByRole("button", {name: "Get plans"}));
     await expect(await bar.findByText("Check your WhatsApp number. Include the country code if it isn’t a local number.")).toBeInTheDocument();
     await userEvent.type(phone, "43210");
-    await userEvent.click(bar.getByRole("button", {name: "Notify me"}));
+    await userEvent.click(bar.getByRole("button", {name: "Get plans"}));
     await expect(await bar.findByRole("button", {name: "Try again"})).toBeInTheDocument();
   },
 };

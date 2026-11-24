@@ -1,0 +1,28 @@
+{
+  "id": "contactPermissionReceipts",
+  "path": "contactPermissionReceipts/{receiptId}",
+  "rulesMatch": "/contactPermissionReceipts/{receiptId}",
+  "typescriptInterface": "ContactPermissionReceiptDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "rulesTestNames": [
+    "lets a guest get and list only their own contact permissions"
+  ],
+  "owner": "messaging contact permission writer, called in the same transaction by every consent writer",
+  "writerContext": "messaging",
+  "read": "server only; no client and no organiser reads receipts",
+  "write": "server only and append-only: created by the consent writer that records the decision",
+  "exportedFunctions": [
+    "registerPublicEvent",
+    "followOrganizerByPhone",
+    "promoteFormCommunicationIntent",
+    "submitOrganizerFormResponse",
+    "getOrganizerFormPayment",
+    "withdrawParticipantMessagingPermission",
+    "onOrganizerMessagingWebhookEventCreated",
+    "requestAccountDeletion"
+  ],
+  "migrationNotes": [
+    "Issue #2460. The one receipt log for contact consent: it replaced catchCommunicationPermissionReceipts and organizerCommunicationPermissionReceipts and keeps their ids. Account deletion deletes a person's receipts; whether to keep them anonymised instead awaits counsel (OQ-C2)."
+  ]
+}

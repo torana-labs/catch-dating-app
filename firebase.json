@@ -1,16 +1,13 @@
 {
   "extensions": {
-    "bq-event-success-feedback": "firebase/firestore-bigquery-export@0.3.2",
     "bq-event-success-scorecards": "firebase/firestore-bigquery-export@0.3.2",
+    "bq-host-event-bookings": "firebase/firestore-bigquery-export@0.3.2",
     "bq-host-event-invite-links": "firebase/firestore-bigquery-export@0.3.2",
-    "bq-host-event-participations": "firebase/firestore-bigquery-export@0.3.2",
     "bq-host-events": "firebase/firestore-bigquery-export@0.3.2",
-    "bq-host-matches": "firebase/firestore-bigquery-export@0.3.2",
+    "bq-host-guest-payments": "firebase/firestore-bigquery-export@0.3.2",
     "bq-host-organizers": "firebase/firestore-bigquery-export@0.3.2",
-    "bq-host-payments": "firebase/firestore-bigquery-export@0.3.2",
     "bq-host-reviews": "firebase/firestore-bigquery-export@0.3.2",
     "bq-host-saved-events": "firebase/firestore-bigquery-export@0.3.2",
-    "bq-participant-metric-counters": "firebase/firestore-bigquery-export@0.3.2",
     "bq-participant-signal-facts": "firebase/firestore-bigquery-export@0.3.2"
   },
   "hosting": [
@@ -267,6 +264,10 @@
         {
           "source": "/host/billing",
           "destination": "/host/billing/index.html"
+        },
+        {
+          "source": "/start/walkthrough/manage",
+          "destination": "/start/walkthrough/manage/index.html"
         },
         {
           "source": "/account/**",

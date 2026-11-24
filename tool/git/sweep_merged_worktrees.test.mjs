@@ -16,6 +16,7 @@ test("classifyWorktree removes only clean, idle, merged worktrees", () => {
   assert.equal(classifyWorktree({...merged, dirty: true}).reason, "uncommitted-changes");
   assert.equal(classifyWorktree({...merged, inUse: true}).reason, "process-running-inside");
   assert.equal(classifyWorktree({...merged, openPullRequest: true}).reason, "open-pull-request");
+  assert.equal(classifyWorktree({...merged, unstartedClaim: true}).reason, "claimed-not-started");
   assert.equal(classifyWorktree({...merged, ancestorOfMain: false}).reason, "unmerged-commits");
   assert.equal(classifyWorktree({...merged, idleHours: 1}).reason, "recent-activity:in-origin-main");
   assert.equal(classifyWorktree({missing: true}).action, "prune");
@@ -114,6 +115,33 @@ test("sweepWorktrees reports, then removes only finished worktrees", () => {
   }
 });
 
+test("sweepWorktrees removes a worktree whose head is an earlier commit of a merged PR", () => {
+  const f = fixture();
+  try {
+    const asked = [];
+    const report = sweepWorktrees({
+      cwd: f.repo, apply: true, fetch: false,
+      now: () => new Date(Date.now() + 48 * 3600 * 1000),
+      github: () => ({
+        available: true,
+        mergedByHead: new Map(),
+        openBranches: new Set(["claude/open"]),
+        mergedContaining: (sha) => { asked.push(sha); return sha === f.squashedHead ? 9 : null; },
+      }),
+      processCwds: () => [],
+    });
+    const byName = Object.fromEntries(report.results.map((r) => [path.basename(r.path), r]));
+    assert.equal(byName.squashed.reason, "merged-pr-9");
+    assert.equal(byName.squashed.outcome, "removed");
+    assert.equal(byName.unmerged.reason, "unmerged-commits");
+    assert.ok(fs.existsSync(f.unmerged));
+    // Only clean worktrees the cheap checks left undecided cost a GitHub lookup.
+    assert.deepEqual(new Set(asked), new Set([sh(f.unmerged, "rev-parse", "HEAD"), f.squashedHead]));
+  } finally {
+    fs.rmSync(f.root, {recursive: true, force: true});
+  }
+});
+
 test("sweepWorktrees keeps a worktree a process is running in", () => {
   const f = fixture();
   try {
@@ -126,6 +154,32 @@ test("sweepWorktrees keeps a worktree a process is running in", () => {
     const merged = report.results.find((r) => r.path === f.merged);
     assert.equal(merged.reason, "process-running-inside");
     assert.ok(fs.existsSync(f.merged));
+  } finally {
+    fs.rmSync(f.root, {recursive: true, force: true});
+  }
+});
+
+test("sweepWorktrees keeps a claimed task worktree that has no commits yet", () => {
+  const f = fixture();
+  try {
+    const fresh = path.join(f.root, "fresh");
+    sh(f.repo, "worktree", "add", "-q", "-b", "codex/fresh", fresh, "origin/main");
+    const head = sh(fresh, "rev-parse", "HEAD");
+    const claims = path.join(f.repo, ".git", "catch-worktree-claims");
+    fs.mkdirSync(claims, {recursive: true});
+    fs.writeFileSync(path.join(claims, "fresh.json"), JSON.stringify({
+      taskId: "fresh", baseSha: head, branch: "codex/fresh", worktreePath: fresh, claimedPaths: ["a.txt"],
+    }));
+    const report = sweepWorktrees({
+      cwd: f.repo, apply: true, fetch: false, now: () => new Date(Date.now() + 48 * 3600 * 1000),
+      github: () => ({available: true, mergedByHead: new Map(), openBranches: new Set()}),
+      processCwds: () => [],
+    });
+    const row = report.results.find((r) => path.basename(r.path) === "fresh");
+    assert.equal(row.reason, "claimed-not-started");
+    assert.equal(row.outcome, undefined);
+    assert.ok(fs.existsSync(fresh), "the fresh task worktree stays");
+    assert.ok(!fs.existsSync(f.merged), "an unclaimed finished worktree still goes");
   } finally {
     fs.rmSync(f.root, {recursive: true, force: true});
   }

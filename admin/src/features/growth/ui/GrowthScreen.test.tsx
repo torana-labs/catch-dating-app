@@ -38,6 +38,32 @@ describe("Growth", () => {
     expect(screen.getByText("Google Ads is not connected")).toBeTruthy();
   });
 
+  it("adds Meta and Google into one ad spend, with each platform in the note", () => {
+    renderGrowth(controller("channels", {data: {...growth, adSpend: {...growth.adSpend,
+      metaMinor: 4_820_000, googleMinor: 1_260_000, googleConnected: true}}}));
+    expect(screen.getByText("₹60,800")).toBeTruthy();
+    expect(screen.getByText("Meta ₹48,200 · Google ₹12,600")).toBeTruthy();
+  });
+
+  it("counts Google alone when Meta has no spend, and says Not connected only when neither has", () => {
+    renderGrowth(controller("channels", {data: {...growth, adSpend: {...growth.adSpend,
+      metaMinor: null, metaConnected: false, googleMinor: 1_260_000, googleConnected: true}}}));
+    expect(screen.getByText("Meta not connected · Google ₹12,600")).toBeTruthy();
+    expect(screen.queryByText("Not connected")).toBeNull();
+    cleanup();
+    renderGrowth(controller("channels", {data: {...growth, adSpend: {...growth.adSpend,
+      metaMinor: null, metaConnected: false, googleMinor: null, googleConnected: false}}}));
+    expect(screen.getByText("Not connected")).toBeTruthy();
+  });
+
+  it("shows what hosts said in setup in its own table, beside the channels", () => {
+    renderGrowth(controller("channels"));
+    const table = screen.getByRole("table", {name: "Self-reported source"});
+    expect(table.textContent).toContain("Instagram or Facebook ad");
+    expect(table.textContent).toContain("Skipped or not asked");
+    expect(screen.getByRole("table", {name: "By channel"}).textContent).not.toContain("Google search");
+  });
+
   it("approves a nominator's owed credit from the decision bar", () => {
     const value = controller("nominators");
     renderGrowth(value);

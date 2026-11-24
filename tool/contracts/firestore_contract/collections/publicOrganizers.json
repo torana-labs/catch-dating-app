@@ -1,0 +1,11 @@
+{
+  "id": "publicOrganizers",
+  "path": "publicOrganizers/{organizerId}",
+  "rulesMatch": "/publicOrganizers/{organizerId}",
+  "typescriptInterface": "PublicOrganizerDocument",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "syncPublicOrganizer trigger",
+  "writerContext": "organizers",
+  "read": "public get; list only discoverable organizers",
+  "write": "server only"
+}

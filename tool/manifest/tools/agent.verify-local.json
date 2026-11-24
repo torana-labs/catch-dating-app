@@ -1,0 +1,20 @@
+{
+  "id": "agent:verify-local",
+  "category": "agent",
+  "path": "tool/harness/verify_local.mjs",
+  "command": "node tool/harness/verify_local.mjs",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "impactPaths": [
+    "tool/harness/lib/workflow_steps.mjs",
+    "tool/harness/workflow_steps.test.mjs",
+    ".github/workflows/ci.yml"
+  ],
+  "description": "Derives the locally runnable CI gates for a change from the workflow definitions themselves, so pre-push verification cannot drift from what CI actually runs.",
+  "checks": [
+    "node --check tool/harness/verify_local.mjs",
+    "node --check tool/harness/lib/workflow_steps.mjs",
+    "node --test tool/harness/workflow_steps.test.mjs"
+  ],
+  "role": "gate"
+}

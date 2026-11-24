@@ -1,18 +1,15 @@
-import * as admin from "firebase-admin";
-import {onDocumentWritten} from "firebase-functions/v2/firestore";
-import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import {reconcileFormPaymentView} from "./formPaymentViewStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 /**
- * A form fee payment's view follows its ledger document. Other checkouts in
- * the shared ledger (bookings, website and offer payments) have no view and
- * return without a read.
+ * A form fee payment: its ledger row view.
+ * Served by dispatchGuestPayments (issue #2451); it re-reads its sources,
+ * so a retry or a replay converges.
  */
-export const onHostFormPaymentViewPaymentChanged = onDocumentWritten({
-  retry: true, document: `${GUEST_PAYMENTS}/{paymentId}`,
-}, async (event) => {
-  const before = event.data?.before.get("purpose");
-  const after = event.data?.after.get("purpose");
-  if (before !== "form" && after !== "form") return;
-  await reconcileFormPaymentView(admin.firestore(), event.params.paymentId);
-});
+export const hostFormPaymentViewProjections = defineProjections(
+  "guestPayments", [{
+    id: "hostFormPaymentView", kind: "projection",
+    when: ({before, after}) => before?.purpose === "form" ||
+      after?.purpose === "form",
+    run: (change, ctx) => reconcileFormPaymentView(ctx.db, change.documentId),
+  }]);

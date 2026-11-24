@@ -36,6 +36,7 @@ const emptyMaps = () => ({
   hotelScoped: {} as ExpiryMap,
   functionAll: {} as ExpiryMap,
   functionScoped: {} as ExpiryMap,
+  programAll: {} as ExpiryMap,
   workPickup: {} as ExpiryMap,
   workHotel: {} as ExpiryMap,
   workFunction: {} as ExpiryMap,
@@ -226,6 +227,13 @@ function foldAssignment(maps: ReturnType<typeof emptyMaps>,
   for (const {all, scoped, ids} of dimensions) {
     if (ids.length === 0) raise(all, duty, expiry);
     for (const id of ids) raise(scoped, `${duty}__${id}`, expiry);
+  }
+  // One assignment covering every pickup point, hotel and function at once,
+  // as requireProgramGuestDirectoryAccess demands for the guest directory.
+  // The three maps above cannot say this: each can be raised by a different
+  // assignment.
+  if (dimensions.every(({ids}) => ids.length === 0)) {
+    raise(maps.programAll, duty, expiry);
   }
 }
 

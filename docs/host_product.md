@@ -693,7 +693,7 @@ concurrency problem.
 ### Attendee identities
 
 `eventAttendees/{attendeeId}` is the canonical Host-facing operational identity.
-`eventParticipations/{eventId_uid}` remains the Consumer booking/membership
+`eventBookings/{eventId_uid}` remains the Consumer booking/membership
 edge. The server projection links them through optional `linkedUid` without
 synthesizing accounts.
 
@@ -1217,7 +1217,7 @@ client writes.
 | `organizerContactEventEdges/{attendeeId}` | One resolved organizer-person-event fact edge keyed to its operational attendee | organizer/contact/event/attendee ids, expected/registered/cancelled/checked-in facts with timestamps/provenance and attribution ref/revision |
 | `organizerContactTraits/{contactId}` | Rebuildable query projection | attendance/advocacy/engagement counts, fixed segment ids/versions, source coverage, computed time/version |
 | `organizerContactMergeReceipts/{receiptId}` | Immutable merge/unmerge evidence | organizer, survivor/source ids, evidence, conflicts, actor, before revisions, operation, timestamp and reversal link |
-| `organizerCommunicationPreferences/{organizerId_uidOrContactId}` | Existing server-owned permission ledger, expanded without weakening current semantics | channel, purpose, status, consent text/version/source, actor or attendee evidence, granted/withdrawn time, endpoint, suppression reason, revision |
+| `users/{uid}/contactPermissions/{senderKey}` and `contactPermissionReceipts/{receiptId}` | The server-written contact consent record (issue #2460): one document per sender and person plus one append-only receipt log | per channel:purpose status, the exact number an opt-in covers, terms version, source, receipt id and decision time; `granted` lists the effective answers |
 | `organizerContactNotes/{noteId}` and `organizerContactTagVocabularies/{organizerId}` | **Implemented in source; deployment/runtime coverage remains separate:** restricted author-stamped Host notes and organizer-owned manual-tag vocabulary | organizer/contact ids, note body or tag references, actor, created/edited/deleted time, retention class; never safety or dating-private data |
 | `organizerCampaigns/{campaignId}` | One campaign definition and frozen report | organizer, message class, channel, segment/filter version, event/template/sender refs, variables, schedule/state/counts, actor/revision/idempotency key |
 | `organizerCampaignRecipients/{campaignId_contactId}` | Immutable recipient snapshot and delivery state | campaign/contact, eligibility/suppression decision, endpoint ref, rendered hash, provider message id, attempts, monotonic status times, reply/opt-out state |
@@ -1333,7 +1333,7 @@ delivery or replies. It must never use one undifferentiated “Message” action
 
 The source registries are
 `lib/contexts/messaging/domain/communication_route.dart` and
-`functions/src/communications/communicationRoutes.ts`. `adapterKey` selects the
+`functions/src/platform/delivery/communicationRoutes.ts`. `adapterKey` selects the
 provider implementation. A future LINE, WeChat, KakaoTalk, SMS, or regional
 adapter adds a new route or replaces an adapter behind the same exact contract;
 it does not inherit WhatsApp permission merely because the delivery mode is
@@ -1870,7 +1870,7 @@ hand:
 
 | Concern | Current owner seams | Expected implementation delta |
 | --- | --- | --- |
-| Host first run and routing | `lib/routing/go_router.dart`, `lib/hosts/events/presentation/host_events_screen.dart` | first-run intent route, resumable draft, private-event handoff |
+| Host first run and routing | `lib/routing/host_router.dart`, `lib/hosts/events/presentation/host_events_screen.dart` | first-run intent route, resumable draft, private-event handoff |
 | Public organizer creation | `contracts/callables/create_organizer_payload.schema.json`, `functions/src/organizers/createOrganizer.ts`, Host organizer create controller | retain for explicit public identity; add separate private-workspace operation/lifecycle |
 | Organizer authority | `contracts/firestore/organizers.schema.json`, `contracts/firestore/organizer_team_memberships.schema.json` | private lifecycle, fail-closed public capability, event-staff authority |
 | Event creation | `contracts/callables/create_event_payload.schema.json`, `contracts/firestore/events.schema.json`, `functions/src/events/mutateEvent.ts`, `lib/hosts/presentation/event_management/create/` | explicit title, provenance/capabilities, operations-only mutation branch with no public side effects |
@@ -2068,7 +2068,7 @@ Flutter:
 Migration:
 
 - project existing Consumer participations into attendees;
-- do not delete `eventParticipations`;
+- do not delete `eventBookings`;
 - preserve old Host report behavior until parity tests pass; and
 - instrument unmatched, ambiguous, merged, unmerged, and corrected identities.
 

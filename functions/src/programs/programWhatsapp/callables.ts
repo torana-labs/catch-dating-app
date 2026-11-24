@@ -23,7 +23,6 @@ import {
 import type {
   OrganizerProgramDocument,
   ProgramHouseholdDocument,
-  ProgramStaffGrantDocument,
 } from "../../shared/generated/firestoreAdminTypes";
 import type {ListProgramWhatsappThreadsCallablePayload} from
   "../../shared/generated/listProgramWhatsappThreadsCallablePayload";
@@ -33,8 +32,6 @@ import type {SendProgramWhatsappReplyCallablePayload} from
   "../../shared/generated/sendProgramWhatsappReplyCallablePayload";
 import type {ProgramWhatsappThreadsCallableResponse} from
   "../../shared/generated/programWhatsappThreadsCallableResponse";
-import type {ProgramWhatsappThreadCallableResponse} from
-  "../../shared/generated/programWhatsappThreadCallableResponse";
 import type {ProgramWhatsappReplyCallableResponse} from
   "../../shared/generated/programWhatsappReplyCallableResponse";
 import type {ProgramWhatsappThreadHandlingCallableResponse} from
@@ -47,8 +44,6 @@ import {validateSendProgramWhatsappReplyCallablePayload} from
   "../../shared/generated/validators/sendProgramWhatsappReplyInput";
 import {validateProgramWhatsappThreadsCallableResponse} from
   "../../shared/generated/validators/programWhatsappThreadsOutput";
-import {validateProgramWhatsappThreadCallableResponse} from
-  "../../shared/generated/validators/programWhatsappThreadOutput";
 import {validateProgramWhatsappReplyCallableResponse} from
   "../../shared/generated/validators/programWhatsappReplyOutput";
 import {validateProgramWhatsappThreadHandlingCallableResponse} from
@@ -68,30 +63,25 @@ import {
   resolveProgramSender,
   updateProgramAssistantSettingsHandler,
 } from "./assistantSettings";
-import {
-  listProgramWhatsappCannedRepliesHandler,
-  upsertProgramWhatsappCannedReplyHandler,
-} from "./cannedReplies";
+import {upsertProgramWhatsappCannedReplyHandler} from "./cannedReplies";
 import {setProgramWhatsappThreadHandlingHandler} from "./handling";
 import {
-  PROGRAM_WHATSAPP_MESSAGES,
   PROGRAM_WHATSAPP_THREADS,
   isProgramWhatsappWindowOpen,
-  maxProgramThreadMessages,
 } from "./ids";
 import {
   defaultProgramReplyDeps,
   sendProgramWhatsappText,
   type ProgramReplyDeps,
 } from "./replies";
-import {readThread, requireValidThread, type ProgramMessage,
-  type ProgramThread} from "./threads";
+import {readThread, requireValidThread, type ProgramThread} from
+  "./threads";
 import {programThreadSummary} from "./threadViews";
 
-// The planner inbox reads kept for older builds, the reply command and the
-// mark-read command. Current builds read the inbox from
-// programWhatsappThreadViews and a thread's programWhatsappMessages through
-// listeners (see threadViews.ts); the two reads stay deployed, retire-later.
+// The thread rows read (the programme message screen still calls it with
+// limit 1 for its sender header), the reply command and the mark-read
+// command. The planner inbox reads programWhatsappThreadViews and a thread's
+// programWhatsappMessages through listeners (see threadViews.ts).
 
 const THREAD_SCAN_LIMIT = 500;
 const DEFAULT_PAGE = 30;
@@ -198,88 +188,6 @@ export async function listProgramWhatsappThreadsHandler(
   }, "WhatsApp threads");
 }
 
-export async function getProgramWhatsappThreadHandler(
-  request: CallableRequest<unknown>,
-  deps: ProgramInboxDeps = defaultProgramInboxDeps,
-): Promise<ProgramWhatsappThreadCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<
-    GetProgramWhatsappThreadCallablePayload>(request,
-      validateGetProgramWhatsappThreadCallablePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getProgramWhatsappThread",
-    {maxRequests: 120, windowMs: 60 * 1000});
-  const access = await requireProgramAccess({db, programId: data.programId,
-    actorUid, now: deps.now()});
-  requireInboxAccess(access);
-  const threadRef = db.collection(PROGRAM_WHATSAPP_THREADS).doc(data.threadId);
-  const [threadSnap, messageSnap] = await Promise.all([
-    threadRef.get(),
-    db.collection(PROGRAM_WHATSAPP_MESSAGES)
-      .where("programId", "==", data.programId)
-      .where("threadId", "==", data.threadId)
-      .orderBy("createdAtMillis", "desc")
-      .limit(maxProgramThreadMessages + 1).get(),
-  ]);
-  let thread = readThread(threadSnap, data.programId);
-  if (!thread || thread.organizerId !== access.program.organizerId) {
-    throw new HttpsError("not-found", "WhatsApp thread not found.");
-  }
-  // Opening a thread marks it read; archived programmes stay read-only.
-  if (thread.unreadCount > 0 && access.program.status !== "archived") {
-    thread = await db.runTransaction(async (tx) => {
-      const live = readThread(await tx.get(threadRef), data.programId);
-      if (!live) throw new HttpsError("not-found", "WhatsApp thread gone.");
-      if (live.unreadCount === 0) return live;
-      const next = {...live, unreadCount: 0,
-        updatedAtMillis: deps.now().toMillis(), revision: live.revision + 1};
-      tx.set(threadRef, requireValidThread(next));
-      return next;
-    });
-  }
-  const messages = messageSnap.docs.map((doc) => doc.data() as ProgramMessage)
-    .filter((message) => message.organizerId === access.program.organizerId);
-  const shown = messages.slice(0, maxProgramThreadMessages).reverse();
-  const authorUids = [...new Set(shown.map((m) => m.authorUid)
-    .filter((uid): uid is string => !!uid))];
-  const grants = await Promise.all(authorUids.map((uid) =>
-    db.collection("programStaffGrants").doc(`${data.programId}__${uid}`)
-      .get()));
-  const names = new Map(grants.flatMap((snap) => {
-    const grant = snap.data() as ProgramStaffGrantDocument | undefined;
-    return grant?.programId === data.programId && grant.displayName ?
-      [[grant.uid, grant.displayName] as const] : [];
-  }));
-  const households = await readHouseholds(db, data.programId,
-    [thread.householdId]);
-  const household = thread.householdId ?
-    households.get(thread.householdId) : undefined;
-  return requireValid(validateProgramWhatsappThreadCallableResponse, {
-    programId: data.programId,
-    thread: summary(thread, access.program, household,
-      deps.now().toMillis()),
-    household: household && thread.householdId ? {
-      householdId: thread.householdId,
-      label: household.label,
-      primaryContactName: household.primaryContactName ?? null,
-      guestCount: household.memberGuestIds?.length ?? 0,
-      rsvpStatus: null,
-    } : null,
-    messages: shown.map((message) => ({
-      messageId: message.messageId,
-      direction: message.direction,
-      kind: message.kind,
-      text: message.text,
-      author: message.author,
-      authorName: message.authorUid ? names.get(message.authorUid) ?? null :
-        null,
-      status: message.status,
-      createdAtMillis: message.createdAtMillis,
-    })),
-    messagesTruncated: messages.length > maxProgramThreadMessages,
-  }, "WhatsApp thread");
-}
-
 /**
  * Marks one thread read: the write half of opening a thread, now that the
  * thread and its messages are read through listeners. Managers and
@@ -354,10 +262,6 @@ export const listProgramWhatsappThreads = onCall(
   appCheckCallableOptionsWithLimits(callableLimits),
   (request) => listProgramWhatsappThreadsHandler(request));
 
-export const getProgramWhatsappThread = onCall(
-  appCheckCallableOptionsWithLimits(callableLimits),
-  (request) => getProgramWhatsappThreadHandler(request));
-
 export const markProgramWhatsappThreadRead = onCall(
   appCheckCallableOptionsWithLimits(callableLimits),
   (request) => markProgramWhatsappThreadReadHandler(request));
@@ -375,10 +279,6 @@ export const sendProgramWhatsappReply = onCall(
 export const setProgramWhatsappThreadHandling = onCall(
   appCheckCallableOptionsWithLimits(callableLimits),
   (request) => setProgramWhatsappThreadHandlingHandler(request));
-
-export const listProgramWhatsappCannedReplies = onCall(
-  appCheckCallableOptionsWithLimits(callableLimits),
-  (request) => listProgramWhatsappCannedRepliesHandler(request));
 
 export const upsertProgramWhatsappCannedReply = onCall(
   appCheckCallableOptionsWithLimits(callableLimits),

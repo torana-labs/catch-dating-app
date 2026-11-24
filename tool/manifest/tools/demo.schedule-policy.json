@@ -1,0 +1,12 @@
+{
+  "id": "demo:schedule-policy",
+  "category": "demo",
+  "path": "tool/demo/demo_schedule_policy.mjs",
+  "command": "node --check tool/demo/demo_schedule_policy.mjs",
+  "surface": "remote-read",
+  "status": "internal",
+  "description": "Shared demo schedule-lock and event timing policy helpers.",
+  "checks": [
+    "node --check tool/demo/demo_schedule_policy.mjs"
+  ]
+}

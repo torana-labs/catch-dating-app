@@ -1,0 +1,29 @@
+{
+  "id": "web:admin-feature-ui-size",
+  "category": "lint",
+  "path": "tool/web/check_admin_feature_ui_size.mjs",
+  "command": "node tool/web/check_admin_feature_ui_size.mjs --check",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Keeps admin feature route/workspace entries and private panel modules below reviewed line ceilings after the large-screen decomposition pass.",
+  "checks": [
+    "node --check tool/web/check_admin_feature_ui_size.mjs",
+    "node tool/web/check_admin_feature_ui_size.mjs --self-test",
+    "node tool/web/check_admin_feature_ui_size.mjs --check"
+  ],
+  "role": "ratchet",
+  "rules": [
+    {
+      "id": "WEB-FEATURE-SIZE-001",
+      "title": "Admin feature UI remains decomposed into reviewable modules",
+      "appliesTo": [
+        "admin/src/features/**/*.tsx",
+        "admin/feature-ui-size-budget.json",
+        "tool/web/check_admin_feature_ui_size.mjs",
+        "admin/package.json"
+      ],
+      "instruction": "Keep route/workspace entries below 900 lines and feature-private panel modules below 1200 lines. Split by cohesive workflow before raising a ceiling; do not bypass the admin feature-export boundary with reusable-looking feature exports."
+    }
+  ],
+  "queueGate": "always"
+}

@@ -1,0 +1,39 @@
+{
+  "id": "contracts:schema-fixtures",
+  "category": "contracts",
+  "path": "tool/contracts/check_schema_fixtures.mjs",
+  "command": "node tool/contracts/check_schema_fixtures.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates every contract fixture against its explicitly mapped generated JSON Schema.",
+  "checks": [
+    "node --check tool/contracts/check_schema_fixtures.mjs",
+    "node --test tool/contracts/check_schema_fixtures.test.mjs",
+    "node tool/contracts/check_schema_fixtures.mjs"
+  ],
+  "impactPaths": [
+    "contracts/**/*.json",
+    "tool/contracts/generate_schema_contracts.mjs"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "SCHEMA-FIXTURE-001",
+      "title": "Contract fixtures stay schema-backed",
+      "appliesTo": [
+        "contracts/fixtures/**/*.json",
+        "tool/contracts/check_schema_fixtures.mjs",
+        "tool/contracts/generate_schema_contracts.mjs"
+      ],
+      "instruction": "Every JSON fixture under contracts/fixtures/valid or contracts/fixtures/invalid must be declared in tool/contracts/check_schema_fixtures.mjs and must validate with the expected pass/fail result against its generated JSON Schema."
+    }
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "queueGate": "always"
+}

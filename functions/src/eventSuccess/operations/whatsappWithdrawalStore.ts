@@ -14,7 +14,7 @@ import {Permission, parseWhatsappPermission, WHATSAPP_PERMISSIONS} from
   "./whatsappPermissionRecords";
 import {parseWhatsappConsentReceipt, WHATSAPP_CONSENT_RECEIPTS} from
   "./whatsappConsent";
-import {runAssistanceTransaction} from "./transactionCallback";
+import {runAssistanceTransaction} from "../../platform/transactionCallback";
 import {
   WithdrawalGrant, parseWhatsappWithdrawalGrant, WHATSAPP_WITHDRAWAL_GRANTS,
   whatsappWithdrawalMatchesPermission,

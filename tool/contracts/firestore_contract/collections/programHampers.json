@@ -1,0 +1,15 @@
+{
+  "id": "programHampers",
+  "path": "programHampers/{programHamperId}",
+  "rulesMatch": "/programHampers/{programHamperId}",
+  "typescriptInterface": "ProgramHamperDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "upsertProgramHamper callable",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "One welcome hamper per hotel room; the photo lives in private Storage under programs/{programId}/hampers/.",
+    "Deleted by the archive retention sweep."
+  ]
+}

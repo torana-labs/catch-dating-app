@@ -24,7 +24,7 @@ import {
   eventParticipationId,
   eventWaitlistOfferId,
   eventParticipationPatch,
-  eventParticipationsByStatusInTransaction,
+  eventBookingsByStatusInTransaction,
 } from "../shared/relationshipDocuments";
 import {checkRateLimit} from "../shared/rateLimit";
 import {
@@ -35,7 +35,7 @@ import {normalizeEventIdPayload} from "./eventPayloadNormalization";
 import {requireCatchBookingAuthority} from "./eventOrigin";
 import {requirePublicConfiguredEvent, requireEventTimeRange} from
   "./configuredEvent";
-import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
+import {requireEventSeatLedger} from "./seatAuthority/eventSeatLedgers";
 import {loadVerifiedRosterPhone, participationAfterPatch,
   readCatchBookingRoster, writeCatchBookingRoster} from "./catchBookingRoster";
 import {
@@ -55,6 +55,7 @@ import {
   resolveInviteAttribution,
   InviteAttribution,
 } from "./inviteLinks";
+import {updateEventBookingCounters} from "../domain/events/eventDocumentWrites";
 
 interface WaitlistDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -102,7 +103,7 @@ export async function joinEventWaitlistHandler(
 
   const eventRef = db.collection("events").doc(eventId);
   const participationRef = db
-    .collection("eventParticipations")
+    .collection("eventBookings")
     .doc(eventParticipationId(eventId, userId));
 
   await db.runTransaction(async (tx) => {
@@ -117,7 +118,7 @@ export async function joinEventWaitlistHandler(
         tx.get(eventRef),
         tx.get(db.collection("users").doc(userId)),
         tx.get(participationRef),
-        eventParticipationsByStatusInTransaction(tx, db, eventId, [
+        eventBookingsByStatusInTransaction(tx, db, eventId, [
           "signedUp",
           "attended",
         ]),
@@ -131,7 +132,7 @@ export async function joinEventWaitlistHandler(
     }
     await assertAccountMayBook(tx, db, userId,
       eventSnap.data()?.organizerId ?? null, Date.now());
-    const seatMode = await readSeatMigrationWriterFence({db, tx, eventId});
+    await requireEventSeatLedger({db, tx, eventId});
 
     const event = eventSnap.data() as EventDocument;
     const user = userSnap.data() as UserProfileDocument;
@@ -209,7 +210,7 @@ export async function joinEventWaitlistHandler(
       endTimeMillis: configuredEvent.endTime.toMillis(),
     });
 
-    tx.update(eventRef, {
+    updateEventBookingCounters(tx, eventRef, {
       waitlistedCount: admin.firestore.FieldValue.increment(1),
       waitlistedCohortCounts: incrementCount(
         event.waitlistedCohortCounts ?? {},
@@ -255,7 +256,7 @@ export async function joinEventWaitlistHandler(
     writeCatchBookingRoster({db, tx, slot: rosterSlot,
       booking: participationAfterPatch(participationAfterPatch(
         participationSnap.data(), waitlisting), requestState),
-      now: admin.firestore.Timestamp.now(), seatReady: seatMode === "ready"});
+      now: admin.firestore.Timestamp.now()});
   });
 
   return {waitlisted: true};
@@ -297,7 +298,7 @@ export async function leaveEventWaitlistHandler(
 
   const eventRef = db.collection("events").doc(eventId);
   const participationRef = db
-    .collection("eventParticipations")
+    .collection("eventBookings")
     .doc(eventParticipationId(eventId, userId));
   const offerRef = db
     .collection("eventWaitlistOffers")
@@ -312,7 +313,7 @@ export async function leaveEventWaitlistHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
-    const seatMode = await readSeatMigrationWriterFence({db, tx, eventId});
+    await requireEventSeatLedger({db, tx, eventId});
 
     const event = eventSnap.data() as EventDocument;
     const existingParticipation = participationSnap.exists ?
@@ -332,7 +333,7 @@ export async function leaveEventWaitlistHandler(
       event.waitlistedCount ?? 1;
     const rosterSlot = await readCatchBookingRoster({db, tx, eventId,
       uid: userId, verifiedPhone: () => loadVerifiedRosterPhone(userId)});
-    tx.update(eventRef, {
+    updateEventBookingCounters(tx, eventRef, {
       waitlistedCount: Math.max(0, currentWaitlistedCount - 1),
       ...(cohortAtSignup ?
         {
@@ -359,7 +360,7 @@ export async function leaveEventWaitlistHandler(
     tx.set(participationRef, leaving, {merge: true});
     writeCatchBookingRoster({db, tx, slot: rosterSlot,
       booking: participationAfterPatch(participationSnap.data(), leaving),
-      now: admin.firestore.Timestamp.now(), seatReady: seatMode === "ready"});
+      now: admin.firestore.Timestamp.now()});
     const offerStatus = offerSnap.data()?.status;
     if (offerStatus === "active" || offerStatus === "accepted") {
       tx.set(offerRef, {

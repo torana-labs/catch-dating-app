@@ -11,7 +11,7 @@ import {
   OperationWorkItemRepository,
 } from "../operations/repositories";
 import {canonicalMarkets} from "../locations/marketConfig";
-import {requireAdminRole} from "./adminAuth";
+import {requireAdminRole} from "../platform/adminAuth";
 
 const eventIntakeRoles = ["admin", "adminOwner", "support"] as const;
 const supplyIntakeWorkflowId = "supply-intake";

@@ -475,6 +475,7 @@ export function retireTask({repository, options, runner = runGit}) {
       block("main_not_current", "Fetch origin/main and repeat exact accepted-source verification; remote failure is not merge evidence.");
     }
     let equivalence = null;
+    let mainDeltaCommits = null;
     let uniqueCommits = null;
     let recoveryRef = null;
     if (!blockers.has("main_not_current") && inspection.headSha === headSha) {
@@ -498,8 +499,17 @@ export function retireTask({repository, options, runner = runGit}) {
           const equivalent = runner({cwd: repository.primaryRoot,
             args: ["diff", "--quiet", "--no-renames", headSha, acceptedSha, "--",
               ...taskPaths.map((entry) => `:(literal)${entry}`)]});
-          if (equivalent.status === 0) equivalence = "exact_task_paths";
-          else block("accepted_source_not_equivalent", "Have integration review every differing task path; preserve unique work and do not force retirement.");
+          if (equivalent.status === 0) {
+            equivalence = "exact_task_paths";
+          } else {
+            const replay = replayOnAcceptedParent({repository, runner, headSha, acceptedSha, taskPaths});
+            if (replay != null) {
+              equivalence = "task_paths_plus_main";
+              mainDeltaCommits = replay.mainDeltaCommits;
+            } else {
+              block("accepted_source_not_equivalent", "Have integration review every differing task path; preserve unique work and do not force retirement.");
+            }
+          }
         }
       }
       const unique = runner({cwd: repository.primaryRoot,
@@ -542,7 +552,7 @@ export function retireTask({repository, options, runner = runGit}) {
     if (!hasClearance) {
       block("manual_clearance_required", "The task owner must provide --by and --clearance evidence for CI/release acceptance, current owners/cross-clone claims, other users/runtime consumers, recovery, and deletion authority. Preserve previously denied targets.");
     }
-    const evidence = {branch: claim.branch, equivalence, uniqueCommits, ignoredPaths,
+    const evidence = {branch: claim.branch, equivalence, mainDeltaCommits, uniqueCommits, ignoredPaths,
       retainedLocalRef: `refs/heads/${claim.branch}`, retainedRemoteRef: uniqueCommits > 0 ? recoveryRef : "refs/heads/main",
       retainedStashes: parseNulPaths(stashes.stdout.replaceAll("\n", "\0"))};
     if (blockers.size > 0) return result({...evidence, disposition: "retained"});
@@ -1064,6 +1074,38 @@ function dirtyPathsAt(worktreePath, runner) {
     for (const value of parseNulPaths(gitText(worktreePath, args, runner))) changed.add(value);
   }
   return [...changed].sort();
+}
+
+/**
+ * A squash that landed after other work reached main carries that work too.
+ * Replay the task head onto the accepted commit's first parent (main just
+ * before the squash) with a clean three-way merge. When that replay matches
+ * the accepted commit on every task path, each line that differs from the task
+ * head came from commits on the parent's side: ancestors of the accepted
+ * commit that are not in the task branch. Any conflict, a missing parent, or
+ * any task path that differs from the replay returns null, and the caller
+ * keeps the worktree. Returns the parent-side commits that touched task paths.
+ */
+function replayOnAcceptedParent({repository, runner, headSha, acceptedSha, taskPaths}) {
+  const cwd = repository.primaryRoot;
+  const parent = runner({cwd, args: ["rev-parse", "--verify", `${acceptedSha}^1^{commit}`]});
+  const parentSha = parent.stdout.trim();
+  if (parent.status !== 0 || !SHA_40.test(parentSha)) return null;
+  const merged = runner({cwd, args: ["merge-tree", "--write-tree", "--no-messages", parentSha, headSha]});
+  const tree = merged.stdout.split("\n")[0].trim();
+  if (merged.status !== 0 || !SHA_40.test(tree)) return null;
+  const literal = taskPaths.map((entry) => `:(literal)${entry}`);
+  const same = runner({cwd, args: ["diff", "--quiet", "--no-renames", tree, acceptedSha, "--", ...literal]});
+  if (same.status !== 0) return null;
+  const base = runner({cwd, args: ["merge-base", headSha, parentSha]});
+  const baseSha = base.stdout.trim();
+  if (base.status !== 0 || !SHA_40.test(baseSha)) return null;
+  const commits = runner({cwd, args: ["rev-list", "--no-merges", `${baseSha}..${parentSha}`, "--", ...literal]});
+  if (commits.status !== 0) return null;
+  const mainDeltaCommits = commits.stdout.split("\n").map((line) => line.trim()).filter(Boolean);
+  // No main-side change to a task path means the replay is the task head, so
+  // a difference from it cannot be explained by main.
+  return mainDeltaCommits.length > 0 ? {mainDeltaCommits} : null;
 }
 
 function parseNulPaths(source) {

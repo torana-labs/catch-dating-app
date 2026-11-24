@@ -1,0 +1,39 @@
+{
+  "id": "eventBroadcasts",
+  "path": "eventBroadcasts/{broadcastId}",
+  "rulesMatch": "/eventBroadcasts/{broadcastId}",
+  "typescriptInterface": "EventBroadcastDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "sendEventBroadcast callable and account-deletion cleanup",
+  "writerContext": "events",
+  "read": "server/admin only; clients receive only the sanitized callable response",
+  "write": "server only",
+  "exportedFunctions": [
+    "sendEventBroadcast",
+    "requestAccountDeletion"
+  ],
+  "operations": [
+    {
+      "id": "host_send_event_broadcast",
+      "type": "callable",
+      "owner": "authenticated current host for the event",
+      "function": "sendEventBroadcast",
+      "payloadSchemaRef": "contracts/callables/send_event_broadcast_payload.schema.json",
+      "rulesTestNames": [
+        "keeps event broadcast receipts and organizer summaries server-only"
+      ]
+    },
+    {
+      "id": "account_deletion_cleanup",
+      "type": "callable",
+      "owner": "authenticated account owner",
+      "function": "requestAccountDeletion"
+    }
+  ],
+  "migrationNotes": [
+    "The receipt freezes the server-resolved audience and per-delivery evidence; direct client reads and writes are denied.",
+    "Requires a Firestore TTL policy on expiresAt.",
+    "Account deletion deletes authored receipts and removes recipient identifiers and delivery evidence."
+  ]
+}

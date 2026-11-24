@@ -1,0 +1,26 @@
+{
+  "id": "hostContactMergeCandidateViews",
+  "path": "hostContactMergeCandidateViews/{candidateId}",
+  "rulesMatch": "/hostContactMergeCandidateViews/{candidateId}",
+  "dartModel": null,
+  "typescriptInterface": "HostContactMergeCandidateViewDocument",
+  "rulesTestFile": "functions/test/rules/host_crm_views.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers list their organizer's duplicate candidates and nothing else"
+  ],
+  "owner": "Host read model projector: hostReadModels CRM view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get a pair by id or list their organizer's pairs, newest evidence first, as listOrganizerContactMergeCandidates admitted them (requireOrganizerManager); a view not written yet reads as missing",
+  "write": "server only; written from organizerContactIdentityClaims, organizerContactIdentityLinks, organizerContacts, organizerContactEventEdges and organizerContactMergeReviewDecisions",
+  "exportedFunctions": [
+    "onHostMergeCandidateViewClaimChanged",
+    "onHostMergeCandidateViewLinkChanged",
+    "onHostMergeCandidateViewContactChanged",
+    "onHostMergeCandidateViewEdgeChanged",
+    "onHostMergeCandidateViewDecisionChanged"
+  ],
+  "migrationNotes": [
+    "Replaces listOrganizerContactMergeCandidates for the Host app (#2306): each pair exactly as the callable returned it, with reviewedByUid instead of the reader-specific canReopen. Merges and decisions stay on mergeOrganizerContacts and reviewOrganizerContactMergeCandidate, fenced by the contact and decision revisions on the row. The host-crm-views copy-forward migration creates views for pairs that predate the triggers.",
+    "Holds the two contacts' names, phone numbers and emails, which managers already read on hostContactSummaries; never identity hashes, linked uids or identity evidence."
+  ]
+}

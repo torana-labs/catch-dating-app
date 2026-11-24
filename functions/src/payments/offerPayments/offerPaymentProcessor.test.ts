@@ -4,8 +4,7 @@ import test from "node:test";
 import {setup, uid, phone, now} from "./offerPaymentTestFixture";
 import {eventId, offerId} from
   "../../organizerFormAdmission/admissionTestFixture";
-import {CHECKOUT_HOLD_MILLIS} from
-  "../../events/seatAuthority/seatAuthority";
+import {CHECKOUT_HOLD_MILLIS} from "../../domain/payments/checkoutHold";
 import {OfferPaymentProcessor, type OfferPaymentProcessorDeps} from
   "./offerPaymentProcessor";
 import type {FormProviderPayment, FormPaymentOrder} from

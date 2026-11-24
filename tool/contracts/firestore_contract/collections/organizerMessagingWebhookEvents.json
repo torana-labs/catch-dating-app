@@ -1,0 +1,11 @@
+{
+  "id": "organizerMessagingWebhookEvents",
+  "path": "organizerMessagingWebhookEvents/{eventId}",
+  "rulesMatch": "/organizerMessagingWebhookEvents/{eventId}",
+  "typescriptInterface": "OrganizerMessagingWebhookEventDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "WhatsApp webhook ingress and receipt processor",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

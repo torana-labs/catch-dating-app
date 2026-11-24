@@ -10,7 +10,7 @@ const eventIdPattern = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/;
 export const commitmentCollections = [
   "eventAttendees",
   "eventAttendeeImports",
-  "eventParticipations",
+  "eventBookings",
   "eventWaitlistOffers",
   "organizerEventOffers",
   GUEST_PAYMENTS,

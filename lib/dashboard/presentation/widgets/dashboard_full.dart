@@ -18,7 +18,7 @@ import 'package:catch_dating_app/event_success/event_success.dart'
     show showEventVenueSessionScanner;
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/events/shared/event_check_in_celebration_screen.dart';
-import 'package:catch_dating_app/reviews/shared/write_review_sheet.dart';
+import 'package:catch_dating_app/pages/reviews/write_review_sheet.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/device/external_links.dart';

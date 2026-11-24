@@ -1,0 +1,27 @@
+{
+  "id": "eventChatDirectoryEntries",
+  "path": "eventChatDirectoryEntries/{entryId}",
+  "rulesMatch": "/eventChatDirectoryEntries/{entryId}",
+  "typescriptInterface": "EventChatDirectoryEntryDocument",
+  "dartModel": "lib/contexts/messaging/data/event_chat_directory_repository.dart",
+  "rulesTestFile": "functions/test/rules/chat_and_match_writes.rules.test.cjs",
+  "rulesTestNames": [
+    "lets a person list only their own event chat directory rows"
+  ],
+  "owner": "event chat directory triggers",
+  "writerContext": "messaging",
+  "read": "a signed-in, non-deleted person lists or gets only rows whose uid is theirs",
+  "write": "server only; triggers on eventChatMemberships, eventBookings, eventAttendees, eventChatRooms, events and users rebuild a row from readEventChatAccess and delete it when access ends",
+  "exportedFunctions": [
+    "onEventChatDirectoryMembershipWritten",
+    "onEventChatDirectoryParticipationWritten",
+    "dispatchEventAttendees",
+    "onEventChatDirectoryRoomWritten",
+    "dispatchEvents",
+    "onEventChatDirectoryUserWritten",
+    "requestAccountDeletion"
+  ],
+  "migrationNotes": [
+    "Replaced the listEventChats callable for the Consumer chat list (#1337 wave 2), now retired. Backfilled by the event-chat-directory migration."
+  ]
+}
