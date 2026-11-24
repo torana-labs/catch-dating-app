@@ -433,12 +433,11 @@ async function queueParticipantPrivateStateCleanup(
 
 /**
  * Erases the account's derived event and dating data (#2444). Its own signal
- * facts, metric counters, event feedback, compatibility answers, conversation
- * graphs and runtime identities are deleted. Other people's records lose the
- * account: their signal facts naming it as peer are deleted too (the fact id
- * carries the peer's uid), while their running counters keep the anonymous
- * total, and their conversation graphs drop it from selectedUids. Scorecard
- * triggers recompute the host aggregates from what remains.
+ * facts, event feedback, compatibility answers, conversation graphs and
+ * runtime identities are deleted. Other people's records lose the account:
+ * their signal facts naming it as peer are deleted too (the fact id carries
+ * the peer's uid), and their conversation graphs drop it from selectedUids.
+ * Scorecard triggers recompute the host aggregates from what remains.
  */
 async function queueEventSuccessCleanup(
   db: FirebaseFirestore.Firestore,
@@ -475,7 +474,6 @@ async function queueEventSuccessCleanup(
         selectedUids.filter((selected: unknown) => selected !== uid) : [],
     });
   });
-  writer.delete(db.collection("participantMetricCounters").doc(uid));
 }
 
 /**

@@ -10,7 +10,6 @@ import {
   buildSwipeSignalFacts,
 } from "./signalBuilders";
 import {
-  participantCounterPatch,
   participantSignalFactData,
   participantSignalFactId,
 } from "./participantSignals";
@@ -55,28 +54,6 @@ test(
     });
   }
 );
-
-test("participantCounterPatch increments only the emitted signal type", () => {
-  const patch = participantCounterPatch(
-    {
-      id: "fact-1",
-      uid: "user-1",
-      type: "match_created",
-      source: "match",
-      direction: "received",
-      value: 2,
-    },
-    "SERVER_TIMESTAMP" as never,
-    (value) => ({increment: value} as never)
-  );
-
-  assert.deepEqual(patch, {
-    uid: "user-1",
-    updatedAt: "SERVER_TIMESTAMP",
-    counters: {match_created: {increment: 2}},
-    lastSeenByType: {match_created: "SERVER_TIMESTAMP"},
-  });
-});
 
 test("buildSwipeSignalFacts emits demand and private-interest facts", () => {
   const facts = buildSwipeSignalFacts(

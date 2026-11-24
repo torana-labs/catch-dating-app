@@ -1219,23 +1219,6 @@ test("deletion erases the account's signal facts as uid and as peerUid (#2444)",
       write.path.startsWith("participantSignalFacts/")));
   });
 
-test("deletion removes the account's own metric counters only (#2444)",
-  async () => {
-    const harness = await deleteRunnerOne({
-      "participantMetricCounters/runner-1": {uid: "runner-1",
-        counters: {outgoing_like: 1}},
-      "participantMetricCounters/runner-2": {uid: "runner-2",
-        counters: {incoming_like: 1}},
-    });
-    assert.ok(harness.deletedPublicDocs.includes(
-      "participantMetricCounters/runner-1"));
-    // The peer keeps its anonymous running total.
-    assert.ok(!harness.deletedPublicDocs.includes(
-      "participantMetricCounters/runner-2"));
-    assert.ok(!harness.updateWrites.some((write) =>
-      write.path === "participantMetricCounters/runner-2"));
-  });
-
 test("deletion erases the account's event feedback (#2444)", async () => {
   const harness = await deleteRunnerOne({
     "eventSuccessFeedback/event1_runner-1": {eventId: "event1",
