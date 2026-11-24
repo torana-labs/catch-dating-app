@@ -119,6 +119,8 @@ export async function syncUserProfileProjectionsHandler(
   const db = deps.firestore();
   const userRef = db.collection("users").doc(userId);
   const publicProfileRef = db.collection("publicProfiles").doc(userId);
+  // The server-only full profile the matching feeds read (#2493, FIX-8).
+  const guestProfileRef = db.collection("guestProfiles").doc(userId);
   const authoredReviews = db.collection("reviews")
     .where("reviewerUserId", "==", userId);
 
@@ -129,16 +131,19 @@ export async function syncUserProfileProjectionsHandler(
     const reason = hiddenReason(user);
     if (reason || !user) {
       tx.delete(publicProfileRef);
+      tx.delete(guestProfileRef);
       return reason ?? "user deleted";
     }
     const publicProfile = publicProfileFromUserProfileDoc(user);
     // Block underage users from appearing in any swipe queue.
     if (publicProfile.age < 18) {
       tx.delete(publicProfileRef);
+      tx.delete(guestProfileRef);
       return "underage";
     }
     const reviews = await tx.get(authoredReviews);
     tx.set(publicProfileRef, publicProfile);
+    tx.set(guestProfileRef, publicProfile);
     for (const review of reviews.docs) {
       tx.set(review.ref, {reviewerName: publicProfile.name}, {merge: true});
     }

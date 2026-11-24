@@ -257,6 +257,9 @@ test("syncUserProfileProjectionsHandler syncs public profile and reviews only",
       firestore.get("publicProfiles/host-1")?.name,
       "Asha Updated"
     );
+    // The server-only full profile the feeds read is written beside it.
+    assert.deepEqual(firestore.get("guestProfiles/host-1"),
+      firestore.get("publicProfiles/host-1"));
     assert.equal(
       firestore.get("reviews/event-1~host-1")?.reviewerName,
       "Asha Updated"
@@ -417,6 +420,7 @@ test("syncUserProfileProjectionsHandler deletes public profile on user delete",
   async () => {
     const firestore = new FakeFirestore({
       "publicProfiles/host-1": {name: "Asha"},
+      "guestProfiles/host-1": {name: "Asha"},
     });
 
     assert.equal(await syncUserProfileProjectionsHandler(
@@ -426,6 +430,7 @@ test("syncUserProfileProjectionsHandler deletes public profile on user delete",
     ), "deleted");
 
     assert.equal(firestore.get("publicProfiles/host-1"), undefined);
+    assert.equal(firestore.get("guestProfiles/host-1"), undefined);
   }
 );
 

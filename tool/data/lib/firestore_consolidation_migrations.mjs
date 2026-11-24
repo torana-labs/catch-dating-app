@@ -2431,6 +2431,24 @@ export const MIGRATIONS = [
       },
     ],
   },
+  {
+    name: "guest-profiles",
+    description:
+      "Every publicProfiles document is copied to the server-only " +
+      "guestProfiles with the same id and data (#2493, FIX-8), as " +
+      "syncPublicProfile now writes both in one transaction. The matching " +
+      "feeds read guestProfiles; publicProfiles narrows to a card in a later " +
+      "step. A guest profile already written is never replaced, and nothing " +
+      "is deleted. Deploy rules and Functions first.",
+    steps: [
+      {
+        source: "publicProfiles",
+        target: "guestProfiles",
+        targetId: (id) => id,
+        transform: (data) => ({...data}),
+      },
+    ],
+  },
 ];
 
 /**

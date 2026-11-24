@@ -279,6 +279,21 @@ test("event-bookings refuses to overwrite a booking that moved on", async () => 
   assert.equal(db.data["eventBookings/e1_a"].status, "cancelled");
 });
 
+test("guest-profiles copies every public profile once and replaces none", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "guest-profiles");
+  const db = fakeDb({
+    "publicProfiles/a": {name: "Asha", age: 28, gender: "woman", religion: "hindu"},
+    "publicProfiles/b": {name: "Bina", age: 30, gender: "woman"},
+    "guestProfiles/b": {name: "Bina", age: 30, gender: "woman"},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 1);
+  assert.equal(plan.totals.alreadyCopied, 1);
+  await applyMigrationPlan(db, plan);
+  assert.deepEqual(db.data["guestProfiles/a"], db.data["publicProfiles/a"]);
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
 test("guest-event-read-models creates each entry and row once from its first record", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "guest-event-read-models");
   const db = fakeDb({
