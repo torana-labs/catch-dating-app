@@ -1,14 +1,19 @@
 /* eslint-disable max-len */
 import * as admin from "firebase-admin";
-import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import type {AdminRecommendOrganizerClaimCallablePayload} from "../shared/generated/adminRecommendOrganizerClaimCallablePayload";
 import type {AdminRecommendOrganizerClaimCallableResponse} from "../shared/generated/adminRecommendOrganizerClaimCallableResponse";
 import {validateAdminRecommendOrganizerClaimCallablePayload} from "../shared/generated/validators/adminRecommendOrganizerClaimInput";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
-import {requireAdminRole} from "../platform/adminAuth";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 /**
  * Ops recommend a claim; the owner decides it (adminDecideOrganizerClaim).
@@ -32,11 +37,38 @@ const defaultDeps: RecommendDeps = {
   checkRateLimit: defaultCheckRateLimit,
 };
 
-export async function adminRecommendOrganizerClaimHandler(request: CallableRequest<unknown>,
-  deps: RecommendDeps = defaultDeps): Promise<AdminRecommendOrganizerClaimCallableResponse> {
-  const adminContext = requireAdminRole(request, recommendRoles);
-  const data = validateCallableWithAjv<AdminRecommendOrganizerClaimCallablePayload>(request,
-    validateAdminRecommendOrganizerClaimCallablePayload, normalizePayload);
+/**
+ * adminRecommendOrganizerClaim: recommendRoles only (STR-10 policy).
+ * @param {RecommendDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
+ */
+export function adminRecommendOrganizerClaimSpec(
+  deps: RecommendDeps = defaultDeps):
+  CallableSpec<
+    AdminRecommendOrganizerClaimCallablePayload,
+    AdminContext,
+    AdminRecommendOrganizerClaimCallableResponse> {
+  return {
+    name: "adminRecommendOrganizerClaim",
+    policy: adminRoles(recommendRoles),
+    input: validateAdminRecommendOrganizerClaimCallablePayload,
+    normalize: normalizePayload,
+    handle: (context) => adminRecommendOrganizerClaimWork(context, deps),
+  };
+}
+
+/** The deployed path of adminRecommendOrganizerClaim, for tests. */
+export function adminRecommendOrganizerClaimHandler(
+  request: CallableRequest<unknown>, deps: RecommendDeps = defaultDeps):
+  Promise<AdminRecommendOrganizerClaimCallableResponse> {
+  return runCallable(adminRecommendOrganizerClaimSpec(deps), request);
+}
+
+async function adminRecommendOrganizerClaimWork(
+  {request, data, actor: adminContext}:
+    CallableContext<AdminRecommendOrganizerClaimCallablePayload, AdminContext>,
+  deps: RecommendDeps):
+  Promise<AdminRecommendOrganizerClaimCallableResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminRecommendOrganizerClaim", {maxRequests: 30, windowMs: 60 * 1000});
   const recommendation = {decision: data.decision, byUid: adminContext.uid, at: deps.now().toISOString(), note: data.note};
@@ -68,5 +100,5 @@ function normalizePayload(value: unknown): unknown {
   return {...data, note: typeof data.note === "string" ? data.note.trim() : data.note};
 }
 
-export const adminRecommendOrganizerClaim = onCall(appCheckCallableOptions,
-  (request) => adminRecommendOrganizerClaimHandler(request));
+export const adminRecommendOrganizerClaim = callable(
+  adminRecommendOrganizerClaimSpec());

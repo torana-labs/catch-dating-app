@@ -1,7 +1,6 @@
-import {CallableRequest, HttpsError, onCall} from
+import {CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {AdminReviewEventMessagingBudgetCallablePayload} from
   "../shared/generated/adminReviewEventMessagingBudgetCallablePayload";
 import type {AdminReviewEventMessagingBudgetCallableResponse} from
@@ -19,12 +18,18 @@ import {
 import {validateEventMessagingBudgetDecisionDocument} from
   "../shared/generated/validators/eventMessagingBudgetDecisionDocument";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import {reviewEventMessageSetupInTransaction} from
   "../eventSuccess/operations/messageSetupReview";
-import {requireAdminRole} from "../platform/adminAuth";
 import {writeAdminAuditLog} from "../platform/adminAudit";
 import {eventMessagingBudgetDecisionId} from "./eventMessagingBudget";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 const decisionCollection = "eventMessagingBudgetDecisions";
 const allowedRoles = ["adminOwner"] as const;
@@ -48,22 +53,40 @@ const defaultDeps: EventMessagingBudgetReviewDeps = {
 /**
  * Returns one exact Finance setup review and its current decision revision.
  * It reads no credentials or roster data and grants no spending or dispatch.
- * @param {CallableRequest<unknown>} request Callable request.
- * @param {EventMessagingBudgetReviewDeps} deps Injectable dependencies.
- * @return {Promise<AdminReviewEventMessagingBudgetCallableResponse>} Review.
+ * Policy: allowedRoles (STR-10).
+ * @param {EventMessagingBudgetReviewDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminReviewEventMessagingBudgetHandler(
+export function adminReviewEventMessagingBudgetSpec(
+  deps: EventMessagingBudgetReviewDeps = defaultDeps):
+  CallableSpec<
+    AdminReviewEventMessagingBudgetCallablePayload,
+    AdminContext,
+    AdminReviewEventMessagingBudgetCallableResponse> {
+  return {
+    name: "adminReviewEventMessagingBudget",
+    policy: adminRoles(allowedRoles),
+    input: validateAdminReviewEventMessagingBudgetCallablePayload,
+    normalize: normalizePayload,
+    handle: (context) => adminReviewEventMessagingBudgetWork(context, deps),
+  };
+}
+
+/** The deployed path of adminReviewEventMessagingBudget, for tests. */
+export function adminReviewEventMessagingBudgetHandler(
   request: CallableRequest<unknown>,
-  deps: EventMessagingBudgetReviewDeps = defaultDeps
-): Promise<AdminReviewEventMessagingBudgetCallableResponse> {
-  const adminContext = requireAdminRole(request, allowedRoles);
-  const data = validateCallableWithAjv<
-    AdminReviewEventMessagingBudgetCallablePayload
-  >(
-    request,
-    validateAdminReviewEventMessagingBudgetCallablePayload,
-    normalizePayload
-  );
+  deps: EventMessagingBudgetReviewDeps = defaultDeps):
+  Promise<AdminReviewEventMessagingBudgetCallableResponse> {
+  return runCallable(adminReviewEventMessagingBudgetSpec(deps), request);
+}
+
+async function adminReviewEventMessagingBudgetWork(
+  {request, data, actor: adminContext}:
+    CallableContext<
+      AdminReviewEventMessagingBudgetCallablePayload,
+      AdminContext>,
+  deps: EventMessagingBudgetReviewDeps):
+  Promise<AdminReviewEventMessagingBudgetCallableResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(
     db,
@@ -166,7 +189,5 @@ function trimmed(value: unknown): unknown {
   return typeof value === "string" ? value.trim() : value;
 }
 
-export const adminReviewEventMessagingBudget = onCall(
-  appCheckCallableOptions,
-  (request) => adminReviewEventMessagingBudgetHandler(request)
-);
+export const adminReviewEventMessagingBudget = callable(
+  adminReviewEventMessagingBudgetSpec());

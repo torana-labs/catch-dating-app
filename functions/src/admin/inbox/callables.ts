@@ -1,7 +1,6 @@
 /* eslint-disable max-len */
 import * as admin from "firebase-admin";
-import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
-import {appCheckCallableOptions} from "../../shared/callableOptions";
+import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import type {AdminListInboxItemsCallablePayload} from "../../shared/generated/adminListInboxItemsCallablePayload";
 import type {AdminListInboxItemsCallableResponse} from "../../shared/generated/adminListInboxItemsCallableResponse";
 import type {AdminGetInboxItemCallablePayload} from "../../shared/generated/adminGetInboxItemCallablePayload";
@@ -12,9 +11,7 @@ import {validateAdminListInboxItemsCallablePayload} from "../../shared/generated
 import {validateAdminGetInboxItemCallablePayload} from "../../shared/generated/validators/adminGetInboxItemInput";
 import {validateAdminUpdateInboxItemCallablePayload} from "../../shared/generated/validators/adminUpdateInboxItemInput";
 import {checkRateLimit as defaultCheckRateLimit} from "../../shared/rateLimit";
-import {validateCallableWithAjv} from "../../shared/validation";
 import {setAdminAuditLogInTransaction} from "../../platform/adminAudit";
-import {requireAdminRole} from "../../platform/adminAuth";
 import {
   INBOX_ITEMS_COLLECTION,
   INBOX_ITEM_TYPES,
@@ -27,6 +24,14 @@ import {
   reopenedInboxItem,
 } from "./model";
 import {journeyStepDocument} from "./store";
+import type {AdminContext} from "../../platform/adminAuth";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../../platform/callables/callable";
+import {adminRoles} from "../../platform/callables/policies";
 
 /** Ops and the owner work the inbox; a sales associate may open their own nominations. */
 export const inboxRoles = ["admin", "adminOwner", "support"] as const;
@@ -54,12 +59,32 @@ type Scope = AdminListInboxItemsCallablePayload["scope"];
  * One page of the inbox, oldest waiting first (done: most recently decided
  * first), with real totals: how many items wait in each scope, and how many
  * of each type are in the scope you are looking at.
+ * Policy: inboxRoles (STR-10).
+ * @param {InboxDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminListInboxItemsHandler(request: CallableRequest<unknown>,
-  deps: InboxDeps = defaultDeps): Promise<ListResponse> {
-  const adminContext = requireAdminRole(request, inboxRoles);
-  const data = validateCallableWithAjv<AdminListInboxItemsCallablePayload>(request,
-    validateAdminListInboxItemsCallablePayload);
+export function adminListInboxItemsSpec(deps: InboxDeps = defaultDeps):
+  CallableSpec<AdminListInboxItemsCallablePayload, AdminContext, ListResponse> {
+  return {
+    name: "adminListInboxItems",
+    policy: adminRoles(inboxRoles),
+    input: validateAdminListInboxItemsCallablePayload,
+    handle: (context) => adminListInboxItemsWork(context, deps),
+  };
+}
+
+/** The deployed path of adminListInboxItems, for tests. */
+export function adminListInboxItemsHandler(
+  request: CallableRequest<unknown>, deps: InboxDeps = defaultDeps):
+  Promise<ListResponse> {
+  return runCallable(adminListInboxItemsSpec(deps), request);
+}
+
+async function adminListInboxItemsWork(
+  {data, actor: adminContext}:
+    CallableContext<AdminListInboxItemsCallablePayload, AdminContext>,
+  deps: InboxDeps):
+  Promise<ListResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminListInboxItems", {maxRequests: 120, windowMs: 60 * 1000});
   const items = db.collection(INBOX_ITEMS_COLLECTION);
@@ -107,11 +132,36 @@ export async function adminListInboxItemsHandler(request: CallableRequest<unknow
 }
 
 /** One item with every step it took, oldest first. */
-export async function adminGetInboxItemHandler(request: CallableRequest<unknown>,
-  deps: InboxDeps = defaultDeps): Promise<AdminGetInboxItemCallableResponse> {
-  const adminContext = requireAdminRole(request, inboxReadRoles);
-  const data = validateCallableWithAjv<AdminGetInboxItemCallablePayload>(request,
-    validateAdminGetInboxItemCallablePayload);
+/**
+ * adminGetInboxItem: inboxReadRoles only (STR-10 policy).
+ * @param {InboxDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
+ */
+export function adminGetInboxItemSpec(deps: InboxDeps = defaultDeps):
+  CallableSpec<
+    AdminGetInboxItemCallablePayload,
+    AdminContext,
+    AdminGetInboxItemCallableResponse> {
+  return {
+    name: "adminGetInboxItem",
+    policy: adminRoles(inboxReadRoles),
+    input: validateAdminGetInboxItemCallablePayload,
+    handle: (context) => adminGetInboxItemWork(context, deps),
+  };
+}
+
+/** The deployed path of adminGetInboxItem, for tests. */
+export function adminGetInboxItemHandler(
+  request: CallableRequest<unknown>, deps: InboxDeps = defaultDeps):
+  Promise<AdminGetInboxItemCallableResponse> {
+  return runCallable(adminGetInboxItemSpec(deps), request);
+}
+
+async function adminGetInboxItemWork(
+  {data, actor: adminContext}:
+    CallableContext<AdminGetInboxItemCallablePayload, AdminContext>,
+  deps: InboxDeps):
+  Promise<AdminGetInboxItemCallableResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminGetInboxItem", {maxRequests: 240, windowMs: 60 * 1000});
   const snap = await db.collection(INBOX_ITEMS_COLLECTION).doc(data.itemId).get();
@@ -145,11 +195,36 @@ export async function adminGetInboxItemHandler(request: CallableRequest<unknown>
  */
 const dismissableTypes: InboxItemType[] = ["event", "stuck", "lead", "enquiry"];
 
-export async function adminUpdateInboxItemHandler(request: CallableRequest<unknown>,
-  deps: InboxDeps = defaultDeps): Promise<AdminUpdateInboxItemCallableResponse> {
-  const adminContext = requireAdminRole(request, inboxRoles);
-  const data = validateCallableWithAjv<AdminUpdateInboxItemCallablePayload>(request,
-    validateAdminUpdateInboxItemCallablePayload);
+/**
+ * adminUpdateInboxItem: inboxRoles only (STR-10 policy).
+ * @param {InboxDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
+ */
+export function adminUpdateInboxItemSpec(deps: InboxDeps = defaultDeps):
+  CallableSpec<
+    AdminUpdateInboxItemCallablePayload,
+    AdminContext,
+    AdminUpdateInboxItemCallableResponse> {
+  return {
+    name: "adminUpdateInboxItem",
+    policy: adminRoles(inboxRoles),
+    input: validateAdminUpdateInboxItemCallablePayload,
+    handle: (context) => adminUpdateInboxItemWork(context, deps),
+  };
+}
+
+/** The deployed path of adminUpdateInboxItem, for tests. */
+export function adminUpdateInboxItemHandler(
+  request: CallableRequest<unknown>, deps: InboxDeps = defaultDeps):
+  Promise<AdminUpdateInboxItemCallableResponse> {
+  return runCallable(adminUpdateInboxItemSpec(deps), request);
+}
+
+async function adminUpdateInboxItemWork(
+  {request, data, actor: adminContext}:
+    CallableContext<AdminUpdateInboxItemCallablePayload, AdminContext>,
+  deps: InboxDeps):
+  Promise<AdminUpdateInboxItemCallableResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminUpdateInboxItem", {maxRequests: 60, windowMs: 60 * 1000});
   const now = deps.now();
@@ -265,9 +340,6 @@ function decodeCursor(value: string): {value: string; itemId: string} {
   throw new HttpsError("invalid-argument", "This page cursor is invalid; reload the inbox.");
 }
 
-export const adminListInboxItems = onCall(appCheckCallableOptions,
-  (request) => adminListInboxItemsHandler(request));
-export const adminGetInboxItem = onCall(appCheckCallableOptions,
-  (request) => adminGetInboxItemHandler(request));
-export const adminUpdateInboxItem = onCall(appCheckCallableOptions,
-  (request) => adminUpdateInboxItemHandler(request));
+export const adminListInboxItems = callable(adminListInboxItemsSpec());
+export const adminGetInboxItem = callable(adminGetInboxItemSpec());
+export const adminUpdateInboxItem = callable(adminUpdateInboxItemSpec());

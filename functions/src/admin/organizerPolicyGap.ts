@@ -1,8 +1,7 @@
 import crypto from "node:crypto";
-import {onCall, CallableRequest, HttpsError} from
+import {CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {AdminDecideOrganizerPolicyGapCallablePayload} from
   "../shared/generated/adminDecideOrganizerPolicyGapCallablePayload";
 import type {OrganizerPolicyGapReviewDecisionDocument} from
@@ -11,10 +10,16 @@ import {
   validateAdminDecideOrganizerPolicyGapCallablePayload,
 } from
   "../shared/generated/validators/adminDecideOrganizerPolicyGapInput";
-import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {requireAdminRole} from "../platform/adminAuth";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 const organizerIntakeRoles = ["admin", "adminOwner", "support"] as const;
 const decisionCollection = "organizerPolicyGapReviewDecisions";
@@ -51,21 +56,38 @@ export interface AdminDecideOrganizerPolicyGapResponse {
  * Records the latest manual product/admin decision for a policy gap. This is a
  * review bridge only; accepted policy decisions remain blocked until the
  * owning implementation or configuration is explicitly encoded and checked.
- * @param {CallableRequest<unknown>} request Callable request.
- * @param {OrganizerPolicyGapDeps} deps Injectable dependencies.
- * @return {Promise<AdminDecideOrganizerPolicyGapResponse>} Decision.
+ * Policy: organizerIntakeRoles (STR-10).
+ * @param {OrganizerPolicyGapDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminDecideOrganizerPolicyGapHandler(
+export function adminDecideOrganizerPolicyGapSpec(
+  deps: OrganizerPolicyGapDeps = defaultDeps):
+  CallableSpec<
+    AdminDecideOrganizerPolicyGapCallablePayload,
+    AdminContext,
+    AdminDecideOrganizerPolicyGapResponse> {
+  return {
+    name: "adminDecideOrganizerPolicyGap",
+    policy: adminRoles(organizerIntakeRoles),
+    input: validateAdminDecideOrganizerPolicyGapCallablePayload,
+    normalize: normalizeAdminDecideOrganizerPolicyGapPayload,
+    handle: (context) => adminDecideOrganizerPolicyGapWork(context, deps),
+  };
+}
+
+/** The deployed path of adminDecideOrganizerPolicyGap, for tests. */
+export function adminDecideOrganizerPolicyGapHandler(
   request: CallableRequest<unknown>,
-  deps: OrganizerPolicyGapDeps = defaultDeps
-): Promise<AdminDecideOrganizerPolicyGapResponse> {
-  const adminContext = requireAdminRole(request, organizerIntakeRoles);
-  const data =
-    validateCallableWithAjv<AdminDecideOrganizerPolicyGapCallablePayload>(
-      request,
-      validateAdminDecideOrganizerPolicyGapCallablePayload,
-      normalizeAdminDecideOrganizerPolicyGapPayload
-    );
+  deps: OrganizerPolicyGapDeps = defaultDeps):
+  Promise<AdminDecideOrganizerPolicyGapResponse> {
+  return runCallable(adminDecideOrganizerPolicyGapSpec(deps), request);
+}
+
+async function adminDecideOrganizerPolicyGapWork(
+  {request, data, actor: adminContext}:
+    CallableContext<AdminDecideOrganizerPolicyGapCallablePayload, AdminContext>,
+  deps: OrganizerPolicyGapDeps):
+  Promise<AdminDecideOrganizerPolicyGapResponse> {
   assertDecisionAllowed(data);
 
   const db = deps.firestore();
@@ -243,7 +265,5 @@ function normalizeString(value: unknown): unknown {
   return typeof value === "string" ? value.trim() : value;
 }
 
-export const adminDecideOrganizerPolicyGap = onCall(
-  appCheckCallableOptions,
-  (request) => adminDecideOrganizerPolicyGapHandler(request)
-);
+export const adminDecideOrganizerPolicyGap = callable(
+  adminDecideOrganizerPolicyGapSpec());

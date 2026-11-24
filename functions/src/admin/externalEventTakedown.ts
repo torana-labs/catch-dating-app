@@ -1,7 +1,6 @@
-import {CallableRequest, HttpsError, onCall} from
+import {CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {AdminTakedownExternalEventCallablePayload} from
   "../shared/generated/adminTakedownExternalEventCallablePayload";
 import type {ExternalEventPublicationReceiptDocument} from
@@ -10,15 +9,21 @@ import {
   validateAdminTakedownExternalEventCallablePayload,
 } from
   "../shared/generated/validators/adminTakedownExternalEventInput";
-import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {requireAdminRole} from "../platform/adminAuth";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {
   assertMatchingPublicationReceipt,
   publicationInputHash,
   publicationReceiptId,
 } from "../domain/supply/externalEventPublicationPolicy";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 const takedownRoles = ["admin", "adminOwner", "support"] as const;
 
@@ -47,18 +52,39 @@ export interface AdminTakedownExternalEventResponse {
   completedAt: string;
 }
 
-export async function adminTakedownExternalEventHandler(
+/**
+ * adminTakedownExternalEvent: takedownRoles only (STR-10 policy).
+ * @param {ExternalEventTakedownDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
+ */
+export function adminTakedownExternalEventSpec(
+  deps: ExternalEventTakedownDeps = defaultDeps):
+  CallableSpec<
+    AdminTakedownExternalEventCallablePayload,
+    AdminContext,
+    AdminTakedownExternalEventResponse> {
+  return {
+    name: "adminTakedownExternalEvent",
+    policy: adminRoles(takedownRoles),
+    input: validateAdminTakedownExternalEventCallablePayload,
+    normalize: normalizePayload,
+    handle: (context) => adminTakedownExternalEventWork(context, deps),
+  };
+}
+
+/** The deployed path of adminTakedownExternalEvent, for tests. */
+export function adminTakedownExternalEventHandler(
   request: CallableRequest<unknown>,
-  deps: ExternalEventTakedownDeps = defaultDeps
-): Promise<AdminTakedownExternalEventResponse> {
-  const adminContext = requireAdminRole(request, takedownRoles);
-  const data = validateCallableWithAjv<
-    AdminTakedownExternalEventCallablePayload
-  >(
-    request,
-    validateAdminTakedownExternalEventCallablePayload,
-    normalizePayload
-  );
+  deps: ExternalEventTakedownDeps = defaultDeps):
+  Promise<AdminTakedownExternalEventResponse> {
+  return runCallable(adminTakedownExternalEventSpec(deps), request);
+}
+
+async function adminTakedownExternalEventWork(
+  {request, data, actor: adminContext}:
+    CallableContext<AdminTakedownExternalEventCallablePayload, AdminContext>,
+  deps: ExternalEventTakedownDeps):
+  Promise<AdminTakedownExternalEventResponse> {
   if (!data.checklist.sourceStatusReviewed ||
     !data.checklist.takedownAuthorityReviewed ||
     !data.checklist.downstreamVisibilityReviewed) {
@@ -204,7 +230,5 @@ function normalizeString(value: unknown): unknown {
   return typeof value === "string" ? value.trim() : value;
 }
 
-export const adminTakedownExternalEvent = onCall(
-  appCheckCallableOptions,
-  (request) => adminTakedownExternalEventHandler(request)
-);
+export const adminTakedownExternalEvent = callable(
+  adminTakedownExternalEventSpec());

@@ -17,6 +17,14 @@ import {validateSupplyNominatorDocument} from "../../shared/generated/validators
 import {checkRateLimit as defaultCheckRateLimit} from "../../shared/rateLimit";
 import {validateCallableWithAjv} from "../../shared/validation";
 import {intakeMarket} from "./requests";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../../platform/callables/callable";
+import {adminRoles} from "../../platform/callables/policies";
+import type {AdminContext} from "../../platform/adminAuth";
 
 // Who may nominate organizers by messaging Catch. Staff register a person's
 // WhatsApp number or Instagram username against their Catch account. The
@@ -121,11 +129,37 @@ async function resolveNominator(tx: Transaction, db: Firestore, deps: Pick<Nomin
     partnerId: row.role === "partner" ? row.uid : null, defaultMarket: row.defaultMarket};
 }
 
-export async function adminSetSupplyNominatorHandler(request: CallableRequest<unknown>,
-  deps: NominatorDeps = defaultDeps): Promise<AdminSetSupplyNominatorCallableResponse> {
-  const context = requireAdminRole(request, ["admin", "adminOwner"]);
-  const data = validateCallableWithAjv<AdminSetSupplyNominatorCallablePayload>(request,
-    validateAdminSetSupplyNominatorCallablePayload, normalizeSetPayload);
+/**
+ * adminSetSupplyNominator: ["admin", "adminOwner"] only (STR-10 policy).
+ * @param {NominatorDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
+ */
+export function adminSetSupplyNominatorSpec(deps: NominatorDeps = defaultDeps):
+  CallableSpec<
+    AdminSetSupplyNominatorCallablePayload,
+    AdminContext,
+    AdminSetSupplyNominatorCallableResponse> {
+  return {
+    name: "adminSetSupplyNominator",
+    policy: adminRoles(["admin", "adminOwner"]),
+    input: validateAdminSetSupplyNominatorCallablePayload,
+    normalize: normalizeSetPayload,
+    handle: (context) => adminSetSupplyNominatorWork(context, deps),
+  };
+}
+
+/** The deployed path of adminSetSupplyNominator, for tests. */
+export function adminSetSupplyNominatorHandler(
+  request: CallableRequest<unknown>, deps: NominatorDeps = defaultDeps):
+  Promise<AdminSetSupplyNominatorCallableResponse> {
+  return runCallable(adminSetSupplyNominatorSpec(deps), request);
+}
+
+async function adminSetSupplyNominatorWork(
+  {request, data, actor: context}:
+    CallableContext<AdminSetSupplyNominatorCallablePayload, AdminContext>,
+  deps: NominatorDeps):
+  Promise<AdminSetSupplyNominatorCallableResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, context.uid, "adminSetSupplyNominator", {maxRequests: 30, windowMs: 60 * 1000});
   if ((data.phoneE164 === undefined) === (data.instagramHandle === undefined)) {
@@ -213,8 +247,7 @@ function normalizeSetPayload(value: unknown): unknown {
   };
 }
 
-export const adminSetSupplyNominator = onCall(appCheckCallableOptions, (request) =>
-  adminSetSupplyNominatorHandler(request));
+export const adminSetSupplyNominator = callable(adminSetSupplyNominatorSpec());
 
 export const adminListSupplyNominators = onCall(appCheckCallableOptions, (request) =>
   adminListSupplyNominatorsHandler(request));

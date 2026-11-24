@@ -1,7 +1,6 @@
-import {CallableRequest, HttpsError, onCall} from
+import {CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {AdminDecideEventMessagingBudgetCallablePayload} from
   "../shared/generated/adminDecideEventMessagingBudgetCallablePayload";
 import type {AdminDecideEventMessagingBudgetCallableResponse} from
@@ -23,15 +22,21 @@ import {validateEventMessagingBudgetDecisionDocument} from
 import {validateEventMessagingBudgetDecisionReceiptDocument} from
   "../shared/generated/validators/eventMessagingBudgetDecisionReceiptDocument";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import {operationContentHash} from "../operations/durableActions";
 import {
   MessageBudgetReview,
   MessageSetupReview,
   reviewEventMessageSetupInTransaction,
 } from "../eventSuccess/operations/messageSetupReview";
-import {requireAdminRole} from "../platform/adminAuth";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 const decisionCollection = "eventMessagingBudgetDecisions";
 const receiptCollection = "eventMessagingBudgetDecisionReceipts";
@@ -63,22 +68,40 @@ type BudgetEvidence =
 /**
  * Records a revision-fenced finance decision against a current messaging setup
  * review. This callable never writes a provider budget or grants spend.
- * @param {CallableRequest<unknown>} request Callable request.
- * @param {EventMessagingBudgetDeps} deps Injectable dependencies.
- * @return {Promise<AdminDecideEventMessagingBudgetCallableResponse>} Result.
+ * Policy: allowedRoles (STR-10).
+ * @param {EventMessagingBudgetDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminDecideEventMessagingBudgetHandler(
+export function adminDecideEventMessagingBudgetSpec(
+  deps: EventMessagingBudgetDeps = defaultDeps):
+  CallableSpec<
+    AdminDecideEventMessagingBudgetCallablePayload,
+    AdminContext,
+    AdminDecideEventMessagingBudgetCallableResponse> {
+  return {
+    name: "adminDecideEventMessagingBudget",
+    policy: adminRoles(allowedRoles),
+    input: validateAdminDecideEventMessagingBudgetCallablePayload,
+    normalize: normalizePayload,
+    handle: (context) => adminDecideEventMessagingBudgetWork(context, deps),
+  };
+}
+
+/** The deployed path of adminDecideEventMessagingBudget, for tests. */
+export function adminDecideEventMessagingBudgetHandler(
   request: CallableRequest<unknown>,
-  deps: EventMessagingBudgetDeps = defaultDeps
-): Promise<AdminDecideEventMessagingBudgetCallableResponse> {
-  const adminContext = requireAdminRole(request, allowedRoles);
-  const data = validateCallableWithAjv<
-    AdminDecideEventMessagingBudgetCallablePayload
-  >(
-    request,
-    validateAdminDecideEventMessagingBudgetCallablePayload,
-    normalizePayload
-  );
+  deps: EventMessagingBudgetDeps = defaultDeps):
+  Promise<AdminDecideEventMessagingBudgetCallableResponse> {
+  return runCallable(adminDecideEventMessagingBudgetSpec(deps), request);
+}
+
+async function adminDecideEventMessagingBudgetWork(
+  {request, data, actor: adminContext}:
+    CallableContext<
+      AdminDecideEventMessagingBudgetCallablePayload,
+      AdminContext>,
+  deps: EventMessagingBudgetDeps):
+  Promise<AdminDecideEventMessagingBudgetCallableResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(
     db,
@@ -453,7 +476,5 @@ function unreachableBudgetSource(): never {
   throw new Error("Reviewed budget source required");
 }
 
-export const adminDecideEventMessagingBudget = onCall(
-  appCheckCallableOptions,
-  (request) => adminDecideEventMessagingBudgetHandler(request)
-);
+export const adminDecideEventMessagingBudget = callable(
+  adminDecideEventMessagingBudgetSpec());

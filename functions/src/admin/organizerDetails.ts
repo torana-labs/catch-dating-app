@@ -1,9 +1,8 @@
-import {onCall, CallableRequest, HttpsError} from
+import {CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {Timestamp} from "firebase-admin/firestore";
 import crypto from "node:crypto";
-import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {
   OrganizerDocument,
   OrganizerIntakeFieldCorrectionDocument,
@@ -23,8 +22,7 @@ import {
 import {
   validateAdminUpdateOrganizerDetailsCallablePayload,
 } from "../shared/generated/validators/adminUpdateOrganizerDetailsInput";
-import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {requireAdminRole} from "../platform/adminAuth";
+import {requireDoc} from "../shared/validation";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
@@ -47,6 +45,14 @@ import {
   type OwnerLinkInput,
 } from "../organizers/organizerLinks";
 import {adminOrganizerWomenLed} from "../domain/events/womenLed";
+import type {AdminContext} from "../platform/adminAuth";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
 
 const organizerDetailsRoles = ["admin", "adminOwner", "support"] as const;
 
@@ -168,20 +174,37 @@ export interface AdminUpdateOrganizerDetailsResponse {
 
 /**
  * Loads a review-safe organizer snapshot for the admin cleanup editor.
- * @param {CallableRequest<unknown>} request Callable request.
- * @param {OrganizerDetailsDeps} deps Injectable dependencies.
- * @return {Promise<AdminGetOrganizerDetailsResponse>} Organizer snapshot.
+ * Policy: organizerDetailsRoles (STR-10).
+ * @param {OrganizerDetailsDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminGetOrganizerDetailsHandler(
-  request: CallableRequest<unknown>,
-  deps: OrganizerDetailsDeps = defaultDeps
-): Promise<AdminGetOrganizerDetailsResponse> {
-  const adminContext = requireAdminRole(request, organizerDetailsRoles);
-  const data = validateCallableWithAjv<AdminGetOrganizerDetailsCallablePayload>(
-    request,
-    validateAdminGetOrganizerDetailsCallablePayload,
-    normalizeAdminGetOrganizerDetailsPayload
-  );
+export function adminGetOrganizerDetailsSpec(
+  deps: OrganizerDetailsDeps = defaultDeps):
+  CallableSpec<
+    AdminGetOrganizerDetailsCallablePayload,
+    AdminContext,
+    AdminGetOrganizerDetailsResponse> {
+  return {
+    name: "adminGetOrganizerDetails",
+    policy: adminRoles(organizerDetailsRoles),
+    input: validateAdminGetOrganizerDetailsCallablePayload,
+    normalize: normalizeAdminGetOrganizerDetailsPayload,
+    handle: (context) => adminGetOrganizerDetailsWork(context, deps),
+  };
+}
+
+/** The deployed path of adminGetOrganizerDetails, for tests. */
+export function adminGetOrganizerDetailsHandler(
+  request: CallableRequest<unknown>, deps: OrganizerDetailsDeps = defaultDeps):
+  Promise<AdminGetOrganizerDetailsResponse> {
+  return runCallable(adminGetOrganizerDetailsSpec(deps), request);
+}
+
+async function adminGetOrganizerDetailsWork(
+  {data, actor: adminContext}:
+    CallableContext<AdminGetOrganizerDetailsCallablePayload, AdminContext>,
+  deps: OrganizerDetailsDeps):
+  Promise<AdminGetOrganizerDetailsResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminGetOrganizerDetails",
     {
@@ -199,21 +222,37 @@ export async function adminGetOrganizerDetailsHandler(
 
 /**
  * Lists canonical organizer profile rows from organizers/{organizerId}.
- * @param {CallableRequest<unknown>} request Callable request.
- * @param {OrganizerDetailsDeps} deps Injectable dependencies.
- * @return {Promise<AdminListOrganizerDetailsResponse>} Organizer list rows.
+ * Policy: organizerDetailsRoles (STR-10).
+ * @param {OrganizerDetailsDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminListOrganizerDetailsHandler(
-  request: CallableRequest<unknown>,
-  deps: OrganizerDetailsDeps = defaultDeps
-): Promise<AdminListOrganizerDetailsResponse> {
-  const adminContext = requireAdminRole(request, organizerDetailsRoles);
-  const data =
-      validateCallableWithAjv<AdminListOrganizerDetailsCallablePayload>(
-        request,
-        validateAdminListOrganizerDetailsCallablePayload,
-        normalizeAdminListOrganizerDetailsPayload
-      );
+export function adminListOrganizerDetailsSpec(
+  deps: OrganizerDetailsDeps = defaultDeps):
+  CallableSpec<
+    AdminListOrganizerDetailsCallablePayload,
+    AdminContext,
+    AdminListOrganizerDetailsResponse> {
+  return {
+    name: "adminListOrganizerDetails",
+    policy: adminRoles(organizerDetailsRoles),
+    input: validateAdminListOrganizerDetailsCallablePayload,
+    normalize: normalizeAdminListOrganizerDetailsPayload,
+    handle: (context) => adminListOrganizerDetailsWork(context, deps),
+  };
+}
+
+/** The deployed path of adminListOrganizerDetails, for tests. */
+export function adminListOrganizerDetailsHandler(
+  request: CallableRequest<unknown>, deps: OrganizerDetailsDeps = defaultDeps):
+  Promise<AdminListOrganizerDetailsResponse> {
+  return runCallable(adminListOrganizerDetailsSpec(deps), request);
+}
+
+async function adminListOrganizerDetailsWork(
+  {data, actor: adminContext}:
+    CallableContext<AdminListOrganizerDetailsCallablePayload, AdminContext>,
+  deps: OrganizerDetailsDeps):
+  Promise<AdminListOrganizerDetailsResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid,
     "adminListOrganizerDetails", {
@@ -265,21 +304,37 @@ export async function adminListOrganizerDetailsHandler(
 
 /**
  * Applies an audited admin cleanup patch to owner-safe organizer fields.
- * @param {CallableRequest<unknown>} request Callable request.
- * @param {OrganizerDetailsDeps} deps Injectable dependencies.
- * @return {Promise<AdminUpdateOrganizerDetailsResponse>} Save summary.
+ * Policy: organizerDetailsRoles (STR-10).
+ * @param {OrganizerDetailsDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminUpdateOrganizerDetailsHandler(
-  request: CallableRequest<unknown>,
-  deps: OrganizerDetailsDeps = defaultDeps
-): Promise<AdminUpdateOrganizerDetailsResponse> {
-  const adminContext = requireAdminRole(request, organizerDetailsRoles);
-  const data =
-    validateCallableWithAjv<AdminUpdateOrganizerDetailsCallablePayload>(
-      request,
-      validateAdminUpdateOrganizerDetailsCallablePayload,
-      normalizeAdminUpdateOrganizerDetailsPayload
-    );
+export function adminUpdateOrganizerDetailsSpec(
+  deps: OrganizerDetailsDeps = defaultDeps):
+  CallableSpec<
+    AdminUpdateOrganizerDetailsCallablePayload,
+    AdminContext,
+    AdminUpdateOrganizerDetailsResponse> {
+  return {
+    name: "adminUpdateOrganizerDetails",
+    policy: adminRoles(organizerDetailsRoles),
+    input: validateAdminUpdateOrganizerDetailsCallablePayload,
+    normalize: normalizeAdminUpdateOrganizerDetailsPayload,
+    handle: (context) => adminUpdateOrganizerDetailsWork(context, deps),
+  };
+}
+
+/** The deployed path of adminUpdateOrganizerDetails, for tests. */
+export function adminUpdateOrganizerDetailsHandler(
+  request: CallableRequest<unknown>, deps: OrganizerDetailsDeps = defaultDeps):
+  Promise<AdminUpdateOrganizerDetailsResponse> {
+  return runCallable(adminUpdateOrganizerDetailsSpec(deps), request);
+}
+
+async function adminUpdateOrganizerDetailsWork(
+  {request, data, actor: adminContext}:
+    CallableContext<AdminUpdateOrganizerDetailsCallablePayload, AdminContext>,
+  deps: OrganizerDetailsDeps):
+  Promise<AdminUpdateOrganizerDetailsResponse> {
   const patch = buildFirestorePatch(
     data.fields,
     deps.serverTimestamp(),
@@ -1140,17 +1195,11 @@ function organizerListRowMatchesQuery(
     .every((token) => haystack.includes(token));
 }
 
-export const adminListOrganizerDetails = onCall(
-  appCheckCallableOptions,
-  (request) => adminListOrganizerDetailsHandler(request)
-);
+export const adminListOrganizerDetails = callable(
+  adminListOrganizerDetailsSpec());
 
-export const adminGetOrganizerDetails = onCall(
-  appCheckCallableOptions,
-  (request) => adminGetOrganizerDetailsHandler(request)
-);
+export const adminGetOrganizerDetails = callable(
+  adminGetOrganizerDetailsSpec());
 
-export const adminUpdateOrganizerDetails = onCall(
-  appCheckCallableOptions,
-  (request) => adminUpdateOrganizerDetailsHandler(request)
-);
+export const adminUpdateOrganizerDetails = callable(
+  adminUpdateOrganizerDetailsSpec());

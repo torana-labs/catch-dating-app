@@ -1,12 +1,9 @@
 import * as admin from "firebase-admin";
-import {onCall, HttpsError, type CallableRequest} from
+import {HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../platform/adminAuth";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {growthFactsCollection} from "../growth/organizerGrowthFacts";
-import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import type {
   NominatorCreditDocument,
   OrganizerBillDocument,
@@ -29,6 +26,14 @@ import {
 } from "./billComputation";
 import {moneyRoles, readMoneySettings} from "./moneySettings";
 import {organizerReferralsCollection} from "./organizerReferrals";
+import {
+  callableWithLimits,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 export const nominatorCreditsCollection = "nominatorCredits";
 const dayMillis = 24 * 60 * 60 * 1000;
@@ -159,16 +164,31 @@ const defaults: Dependencies = {db: () => admin.firestore(),
 /**
  * The owner reads the credit ledger, approves a nominator's owed credit
  * once it reaches the minimum payout, or records that it was paid.
- * @param {CallableRequest<unknown>} request Callable request.
- * @param {Dependencies} deps Injectable dependencies.
- * @return {Promise<Result>} The ledger after the action.
+ * Policy: moneyRoles (STR-10).
+ * @param {Dependencies} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminManageNominatorCreditsHandler(
+export function adminManageNominatorCreditsSpec(deps: Dependencies = defaults):
+  CallableSpec<Payload, AdminContext, Result> {
+  return {
+    name: "adminManageNominatorCredits",
+    policy: adminRoles(moneyRoles),
+    input: validateAdminManageNominatorCreditsCallablePayload,
+    handle: (context) => adminManageNominatorCreditsWork(context, deps),
+  };
+}
+
+/** The deployed path of adminManageNominatorCredits, for tests. */
+export function adminManageNominatorCreditsHandler(
   request: CallableRequest<unknown>, deps: Dependencies = defaults):
   Promise<Result> {
-  const actor = requireAdminRole(request, moneyRoles);
-  const data = validateCallableWithAjv<Payload>(request,
-    validateAdminManageNominatorCreditsCallablePayload);
+  return runCallable(adminManageNominatorCreditsSpec(deps), request);
+}
+
+async function adminManageNominatorCreditsWork(
+  {request, data, actor}: CallableContext<Payload, AdminContext>,
+  deps: Dependencies):
+  Promise<Result> {
   if ((data.action === "list") !== (data.nominatorUid === null)) {
     throw new HttpsError("invalid-argument", "Invalid credit action.");
   }
@@ -227,6 +247,6 @@ export async function adminManageNominatorCreditsHandler(
   return result;
 }
 
-export const adminManageNominatorCredits = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 10}),
-  (request) => adminManageNominatorCreditsHandler(request));
+export const adminManageNominatorCredits = callableWithLimits(
+  {timeoutSeconds: 60, maxInstances: 10},
+  adminManageNominatorCreditsSpec());
