@@ -1,14 +1,11 @@
 import * as admin from "firebase-admin";
-import {onCall, HttpsError, type CallableRequest} from
+import {HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../platform/adminAuth";
 import {organizerBillsCollection} from "../money/organizerBills";
 import {nominatorCreditsCollection} from "../money/nominatorCredits";
 import {platformCostsCollection} from "../money/platformCosts";
 import {moneyRoles} from "../money/moneySettings";
-import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import type {
   NominatorCreditDocument,
   OrganizerBillDocument,
@@ -26,6 +23,14 @@ import {validateAdminGetGrowthCallableResponse} from
 import {growthFactsCollection} from "./organizerGrowthFacts";
 import {buildGrowth, setItselfUp, type SignupSource} from
   "./growthReadModel";
+import {
+  callableWithLimits,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 // Pre-launch volumes; a bounded read keeps one callable within its budget.
 const readLimit = 10_000;
@@ -84,14 +89,29 @@ async function signupSourcesOf(db: FirebaseFirestore.Firestore,
 
 /**
  * The owner reads Growth for a range.
- * @param {CallableRequest<unknown>} request Callable request.
- * @return {Promise<Result>} Growth.
+ * Policy: moneyRoles (STR-10).
+ * @return {CallableSpec} The callable.
  */
-export async function adminGetGrowthHandler(
-  request: CallableRequest<unknown>): Promise<Result> {
-  const actor = requireAdminRole(request, moneyRoles);
-  const data = validateCallableWithAjv<Payload>(request,
-    validateAdminGetGrowthCallablePayload);
+export function adminGetGrowthSpec():
+  CallableSpec<Payload, AdminContext, Result> {
+  return {
+    name: "adminGetGrowth",
+    policy: adminRoles(moneyRoles),
+    input: validateAdminGetGrowthCallablePayload,
+    handle: (context) => adminGetGrowthWork(context),
+  };
+}
+
+/** The deployed path of adminGetGrowth, for tests. */
+export function adminGetGrowthHandler(
+  request: CallableRequest<unknown>):
+  Promise<Result> {
+  return runCallable(adminGetGrowthSpec(), request);
+}
+
+async function adminGetGrowthWork(
+  {data, actor}: CallableContext<Payload, AdminContext>):
+  Promise<Result> {
   const db = admin.firestore();
   await checkRateLimit(db, actor.uid, "adminGetGrowth",
     {maxRequests: 30, windowMs: 60 * 1000});
@@ -140,7 +160,6 @@ export async function adminGetGrowthHandler(
   return result;
 }
 
-export const adminGetGrowth = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 120, maxInstances: 5,
-    memory: "1GiB"}),
-  (request) => adminGetGrowthHandler(request));
+export const adminGetGrowth = callableWithLimits(
+  {timeoutSeconds: 120, maxInstances: 5, memory: "1GiB"},
+  adminGetGrowthSpec());

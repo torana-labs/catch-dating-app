@@ -1,12 +1,9 @@
 import * as admin from "firebase-admin";
-import {onCall, HttpsError, type CallableRequest} from
+import {HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../platform/adminAuth";
 import {organizerAdminSearchQueryTokens} from
   "../domain/organizers/organizerAdminSearch";
-import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import type {CommercialTermsDocument} from
   "../shared/generated/commercialTermsDocument";
 import type {AdminListCommercialTermsCallablePayload as Payload} from
@@ -29,6 +26,14 @@ import {
   organizerCommercialTermsId,
   platformCommercialTermsId,
 } from "./terms";
+import {
+  callableWithLimits,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 /** Bounds keep one console read cheap; the response says when it is cut. */
 export const commercialTermsHistoryLimit = 20;
@@ -53,13 +58,30 @@ const defaults: Dependencies = {db: () => admin.firestore(),
  * Finance and Admin Owner review commercial terms in the Admin console:
  * the platform defaults, one scope's recent revisions, every organizer
  * override and, to add an override, an organizer name search. Read-only.
+ * Policy: ["adminOwner"] (STR-10).
+ * @param {Dependencies} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminListCommercialTermsHandler(
+export function adminListCommercialTermsSpec(deps: Dependencies = defaults):
+  CallableSpec<Payload, AdminContext, Result> {
+  return {
+    name: "adminListCommercialTerms",
+    policy: adminRoles(["adminOwner"]),
+    input: validateAdminListCommercialTermsCallablePayload,
+    handle: (context) => adminListCommercialTermsWork(context, deps),
+  };
+}
+
+/** The deployed path of adminListCommercialTerms, for tests. */
+export function adminListCommercialTermsHandler(
   request: CallableRequest<unknown>, deps: Dependencies = defaults):
   Promise<Result> {
-  const actor = requireAdminRole(request, ["adminOwner"]);
-  const data = validateCallableWithAjv<Payload>(request,
-    validateAdminListCommercialTermsCallablePayload);
+  return runCallable(adminListCommercialTermsSpec(deps), request);
+}
+
+async function adminListCommercialTermsWork(
+  {data, actor}: CallableContext<Payload, AdminContext>, deps: Dependencies):
+  Promise<Result> {
   const query = data.organizerQuery?.trim() ?? "";
   if (data.organizerQuery !== null && query.length < 2) {
     throw new HttpsError("invalid-argument", "Search needs two characters.");
@@ -205,6 +227,6 @@ async function searchOrganizersByName(db: FirebaseFirestore.Firestore,
     .slice(0, commercialTermsOrganizerMatchLimit);
 }
 
-export const adminListCommercialTerms = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 30, maxInstances: 10}),
-  (request) => adminListCommercialTermsHandler(request));
+export const adminListCommercialTerms = callableWithLimits(
+  {timeoutSeconds: 30, maxInstances: 10},
+  adminListCommercialTermsSpec());

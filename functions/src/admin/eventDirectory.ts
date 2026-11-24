@@ -1,7 +1,6 @@
-import {onCall, CallableRequest} from "firebase-functions/v2/https";
+import {CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {Timestamp} from "firebase-admin/firestore";
-import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {
   EventDocument,
   ExternalEventDocument,
@@ -14,8 +13,6 @@ import type {AdminListEventDirectoryCallableResponse} from
 import {
   validateAdminListEventDirectoryCallablePayload,
 } from "../shared/generated/validators/adminListEventDirectoryInput";
-import {validateCallableWithAjv} from "../shared/validation";
-import {requireAdminRole} from "../platform/adminAuth";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
   catchEventStatus,
@@ -31,6 +28,14 @@ import {
 } from "./recordsDirectory";
 import {timestampIso, timestampMillis} from "../shared/dates";
 import {catchEventTitle} from "../shared/eventLabels";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 /** The most events of one source a directory read covers. */
 export const eventDirectoryScanLimit = 3000;
@@ -71,20 +76,37 @@ interface Candidate {
  * Lists the Admin Events directory: Catch and imported events in one table.
  * View totals are exact counts; the selected view is read up to the scan
  * limit per source and filtered, counted and paged in memory.
- * @param {CallableRequest<unknown>} request Callable request.
- * @param {EventDirectoryDeps} deps Injectable dependencies.
- * @return {Promise<AdminListEventDirectoryCallableResponse>} One page.
+ * Policy: recordsReaderRoles (STR-10).
+ * @param {EventDirectoryDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminListEventDirectoryHandler(
-  request: CallableRequest<unknown>,
-  deps: EventDirectoryDeps = defaultDeps
-): Promise<AdminListEventDirectoryCallableResponse> {
-  const adminContext = requireAdminRole(request, recordsReaderRoles);
-  const data = validateCallableWithAjv<AdminListEventDirectoryCallablePayload>(
-    request,
-    validateAdminListEventDirectoryCallablePayload,
-    normalizePayload
-  );
+export function adminListEventDirectorySpec(
+  deps: EventDirectoryDeps = defaultDeps):
+  CallableSpec<
+    AdminListEventDirectoryCallablePayload,
+    AdminContext,
+    AdminListEventDirectoryCallableResponse> {
+  return {
+    name: "adminListEventDirectory",
+    policy: adminRoles(recordsReaderRoles),
+    input: validateAdminListEventDirectoryCallablePayload,
+    normalize: normalizePayload,
+    handle: (context) => adminListEventDirectoryWork(context, deps),
+  };
+}
+
+/** The deployed path of adminListEventDirectory, for tests. */
+export function adminListEventDirectoryHandler(
+  request: CallableRequest<unknown>, deps: EventDirectoryDeps = defaultDeps):
+  Promise<AdminListEventDirectoryCallableResponse> {
+  return runCallable(adminListEventDirectorySpec(deps), request);
+}
+
+async function adminListEventDirectoryWork(
+  {data, actor: adminContext}:
+    CallableContext<AdminListEventDirectoryCallablePayload, AdminContext>,
+  deps: EventDirectoryDeps):
+  Promise<AdminListEventDirectoryCallableResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid,
     "adminListEventDirectory", {maxRequests: 60, windowMs: 60 * 1000});
@@ -324,7 +346,4 @@ function normalizePayload(value: unknown): unknown {
   };
 }
 
-export const adminListEventDirectory = onCall(
-  appCheckCallableOptions,
-  (request) => adminListEventDirectoryHandler(request)
-);
+export const adminListEventDirectory = callable(adminListEventDirectorySpec());

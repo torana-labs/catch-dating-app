@@ -1,4 +1,4 @@
-import {CallableRequest, onCall} from "firebase-functions/v2/https";
+import {CallableRequest} from "firebase-functions/v2/https";
 import {
   executeAiRead,
   defaultAiFallbackDeps,
@@ -13,15 +13,20 @@ import {
 import {anthropicFederationConfig, tokenSourceFor} from
   "../platform/anthropicIdentity";
 import {guestMappingTestRequest} from "../guestImport/mappingFallback";
-import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import type {AdminAiFallbackTestCallCallablePayload} from
   "../shared/generated/adminAiFallbackTestCallCallablePayload";
 import type {AdminAiFallbackTestCallCallableResponse} from
   "../shared/generated/adminAiFallbackTestCallCallableResponse";
 import {validateAdminAiFallbackTestCallCallablePayload} from
   "../shared/generated/validators/adminAiFallbackTestCallInput";
-import {validateCallableWithAjv} from "../shared/validation";
-import {requireAdminRole} from "../platform/adminAuth";
+import {
+  callableWithLimits,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 // The owner's live test of the AI fallback's federated sign-in (#2062),
 // before anything is switched on for visitors. One fixed, fictional
@@ -81,15 +86,33 @@ function providerStep(code: string): Step {
 
 /**
  * Makes one live test call through the AI fallback's federated sign-in.
- * @return {Promise<Response>} What happened, by step, with usage and cost.
+ * Policy: roles (STR-10).
+ * @param {AiFallbackTestDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminAiFallbackTestCallHandler(
-  request: CallableRequest<unknown>,
-  deps: AiFallbackTestDeps = defaultDeps
-): Promise<Response> {
-  const adminContext = requireAdminRole(request, roles);
-  const data = validateCallableWithAjv<AdminAiFallbackTestCallCallablePayload>(
-    request, validateAdminAiFallbackTestCallCallablePayload);
+export function adminAiFallbackTestCallSpec(
+  deps: AiFallbackTestDeps = defaultDeps):
+  CallableSpec<AdminAiFallbackTestCallCallablePayload, AdminContext, Response> {
+  return {
+    name: "adminAiFallbackTestCall",
+    policy: adminRoles(roles),
+    input: validateAdminAiFallbackTestCallCallablePayload,
+    handle: (context) => adminAiFallbackTestCallWork(context, deps),
+  };
+}
+
+/** The deployed path of adminAiFallbackTestCall, for tests. */
+export function adminAiFallbackTestCallHandler(
+  request: CallableRequest<unknown>, deps: AiFallbackTestDeps = defaultDeps):
+  Promise<Response> {
+  return runCallable(adminAiFallbackTestCallSpec(deps), request);
+}
+
+async function adminAiFallbackTestCallWork(
+  {data, actor: adminContext}:
+    CallableContext<AdminAiFallbackTestCallCallablePayload, AdminContext>,
+  deps: AiFallbackTestDeps):
+  Promise<Response> {
   const started = deps.nowMillis();
   const base = {ok: false, dryRun: data.dryRun === true,
     modelId: AI_FALLBACK_MODEL_ID, failedStep: null, refusal: null,
@@ -139,6 +162,5 @@ export async function adminAiFallbackTestCallHandler(
   return done({failedStep: "budget", refusal: outcome.reason, ...usage});
 }
 
-export const adminAiFallbackTestCall = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 120}),
-  (request) => adminAiFallbackTestCallHandler(request));
+export const adminAiFallbackTestCall = callableWithLimits({timeoutSeconds: 120},
+  adminAiFallbackTestCallSpec());

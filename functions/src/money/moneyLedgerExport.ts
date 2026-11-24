@@ -1,10 +1,7 @@
 import * as admin from "firebase-admin";
-import {onCall, HttpsError, type CallableRequest} from
+import {HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../platform/adminAuth";
-import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import type {
   NominatorCreditDocument,
   OrganizerBillDocument,
@@ -22,6 +19,14 @@ import {moneyRoles} from "./moneySettings";
 import {nominatorCreditsCollection} from "./nominatorCredits";
 import {organizerBillsCollection} from "./organizerBills";
 import {listMonthCosts} from "./platformCosts";
+import {
+  callableWithLimits,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 /**
  * Catch's ledger for one month, for the accountant's Zoho Books import:
@@ -148,14 +153,29 @@ export async function monthLedgerRows(db: FirebaseFirestore.Firestore,
 
 /**
  * The owner downloads a month's ledger as CSV.
- * @param {CallableRequest<unknown>} request Callable request.
- * @return {Promise<Result>} CSV with its file name.
+ * Policy: moneyRoles (STR-10).
+ * @return {CallableSpec} The callable.
  */
-export async function adminExportMoneyLedgerHandler(
-  request: CallableRequest<unknown>): Promise<Result> {
-  const actor = requireAdminRole(request, moneyRoles);
-  const data = validateCallableWithAjv<Payload>(request,
-    validateAdminExportMoneyLedgerCallablePayload);
+export function adminExportMoneyLedgerSpec():
+  CallableSpec<Payload, AdminContext, Result> {
+  return {
+    name: "adminExportMoneyLedger",
+    policy: adminRoles(moneyRoles),
+    input: validateAdminExportMoneyLedgerCallablePayload,
+    handle: (context) => adminExportMoneyLedgerWork(context),
+  };
+}
+
+/** The deployed path of adminExportMoneyLedger, for tests. */
+export function adminExportMoneyLedgerHandler(
+  request: CallableRequest<unknown>):
+  Promise<Result> {
+  return runCallable(adminExportMoneyLedgerSpec(), request);
+}
+
+async function adminExportMoneyLedgerWork(
+  {data, actor}: CallableContext<Payload, AdminContext>):
+  Promise<Result> {
   const db = admin.firestore();
   await checkRateLimit(db, actor.uid, "adminExportMoneyLedger",
     {maxRequests: 10, windowMs: 60 * 1000});
@@ -169,6 +189,6 @@ export async function adminExportMoneyLedgerHandler(
   return result;
 }
 
-export const adminExportMoneyLedger = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 120, maxInstances: 3}),
-  (request) => adminExportMoneyLedgerHandler(request));
+export const adminExportMoneyLedger = callableWithLimits(
+  {timeoutSeconds: 120, maxInstances: 3},
+  adminExportMoneyLedgerSpec());

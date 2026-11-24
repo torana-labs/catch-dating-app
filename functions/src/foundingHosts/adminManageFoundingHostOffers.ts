@@ -1,12 +1,9 @@
 import * as admin from "firebase-admin";
-import {onCall, HttpsError, type CallableRequest} from
+import {HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../platform/adminAuth";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {marketForIdOrAlias} from "../locations/marketConfig";
-import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import type {AdminManageFoundingHostOffersCallablePayload as Payload} from
   "../shared/generated/adminManageFoundingHostOffersCallablePayload";
 import type {AdminManageFoundingHostOffersCallableResponse as Result} from
@@ -29,6 +26,14 @@ import {
   publicFoundingOffer,
   type FoundingHostOffer,
 } from "./foundingHostOffer";
+import {
+  callableWithLimits,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 type Db = FirebaseFirestore.Firestore;
 
@@ -61,16 +66,32 @@ function storedOffer(snap: FirebaseFirestore.DocumentSnapshot):
  * The cap never falls below the places already taken, and a change never
  * touches a place already taken or its trial. The public counter is
  * rewritten in the same transaction.
- * @param {CallableRequest<unknown>} request Callable request.
- * @param {Dependencies} deps Injectable dependencies.
- * @return {Promise<Result>} Offers in force.
+ * Policy: ["adminOwner"] (STR-10).
+ * @param {Dependencies} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminManageFoundingHostOffersHandler(
+export function adminManageFoundingHostOffersSpec(
+  deps: Dependencies = defaults):
+  CallableSpec<Payload, AdminContext, Result> {
+  return {
+    name: "adminManageFoundingHostOffers",
+    policy: adminRoles(["adminOwner"]),
+    input: validateAdminManageFoundingHostOffersCallablePayload,
+    handle: (context) => adminManageFoundingHostOffersWork(context, deps),
+  };
+}
+
+/** The deployed path of adminManageFoundingHostOffers, for tests. */
+export function adminManageFoundingHostOffersHandler(
   request: CallableRequest<unknown>, deps: Dependencies = defaults):
   Promise<Result> {
-  const actor = requireAdminRole(request, ["adminOwner"]);
-  const data = validateCallableWithAjv<Payload>(request,
-    validateAdminManageFoundingHostOffersCallablePayload);
+  return runCallable(adminManageFoundingHostOffersSpec(deps), request);
+}
+
+async function adminManageFoundingHostOffersWork(
+  {request, data, actor}: CallableContext<Payload, AdminContext>,
+  deps: Dependencies):
+  Promise<Result> {
   if (data.action === "read" ?
     data.expectedRevision !== null || data.cap !== null ||
       data.endsAtMillis !== null || data.reason !== null :
@@ -165,6 +186,6 @@ function project(offers: FoundingHostOffer[], nowMillis: number): Result {
   return result;
 }
 
-export const adminManageFoundingHostOffers = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 30, maxInstances: 10}),
-  (request) => adminManageFoundingHostOffersHandler(request));
+export const adminManageFoundingHostOffers = callableWithLimits(
+  {timeoutSeconds: 30, maxInstances: 10},
+  adminManageFoundingHostOffersSpec());

@@ -1,6 +1,5 @@
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../platform/adminAuth";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
@@ -31,6 +30,14 @@ import {
   safetyNoticeRef,
 } from "./accountStanding";
 import {SAFETY_OPS_ROLES, safetyActorRole} from "./safetyPolicy";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 type ActionDoc = AccountSafetyActionDocument;
 
@@ -89,18 +96,37 @@ export async function submitSafetyAppealHandler(
 /**
  * Decides an appeal. The reviewer must not be the person who decided the
  * action; that is the whole review. Keep, reduce to a lighter step, or lift.
- * @param {CallableRequest<unknown>} request Callable request.
+ * Policy: SAFETY_OPS_ROLES (STR-10).
  * @param {AccountActionDeps} deps Dependencies.
- * @return {Promise<AdminDecideSafetyAppealCallableResponse>} Result.
+ * @return {CallableSpec} The callable.
  */
-export async function adminDecideSafetyAppealHandler(
+export function adminDecideSafetyAppealSpec(
+  deps: AccountActionDeps = defaultAccountActionDeps):
+  CallableSpec<
+    AdminDecideSafetyAppealCallablePayload,
+    AdminContext,
+    AdminDecideSafetyAppealCallableResponse> {
+  return {
+    name: "adminDecideSafetyAppeal",
+    policy: adminRoles(SAFETY_OPS_ROLES),
+    input: validateAdminDecideSafetyAppealCallablePayload,
+    handle: (context) => adminDecideSafetyAppealWork(context, deps),
+  };
+}
+
+/** The deployed path of adminDecideSafetyAppeal, for tests. */
+export function adminDecideSafetyAppealHandler(
   request: CallableRequest<unknown>,
-  deps: AccountActionDeps = defaultAccountActionDeps
-): Promise<AdminDecideSafetyAppealCallableResponse> {
-  const context = requireAdminRole(request, SAFETY_OPS_ROLES);
-  const payload = validateCallableWithAjv<
-    AdminDecideSafetyAppealCallablePayload>(request,
-      validateAdminDecideSafetyAppealCallablePayload);
+  deps: AccountActionDeps = defaultAccountActionDeps):
+  Promise<AdminDecideSafetyAppealCallableResponse> {
+  return runCallable(adminDecideSafetyAppealSpec(deps), request);
+}
+
+async function adminDecideSafetyAppealWork(
+  {request, data: payload, actor: context}:
+    CallableContext<AdminDecideSafetyAppealCallablePayload, AdminContext>,
+  deps: AccountActionDeps):
+  Promise<AdminDecideSafetyAppealCallableResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, context.uid, "adminDecideSafetyAppeal",
     {maxRequests: 20, windowMs: 60_000});
@@ -202,5 +228,4 @@ export async function adminDecideSafetyAppealHandler(
 export const submitSafetyAppeal = onCall(appCheckCallableOptions,
   (request) => submitSafetyAppealHandler(request));
 
-export const adminDecideSafetyAppeal = onCall(appCheckCallableOptions,
-  (request) => adminDecideSafetyAppealHandler(request));
+export const adminDecideSafetyAppeal = callable(adminDecideSafetyAppealSpec());

@@ -1,13 +1,11 @@
 /* eslint-disable max-len */
-import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import type {AdminGetListingEventReviewCallablePayload} from "../shared/generated/adminGetListingEventReviewCallablePayload";
 import type {AdminGetListingEventReviewCallableResponse} from "../shared/generated/adminGetListingEventReviewCallableResponse";
 import type {AdminPublishListingEventsCallablePayload} from "../shared/generated/adminPublishListingEventsCallablePayload";
 import type {AdminPublishListingEventsCallableResponse} from "../shared/generated/adminPublishListingEventsCallableResponse";
 import {validateAdminGetListingEventReviewCallablePayload} from "../shared/generated/validators/adminGetListingEventReviewInput";
 import {validateAdminPublishListingEventsCallablePayload} from "../shared/generated/validators/adminPublishListingEventsInput";
-import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {supplyIntakeCollections} from "../operations/supplyIntake/worker";
 import {
@@ -20,7 +18,14 @@ import {
   type ListingEventReview,
   type StaffEventLocation,
 } from "../operations/supplyIntake/eventPublication";
-import {requireAdminRole} from "../platform/adminAuth";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 // Reviewing and publishing imported events share the external-event roles.
 const listingEventRoles = ["admin", "adminOwner", "support"] as const;
@@ -131,13 +136,38 @@ export async function listingEventImportRow(
 }
 
 /** One imported event, by its request, for the inbox's publish sheet. */
-export async function adminGetListingEventReviewHandler(
+/**
+ * adminGetListingEventReview: listingEventRoles only (STR-10 policy).
+ * @param {ListingEventImportDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
+ */
+export function adminGetListingEventReviewSpec(
+  deps: ListingEventImportDeps = defaultDeps):
+  CallableSpec<
+    AdminGetListingEventReviewCallablePayload,
+    AdminContext,
+    AdminGetListingEventReviewCallableResponse> {
+  return {
+    name: "adminGetListingEventReview",
+    policy: adminRoles(listingEventRoles),
+    input: validateAdminGetListingEventReviewCallablePayload,
+    handle: (context) => adminGetListingEventReviewWork(context, deps),
+  };
+}
+
+/** The deployed path of adminGetListingEventReview, for tests. */
+export function adminGetListingEventReviewHandler(
   request: CallableRequest<unknown>,
-  deps: ListingEventImportDeps = defaultDeps
-): Promise<AdminGetListingEventReviewCallableResponse> {
-  const adminContext = requireAdminRole(request, listingEventRoles);
-  const data = validateCallableWithAjv<AdminGetListingEventReviewCallablePayload>(request,
-    validateAdminGetListingEventReviewCallablePayload);
+  deps: ListingEventImportDeps = defaultDeps):
+  Promise<AdminGetListingEventReviewCallableResponse> {
+  return runCallable(adminGetListingEventReviewSpec(deps), request);
+}
+
+async function adminGetListingEventReviewWork(
+  {data, actor: adminContext}:
+    CallableContext<AdminGetListingEventReviewCallablePayload, AdminContext>,
+  deps: ListingEventImportDeps):
+  Promise<AdminGetListingEventReviewCallableResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(
     db,
@@ -155,22 +185,46 @@ export async function adminGetListingEventReviewHandler(
   return {policy: {mode: policy.mode, policyVersion: policy.policyVersion}, organizer: imported.row.organizer, event};
 }
 
-export const adminGetListingEventReview = onCall(appCheckCallableOptions,
-  (request) => adminGetListingEventReviewHandler(request));
+export const adminGetListingEventReview = callable(
+  adminGetListingEventReviewSpec());
 
 /**
  * A staff member publishes (or dry-runs) chosen events of one approved
  * listing. Every checklist gate must be confirmed; resolutions name the event
  * they belong to. Each event is planned and written on its own, so the
  * response reports blocked events beside published ones.
+ * Policy: listingEventRoles (STR-10).
+ * @param {ListingEventImportDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminPublishListingEventsHandler(
+export function adminPublishListingEventsSpec(
+  deps: ListingEventImportDeps = defaultDeps):
+  CallableSpec<
+    AdminPublishListingEventsCallablePayload,
+    AdminContext,
+    AdminPublishListingEventsCallableResponse> {
+  return {
+    name: "adminPublishListingEvents",
+    policy: adminRoles(listingEventRoles),
+    input: validateAdminPublishListingEventsCallablePayload,
+    normalize: normalizePublishPayload,
+    handle: (context) => adminPublishListingEventsWork(context, deps),
+  };
+}
+
+/** The deployed path of adminPublishListingEvents, for tests. */
+export function adminPublishListingEventsHandler(
   request: CallableRequest<unknown>,
-  deps: ListingEventImportDeps = defaultDeps
-): Promise<AdminPublishListingEventsCallableResponse> {
-  const adminContext = requireAdminRole(request, listingEventRoles);
-  const data = validateCallableWithAjv<AdminPublishListingEventsCallablePayload>(request,
-    validateAdminPublishListingEventsCallablePayload, normalizePublishPayload);
+  deps: ListingEventImportDeps = defaultDeps):
+  Promise<AdminPublishListingEventsCallableResponse> {
+  return runCallable(adminPublishListingEventsSpec(deps), request);
+}
+
+async function adminPublishListingEventsWork(
+  {request, data, actor: adminContext}:
+    CallableContext<AdminPublishListingEventsCallablePayload, AdminContext>,
+  deps: ListingEventImportDeps):
+  Promise<AdminPublishListingEventsCallableResponse> {
   const {checklist} = data;
   if (!checklist.outboundLinksReviewed || !checklist.noCatchBookingPaymentsWaitlist ||
       !checklist.ownerSafeCopyReviewed) {
@@ -221,8 +275,8 @@ export async function adminPublishListingEventsHandler(
   };
 }
 
-export const adminPublishListingEvents = onCall(appCheckCallableOptions,
-  (request) => adminPublishListingEventsHandler(request));
+export const adminPublishListingEvents = callable(
+  adminPublishListingEventsSpec());
 
 function normalizePublishPayload(value: unknown): unknown {
   if (!value || typeof value !== "object" || Array.isArray(value)) return value;

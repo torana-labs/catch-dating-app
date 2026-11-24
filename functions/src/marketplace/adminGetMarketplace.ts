@@ -1,17 +1,14 @@
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {onCall, HttpsError, type CallableRequest} from
+import {HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../platform/adminAuth";
 import {
   type BigQueryClient,
   defaultBigQueryClient,
   intParam,
   stringParam,
 } from "../shared/bigQuery";
-import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import type {AdminGetMarketplaceCallablePayload as Payload} from
   "../shared/generated/adminGetMarketplaceCallablePayload";
 import type {AdminGetMarketplaceCallableResponse as Result} from
@@ -20,6 +17,14 @@ import {validateAdminGetMarketplaceCallablePayload} from
   "../shared/generated/validators/adminGetMarketplaceInput";
 import {validateAdminGetMarketplaceCallableResponse} from
   "../shared/generated/validators/adminGetMarketplaceOutput";
+import {
+  callableWithLimits,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 /**
  * The Marketplace from the warehouse's Firestore exports (events, bookings,
@@ -289,16 +294,33 @@ export function buildMarketplace(input: {
 
 /**
  * The owner reads the Marketplace.
- * @param {CallableRequest<unknown>} request Callable request.
- * @param {BigQueryClient} bigQuery Warehouse client.
- * @return {Promise<Result>} Marketplace.
+ * Policy: marketplaceRoles (STR-10).
+ * @param {BigQueryClient} bigQuery Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminGetMarketplaceHandler(
+export function adminGetMarketplaceSpec(
+  bigQuery: BigQueryClient = defaultBigQueryClient):
+  CallableSpec<Payload, AdminContext, Result> {
+  return {
+    name: "adminGetMarketplace",
+    policy: adminRoles(marketplaceRoles),
+    input: validateAdminGetMarketplaceCallablePayload,
+    handle: (context) => adminGetMarketplaceWork(context, bigQuery),
+  };
+}
+
+/** The deployed path of adminGetMarketplace, for tests. */
+export function adminGetMarketplaceHandler(
   request: CallableRequest<unknown>,
-  bigQuery: BigQueryClient = defaultBigQueryClient): Promise<Result> {
-  const actor = requireAdminRole(request, marketplaceRoles);
-  const data = validateCallableWithAjv<Payload>(request,
-    validateAdminGetMarketplaceCallablePayload);
+  bigQuery: BigQueryClient = defaultBigQueryClient):
+  Promise<Result> {
+  return runCallable(adminGetMarketplaceSpec(bigQuery), request);
+}
+
+async function adminGetMarketplaceWork(
+  {data, actor}: CallableContext<Payload, AdminContext>,
+  bigQuery: BigQueryClient):
+  Promise<Result> {
   const db = admin.firestore();
   await checkRateLimit(db, actor.uid, "adminGetMarketplace",
     {maxRequests: 20, windowMs: 60 * 1000});
@@ -346,6 +368,6 @@ export async function adminGetMarketplaceHandler(
   return result;
 }
 
-export const adminGetMarketplace = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 120, maxInstances: 5}),
-  (request) => adminGetMarketplaceHandler(request));
+export const adminGetMarketplace = callableWithLimits(
+  {timeoutSeconds: 120, maxInstances: 5},
+  adminGetMarketplaceSpec());

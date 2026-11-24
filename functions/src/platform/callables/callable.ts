@@ -26,8 +26,14 @@ export interface CallableSpec<P, A, R> {
   /** Shapes the raw payload before validation, such as null to {}. */
   normalize?: (data: unknown) => unknown;
   /** The work, given the validated payload and the policy's actor. */
-  handle: (context: {request: CallableRequest<unknown>; data: P; actor: A}) =>
-    Promise<R>;
+  handle: (context: CallableContext<P, A>) => Promise<R>;
+}
+
+/** What a callable's handler receives. */
+export interface CallableContext<P, A> {
+  request: CallableRequest<unknown>;
+  data: P;
+  actor: A;
 }
 
 /**
