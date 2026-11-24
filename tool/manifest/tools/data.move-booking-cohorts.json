@@ -1,0 +1,20 @@
+{
+  "id": "data:move-booking-cohorts",
+  "category": "data",
+  "path": "tool/data/move_booking_cohorts.mjs",
+  "command": "node tool/data/move_booking_cohorts.mjs --env <dev|prod>",
+  "surface": "remote-write",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "description": "One-off move of booking cohorts (a guest's orientation) from eventBookings, eventParticipations and eventWaitlistOffers into the server-only eventBookingPrivateFacts (#2493); dry run by default.",
+  "checks": [
+    "node --check tool/data/move_booking_cohorts.mjs",
+    "node --test tool/data/move_booking_cohorts.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/data/move_booking_cohorts.test.mjs",
+    "functions/src/shared/bookingPrivateFacts.ts"
+  ],
+  "role": "generator",
+  "runbook": "docs/data_contracts.md#booking-cohorts-stay-server-only"
+}

@@ -25,6 +25,7 @@ import {
   eventParticipationPatch,
   eventBookingsByStatusInTransaction,
 } from "../shared/relationshipDocuments";
+import {writeBookingCohort} from "../shared/bookingPrivateFacts";
 import {
   activityNotificationId,
   eventActivityNotificationCopy,
@@ -490,7 +491,6 @@ export async function signUpUserForEvent(
         uid: userId,
         status: "signedUp",
         genderAtSignup: gender,
-        cohortAtSignup: cohortId,
         paymentId,
       }),
       ...(membership ? {communityMembershipAtSignup: {
@@ -503,6 +503,8 @@ export async function signUpUserForEvent(
       ...inviteAttributionWriteFields(attribution.write),
     };
     tx.set(participationRef, participationWrite, {merge: true});
+    writeBookingCohort({db, tx, eventId, uid: userId,
+      cohortAtSignup: cohortId});
     writeCatchBookingRoster({db, tx, slot: rosterSlot,
       booking: participationAfterPatch(participationSnap.data(),
         participationWrite), now: admin.firestore.Timestamp.now()});
