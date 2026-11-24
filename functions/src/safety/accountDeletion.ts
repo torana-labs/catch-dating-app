@@ -422,8 +422,8 @@ async function queueParticipantPrivateStateCleanup(
  * facts, event feedback, compatibility answers, conversation graphs and
  * runtime identities are deleted. Other people's records lose the account:
  * their signal facts naming it as peer are deleted too (the fact id carries
- * the peer's uid), and their conversation graphs drop it from selectedUids. Scorecard
- * triggers recompute the host aggregates from what remains.
+ * the peer's uid), and their conversation graphs drop it from selectedUids.
+ * Scorecard triggers recompute the host aggregates from what remains.
  */
 async function queueEventSuccessCleanup(
   db: FirebaseFirestore.Firestore,
