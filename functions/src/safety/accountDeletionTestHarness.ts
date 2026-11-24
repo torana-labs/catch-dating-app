@@ -1,8 +1,6 @@
 import assert from "node:assert/strict";
 import * as admin from "firebase-admin";
 import {requestAccountDeletionHandler} from "./accountDeletion";
-import {withEventSeatLedgers} from
-  "../events/seatAuthority/eventSeatLedgerTestSupport";
 
 // The in-memory Firestore, Auth and Storage that account deletion tests run
 // requestAccountDeletionHandler against. Batch writes are recorded, not
@@ -41,6 +39,9 @@ export function createAccountDeletionHarness(params: {
   seed: Record<string, FakeDocumentData>;
   now: unknown;
   beforeTransaction?: () => void;
+  /** Rows to add to the seed first, such as every event's seat ledger. */
+  seedSupport?: (seed: Record<string, FakeDocumentData>) =>
+    Record<string, FakeDocumentData>;
 }) {
   const setWrites: SetWrite[] = [];
   const updateWrites: UpdateWrite[] = [];
@@ -49,8 +50,9 @@ export function createAccountDeletionHarness(params: {
   const deletedStorageFiles: string[] = [];
   const committedBatches: string[][] = [];
   let commits = 0;
-  // Every event has its seat ledger. Tests change the seed in place.
-  const seed = Object.assign(params.seed, withEventSeatLedgers(params.seed));
+  // Tests change the seed in place.
+  const seed = Object.assign(params.seed,
+    params.seedSupport?.(params.seed) ?? {});
 
   const docFor = (
     collectionPath: string,

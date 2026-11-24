@@ -376,14 +376,18 @@
       "reason": "Expiring capability that routes one forwarded roster to one Host identity; it lapses at its own expiry and holds no guest data."
     },
     "eventRuntimeClaimRequests": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Pending runtime identity claim by the guest at eventRuntimeClaimRequests/{eventId_uid}. Proposed: delete it with the account's eventRuntimeParticipants."
+      "handling": "deleted",
+      "how": "queueEventDataCleanup deletes the account's runtime identity claims, with its eventRuntimeParticipants (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionEventData.ts"
+      ]
     },
     "eventRuntimeDataRequests": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Request for the guest's missing event-scoped runtime data. Proposed: delete it with the account's eventRuntimeParticipants."
+      "handling": "deleted",
+      "how": "queueEventDataCleanup deletes the account's runtime data requests, with its eventRuntimeParticipants (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionEventData.ts"
+      ]
     },
     "eventRuntimeParticipants": {
       "handling": "deleted",
@@ -422,19 +426,25 @@
       "reason": "Door-presence heartbeat of a manager or staff member at eventStaffPresence/{eventId}_{uid}. Proposed: delete the account's rows."
     },
     "eventSuccessArrivalMissions": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "First Hello mission naming the observing guest and the guest they look for. Proposed: delete missions where either uid is the account."
+      "handling": "deleted",
+      "how": "queueEventDataCleanup deletes the missions where the account is the observer or the target (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionEventData.ts"
+      ]
     },
     "eventSuccessAssignmentDrafts": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Host-only precomputed assignment of the guest until its round is published. Proposed: delete the account's drafts."
+      "handling": "deleted",
+      "how": "queueEventDataCleanup deletes the account's drafts and cleans peers' drafts as it cleans their assignments, so publishing a round cannot bring the account back (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionEventData.ts"
+      ]
     },
     "eventSuccessAssignments": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Live guidance assignment of the guest, with peer uids in its rotation slots. Proposed: delete the account's assignments and remove its uid from peers' slots."
+      "handling": "deleted",
+      "how": "queueEventDataCleanup deletes the account's assignments and, in peers' assignments, removes it from peerUids and group slots and drops every rotation slot that pairs the peer with it (a slot requires its peer) (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionEventData.ts"
+      ]
     },
     "eventSuccessCompatibilityResponses": {
       "handling": "deleted",
@@ -445,48 +455,64 @@
       "how": "queueEventSuccessCleanup deletes the account's own graphs and removes its uid from other guests' selectedUids. The graph trigger recomputes the host's aggregate counts."
     },
     "eventSuccessDeferredCues": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Server-only cue held back for the guest by the event's phone rule. Proposed: delete the account's cues."
+      "handling": "deleted",
+      "how": "queueEventDataCleanup deletes the account's held-back cues (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionEventData.ts"
+      ]
     },
     "eventSuccessFeedback": {
       "handling": "deleted",
       "how": "queueEventSuccessCleanup deletes the account's feedback. The scorecard trigger recomputes the event's aggregate without it; the safety report it raised (eventSafetyReports) is separate."
     },
     "eventSuccessGuestHistory": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "One guest's game history for one night, projected from eventSuccessStandings. Proposed: delete the account's history and anonymise its standings entries."
+      "handling": "deleted",
+      "how": "queueEventDataCleanup deletes the account's game histories; after the main writes it renames the account's half of its pair labels in rank standings, and the standings trigger re-projects the other guests' histories with the new label (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionEventData.ts"
+      ]
     },
     "eventSuccessLateArrivals": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Host resolution for the guest's late arrival (resolvedByUid names the host). Proposed: delete the account's records."
+      "handling": "deleted",
+      "how": "queueEventDataCleanup deletes the late-arrival resolutions about the account; resolvedByUid on other guests' records names the Host and is left for the staff-access pass (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionEventData.ts"
+      ]
     },
     "eventSuccessPlans": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Host plan whose affinity constraints and spatial overrides pair named guests. Proposed: drop constraints and overrides naming the account."
+      "handling": "anonymised",
+      "how": "queueEventDataCleanup drops the affinity constraints and spatial overrides naming the account from the plans of the events it booked or was assigned at (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionEventData.ts"
+      ]
     },
     "eventSuccessPreferences": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "The guest's opt-out preferences for live guidance. Proposed: delete the account's preferences."
+      "handling": "deleted",
+      "how": "queueEventDataCleanup deletes the account's live guidance preferences (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionEventData.ts"
+      ]
     },
     "eventSuccessPresence": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Liveness heartbeat of the guest at eventSuccessPresence/{eventId_uid}. Proposed: delete the account's rows."
+      "handling": "deleted",
+      "how": "queueEventDataCleanup deletes the account's presence heartbeats (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionEventData.ts"
+      ]
     },
     "eventSuccessWingmanRequests": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "The guest's request for introduction help, naming the target guest. Proposed: delete requests where either uid is the account."
+      "handling": "deleted",
+      "how": "queueEventDataCleanup deletes the requests where the account is the requester or the target (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionEventData.ts"
+      ]
     },
     "eventVenueSessionRedemptions": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Single-use receipt binding the guest to one venue session. Proposed: delete the account's receipts once the session is over."
+      "handling": "deleted",
+      "how": "queueEventDataCleanup deletes all of the account's receipts, live sessions included: a receipt only stops the same account redeeming twice, and the account is gone (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionEventData.ts"
+      ]
     },
     "eventWaitlistOffers": {
       "handling": "kept",
@@ -565,9 +591,12 @@
       "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
     },
     "hostEventRequestViews": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Host view listing guests' runtime data requests by uid. Proposed: refresh it after the account's eventRuntimeDataRequests are removed."
+      "handling": "anonymised",
+      "how": "Account deletion marks the account's participations deleted (accountDeletionSeats.ts); the request view trigger re-evaluates each event on that write and drops the account's row (#2468).",
+      "handledBy": [
+        "functions/src/hostReadModels/requestViewTriggers.ts",
+        "functions/src/hostReadModels/requestViewStore.ts"
+      ]
     },
     "hostMembershipBenefitUses": {
       "handling": "deleted",
@@ -761,9 +790,8 @@
       "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
     },
     "organizerFollows": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "queueOrganizerMembershipCleanup marks the follow inactive, stops pushes and decrements the follower count, but the edge keeps the uid. Proposed: delete the edge; its count effect is already applied."
+      "handling": "deleted",
+      "how": "queueOrganizerFollowCleanup deletes the account's follow edges; syncOrganizerFollowerStats recounts the organiser's active edges on the delete (#2468)."
     },
     "organizerFormAdmissionReceipts": {
       "handling": "kept",
@@ -841,9 +869,11 @@
       "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
     },
     "organizerMeetingHistory": {
-      "handling": "kept",
-      "needsDecision": true,
-      "reason": "Who a guest met at one organiser's events (organizerMeetingHistory/{organizerId_uid}). Proposed: delete the account's history and remove its uid from other guests' histories."
+      "handling": "deleted",
+      "how": "queueEventDataCleanup deletes the account's histories and removes it from the peers map of every guest it met; its own histories name those guests, because the peers map is unindexed (#2468).",
+      "handledBy": [
+        "functions/src/safety/accountDeletionEventData.ts"
+      ]
     },
     "organizerMomentViews": {
       "handling": "kept",

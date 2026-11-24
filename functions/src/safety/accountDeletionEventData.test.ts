@@ -6,6 +6,8 @@ import {requestViewEventsForParticipation} from
 import {outcomeUnitId, pairLabelWithoutAccount} from
   "./accountDeletionEventData";
 import {deleteRunnerOne} from "./accountDeletionTestHarness";
+import {syncOrganizerFollowerStatsHandler} from
+  "../organizers/syncOrganizerFollowerStats";
 
 // One test per collection of #2468 group 1 (guest event and dating data).
 // runner-1 is the deleted account; runner-2 and runner-3 are other guests.
@@ -235,4 +237,34 @@ test("deletion deletes the account's follow edges only", async () => {
   assert.ok(!deletes(harness, "organizerFollows/club-1_runner-2"));
   assert.ok(!harness.setWrites.some((write) =>
     write.path.startsWith("organizerFollows/")));
+});
+
+test("a deleted follow edge recounts the organiser's followers", async () => {
+  // syncOrganizerFollowerStats runs on every organizerFollows write,
+  // deletes included, and sets followerCount to the active edges left.
+  const follows = [
+    {organizerId: "club-1", uid: "runner-2", status: "active"},
+    {organizerId: "club-1", uid: "runner-3", status: "inactive"},
+  ];
+  const organizer: Record<string, unknown> = {followerCount: 2};
+  const firestore = {collection: (name: string) => name === "organizers" ? {
+    doc: () => ({
+      get: async () => ({exists: true}),
+      set: async (data: Record<string, unknown>) => {
+        Object.assign(organizer, data);
+      },
+    }),
+  } : {
+    where: (field: string, _op: string, value: unknown) => ({
+      where: (field2: string, _op2: string, value2: unknown) => ({
+        get: async () => ({docs: follows.filter((follow) =>
+          (follow as Record<string, unknown>)[field] === value &&
+          (follow as Record<string, unknown>)[field2] === value2)}),
+      }),
+    }),
+  }} as unknown as FirebaseFirestore.Firestore;
+  await syncOrganizerFollowerStatsHandler(
+    {organizerId: "club-1", uid: "runner-1", status: "active"} as never,
+    undefined, {firestore: () => firestore});
+  assert.equal(organizer.followerCount, 1);
 });

@@ -17,8 +17,17 @@ import {
   requestAccountDeletionHandler,
   storagePathFromDownloadUrl,
 } from "./accountDeletion";
-import {createAccountDeletionHarness, deleteRunnerOne,
+import {createAccountDeletionHarness as createHarness, deleteRunnerOne,
   type FakeDocumentData} from "./accountDeletionTestHarness";
+import {withEventSeatLedgers} from
+  "../events/seatAuthority/eventSeatLedgerTestSupport";
+
+/** The harness with every seeded event's seat ledger. */
+function createAccountDeletionHarness(
+  params: Parameters<typeof createHarness>[0]
+) {
+  return createHarness({...params, seedSupport: withEventSeatLedgers});
+}
 
 test(
   "storagePathFromDownloadUrl extracts Firebase Storage object paths",
