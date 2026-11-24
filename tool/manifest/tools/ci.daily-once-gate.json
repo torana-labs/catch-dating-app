@@ -23,5 +23,5 @@
     ]
   },
   "role": "finder",
-  "runbook": "docs/release_operations.md#test-read-map"
+  "runbook": "docs/release_operations.md#once-a-day-reports"
 }
