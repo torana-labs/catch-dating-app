@@ -128,6 +128,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       readBaseline(repoRoot) : [...current];
     const next = [...new Set(baseline)].filter((name) => current.has(name)).sort();
     fs.writeFileSync(path.join(repoRoot, BASELINE), JSON.stringify({
+      owner: "backend_operation_catalog",
+      targetPhase: "docs/backend_operation_catalog.md#" +
+        "phase-every-callable-uses-callable",
       description: "Callables still built with a raw onCall, not callable() " +
         "with a policy (STR-10, issue #2532). Only shrinks: convert one, then " +
         "remove its name. node tool/audit/check_callable_policy.mjs checks it.",
