@@ -281,7 +281,8 @@ test("buildEventHostFunnelMetrics computes the operating funnel", () => {
 });
 
 test(
-  "invite link scorecard trigger ignores writes that leave funnel counters unchanged",
+  "invite link scorecard trigger ignores writes that leave funnel counters " +
+    "unchanged",
   async () => {
     await onEventInviteLinkWrittenHandler(
       {
