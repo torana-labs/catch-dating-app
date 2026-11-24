@@ -1,0 +1,37 @@
+{
+  "id": "audit:callable-policy",
+  "category": "audit",
+  "path": "tool/audit/check_callable_policy.mjs",
+  "command": "node tool/audit/check_callable_policy.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "STR-10 (#2532): every callable is built with callable() from functions/src/platform/callables/callable.ts, whose authorisation policy is required. Fails on a raw onCall export (or a local onCall wrapper's export) not named in tool/audit/callable_policy_baseline.json, and on a listed name that is converted or gone, so the list of unconverted callables only shrinks.",
+  "impactPaths": [
+    "functions/src/**/*.ts",
+    "tool/audit/callable_policy_baseline.json",
+    "tool/audit/check_callable_policy.test.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "checks": [
+    "node --check tool/audit/check_callable_policy.mjs",
+    "node --test tool/audit/check_callable_policy.test.mjs",
+    "node tool/audit/check_callable_policy.mjs"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "CALLABLE-POLICY-001",
+      "title": "Callables state their authorisation policy through callable()",
+      "appliesTo": [
+        "functions/src/**/*.ts"
+      ],
+      "instruction": "Build a new callable with callable(options, {name, policy, input, handle}) from functions/src/platform/callables/callable.ts and a policy from policies.ts. Never add a raw onCall. When converting one, remove its name from tool/audit/callable_policy_baseline.json."
+    }
+  ],
+  "queueGate": "always"
+}

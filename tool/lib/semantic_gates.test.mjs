@@ -18,6 +18,8 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../
 // changes on purpose.
 const approvedAlways = [
   "audit:app-architecture-exhibits",
+  // STR-10 (#2532): no new raw onCall; 0.3 s.
+  "audit:callable-policy",
   "audit:context-map",
   "audit:flutter-source-size",
   "audit:fn-rate-limits",

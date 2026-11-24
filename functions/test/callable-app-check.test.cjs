@@ -213,10 +213,39 @@ function callableViolations(source, filePath, wrappers = new Set(), moduleSource
       account.name.text === "serviceAccount" &&
       approvedAccount(account.initializer);
   }
+  // STR-10 (#2532): platform/callables/callable.ts builds callables with the
+  // shared options. Its one parameterised form, callableWithLimits(limits,
+  // spec), passes its first parameter to appCheckCallableOptionsWithLimits;
+  // that is accepted there only because every call site below must pass
+  // literal limits, checked like a direct appCheckCallableOptionsWithLimits.
+  const wrapperModule = path.join(sourceRoot, "platform", "callables", "callable");
+  const callableWrapperName = (node) => importedName(node, (module) =>
+    module.startsWith(".") &&
+    path.resolve(path.dirname(filePath), module).replace(/\.ts$/, "") === wrapperModule);
+  function wrapperForwardsLimits(call) {
+    if (filePath.replace(/\.ts$/, "") !== wrapperModule) return false;
+    const options = unwrap(call.arguments[0]);
+    if (!options || !ts.isCallExpression(options) ||
+      sharedName(unwrap(options.expression)) !== "appCheckCallableOptionsWithLimits" ||
+      options.arguments.length !== 1 || !ts.isIdentifier(options.arguments[0])) return false;
+    let fn = call.parent;
+    while (fn && !ts.isFunctionDeclaration(fn)) fn = fn.parent;
+    return !!fn && fn.name?.text === "callableWithLimits" &&
+      fn.parameters.length === 2 && ts.isIdentifier(fn.parameters[0].name) &&
+      fn.parameters[0].name.text === options.arguments[0].text;
+  }
   const violations = [];
   function visit(node) {
     if (ts.isCallExpression(node) &&
+      callableWrapperName(unwrap(node.expression)) === "callableWithLimits" &&
+      !safeLimits(node.arguments[0],
+        ["concurrency", "maxInstances", "memory", "timeoutSeconds"])) {
+      const {line} = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile));
+      violations.push(`${path.relative(sourceRoot, filePath)}:${line + 1}: callableWithLimits(${node.arguments[0]?.getText(sourceFile) || "missing limits"})`);
+    }
+    if (ts.isCallExpression(node) &&
       isOnCall(node.expression) &&
+      !wrapperForwardsLimits(node) &&
       !approvedOptions(node.arguments[0])) {
       const {line} = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile));
       violations.push(`${path.relative(sourceRoot, filePath)}:${line + 1}: ${node.arguments[0]?.getText(sourceFile) || "missing options"}`);
@@ -336,6 +365,41 @@ test("scanner rejects policy overrides, arbitrary spreads and malformed helper c
       "appCheckCallableOptionsWithSecrets([secret])" : "appCheckCallableOptions";
     assert.equal(fixtureViolations(`onCall(${options}, handler);`, imports).length, 1, imports);
   }
+});
+
+test("callableWithLimits call sites pass literal limits; only the wrapper may forward them", () => {
+  const wrapperImports = `
+import {callableWithLimits} from "../platform/callables/callable";
+`;
+  assert.deepEqual(fixtureViolations(
+    "export const a = callableWithLimits({timeoutSeconds: 60, maxInstances: 5}, spec);",
+    wrapperImports), []);
+  for (const body of [
+    "export const a = callableWithLimits({enforceAppCheck: false} as any, spec);",
+    "export const a = callableWithLimits({...other}, spec);",
+    "export const a = callableWithLimits(limitsFromElsewhere, spec);",
+    "export const a = callableWithLimits(undefined as any, spec);",
+  ]) {
+    assert.equal(fixtureViolations(body, wrapperImports).length, 1, body);
+  }
+  // Forwarding a parameter is refused anywhere but the wrapper module.
+  const forward = "export function callableWithLimits(limits: any, spec: any) " +
+    "{ return onCall(appCheckCallableOptionsWithLimits(limits), handler); }";
+  assert.equal(fixtureViolations(forward).length, 1);
+  const wrapperPath = path.join(sourceRoot, "platform", "callables", "callable.ts");
+  const wrapperFixture = `import {onCall} from "firebase-functions/v2/https";
+import {appCheckCallableOptions, appCheckCallableOptionsWithLimits} from "../../shared/callableOptions";
+`;
+  assert.deepEqual(callableViolations(wrapperFixture + forward, wrapperPath), []);
+  // Even there, only the limits parameter of callableWithLimits.
+  assert.equal(callableViolations(wrapperFixture +
+    "export function callableWithLimits(limits: any, spec: any) " +
+    "{ return onCall(appCheckCallableOptionsWithLimits(spec), handler); }",
+  wrapperPath).length, 1);
+  assert.equal(callableViolations(wrapperFixture +
+    "export function other(limits: any, spec: any) " +
+    "{ return onCall(appCheckCallableOptionsWithLimits(limits), handler); }",
+  wrapperPath).length, 1);
 });
 
 test("scanner proves imported legacy wrapper implementations", () => {
