@@ -1,11 +1,12 @@
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/pages/event/event_action_keys.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_keys.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart'
+    as organizer_helpers;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test/events/event_viewer_state_fixtures.dart';
 import '../test/events/events_test_helpers.dart' as event_helpers;
-import '../test/organizers/organizers_test_helpers.dart' as organizer_helpers;
 import '../test/support/profile_readiness_fixtures.dart';
 import 'support/app_shell_test_binding.dart';
 import 'support/app_shell_test_harness.dart';

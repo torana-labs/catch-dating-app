@@ -4,13 +4,12 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switc
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/theme/activity_palette.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/organizers_test_helpers.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../organizers/organizers_test_helpers.dart';
 
 void main() {
   test('selection is isolated per signed-in Host user', () {
