@@ -20,7 +20,6 @@ export {onHostResponseSummaryOfferChanged} from
   "./responseOfferTriggers";
 export {
   onHostGuestViewPlanChanged,
-  onHostGuestViewAttendeeChanged,
   onHostGuestViewGuestChanged,
   onHostGuestViewMembershipChanged,
   onHostGuestViewStaffGrantChanged,
@@ -42,12 +41,10 @@ export {
 } from "./attentionTriggers";
 export {
   onHostEventSetupViewPreferencesChanged,
-  onHostEventSetupViewAttendeeChanged,
   onHostEventSetupViewAttendeeImportChanged,
   onHostEventSetupViewParticipationChanged,
   onHostEventSetupViewWaitlistOfferChanged,
   onHostEventSetupViewEventOfferChanged,
-  onHostEventSetupViewGuestPaymentChanged,
   onHostEventSetupViewMomentChanged,
 } from "./eventSetupViewTriggers";
 export {
@@ -99,8 +96,6 @@ export {
 } from "./organizerJourneyViewTriggers";
 export {onHostFormAutomationRuleChanged, onHostFormAutomationRunChanged} from
   "./formAutomationViewTriggers";
-export {onHostFormPaymentViewPaymentChanged} from
-  "./formPaymentViewTriggers";
 export {
   onHostRequestViewParticipationWritten,
   onHostRequestViewProfileWritten,
@@ -111,11 +106,9 @@ export {
   onHostContactDetailViewContactWritten,
   onHostContactDetailViewTraitsWritten,
   onHostContactDetailViewEdgeWritten,
-  onHostContactDetailViewPaymentWritten,
   onHostContactDetailViewMergeReceiptWritten,
 } from "./contactDetailViewTriggers";
 export {
-  onHostEventAttendanceReportAttendeeWritten,
   onHostEventAttendanceReportDispositionWritten,
 } from "./attendanceReportViewTriggers";
 export {onHostApplicationDetailViewApplicationWritten,
@@ -125,20 +118,15 @@ export {onHostApplicationDetailViewApplicationWritten,
   onHostApplicationDetailViewMembershipWritten} from
   "./applicationDetailViewTriggers";
 export {
-  onHostRosterInsightAttendeeChanged,
   onHostRosterInsightEdgeChanged,
   onHostRosterInsightContactChanged,
   onHostRosterInsightTraitsChanged,
   onHostRosterInsightBookingPaymentChanged,
 } from "./rosterInsightViewTriggers";
-export {
-  onHostEventCaseViewCaseChanged,
-  onHostEventCaseViewAttendeeChanged,
-} from "./eventCaseViewTriggers";
+export {onHostEventCaseViewCaseChanged} from "./eventCaseViewTriggers";
 export {
   onHostEventDeliveryViewMessageChanged,
   onHostEventDeliveryViewGuestChanged,
-  onHostEventDeliveryViewAttendeeChanged,
   onHostEventDeliveryViewWorkItemChanged,
   onHostEventDeliveryViewRunChanged,
 } from "./eventDeliveryViewTriggers";
@@ -147,7 +135,6 @@ export {
   onHostMovementViewProgressChanged,
   onHostMovementViewRosterChanged,
   onHostMovementViewCheckpointChanged,
-  onHostMovementViewAttendeeChanged,
   onHostMovementViewGuestChanged,
   onHostMovementViewMembershipChanged,
   onHostMovementViewWorkItemChanged,

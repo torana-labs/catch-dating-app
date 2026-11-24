@@ -14,7 +14,6 @@
   "write": "server only; written from programStaffGrants, eventStaffGrants, organizerTeamMemberships, organizerPrograms, events and organizers",
   "exportedFunctions": [
     "onHostAssignmentProgramGrantChanged",
-    "onHostAssignmentProgramChanged",
     "dispatchOrganizerPrograms",
     "onHostAssignmentEventGrantChanged",
     "dispatchEvents",
