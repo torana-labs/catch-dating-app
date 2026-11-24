@@ -1,15 +1,21 @@
 import * as admin from "firebase-admin";
 import {Timestamp} from "firebase-admin/firestore";
-import {CallableRequest, onCall} from "firebase-functions/v2/https";
-import {requireAdminRole} from "../platform/adminAuth";
+import type {CallableRequest} from "firebase-functions/v2/https";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {
+  callable,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import type {DiscoverySettingsDocument} from
   "../shared/generated/firestoreAdminTypes";
 import type {AdminGetDiscoverySettingsCallableResponse} from
   "../shared/generated/adminGetDiscoverySettingsCallableResponse";
+import type {AdminGetDiscoverySettingsCallablePayload} from
+  "../shared/generated/adminGetDiscoverySettingsCallablePayload";
 import type {AdminUpdateDiscoverySettingsCallablePayload} from
   "../shared/generated/adminUpdateDiscoverySettingsCallablePayload";
 import {validateAdminGetDiscoverySettingsCallablePayload} from
@@ -52,70 +58,94 @@ function settingsResponse(settings: DiscoverySettings):
   };
 }
 
+type Response = AdminGetDiscoverySettingsCallableResponse;
+
 /**
- * Reads Settings → Discovery, with the defaults in code.
- * @param {CallableRequest<unknown>} request Callable request.
+ * Reads Settings → Discovery, with the defaults in code. Discovery readers
+ * only (STR-10 policy).
  * @param {DiscoverySettingsDeps} deps Dependencies.
- * @return {Promise<AdminGetDiscoverySettingsCallableResponse>} Settings.
+ * @return {CallableSpec} The callable.
  */
-export async function adminGetDiscoverySettingsHandler(
-  request: CallableRequest<unknown>,
+export function adminGetDiscoverySettingsSpec(
   deps: DiscoverySettingsDeps = defaultDeps
-): Promise<AdminGetDiscoverySettingsCallableResponse> {
-  requireAdminRole(request, DISCOVERY_READ_ROLES);
-  validateCallableWithAjv(request,
-    validateAdminGetDiscoverySettingsCallablePayload, (data) => data ?? {});
-  return settingsResponse(await readDiscoverySettings(deps.firestore()));
+): CallableSpec<AdminGetDiscoverySettingsCallablePayload, AdminContext,
+  Response> {
+  return {
+    name: "adminGetDiscoverySettings",
+    policy: adminRoles(DISCOVERY_READ_ROLES),
+    input: validateAdminGetDiscoverySettingsCallablePayload,
+    normalize: (data) => data ?? {},
+    handle: async () =>
+      settingsResponse(await readDiscoverySettings(deps.firestore())),
+  };
 }
 
 /**
  * Owner-only: replaces the discovery rules. The write lands with an admin
  * audit log entry in one transaction; the city plans trigger then rebuilds
  * every city.
- * @param {CallableRequest<unknown>} request Callable request.
  * @param {DiscoverySettingsDeps} deps Dependencies.
- * @return {Promise<AdminGetDiscoverySettingsCallableResponse>} New settings.
+ * @return {CallableSpec} The callable.
  */
-export async function adminUpdateDiscoverySettingsHandler(
-  request: CallableRequest<unknown>,
+export function adminUpdateDiscoverySettingsSpec(
   deps: DiscoverySettingsDeps = defaultDeps
-): Promise<AdminGetDiscoverySettingsCallableResponse> {
-  const context = requireAdminRole(request, DISCOVERY_OWNER_ROLES);
-  const payload = validateCallableWithAjv<
-    AdminUpdateDiscoverySettingsCallablePayload>(request,
-      validateAdminUpdateDiscoverySettingsCallablePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit?.(db, context.uid, "adminUpdateDiscoverySettings",
-    {maxRequests: 20, windowMs: 60_000});
-  const now = deps.now();
-  const rules = discoveryRulesOf(payload);
-  const document: DiscoverySettingsDocument = {
-    schemaVersion: 1,
-    ...rules,
-    updatedAt: now,
-    updatedByUid: context.uid,
+): CallableSpec<AdminUpdateDiscoverySettingsCallablePayload, AdminContext,
+  Response> {
+  return {
+    name: "adminUpdateDiscoverySettings",
+    policy: adminRoles(DISCOVERY_OWNER_ROLES),
+    input: validateAdminUpdateDiscoverySettingsCallablePayload,
+    handle: async ({request, data: payload, actor: context}) => {
+      const db = deps.firestore();
+      await deps.checkRateLimit?.(db, context.uid,
+        "adminUpdateDiscoverySettings", {maxRequests: 20, windowMs: 60_000});
+      const now = deps.now();
+      const rules = discoveryRulesOf(payload);
+      const document: DiscoverySettingsDocument = {
+        schemaVersion: 1,
+        ...rules,
+        updatedAt: now,
+        updatedByUid: context.uid,
+      };
+      await db.runTransaction(async (tx) => {
+        const before = await readDiscoverySettings(db, tx);
+        tx.set(db.doc(DISCOVERY_SETTINGS_PATH), document);
+        setAdminAuditLogInTransaction(tx, db, context, {
+          action: "adminUpdateDiscoverySettings",
+          targetPath: DISCOVERY_SETTINGS_PATH,
+          request,
+          before: {...discoveryRulesOf(before)},
+          after: {...rules},
+          serverTimestamp: deps.serverTimestamp,
+        });
+      });
+      return settingsResponse({
+        ...rules,
+        updatedAtMillis: now.toMillis(),
+        updatedByUid: context.uid,
+      });
+    },
   };
-  await db.runTransaction(async (tx) => {
-    const before = await readDiscoverySettings(db, tx);
-    tx.set(db.doc(DISCOVERY_SETTINGS_PATH), document);
-    setAdminAuditLogInTransaction(tx, db, context, {
-      action: "adminUpdateDiscoverySettings",
-      targetPath: DISCOVERY_SETTINGS_PATH,
-      request,
-      before: {...discoveryRulesOf(before)},
-      after: {...rules},
-      serverTimestamp: deps.serverTimestamp,
-    });
-  });
-  return settingsResponse({
-    ...rules,
-    updatedAtMillis: now.toMillis(),
-    updatedByUid: context.uid,
-  });
 }
 
-export const adminGetDiscoverySettings = onCall(appCheckCallableOptions,
-  (request) => adminGetDiscoverySettingsHandler(request));
+/** The deployed path of adminGetDiscoverySettings, for tests. */
+export function adminGetDiscoverySettingsHandler(
+  request: CallableRequest<unknown>,
+  deps: DiscoverySettingsDeps = defaultDeps
+): Promise<Response> {
+  return runCallable(adminGetDiscoverySettingsSpec(deps), request);
+}
 
-export const adminUpdateDiscoverySettings = onCall(appCheckCallableOptions,
-  (request) => adminUpdateDiscoverySettingsHandler(request));
+/** The deployed path of adminUpdateDiscoverySettings, for tests. */
+export function adminUpdateDiscoverySettingsHandler(
+  request: CallableRequest<unknown>,
+  deps: DiscoverySettingsDeps = defaultDeps
+): Promise<Response> {
+  return runCallable(adminUpdateDiscoverySettingsSpec(deps), request);
+}
+
+export const adminGetDiscoverySettings = callable(
+  adminGetDiscoverySettingsSpec());
+
+export const adminUpdateDiscoverySettings = callable(
+  adminUpdateDiscoverySettingsSpec());
