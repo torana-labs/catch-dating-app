@@ -28,6 +28,7 @@ test("typed contact details hash to the digests the queue sends", () => {
     conversion: "organizer_signup",
     organizer: {ownership: {state: "claimed", ownerUserId: "host-1"}},
     owner: {phoneNumber: "+919876543210", email: "host@example.com"},
+    verifiedEmail: "host@example.com",
     nowMillis: Date.parse("2026-11-17T12:00:00Z")});
   assert.equal(record.matching.phoneSha256, typed.phoneSha256);
   assert.equal(record.matching.emailSha256, typed.emailSha256);
