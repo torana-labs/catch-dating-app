@@ -494,6 +494,10 @@ service cloud.firestore {
           'prefsRunStatusUpdates', 'prefsOrganizerUpdates',
           'prefsWeeklyDigest', 'prefsShowOnMap', 'prefsShowInCrossPaths',
           'prefsCrossPathsInvitations',
+          // Hide switches for the sensitive answers (#2493), set through
+          // updateUserProfile; tolerated, never needed, on create.
+          'prefsHideReligion', 'prefsHideRelationshipGoal',
+          'prefsHideDrinking', 'prefsHideSmoking', 'prefsHideChildren',
           // Server-owned lifecycle fields. These must be tolerated on existing
           // retained docs, but clients cannot create or change them.
           'deleted',

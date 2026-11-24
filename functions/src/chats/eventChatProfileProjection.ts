@@ -27,6 +27,24 @@ export const eventProfileCoreIds = [
   "children",
 ] as const;
 
+/**
+ * Whether the guest hid this answer with its hide switch (#2493, FIX-8).
+ * Religion is hidden unless the guest turned it on; it is not a core field
+ * today, so only the others apply here.
+ * @param {User} user The guest.
+ * @param {string} fieldId Core field id.
+ * @return {boolean} Whether to leave it out.
+ */
+function hiddenByGuest(user: User, fieldId: string): boolean {
+  switch (fieldId) {
+  case "relationshipGoal": return user.prefsHideRelationshipGoal === true;
+  case "drinking": return user.prefsHideDrinking === true;
+  case "smoking": return user.prefsHideSmoking === true;
+  case "children": return user.prefsHideChildren === true;
+  default: return false;
+  }
+}
+
 /** Explicit selectable values, never a projection of the complete profile. */
 export function eventProfileCoreFields(
   user: User | null,
@@ -35,6 +53,8 @@ export function eventProfileCoreFields(
   if (!user) return [];
   const result: Settings["coreFields"] = [];
   for (const fieldId of eventProfileCoreIds) {
+    // A hidden answer is offered to and shown to no one (#2493).
+    if (hiddenByGuest(user, fieldId)) continue;
     let value: unknown;
     if (fieldId === "age") {
       const birth = user.dateOfBirth?.toDate();
