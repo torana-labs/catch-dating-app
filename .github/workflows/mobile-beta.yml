@@ -144,7 +144,7 @@ jobs:
         with:
           cocoapods-version: ${{ steps.toolchain.outputs.cocoapods-version }}
           lockfiles: apps/${{ matrix.role }}/ios/Podfile.lock
-      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
+      - uses: ruby/setup-ruby@4e97ecde5048e1e0816923020652678063ffbf65 # v1.339.0
         with:
           ruby-version: "3.3"
           bundler-cache: true
@@ -217,7 +217,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@748248ddd2a24f49513d8f472f81c3a07d4d50e1 # v4.4.4
       - uses: ./.github/actions/setup-flutter
       - run: flutter pub get --enforce-lockfile
-      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
+      - uses: ruby/setup-ruby@4e97ecde5048e1e0816923020652678063ffbf65 # v1.339.0
         with:
           ruby-version: "3.3"
           bundler-cache: true
