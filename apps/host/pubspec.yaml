@@ -37,8 +37,8 @@ dependencies:
   riverpod_annotation: ^4.0.3
 
 dev_dependencies:
-  archive: ^4.6.0
-  build_runner: ^2.11.1
+  archive: ^4.7.1
+  build_runner: ^2.16.1
   catch_test_support:
     path: ../../packages/catch_test_support
   cloud_firestore: ^6.10.2
@@ -55,7 +55,7 @@ dev_dependencies:
   freezed: ^4.0.1
   geolocator: ^14.1.2
   google_maps_flutter: ^2.18.1
-  idb_shim: ^2.11.1
+  idb_shim: ^2.11.3
   json_schema: ^5.2.2
   riverpod: '>=3.5.0 <3.6.0'
   riverpod_generator: ^4.0.4

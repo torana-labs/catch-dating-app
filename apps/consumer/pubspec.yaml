@@ -42,7 +42,7 @@ dependencies:
   riverpod_annotation: ^4.0.8
 
 dev_dependencies:
-  build_runner: ^2.11.1
+  build_runner: ^2.16.1
   catch_test_support:
     path: ../../packages/catch_test_support
   cloud_firestore: ^6.10.2
