@@ -81,6 +81,8 @@ void main() {
     await tester.tap(find.text('Team'));
     await tester.tap(find.text('Memberships'));
     await tester.tap(find.text('Event defaults'));
+    await tester.tap(find.text('Live event guide'));
+    await tester.tap(find.text('Your page so far'));
     await tester.tap(find.text('Rehearse a night'));
     await tester.tap(find.text('Settings'));
     await tester.tap(find.text('Help'));
@@ -93,6 +95,8 @@ void main() {
       OrganizerAction.team,
       OrganizerAction.memberships,
       OrganizerAction.eventDefaults,
+      OrganizerAction.liveGuide,
+      OrganizerAction.journey,
       OrganizerAction.rehearse,
       OrganizerAction.settings,
       OrganizerAction.help,

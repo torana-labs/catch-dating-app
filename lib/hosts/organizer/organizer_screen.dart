@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/hosts/organizer/live_guide_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_body.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_controller.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/organizer_journey/host_organizer_journey_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
@@ -158,6 +160,17 @@ class OrganizerScreen extends ConsumerWidget {
         await context.pushNamed<void>(
           Routes.hostOrganizerEventDefaultsScreen.name,
           queryParameters: query,
+        );
+      case OrganizerAction.liveGuide:
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(
+            builder: (_) => OrganizerLiveGuideScreen(organizerId: organizer.id),
+          ),
+        );
+      case OrganizerAction.journey:
+        await showCatchBottomSheet<void>(
+          context: context,
+          builder: (_) => HostOrganizerJourneySheet(organizerId: organizer.id),
         );
       case OrganizerAction.rehearse:
         await context.pushNamed<void>(

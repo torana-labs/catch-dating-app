@@ -33,6 +33,8 @@ enum OrganizerAction {
   team,
   memberships,
   eventDefaults,
+  liveGuide,
+  journey,
   rehearse,
   settings,
   help,

@@ -95,6 +95,30 @@ class OrganizerBody extends StatelessWidget {
               onTap: () => onAction(OrganizerAction.eventDefaults),
             ),
             CatchIndexRow(
+              key: const ValueKey<String>('organizer-row-live-guide'),
+              title: l10n.hostsHostOrganizerEditTabLabelLiveEventGuide,
+              subtitle: l10n
+                  .hostsOrganizerEventSuccessDefaultsStepSubtitleNewEventsStartWithAReadyToRunPlanForThisActivity,
+              value:
+                  state.organizer.hostDefaults
+                      .eventSuccessForActivity(
+                        state.organizer.hostDefaults.primaryActivityKind,
+                      )
+                      .enabled
+                  ? l10n.hostsHostOrganizerEditTabValueOn
+                  : l10n.hostsHostOrganizerEditTabValueOff,
+              density: CatchIndexRowSize.regular,
+              chevron: true,
+              onTap: () => onAction(OrganizerAction.liveGuide),
+            ),
+            CatchIndexRow(
+              key: const ValueKey<String>('organizer-row-journey'),
+              title: l10n.hostJourneyTitle,
+              density: CatchIndexRowSize.regular,
+              chevron: true,
+              onTap: () => onAction(OrganizerAction.journey),
+            ),
+            CatchIndexRow(
               key: const ValueKey<String>('organizer-row-rehearse'),
               title: l10n.hostOrganizerRowRehearse,
               subtitle: l10n.hostOrganizerRowRehearseNote,
