@@ -188,8 +188,6 @@ void main() {
         find.byKey(const ValueKey('response-export-csv')),
       );
       await tester.tap(find.byKey(const ValueKey('response-export-csv')));
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 3));
       await pumpFeatureUi(tester);
 
       expect(calls.exports.calls.single.format, HostFormExportFormat.csv);
