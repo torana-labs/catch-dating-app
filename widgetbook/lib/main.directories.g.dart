@@ -231,6 +231,8 @@ import 'package:widgetbook_workspace/hosts/host_person_messaging_use_cases.dart'
     as _widgetbook_workspace_hosts_host_person_messaging_use_cases;
 import 'package:widgetbook_workspace/hosts/host_phone_import_use_cases.dart'
     as _widgetbook_workspace_hosts_host_phone_import_use_cases;
+import 'package:widgetbook_workspace/hosts/host_programme_answers_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_programme_answers_use_cases;
 import 'package:widgetbook_workspace/hosts/host_rehearsal_practice_use_cases.dart'
     as _widgetbook_workspace_hosts_host_rehearsal_practice_use_cases;
 import 'package:widgetbook_workspace/hosts/host_response_export_use_cases.dart'
@@ -9715,6 +9717,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Programmes',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'HostProgrammeAnswersSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'A guest with mixed answers',
+                    builder:
+                        _widgetbook_workspace_hosts_host_programme_answers_use_cases
+                            .hostProgrammeAnswersSheetUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostProgrammeGuestFilterTabBar',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -12652,16 +12665,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Body states',
                 builder: _widgetbook_workspace_programs_workspace_use_cases
                     .programGuestsPageBodyStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ProgramGuestsScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Screen states',
-                builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programGuestsScreenStates,
               ),
             ],
           ),
