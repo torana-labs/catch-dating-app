@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
-import {FLOOR_EXIT_TITLE, ISSUE_TITLE, alertRunTitle, decideAlert, decideFloorExit, decideUncovered, failedJobNames, nightlyWindow, resolveAlertRun,
+import {FLOOR_EXIT_TITLE, ISSUE_TITLE, alertCounts, alertRunTitle, applyDecision, decideAlert, settleDecision, decideFloorExit, decideUncovered, failedJobNames, nightlyWindow, resolveAlertRun,
   onlyMobileBlockFailures, owedFromIssue, reportedUncovered, uncoveredCommits, uncoveredReportCounts}
   from "./main_red_alert.mjs";
 import {CAPTURE_JOB, GOLDENS_JOB} from "./golden_policy.mjs";
+import {fakeIssueApi, oldestOpen, openIssueOnce, settleToHead} from "../lib/github_issues.mjs";
 
 const run = (conclusion, extra = {}) => ({id: 7, html_url: "https://example.test/run/7", head_sha: "a".repeat(40),
   conclusion, event: "push", display_title: "CI", ...extra});
@@ -360,4 +361,102 @@ test("a commit reported before an early close is reported once more at most, nev
     {action: "none"});
   assert.deepEqual(decideUncovered({uncovered, openIssue: {number: 4},
     counts: uncoveredReportCounts([first.body, again.body])}), {action: "none"});
+});
+
+// One alert run as main() runs it: decide from the issue as it reads now,
+// write, then settle to a newer head run whose own alert finished.
+function alertRunFor(api, target0, {jobsOf, runs, alertRuns}) {
+  const decide = (target) => {
+    const openIssue = oldestOpen(api.listOpen(), ISSUE_TITLE);
+    return decideAlert({run: target, jobs: jobsOf(target.id), openIssue, owed: openIssue ? owedFromIssue(api.texts(openIssue)) : null});
+  };
+  return {
+    decide: () => decide(target0),
+    write: (decision) => applyDecision(api, decision),
+    settle: () => settleToHead({run: target0, counts: alertCounts, alertTitle: alertRunTitle, listRuns: () => runs,
+      listAlertRuns: () => alertRuns, sleep: () => {}, settle: (head) => applyDecision(api, settleDecision(decide(head), head))}),
+  };
+}
+
+const mainRun = (id, conclusion, created, sha) => ({id, conclusion, created_at: created, status: "completed", event: "push",
+  head_branch: "main", head_sha: sha.repeat(40), html_url: `https://example.test/run/${id}`, display_title: "CI"});
+const openAlerts = (fake) => fake.state.issues.filter((issue) => issue.state === "open" && issue.title === ISSUE_TITLE);
+
+test("a close racing an open settles to the state of the latest head run", () => {
+  const red = mainRun(100, "failure", "2026-11-26T10:00:00Z", "a");
+  const green = mainRun(101, "success", "2026-11-26T10:05:00Z", "b");
+  const jobs = {100: [job("Required CI", "failure"), job("tools / Tool checks (core-audit)", "failure")],
+    101: [job("Required CI", "success"), job("tools / Tool checks (core-audit)", "success")]};
+  const jobsOf = (id) => jobs[id];
+  // The newer green run's alert reads first (nothing to close) and finishes;
+  // only then does the older red run's alert open the issue.
+  const fake = fakeIssueApi();
+  const alertRuns = [{display_title: alertRunTitle(101), status: "completed"}];
+  const head = alertRunFor(fake.api, green, {jobsOf, runs: [red, green], alertRuns});
+  assert.equal(head.decide().action, "none");
+  const older = alertRunFor(fake.api, red, {jobsOf, runs: [red, green], alertRuns});
+  older.write(older.decide());
+  assert.equal(openAlerts(fake).length, 1, "the older red run opened the issue");
+  assert.deepEqual(older.settle(), {status: "settled", head: 101});
+  assert.equal(openAlerts(fake).length, 0, "settled to the green head: closed");
+  assert.match(fake.state.issues[0].comments.at(-1), /^Settled to the latest main run \(https:\/\/example\.test\/run\/101\)/u);
+
+  // The reverse: the newer red run comments, then the older green run closes
+  // on what it read before that comment. Settling reopens the alert for the head.
+  const reverse = fakeIssueApi();
+  const older2 = mainRun(200, "success", "2026-11-26T11:00:00Z", "c");
+  const head2 = mainRun(201, "failure", "2026-11-26T11:05:00Z", "d");
+  jobs[200] = jobs[101];
+  jobs[201] = jobs[100];
+  openIssueOnce(reverse.api, {title: ISSUE_TITLE, body: decideAlert({run: mainRun(199, "failure", "2026-11-26T10:55:00Z", "e"),
+    jobs: jobs[100], openIssue: null}).body});
+  const alertRuns2 = [{display_title: alertRunTitle(201), status: "completed"}];
+  const greenAlert = alertRunFor(reverse.api, older2, {jobsOf, runs: [older2, head2], alertRuns: alertRuns2});
+  const read = greenAlert.decide();
+  assert.equal(read.action, "close");
+  const redAlert = alertRunFor(reverse.api, head2, {jobsOf, runs: [older2, head2], alertRuns: alertRuns2});
+  redAlert.write(redAlert.decide());
+  greenAlert.write(read);
+  assert.equal(openAlerts(reverse).length, 0, "the stale close won the race");
+  assert.equal(greenAlert.settle().status, "settled");
+  assert.equal(openAlerts(reverse).length, 1, "settled to the red head: open again");
+  assert.match(openAlerts(reverse)[0].body, /^Settled to the latest main run[^\n]*\n\nMain CI \(push\) failed at dddddddd/u);
+  // The head run's own alert is never repeated: settling to a head whose state already holds posts nothing.
+  const posts = reverse.state.log.filter(([name]) => ["comment", "create", "close"].includes(name)).length;
+  assert.deepEqual(greenAlert.settle(), {status: "settled", head: 201});
+  assert.equal(reverse.state.log.filter(([name]) => ["comment", "create", "close"].includes(name)).length, posts);
+});
+
+test("two alert runs racing to open Main CI is red end with exactly one open issue", () => {
+  const a = mainRun(300, "failure", "2026-11-26T12:00:00Z", "a");
+  const b = mainRun(301, "failure", "2026-11-26T12:01:00Z", "b");
+  const jobsOf = () => [job("Required CI", "failure")];
+  // Both read "no open issue" before either opens, and run B opens while run A
+  // is between openIssueOnce's own check and its open.
+  let race = null;
+  const fake = fakeIssueApi({between: (name) => {
+    if (name === "create" && race) {
+      const write = race;
+      race = null;
+      write();
+    }
+  }});
+  const runA = alertRunFor(fake.api, a, {jobsOf, runs: [a, b], alertRuns: []});
+  const runB = alertRunFor(fake.api, b, {jobsOf, runs: [a, b], alertRuns: []});
+  const decisionA = runA.decide();
+  const decisionB = runB.decide();
+  assert.deepEqual([decisionA.action, decisionB.action], ["open", "open"]);
+  race = () => runB.write(decisionB);
+  runA.write(decisionA);
+  assert.equal(fake.state.issues.length, 2, "both runs opened an issue");
+  assert.deepEqual(openAlerts(fake).map((issue) => issue.number), [1]);
+  assert.match(fake.state.issues[0].comments[0], /^#2 was opened by a parallel run[\s\S]*failed at aaaaaaaa/u);
+  // The owed record survives the move, so a green run still has to pass both runs' jobs.
+  assert.deepEqual(owedFromIssue([fake.state.issues[0].body, ...fake.state.issues[0].comments]).jobs, ["Required CI"]);
+});
+
+test("the alert jobs are grouped per CI run, never replaced, and check out the issue guard", () => {
+  const source = fs.readFileSync(new URL("../../.github/workflows/main-red-alert.yml", import.meta.url), "utf8");
+  assert.match(source, /concurrency:\n  group: main-red-alert-\$\{\{ inputs\.run_id \|\| github\.event\.workflow_run\.id \}\}\n  cancel-in-progress: false\n/u);
+  assert.equal([...source.matchAll(/sparse-checkout: \|\n            tool\/ci\n            tool\/lib\n/gu)].length, 4);
 });

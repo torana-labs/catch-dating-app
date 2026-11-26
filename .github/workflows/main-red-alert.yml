@@ -52,8 +52,13 @@ on:
 
 permissions: {}
 
+# One group per CI run handled, so no alert run is ever replaced: GitHub keeps
+# one pending run per group and cancels an older pending one, which lost a
+# push alert and a nightly follow-up on 26 Nov 2026. Alert runs for different
+# CI runs therefore run in parallel; tool/lib/github_issues.mjs keeps one open
+# issue per title and settles each issue to the latest head run's state.
 concurrency:
-  group: main-red-alert
+  group: main-red-alert-${{ inputs.run_id || github.event.workflow_run.id }}
   cancel-in-progress: false
 
 jobs:
@@ -82,6 +87,7 @@ jobs:
           persist-credentials: false
           sparse-checkout: |
             tool/ci
+            tool/lib
             .github/actions/load-toolchain
       - id: toolchain
         uses: ./.github/actions/load-toolchain
@@ -100,7 +106,8 @@ jobs:
     needs: resolve
     if: ${{ needs.resolve.outputs.proceed == 'true' && needs.resolve.outputs.head_branch == 'main' && (needs.resolve.outputs.event == 'push' || needs.resolve.outputs.nightly == 'true') && contains(fromJSON('["success", "failure", "timed_out", "startup_failure"]'), needs.resolve.outputs.conclusion) }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    # Up to 3 minutes waiting for a newer head run's alert to finish (settleToHead).
+    timeout-minutes: 10
     permissions:
       actions: read
       contents: read
@@ -111,6 +118,7 @@ jobs:
           persist-credentials: false
           sparse-checkout: |
             tool/ci
+            tool/lib
             .github/actions/load-toolchain
       - id: toolchain
         uses: ./.github/actions/load-toolchain
@@ -128,7 +136,8 @@ jobs:
     needs: resolve
     if: ${{ needs.resolve.outputs.proceed == 'true' && needs.resolve.outputs.head_branch == 'main' && (needs.resolve.outputs.event == 'push' || needs.resolve.outputs.nightly == 'true') && contains(fromJSON('["success", "failure", "timed_out", "startup_failure"]'), needs.resolve.outputs.conclusion) }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    # Up to 3 minutes waiting for a newer head run's alert to finish (settleToHead).
+    timeout-minutes: 10
     # actions: write only dispatches the dispatch-only baseline workflows.
     permissions:
       actions: write
@@ -140,6 +149,7 @@ jobs:
           persist-credentials: false
           sparse-checkout: |
             tool/ci
+            tool/lib
             .github/actions/load-toolchain
       - id: toolchain
         uses: ./.github/actions/load-toolchain

@@ -25,6 +25,7 @@ import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {isNightlyRun} from "./ci_nightly.mjs";
+import {githubIssueApi, oldestOpen, openIssueOnce, settleToHead, sleepMs} from "../lib/github_issues.mjs";
 
 export const FAILURE_TITLE = "Golden or capture failure";
 export const DRIFT_TITLE = "Golden baselines drifted";
@@ -185,9 +186,6 @@ function gh(args, input) {
   return result.stdout;
 }
 
-const issueTexts = (repository, issue) => [issue.body, ...JSON.parse(gh(["api", "--paginate", "--slurp",
-  `repos/${repository}/issues/${issue.number}/comments?per_page=100`])).flat().map((comment) => comment.body)];
-
 function ensureLabel(repository, label) {
   const found = spawnSync("gh", ["api", `repos/${repository}/labels/${encodeURIComponent(label)}`], {encoding: "utf8"});
   if (found.status === 0) return;
@@ -215,41 +213,64 @@ function readDrift(repository, runId) {
   return parseDrift(files);
 }
 
-function post(repository, decision) {
+/** Applies a decision; opening goes through openIssueOnce, so parallel runs leave one issue. */
+export function post(api, decision) {
   if (decision.action === "open") {
-    gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${decision.title}`, "-F", "body=@-",
-      ...(decision.label ? ["-f", `labels[]=${decision.label}`] : [])], decision.body);
-  } else if (["comment", "close"].includes(decision.action)) {
-    gh(["api", "-X", "POST", `repos/${repository}/issues/${decision.issue}/comments`, "-F", "body=@-"], decision.body);
-    if (decision.label) gh(["api", "-X", "POST", `repos/${repository}/issues/${decision.issue}/labels`, "-f", `labels[]=${decision.label}`]);
-    if (decision.action === "close") {
-      gh(["api", "-X", "PATCH", `repos/${repository}/issues/${decision.issue}`, "-f", "state=closed", "-f", "state_reason=completed"]);
-    }
+    return openIssueOnce(api, {title: decision.title, body: decision.body, labels: decision.label ? [decision.label] : []});
   }
+  if (["comment", "close"].includes(decision.action)) {
+    api.comment(decision.issue, decision.body);
+    if (decision.label) api.label(decision.issue, [decision.label]);
+    if (decision.action === "close") api.close(decision.issue, "completed");
+  }
+  return null;
 }
 
-function main() {
+/**
+ * The head run's decisions, applied by an older run once the head run's own
+ * alert finished (settleToHead in tool/lib/github_issues.mjs): the failure
+ * issue opens or closes to match it, and the drift issue only closes (opening
+ * it dispatches baseline workflows, which the head run's own alert did).
+ */
+export function settleDecisions({failure, drift}, run) {
+  const note = (decision) => ({...decision,
+    body: `Settled to the latest main run (${run.html_url}) after a parallel alert run.\n\n${decision.body}`});
+  return {
+    failure: ["open", "close"].includes(failure.action) ? note(failure) : {action: "none", reason: "head_unchanged"},
+    drift: drift.action === "close" ? note(drift) : {action: "none", reason: "head_unchanged"},
+  };
+}
+
+function failureFor(repository, api, run, jobs) {
+  const failureIssue = oldestOpen(api.listOpen(), FAILURE_TITLE);
+  return decideFailure({run, jobs, openIssue: failureIssue, owed: failureIssue ? owedFromFailureIssue(api.texts(failureIssue)) : null});
+}
+
+function driftFor(repository, api, run, jobs) {
+  const goldens = jobs.find((job) => job.name === GOLDENS_JOB);
+  const driftIssue = oldestOpen(api.listOpen(), DRIFT_TITLE);
+  const drift = mainRun(run) && goldens?.conclusion === "success" ? readDrift(repository, run.id) : null;
+  return decideDrift({run, jobs, drift, openIssue: driftIssue,
+    reported: driftIssue ? suitesFromDriftIssue(api.texts(driftIssue)) : null});
+}
+
+const jobsOf = (repository, runId) => JSON.parse(gh(["api", "--paginate", "--slurp",
+  `repos/${repository}/actions/runs/${runId}/jobs?per_page=100&filter=latest`])).flatMap((page) => page.jobs ?? []);
+
+async function main() {
   const repository = process.env.GITHUB_REPOSITORY;
   const runId = process.env.RUN_ID;
   assert.match(repository ?? "", /^[\w.-]+\/[\w.-]+$/u, "GITHUB_REPOSITORY is required");
   assert.match(runId ?? "", /^[1-9][0-9]*$/u, "RUN_ID is required");
+  const api = githubIssueApi(gh, repository);
   const run = JSON.parse(gh(["api", `repos/${repository}/actions/runs/${runId}`]));
-  const jobs = JSON.parse(gh(["api", "--paginate", "--slurp", `repos/${repository}/actions/runs/${runId}/jobs?per_page=100&filter=latest`]))
-    .flatMap((page) => page.jobs ?? []);
-  const issues = JSON.parse(gh(["api", `repos/${repository}/issues?state=open&creator=github-actions%5Bbot%5D&per_page=100`]))
-    .filter((issue) => !issue.pull_request);
-  const failureIssue = issues.find((issue) => issue.title === FAILURE_TITLE) ?? null;
-  const failure = decideFailure({run, jobs, openIssue: failureIssue,
-    owed: failureIssue ? owedFromFailureIssue(issueTexts(repository, failureIssue)) : null});
+  const jobs = jobsOf(repository, runId);
+  const failure = failureFor(repository, api, run, jobs);
   if (failure.label) ensureLabel(repository, failure.label);
-  post(repository, failure);
+  post(api, failure);
   console.log(`Golden or capture failure: ${failure.action}${failure.reason ? ` (${failure.reason})` : ""}`);
 
-  const goldens = jobs.find((job) => job.name === GOLDENS_JOB);
-  const driftIssue = issues.find((issue) => issue.title === DRIFT_TITLE) ?? null;
-  const drift = mainRun(run) && goldens?.conclusion === "success" ? readDrift(repository, runId) : null;
-  const decision = decideDrift({run, jobs, drift, openIssue: driftIssue,
-    reported: driftIssue ? suitesFromDriftIssue(issueTexts(repository, driftIssue)) : null});
+  const decision = driftFor(repository, api, run, jobs);
   let body = decision.body;
   for (const entry of decision.dispatch ?? []) {
     // The dispatch runs main's copy of the workflow; its own `ref` input checks out the drifted commit.
@@ -268,9 +289,34 @@ function main() {
     }
     body = body.replace(`{{${entry.suite}}}`, result.status === 0 ? `: ${target}` : ` could not be dispatched (${result.stderr.split("\n")[0]}); run it by hand: ${target}`);
   }
-  post(repository, {...decision, body});
+  post(api, {...decision, body});
   console.log(`Golden baselines drifted: ${decision.action}${decision.reason ? ` (${decision.reason})` : ""}` +
     `${decision.dispatch?.length ? `, dispatched ${decision.dispatch.map((entry) => entry.workflow).join(", ")}` : ""}`);
+
+  // Loaded here: main_red_alert.mjs imports this module.
+  const {alertCounts, alertRunTitle} = await import("./main_red_alert.mjs");
+  const settled = settleToHead({run, counts: alertCounts, alertTitle: alertRunTitle, sleep: () => sleepMs(15000),
+    listRuns: () => JSON.parse(gh(["api", "-H", "Cache-Control: no-cache",
+      `repos/${repository}/actions/workflows/ci.yml/runs?branch=main&status=completed&per_page=30`])).workflow_runs ?? [],
+    listAlertRuns: () => JSON.parse(gh(["api", "-H", "Cache-Control: no-cache",
+      `repos/${repository}/actions/workflows/main-red-alert.yml/runs?per_page=100`])).workflow_runs ?? [],
+    settle: (head) => {
+      const headJobs = jobsOf(repository, head.id);
+      const headDecisions = settleDecisions({failure: failureFor(repository, api, head, headJobs),
+        drift: driftFor(repository, api, head, headJobs)}, head);
+      if (headDecisions.failure.label) ensureLabel(repository, headDecisions.failure.label);
+      post(api, headDecisions.failure);
+      post(api, headDecisions.drift);
+      console.log(`Golden policy: settled to head run ${head.id}: failure ${headDecisions.failure.action}, drift ${headDecisions.drift.action}`);
+    }});
+  console.log(`Golden policy: head run ${settled.status}${settled.head ? ` (${settled.head})` : ""}`);
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) main();
+// Not a top-level await: main imports main_red_alert.mjs, which imports this
+// module, and that import would wait on this module's evaluation forever.
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}
