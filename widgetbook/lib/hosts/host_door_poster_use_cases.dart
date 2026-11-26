@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/presentation/widgets/host_door_poster_sheet.dart';
+import 'package:catch_dating_app/hosts/events/access/door_poster_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/page_preview.dart';

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/bookings/domain/event_check_in_qr_payload.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_door_poster_sheet.dart';
+import 'package:catch_dating_app/hosts/events/access/door_poster_sheet.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
@@ -16,7 +16,8 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 /// The venue check-in QR for a night that runs on the web runtime, with a
 /// button that shares the runtime link and one that opens the join-only door
-/// poster.
+/// poster. It watches [eventVenueSessionProvider] (the `createEventVenueSession`
+/// token the QR carries) and shares through the platform share sheet.
 class HostEventCheckInQrSection extends ConsumerStatefulWidget {
   const HostEventCheckInQrSection({super.key, required this.event});
 
@@ -72,73 +73,63 @@ class _HostEventCheckInQrSectionState
     final venueSessionAsync = ref.watch(
       eventVenueSessionProvider(widget.event.id),
     );
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          venueSessionAsync.when(
-            data: (session) => CatchLegacySurface(
-              radius: CatchRadius.sm,
-              backgroundColor: CatchTokens.editorialWhite,
-              padding: CatchInsets.iconChipContent,
-              child: QrImageView(
-                key: ValueKey('host_event_live_qr_${session.expiresAtMillis}'),
-                data: hostEventVenueQrData(
-                  event: widget.event,
-                  venueSessionToken: session.venueSessionToken,
-                ),
-                size: CatchLayout.eventSuccessVenueQrExtent,
-                padding: EdgeInsets.zero,
-                backgroundColor: CatchTokens.editorialWhite,
+    return CatchStack(
+      align: CatchStackAlign.start,
+      children: [
+        venueSessionAsync.when(
+          data: (session) => CatchSurface(
+            block: CatchSurfaceBlock.floating,
+            padding: CatchSurfacePadding.sm,
+            child: QrImageView(
+              key: ValueKey('host_event_live_qr_${session.expiresAtMillis}'),
+              data: hostEventVenueQrData(
+                event: widget.event,
+                venueSessionToken: session.venueSessionToken,
               ),
+              size: CatchLayout.eventSuccessVenueQrExtent,
+              padding: EdgeInsets.zero,
+              backgroundColor: CatchTokens.editorialWhite,
             ),
-            loading: () => const SizedBox.square(
-              dimension: CatchLayout.eventSuccessVenueQrExtent,
-              child: Center(child: CircularProgressIndicator()),
-            ),
-            error: (error, _) => SizedBox(
-              width: CatchLayout.eventSuccessVenueQrErrorMaxWidth,
-              child: CatchLocalizedErrorState(
-                error,
-                onRetry: () =>
-                    ref.invalidate(eventVenueSessionProvider(widget.event.id)),
-                mode: CatchErrorStateMode.inline,
+          ),
+          loading: () => const SizedBox.square(
+            dimension: CatchLayout.eventSuccessVenueQrExtent,
+            child: CatchLoadingIndicator(),
+          ),
+          error: (error, _) => CatchLocalizedErrorState(
+            error,
+            onRetry: () =>
+                ref.invalidate(eventVenueSessionProvider(widget.event.id)),
+            mode: CatchErrorStateMode.inline,
+          ),
+        ),
+        if (runtimeLink != null) ...[
+          CatchButton(
+            label: context.l10n.hostsHostEventAttendancePanelRuntimeShareLabel,
+            leading: Icon(CatchIcons.share),
+            size: CatchButtonSize.md,
+            variant: CatchButtonVariant.secondary,
+            status: _sharing
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
+            onPressed: _sharing ? null : () => _shareRuntimeLink(runtimeLink),
+          ),
+          CatchButton(
+            key: const ValueKey('host_event_door_poster'),
+            label: context.l10n.hostsDoorPosterAction,
+            leading: Icon(CatchIcons.qrCode),
+            size: CatchButtonSize.md,
+            variant: CatchButtonVariant.secondary,
+            onPressed: () => unawaited(
+              showHostDoorPoster(
+                context,
+                eventName: widget.event.name,
+                joinLink: runtimeLink,
+                share: ref.read(externalShareControllerProvider),
               ),
             ),
           ),
-          if (runtimeLink != null) ...[
-            gapH10,
-            CatchButton(
-              label:
-                  context.l10n.hostsHostEventAttendancePanelRuntimeShareLabel,
-              leading: Icon(CatchIcons.share),
-              size: CatchButtonSize.md,
-              variant: CatchButtonVariant.secondary,
-              status: (_sharing)
-                  ? CatchButtonStatus.loading
-                  : CatchButtonStatus.idle,
-              onPressed: _sharing ? null : () => _shareRuntimeLink(runtimeLink),
-            ),
-            gapH10,
-            CatchButton(
-              key: const ValueKey('host_event_door_poster'),
-              label: context.l10n.hostsDoorPosterAction,
-              leading: Icon(CatchIcons.qrCode),
-              size: CatchButtonSize.md,
-              variant: CatchButtonVariant.secondary,
-              onPressed: () => unawaited(
-                showHostDoorPoster(
-                  context,
-                  eventName: widget.event.name,
-                  joinLink: runtimeLink,
-                  share: ref.read(externalShareControllerProvider),
-                ),
-              ),
-            ),
-          ],
         ],
-      ),
+      ],
     );
   }
 }
