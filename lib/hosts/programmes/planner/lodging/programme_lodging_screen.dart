@@ -43,6 +43,12 @@ class HostProgrammeLodgingScreen extends ConsumerStatefulWidget {
       _HostProgrammeLodgingScreenState();
 }
 
+/// The top bar of a view: an editing view's [title] and its [close]; a
+/// null title is the planner's own bar with back.
+typedef _LodgingBar = ({String? title, VoidCallback? close});
+
+const _LodgingBar _plainBar = (title: null, close: null);
+
 class _HostProgrammeLodgingScreenState
     extends ConsumerState<HostProgrammeLodgingScreen> {
   ProgramLodgingDraft? _editing;
@@ -142,55 +148,75 @@ class _HostProgrammeLodgingScreenState
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final value = ref.watch(_provider);
-    final CatchTopBar? topBar;
+    final _LodgingBar? bar;
     final Widget body;
     // A failed or reloading read never keeps showing the older private view.
     if (value.hasError) {
-      topBar = _bar(l10n);
+      bar = _plainBar;
       body = CatchLocalizedErrorState(
         value.error!,
         context: AppErrorContext.event,
         onRetry: () => ref.invalidate(_provider),
       );
     } else if (value.isLoading || !value.hasValue) {
-      topBar = _bar(l10n);
+      bar = _plainBar;
       body = const CatchPageBody.screen(child: CatchLoadingIndicator());
     } else {
-      (topBar, body) = _view(context, value.requireValue);
+      (bar, body) = _view(context, value.requireValue);
     }
     return CatchRoot(
       format: CatchFormat.nightsOut,
       child: CatchScreen(
         key: const ValueKey<String>('host-programme-lodging-screen'),
         bodyScrolls: false,
-        topBar: topBar,
+        topBar: switch (bar) {
+          null => null,
+          (:final title, :final close) => CatchTopBar(
+            variant: CatchTopBarVariant.tool,
+            // A close leaves an editing view; otherwise back leaves the
+            // planner. A disabled close keeps a call's view in place.
+            back: close == null && title != null
+                ? CatchTopBarBack(
+                    label: l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
+                    close: true,
+                    onPressed: () {},
+                  )
+                : close == null
+                ? CatchTopBarBack(onPressed: _back)
+                : CatchTopBarBack(
+                    label: l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
+                    close: true,
+                    onPressed: close,
+                  ),
+            kicker: title == null ? null : l10n.hostProgrammeLodgingTitle,
+            title: title ?? l10n.hostProgrammeLodgingTitle,
+          ),
+        },
         body: body,
       ),
     );
   }
 
-  CatchTopBar _bar(
-    AppLocalizations l10n, {
-    String? title,
-    VoidCallback? close,
-  }) => CatchTopBar(
-    variant: CatchTopBarVariant.tool,
-    back: close == null
-        ? CatchTopBarBack(onPressed: _back)
-        : CatchTopBarBack(
-            label: l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
-            close: true,
-            onPressed: close,
-          ),
-    kicker: title == null ? null : l10n.hostProgrammeLodgingTitle,
-    title: title ?? l10n.hostProgrammeLodgingTitle,
-  );
-
-  (CatchTopBar?, Widget) _view(
+  (_LodgingBar?, Widget) _view(
     BuildContext context,
     HostProgrammeLodgingState view,
   ) {
     final l10n = context.l10n;
+    final expired = CatchPageBody.screen(
+      children: [
+        CatchNotice.inline(
+          key: const ValueKey<String>('host-programme-lodging-expired'),
+          tone: CatchNoticeTone.warning,
+          icon: CatchIcons.info,
+          body: l10n.hostProgrammeLodgingMembershipExpired,
+        ),
+        CatchButton(
+          label: l10n.hostProgrammeLodgingRefresh,
+          fullWidth: true,
+          onPressed: view.locked ? null : _controller.refresh,
+        ),
+      ],
+    );
     final active = ref.watch(
       programProjectionActiveProvider(
         programProjectionDeadline(
@@ -206,7 +232,7 @@ class _HostProgrammeLodgingScreenState
       _membership = null;
       _membershipGroups = {};
       _membershipEpoch++;
-      return (_bar(l10n), _expired(l10n, view));
+      return (_plainBar, expired);
     }
     if (_editing != null && !identical(view.setup, _editingSetup)) {
       // A rebuilt account, authority or source read cannot keep a private
@@ -229,10 +255,9 @@ class _HostProgrammeLodgingScreenState
           ),
         ),
       );
-      if (!membershipActive) return (_bar(l10n), _expired(l10n, view));
+      if (!membershipActive) return (_plainBar, expired);
       return (
-        _bar(
-          l10n,
+        (
           title: l10n.hostProgrammeLodgingMembershipTitle,
           close: view.busy ? null : _closeMembership,
         ),
@@ -250,8 +275,7 @@ class _HostProgrammeLodgingScreenState
     }
     if (_editing case final editing?) {
       return (
-        _bar(
-          l10n,
+        (
           title: l10n.hostProgrammeLodgingSetup,
           close: view.busy
               ? null
@@ -278,7 +302,44 @@ class _HostProgrammeLodgingScreenState
       );
     }
     final review = view.review;
-    if (review == null) return (_bar(l10n), _empty(l10n, view));
+    if (review == null) {
+      return (
+        _plainBar,
+        CatchPageBody.screen(
+          children: [
+            CatchEmptyState(
+              icon: CatchIcons.hotel,
+              title: l10n.hostProgrammeLodgingSetupMissing,
+            ),
+            if (view.error case final error?)
+              CatchNotice.inline(
+                tone: CatchNoticeTone.danger,
+                icon: CatchIcons.error,
+                body: appErrorMessage(
+                  error,
+                  l10n: l10n,
+                  context: AppErrorContext.event,
+                ),
+              ),
+            CatchButton(
+              key: const ValueKey<String>('host-programme-lodging-start-setup'),
+              label: l10n.hostProgrammeLodgingSetup,
+              fullWidth: true,
+              onPressed: view.busy ? null : () => _action(_openSetup),
+            ),
+            CatchButton(
+              key: const ValueKey<String>(
+                'host-programme-lodging-start-membership',
+              ),
+              label: l10n.hostProgrammeLodgingMembershipTitle,
+              variant: CatchButtonVariant.secondary,
+              fullWidth: true,
+              onPressed: view.busy ? null : () => _action(_openMembership),
+            ),
+          ],
+        ),
+      );
+    }
     return (
       null,
       HostProgrammeLodgingBody(
@@ -296,56 +357,4 @@ class _HostProgrammeLodgingScreenState
       ),
     );
   }
-
-  Widget _empty(AppLocalizations l10n, HostProgrammeLodgingState view) =>
-      CatchPageBody.screen(
-        children: [
-          CatchEmptyState(
-            icon: CatchIcons.hotel,
-            title: l10n.hostProgrammeLodgingSetupMissing,
-          ),
-          if (view.error case final error?)
-            CatchNotice.inline(
-              tone: CatchNoticeTone.danger,
-              icon: CatchIcons.error,
-              body: appErrorMessage(
-                error,
-                l10n: l10n,
-                context: AppErrorContext.event,
-              ),
-            ),
-          CatchButton(
-            key: const ValueKey<String>('host-programme-lodging-start-setup'),
-            label: l10n.hostProgrammeLodgingSetup,
-            fullWidth: true,
-            onPressed: view.busy ? null : () => _action(_openSetup),
-          ),
-          CatchButton(
-            key: const ValueKey<String>(
-              'host-programme-lodging-start-membership',
-            ),
-            label: l10n.hostProgrammeLodgingMembershipTitle,
-            variant: CatchButtonVariant.secondary,
-            fullWidth: true,
-            onPressed: view.busy ? null : () => _action(_openMembership),
-          ),
-        ],
-      );
-
-  Widget _expired(AppLocalizations l10n, HostProgrammeLodgingState view) =>
-      CatchPageBody.screen(
-        children: [
-          CatchNotice.inline(
-            key: const ValueKey<String>('host-programme-lodging-expired'),
-            tone: CatchNoticeTone.warning,
-            icon: CatchIcons.info,
-            body: l10n.hostProgrammeLodgingMembershipExpired,
-          ),
-          CatchButton(
-            label: l10n.hostProgrammeLodgingRefresh,
-            fullWidth: true,
-            onPressed: view.locked ? null : _controller.refresh,
-          ),
-        ],
-      );
 }

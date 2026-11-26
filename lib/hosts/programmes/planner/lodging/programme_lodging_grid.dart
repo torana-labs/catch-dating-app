@@ -4,7 +4,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
 /// How the stay planner lays out one floor's rooms.
-enum HostProgrammeLodgingRoomsLayout {
+enum HostProgrammeLodgingGridLayout {
   /// Rooms in board order, four to a row.
   list,
 
@@ -21,8 +21,8 @@ enum HostProgrammeLodgingRoomsLayout {
 /// rooms, a room the party could move to takes the attention ring, every
 /// judged room is tappable to see why, an empty room shows as vacant, and
 /// the picked room is selected.
-class HostProgrammeLodgingRooms extends StatelessWidget {
-  const HostProgrammeLodgingRooms({
+class HostProgrammeLodgingGrid extends StatelessWidget {
+  const HostProgrammeLodgingGrid({
     super.key,
     required this.units,
     required this.parties,
@@ -36,7 +36,7 @@ class HostProgrammeLodgingRooms extends StatelessWidget {
   /// The rooms on the floor on show.
   final List<ProgramLodgingBoardUnit> units;
   final List<ProgramLodgingBoardParty> parties;
-  final HostProgrammeLodgingRoomsLayout layout;
+  final HostProgrammeLodgingGridLayout layout;
 
   /// Every room the server judged for the selected party, allowed or not.
   final List<ProgramLodgingDestination> destinations;
@@ -62,7 +62,8 @@ class HostProgrammeLodgingRooms extends StatelessWidget {
         title: l10n.hostProgrammeLodgingEmpty,
       );
     }
-    Widget tile(ProgramLodgingBoardUnit unit) {
+    final tiles = <String, CatchChoiceTile>{};
+    for (final unit in units) {
       final judged = destinations
           .where((d) => d.inventoryId == unit.inventoryId)
           .firstOrNull;
@@ -75,7 +76,7 @@ class HostProgrammeLodgingRooms extends StatelessWidget {
       final movable = parties
           .where((p) => p.canMove && unit.partyIds.contains(p.id))
           .firstOrNull;
-      return CatchChoiceTile(
+      tiles[unit.inventoryId] = CatchChoiceTile(
         key: ValueKey<String>(
           'host-programme-lodging-room-${unit.inventoryId}',
         ),
@@ -102,8 +103,8 @@ class HostProgrammeLodgingRooms extends StatelessWidget {
 
     final rows =
         switch (layout) {
-          HostProgrammeLodgingRoomsLayout.floorMap => _floorRows(units),
-          HostProgrammeLodgingRoomsLayout.list => null,
+          HostProgrammeLodgingGridLayout.floorMap => _floorRows(units),
+          HostProgrammeLodgingGridLayout.list => null,
         } ??
         [
           for (var start = 0; start < units.length; start += _perRow)
@@ -123,7 +124,10 @@ class HostProgrammeLodgingRooms extends StatelessWidget {
             gap: CatchStackGap.g8,
             children: [
               for (final unit in row)
-                if (unit == null) const SizedBox.shrink() else tile(unit),
+                if (unit == null)
+                  const SizedBox.shrink()
+                else
+                  tiles[unit.inventoryId]!,
             ],
           ),
       ],

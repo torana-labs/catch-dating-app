@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/programmes/data/program_lodging_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_board.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_review.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/lodging/programme_lodging_rooms.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/lodging/programme_lodging_grid.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/lodging/programme_lodging_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
@@ -76,7 +76,7 @@ class _HostProgrammeLodgingBodyState extends State<HostProgrammeLodgingBody> {
   String? _layerId;
   String? _destinationId;
   var _destinations = <ProgramLodgingDestination>[];
-  var _layout = HostProgrammeLodgingRoomsLayout.list;
+  var _layout = HostProgrammeLodgingGridLayout.list;
   var _previewPending = false;
   var _moving = false;
   var _boardOpen = false;
@@ -176,6 +176,7 @@ class _HostProgrammeLodgingBodyState extends State<HostProgrammeLodgingBody> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final review = widget.review;
     final layers = {
       for (final unit in review.units) unit.layerId: unit.layerLabel,
@@ -183,25 +184,7 @@ class _HostProgrammeLodgingBodyState extends State<HostProgrammeLodgingBody> {
     final layerId = layers.containsKey(_layerId)
         ? _layerId
         : layers.keys.firstOrNull;
-    final list = CatchScrollView(
-      primary: false,
-      child: CatchPageBody(child: _list(context)),
-    );
-    final detail = CatchScrollView(
-      primary: false,
-      child: CatchPageBody(child: _board(context, layers, layerId)),
-    );
-    return CatchPaneLayout(
-      pattern: CatchPaneLayoutMode.listDetail,
-      detailOpen: _partyId != null || _boardOpen,
-      children: [list, detail],
-    );
-  }
-
-  Widget _list(BuildContext context) {
-    final l10n = context.l10n;
     final state = widget.state;
-    final review = widget.review;
     final proposal = _proposal;
     final approved = review.workflow['approvedProposalId'] == proposal.id;
     final published =
@@ -209,7 +192,7 @@ class _HostProgrammeLodgingBodyState extends State<HostProgrammeLodgingBody> {
     final retry = state.retryAction;
     final idle = !state.locked;
     String hotel(String id) => review.hotelLabels[id] ?? id;
-    return CatchStack(
+    final listPane = CatchStack(
       gap: CatchStackGap.g16,
       children: [
         CatchPaneHeader(
@@ -405,22 +388,13 @@ class _HostProgrammeLodgingBodyState extends State<HostProgrammeLodgingBody> {
         ),
       ],
     );
-  }
-
-  Widget _board(
-    BuildContext context,
-    Map<String, String> layers,
-    String? layerId,
-  ) {
-    final l10n = context.l10n;
-    final review = widget.review;
     final visible = review.units.where((u) => u.layerId == layerId).toList();
     final target = _destinations
         .where((d) => d.inventoryId == _destinationId)
         .firstOrNull;
     final party = review.parties.where((p) => p.id == _partyId).firstOrNull;
     final locked = widget.state.locked;
-    return CatchStack(
+    final boardPane = CatchStack(
       gap: CatchStackGap.g16,
       children: [
         CatchPaneHeader(
@@ -463,23 +437,23 @@ class _HostProgrammeLodgingBodyState extends State<HostProgrammeLodgingBody> {
             variant: CatchTextVariant.labelKicker,
             tone: CatchTextTone.secondary,
           ),
-        CatchPageTabBar<HostProgrammeLodgingRoomsLayout>.segmented(
+        CatchPageTabBar<HostProgrammeLodgingGridLayout>.segmented(
           key: const ValueKey<String>('host-programme-lodging-layout'),
           selected: _layout,
           size: CatchPageTabBarSize.sm,
           onChanged: (value) => setState(() => _layout = value),
           options: [
             CatchOption(
-              value: HostProgrammeLodgingRoomsLayout.list,
+              value: HostProgrammeLodgingGridLayout.list,
               label: l10n.hostProgrammeLodgingList,
             ),
             CatchOption(
-              value: HostProgrammeLodgingRoomsLayout.floorMap,
+              value: HostProgrammeLodgingGridLayout.floorMap,
               label: l10n.hostProgrammeLodgingMap,
             ),
           ],
         ),
-        HostProgrammeLodgingRooms(
+        HostProgrammeLodgingGrid(
           units: visible,
           parties: review.parties,
           layout: _layout,
@@ -523,6 +497,19 @@ class _HostProgrammeLodgingBodyState extends State<HostProgrammeLodgingBody> {
           ),
         ],
       ],
+    );
+    final list = CatchScrollView(
+      primary: false,
+      child: CatchPageBody(child: listPane),
+    );
+    final detail = CatchScrollView(
+      primary: false,
+      child: CatchPageBody(child: boardPane),
+    );
+    return CatchPaneLayout(
+      pattern: CatchPaneLayoutMode.listDetail,
+      detailOpen: _partyId != null || _boardOpen,
+      children: [list, detail],
     );
   }
 }
