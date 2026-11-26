@@ -77,6 +77,8 @@ export const owedFromFailureIssue = (texts) => latestRecord(texts, FAILURE_MARKE
 export const suitesFromDriftIssue = (texts) => latestRecord(texts, DRIFT_MARKER, (value) => names(value.suites))?.suites ?? null;
 
 const link = (job) => (job.html_url ? `[${job.name}](${job.html_url})` : job.name);
+/** The run's kind for an issue body: "nightly" for either kind of nightly, else its event. */
+const kindOf = (run) => (isNightlyRun(run) ? "nightly" : run.event);
 const mainRun = (run) => (run?.event === "push" || isNightlyRun(run)) && run?.head_branch === "main" &&
   SHA.test(String(run?.head_sha ?? ""));
 
@@ -99,7 +101,7 @@ export function decideFailure({run, jobs, openIssue, owed = null}) {
     const owedNow = [...new Set([...failed.map((job) => job.name),
       ...(openIssue ? owed ?? MOBILE_BLOCK_JOBS : []).filter((name) => !settled(name))])].sort();
     const body = [
-      `Main CI (${run.event}) at ${sha}: ${run.html_url}`, "",
+      `Main CI (${kindOf(run)}) at ${sha}: ${run.html_url}`, "",
       "Failed:", ...failed.map((job) => `- ${link(job)}`), "",
       `**Mobile releases are blocked**: Release Readiness fails while an open issue carries \`${RELEASE_BLOCK_LABEL}\`.`,
       "A failure (render error, assertion, stale generated code, failed capture render) is not baseline drift, " +
@@ -164,7 +166,7 @@ export function decideDrift({run, jobs, drift, openIssue, reported = null}) {
     return [`- **${suite}**: ${rows.length} golden(s)`, ...shown, ...(rows.length > shown.length ? [`  - and ${rows.length - shown.length} more`] : [])];
   });
   const body = [
-    `The goldens passed at ${sha} (${run.event}), but some differ from their baselines: ${run.html_url}`, "",
+    `The goldens passed at ${sha} (${kindOf(run)}), but some differ from their baselines: ${run.html_url}`, "",
     ...lines, "",
     "Report only: drift does not block a merge or a release. The images are in the run's flutter-golden-failures artifact.",
     ...(dispatch.length ? ["", "Baseline refresh dispatched at this commit (it uploads changed baselines for a person to review and commit; it never pushes):",

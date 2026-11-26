@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
 import fs from "node:fs";
+import vm from "node:vm";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -84,6 +85,26 @@ test("isNightlyRun: the dispatched nightly and the scheduled ones from before, n
     {event: "pull_request", display_title: "CI nightly"}, {event: "merge_group", display_title: "CI"}, null, undefined]) {
     assert.equal(isNightlyRun(run), false, JSON.stringify(run));
   }
+});
+
+test("ci.yml's run-name gives exactly NIGHTLY_TITLE to the nightly dispatch and never to any other run", () => {
+  const expression = workflow("ci.yml").match(/^run-name: >-\n  \$\{\{ ([\s\S]+?) \}\}$/mu)?.[1].replaceAll("\n  ", " ");
+  assert.ok(expression, "missing run-name expression");
+  const runName = (eventName, inputs = {}) => vm.runInNewContext(expression, {
+    github: {event_name: eventName, event: {pull_request: {number: 42}}}, inputs,
+    format: (template, value) => template.replace("{0}", String(value)),
+  });
+  const titled = (event, inputs) => ({event, display_title: runName(event, inputs)});
+  // The nightly: renaming either the run-name or NIGHTLY_TITLE breaks this.
+  assert.equal(runName("workflow_dispatch", {nightly: true}), NIGHTLY_TITLE);
+  assert.equal(isNightlyRun(titled("workflow_dispatch", {nightly: true})), true);
+  // A full or base_sha dispatch, a push, a queue group and a pull request are never titled the nightly.
+  for (const [event, inputs] of [["workflow_dispatch", {nightly: false, full: true}], ["workflow_dispatch", {base_sha: "a".repeat(40)}],
+    ["workflow_dispatch", {}], ["push", {}], ["merge_group", {}], ["pull_request", {}]]) {
+    assert.notEqual(runName(event, inputs), NIGHTLY_TITLE, `${event} ${JSON.stringify(inputs)}`);
+    assert.equal(isNightlyRun(titled(event, inputs)), false, `${event} ${JSON.stringify(inputs)}`);
+  }
+  assert.equal(runName("pull_request"), "CI PR #42");
 });
 
 test("nightlyRuns reads dispatched and scheduled runs, keeps only nightlies, newest first", () => {

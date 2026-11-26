@@ -170,9 +170,18 @@ async function main() {
 async function commitSelections(repository, nightly) {
   const {repoRoot} = await import("../lib/repo_paths.mjs");
   const greens = nightlyRuns((endpoint) => JSON.parse(gh(["api", endpoint])), repository, "status=success&per_page=30");
-  const green = greens.find((candidate) => candidate.created_at < nightly.created_at &&
-    spawnSync("git", ["merge-base", "--is-ancestor", candidate.head_sha, nightly.head_sha], {cwd: repoRoot}).status === 0);
+  const green = lastGreenNightly({greens, nightly, isAncestor: (sha) =>
+    spawnSync("git", ["merge-base", "--is-ancestor", sha, nightly.head_sha], {cwd: repoRoot}).status === 0});
   return selectionsSince({base: green?.head_sha ?? null, head: nightly.head_sha});
+}
+
+/**
+ * The newest green nightly before this one whose commit main still contains:
+ * the start of the window whose commits a failed nightly checks. Dispatched
+ * and scheduled nightlies both count (isNightlyRun); any other run does not.
+ */
+export function lastGreenNightly({greens, nightly, isAncestor}) {
+  return greens.find((candidate) => isNightlyRun(candidate) && candidate.created_at < nightly.created_at && isAncestor(candidate.head_sha)) ?? null;
 }
 
 /**

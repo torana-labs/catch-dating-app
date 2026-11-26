@@ -258,6 +258,8 @@ test("the nightly counts only the dispatched or scheduled nightly, from 02:00, a
   const now = at("2026-11-27T06:00:00Z");
   const check = (runs) => decide({now, graceHours: 3, repository, runs: {"nightly-ci": runs}, records: new Set(),
     targets: only("nightly-ci")}).checks[0].status;
+  // A scheduled nightly from before the switch still counts.
+  assert.equal(check([{created_at: "2026-11-27T02:30:00Z", event: "schedule", display_title: "CI"}]), "started");
   // ci-nightly.yml dispatched it at 02:05, after a main push and before the 02:23 cron time.
   assert.equal(check([{created_at: "2026-11-27T02:05:00Z", event: "workflow_dispatch", display_title: "CI nightly"}]), "started");
   // A push run, a full dispatch by hand or a nightly from the day before is not today's nightly.
