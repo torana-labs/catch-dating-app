@@ -6,8 +6,8 @@ import type {EventDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import type {UpdatePrivateEventDetailsCallablePayload} from
   "../../shared/generated/updatePrivateEventDetailsCallablePayload";
-import {eventPolicyFromEvent, initialPolicyFromTerms, normalizePolicy} from
-  "../eventPolicy";
+import {EventPolicyBundleDocument, eventPolicyFromEvent, initialPolicyFromTerms,
+  normalizeInviteCode, normalizePolicy} from "../eventPolicy";
 import {prepareEventMutationLedger} from "../eventPolicyMutation";
 import {canonicalJson} from
   "../../domain/formats/eventSetupPreferences/resolve";
@@ -18,6 +18,10 @@ export type PrivateAdmissionTerms = NonNullable<
 
 /** Complete explicit price/capacity choices without changing offer snapshots.
  * Advanced admission restrictions are preserved, never silently made open.
+ * A full `eventPolicy` and `constraints` replace them with the same rules the
+ * published-event update applies: the policy is normalized and must agree with
+ * the capacity, price and cancellation chosen beside it, and the age bounds
+ * must be ordered.
  */
 export function eventListingTermsPatch(event: EventDocument,
   terms: PrivateAdmissionTerms): Partial<EventDocument> {
@@ -26,6 +30,24 @@ export function eventListingTermsPatch(event: EventDocument,
     terms.cancellationPolicyId === "notApplicable") {
     throw new HttpsError("invalid-argument",
       "Review the cancellation policy for this price.");
+  }
+  const constraints = terms.constraints ?
+    listingConstraints(terms.constraints) :
+    event.constraints ?? {minAge: 0, maxAge: 99, maxMen: null,
+      maxWomen: null};
+  if (terms.eventPolicy) {
+    const policy = normalizePolicy(
+      terms.eventPolicy as EventPolicyBundleDocument);
+    if (policy.admission.capacityLimit !== terms.capacityLimit ||
+        policy.pricing.basePriceInPaise !== terms.priceInPaise ||
+        policy.cancellation.policyId !== terms.cancellationPolicyId) {
+      throw new HttpsError("invalid-argument",
+        "The admission policy must match the capacity, price and " +
+        "cancellation policy.");
+    }
+    return {capacityLimit: terms.capacityLimit,
+      priceInPaise: terms.priceInPaise, currency: terms.currency,
+      eventPolicy: policy as EventDocument["eventPolicy"], constraints};
   }
   const configured = {...event, capacityLimit: terms.capacityLimit,
     priceInPaise: terms.priceInPaise};
@@ -36,9 +58,41 @@ export function eventListingTermsPatch(event: EventDocument,
     pricing: {...previous.pricing, basePriceInPaise: terms.priceInPaise},
     cancellation: {policyId: terms.cancellationPolicyId}});
   return {capacityLimit: terms.capacityLimit, priceInPaise: terms.priceInPaise,
-    currency: terms.currency, eventPolicy: policy,
-    constraints: event.constraints ?? {minAge: 0, maxAge: 99,
-      maxMen: null, maxWomen: null}};
+    currency: terms.currency, eventPolicy: policy, constraints};
+}
+
+/** The stored constraints shape, with the published update's age check. */
+function listingConstraints(
+  constraints: NonNullable<PrivateAdmissionTerms["constraints"]>
+): NonNullable<EventDocument["constraints"]> {
+  const minAge = constraints.minAge ?? 0;
+  const maxAge = constraints.maxAge ?? 99;
+  if (maxAge < minAge) {
+    throw new HttpsError("invalid-argument",
+      "maxAge must be greater than or equal to minAge");
+  }
+  return {minAge, maxAge, maxMen: constraints.maxMen ?? null,
+    maxWomen: constraints.maxWomen ?? null};
+}
+
+/** The invite code an invite-only private event keeps in
+ * `eventPrivateAccess/{eventId}`, as the published update syncs it: a new
+ * code replaces the saved one, the saved one is kept otherwise, and an event
+ * that is no longer invite-only drops it. Null means delete the document.
+ */
+export function privateListingInviteCode(params: {
+  eventPolicy: EventDocument["eventPolicy"] | undefined;
+  terms: PrivateAdmissionTerms;
+  savedCode: unknown;
+}): string | null {
+  if (!params.eventPolicy?.admission?.inviteRequired) return null;
+  const code = normalizeInviteCode(params.terms.privateAccess?.inviteCode) ??
+    normalizeInviteCode(params.savedCode);
+  if (!code || code.length < 4 || code.length > 64) {
+    throw new HttpsError("invalid-argument",
+      "Invite-only events need an invite code between 4 and 64 characters.");
+  }
+  return code;
 }
 
 /** Read-only preparation; the caller applies the returned ledger with its event
