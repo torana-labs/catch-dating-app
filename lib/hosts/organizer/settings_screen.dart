@@ -371,7 +371,10 @@ class _HostProfileSheetState extends State<_HostProfileSheet> {
             title: l10n.hostOrganizerProfileBio,
             contract: CatchContractConstraints.hostProfileDocumentBio,
             initialValue: _draft.bio,
+            // maxLines defaults to 1, which is below minLines and fails
+            // TextField's assertion when the sheet opens.
             minLines: 3,
+            maxLines: 6,
             onChanged: (value) => _draft = _HostProfileDraft(
               name: _draft.name,
               role: _draft.role,
