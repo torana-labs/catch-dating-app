@@ -140,7 +140,7 @@ test("flags an Audience view or saved-audience route that drifts", () => {
     audienceViewPath: "audience_view.dart",
     audienceViewSource: [
       "enum HostAudienceView { people, audiences }",
-      "class HostAudienceTabRail {}",
+      "HostAudienceView hostAudienceViewFromName(String? name) => null;",
     ].join("\n"),
     routeContractPath: "routes.dart",
     routeContractSource: "",

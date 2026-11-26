@@ -39,13 +39,6 @@
         "noncanonical-feature-widget-file",
         "noncanonical-feature-widget-name"
       ]
-    },
-    {
-      "file": "lib/hosts/presentation/host_audience_view.dart",
-      "name": "HostAudienceTabRail",
-      "issues": [
-        "noncanonical-feature-widget-file"
-      ]
     }
   ]
 }
