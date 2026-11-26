@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
@@ -15,6 +16,7 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_participation.da
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automation.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/hosts/people/automations_controller.dart';
 import 'package:catch_dating_app/hosts/people/automations_state.dart';
 import 'package:catch_dating_app/hosts/people/compose_controller.dart';
@@ -450,17 +452,26 @@ void main() {
             ),
           ),
         ),
-        hostWhatsappThreadsProvider(_org).overrideWith(
-          (ref) async => [
-            _whatsapp('a', at: DateTime(2026, 10, 27, 9)),
-            _whatsapp(
-              'b',
-              linkedUid: 'uid-b',
-              eventIds: ['tonight'],
-              direction: HostWhatsappMessageDirection.outbound,
-              at: DateTime(2026, 10, 27, 11),
+        uidProvider.overrideWithValue(const AsyncData('host')),
+        organizerProgramListProvider(
+          _org,
+        ).overrideWithValue(const AsyncData([])),
+        hostWhatsappThreadPagesProvider(_org).overrideWithBuild(
+          (ref, notifier) => Stream.value(
+            LivePages(
+              items: [
+                _whatsapp('a', at: DateTime(2026, 10, 27, 9)),
+                _whatsapp(
+                  'b',
+                  linkedUid: 'uid-b',
+                  eventIds: ['tonight'],
+                  direction: HostWhatsappMessageDirection.outbound,
+                  at: DateTime(2026, 10, 27, 11),
+                ),
+              ],
+              hasMore: false,
             ),
-          ],
+          ),
         ),
         watchEventsForOrganizerProvider(
           _org,

@@ -2,8 +2,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
 /// One conversation in the host's Messages: the person's avatar and name,
-/// a neutral badge (Tonight), the last message, its time, and bold while
-/// it waits on the host.
+/// a neutral badge (Tonight), the last message, its time, bold while it
+/// waits on the host, and marked while it is open beside the list.
 class MessagingThreadRow extends StatelessWidget {
   const MessagingThreadRow({
     super.key,
@@ -14,6 +14,7 @@ class MessagingThreadRow extends StatelessWidget {
     this.photoUrl,
     this.badge,
     this.unread = false,
+    this.selected = false,
   });
 
   final String name;
@@ -27,6 +28,9 @@ class MessagingThreadRow extends StatelessWidget {
 
   /// The last message is the guest's and waits on the host.
   final bool unread;
+
+  /// The conversation is open beside the list.
+  final bool selected;
 
   @override
   Widget build(BuildContext context) => CatchIndexRow(
@@ -43,6 +47,7 @@ class MessagingThreadRow extends StatelessWidget {
         ? CatchIndexRowEmphasis.unread
         : CatchIndexRowEmphasis.regular,
     density: CatchIndexRowSize.compact,
+    selected: selected,
     onTap: onTap,
   );
 }

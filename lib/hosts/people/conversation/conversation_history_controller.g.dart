@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'host_conversation_history_controller.dart';
+part of 'conversation_history_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator
