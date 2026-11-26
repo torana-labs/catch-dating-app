@@ -101,6 +101,8 @@ import {
   crossPathsEventWriteInvalidationMode,
   crossPathsPilotEventEnabled,
 } from "./pilotPolicy";
+import {readEventWithCohortCounts} from
+  "../domain/events/eventCohortCounts";
 
 export {
   crossPathsEventPlanId,
@@ -215,7 +217,8 @@ export async function sendCrossPathsInvitationHandler(
     if (existing.exists || outgoingBlock.exists || incomingBlock.exists) {
       throw unavailable();
     }
-    const event = validUpcomingEvent(eventSnap, now, true);
+    const event = await readEventWithCohortCounts(tx, db, data.eventId,
+      validUpcomingEvent(eventSnap, now, true));
     const senderParticipation = signedUpParticipation(
       senderParticipationSnap,
       data.eventId,
@@ -526,7 +529,8 @@ export async function respondCrossPathsInvitationHandler(
       tx.get(db.collection("deletedUsers").doc(invitation.recipientUid)),
     ]);
     if (deletionGuards.some((guard) => guard.exists)) throw unavailable();
-    const event = validUpcomingEvent(eventSnap, now, false);
+    const event = await readEventWithCohortCounts(tx, db, invitation.eventId,
+      validUpcomingEvent(eventSnap, now, false));
     const senderParticipation = signedUpParticipation(
       senderParticipationSnap,
       invitation.eventId,

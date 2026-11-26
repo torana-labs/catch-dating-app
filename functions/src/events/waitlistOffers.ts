@@ -68,6 +68,8 @@ import {
 } from "./eventPolicy";
 import {signUpUserForEvent} from "./signUpUserForEvent";
 import {validateCallableWithAjv, requireDoc} from "../shared/validation";
+import {readEventWithCohortCounts} from
+  "../domain/events/eventCohortCounts";
 
 type WaitlistOfferStatus =
   | "active"
@@ -157,7 +159,8 @@ export async function createEventWaitlistOffersHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
-    const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
+    const event = await readEventWithCohortCounts(tx, db, eventId,
+      requireDoc<EventDocument>(eventSnap, "EventDocument"));
     assertEventCanReceiveOffers(event, nowMillis);
 
     const organizerSnap = await tx.get(eventOrganizerRef(db, event));
@@ -434,7 +437,8 @@ export async function acceptEventWaitlistOfferHandler(
       throw new HttpsError("not-found", "User profile not found.");
     }
 
-    const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
+    const event = await readEventWithCohortCounts(tx, db, eventId,
+      requireDoc<EventDocument>(eventSnap, "EventDocument"));
     assertEventCanReceiveOffers(event, nowMillis);
     const offer = requireDoc<EventWaitlistOfferDocument>(
       offerSnap,

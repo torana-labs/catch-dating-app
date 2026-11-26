@@ -272,6 +272,7 @@ function deps({
     "eventBookings",
     "eventWaitlistOffers",
     "hostMembershipBenefitUses",
+    "eventCohortCounts",
   ];
   const firestore = {
     collection: (path: string) => {
@@ -301,7 +302,8 @@ function deps({
                 users[id] :
                 path === "eventPrivateAccess" ?
                   eventPrivateAccess[id] :
-                  eventBookings[id];
+                  path === "eventCohortCounts" ? undefined :
+                    eventBookings[id];
             return {
               exists: data !== undefined,
               data: () => data,

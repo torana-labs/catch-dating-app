@@ -58,6 +58,8 @@ import {
   InviteAttribution,
 } from "./inviteLinks";
 import {updateEventBookingCounters} from "../domain/events/eventDocumentWrites";
+import {readEventWithCohortCounts} from
+  "../domain/events/eventCohortCounts";
 
 interface WaitlistDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -136,7 +138,8 @@ export async function joinEventWaitlistHandler(
       eventSnap.data()?.organizerId ?? null, Date.now());
     await requireEventSeatLedger({db, tx, eventId});
 
-    const event = eventSnap.data() as EventDocument;
+    const event = await readEventWithCohortCounts(tx, db, eventId,
+      eventSnap.data() as EventDocument);
     const user = userSnap.data() as UserProfileDocument;
     if (event.status === "cancelled") {
       throw new HttpsError(
@@ -317,7 +320,8 @@ export async function leaveEventWaitlistHandler(
     }
     await requireEventSeatLedger({db, tx, eventId});
 
-    const event = eventSnap.data() as EventDocument;
+    const event = await readEventWithCohortCounts(tx, db, eventId,
+      eventSnap.data() as EventDocument);
     const existingParticipation = participationSnap.exists ?
       participationSnap.data() as {status?: string} :
       null;

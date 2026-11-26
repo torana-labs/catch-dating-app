@@ -17,6 +17,9 @@ import type {EventDocument} from
 import type {EventOrganizerSummary} from
   "../../shared/generated/eventOrganizerSummary";
 import type {EventOrigin} from "../../shared/generated/eventOrigin";
+import * as admin from "firebase-admin";
+import {eventCohortCountFields, eventCohortCountsRef} from
+  "./eventCohortCounts";
 
 /** Thrown when a caller asks to write a field its purpose does not own. */
 export class EventDocumentWriteError extends Error {
@@ -34,6 +37,15 @@ export type EventDocumentUpdater = {
   update(
     ref: FirebaseFirestore.DocumentReference,
     data: FirebaseFirestore.UpdateData<FirebaseFirestore.DocumentData>
+  ): unknown;
+};
+
+/** A transaction or batch that can also stage a set, for cohort totals. */
+export type EventCounterWriter = EventDocumentUpdater & {
+  set(
+    ref: FirebaseFirestore.DocumentReference,
+    data: FirebaseFirestore.DocumentData,
+    options: FirebaseFirestore.SetOptions
   ): unknown;
 };
 
@@ -165,11 +177,11 @@ export const eventKeyedSetupCollections =
  * @param {EventBookingCountersPatch} patch Counter values or sentinels.
  */
 export function updateEventBookingCounters(
-  writer: EventDocumentUpdater,
+  writer: EventCounterWriter,
   eventRef: FirebaseFirestore.DocumentReference,
   patch: EventBookingCountersPatch
 ): void {
-  stageUpdate("booking counters", eventBookingCounterFields, writer,
+  stageCounterUpdate("booking counters", eventBookingCounterFields, writer,
     eventRef, patch);
 }
 
@@ -181,11 +193,11 @@ export function updateEventBookingCounters(
  * @param {EventPairHoldCountersPatch} patch Pair-hold counter values.
  */
 export function updateEventPairHoldCounters(
-  writer: EventDocumentUpdater,
+  writer: EventCounterWriter,
   eventRef: FirebaseFirestore.DocumentReference,
   patch: EventPairHoldCountersPatch
 ): void {
-  stageUpdate("pair-hold counters", eventPairHoldCounterFields, writer,
+  stageCounterUpdate("pair-hold counters", eventPairHoldCounterFields, writer,
     eventRef, patch);
 }
 
@@ -281,6 +293,50 @@ export function deleteTryItDraftEvent(
  * @param {FirebaseFirestore.DocumentReference} eventRef events/{eventId}.
  * @param {object} patch Fields to update.
  */
+/**
+ * Stages a counter update. Cohort totals (orientation, #2493) go to the
+ * server-only eventCohortCounts document, one map per field, and
+ * the event's legacy copy of each such map is removed in the same write.
+ * @param {string} purpose What the write is for, in errors.
+ * @param {ReadonlyArray<string>} allowed Top-level fields it may change.
+ * @param {EventCounterWriter} writer The caller's transaction or batch.
+ * @param {FirebaseFirestore.DocumentReference} eventRef events/{eventId}.
+ * @param {object} patch Counter values or sentinels.
+ */
+function stageCounterUpdate(
+  purpose: string,
+  allowed: ReadonlyArray<string>,
+  writer: EventCounterWriter,
+  eventRef: FirebaseFirestore.DocumentReference,
+  patch: object
+): void {
+  const eventPatch: Record<string, unknown> = {};
+  const cohortPatch: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(patch)) {
+    const field = key.split(".")[0];
+    if ((eventCohortCountFields as ReadonlyArray<string>).includes(field)) {
+      if (key !== field) {
+        throw new EventDocumentWriteError(
+          `Event ${purpose} write must replace ${field} whole, not ${key}.`);
+      }
+      cohortPatch[field] = value;
+      eventPatch[field] = admin.firestore.FieldValue.delete();
+    } else {
+      eventPatch[key] = value;
+    }
+  }
+  stageUpdate(purpose, allowed, writer, eventRef, eventPatch);
+  const fields = Object.keys(cohortPatch);
+  if (fields.length > 0) {
+    writer.set(eventCohortCountsRef(eventRef.firestore, eventRef.id),
+      {eventId: eventRef.id, ...cohortPatch,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()},
+      // Each map holds every cohort key the read map held (counts drop to 0,
+      // never vanish), so a merge leaves exactly the written totals.
+      {merge: true});
+  }
+}
+
 function stageUpdate(
   purpose: string,
   allowed: ReadonlyArray<string>,
