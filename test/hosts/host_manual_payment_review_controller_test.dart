@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_manual_payment_review_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_event_offer_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_manual_payment_review_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'forms/event_offer_controller_test_support.dart';

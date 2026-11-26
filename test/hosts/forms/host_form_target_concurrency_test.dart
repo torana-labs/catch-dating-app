@@ -8,14 +8,10 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configura
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_target_section.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_l10n/l10n.dart';
+import 'package:catch_dating_app/hosts/forms/host_forms_controller.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -306,50 +302,6 @@ void main() {
       expect(controller.event('three'), isNull);
     },
   );
-
-  testWidgets('bound event refreshes when actor settles after first frame', (
-    tester,
-  ) async {
-    final accounts = StreamController<String?>();
-    addTearDown(accounts.close);
-    final auth = _Auth('host-two');
-    final notifier = _PickerNotifier();
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          uidProvider.overrideWith((ref) => accounts.stream),
-          firebaseAuthProvider.overrideWithValue(auth),
-        ],
-        child: MaterialApp(
-          theme: AppTheme.light,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: SingleChildScrollView(
-              child: HostFormTargetSection(
-                organizerId: 'org',
-                definition: HostFormDefinition.fromMap(_definition).withTarget(
-                  kind: HostFormTargetKind.event,
-                  eventId: 'event-two',
-                ),
-                notifier: notifier,
-                accountId: 'host-two',
-                enableEventTargetSettings: true,
-                hasPublishedVersion: false,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-    await pumpFeatureUi(tester);
-    expect(notifier._reads, 0);
-    accounts.add('host-two');
-    await pumpFeatureUi(tester);
-    expect(notifier._reads, 1);
-    expect(find.text('Event event-two'), findsWidgets);
-    expect(tester.takeException(), isNull);
-  });
 }
 
 ProviderContainer _container(
@@ -421,19 +373,6 @@ class _Repository extends Fake implements HostFormsRepository {
     serverRevision++;
     serverTargetId = definition.defaultTargetId;
     return _editor(targetId: serverTargetId, draftRevision: serverRevision);
-  }
-}
-
-class _PickerNotifier extends HostFormEditorController {
-  int _reads = 0;
-  @override
-  Future<HostFormEditorState> build(String organizerId, String formId) async =>
-      throw UnimplementedError();
-
-  @override
-  Future<HostOfferEventTargetPage> listTargetEvents({String? cursor}) async {
-    _reads++;
-    return HostOfferEventTargetPage([_event('event-two')], null);
   }
 }
 

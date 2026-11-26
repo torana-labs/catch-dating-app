@@ -207,20 +207,12 @@ import 'package:widgetbook_workspace/hosts/host_event_coach_use_cases.dart'
     as _widgetbook_workspace_hosts_host_event_coach_use_cases;
 import 'package:widgetbook_workspace/hosts/host_event_gaps_use_cases.dart'
     as _widgetbook_workspace_hosts_host_event_gaps_use_cases;
-import 'package:widgetbook_workspace/hosts/host_event_offer_use_cases.dart'
-    as _widgetbook_workspace_hosts_host_event_offer_use_cases;
-import 'package:widgetbook_workspace/hosts/host_form_admission_use_cases.dart'
-    as _widgetbook_workspace_hosts_host_form_admission_use_cases;
-import 'package:widgetbook_workspace/hosts/host_form_editor_use_cases.dart'
-    as _widgetbook_workspace_hosts_host_form_editor_use_cases;
-import 'package:widgetbook_workspace/hosts/host_form_payment_use_cases.dart'
-    as _widgetbook_workspace_hosts_host_form_payment_use_cases;
+import 'package:widgetbook_workspace/hosts/host_form_payments_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_form_payments_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_responses_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_responses_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_settings_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_settings_use_cases;
-import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
-    as _widgetbook_workspace_hosts_host_form_workspace_use_cases;
 import 'package:widgetbook_workspace/hosts/host_live_tools_use_cases.dart'
     as _widgetbook_workspace_hosts_host_live_tools_use_cases;
 import 'package:widgetbook_workspace/hosts/host_membership_admin_use_cases.dart'
@@ -239,14 +231,10 @@ import 'package:widgetbook_workspace/hosts/host_programme_answers_use_cases.dart
     as _widgetbook_workspace_hosts_host_programme_answers_use_cases;
 import 'package:widgetbook_workspace/hosts/host_rehearsal_practice_use_cases.dart'
     as _widgetbook_workspace_hosts_host_rehearsal_practice_use_cases;
-import 'package:widgetbook_workspace/hosts/host_response_export_use_cases.dart'
-    as _widgetbook_workspace_hosts_host_response_export_use_cases;
 import 'package:widgetbook_workspace/hosts/host_response_review_use_cases.dart'
     as _widgetbook_workspace_hosts_host_response_review_use_cases;
 import 'package:widgetbook_workspace/hosts/host_roster_import_use_cases.dart'
     as _widgetbook_workspace_hosts_host_roster_import_use_cases;
-import 'package:widgetbook_workspace/hosts/host_rsvp_review_use_cases.dart'
-    as _widgetbook_workspace_hosts_host_rsvp_review_use_cases;
 import 'package:widgetbook_workspace/hosts/host_saved_audience_use_cases.dart'
     as _widgetbook_workspace_hosts_host_saved_audience_use_cases;
 import 'package:widgetbook_workspace/hosts/host_sends_use_cases.dart'
@@ -10824,17 +10812,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostFormAvailabilityField',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Opening and closing dates',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormAvailabilityFieldPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostFormAvailabilitySection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10842,17 +10819,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_settings_use_cases
                             .hostFormAvailabilitySectionPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormBody',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Respondent preview',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_workspace_use_cases
-                            .hostFormBodyPreview,
                   ),
                 ],
               ),
@@ -10879,28 +10845,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostFormEditorNotice',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Save failure, revision conflict, and invalid draft',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormEditorNoticePreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormEditorViewport',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Desktop outline, canvas, and inspector',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormEditorViewportPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostFormFeeSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10919,17 +10863,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_settings_use_cases
                             .hostFormFeeSheetPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormInspectorSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Desktop form, section, and question inspectors',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormInspectorSectionPreview,
                   ),
                 ],
               ),
@@ -10978,101 +10911,35 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostFormMetricRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Unboxed form metrics',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_workspace_use_cases
-                            .hostFormMetricsPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormNumberField',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Integer and decimal limits',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormNumberFieldPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormOutlineMenu',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Desktop section and question selection',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormOutlineMenuPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormOverviewSectionList',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Published form overview',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_workspace_use_cases
-                            .hostFormWorkspaceOverviewPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormPaymentDetailSheet',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Captured payment awaiting submission',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_payment_use_cases
-                            .hostFormPaymentDetailPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormPaymentSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Manager connection boundary',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_payment_use_cases
-                            .hostFormPaymentSectionPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormPaymentSetupSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Unconfigured and connected account',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_payment_use_cases
-                            .hostFormPaymentSetupPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostFormPaymentSheet',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'Amount and mandatory refund policy',
+                    name: 'Payment details',
                     builder:
-                        _widgetbook_workspace_hosts_host_form_payment_use_cases
+                        _widgetbook_workspace_hosts_host_form_payments_use_cases
                             .hostFormPaymentSheetPreview,
                   ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostFormPaymentsSectionList',
+                name: 'HostFormPaymentsBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'Verified fee stages and test money',
+                    name: 'Payments list',
                     builder:
-                        _widgetbook_workspace_hosts_host_form_payment_use_cases
-                            .hostFormPaymentsPreview,
+                        _widgetbook_workspace_hosts_host_form_payments_use_cases
+                            .hostFormPaymentsBodyPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormPaymentsScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Payments',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_payments_use_cases
+                            .hostFormPaymentsScreenPreview,
                   ),
                 ],
               ),
@@ -11121,105 +10988,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostFormPublishText',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Question count and publication prompt',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormPublishTextPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormQuestionField',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Question kinds',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_workspace_use_cases
-                            .hostFormQuestionFieldPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormQuestionRowList',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Reorderable question rows',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormQuestionRowListPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormQuestionSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Inline and inspector question editing',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormQuestionSectionPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormQuestionSectionList',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Sections with editable question rows',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormQuestionSectionListPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormQuestionsPageBody',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Phone questions workspace',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormQuestionsPageBodyPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormResponsesSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Form responses',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_workspace_use_cases
-                            .hostFormResponsesSectionPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormSectionAccordion',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Form section with an expanded question',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormSectionAccordionPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormSectionField',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Section title and question actions',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormSectionFieldPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostFormSettingsBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -11227,17 +10995,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_settings_use_cases
                             .hostFormSettingsBodyPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormSettingsMenu',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Settings and respondent preview links',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormSettingsMenuPreview,
                   ),
                 ],
               ),
@@ -11275,17 +11032,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostFormSettingsSectionList',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Autosaved form settings',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormSettingsSectionListPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostFormSettingsTargetSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -11304,74 +11050,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_settings_use_cases
                             .hostFormTargetEventListPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormTargetSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Reusable or fixed event intake',
-                    builder:
-                        _widgetbook_workspace_hosts_unified_event_setup_use_cases
-                            .hostFormTargetSectionPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormValidationFieldLanes',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Choices answer validation',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormChoicesValidationPreview,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Date answer validation',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormDateValidationPreview,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'File answer validation',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormFileValidationPreview,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Number answer validation',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormNumberValidationPreview,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Text answer validation',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormTextValidationPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormValidationTextField',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Date rule and optional error copy',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormValidationTextFieldPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormWorkspaceHeader',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Published workspace navigation',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_workspace_use_cases
-                            .hostFormWorkspaceHeaderPreview,
                   ),
                 ],
               ),
@@ -11574,201 +11252,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_hosts_operations_organizer_preview
                         .hostOrganizerDetailPublicPreviewStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookFolder(
-            name: 'RSVP review',
-            children: [
-              _widgetbook.WidgetbookComponent(
-                name: 'HostEventOfferReviewSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Event offer review',
-                    builder:
-                        _widgetbook_workspace_hosts_host_rsvp_review_use_cases
-                            .eventOfferReviewPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostEventOfferWorkspaceBodySection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Offer review ready',
-                    builder:
-                        _widgetbook_workspace_hosts_host_event_offer_use_cases
-                            .hostOfferPrepared,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostEventOfferWorkspaceContentSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Prepared offer content',
-                    builder:
-                        _widgetbook_workspace_hosts_host_event_offer_use_cases
-                            .hostOfferContentPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostEventOfferWorkspaceLayout',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Offer body and primary action',
-                    builder:
-                        _widgetbook_workspace_hosts_host_event_offer_use_cases
-                            .hostOfferLayoutPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostEventOfferWorkspaceSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'CRM contact conversion required',
-                    builder:
-                        _widgetbook_workspace_hosts_host_event_offer_use_cases
-                            .hostOfferNeedsContact,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Existing offer review',
-                    builder:
-                        _widgetbook_workspace_hosts_host_event_offer_use_cases
-                            .hostOfferExisting,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'No upcoming offer target',
-                    builder:
-                        _widgetbook_workspace_hosts_host_event_offer_use_cases
-                            .hostOfferTargetEmpty,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Offer target loading',
-                    builder:
-                        _widgetbook_workspace_hosts_host_event_offer_use_cases
-                            .hostOfferTargetLoading,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Offer target unavailable',
-                    builder:
-                        _widgetbook_workspace_hosts_host_event_offer_use_cases
-                            .hostOfferTargetFailure,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormAdmissionSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Admission readiness and confirmation',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_admission_use_cases
-                            .hostFormAdmissionPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostManualPaymentReviewSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Manual payment review',
-                    builder:
-                        _widgetbook_workspace_hosts_host_rsvp_review_use_cases
-                            .manualPaymentReviewPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostResponseConditionSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Response condition',
-                    builder:
-                        _widgetbook_workspace_hosts_host_rsvp_review_use_cases
-                            .responseConditionPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostResponseConditionValueSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Response condition value',
-                    builder:
-                        _widgetbook_workspace_hosts_host_rsvp_review_use_cases
-                            .responseConditionValuePreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostResponseExportAction',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Filtered CSV ready on action',
-                    builder:
-                        _widgetbook_workspace_hosts_host_response_export_use_cases
-                            .hostResponseExportReady,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Filtered export needs fresh results',
-                    builder:
-                        _widgetbook_workspace_hosts_host_response_export_use_cases
-                            .hostResponseExportStale,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Filtered export pending replay',
-                    builder:
-                        _widgetbook_workspace_hosts_host_response_export_use_cases
-                            .hostResponseExportPending,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostResponseGroupSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Response group',
-                    builder:
-                        _widgetbook_workspace_hosts_host_rsvp_review_use_cases
-                            .responseGroupPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostResponseQueryEditorSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Response query editor',
-                    builder:
-                        _widgetbook_workspace_hosts_host_rsvp_review_use_cases
-                            .responseQueryEditorPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostResponseQueryWorkspaceSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Response query workspace',
-                    builder:
-                        _widgetbook_workspace_hosts_host_rsvp_review_use_cases
-                            .responseQueryWorkspacePreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostResponseValueFieldSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Response value field',
-                    builder:
-                        _widgetbook_workspace_hosts_host_rsvp_review_use_cases
-                            .responseValueFieldPreview,
-                  ),
-                ],
               ),
             ],
           ),

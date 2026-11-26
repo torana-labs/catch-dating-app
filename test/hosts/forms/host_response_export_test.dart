@@ -4,18 +4,11 @@ import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart'
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_export.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_response_query.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_export_action.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_export_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_editor_section.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_workspace_section.dart';
-import 'package:catch_l10n/generated/app_localizations.dart';
+import 'package:catch_dating_app/hosts/forms/host_form_response_query_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_response_export_controller.dart';
 import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
-import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:crypto/crypto.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _request = HostResponseQueryRequest(
@@ -344,88 +337,6 @@ void main() {
       expect(repository.requestIds, ['immutable_request', 'immutable_request']);
     },
   );
-
-  testWidgets('inline export action uses the reviewed query and opens once', (
-    tester,
-  ) async {
-    final query = HostResponseQueryController(_Query());
-    addTearDown(query.dispose);
-    await query.apply(_request);
-    final gateway = _Gateway()..statuses = [HostFormExportStatus.completed];
-    final opened = <Uri>[];
-    await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(
-          theme: AppTheme.light,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: HostResponseExportAction(
-              accountId: 'manager',
-              organizerId: 'org',
-              formId: 'form',
-              queryController: query,
-              gateway: gateway,
-              currentAccountId: () => 'manager',
-              openDownload: (uri) async {
-                opened.add(uri);
-                return true;
-              },
-            ),
-          ),
-        ),
-      ),
-    );
-    await pumpFeatureUi(tester);
-    await tester.tap(find.text('Export CSV'));
-    await pumpUntilFound(tester, find.text('Export ready'));
-    expect(
-      gateway.calls.single.responseQuery['predicate'],
-      _request.predicate!.toJson(),
-    );
-    expect(opened, hasLength(1));
-    expect(find.text('Export ready'), findsOneWidget);
-  });
-
-  testWidgets('offer create action can select without a bulk review callback', (
-    tester,
-  ) async {
-    final query = HostResponseQueryController(_Query(withRow: true));
-    addTearDown(query.dispose);
-    var created = false;
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: SingleChildScrollView(
-            child: HostResponseQueryWorkspaceSection(
-              controller: query,
-              request: _request,
-              copy: _workspaceCopy,
-              onOpenResponse: (_) {},
-              offerWorkspace: TextButton(
-                onPressed: () {
-                  created = true;
-                },
-                child: const Text('Offer an event'),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-    await pumpUntilFound(tester, find.byTooltip('Select: Maya'));
-    await tester.ensureVisible(find.byTooltip('Select: Maya'));
-    await tester.tap(find.byTooltip('Select: Maya'));
-    await pumpFeatureUi(tester);
-    expect(query.selectionIntent?.ids, ['response-1']);
-    await tester.ensureVisible(find.text('Offer an event'));
-    await tester.tap(find.text('Offer an event'));
-    await pumpFeatureUi(tester);
-    expect(created, isTrue);
-  });
 }
 
 HostResponseExportController _controller(
@@ -446,8 +357,8 @@ HostResponseExportController _controller(
 );
 
 class _Query implements HostResponseQueryGateway {
-  _Query({this.withRow = false});
-  final bool withRow;
+  _Query();
+  final bool withRow = false;
   String resultHash = 'result-hash';
   @override
   Future<HostResponseQueryPage> query(HostResponseQueryRequest request) async =>
@@ -547,48 +458,6 @@ HostResponseExportCommand _command({required String expectedResultHash}) =>
       expectedResultHash: expectedResultHash,
       createdAtMillis: 1000,
     );
-
-const _workspaceCopy = HostResponseQueryWorkspaceCopy(
-  filter: 'Filter',
-  sort: 'Sort',
-  newest: 'Newest',
-  oldest: 'Oldest',
-  refresh: 'Refresh',
-  loadMore: 'Load more',
-  loading: 'Loading',
-  empty: 'Empty',
-  stale: 'Stale',
-  budgetExceeded: 'Limit reached',
-  permissionLost: 'Permission lost',
-  failed: 'Failed',
-  selected: _selectedCount,
-  clearSelection: 'Clear',
-  reviewSelection: 'Review',
-  withdrawn: 'Withdrawn',
-  select: 'Select',
-  deselect: 'Deselect',
-  editor: HostResponseQueryEditorCopy(
-    title: 'Filters',
-    matchAll: 'All',
-    matchAny: 'Any',
-    field: 'Field',
-    condition: 'Condition',
-    value: 'Value',
-    minimum: 'Minimum',
-    maximum: 'Maximum',
-    yes: 'Yes',
-    no: 'No',
-    addCondition: 'Add condition',
-    addGroup: 'Add group',
-    remove: 'Remove',
-    apply: 'Apply',
-    reset: 'Reset',
-    invalidCondition: 'Invalid',
-    operatorLabels: {},
-  ),
-);
-
-String _selectedCount(int count) => '$count selected';
 
 HostFormExportReceipt _receipt(
   HostFormExportStatus status, {

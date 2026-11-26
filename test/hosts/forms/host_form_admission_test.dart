@@ -1,19 +1,12 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/forms/data/forms/host_form_admission_gateway.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_admission.dart';
-import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
-import 'package:catch_platform/theme/app_theme.dart';
-import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../ui_captures/support/capture_device.dart';
-import '../../ui_captures/support/capture_pump.dart';
 import 'event_offer_controller_test_support.dart';
 
 const scope = HostFormAdmissionScope(
@@ -47,48 +40,6 @@ Map<String, Object?> receipt(HostFormAdmissionCommand command) => {
 };
 
 void main() {
-  const captureDirectory = String.fromEnvironment('RSVP_CAPTURE_DIRECTORY');
-  if (captureDirectory.isNotEmpty) {
-    TestWidgetsFlutterBinding.ensureInitialized();
-    setUpAll(loadCatchTestFonts);
-    for (final scale in [1.0, 2.0]) {
-      testWidgets('capture admission at text scale $scale', (tester) async {
-        final gateway = _Gateway();
-        final storage = MemoryCommandJournalStorage();
-        addTearDown(storage.close);
-        await captureCatchWidget(
-          tester,
-          id: 'form-admission-$scale',
-          device: CaptureDevice.iphone17Pro,
-          textScale: scale,
-          outputDirectory: Directory(captureDirectory),
-          builder: (context) => Scaffold(
-            body: SafeArea(
-              child: SingleChildScrollView(
-                child: TestHostFormAdmissionSection(
-                  createController: () => TestHostFormAdmissionController(
-                    accountId: 'manager',
-                    scope: scope,
-                    gateway: gateway,
-                    currentAccountId: () => 'manager',
-                    outbox: JournalHostFormAdmissionOutbox(
-                      gateway: gateway,
-                      storage: () async => storage,
-                      currentAccountId: () => 'manager',
-                    ),
-                  ),
-                  onAdmitted: () async {},
-                ),
-              ),
-            ),
-          ),
-        );
-        expect(tester.takeException(), isNull);
-      });
-    }
-    return;
-  }
-
   test(
     'readiness and receipts reject wrong scope and fabricated authority',
     () {
@@ -238,53 +189,6 @@ void main() {
     expect(controller.preview, isNull);
     await controller.confirm();
     expect(gateway.commands, isEmpty);
-  });
-
-  testWidgets('admission is confirmed explicitly after preview', (
-    tester,
-  ) async {
-    final gateway = _Gateway();
-    final storage = MemoryCommandJournalStorage();
-    addTearDown(storage.close);
-    var updates = 0;
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: SingleChildScrollView(
-            child: TestHostFormAdmissionSection(
-              createController: () => TestHostFormAdmissionController(
-                accountId: 'manager',
-                scope: scope,
-                gateway: gateway,
-                currentAccountId: () => 'manager',
-                outbox: JournalHostFormAdmissionOutbox(
-                  gateway: gateway,
-                  storage: () async => storage,
-                  currentAccountId: () => 'manager',
-                ),
-              ),
-              onAdmitted: () async => updates++,
-            ),
-          ),
-        ),
-      ),
-    );
-    await pumpFeatureUi(tester);
-    expect(gateway.commands, isEmpty);
-    expect(find.text('Confirm admission'), findsOneWidget);
-    await tester.tap(find.text('Confirm admission'));
-    await pumpFeatureUi(tester);
-    expect(gateway.commands, hasLength(1));
-    expect(updates, 1);
-    expect(
-      find.text('Admission confirmed. The guest is on the event roster.'),
-      findsOneWidget,
-    );
-    expect(find.text('Confirm admission'), findsNothing);
-    expect(tester.takeException(), isNull);
   });
 }
 

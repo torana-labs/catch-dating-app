@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
+import 'package:catch_dating_app/hosts/forms/host_form_payment_controller.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_payments_body.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/errors/app_error_message.dart';

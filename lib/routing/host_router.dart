@@ -17,12 +17,15 @@ import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_mom
 import 'package:catch_dating_app/hosts/events/rehearsal_screen.dart';
 import 'package:catch_dating_app/hosts/forms/form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/forms/form_new_screen.dart';
+import 'package:catch_dating_app/hosts/forms/form_payments_screen.dart';
 import 'package:catch_dating_app/hosts/forms/form_preview_screen.dart';
 import 'package:catch_dating_app/hosts/forms/form_questions_screen.dart';
 import 'package:catch_dating_app/hosts/forms/form_screen.dart';
 import 'package:catch_dating_app/hosts/forms/form_settings_screen.dart';
 import 'package:catch_dating_app/hosts/forms/form_share_screen.dart';
 import 'package:catch_dating_app/hosts/forms/forms_screen.dart';
+import 'package:catch_dating_app/hosts/forms/host_form_response_query_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/forms/offer_screen.dart';
 import 'package:catch_dating_app/hosts/forms/offer_settings_screen.dart';
 import 'package:catch_dating_app/hosts/forms/response_screen.dart';
@@ -46,9 +49,6 @@ import 'package:catch_dating_app/hosts/people/person_screen.dart';
 import 'package:catch_dating_app/hosts/people/saved_group_screen.dart';
 import 'package:catch_dating_app/hosts/people/sends/sends_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_route_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
@@ -159,10 +159,9 @@ Widget hostFormScreenForUri(Uri uri, {required String formId}) {
       organizerId: organizerId,
       formId: formId,
     ),
-    HostFormWorkspaceView.payments => HostFormBuilderScreen(
+    HostFormWorkspaceView.payments => HostFormPaymentsScreen(
       organizerId: organizerId,
       formId: formId,
-      initialView: HostFormWorkspaceView.payments,
     ),
     _ => HostFormScreen(organizerId: organizerId, formId: formId),
   };

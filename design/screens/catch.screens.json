@@ -597,12 +597,12 @@
           "routes": [
             "hostFormBuilderScreen"
           ],
-          "file": "lib/hosts/presentation/forms/host_form_builder_screen.dart",
-          "symbol": "_HostFormBuilderScreenState",
+          "file": "lib/hosts/forms/form_screen.dart",
+          "symbol": "_HostFormScreenState",
           "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
-          "bodyGeometry": "mixed",
-          "topEdge": "route-chrome"
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
         },
         {
           "routes": [
@@ -23195,7 +23195,7 @@
         "primary": "hostResponseReviewDetailProvider + hostApplicationsControllerProvider",
         "files": [
           {
-            "file": "lib/hosts/presentation/forms/host_response_review_detail.dart",
+            "file": "lib/hosts/forms/host_response_review_detail.dart",
             "symbol": "hostResponseReviewDetail"
           },
           {
@@ -23205,7 +23205,7 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/hosts/presentation/applications/host_applications_controller.dart",
+            "file": "lib/hosts/forms/host_applications_controller.dart",
             "symbol": "HostApplicationsController"
           }
         ],

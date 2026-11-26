@@ -139,7 +139,11 @@ import 'package:catch_dating_app/hosts/events/rehearsal_practice_screen.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_practice_tools_screen.dart';
 import 'package:catch_dating_app/hosts/forms/form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/forms/form_preview_screen.dart';
+import 'package:catch_dating_app/hosts/forms/form_questions_screen.dart';
+import 'package:catch_dating_app/hosts/forms/form_screen.dart';
 import 'package:catch_dating_app/hosts/forms/form_settings_screen.dart';
+import 'package:catch_dating_app/hosts/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_photos_controller.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_photos_state.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
@@ -151,9 +155,6 @@ import 'package:catch_dating_app/hosts/people/people_state.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_route_screen.dart';
@@ -11998,7 +11999,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_form_overview',
     routeIds: const <String>['hostFormBuilderScreen'],
     device: CaptureDevice.iphone17Pro,
-    builder: (_) => HostFormBuilderScreen(
+    builder: (_) => HostFormScreen(
       organizerId: HostOperationsFixtures.primaryOrganizer.id,
       formId: 'saturday-social-application',
     ),
@@ -12009,7 +12010,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_form_questions_phone',
     routeIds: const <String>['hostFormBuilderScreen'],
     device: CaptureDevice.iphone17Pro,
-    builder: (_) => HostFormBuilderScreen(
+    builder: (_) => HostFormQuestionsScreen(
       organizerId: HostOperationsFixtures.primaryOrganizer.id,
       formId: 'saturday-social-application',
     ),
@@ -12097,7 +12098,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         'saturday-social-application',
       ).overrideWith(() => _CaptureHostFormEditorController()),
     ],
-    builder: (context) => HostFormBuilderScreen(
+    builder: (context) => HostFormQuestionsScreen(
       organizerId: HostOperationsFixtures.primaryOrganizer.id,
       formId: 'saturday-social-application',
     ),

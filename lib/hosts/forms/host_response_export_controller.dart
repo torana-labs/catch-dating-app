@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_export.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_form_response_query_controller.dart';
 import 'package:flutter/foundation.dart';
 
 enum HostResponseExportStatus {
