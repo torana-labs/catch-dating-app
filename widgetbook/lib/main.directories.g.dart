@@ -215,6 +215,8 @@ import 'package:widgetbook_workspace/hosts/host_form_editor_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_editor_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_payment_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_payment_use_cases;
+import 'package:widgetbook_workspace/hosts/host_form_questions_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_form_questions_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_responses_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_responses_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_settings_use_cases.dart'
@@ -11020,6 +11022,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormKindPicker',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Choose an answer type',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_questions_use_cases
+                            .hostFormKindPickerPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormLifecycleMenu',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -11262,6 +11275,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormQuestionSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Question settings',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_questions_use_cases
+                            .hostFormQuestionSheetPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormQuestionsPageBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -11284,6 +11308,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormRuleField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Answer rule',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_questions_use_cases
+                            .hostFormRuleFieldPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormSectionAccordion',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -11302,6 +11337,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_editor_use_cases
                             .hostFormSectionFieldPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormSectionSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Edit a section',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_questions_use_cases
+                            .hostFormSectionSheetPreview,
                   ),
                 ],
               ),
