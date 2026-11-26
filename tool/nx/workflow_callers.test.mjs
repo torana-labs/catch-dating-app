@@ -5,11 +5,14 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {planAffected} from "../harness/lib/component_graph.mjs";
-import {compare, comparedLanes, workflowLanes} from "./shadow_plan.mjs";
+import {comparedLanes, selectNxLanes, workflowLanes} from "./lanes.mjs";
 import {ALL, callerLanes, declaredTargets, isCiConfiguration, isExecutedCode, isSelector, notCalledByCi, selectorEntries,
   selectorFiles, trackedFiles, unclassifiedCiFiles, workflowCallers} from "./workflow_callers.mjs";
 import {iosBuildInput} from "../ci/ios_build_inputs.mjs";
 import {splitToolsManifest} from "../lib/tools_manifest.mjs";
+
+// The lanes Nx selects for one change, sorted.
+const nxSelection = (input) => [...selectNxLanes(input).lanes].sort();
 
 const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
 const realGraph = workflowCallers({root: repoRoot, lanes: comparedLanes});
@@ -276,13 +279,13 @@ test("pull requests and the merge queue narrow CI configuration edits the same w
     ".github/actions/cache-cocoapods/action.yml", ".github/actions/install-ripgrep/action.yml",
     ".github/workflows/react-surface-validation.yml", "tool/ci/generated_inventories.mjs", "tool/nx/select_lanes.mjs"];
   for (const file of edits) {
-    const select = (mode) => compare({plannerLanes: [], nxTasks: [], changedFiles: [file], mode, graph: realGraph}).nxLanes;
+    const select = (mode) => nxSelection({nxTasks: [], changedFiles: [file], mode, graph: realGraph});
     const queue = select("merge_group");
     assert.deepEqual(select("pr"), queue.filter((lane) => !queueOnly.includes(lane)), file);
   }
   // The narrowing never drops the iOS queue lanes from an edit that runs them.
-  const ios = compare({plannerLanes: [], nxTasks: [], changedFiles: [".github/workflows/app-build-matrix.yml"],
-    mode: "merge_group", graph: realGraph}).nxLanes;
+  const ios = nxSelection({nxTasks: [], changedFiles: [".github/workflows/app-build-matrix.yml"],
+    mode: "merge_group", graph: realGraph});
   assert.ok(ios.includes("flutter_build_ios"));
 });
 

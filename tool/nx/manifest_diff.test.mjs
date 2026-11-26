@@ -6,10 +6,15 @@ import path from "node:path";
 import test from "node:test";
 import {planAffected} from "../harness/lib/component_graph.mjs";
 import {canonical, manifestChange} from "./manifest_diff.mjs";
-import {callerGraph, compare, comparedLanes, plannerManifestLanes} from "./shadow_plan.mjs";
+import {callerGraph, comparedLanes, selectNxLanes} from "./lanes.mjs";
+// The planner side of the rule, until the planner comparison is retired.
+import {plannerManifestLanes} from "./shadow_plan.mjs";
 import {mainShadowReport} from "./select_lanes.mjs";
 import {manifestLanes, workflowCallers} from "./workflow_callers.mjs";
 import {formatToolsManifest, loadToolsManifest, splitToolsManifest, toolsManifestPath as manifestFile} from "../lib/tools_manifest.mjs";
+
+// The lanes Nx selects for one change, sorted.
+const nxSelection = (input) => [...selectNxLanes(input).lanes].sort();
 
 const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
 const baseText = formatToolsManifest(loadToolsManifest());
@@ -174,8 +179,7 @@ test("pull requests and the queue narrow a manifest-only edit; main still runs e
   assert.ok(!plannerManifestLanes({mode: "pr", changedFiles: files, change: appTargets}).some((lane) => queueOnly.includes(lane)),
     "pull requests leave the queue-only lanes to the queue");
   // Nx applies the same rule.
-  assert.deepEqual(compare({plannerLanes: [], nxTasks: [], changedFiles: files, mode: "merge_group", manifestChange: appTargets})
-    .nxLanes, queue);
+  assert.deepEqual(nxSelection({nxTasks: [], changedFiles: files, mode: "merge_group", manifestChange: appTargets}), queue);
   // Main: the planner keeps the manifest harness-full; the diff is report-only.
   const componentGraph = JSON.parse(fs.readFileSync(path.join(repoRoot, "tool/harness/component_graph.json"), "utf8"));
   const mainPlan = planAffected({changedPaths: files, graph: componentGraph, mode: "main"});
@@ -189,10 +193,10 @@ test("pull requests and the queue narrow a manifest-only edit; main still runs e
 test("a manifest edit with a selector file, or with files that do not plan, keeps every lane", () => {
   const description = manifestChange(baseText, edit((manifest) => { tool(manifest, "meta:nx-shadow-plan").description += "."; }));
   assert.equal(plannerManifestLanes({mode: "pr", changedFiles: [manifestFile, "tool/harness.mjs"], change: description}), null);
-  assert.deepEqual(compare({plannerLanes: [], nxTasks: [], changedFiles: [manifestFile, "tool/harness.mjs"],
-    manifestChange: description}).nxLanes, everyLane.filter((lane) => lane !== "flutter_build_ios"));
-  assert.deepEqual(compare({plannerLanes: [], nxTasks: [], changedFiles: [manifestFile, "tool/harness.mjs"],
-    manifestChange: description, mode: "main"}).nxLanes, everyLane);
+  assert.deepEqual(nxSelection({nxTasks: [], changedFiles: [manifestFile, "tool/harness.mjs"],
+    manifestChange: description}), everyLane.filter((lane) => lane !== "flutter_build_ios"));
+  assert.deepEqual(nxSelection({nxTasks: [], changedFiles: [manifestFile, "tool/harness.mjs"],
+    manifestChange: description, mode: "main"}), everyLane);
   assert.equal(plannerManifestLanes({mode: "pr", changedFiles: [manifestFile], change: null}), null);
   // Other files plan with the planner as usual.
   const withDocs = plannerManifestLanes({mode: "pr", changedFiles: [manifestFile, "docs/README.md"], change: description});
