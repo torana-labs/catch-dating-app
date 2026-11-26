@@ -123,6 +123,9 @@ class _HostEventLiveLocationFieldState
       );
       _lastPublishedAt = widget.clock();
       await _subscription?.cancel();
+      // A field disposed meanwhile has cancelled its subscription; starting
+      // a new one now would watch the position with nothing to stop it.
+      if (!mounted) return;
       _subscription = ref
           .read(eventLivePositionStreamGatewayProvider)
           .watch()
