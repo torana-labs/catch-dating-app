@@ -10,8 +10,6 @@
   "read": "server only; sanitized vocabulary labels are returned by CRM callables",
   "write": "server only",
   "exportedFunctions": [
-    "listOrganizerContacts",
-    "getOrganizerContactDetail",
     "mutateOrganizerContact"
   ],
   "migrationNotes": [

@@ -3,7 +3,6 @@
   "$id": "https://catch.app/contracts/callables/list_organizer_saved_audiences_payload.schema.json",
   "title": "ListOrganizerSavedAudiencesCallablePayload",
   "description": "Lists one organizer's reusable CRM audiences.",
-  "x-callable-aliases": ["listOrganizerSavedAudiences"],
   "type": "object",
   "additionalProperties": false,
   "required": ["organizerId"],

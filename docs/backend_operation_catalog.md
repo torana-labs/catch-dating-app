@@ -728,12 +728,11 @@ and they are listed in `functions/retired-functions.json`:
 `programDoorJournalViews`) and `getProgramLiveBoard` (`programAlertViews`,
 `programTravelCountViews` and `programResourceViews`).
 
-**Retire-later callables (programme read batches 3 to 5, #1339).** Deployed for
-older builds, no current client calls them: `listProgramWhatsappThreads` for
-rows (still called with `limit: 1` for the header's number), `getProgramHotelRooms`,
-`listMyHostAssignments` and `listOrganizerMoments` for moment rows (still called
-by the planned message screen for the sender). The overview and rollup counts of
-`listOrganizerPrograms` and `getOrganizerProgram` are still called.
+**Retired after the Host 1.0.6 floor raise (Nov 2026, #2174).** The programme
+read callables `listProgramWhatsappThreads`, `getProgramHotelRooms`,
+`listMyHostAssignments`, `listOrganizerMoments`, `listOrganizerPrograms`,
+`listProgramGuests` and `getProgramAssistantSettings` are retired; the Host app
+reads the views named above. `getOrganizerProgram` is still called.
 
 ## Programme WhatsApp threads, replies and the assistant settings
 
@@ -1056,8 +1055,8 @@ on change, so lease and retry bookkeeping writes nothing. Current managers read
 both under rules: every rule of the organizer or of one form in one bounded
 listener, runs newest first in live pages of 50. A saved or switched rule shows
 from the command's answer until its view reaches that revision.
-`listOrganizerFormAutomationRuns` stays deployed for older builds,
-retire-later; saving and switching stay on the revision-fenced
+`listOrganizerFormAutomationRuns` was retired after the Host 1.0.6 floor
+raise (#2174); saving and switching stay on the revision-fenced
 `createOrganizerFormAutomation` and `setOrganizerFormAutomationState`.
 
 `onOrganizerFormResponseAutomated`, `onOrganizerApplicationAutomated` and
@@ -1194,8 +1193,8 @@ organizer they already listen to, with the same test as the server's
 `trackingConfigurationEligible` (not archived, not suppressed, an owner, and
 first-party or a verified claim); the save still goes through
 `setOrganizerTrackingSettings`, which rechecks eligibility and the revision.
-`getOrganizerTrackingSettings` stays deployed for the website and older Host
-builds, retire-later for the app.
+`getOrganizerTrackingSettings` was retired after the Host 1.0.6 floor raise
+(#2174).
 
 The public tag projection is built into the page read models (`tracking` on
 `organizerPublicPage` and `eventPublicPage`, #2063): null for an organizer that may

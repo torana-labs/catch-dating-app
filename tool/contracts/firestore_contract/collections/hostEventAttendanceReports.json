@@ -19,6 +19,6 @@
   ],
   "migrationNotes": [
     "view equals what getEventAttendanceReport returns as of view.serverTime. Events that ended before the triggers have no view until their next attendee or closeout write; Host close-out then shows its own counts without the report section.",
-    "getEventAttendanceReport and getEventAttendanceDisposition stay deployed; recordEventNoShow is the command."
+    "getEventAttendanceReport was retired in Nov 2026 after the Host 1.0.6 floor raise (#2174); getEventAttendanceDisposition stays deployed and recordEventNoShow is the command."
   ]
 }
