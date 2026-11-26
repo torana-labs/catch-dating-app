@@ -1,5 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useMemo, useState} from "react";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {
   actOnIssue,
   loadIssues,
@@ -43,6 +44,7 @@ export function useMoneyIssuesController({view: routedView, selectedIssueId =
   onSelectIssueId?: (issueId: string) => void;
 } = {}): MoneyIssuesController {
   const client = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const [localView, setView] = useState<IssuesView["view"]>("open");
   const view = routedView ?? localView;
   const [kind, setKind] = useState<IssueKindFilter>("all");
@@ -74,6 +76,8 @@ export function useMoneyIssuesController({view: routedView, selectedIssueId =
     note: string | null) => {
     if (!selected) return false;
     const following = rows[position + 1]?.issueId ?? null;
+    const operation = beginOperation();
+    if (!operation) return false;
     try {
       await action.mutateAsync({issueId: selected.issueId,
         action: kindOfAction, note});
@@ -84,6 +88,8 @@ export function useMoneyIssuesController({view: routedView, selectedIssueId =
       return true;
     } catch {
       return false;
+    } finally {
+      endOperation(operation);
     }
   };
   return {

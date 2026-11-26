@@ -1,5 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useCallback, useMemo, useState} from "react";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {getSalesAccount, listSalesTasks, recordSalesActivity, upsertSalesTask} from "../api/salesRepository";
 import type {SalesTask} from "../api/salesTypes";
 import {nextMonday, taskScope, todayKinds, type TodayKind, type TodayScope} from "./salesLabels";
@@ -21,6 +22,7 @@ export function useSalesTodayController({ownerUid, onError, onNotice, selectedTa
   onSelect: (taskId: string | null) => void;
 }) {
   const queryClient = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const [scope, setScope] = useState<TodayScope>("week");
   const [kind, setKind] = useState<TodayKind | null>(null);
   const tasks = useQuery({
@@ -52,6 +54,8 @@ export function useSalesTodayController({ownerUid, onError, onNotice, selectedTa
   const log = useMutation({mutationFn: recordSalesActivity});
 
   const finish = useCallback(async (action: () => Promise<unknown>, notice: string) => {
+    const operation = beginOperation();
+    if (!operation) return false;
     onError(null);
     try {
       await action();
@@ -62,13 +66,10 @@ export function useSalesTodayController({ownerUid, onError, onNotice, selectedTa
     } catch (error) {
       onError(error instanceof Error ? error.message : String(error));
       return false;
+    } finally {
+      endOperation(operation);
     }
-  }, [nextTask, onError, onNotice, onSelect, queryClient]);
-
-  const updateTask = (task: SalesTask, patch: Partial<Pick<SalesTask, "dueAt" | "status">>) => save.mutateAsync({
-    organizerId: task.organizerId, taskId: task.taskId, requestId: crypto.randomUUID(), expectedRevision: task.revision,
-    task: {kind: task.kind, title: task.title, dueAt: task.dueAt, ownerUid: task.ownerUid, status: task.status, ...patch},
-  });
+  }, [beginOperation, endOperation, nextTask, onError, onNotice, onSelect, queryClient]);
 
   return {
     scope, setScope, kind, setKind, tasks, rows, counts, selected, account, nextTask,
@@ -78,11 +79,19 @@ export function useSalesTodayController({ownerUid, onError, onNotice, selectedTa
       await log.mutateAsync({organizerId: task.organizerId, requestId: crypto.randomUUID(),
         type: task.kind === "reply" ? "reply" : task.kind === "demo" ? "demo" : "note",
         occurredAt: new Date().toISOString(), note});
-      await updateTask(task, {status: "completed"});
+      await save.mutateAsync(taskUpdate(task, {status: "completed"}));
     }, "Logged and done."),
-    snooze: (task: SalesTask) => finish(() => updateTask(task, {dueAt: nextMonday()}), "Snoozed to Monday."),
-    complete: (task: SalesTask) => finish(() => updateTask(task, {status: "completed"}), "Done."),
+    snooze: (task: SalesTask) => finish(() => save.mutateAsync(taskUpdate(task, {dueAt: nextMonday()})), "Snoozed to Monday."),
+    complete: (task: SalesTask) => finish(() => save.mutateAsync(taskUpdate(task, {status: "completed"})), "Done."),
     isSaving: save.isPending || log.isPending,
+  };
+}
+
+/** The upsert that changes one task's due date or status, with a fresh request id. */
+function taskUpdate(task: SalesTask, patch: Partial<Pick<SalesTask, "dueAt" | "status">>) {
+  return {
+    organizerId: task.organizerId, taskId: task.taskId, requestId: crypto.randomUUID(), expectedRevision: task.revision,
+    task: {kind: task.kind, title: task.title, dueAt: task.dueAt, ownerUid: task.ownerUid, status: task.status, ...patch},
   };
 }
 
