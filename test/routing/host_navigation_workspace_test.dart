@@ -410,6 +410,19 @@ void main() {
     },
   );
 
+  test('the old Requests tab link opens Today with the requests queue', () {
+    expect(
+      hostAudienceRecordRedirect(
+        Uri.parse('/host/audience?organizerId=o&view=requests'),
+      ),
+      '/host/today?organizerId=o&view=requests',
+    );
+    expect(
+      hostAudienceRecordRedirect(Uri.parse('/host/audience?view=forms')),
+      isNull,
+    );
+  });
+
   testWidgets(
     'routed panes keep index state, nested Back and push results across widths',
     (tester) async {

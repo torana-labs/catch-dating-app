@@ -37,9 +37,18 @@ import 'package:intl/intl.dart';
 /// callbacks into navigation. Every read behind it is a listener or a cached
 /// read, so nothing here refreshes on return or resume.
 class HostTodayScreen extends ConsumerStatefulWidget {
-  const HostTodayScreen({super.key, this.initialOrganizerId, this.now});
+  const HostTodayScreen({
+    super.key,
+    this.initialOrganizerId,
+    this.now,
+    this.openRequests = false,
+  });
 
   final String? initialOrganizerId;
+
+  /// Opens the requests queue once the organizer is known: the
+  /// `view=requests` link (the old Audience Requests tab) lands here.
+  final bool openRequests;
 
   /// A fixed clock for previews and tests; null follows the app clock.
   final DateTime? now;
@@ -51,6 +60,7 @@ class HostTodayScreen extends ConsumerStatefulWidget {
 class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
   DateTime? _clockNow;
   Timer? _tick;
+  bool _requestsOpened = false;
 
   DateTime get _now => widget.now ?? _clockNow ?? DateTime.now();
 
@@ -205,6 +215,15 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
         cityName: organizer.location,
       );
       final state = ref.watch(hostTodayControllerProvider(request));
+      if (widget.openRequests && !_requestsOpened) {
+        _requestsOpened = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          unawaited(
+            showHostTodayRequestsSheet(context, organizerId: organizer.id),
+          );
+        });
+      }
       body = state.status == HostTodayStatus.error
           ? CatchLocalizedErrorState(
               state.error!,
