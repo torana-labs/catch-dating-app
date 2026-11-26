@@ -41,7 +41,8 @@ function fixture(t, source, name = "publicName", consumer = "dart", coverage = "
   }
   if (coverage === "unknown") gap.collections.push({id: "items", reason: "x"}, {id: "gone", reason: "x"});
   writeFirestoreContract(root, {
-    schemaVersion: 2, collectionsWithoutRulesTests: gap, collections: [collection],
+    schemaVersion: 2, collectionsWithoutRulesTests: gap,
+    collectionsPredatingNewCollectionRule: {collections: ["items"]}, collections: [collection],
   });
   write("firestore.rules", "match /items/{id} {}");
   write("functions/src/shared/generated/firestoreAdminTypes.ts", "");
@@ -152,6 +153,7 @@ function registerOrphans(root, rulesMatch = "/orphans/{privateDocument=**}") {
     registry.collections.push({id: "orphans", path: "orphans/{id}", rulesMatch,
       owner: "server", read: "server", write: "server"});
     registry.collectionsWithoutRulesTests.collections.push({id: "orphans", reason: "Server only."});
+    registry.collectionsPredatingNewCollectionRule.collections.push("orphans");
   });
 }
 
@@ -340,4 +342,90 @@ test("every collection names its rules test or is listed as untested, never both
     assert.equal(result.status, 1, coverage);
     assert.match(result.stderr, message);
   }
+});
+
+// STR-11: a new collection records why an existing one cannot hold its data
+// and names its readers; the grandfather list only shrinks.
+function addNewCollection(root, rationale) {
+  editRegistry(root, (registry) => {
+    registry.collections.push({id: "notes", path: "notes/{id}", rulesMatch: "/notes/{id}",
+      owner: "server", read: "server", write: "server",
+      ...(rationale === undefined ? {} : {newCollectionRationale: rationale})});
+    registry.collectionsWithoutRulesTests.collections.push({id: "notes", reason: "Server only."});
+  });
+  fs.writeFileSync(path.join(root, "firestore.rules"),
+    "match /items/{id} {}\nmatch /notes/{id} {}");
+  fs.writeFileSync(path.join(root, "contracts/firestore/notes.schema.json"), JSON.stringify({
+    "x-firestore-collection": "notes", "x-firestore-path": "notes/{id}",
+  }));
+}
+
+const why = "Notes are per-guest and outlive the event, so neither a field on the event " +
+  "nor a document type in an existing collection fits.";
+
+test("a new collection needs a reason an existing one cannot hold it and a named reader", t => {
+  const source = "export {publicName} from './handler';";
+  for (const [rationale, message] of [
+    [undefined, /notes: a new collection needs newCollectionRationale/u],
+    [{whyNotAnExistingCollection: "Too short.", readers: ["publicName"]},
+      /notes\.newCollectionRationale\.whyNotAnExistingCollection must say/u],
+    [{whyNotAnExistingCollection: why}, /notes\.newCollectionRationale\.readers must name at least one reader/u],
+    [{whyNotAnExistingCollection: why, readers: []}, /readers must name at least one reader/u],
+    [{whyNotAnExistingCollection: why, readers: ["someone"]},
+      /"someone" is neither an exported Function nor a repository file/u],
+    [{whyNotAnExistingCollection: why, readers: ["lib/missing.dart"]},
+      /"lib\/missing\.dart" is neither an exported Function nor a repository file/u],
+    [{whyNotAnExistingCollection: why, readers: ["publicName"], owner: "x"},
+      /notes\.newCollectionRationale: unknown field owner/u],
+  ]) {
+    const root = fixture(t, source);
+    addNewCollection(root, rationale);
+    const result = check(root);
+    assert.equal(result.status, 1, JSON.stringify(rationale));
+    assert.match(result.stderr, message);
+  }
+  for (const readers of [["publicName"], ["lib/caller.dart"], ["publicName", "lib/caller.dart"]]) {
+    const root = fixture(t, source);
+    addNewCollection(root, {whyNotAnExistingCollection: why, readers});
+    accepted(check(root));
+  }
+});
+
+test("the grandfather list names only real collections without a rationale", t => {
+  const source = "export {publicName} from './handler';";
+  let root = fixture(t, source);
+  addNewCollection(root, {whyNotAnExistingCollection: why, readers: ["publicName"]});
+  editRegistry(root, (registry) => {
+    registry.collectionsPredatingNewCollectionRule.collections.push("notes", "gone");
+  });
+  const result = check(root);
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /notes: has a newCollectionRationale, so remove it from collectionsPredatingNewCollectionRule/u);
+  assert.match(result.stderr, /collectionsPredatingNewCollectionRule: gone is not a collection in this contract/u);
+
+  root = fixture(t, source);
+  editRegistry(root, (registry) => {
+    delete registry.collectionsPredatingNewCollectionRule;
+  });
+  assert.match(check(root).stderr, /collectionsPredatingNewCollectionRule\.collections must be an array/u);
+});
+
+test("the grandfather list only shrinks against origin/main", t => {
+  const root = fixture(t, "export {publicName} from './handler';");
+  const git = (...args) => spawnSync("git", args, {cwd: root, encoding: "utf8"});
+  assert.equal(git("init", "-q").status, 0);
+  assert.equal(git("add", "-A").status, 0);
+  assert.equal(git("-c", "user.name=Test", "-c", "user.email=test@example.test",
+    "commit", "-qm", "base").status, 0);
+  assert.equal(git("update-ref", "refs/remotes/origin/main", "HEAD").status, 0);
+  accepted(check(root));
+
+  // Listing a new collection instead of giving it a rationale fails.
+  addNewCollection(root, undefined);
+  editRegistry(root, (registry) => {
+    registry.collectionsPredatingNewCollectionRule.collections.push("notes");
+  });
+  const result = check(root);
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /notes is not on origin\/main's list, and the list only shrinks/u);
 });
