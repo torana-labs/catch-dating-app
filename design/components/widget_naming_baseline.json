@@ -42,13 +42,6 @@
     },
     {
       "file": "lib/hosts/presentation/host_audience_view.dart",
-      "name": "HostAudienceStateScaffold",
-      "issues": [
-        "noncanonical-feature-widget-file"
-      ]
-    },
-    {
-      "file": "lib/hosts/presentation/host_audience_view.dart",
       "name": "HostAudienceTabRail",
       "issues": [
         "noncanonical-feature-widget-file"
