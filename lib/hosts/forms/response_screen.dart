@@ -68,6 +68,8 @@ class HostResponseScreen extends ConsumerStatefulWidget {
 class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
   final _note = TextEditingController();
   int? _noteRevision;
+
+  /// A step is opening the next answer; a second tap waits for it.
   bool _stepping = false;
 
   HostResponseReviewKey get _key => (
@@ -146,7 +148,7 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
                 key: const ValueKey<String>('host-response-previous'),
                 tooltip: l10n.hostFormsResponsePrevious,
                 size: GeneratedCatchSizeTokens.controlMd,
-                onPressed: !busy && !_stepping && neighbours.previous
+                onPressed: !busy && neighbours.previous
                     ? () => _step(queue, -1)
                     : null,
                 child: CatchIcon(CatchIcons.back),
@@ -155,7 +157,7 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
                 key: const ValueKey<String>('host-response-next'),
                 tooltip: l10n.hostFormsResponseNext,
                 size: GeneratedCatchSizeTokens.controlMd,
-                onPressed: !busy && !_stepping && neighbours.next
+                onPressed: !busy && neighbours.next
                     ? () => _step(queue, 1)
                     : null,
                 child: CatchIcon(CatchIcons.forward),
@@ -219,7 +221,8 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
   /// Opens the answer [direction] steps away in place of this one, loading
   /// further pages (at most ten) when it is past the last loaded answer.
   Future<void> _step(HostResponsesQueue queue, int direction) async {
-    setState(() => _stepping = true);
+    if (_stepping) return;
+    _stepping = true;
     try {
       final provider = hostFormResponsesControllerProvider(queue.request);
       var page = await ref.read(provider.future);
@@ -277,7 +280,7 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
         );
       }
     } finally {
-      if (mounted) setState(() => _stepping = false);
+      _stepping = false;
     }
   }
 

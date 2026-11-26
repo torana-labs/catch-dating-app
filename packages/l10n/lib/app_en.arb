@@ -18532,7 +18532,7 @@
   "@hostFormsResponsesKicker": {"description": "Responses kicker: form kind and answer count.", "placeholders": {"kind": {"type": "String"}, "count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.forms"},
   "hostFormsResponsesViews": "Form views",
   "@hostFormsResponsesViews": {"description": "Responses segmented label for screen readers.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.forms"},
-  "hostFormsResponsesFiltersCount": "Filters \u00b7 {count}",
+  "hostFormsResponsesFiltersCount": "{count, plural, =1{Filters · 1} other{Filters · {count}}}",
   "@hostFormsResponsesFiltersCount": {"description": "Responses chip: the filters, with how many narrow the list.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.forms", "placeholders": {"count": {"type": "int"}}},
   "hostFormsResponsesVersionTitle": "Version",
   "@hostFormsResponsesVersionTitle": {"description": "Responses filter sheet section: which published version.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.forms"},

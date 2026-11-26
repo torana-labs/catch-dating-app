@@ -180,7 +180,7 @@ class HostResponsesBody extends StatelessWidget {
           else if (state.entries.isEmpty && !state.canLoadMore)
             CatchEmptyState(
               key: const ValueKey<String>('host-responses-empty'),
-              icon: CatchIcons.descriptionOutlined,
+              icon: CatchIcons.document,
               title: state.filtered
                   ? l10n.hostFormResponsesNoMatchesTitle
                   : l10n.hostFormResponsesEmptyTitle,
