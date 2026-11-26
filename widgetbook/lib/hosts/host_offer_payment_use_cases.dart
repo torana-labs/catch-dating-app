@@ -3,10 +3,9 @@ import 'package:catch_dating_app/contexts/events/data/private_event_preferences_
 import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/forms/offer_settings_editor.dart';
-import 'package:catch_dating_app/hosts/forms/offer_settings_sections.dart';
+import 'package:catch_dating_app/hosts/forms/offer_settings_section.dart';
 import 'package:catch_dating_app/hosts/forms/offer_settings_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -122,12 +121,12 @@ Widget hostOfferPaymentDetailsSectionPreview(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Offer payment confirmation contract',
-  type: HostOfferSettingsConfirmation,
+  type: HostOfferSettingsConfirmationNotice,
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostOfferPaymentConfirmationSectionPreview(BuildContext context) =>
     WidgetbookPageCatalogFrame(
-      title: 'HostOfferSettingsConfirmation',
+      title: 'HostOfferSettingsConfirmationNotice',
       contractId: 'section.host.event.offer.payment.confirmation',
       children: [
         for (final mode in HostOfferSettingsMode.values)
@@ -136,7 +135,7 @@ Widget hostOfferPaymentConfirmationSectionPreview(BuildContext context) =>
             child: WidgetbookHostDeviceFrame(
               child: Scaffold(
                 body: SingleChildScrollView(
-                  child: HostOfferSettingsConfirmation(mode: mode),
+                  child: HostOfferSettingsConfirmationNotice(mode: mode),
                 ),
               ),
             ),

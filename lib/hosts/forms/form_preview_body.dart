@@ -66,7 +66,7 @@ class _HostFormPreviewBodyState extends State<HostFormPreviewBody> {
                     tone: CatchTextTone.secondary,
                   ),
                 for (final question in section.questions)
-                  HostFormPreviewQuestion(
+                  HostFormPreviewField(
                     question: question,
                     answer: _answers[question.questionId],
                     onChanged: (answer) =>
@@ -100,8 +100,8 @@ class _HostFormPreviewBodyState extends State<HostFormPreviewBody> {
 /// phone, email and link as inputs; choices as chips; yes-or-no and
 /// acknowledgements as switches; files and signatures as their upload and
 /// sign rows, which do nothing in a preview.
-class HostFormPreviewQuestion extends StatelessWidget {
-  const HostFormPreviewQuestion({
+class HostFormPreviewField extends StatelessWidget {
+  const HostFormPreviewField({
     super.key,
     required this.question,
     required this.answer,

@@ -55,7 +55,7 @@ class HostFormSettingsPaymentSection extends ConsumerWidget {
       );
     }
     final notifier = ref.read(provider.notifier);
-    return HostFormSettingsPaymentRows(
+    return HostFormPaymentSetupSection(
       state: setup,
       definition: definition,
       onChanged: onChanged,
@@ -69,8 +69,8 @@ class HostFormSettingsPaymentSection extends ConsumerWidget {
 }
 
 /// The fee section drawn from a payment setup, as plain values.
-class HostFormSettingsPaymentRows extends StatelessWidget {
-  const HostFormSettingsPaymentRows({
+class HostFormPaymentSetupSection extends StatelessWidget {
+  const HostFormPaymentSetupSection({
     super.key,
     required this.state,
     required this.definition,

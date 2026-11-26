@@ -50,7 +50,7 @@ class HostFormSettingsBody extends StatelessWidget {
       child: CatchStack(
         gap: CatchStackGap.g24,
         children: [
-          HostFormSettingsNotices(state: state, editor: editor),
+          HostFormSettingsNotice(state: state, editor: editor),
           CatchText(
             hostFormSaveLabel(context, state),
             key: const ValueKey<String>('host-form-settings-save-state'),
@@ -132,7 +132,7 @@ class HostFormSettingsBody extends StatelessWidget {
               ),
             ],
           ),
-          _HostFormMessagingSection(definition: definition, editor: editor),
+          HostFormMessagingSection(definition: definition, editor: editor),
           HostFormSettingsPaymentSection(
             organizerId: organizerId,
             definition: definition,
@@ -188,7 +188,7 @@ class HostFormSettingsBody extends StatelessWidget {
                 ),
             ],
           ),
-          _HostFormAvailabilitySection(definition: definition, editor: editor),
+          HostFormAvailabilitySection(definition: definition, editor: editor),
           CatchSection(
             title: l10n.hostFormConsent,
             dividers: CatchSectionPlacement.none,
@@ -228,8 +228,8 @@ class HostFormSettingsBody extends StatelessWidget {
               ),
             ],
           ),
-          _HostFormCompletionSection(definition: definition, editor: editor),
-          _HostFormLogicSection(definition: definition, editor: editor),
+          HostFormCompletionSection(definition: definition, editor: editor),
+          HostFormLogicSection(definition: definition, editor: editor),
         ],
       ),
     );
@@ -238,8 +238,8 @@ class HostFormSettingsBody extends StatelessWidget {
 
 /// The save conflict, a failed save and the draft's validation issues,
 /// each with what the host can do about it.
-class HostFormSettingsNotices extends StatelessWidget {
-  const HostFormSettingsNotices({
+class HostFormSettingsNotice extends StatelessWidget {
+  const HostFormSettingsNotice({
     super.key,
     required this.state,
     required this.editor,
@@ -292,8 +292,9 @@ class HostFormSettingsNotices extends StatelessWidget {
 
 /// The WhatsApp updates the form offers; the organizer and Catch choices
 /// need a verified phone, and a purpose form sets its own.
-class _HostFormMessagingSection extends StatelessWidget {
-  const _HostFormMessagingSection({
+class HostFormMessagingSection extends StatelessWidget {
+  const HostFormMessagingSection({
+    super.key,
     required this.definition,
     required this.editor,
   });
@@ -377,8 +378,9 @@ class _HostFormMessagingSection extends StatelessWidget {
 
 /// When the form opens and closes, how many answers it takes and what it
 /// says once it is closed.
-class _HostFormAvailabilitySection extends StatelessWidget {
-  const _HostFormAvailabilitySection({
+class HostFormAvailabilitySection extends StatelessWidget {
+  const HostFormAvailabilitySection({
+    super.key,
     required this.definition,
     required this.editor,
   });
@@ -394,14 +396,14 @@ class _HostFormAvailabilitySection extends StatelessWidget {
       title: l10n.hostFormAvailability,
       dividers: CatchSectionPlacement.none,
       children: [
-        _HostFormDateField(
+        HostFormDateField(
           key: const ValueKey<String>('host-form-settings-opens'),
           title: l10n.hostFormOpensAt,
           value: definition.opensAt,
           onChanged: (value) =>
               editor.updateMetadata(opensAt: value, setOpensAt: true),
         ),
-        _HostFormDateField(
+        HostFormDateField(
           key: const ValueKey<String>('host-form-settings-closes'),
           title: l10n.hostFormClosesAt,
           value: definition.closesAt,
@@ -445,8 +447,8 @@ class _HostFormAvailabilitySection extends StatelessWidget {
 
 /// One opening or closing day: tap to choose it, or clear it. A closing
 /// day runs to the end of that day.
-class _HostFormDateField extends StatelessWidget {
-  const _HostFormDateField({
+class HostFormDateField extends StatelessWidget {
+  const HostFormDateField({
     super.key,
     required this.title,
     required this.value,
@@ -504,8 +506,9 @@ class _HostFormDateField extends StatelessWidget {
 }
 
 /// What people see after they send the form, and the button it offers.
-class _HostFormCompletionSection extends StatelessWidget {
-  const _HostFormCompletionSection({
+class HostFormCompletionSection extends StatelessWidget {
+  const HostFormCompletionSection({
+    super.key,
     required this.definition,
     required this.editor,
   });
@@ -601,8 +604,12 @@ class _HostFormCompletionSection extends StatelessWidget {
 }
 
 /// The form's logic rules, each with Remove, and Add a rule.
-class _HostFormLogicSection extends StatelessWidget {
-  const _HostFormLogicSection({required this.definition, required this.editor});
+class HostFormLogicSection extends StatelessWidget {
+  const HostFormLogicSection({
+    super.key,
+    required this.definition,
+    required this.editor,
+  });
 
   final HostFormDefinition definition;
   final HostFormEditorController editor;

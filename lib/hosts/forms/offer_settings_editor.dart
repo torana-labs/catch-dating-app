@@ -4,7 +4,7 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
-import 'package:catch_dating_app/hosts/forms/offer_settings_sections.dart';
+import 'package:catch_dating_app/hosts/forms/offer_settings_section.dart';
 import 'package:catch_dating_app/hosts/forms/offer_settings_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -462,7 +462,7 @@ class _HostOfferSettingsEditorState
                           body: l10n.hostOfferPaymentRequestLinksBody,
                           icon: CatchIcons.link,
                         ),
-                      HostOfferSettingsConfirmation(mode: mode),
+                      HostOfferSettingsConfirmationNotice(mode: mode),
                       CatchText(
                         l10n.hostsEventPreferenceProviderHint,
                         variant: CatchTextVariant.bodySmall,

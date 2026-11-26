@@ -48,57 +48,32 @@ class HostOfferSettingsModeSection extends StatelessWidget {
       children: [
         for (final candidate
             in choosing ? HostOfferSettingsMode.values : [chosen])
-          _HostOfferModeTile(
-            mode: candidate,
+          Semantics(
             selected: chosen == candidate,
-            gated:
-                candidate == HostOfferSettingsMode.catchCheckout &&
-                !checkoutAvailable,
-            onTap: !editable
-                ? null
-                : !choosing
-                ? onChange
-                : candidate == HostOfferSettingsMode.catchCheckout &&
+            inMutuallyExclusiveGroup: true,
+            child: CatchChoiceTile(
+              key: ValueKey('offer-payment-mode-${candidate.name}'),
+              variant: CatchChoiceTileVariant.row,
+              title:
+                  candidate == HostOfferSettingsMode.catchCheckout &&
                       !checkoutAvailable
-                ? null
-                : () => onSelected(candidate),
+                  ? '${hostOfferSettingsModeTitle(l10n, candidate)} · '
+                        '${l10n.hostOfferPaymentComingSoon}'
+                  : hostOfferSettingsModeTitle(l10n, candidate),
+              subtitle: hostOfferSettingsModeBody(l10n, candidate),
+              selected: chosen == candidate,
+              contractExemption: 'Offer collection mode, staged locally.',
+              onTap: !editable
+                  ? null
+                  : !choosing
+                  ? onChange
+                  : candidate == HostOfferSettingsMode.catchCheckout &&
+                        !checkoutAvailable
+                  ? null
+                  : () => onSelected(candidate),
+            ),
           ),
       ],
-    );
-  }
-}
-
-class _HostOfferModeTile extends StatelessWidget {
-  const _HostOfferModeTile({
-    required this.mode,
-    required this.selected,
-    required this.gated,
-    required this.onTap,
-  });
-
-  final HostOfferSettingsMode mode;
-  final bool selected;
-  final bool gated;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return Semantics(
-      selected: selected,
-      inMutuallyExclusiveGroup: true,
-      child: CatchChoiceTile(
-        key: ValueKey('offer-payment-mode-${mode.name}'),
-        variant: CatchChoiceTileVariant.row,
-        title: gated
-            ? '${hostOfferSettingsModeTitle(l10n, mode)} · '
-                  '${l10n.hostOfferPaymentComingSoon}'
-            : hostOfferSettingsModeTitle(l10n, mode),
-        subtitle: hostOfferSettingsModeBody(l10n, mode),
-        selected: selected,
-        contractExemption: 'Offer collection mode, staged locally.',
-        onTap: onTap,
-      ),
     );
   }
 }
@@ -348,8 +323,8 @@ class HostOfferSettingsDetailsSection extends StatelessWidget {
 
 /// How an offer in the chosen mode is confirmed, said plainly before the
 /// host saves.
-class HostOfferSettingsConfirmation extends StatelessWidget {
-  const HostOfferSettingsConfirmation({super.key, required this.mode});
+class HostOfferSettingsConfirmationNotice extends StatelessWidget {
+  const HostOfferSettingsConfirmationNotice({super.key, required this.mode});
 
   final HostOfferSettingsMode mode;
 

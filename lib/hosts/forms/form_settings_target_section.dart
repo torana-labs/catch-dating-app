@@ -217,7 +217,7 @@ class _HostFormSettingsTargetSectionState
             onTap: _openEvents,
           ),
           if (_choosing)
-            HostFormTargetEventChoices(
+            HostFormTargetEventList(
               targets: targets,
               definition: definition,
               onChoose: _chooseEvent,
@@ -230,8 +230,8 @@ class _HostFormSettingsTargetSectionState
 
 /// The organizer's upcoming events to bind the form to, a page at a time,
 /// with their loading, failed and empty states.
-class HostFormTargetEventChoices extends StatelessWidget {
-  const HostFormTargetEventChoices({
+class HostFormTargetEventList extends StatelessWidget {
+  const HostFormTargetEventList({
     super.key,
     required this.targets,
     required this.definition,
