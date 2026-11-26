@@ -13,10 +13,13 @@ const isCli = process.argv[1] && path.resolve(process.argv[1]) === toolPath;
 const customerRouteConsumers = new Set();
 const savedAudienceMutationOwners = new Set([
   "lib/hosts/presentation/host_audience_controller.dart",
+  // People's saved group screen is the redesigned Customers saved-audience
+  // editor: it renames and deletes the group it shows.
+  "lib/hosts/people/saved_group_controller.dart",
 ]);
 const manualQueueOwners = new Set([
-  "lib/hosts/presentation/inbox/host_manual_send_list.dart",
-  "lib/hosts/presentation/inbox/host_sends_workspace.dart",
+  "lib/hosts/people/sends/sends_screen.dart",
+  "lib/hosts/people/sends/sends_sheets_body.dart",
 ]);
 // Contact consent (issue #2460) is read through
 // functions/src/shared/contactPermissions.ts and written only by
@@ -63,10 +66,9 @@ if (isCli) runCli();
 
 export function scanHostCrmBoundaries({root = fromRepo()} = {}) {
   const findings = [];
-  const presentationFiles = collectFiles(
-    path.join(root, "lib/hosts/presentation"),
-    ".dart"
-  );
+  // The redesigned People, Messages and Sends screens live in lib/hosts/people.
+  const presentationFiles = ["lib/hosts/presentation", "lib/hosts/people"]
+    .flatMap((dir) => collectFiles(path.join(root, dir), ".dart"));
   const backendFiles = collectFiles(
     path.join(root, "functions/src"),
     ".ts"
@@ -148,7 +150,8 @@ export function scanPresentationFile({relativePath, source}) {
     ));
   }
 
-  if (relativePath.endsWith("/host_inbox_screen.dart")) {
+  if (relativePath.endsWith("/hosts/people/messages_screen.dart") ||
+      relativePath.endsWith("/hosts/people/messages_body.dart")) {
     for (const widget of ["HostInboxBroadcastCard", "ChatBlastComposerSheet"] ) {
       const index = source.indexOf(widget);
       if (index >= 0) findings.push(finding(
@@ -159,7 +162,7 @@ export function scanPresentationFile({relativePath, source}) {
       ));
     }
   }
-  const queueIndex = source.indexOf("HostManualSendList");
+  const queueIndex = source.indexOf("HostManualSendSheet");
   if (queueIndex >= 0 && !manualQueueOwners.has(relativePath)) {
     findings.push(finding(
       relativePath,

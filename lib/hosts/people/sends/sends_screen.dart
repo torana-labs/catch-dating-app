@@ -385,22 +385,16 @@ class _HostSendsScreenState extends ConsumerState<HostSendsScreen> {
 
   /// Checks the stored number again, opens WhatsApp with the prepared
   /// message and records that it opened.
-  Future<HostManualSendTask> _openWhatsapp(HostManualSendTask task) async {
-    // Read before the first await, so the handoff still opens and is
-    // recorded if the screen closes meanwhile.
-    final commands = ref.read(hostAudienceControllerProvider);
-    final links = ref.read(externalLinkControllerProvider);
-    final l10n = context.l10n;
-    final validated = await commands.validateManualSendTaskLaunch(task);
-    final opened = await links.openWhatsappHandoff(
-      phoneE164: validated.phoneE164,
-      message: validated.prefillText,
-    );
-    if (!opened) {
-      throw ExternalActionException(l10n.hostCustomersWhatsappOpenFailed);
-    }
-    return commands.recordManualHandoffOpened(validated);
-  }
+  Future<HostManualSendTask> _openWhatsapp(
+    HostManualSendTask task, {
+    required bool Function() stillOpen,
+  }) => openHostManualSendHandoff(
+    commands: ref.read(hostAudienceControllerProvider),
+    links: ref.read(externalLinkControllerProvider),
+    task: task,
+    stillOpen: stillOpen,
+    openFailedMessage: context.l10n.hostCustomersWhatsappOpenFailed,
+  );
 
   Future<void> _replan(
     String organizerId,
@@ -449,3 +443,26 @@ String hostSendsFlowTitle(AppLocalizations l10n, HostSendsFlow flow) =>
         _ => l10n.hostSendsAnnouncementType,
       },
     };
+
+/// Checks [task]'s stored number again, opens WhatsApp with the prepared
+/// message and records that it opened. The callers pass [commands] and
+/// [links] read before any await, so a handoff that opens after its sheet
+/// or screen closed is still recorded. If the sheet closed while the number
+/// was checked ([stillOpen] false), nothing opens and the checked task comes
+/// back unchanged.
+Future<HostManualSendTask> openHostManualSendHandoff({
+  required HostAudienceController commands,
+  required ExternalLinkController links,
+  required HostManualSendTask task,
+  required bool Function() stillOpen,
+  required String openFailedMessage,
+}) async {
+  final validated = await commands.validateManualSendTaskLaunch(task);
+  if (!stillOpen()) return validated;
+  final opened = await links.openWhatsappHandoff(
+    phoneE164: validated.phoneE164,
+    message: validated.prefillText,
+  );
+  if (!opened) throw ExternalActionException(openFailedMessage);
+  return commands.recordManualHandoffOpened(validated);
+}
