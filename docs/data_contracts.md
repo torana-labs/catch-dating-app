@@ -3011,7 +3011,8 @@ edit different collections never touch the same file:
   collection's entry. The file name must be its `id`; to register a
   collection, add its file.
 - `tool/contracts/firestore_contract/contract.json` holds `schemaVersion`, the
-  description and `collectionsWithoutRulesTests`.
+  description, `collectionsWithoutRulesTests` and
+  `collectionsPredatingNewCollectionRule`.
 
 Every reader loads it through `tool/contracts/lib/firestore_contract.mjs`,
 which fails closed on a stray, misnamed or malformed file and returns the
@@ -3047,6 +3048,23 @@ The registry, the rules and the schemas must agree in every direction, and
 
 So a new collection needs its rules block, its schema and its registry entry in
 the same change.
+
+**The new-collection rule (STR-11).** A new collection is the last resort.
+Its registry entry carries `newCollectionRationale`, with two parts:
+
+- `whyNotAnExistingCollection` (at least 40 characters) says why a field, or a
+  document type, on an existing collection cannot hold the data.
+- `readers` names at least one reader: an exported Function, or a repository
+  file such as a screen, repository or tool.
+
+`check_firestore_contract.mjs` fails an entry that has neither part, or an
+unknown reader.
+
+The collections registered before the rule (24 Nov 2026) are listed in
+`collectionsPredatingNewCollectionRule`, and that list only shrinks. An id
+leaves when its entry gains a rationale or the collection is retired. An id
+missing from origin/main's list fails, so a new collection cannot join the
+list instead of explaining itself.
 
 Retiring or renaming a collection also moves its BigQuery export in the same
 change. `tool/contracts/check_bigquery_export_paths.mjs` fails while any
