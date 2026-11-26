@@ -203,6 +203,8 @@ import 'package:widgetbook_workspace/hosts/host_conversation_use_cases.dart'
     as _widgetbook_workspace_hosts_host_conversation_use_cases;
 import 'package:widgetbook_workspace/hosts/host_door_poster_use_cases.dart'
     as _widgetbook_workspace_hosts_host_door_poster_use_cases;
+import 'package:widgetbook_workspace/hosts/host_event_coach_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_event_coach_use_cases;
 import 'package:widgetbook_workspace/hosts/host_event_gaps_use_cases.dart'
     as _widgetbook_workspace_hosts_host_event_gaps_use_cases;
 import 'package:widgetbook_workspace/hosts/host_event_offer_use_cases.dart'
@@ -213,10 +215,10 @@ import 'package:widgetbook_workspace/hosts/host_form_editor_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_editor_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_payment_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_payment_use_cases;
+import 'package:widgetbook_workspace/hosts/host_form_settings_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_form_settings_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_workspace_use_cases;
-import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
-    as _widgetbook_workspace_hosts_host_inbox_use_cases;
 import 'package:widgetbook_workspace/hosts/host_live_tools_use_cases.dart'
     as _widgetbook_workspace_hosts_host_live_tools_use_cases;
 import 'package:widgetbook_workspace/hosts/host_membership_admin_use_cases.dart'
@@ -245,12 +247,12 @@ import 'package:widgetbook_workspace/hosts/host_rsvp_review_use_cases.dart'
     as _widgetbook_workspace_hosts_host_rsvp_review_use_cases;
 import 'package:widgetbook_workspace/hosts/host_saved_audience_use_cases.dart'
     as _widgetbook_workspace_hosts_host_saved_audience_use_cases;
-import 'package:widgetbook_workspace/hosts/host_send_intent_use_cases.dart'
-    as _widgetbook_workspace_hosts_host_send_intent_use_cases;
 import 'package:widgetbook_workspace/hosts/host_sends_use_cases.dart'
     as _widgetbook_workspace_hosts_host_sends_use_cases;
 import 'package:widgetbook_workspace/hosts/host_setup_claim_use_cases.dart'
     as _widgetbook_workspace_hosts_host_setup_claim_use_cases;
+import 'package:widgetbook_workspace/hosts/host_staff_event_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_staff_event_use_cases;
 import 'package:widgetbook_workspace/hosts/host_system_parts_use_cases.dart'
     as _widgetbook_workspace_hosts_host_system_parts_use_cases;
 import 'package:widgetbook_workspace/hosts/host_today_requests_use_cases.dart'
@@ -259,8 +261,6 @@ import 'package:widgetbook_workspace/hosts/operations/analytics.dart'
     as _widgetbook_workspace_hosts_operations_analytics;
 import 'package:widgetbook_workspace/hosts/operations/audiences.dart'
     as _widgetbook_workspace_hosts_operations_audiences;
-import 'package:widgetbook_workspace/hosts/operations/create_event_details.dart'
-    as _widgetbook_workspace_hosts_operations_create_event_details;
 import 'package:widgetbook_workspace/hosts/operations/create_event_policy.dart'
     as _widgetbook_workspace_hosts_operations_create_event_policy;
 import 'package:widgetbook_workspace/hosts/operations/create_event_routes.dart'
@@ -279,8 +279,6 @@ import 'package:widgetbook_workspace/hosts/operations/home_routes.dart'
     as _widgetbook_workspace_hosts_operations_home_routes;
 import 'package:widgetbook_workspace/hosts/operations/home_sections.dart'
     as _widgetbook_workspace_hosts_operations_home_sections;
-import 'package:widgetbook_workspace/hosts/operations/inbox_components.dart'
-    as _widgetbook_workspace_hosts_operations_inbox_components;
 import 'package:widgetbook_workspace/hosts/operations/loading_and_tools.dart'
     as _widgetbook_workspace_hosts_operations_loading_and_tools;
 import 'package:widgetbook_workspace/hosts/operations/manage_components.dart'
@@ -301,8 +299,6 @@ import 'package:widgetbook_workspace/hosts/operations/team_management.dart'
     as _widgetbook_workspace_hosts_operations_team_management;
 import 'package:widgetbook_workspace/hosts/operations/wizard_chrome.dart'
     as _widgetbook_workspace_hosts_operations_wizard_chrome;
-import 'package:widgetbook_workspace/hosts/operations/workflow_components.dart'
-    as _widgetbook_workspace_hosts_operations_workflow_components;
 import 'package:widgetbook_workspace/hosts/organizer_live_guide_use_cases.dart'
     as _widgetbook_workspace_hosts_organizer_live_guide_use_cases;
 import 'package:widgetbook_workspace/hosts/organizer_messaging_use_cases.dart'
@@ -6296,21 +6292,6 @@ final directories = <_widgetbook.WidgetbookNode>[
     name: 'Host',
     children: [
       _widgetbook.WidgetbookFolder(
-        name: 'Inbox',
-        children: [
-          _widgetbook.WidgetbookComponent(
-            name: 'HostSendsPageBody',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'History and outbound intent',
-                builder: _widgetbook_workspace_hosts_host_inbox_use_cases
-                    .hostSendsPanel,
-              ),
-            ],
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookFolder(
         name: 'Layout',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -6324,7 +6305,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostResponseOfferPreferencesRouteScreen',
+            name: 'HostOfferSettingsScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Signed-out preferences boundary',
@@ -8821,28 +8802,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                   ),
                 ],
               ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessRecommendationTile',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessRecommendationTile',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_feature_blocks
-                            .eventSuccessStrictEventSuccessRecommendationTile,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessReportSectionList',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessReportSectionList',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_feature_blocks
-                            .eventSuccessStrictEventSuccessPostEventReport,
-                  ),
-                ],
-              ),
             ],
           ),
           _widgetbook.WidgetbookFolder(
@@ -9342,129 +9301,22 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookFolder(
-            name: 'Inbox',
+            name: 'Insights',
             children: [
-              _widgetbook.WidgetbookFolder(
-                name: 'Components',
-                children: [
-                  _widgetbook.WidgetbookComponent(
-                    name: 'HostEventAnnouncementField',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Ready and disabled announcement',
-                        builder:
-                            _widgetbook_workspace_hosts_host_send_intent_use_cases
-                                .hostEventAnnouncementFieldStates,
-                      ),
-                    ],
-                  ),
-                  _widgetbook.WidgetbookComponent(
-                    name: 'HostInboxAudienceInput',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Audience control states',
-                        builder:
-                            _widgetbook_workspace_hosts_host_inbox_use_cases
-                                .hostInboxAudienceRailStates,
-                      ),
-                    ],
-                  ),
-                  _widgetbook.WidgetbookComponent(
-                    name: 'HostInboxEmptyState',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Empty states',
-                        builder:
-                            _widgetbook_workspace_hosts_host_inbox_use_cases
-                                .hostInboxEmptyStates,
-                      ),
-                    ],
-                  ),
-                  _widgetbook.WidgetbookComponent(
-                    name: 'HostInboxPeopleSection',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Workspace states',
-                        builder:
-                            _widgetbook_workspace_hosts_host_inbox_use_cases
-                                .hostInboxWorkspaceStates,
-                      ),
-                    ],
-                  ),
-                  _widgetbook.WidgetbookComponent(
-                    name: 'HostInboxScopeMenu',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Scope control states',
-                        builder:
-                            _widgetbook_workspace_hosts_host_inbox_use_cases
-                                .hostInboxScopeSelectorStates,
-                      ),
-                    ],
-                  ),
-                  _widgetbook.WidgetbookComponent(
-                    name: 'HostInboxWorkspaceSection',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Resolved scope and people',
-                        builder:
-                            _widgetbook_workspace_hosts_host_inbox_use_cases
-                                .hostInboxWorkspaceSection,
-                      ),
-                    ],
-                  ),
-                  _widgetbook.WidgetbookComponent(
-                    name: 'HostMessagingWorkspaceTabBar',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'People and sends navigation',
-                        builder:
-                            _widgetbook_workspace_hosts_host_inbox_use_cases
-                                .hostMessagingTabs,
-                      ),
-                    ],
-                  ),
-                  _widgetbook.WidgetbookComponent(
-                    name: 'HostSendIntentMenu',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Ready and unavailable channels',
-                        builder:
-                            _widgetbook_workspace_hosts_host_send_intent_use_cases
-                                .hostSendIntentMenuStates,
-                      ),
-                    ],
-                  ),
-                  _widgetbook.WidgetbookComponent(
-                    name: 'HostSendsBackButton',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Enabled and busy',
-                        builder:
-                            _widgetbook_workspace_hosts_host_send_intent_use_cases
-                                .hostSendsBackButtonStates,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostBroadcastComposerSheet',
+                name: 'HostEventCoachSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'Lifecycle states',
-                    builder: _widgetbook_workspace_hosts_host_inbox_use_cases
-                        .hostBroadcastComposerLifecycleStates,
+                    name: 'Coach figures',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_coach_use_cases
+                            .hostEventCoachSectionUseCase,
                   ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostInboxScreen',
-                useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'Event-scoped states',
-                    builder: _widgetbook_workspace_hosts_host_inbox_use_cases
-                        .hostInboxEventScopedStates,
+                    name: 'Withheld below the floor',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_coach_use_cases
+                            .hostEventCoachSectionWithheldUseCase,
                   ),
                 ],
               ),
@@ -10365,6 +10217,22 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookFolder(
+            name: 'Staff',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'StaffEventScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Cancelled event',
+                    builder:
+                        _widgetbook_workspace_hosts_host_staff_event_use_cases
+                            .staffEventScreenCancelledUseCase,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
             name: 'Today',
             children: [
               _widgetbook.WidgetbookFolder(
@@ -10507,28 +10375,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EventGuestDetailsSection',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Guest information',
-                builder:
-                    _widgetbook_workspace_hosts_operations_create_event_details
-                        .eventGuestDetailsSectionPreview,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostCreateEventRouteBody',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Route state renderer',
-                builder:
-                    _widgetbook_workspace_hosts_operations_create_event_routes
-                        .hostCreateEventRouteStateViewCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'HostWizardStepHeader',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -10544,47 +10390,72 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Host edit event',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'EditHostedEventScopeNotice',
+            name: 'CreateRoutePathScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Scope notice states',
+                name: 'Route path states',
                 builder: _widgetbook_workspace_hosts_operations_edit_event
-                    .editHostedEventScopeNoticeCatalogStates,
+                    .createRoutePathScreenCatalogStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EditHostedEventScreen',
+            name: 'CreateRoutePlanSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route plan states',
+                builder: _widgetbook_workspace_hosts_operations_edit_event
+                    .createRoutePlanSectionCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CreateStepForm',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Step form states',
+                builder: _widgetbook_workspace_hosts_operations_edit_event
+                    .createStepFormCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EditEventBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Edit page',
+                builder: _widgetbook_workspace_hosts_operations_edit_event
+                    .editEventBodyCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EditEventPolicySection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Policy states',
+                builder: _widgetbook_workspace_hosts_operations_edit_event
+                    .editEventPolicySectionCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EditEventScopeNotice',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Scope notice states',
+                builder: _widgetbook_workspace_hosts_operations_edit_event
+                    .editEventScopeNoticeCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EditEventScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Direct screen states',
                 builder: _widgetbook_workspace_hosts_operations_edit_event
                     .editHostedEventScreenCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostedEventPolicySection',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Editable policy states',
-                builder: _widgetbook_workspace_hosts_operations_edit_event
-                    .editableHostedEventPolicySectionCatalogStates,
-              ),
-              _widgetbook.WidgetbookUseCase(
-                name: 'Read-only policy states',
-                builder: _widgetbook_workspace_hosts_operations_edit_event
-                    .readOnlyHostedEventPolicySectionCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostedEventScheduleSection',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Schedule states',
-                builder: _widgetbook_workspace_hosts_operations_edit_event
-                    .hostedEventScheduleSectionCatalogStates,
               ),
             ],
           ),
@@ -10822,6 +10693,17 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CreateRouteScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route and wizard states',
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_routes
+                        .hostCreateEventRouteAndWizardStates,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookFolder(
             name: 'Customers',
             children: [
@@ -10837,17 +10719,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostAutomationRuleEditor',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Acceptance automation editor',
-                    builder:
-                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
-                            .hostAutomationEditorState,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerIdentityInputSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10855,6 +10726,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerIdentityInputStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormAutomationEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Acceptance automation editor',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostAutomationEditorState,
                   ),
                 ],
               ),
@@ -10872,7 +10754,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EditHostedEventRouteScreen',
+            name: 'EditEventRouteScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Route and section states',
@@ -10885,6 +10767,28 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Forms',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormAutomationActionSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Automation step',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormAutomationActionSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormAutomationsBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Form automations',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormAutomationsBodyPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormAvailabilityField',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10896,6 +10800,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormAvailabilitySection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Availability',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormAvailabilitySectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10903,6 +10818,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_workspace_use_cases
                             .hostFormBodyPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormCompletionSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'After submission',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormCompletionSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormDateField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Date',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormDateFieldPreview,
                   ),
                 ],
               ),
@@ -10929,6 +10866,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormFeeSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Payment setup',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormPaymentSetupSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormFeeSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Fee sheet',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormFeeSheetPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormInspectorSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10936,6 +10895,50 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_editor_use_cases
                             .hostFormInspectorSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormLifecycleMenu',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Settings menu',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormSettingsMenuPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormLogicRuleSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Add a rule',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormLogicRuleSheetPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormLogicSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Conditional logic',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormLogicSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormMessagingSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'WhatsApp updates',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormMessagingSectionPreview,
                   ),
                 ],
               ),
@@ -11039,6 +11042,50 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormPreviewBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Preview body',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormPreviewBodyPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormPreviewField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Preview field',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormPreviewFieldPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormPreviewScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Form preview',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormPreviewScreenPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormPublishReviewSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Review before publishing',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormPublishReviewSheetPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormPublishText',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -11138,6 +11185,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormSettingsBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Settings body',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormSettingsBodyPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormSettingsMenu',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -11149,6 +11207,39 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormSettingsNotice',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Save notices',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormSettingsNoticePreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormSettingsPaymentSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Fee and account',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormSettingsPaymentSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormSettingsScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Form settings',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormSettingsScreenPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormSettingsSectionList',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -11156,6 +11247,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_editor_use_cases
                             .hostFormSettingsSectionListPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormSettingsTargetSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Where it is used',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormSettingsTargetSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormTargetEventList',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Upcoming events',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormTargetEventListPreview,
                   ),
                 ],
               ),
@@ -11230,17 +11343,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostCreateEventRouteScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Route and wizard states',
-                builder:
-                    _widgetbook_workspace_hosts_operations_create_event_routes
-                        .hostCreateEventRouteAndWizardStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'HostCreateOrganizerScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -11262,17 +11364,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostEventOfferPreferencesScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Published event offer preferences',
-                builder:
-                    _widgetbook_workspace_hosts_unified_event_setup_use_cases
-                        .hostEventOfferPreferencesScreenPreview,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'HostManagerEventSetupPreferencesSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -11284,7 +11375,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostOfferPaymentConfirmationSection',
+            name: 'HostOfferSettingsConfirmationNotice',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Offer payment confirmation contract',
@@ -11295,7 +11386,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostOfferPaymentDetailsSection',
+            name: 'HostOfferSettingsDetailsSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Offer payment details',
@@ -11306,7 +11397,18 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostOfferPaymentModeSection',
+            name: 'HostOfferSettingsEditor',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Offer payment setup step',
+                builder:
+                    _widgetbook_workspace_hosts_host_offer_payment_use_cases
+                        .hostOfferPaymentSetupPageBodyPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostOfferSettingsModeSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Offer payment mode section',
@@ -11317,18 +11419,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostOfferPaymentModeTile',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Offer payment collection modes',
-                builder:
-                    _widgetbook_workspace_hosts_host_offer_payment_use_cases
-                        .hostOfferPaymentModeTilePreview,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostOfferPaymentReviewSheet',
+            name: 'HostOfferSettingsReviewSheet',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Offer payment review sheet',
@@ -11339,13 +11430,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostOfferPaymentSetupPageBody',
+            name: 'HostOfferSettingsScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Offer payment setup step',
+                name: 'Published event offer preferences',
                 builder:
-                    _widgetbook_workspace_hosts_host_offer_payment_use_cases
-                        .hostOfferPaymentSetupPageBodyPreview,
+                    _widgetbook_workspace_hosts_unified_event_setup_use_cases
+                        .hostEventOfferPreferencesScreenPreview,
               ),
             ],
           ),
@@ -11362,60 +11453,6 @@ final directories = <_widgetbook.WidgetbookNode>[
           _widgetbook.WidgetbookFolder(
             name: 'Messaging',
             children: [
-              _widgetbook.WidgetbookComponent(
-                name: 'HostCampaignEditor',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Campaign and sender states',
-                    builder: _widgetbook_workspace_hosts_operations_audiences
-                        .hostCustomerMessagingStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostCampaignReportSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Campaign lifecycle',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_inbox_components
-                            .hostCampaignReportSectionStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostManualSendList',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Loaded queue',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_inbox_components
-                            .hostManualSendListStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostManualSendListBody',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Queue states',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_inbox_components
-                            .hostManualSendListBodyStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostManualSendTaskSheet',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Handoff states',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_inbox_components
-                            .hostManualSendTaskSheetStates,
-                  ),
-                ],
-              ),
               _widgetbook.WidgetbookComponent(
                 name: 'HostWhatsappSetupSection',
                 useCases: [
@@ -11638,7 +11675,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Response review',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'HostApplicationDetailScreen',
+                name: 'HostResponseScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Existing application link',
@@ -11960,33 +11997,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostPublicRegistrationFieldCatalogStates,
-                  ),
-                ],
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookFolder(
-            name: 'Workflow components',
-            children: [
-              _widgetbook.WidgetbookComponent(
-                name: 'CreateEventDockSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Loading dock',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_workflow_components
-                            .createEventDockSkeletonStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFollowerUpdateComposerSheet',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Follower update composer',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_workflow_components
-                            .hostFollowerUpdateComposerSheetStates,
                   ),
                 ],
               ),
@@ -14546,6 +14556,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Independent sender permissions',
                 builder: _widgetbook_workspace_utility_messaging_permissions
                     .messagingPermissionsScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'SettingsNotificationsSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Notification switches',
+                builder: _widgetbook_workspace_utility_settings
+                    .settingsNotificationsSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'SettingsProfileAnswersSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Profile answers other guests see',
+                builder: _widgetbook_workspace_utility_settings
+                    .settingsProfileAnswersSectionStates,
               ),
             ],
           ),

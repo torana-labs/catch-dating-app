@@ -400,8 +400,7 @@
         ],
         "migration": "HostInboxScreenState now owns search affordance, host filter projection, and unread count. ChatsListScreen passes the query value and callback into ChatsSliverHeader, and ChatsSearchHeaderController owns search-open close policy. Add header previews only if future design references require separate header variants.",
         "previewIds": [
-          "ChatsListScreen/Consumer route states",
-          "HostInboxScreen/Event-scoped states"
+          "ChatsListScreen/Consumer route states"
         ]
       },
       {
@@ -460,8 +459,7 @@
         ],
         "migration": "Decide whether newMatches should become a separate rail/section or remain row-level emphasis in one list.",
         "previewIds": [
-          "ChatsListScreen/Consumer route states",
-          "HostInboxScreen/Event-scoped states"
+          "ChatsListScreen/Consumer route states"
         ]
       },
       {
@@ -494,8 +492,7 @@
         ],
         "migration": "Promote after host inbox contract proves shared row needs; add Widgetbook states for unread/new/host variants.",
         "previewIds": [
-          "ChatsListScreen/Consumer route states",
-          "HostInboxScreen/Event-scoped states"
+          "ChatsListScreen/Consumer route states"
         ]
       },
       {
@@ -525,8 +522,7 @@
         ],
         "migration": "Add previews and captures for each empty-state branch before visual parity edits.",
         "previewIds": [
-          "ChatsListScreen/Consumer route states",
-          "HostInboxScreen/Event-scoped states"
+          "ChatsListScreen/Consumer route states"
         ]
       },
       {

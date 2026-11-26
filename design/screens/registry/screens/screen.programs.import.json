@@ -79,32 +79,28 @@
       "kind": "loading",
       "status": "implemented",
       "source": "ProgramImportScreen renders the canonical loading viewport while providers resolve.",
-      "nextAction": "Review against program design references when they land.",
-      "previewIds": []
+      "nextAction": "Review against program design references when they land."
     },
     {
       "id": "error",
       "kind": "error",
       "status": "implemented",
       "source": "ProgramImportScreen renders CatchLocalizedErrorState with scoped retry.",
-      "nextAction": "Review against program design references when they land.",
-      "previewIds": []
+      "nextAction": "Review against program design references when they land."
     },
     {
       "id": "populated",
       "kind": "populated",
       "status": "implemented",
       "source": "Parsed tables render per-row field mapping and preview results render created, updated and skipped counts with row errors.",
-      "nextAction": "Review against program design references when they land.",
-      "previewIds": []
+      "nextAction": "Review against program design references when they land."
     },
     {
       "id": "empty",
       "kind": "empty",
       "status": "implemented",
       "source": "Before a file is chosen the screen renders the file picker call to action only.",
-      "nextAction": "Review against program design references when they land.",
-      "previewIds": []
+      "nextAction": "Review against program design references when they land."
     }
   ],
   "composition": {

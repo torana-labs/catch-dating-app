@@ -29,6 +29,8 @@ class CreateBasicsScreen extends StatelessWidget {
     onDistance: handlers.onDistance,
     onPace: handlers.onPace,
     onAddPhoto: handlers.onAddPhoto,
+    onIncluded: handlers.onIncluded,
+    onAccessibility: handlers.onAccessibility,
   );
 
   @override

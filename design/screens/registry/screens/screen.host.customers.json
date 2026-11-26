@@ -262,7 +262,6 @@
       "kind": "empty",
       "status": "tested",
       "source": "HostSavedAudiencesWorkspace CatchEmptyState",
-      "previewIds": [],
       "tests": [],
       "nextAction": "Capture the Audience-owned first-audience path when the authenticated gallery is refreshed."
     },
@@ -271,7 +270,6 @@
       "kind": "error",
       "status": "tested",
       "source": "HostSavedAudiencesWorkspace CatchErrorState",
-      "previewIds": [],
       "tests": [],
       "nextAction": "Capture retry treatment when the authenticated gallery is refreshed."
     },
@@ -281,8 +279,7 @@
       "status": "tested",
       "source": "HostSavedAudienceSection member and rule overview with explicit editing",
       "tests": [],
-      "nextAction": "Refresh the full-shell capture with the owner during the deferred visual pass.",
-      "previewIds": []
+      "nextAction": "Refresh the full-shell capture with the owner during the deferred visual pass."
     },
     {
       "id": "customer_saved_audience_mutation",
@@ -310,7 +307,6 @@
       "kind": "mutation",
       "status": "captured",
       "source": "HostAddCustomerScreen submit lifecycle",
-      "previewIds": [],
       "captureIds": [
         "host_customer_add"
       ],
@@ -338,7 +334,6 @@
       "kind": "populated",
       "status": "implemented",
       "source": "HostCustomerIdentityCard",
-      "previewIds": [],
       "tests": [
         "test/hosts/host_customers_screen_state_test.dart",
         "test/hosts/host_crm_repository_test.dart"
@@ -436,7 +431,6 @@
       "kind": "populated",
       "status": "implemented",
       "source": "HostCustomerRevenueCard exact coverage",
-      "previewIds": [],
       "tests": [
         "test/hosts/host_crm_repository_test.dart"
       ],
@@ -461,7 +455,6 @@
       "kind": "populated",
       "status": "tested",
       "source": "resolveOrganizerCommunicationPlan available Catch chat route",
-      "previewIds": [],
       "tests": [
         "functions/src/organizers/organizerCommunicationPlans.test.ts",
         "test/hosts/host_crm_repository_test.dart",

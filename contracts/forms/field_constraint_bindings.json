@@ -58,12 +58,8 @@
       "eventFormat.activityDetails.routePlan.routeShape",
       "eventFormat.activityDetails.routePlan.stopCadence",
       "eventFormat.activityDetails.routePlan.stopKinds",
-      "itinerary.items.description",
-      "itinerary.items.durationMinutes",
-      "itinerary.items.kind",
       "itinerary.items.offsetMinutes",
-      "itinerary.items.routeDistanceMeters",
-      "itinerary.items.title"
+      "itinerary.items.routeDistanceMeters"
     ],
     "createEventRehearsalCallablePayload": [
       "actorCount"
@@ -256,8 +252,6 @@
       "exploreDistanceFilter",
       "exploreHighRatedOnly",
       "exploreJoinedOnly",
-      "hostBroadcastTemplate",
-      "hostInboxAudienceSegment",
       "onboardingDateOfBirthText",
       "suvbotTesterPhoneNumber"
     ],
@@ -357,7 +351,6 @@
       "command.payload.owner"
     ],
     "sendEventBroadcastCallablePayload": [
-      "audience",
       "body"
     ],
     "sendEventChatMessageCallablePayload": [
@@ -397,16 +390,11 @@
       "fields.constraints.maxMen",
       "fields.constraints.maxWomen",
       "fields.constraints.minAge",
-      "fields.description",
-      "fields.distanceKm",
       "fields.eventPolicy.admission.format",
       "fields.eventPolicy.cancellation.policyId",
       "fields.eventPolicy.pricing.demandPricingRules.items.maxAdjustmentInPaise",
       "fields.eventPolicy.pricing.demandPricingRules.items.stepAdjustmentInPaise",
-      "fields.locationDetails",
       "fields.meetingPoint",
-      "fields.name",
-      "fields.pace",
       "fields.priceInPaise",
       "fields.privateAccess.inviteCode"
     ],
@@ -482,6 +470,11 @@
       "occupation",
       "prefsCrossPathsInvitations",
       "prefsEventReminders",
+      "prefsHideChildren",
+      "prefsHideDrinking",
+      "prefsHideRelationshipGoal",
+      "prefsHideReligion",
+      "prefsHideSmoking",
       "prefsMessages",
       "prefsNewCatches",
       "prefsOrganizerUpdates",

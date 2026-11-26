@@ -238,8 +238,11 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
       onPrice: (value) => controller.edit((d) => d.copyWith(price: value)),
       onPlaces: (value) =>
           controller.edit((d) => d.copyWith(capacity: '$value')),
-      onAdmission: (value) =>
-          controller.edit((d) => d.copyWith(admissionPreset: value.preset)),
+      policy: controller.policyHandlers,
+      onIncluded: (value) =>
+          controller.edit((d) => d.copyWith(included: value)),
+      onAccessibility: (value) =>
+          controller.edit((d) => d.copyWith(accessibility: value)),
       onWaitlist: controller.setWaitlist,
       onApproveEach: controller.setApproveEach,
       onPlanVisible: controller.setPlanVisible,

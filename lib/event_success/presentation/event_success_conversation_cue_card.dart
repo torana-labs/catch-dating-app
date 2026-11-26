@@ -1,9 +1,6 @@
-import 'package:catch_dating_app/contexts/formats/domain/event_success_feature_state.dart';
-import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_conversation_cue.dart';
 import 'package:catch_dating_app/pages/live_room/event_success_conversation_cue_copy.dart';
 import 'package:catch_l10n/l10n.dart';
-import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -16,117 +13,6 @@ const EdgeInsets _conversationCueRowGap = EdgeInsets.only(
 const EdgeInsets _conversationCueIconInset = EdgeInsets.only(
   top: CatchSpacing.micro3,
 );
-
-class EventSuccessReportSectionList extends StatelessWidget {
-  const EventSuccessReportSectionList({super.key, this.brief});
-
-  final EventSuccessBrief? brief;
-
-  @override
-  Widget build(BuildContext context) {
-    final resolvedBrief = brief ?? EventSuccessFeatureSamples.postEventBrief;
-    final scorecard = resolvedBrief.scorecard;
-
-    return CatchSectionList(
-      emptyStateOmitted: true,
-      children: [
-        CatchSection.plain(
-          title: context
-              .l10n
-              .eventSuccessEventSuccessFeatureBlocksTitlePostEventHostReport,
-          subtitle: context
-              .l10n
-              .eventSuccessEventSuccessFeatureBlocksSubtitleAConcreteReportSurface,
-          trailing: CatchBadge(
-            label: context.l10n.eventSuccessEventSuccessFeatureBlocksLabelRound(
-              round: (scorecard.experienceScore * 100).round(),
-            ),
-            tone: CatchBadgeTone.brand,
-          ),
-          child: CatchMetricSection.dataQuality(
-            metrics: [
-              CatchMetricData(
-                partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
-                missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
-                icon: CatchIcons.success,
-                value: _eventSuccessFeaturePercent(scorecard.checkInRate),
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessFeatureBlocksLabelCheckIn16e104,
-              ),
-              CatchMetricData(
-                partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
-                missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
-                icon: CatchIcons.people,
-                value: _eventSuccessFeaturePercent(scorecard.introCoverageRate),
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessFeatureBlocksLabelIntroCoverage,
-              ),
-              CatchMetricData(
-                partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
-                missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
-                icon: CatchIcons.like,
-                value: _eventSuccessFeaturePercent(scorecard.caughtSomeoneRate),
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessFeatureBlocksLabelCaughtSomeone,
-              ),
-              CatchMetricData(
-                partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
-                missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
-                icon: CatchIcons.support,
-                value: _eventSuccessFeaturePercent(
-                  scorecard.wingmanRequestRate,
-                ),
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessFeatureBlocksLabelHostHelp,
-              ),
-              CatchMetricData(
-                partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
-                missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
-                icon: CatchIcons.chat,
-                value: _eventSuccessFeaturePercent(scorecard.chatStartRate),
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessFeatureBlocksLabelChatStart,
-              ),
-            ],
-          ),
-        ),
-        if (resolvedBrief.strengths.isNotEmpty)
-          CatchSection.fieldRows(
-            title: context
-                .l10n
-                .eventSuccessEventSuccessFeatureBlocksTextWorkingWell,
-            children: [
-              for (final strength in resolvedBrief.strengths.take(4))
-                CatchField.read(
-                  copy: catchFieldCopy(context.l10n),
-                  title: strength,
-                  icon: CatchIcons.success,
-                ),
-            ],
-          ),
-        if (resolvedBrief.recommendations.isNotEmpty)
-          CatchSection.fieldRows(
-            title: context
-                .l10n
-                .eventSuccessEventSuccessFeatureBlocksTextImproveNextTime,
-            children: [
-              for (final recommendation in resolvedBrief.recommendations.take(
-                4,
-              ))
-                EventSuccessRecommendationTile(recommendation: recommendation),
-            ],
-          ),
-      ],
-    );
-  }
-}
-
-String _eventSuccessFeaturePercent(double value) => '${(value * 100).round()}%';
 
 class EventSuccessConversationCueCard extends StatelessWidget {
   const EventSuccessConversationCueCard({
@@ -201,29 +87,6 @@ class EventSuccessConversationCueCard extends StatelessWidget {
           const SizedBox(height: CatchSpacing.s3),
           for (final cue in cues.take(3)) ConversationCueRow(cue: cue),
         ],
-      ),
-    );
-  }
-}
-
-class EventSuccessRecommendationTile extends StatelessWidget {
-  EventSuccessRecommendationTile({
-    super.key,
-    required this.recommendation,
-    IconData? icon,
-  }) : icon = icon ?? CatchIcons.tip;
-
-  final EventSuccessRecommendation recommendation;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchFieldLanes.single(
-      child: CatchField.content(
-        copy: catchFieldCopy(context.l10n),
-        title: recommendation.title,
-        body: recommendation.rationale,
-        icon: icon,
       ),
     );
   }

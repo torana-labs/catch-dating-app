@@ -1,17 +1,38 @@
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
+import 'package:catch_dating_app/hosts/create/create_policy_handlers.dart';
+import 'package:catch_dating_app/hosts/create/edit_event_values.dart';
+import 'package:catch_dating_app/hosts/create/widgets/edit_event_policy_section.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 /// The places a new event starts with.
 const createDefaultPlaces = 30;
 
+/// Who can come when tickets sell elsewhere, by the copy's admission name.
+const _elsewhereAdmissions = {
+  EventAdmissionPreset.openCapacity: 'open',
+  EventAdmissionPreset.inviteOnly: 'invite',
+};
+
 /// Step three in board order: where tickets are sold, the price beside the
-/// places, who can come, and how payouts work. Selling elsewhere keeps the
-/// price and places off the event.
+/// places, who can come and on what terms (the admission format with its
+/// invite code, cohort caps or demand pricing, the age range and a paid
+/// event's cancellation policy), the waitlist, and how payouts work.
+/// Selling elsewhere keeps the price, places and terms off the event and
+/// asks only whether anyone can book or it is invite only. A
+/// request-to-join format always asks the host, so its approval toggle
+/// gives way to the format's note.
+///
+/// Editing a saved event keeps the price in the event's currency and adds
+/// [trailing] after the terms; once bookings lock the policy, the terms
+/// show it read-only instead of the price and places.
 class CreateTicketsBody extends StatelessWidget {
   const CreateTicketsBody({
     super.key,
@@ -19,18 +40,21 @@ class CreateTicketsBody extends StatelessWidget {
     required this.onSellElsewhere,
     required this.onPrice,
     required this.onPlaces,
-    required this.onAdmission,
+    required this.policy,
     this.onWaitlist,
     this.onApproveEach,
     this.onBookingLink,
     this.showTitle = false,
+    this.trailing = const <Widget>[],
   });
 
   final CreateFlowState state;
   final ValueChanged<bool> onSellElsewhere;
   final ValueChanged<String> onPrice;
   final ValueChanged<int> onPlaces;
-  final ValueChanged<CreateAdmission> onAdmission;
+
+  /// The admission fields: who can come and on what terms.
+  final CreatePolicyHandlers policy;
   final ValueChanged<bool>? onWaitlist;
   final ValueChanged<bool>? onApproveEach;
 
@@ -38,11 +62,101 @@ class CreateTicketsBody extends StatelessWidget {
   final ValueChanged<String>? onBookingLink;
   final bool showTitle;
 
+  /// Fields an edit adds after the terms.
+  final List<Widget> trailing;
+
   @override
   Widget build(BuildContext context) {
     final copy = catchFieldCopy(context.l10n);
     final draft = state.draft;
+    final edit = state.edit;
+    if (edit != null) {
+      // A saved event: the price in its currency beside the places, then
+      // the policy fields.
+      final locale = Localizations.localeOf(context).toLanguageTag();
+      final symbol = NumberFormat.simpleCurrency(
+        locale: locale,
+        name: edit.currencyCode,
+      ).currencySymbol;
+      final frozen = !state.canChange;
+      final places = int.tryParse(draft.capacity ?? '') ?? createDefaultPlaces;
+      return CatchStack(
+        gap: CatchStackGap.g24,
+        children: [
+          if (showTitle)
+            CatchText(
+              context.l10n.hostCreateStepTitle(step: CreateStep.tickets.name),
+              variant: CatchTextVariant.displaySection,
+            ),
+          if (!edit.policyLocked)
+            CatchStack(
+              direction: CatchStackDirection.row,
+              gap: CatchStackGap.g16,
+              equal: true,
+              align: CatchStackAlign.baseline,
+              children: [
+                CatchFieldLanes.single(
+                  child: CatchField.input(
+                    key: CreateEventFormKeys.price,
+                    copy: copy,
+                    title: context.l10n.hostCreatePricePerPlace,
+                    contract: CatchContractConstraints
+                        .updateEventCallablePayloadFieldsPriceInPaise,
+                    initialValue: draft.price ?? '',
+                    prefixText: symbol,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(
+                          context.l10n.hostsEditHostedEventScreenVisiblecopyDD,
+                        ),
+                      ),
+                    ],
+                    states: {if (frozen) WidgetState.disabled},
+                    onChanged: onPrice,
+                    errorText: state.problems.contains(CreateProblem.price)
+                        ? context.l10n.hostCreatePriceNeeded
+                        : null,
+                  ),
+                ),
+                CatchStack(
+                  gap: CatchStackGap.g8,
+                  children: [
+                    CatchText(
+                      context.l10n.hostCreatePlaces,
+                      variant: CatchTextVariant.labelAction,
+                    ),
+                    CatchStepper(
+                      key: CreateEventFormKeys.capacity,
+                      value: places,
+                      min: 1,
+                      max:
+                          CatchContractConstraints
+                              .updateEventCallablePayloadFieldsCapacityLimit
+                              .maximum ??
+                          1000,
+                      decreaseSemanticLabel: context.l10n.hostCreateFewerPlaces,
+                      increaseSemanticLabel: context.l10n.hostCreateMorePlaces,
+                      onChanged: frozen
+                          ? null
+                          : (value) => onPlaces(value.toInt()),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          EditEventPolicySection(state: state, handlers: policy),
+          ...trailing,
+        ],
+      );
+    }
     final elsewhere = draft.externalBookingMode;
+    // A request-to-join format always asks; its note says so.
+    final reviewed = editAdmissionPreset(draft).requiresReview;
+    final invited =
+        editAdmissionPreset(draft) == EventAdmissionPreset.inviteOnly;
     final places = int.tryParse(draft.capacity ?? '') ?? createDefaultPlaces;
     return CatchStack(
       gap: CatchStackGap.g24,
@@ -127,31 +241,37 @@ class CreateTicketsBody extends StatelessWidget {
               ),
             ],
           ),
-        CatchStack(
-          gap: CatchStackGap.g8,
-          children: [
-            CatchText(
-              context.l10n.hostCreateWhoCanCome,
-              variant: CatchTextVariant.labelAction,
-            ),
-            for (final admission in CreateAdmission.values)
-              CatchChoiceTile(
-                key: ValueKey<String>('create-admission-${admission.name}'),
-                variant: CatchChoiceTileVariant.row,
-                title: context.l10n.hostCreateAdmissionTitle(
-                  admission: admission.name,
-                ),
-                subtitle: context.l10n.hostCreateAdmissionNote(
-                  admission: admission.name,
-                ),
-                contract: CatchContractConstraints
-                    .updatePrivateEventPreferencesCallablePayloadIntentsAdmissionPresetValue,
-                contractValue: admission.preset,
-                selected: state.admission == admission,
-                onTap: () => onAdmission(admission),
+        if (!elsewhere) EditEventPolicySection(state: state, handlers: policy),
+        // Selling elsewhere keeps the two simple choices, saved as the
+        // event's admission preference.
+        if (elsewhere)
+          CatchStack(
+            gap: CatchStackGap.g8,
+            children: [
+              CatchText(
+                context.l10n.hostCreateWhoCanCome,
+                variant: CatchTextVariant.labelAction,
               ),
-          ],
-        ),
+              for (final MapEntry(key: preset, value: admission)
+                  in _elsewhereAdmissions.entries)
+                CatchChoiceTile(
+                  key: ValueKey<String>('create-admission-$admission'),
+                  variant: CatchChoiceTileVariant.row,
+                  title: context.l10n.hostCreateAdmissionTitle(
+                    admission: admission,
+                  ),
+                  subtitle: context.l10n.hostCreateAdmissionNote(
+                    admission: admission,
+                  ),
+                  contract: CatchContractConstraints
+                      .updatePrivateEventPreferencesCallablePayloadIntentsAdmissionPresetValue,
+                  contractValue: preset.name,
+                  selected:
+                      invited == (preset == EventAdmissionPreset.inviteOnly),
+                  onTap: () => policy.onAdmission(preset),
+                ),
+            ],
+          ),
         if (!elsewhere)
           CatchStack(
             gap: CatchStackGap.none,
@@ -169,19 +289,20 @@ class CreateTicketsBody extends StatelessWidget {
                   onChanged: onWaitlist,
                 ),
               ),
-              CatchIndexRow(
-                title: context.l10n.hostCreateApproveEach,
-                subtitle: context.l10n.hostCreateApproveEachBody,
-                onTap: null,
-                trailing: CatchToggleInput(
-                  key: const ValueKey<String>('create-approve-each'),
-                  value: state.approveEach,
-                  semanticLabel: context.l10n.hostCreateApproveEach,
-                  contractExemption:
-                      'An event preference saved with the tickets step.',
-                  onChanged: onApproveEach,
+              if (!reviewed)
+                CatchIndexRow(
+                  title: context.l10n.hostCreateApproveEach,
+                  subtitle: context.l10n.hostCreateApproveEachBody,
+                  onTap: null,
+                  trailing: CatchToggleInput(
+                    key: const ValueKey<String>('create-approve-each'),
+                    value: state.approveEach,
+                    semanticLabel: context.l10n.hostCreateApproveEach,
+                    contractExemption:
+                        'An event preference saved with the tickets step.',
+                    onChanged: onApproveEach,
+                  ),
                 ),
-              ),
             ],
           ),
         if (!elsewhere)

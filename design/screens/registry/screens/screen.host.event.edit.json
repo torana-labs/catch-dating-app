@@ -7,9 +7,9 @@
   },
   "topBar": {
     "role": "compact",
-    "expression": "CatchLegacyTopBar",
-    "owner": "CatchLegacyTopBar",
-    "reason": "The source owns canonical compact route chrome."
+    "expression": "CatchTopBar",
+    "owner": "EditEventScreen",
+    "reason": "The tool top bar with Back over the shared create editor's edit page; the expanded editor puts Save changes in it."
   },
   "statePolicy": {
     "requiredStates": [
@@ -35,27 +35,27 @@
     }
   ],
   "source": {
-    "file": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
-    "symbol": "EditHostedEventRouteScreen"
+    "file": "lib/hosts/create/edit_event_screen.dart",
+    "symbol": "EditEventRouteScreen"
   },
   "stateController": {
-    "primary": "EditHostedEventRouteScreen + uidProvider + fetchOrganizerProvider + watchEventProvider + EditHostedEventScreen + EventBookingController",
+    "primary": "EditEventRouteScreen + uidProvider + fetchOrganizerProvider + watchEventProvider + EditEventScreen + EventBookingController",
     "files": [
       {
-        "file": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
-        "symbol": "EditHostedEventRouteScreen"
+        "file": "lib/hosts/create/edit_event_screen.dart",
+        "symbol": "EditEventRouteScreen"
       },
       {
-        "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-        "symbol": "EditHostedEventScreen"
+        "file": "lib/hosts/create/edit_event_screen.dart",
+        "symbol": "EditEventScreen"
       },
       {
-        "file": "lib/hosts/presentation/host_event_edit_screen_state.dart",
-        "symbol": "HostEventEditScreenState"
+        "file": "lib/hosts/create/edit_event_controller.dart",
+        "symbol": "EditEventController"
       },
       {
-        "file": "lib/hosts/presentation/host_event_edit_screen_state.dart",
-        "symbol": "EditHostedEventFooterState"
+        "file": "lib/hosts/create/edit_event_values.dart",
+        "symbol": "EditEventSaveRequest"
       },
       {
         "file": "lib/contexts/organizers/data/organizers_repository.dart",
@@ -84,14 +84,14 @@
         "symbol": "EventRepository"
       }
     ],
-    "notes": "EditHostedEventRouteScreen resolves uid, club, and event, handles loading/error/not-found/unauthorized route states, and delegates loaded state to EditHostedEventScreen. HostEventEditScreenState now owns loaded editability, schedule/policy lock derivation, field display state, save footer enabled/loading state, save error exposure, success/missing-location feedback copy, and pop-on-success policy. HostEventEditSaveRequest owns validated save payload construction. HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy. HostEventEditFieldDisplayState owns schedule, location/details, and policy display values. EditHostedEventScreen still owns local form controllers, location picker navigation, validation, EventBookingController.updateHostedEventMutation execution, and Navigator/snackbar side effects."
+    "notes": "EditEventRouteScreen resolves uid, club, and event, handles loading/error/not-found/unauthorized route states, and delegates loaded state to EditEventScreen. EditEventController now owns loaded editability, schedule/policy lock derivation, field display state, save footer enabled/loading state, save error exposure, success/missing-location feedback copy, and pop-on-success policy. EditEventSaveRequest owns validated save payload construction. HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy. HostEventEditFieldDisplayState owns schedule, location/details, and policy display values. EditEventScreen still owns local form controllers, location picker navigation, validation, EventBookingController.updateHostedEventMutation execution, and Navigator/snackbar side effects."
   },
   "designRefs": [
     {
       "id": "repo.edit-hosted-event-tests",
       "kind": "repo",
       "status": "available",
-      "path": "test/hosts/edit_hosted_event_screen_test.dart",
+      "path": "test/hosts/create/edit_event_screen_test.dart",
       "notes": "Edit hosted event tests cover saving editable fields through updateHostedEvent and schedule locking when event activity exists."
     },
     {
@@ -205,7 +205,7 @@
       "status": "captured",
       "source": "Route loading is true while uidProvider is loading.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "nextAction": "Add route capture for uid loading and signed-out host-shell behavior.",
       "captureIds": [
@@ -218,7 +218,7 @@
       "status": "captured",
       "source": "Club/event provider loading renders a tokenized Scaffold with HostRouteLoadingBody(showTabRail: false).",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "nextAction": "Add deterministic route loading capture.",
       "captureIds": [
@@ -231,7 +231,7 @@
       "status": "captured",
       "source": "uid, club, or event provider errors render CatchLocalizedErrorScaffold with event context and retry invalidation.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "nextAction": "Add error/offline capture for failed club/event provider waves.",
       "captureIds": [
@@ -244,7 +244,7 @@
       "status": "captured",
       "source": "Missing club or event renders Event not found copy.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "nextAction": "Add missing/deleted event capture and recovery decision.",
       "captureIds": [
@@ -257,7 +257,7 @@
       "status": "captured",
       "source": "A uid that is not hosted by the club receives Action unavailable copy.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "nextAction": "Add unauthorized route capture and test for non-host viewer.",
       "captureIds": [
@@ -270,13 +270,13 @@
       "status": "captured",
       "source": "Loaded event pre-fills schedule, location, distance, description, policy, and invite fields.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "captureIds": [
         "edit_hosted_event"
       ],
       "tests": [
-        "test/hosts/edit_hosted_event_screen_test.dart"
+        "test/hosts/create/edit_event_screen_test.dart"
       ],
       "nextAction": "Host Edit Event prefilled state now has a manifest-registered design reference and deterministic capture that compares within threshold at 9.25% mismatch / 10.93 meanDelta. Private access, submit mutation, validation, selected-location, and offline states are captured; add state-specific pixel-reference variants before promoting beyond captured."
     },
@@ -286,7 +286,7 @@
       "status": "captured",
       "source": "Future events without booking/waitlist/attendance activity expose date, time, and duration controls.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "nextAction": "Add Widgetbook state for editable schedule controls.",
       "captureIds": [
@@ -299,10 +299,10 @@
       "status": "captured",
       "source": "Events with activity render a read-only schedule card and hide date picker controls.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "tests": [
-        "test/hosts/edit_hosted_event_screen_test.dart"
+        "test/hosts/create/edit_event_screen_test.dart"
       ],
       "nextAction": "Add locked schedule capture and compare copy against design.",
       "captureIds": [
@@ -315,7 +315,7 @@
       "status": "captured",
       "source": "Unlocked events expose capacity, price, admission format, cohort caps, demand pricing, age, invite, and cancellation policy controls.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "nextAction": "Add previews for each admission preset and dynamic pricing/cohort toggle branch.",
       "captureIds": [
@@ -328,7 +328,7 @@
       "status": "captured",
       "source": "Started or active events render a read-only policy summary instead of editable policy controls.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "nextAction": "Add policy-locked capture.",
       "captureIds": [
@@ -341,7 +341,7 @@
       "status": "captured",
       "source": "MapPinTile opens LocationPickerScreen with map tiles optionally disabled for deterministic captures.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "nextAction": "Selected-location capture is covered; add route callback proof for opening LocationPickerScreen if picker navigation becomes a product-risk area.",
       "captureIds": [
@@ -354,14 +354,14 @@
       "status": "captured",
       "source": "Required meeting point, distance, capacity, price, age, invite code, and pinned starting point requirements validate before save; missing pinned-location feedback uses the shared Catch snackbar helper.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
-      "nextAction": "Validation capture and save-blocking test are covered; keep moving validation state into a future HostEventEditScreenState adapter.",
+      "nextAction": "Validation capture and save-blocking test are covered; keep moving validation state into a future EditEventController adapter.",
       "captureIds": [
         "edit_hosted_event_validation_error"
       ],
       "tests": [
-        "test/hosts/edit_hosted_event_screen_test.dart"
+        "test/hosts/create/edit_event_screen_test.dart"
       ]
     },
     {
@@ -370,7 +370,7 @@
       "status": "captured",
       "source": "Invite-only policy watches watchEventPrivateAccessProvider and shows loading copy while current invite code loads.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "nextAction": "Compare invite-code loading treatment against private-access reference variants once exported.",
       "captureIds": [
@@ -381,9 +381,9 @@
       "id": "submit_pending",
       "kind": "mutation",
       "status": "captured",
-      "source": "HostEventEditScreenState maps updateHostedEventMutation pending into a frozen route and form plus loading/disabled Save state; HostEventBookingController returns the active Future for duplicate direct calls.",
+      "source": "EditEventController maps updateHostedEventMutation pending into a frozen route and form plus loading/disabled Save state; HostEventBookingController returns the active Future for duplicate direct calls.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "nextAction": "Pending footer display policy is adapter-owned; compare against mutation reference variants once exported.",
       "captureIds": [
@@ -391,16 +391,16 @@
       ],
       "tests": [
         "test/hosts/host_event_booking_controller_test.dart",
-        "test/hosts/edit_hosted_event_screen_test.dart"
+        "test/hosts/create/edit_event_screen_test.dart"
       ]
     },
     {
       "id": "submit_error",
       "kind": "mutation",
       "status": "captured",
-      "source": "HostEventEditScreenState exposes updateHostedEventMutation errors before EditHostedEventScreen renders CatchLocalizedErrorBanner under the scope notice.",
+      "source": "EditEventController exposes updateHostedEventMutation errors before EditEventScreen renders CatchLocalizedErrorBanner under the scope notice.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "nextAction": "Submit error display policy is adapter-owned; compare against mutation reference variants once exported.",
       "captureIds": [
@@ -411,12 +411,12 @@
       "id": "success_pop",
       "kind": "mutation",
       "status": "tested",
-      "source": "HostEventEditScreenState owns success copy and pop-on-success policy; EditHostedEventScreen still executes the update mutation, provider invalidations, snackbar, and Navigator pop side effects.",
+      "source": "EditEventController owns success copy and pop-on-success policy; EditEventScreen still executes the update mutation, provider invalidations, snackbar, and Navigator pop side effects.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "tests": [
-        "test/hosts/edit_hosted_event_screen_test.dart"
+        "test/hosts/create/edit_event_screen_test.dart"
       ],
       "nextAction": "Add route test for return to Host Manage."
     },
@@ -426,7 +426,7 @@
       "status": "captured",
       "source": "Cancelled events show Cancelled event scope notice and disable save/edit controls.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "nextAction": "Add cancelled event capture.",
       "captureIds": [
@@ -439,7 +439,7 @@
       "status": "captured",
       "source": "Network-looking route or submit failures currently use error scaffold/banner copy.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "nextAction": "Offline route-load capture is covered; add state-specific references if the offline treatment diverges from the shared Catch error contract.",
       "captureIds": [
@@ -452,7 +452,7 @@
       "status": "captured",
       "source": "The dense long form needs text-scale coverage for scope notice, fields, policy cards, and footer.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "nextAction": "Add text-scale capture and Widgetbook section states.",
       "captureIds": [
@@ -465,7 +465,7 @@
       "status": "captured",
       "source": "Date/time picker, location picker, and route transition need reduced-motion review.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "nextAction": "Add reduced-motion review after fixtures are stable.",
       "captureIds": [
@@ -478,7 +478,7 @@
       "status": "captured",
       "source": "Edit event uses tokenized surfaces and controls.",
       "previewIds": [
-        "EditHostedEventRouteScreen/Route and section states"
+        "EditEventRouteScreen/Route and section states"
       ],
       "nextAction": "Add light/dark capture pair before pixel diff enforcement.",
       "captureIds": [
@@ -487,8 +487,8 @@
     }
   ],
   "composition": {
-    "currentLayout": "EditHostedEventRouteScreen owns provider loading/access through HostEventEditState. EditHostedEventScreen owns form controllers, validation, location picker navigation, mutation execution, snackbar, and Navigator side effects while HostEventEditScreenState owns loaded editability, schedule/policy locks, field display state, save footer state, save error display input, feedback copy, and pop-on-success policy; HostEventEditSaveRequest owns validated save payload construction; HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy; HostEventEditFieldDisplayState owns schedule, location/details, and policy display values.",
-    "targetLayout": "Host Edit Event should keep route access in HostEventEditState and compose provider-free form sections from the existing field display adapters.",
+    "currentLayout": "EditEventRouteScreen owns provider loading/access through EditEventRouteState. EditEventScreen owns form controllers, validation, location picker navigation, mutation execution, snackbar, and Navigator side effects while EditEventController owns loaded editability, schedule/policy locks, field display state, save footer state, save error display input, feedback copy, and pop-on-success policy; EditEventSaveRequest owns validated save payload construction; HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy; HostEventEditFieldDisplayState owns schedule, location/details, and policy display values.",
+    "targetLayout": "Host Edit Event should keep route access in EditEventRouteState and compose provider-free form sections from the existing field display adapters.",
     "sections": [
       {
         "id": "section.host.event_edit.route_adapter",
@@ -496,14 +496,14 @@
         "status": "implemented_local",
         "layer": "screen-adapter",
         "claudeComponents": [
-          "HostEventEditState"
+          "EditEventRouteState"
         ],
         "flutter": {
-          "file": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
-          "symbol": "EditHostedEventRouteScreen"
+          "file": "lib/hosts/create/edit_event_screen.dart",
+          "symbol": "EditEventRouteScreen"
         },
-        "currentOwner": "EditHostedEventRouteScreen + HostEventEditState",
-        "targetOwner": "HostEventEditState adapter",
+        "currentOwner": "EditEventRouteScreen + EditEventRouteState",
+        "targetOwner": "EditEventRouteState adapter",
         "dependencies": [
           "catch.surface"
         ],
@@ -514,7 +514,7 @@
           "event_not_found",
           "unauthorized_host"
         ],
-        "migration": "Route provider waves and host authorization now live in HostEventEditState; keep loaded edit-form policy in HostEventEditScreenState."
+        "migration": "Route provider waves and host authorization now live in EditEventRouteState; keep loaded edit-form policy in EditEventController."
       },
       {
         "id": "section.host.event_edit.scope_notice",
@@ -525,10 +525,10 @@
           "EditEventScopeNotice"
         ],
         "flutter": {
-          "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "symbol": "EditHostedEventScopeNotice"
+          "file": "lib/hosts/create/edit_event_body.dart",
+          "symbol": "EditEventScopeNotice"
         },
-        "currentOwner": "HostEventEditScreenState + EditHostedEventScopeNotice",
+        "currentOwner": "EditEventController + EditEventScopeNotice",
         "targetOwner": "provider-free scope notice section",
         "dependencies": [
           "catch.badge",
@@ -540,7 +540,7 @@
           "policy_locked",
           "cancelled_event_disabled"
         ],
-        "migration": "HostEventEditScreenState now owns the booleans that drive notice title/copy. Keep the notice renderer local until Host Manage and Create Event confirm a shared host action notice pattern."
+        "migration": "EditEventController now owns the booleans that drive notice title/copy. Keep the notice renderer local until Host Manage and Create Event confirm a shared host action notice pattern."
       },
       {
         "id": "section.host.event_edit.schedule",
@@ -551,10 +551,10 @@
           "EditEventScheduleSection"
         ],
         "flutter": {
-          "file": "lib/hosts/presentation/hosted_event_schedule_section.dart",
-          "symbol": "HostedEventScheduleSection"
+          "file": "lib/hosts/create/create_when_body.dart",
+          "symbol": "CreateWhenBody"
         },
-        "currentOwner": "HostedEventScheduleSection",
+        "currentOwner": "CreateLockedScheduleSection",
         "targetOwner": "provider-free schedule section",
         "dependencies": [
           "catch.field",
@@ -566,7 +566,7 @@
           "schedule_locked",
           "validation_error"
         ],
-        "migration": "HostEventEditScheduleFieldState owns date/time/duration display and validation copy; HostEventEditScreenState owns schedule lock state."
+        "migration": "HostEventEditScheduleFieldState owns date/time/duration display and validation copy; EditEventController owns schedule lock state."
       },
       {
         "id": "section.host.event_edit.location_details",
@@ -577,10 +577,10 @@
           "EditEventLocationDetails"
         ],
         "flutter": {
-          "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "symbol": "EditHostedEventScreen"
+          "file": "lib/hosts/create/edit_event_screen.dart",
+          "symbol": "EditEventScreen"
         },
-        "currentOwner": "EditHostedEventScreen",
+        "currentOwner": "EditEventScreen",
         "targetOwner": "provider-free location/details section",
         "dependencies": [
           "catch.field",
@@ -602,10 +602,10 @@
           "EditEventPolicySection"
         ],
         "flutter": {
-          "file": "lib/hosts/presentation/hosted_event_policy_section.dart",
-          "symbol": "HostedEventPolicySection"
+          "file": "lib/hosts/create/widgets/edit_event_policy_section.dart",
+          "symbol": "EditEventPolicySection"
         },
-        "currentOwner": "HostedEventPolicySection",
+        "currentOwner": "EditEventPolicySection",
         "targetOwner": "provider-free policy editor section",
         "dependencies": [
           "catch.chip",
@@ -631,7 +631,7 @@
           "file": "packages/catch_ui/lib/src/components/catch_legacy_dock.dart",
           "symbol": "CatchLegacyDock"
         },
-        "currentOwner": "EditHostedEventFooter over EditHostedEventFooterState",
+        "currentOwner": "EditHostedEventFooter over EditEventSaveRequest",
         "targetOwner": "provider-free mutation footer",
         "dependencies": [
           "catch.button"
@@ -641,7 +641,7 @@
           "submit_error",
           "success_pop"
         ],
-        "migration": "HostEventEditScreenState now owns save enabled/loading/error input, feedback copy, and pop-on-success policy while HostEventEditSaveRequest owns validated save payload construction and EditHostedEventFooter renders the CatchButton dock. HostEventEditIntent owns typed route callback payloads."
+        "migration": "EditEventController now owns save enabled/loading/error input, feedback copy, and pop-on-success policy while EditEventSaveRequest owns validated save payload construction and EditHostedEventFooter renders the CatchButton dock. HostEventEditIntent owns typed route callback payloads."
       }
     ]
   },
@@ -659,7 +659,7 @@
     {
       "id": "DS-HOST-EVENT-EDIT-003",
       "status": "closed",
-      "nextAction": "HostEventEditScreenState now owns loaded editability, schedule/policy locks, field display state, save footer state, save error input, feedback copy, and pop-on-success policy. HostEventEditFieldDisplayState owns schedule, location/details, and policy display values; HostEventEditSaveRequest owns validated save payload construction; HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy; HostEventEditScheduleValidationState owns invalid-start validation state; HostEventEditIntent owns typed route callback payloads."
+      "nextAction": "EditEventController now owns loaded editability, schedule/policy locks, field display state, save footer state, save error input, feedback copy, and pop-on-success policy. HostEventEditFieldDisplayState owns schedule, location/details, and policy display values; EditEventSaveRequest owns validated save payload construction; HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy; HostEventEditScheduleValidationState owns invalid-start validation state; HostEventEditIntent owns typed route callback payloads."
     },
     {
       "id": "DS-HOST-EVENT-EDIT-004",

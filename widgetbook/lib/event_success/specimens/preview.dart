@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.
 import 'package:catch_dating_app/contexts/formats/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_structure.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_conversation_cue.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_card.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_defaults_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart';
@@ -55,9 +56,23 @@ Widget eventSuccessStrictPreview(
     ),
     EventSuccessStrictSurface.featureBlocks => StrictCoverageScaffold(
       componentName: componentName,
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [EventSuccessReportSectionList()],
+      child: const EventSuccessConversationCueCard(
+        title: 'Conversation cues',
+        subtitle: 'Use one when the room goes quiet.',
+        cues: [
+          EventSuccessConversationCue(
+            title: 'Best street food nearby',
+            body: 'Ask the group for one place everyone should try.',
+            contextLabel: 'Warm-up',
+            moment: EventSuccessConversationCueMoment.live,
+          ),
+          EventSuccessConversationCue(
+            title: 'A trip worth repeating',
+            body: 'Swap one trip you would happily take again.',
+            contextLabel: 'Second round',
+            moment: EventSuccessConversationCueMoment.live,
+          ),
+        ],
       ),
     ),
     EventSuccessStrictSurface.liveReveal => StrictCoverageScaffold(

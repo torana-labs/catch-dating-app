@@ -94,11 +94,21 @@ class DoorSession extends _$DoorSession {
       final attendees = next.value;
       if (attendees != null) _confirmFlips(attendees);
     });
+    return const DoorSessionState();
+  }
+
+  var _confirmingRoster = false;
+
+  /// Starts confirming roster commands from the participation listener on
+  /// the first one, so staff, who never send one and may not read the
+  /// participations, never open it.
+  void _confirmRosterCommands() {
+    if (_confirmingRoster) return;
+    _confirmingRoster = true;
     ref.listen(watchEventParticipationsForEventProvider(eventId), (_, next) {
       final participations = next.value;
       if (participations != null) _confirmAwaiting(participations);
     });
-    return const DoorSessionState();
   }
 
   void setFilter(DoorFilter filter) => state = state.copyWith(filter: filter);
@@ -279,6 +289,7 @@ class DoorSession extends _$DoorSession {
     Future<void> Function() command,
   ) async {
     if (state.awaiting.containsKey(userId)) return;
+    _confirmRosterCommands();
     state = state.copyWith(awaiting: {...state.awaiting, userId: kind});
     try {
       await command();
@@ -359,8 +370,11 @@ String doorOperationId(String attendeeId) =>
 /// (who is booked and who is in), the participations (who is waiting or
 /// asking), the roster labels (first-timers and history) and the event,
 /// with the door's own outbox, filter and search over them.
+///
+/// Without [manage] (event staff) it leaves out the participations and the
+/// roster labels: staff see the booked guests only, as the rules allow.
 @riverpod
-DoorState doorController(Ref ref, String eventId) {
+DoorState doorController(Ref ref, String eventId, {bool manage = true}) {
   final attendeesValue = ref.watch(watchEventAttendeesProvider(eventId));
   final attendees = attendeesValue.value;
   if (attendees == null) {
@@ -373,10 +387,12 @@ DoorState doorController(Ref ref, String eventId) {
       _ => const DoorState.loading(),
     };
   }
-  final participations = ref
-      .watch(watchEventParticipationsForEventProvider(eventId))
-      .value;
-  final insights = ref.watch(hostEventRosterInsightsProvider(eventId)).value;
+  final participations = manage
+      ? ref.watch(watchEventParticipationsForEventProvider(eventId)).value
+      : null;
+  final insights = manage
+      ? ref.watch(hostEventRosterInsightsProvider(eventId)).value
+      : null;
   final session = ref.watch(doorSessionProvider(eventId));
   return DoorState(
     status: DoorStatus.content,
@@ -411,8 +427,9 @@ List<String> doorTeam({
 ];
 
 /// Starts the door's listeners again after the guest list failed.
-void retryDoorReads(WidgetRef ref, String eventId) {
+void retryDoorReads(WidgetRef ref, String eventId, {bool manage = true}) {
   ref.invalidate(watchEventAttendeesProvider(eventId));
+  if (!manage) return;
   if (ref.read(watchEventParticipationsForEventProvider(eventId)).hasError) {
     ref.invalidate(watchEventParticipationsForEventProvider(eventId));
   }

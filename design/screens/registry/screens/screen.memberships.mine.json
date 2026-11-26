@@ -81,32 +81,28 @@
       "kind": "loading",
       "status": "implemented",
       "source": "MyMembershipsScreen renders the shared async loading state while uid or memberships load.",
-      "nextAction": "Capture the routed loading state once memberships leave test mode.",
-      "previewIds": []
+      "nextAction": "Capture the routed loading state once memberships leave test mode."
     },
     {
       "id": "error",
       "kind": "error",
       "status": "implemented",
       "source": "MyMembershipsScreen renders the shared localized error state with retry.",
-      "nextAction": "Capture the routed error state once memberships leave test mode.",
-      "previewIds": []
+      "nextAction": "Capture the routed error state once memberships leave test mode."
     },
     {
       "id": "populated",
       "kind": "populated",
       "status": "implemented",
       "source": "MyMembershipsList renders each membership with status, renewal, savings and self-serve actions.",
-      "nextAction": "Capture active, paused and host-paused rows once memberships leave test mode.",
-      "previewIds": []
+      "nextAction": "Capture active, paused and host-paused rows once memberships leave test mode."
     },
     {
       "id": "empty",
       "kind": "empty",
       "status": "implemented",
       "source": "MyMembershipsList renders the no-memberships empty state.",
-      "nextAction": "Capture the routed empty state once memberships leave test mode.",
-      "previewIds": []
+      "nextAction": "Capture the routed empty state once memberships leave test mode."
     },
     {
       "id": "signed_out",
@@ -158,8 +154,7 @@
           "empty",
           "mutation"
         ],
-        "migration": "Keep billing status server-owned; self-serve actions stay behind manageMyHostMembership.",
-        "previewIds": []
+        "migration": "Keep billing status server-owned; self-serve actions stay behind manageMyHostMembership."
       }
     ]
   },

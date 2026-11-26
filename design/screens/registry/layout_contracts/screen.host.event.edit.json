@@ -4,24 +4,24 @@
       "routes": [
         "hostAppEditEventScreen"
       ],
-      "file": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
-      "symbol": "EditHostedEventRouteScreen",
+      "file": "lib/hosts/create/edit_event_screen.dart",
+      "symbol": "EditEventRouteScreen",
       "family": "pushed-route",
-      "expression": "CatchRouteScaffold",
+      "expression": "CatchScreen",
       "bodyGeometry": "standard",
-      "topEdge": "route-chrome"
+      "topEdge": "safe-area"
     },
     {
       "routes": [
         "hostAppEditEventScreen"
       ],
-      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "symbol": "_EditHostedEventScreenState",
+      "file": "lib/hosts/create/edit_event_screen.dart",
+      "symbol": "_EditEventScreenState",
       "family": "pushed-route",
-      "expression": "CatchRouteScaffold",
+      "expression": "CatchScreen",
       "bodyGeometry": "standard",
-      "topEdge": "route-chrome"
+      "topEdge": "safe-area"
     }
   ],
-  "reason": "Edit Event keeps route-state and loaded editing on canonical pushed-route owners."
+  "reason": "Edit Event resolves the route on a system screen, then edits with the shared create editor."
 }

@@ -39,7 +39,10 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
       Routes.hostEventsScreen => HostNavigationWorkspace(
         spec: HostDirectoryWorkspace<({String organizerId, String eventId})>(
           index: root == Routes.hostTodayScreen
-              ? HostTodayScreen(initialOrganizerId: organizerId)
+              ? HostTodayScreen(
+                  initialOrganizerId: organizerId,
+                  openRequests: uri.queryParameters['view'] == 'requests',
+                )
               : HostEventsTabScreen(initialOrganizerId: organizerId),
           selection: organizerId == null || eventId == null
               ? null

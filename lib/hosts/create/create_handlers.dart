@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
+import 'package:catch_dating_app/hosts/create/create_policy_handlers.dart';
 import 'package:flutter/foundation.dart';
 
 /// What the create screens do when the host acts, as callbacks the route
@@ -26,7 +27,7 @@ class CreateHandlers {
     required this.onSellElsewhere,
     required this.onPrice,
     required this.onPlaces,
-    required this.onAdmission,
+    required this.policy,
     required this.onTemplate,
     required this.onBlank,
     required this.onEditStep,
@@ -41,6 +42,8 @@ class CreateHandlers {
     this.onPlanVisible,
     this.onRepeat,
     this.onBookingLink,
+    this.onIncluded,
+    this.onAccessibility,
   });
 
   /// Back a step, or close on the first.
@@ -65,7 +68,9 @@ class CreateHandlers {
   final ValueChanged<bool> onSellElsewhere;
   final ValueChanged<String> onPrice;
   final ValueChanged<int> onPlaces;
-  final ValueChanged<CreateAdmission> onAdmission;
+
+  /// The admission fields of the tickets step.
+  final CreatePolicyHandlers policy;
   final VoidCallback onTemplate;
   final VoidCallback onBlank;
   final ValueChanged<EventItineraryItem> onEditStep;
@@ -82,4 +87,9 @@ class CreateHandlers {
   final ValueChanged<bool>? onPlanVisible;
   final ValueChanged<bool>? onRepeat;
   final ValueChanged<String>? onBookingLink;
+
+  /// What is included and how accessible it is; null leaves them off the
+  /// basics.
+  final ValueChanged<String>? onIncluded;
+  final ValueChanged<String>? onAccessibility;
 }

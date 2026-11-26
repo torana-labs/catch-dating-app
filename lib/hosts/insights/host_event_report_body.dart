@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_metric_tile.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_event_review_row.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
+import 'package:catch_dating_app/hosts/insights/host_event_coach_section.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -10,7 +11,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
 /// The event report in board order: when it was and how it went, the four
-/// stats, the pairs who want to stay in touch, what guests said, the photos
+/// stats, the pairs who want to stay in touch, the post-event coach (or why
+/// it is withheld), what guests said, the photos
 /// for guests, the spotlight that brings the guests back to the next event, and the
 /// downloads.
 class HostEventReportBody extends StatelessWidget {
@@ -118,6 +120,10 @@ class HostEventReportBody extends StatelessWidget {
                 ],
               ),
             ),
+          if (state.coach case final coach?)
+            HostEventCoachSection(brief: coach)
+          else if (state.coachWithheld case final withheld?)
+            HostEventCoachSection(withheld: withheld),
           CatchSection(
             title: l10n.hostEventReportReviewsTitle,
             action: state.reviewCount > state.reviews.length

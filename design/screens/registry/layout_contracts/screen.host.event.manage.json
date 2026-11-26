@@ -17,10 +17,10 @@
       "routes": [
         "hostWorkEventScreen"
       ],
-      "file": "lib/hosts/presentation/host_event_operator_screen.dart",
-      "symbol": "HostEventOperatorScreen",
+      "file": "lib/hosts/programmes/staff/staff_event_screen.dart",
+      "symbol": "StaffEventScreen",
       "family": "pushed-route",
-      "expression": "CatchRouteScaffold",
+      "expression": "CatchScreen",
       "bodyGeometry": "standard",
       "topEdge": "route-chrome"
     },

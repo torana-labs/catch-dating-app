@@ -98,7 +98,10 @@ class HostDoorGuestRow extends StatelessWidget {
   });
 
   final HostDoorGuest guest;
-  final VoidCallback onAction;
+
+  /// The status action; null draws the row without one, for staff who may
+  /// not take it.
+  final VoidCallback? onAction;
 
   /// The event's format, for the "New" badge.
   final CatchFormat? format;
@@ -123,21 +126,23 @@ class HostDoorGuestRow extends StatelessWidget {
       badge: guest.firstTime
           ? CatchIndexRowBadge(label: l10n.doorGuestNew, format: format)
           : null,
-      action: CatchIndexRowAction(
-        label: switch (status) {
-          HostDoorGuestStatus.arriving => l10n.doorGuestCheckIn,
-          HostDoorGuestStatus.checkedIn => l10n.doorGuestUndo,
-          HostDoorGuestStatus.asked => l10n.doorGuestLetIn,
-          HostDoorGuestStatus.waitlist => l10n.doorGuestOffer,
-        },
-        variant: switch (status) {
-          HostDoorGuestStatus.arriving ||
-          HostDoorGuestStatus.asked => CatchIndexRowActionVariant.primary,
-          HostDoorGuestStatus.checkedIn ||
-          HostDoorGuestStatus.waitlist => CatchIndexRowActionVariant.secondary,
-        },
-        onPressed: guest.canAct ? onAction : null,
-      ),
+      action: onAction == null
+          ? null
+          : CatchIndexRowAction(
+              label: switch (status) {
+                HostDoorGuestStatus.arriving => l10n.doorGuestCheckIn,
+                HostDoorGuestStatus.checkedIn => l10n.doorGuestUndo,
+                HostDoorGuestStatus.asked => l10n.doorGuestLetIn,
+                HostDoorGuestStatus.waitlist => l10n.doorGuestOffer,
+              },
+              variant: switch (status) {
+                HostDoorGuestStatus.arriving ||
+                HostDoorGuestStatus.asked => CatchIndexRowActionVariant.primary,
+                HostDoorGuestStatus.checkedIn || HostDoorGuestStatus.waitlist =>
+                  CatchIndexRowActionVariant.secondary,
+              },
+              onPressed: guest.canAct ? onAction : null,
+            ),
     );
   }
 }

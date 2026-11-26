@@ -4,13 +4,35 @@
       "routes": [
         "hostCreateEventScreen"
       ],
-      "file": "lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart",
-      "symbol": "HostCreateEventRouteLoadingScreen",
-      "family": "step-flow",
-      "expression": "CatchScaffold.stepFlow",
-      "bodyGeometry": "intrinsic",
+      "file": "lib/hosts/create/create_route_screen.dart",
+      "symbol": "CreateRouteScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "file": "lib/hosts/create/create_screen.dart",
+      "symbol": "_CreateScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "file": "lib/hosts/create/widgets/create_step_layout.dart",
+      "symbol": "CreateStepLayout",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
       "topEdge": "safe-area"
     }
   ],
-  "reason": "Event creation and its loading state share the explicit step-flow owner."
+  "reason": "The create route resolves the organizer and host on a system screen, then opens the redesigned create flow."
 }

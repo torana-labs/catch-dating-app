@@ -20,7 +20,14 @@ enum SettingsPreference {
   eventReminders('prefsEventReminders'),
   eventStatusUpdates('prefsRunStatusUpdates'),
   organizerUpdates('prefsOrganizerUpdates'),
-  weeklyDigest('prefsWeeklyDigest');
+  weeklyDigest('prefsWeeklyDigest'),
+  // Profile answers other guests see (#2493, FIX-8). The switch shows the
+  // answer when on; the stored field is its hide switch, so it is inverted.
+  showReligion('prefsHideReligion'),
+  showRelationshipGoal('prefsHideRelationshipGoal'),
+  showDrinking('prefsHideDrinking'),
+  showSmoking('prefsHideSmoking'),
+  showChildren('prefsHideChildren');
 
   const SettingsPreference(this.fieldName);
 
@@ -57,6 +64,21 @@ enum SettingsPreference {
       ),
       SettingsPreference.weeklyDigest => UpdateUserProfilePatch(
         prefsWeeklyDigest: value,
+      ),
+      SettingsPreference.showReligion => UpdateUserProfilePatch(
+        prefsHideReligion: !value,
+      ),
+      SettingsPreference.showRelationshipGoal => UpdateUserProfilePatch(
+        prefsHideRelationshipGoal: !value,
+      ),
+      SettingsPreference.showDrinking => UpdateUserProfilePatch(
+        prefsHideDrinking: !value,
+      ),
+      SettingsPreference.showSmoking => UpdateUserProfilePatch(
+        prefsHideSmoking: !value,
+      ),
+      SettingsPreference.showChildren => UpdateUserProfilePatch(
+        prefsHideChildren: !value,
       ),
     };
   }

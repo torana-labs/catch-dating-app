@@ -760,7 +760,6 @@
       "status": "captured",
       "source": "tab=insights opens HostInsightsScreen; hostInsightsController reads hostAnalyticsProvider for the chosen period and HostInsightsBody keeps the period live over a skeleton drawn from the real components while the report loads.",
       "nextAction": "Keep the loading capture and the body render test synced.",
-      "previewIds": [],
       "captureIds": [
         "host_clubs_insights_loading"
       ]
@@ -771,7 +770,6 @@
       "status": "captured",
       "source": "HostInsightsBody renders the RbHostInsights board: the 7/30/90-day segmented control, the Bookings and Ticket sales stats with their change, bookings each week (each day over seven days) as the bar chart, where visitors came from as the stack meter with the page visits row, and the fullest nights as list rows that open the event report.",
       "nextAction": "Came back and Followers wait for the report to carry them (issue #1569).",
-      "previewIds": [],
       "captureIds": [
         "host_clubs_insights_report"
       ]
@@ -782,7 +780,6 @@
       "status": "captured",
       "source": "hostAnalyticsProvider errors render CatchLocalizedErrorState with retry invalidating the period's report read.",
       "nextAction": "Captures cover the generic and offline analytics errors.",
-      "previewIds": [],
       "captureIds": [
         "host_clubs_insights_error",
         "host_clubs_insights_offline"

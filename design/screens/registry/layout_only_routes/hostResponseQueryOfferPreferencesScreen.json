@@ -1,11 +1,11 @@
 {
   "owners": [
     {
-      "file": "lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart",
-      "symbol": "_HostEventOfferPreferencesScreenState",
-      "family": "step-flow",
-      "expression": "CatchScaffold.stepFlow",
-      "bodyGeometry": "intrinsic",
+      "file": "lib/hosts/forms/offer_settings_editor.dart",
+      "symbol": "_HostOfferSettingsEditorState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
       "topEdge": "safe-area",
       "routes": [
         "hostResponseQueryOfferPreferencesScreen"
