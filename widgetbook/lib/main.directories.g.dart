@@ -215,6 +215,8 @@ import 'package:widgetbook_workspace/hosts/host_form_editor_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_editor_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_payment_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_payment_use_cases;
+import 'package:widgetbook_workspace/hosts/host_form_responses_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_form_responses_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_settings_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_settings_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
@@ -307,6 +309,8 @@ import 'package:widgetbook_workspace/hosts/organizer_moments_use_cases.dart'
     as _widgetbook_workspace_hosts_organizer_moments_use_cases;
 import 'package:widgetbook_workspace/hosts/people_duplicates_use_cases.dart'
     as _widgetbook_workspace_hosts_people_duplicates_use_cases;
+import 'package:widgetbook_workspace/hosts/programmes/lodging/host_programme_lodging_use_cases.dart'
+    as _widgetbook_workspace_hosts_programmes_lodging_host_programme_lodging_use_cases;
 import 'package:widgetbook_workspace/hosts/unified_event_setup_use_cases.dart'
     as _widgetbook_workspace_hosts_unified_event_setup_use_cases;
 import 'package:widgetbook_workspace/layout/host_workspace_use_cases.dart'
@@ -10006,11 +10010,104 @@ final directories = <_widgetbook.WidgetbookNode>[
                   ),
                 ],
               ),
+              _widgetbook.WidgetbookFolder(
+                name: 'Stay planner',
+                children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostProgrammeLodgingBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Proposal and room board',
+                        builder:
+                            _widgetbook_workspace_hosts_programmes_lodging_host_programme_lodging_use_cases
+                                .hostProgrammeLodgingBodyUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostProgrammeLodgingGrid',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'One floor with a room the party can take',
+                        builder:
+                            _widgetbook_workspace_hosts_programmes_lodging_host_programme_lodging_use_cases
+                                .hostProgrammeLodgingGridUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostProgrammeLodgingMembershipBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'A guest with a suggested group',
+                        builder:
+                            _widgetbook_workspace_hosts_programmes_lodging_host_programme_lodging_use_cases
+                                .hostProgrammeLodgingMembershipBodyUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostProgrammeLodgingScreen',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'A proposal with one party waiting',
+                        builder:
+                            _widgetbook_workspace_hosts_programmes_lodging_host_programme_lodging_use_cases
+                                .hostProgrammeLodgingScreenUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostProgrammeLodgingSetupBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'A new lodging setup',
+                        builder:
+                            _widgetbook_workspace_hosts_programmes_lodging_host_programme_lodging_use_cases
+                                .hostProgrammeLodgingSetupBodyUseCase,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ],
           ),
           _widgetbook.WidgetbookFolder(
             name: 'Rehearsal practice',
             children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'HostRehearsalLateJoinForm',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Directions for one late joiner',
+                    builder:
+                        _widgetbook_workspace_hosts_host_rehearsal_practice_use_cases
+                            .hostRehearsalLateJoinFormUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostRehearsalLateJoinSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Late joiners in practice tools',
+                    builder:
+                        _widgetbook_workspace_hosts_host_rehearsal_practice_use_cases
+                            .hostRehearsalLateJoinSectionUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostRehearsalLateJoinSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'A late joiner sheet before the run moves',
+                    builder:
+                        _widgetbook_workspace_hosts_host_rehearsal_practice_use_cases
+                            .hostRehearsalLateJoinSheetUseCase,
+                  ),
+                ],
+              ),
               _widgetbook.WidgetbookComponent(
                 name: 'HostRehearsalPracticeScoresScreen',
                 useCases: [
@@ -11337,6 +11434,72 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_workspace_use_cases
                             .hostFormWorkspaceHeaderPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponsesFilterSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Version and answer filters',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_responses_use_cases
+                            .hostResponsesFilterSheetPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponsesQueryBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Filter by answers results',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_responses_use_cases
+                            .hostResponsesQueryBodyPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponsesQueryConditionCard',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Answer filter condition',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_responses_use_cases
+                            .hostResponsesQueryConditionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponsesQueryEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Answer filter editor',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_responses_use_cases
+                            .hostResponsesQueryEditorPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponsesQueryGroupSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Answer filter group',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_responses_use_cases
+                            .hostResponsesQueryGroupPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponsesQueryWorkspace',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Filter by answers',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_responses_use_cases
+                            .hostResponsesQueryWorkspacePreview,
                   ),
                 ],
               ),
