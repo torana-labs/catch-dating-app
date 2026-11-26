@@ -7,7 +7,8 @@ import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
-/// Responses in board order: the form views, the review filter, the answers
+/// Responses in board order: the form views, the status filter, the sort
+/// and the version and answer filters with what they narrow to, the answers
 /// and Load more; or, on Results, each question's answers counted.
 class HostResponsesBody extends StatelessWidget {
   const HostResponsesBody({
@@ -18,6 +19,10 @@ class HostResponsesBody extends StatelessWidget {
     required this.onFilter,
     required this.onOpen,
     required this.onLoadMore,
+    this.onSort,
+    this.onFilters,
+    this.onClearFilters,
+    this.onOpenQuery,
   });
 
   final HostResponsesState state;
@@ -28,6 +33,18 @@ class HostResponsesBody extends StatelessWidget {
   final ValueChanged<HostResponsesFilter> onFilter;
   final ValueChanged<HostFormInboxEntry> onOpen;
   final VoidCallback onLoadMore;
+
+  /// Opens the sort choice: newest or oldest first.
+  final VoidCallback? onSort;
+
+  /// Opens the version and answer filters.
+  final VoidCallback? onFilters;
+
+  /// Clears the version and answer filters.
+  final VoidCallback? onClearFilters;
+
+  /// Opens Filter by answers on the live version; null hides it.
+  final VoidCallback? onOpenQuery;
 
   @override
   Widget build(BuildContext context) {
@@ -70,14 +87,80 @@ class HostResponsesBody extends StatelessWidget {
                 for (final option in HostResponsesFilter.values)
                   CatchOption(
                     value: option,
-                    label: switch (option.reviewStatus) {
-                      final status? => hostFormReviewText(l10n, status),
-                      null => l10n.hostFormsOfferStatusOffered,
+                    label: switch (option) {
+                      HostResponsesFilter.all => l10n.hostFormsFilterAll,
+                      HostResponsesFilter.offered =>
+                        l10n.hostFormsOfferStatusOffered,
+                      _ => hostFormReviewText(l10n, option.reviewStatus!),
                     },
                     count: state.counts[option],
                   ),
               ],
               onChanged: onFilter,
+            ),
+          if (onSort != null ||
+              onOpenQuery != null ||
+              (state.canFilter && onFilters != null))
+            CatchStack(
+              direction: CatchStackDirection.row,
+              gap: CatchStackGap.g8,
+              wrap: true,
+              children: [
+                if (onSort != null)
+                  CatchChip.filter(
+                    key: const ValueKey<String>('host-responses-sort'),
+                    label: state.oldestFirst
+                        ? l10n.hostApplicationsSortOldest
+                        : l10n.hostApplicationsSortNewest,
+                    leading: CatchIcon(CatchIcons.sort),
+                    size: CatchChipSize.sm,
+                    onPressed: onSort,
+                  ),
+                if (state.canFilter && onFilters != null)
+                  CatchChip.filter(
+                    key: const ValueKey<String>('host-responses-filters'),
+                    label: state.filterCount == 0
+                        ? l10n.hostCustomersFilters
+                        : l10n.hostFormsResponsesFiltersCount(
+                            count: state.filterCount,
+                          ),
+                    leading: CatchIcon(CatchIcons.filters),
+                    size: CatchChipSize.sm,
+                    onPressed: onFilters,
+                  ),
+                if (state.filterCount > 0 && onClearFilters != null)
+                  CatchChip.filter(
+                    key: const ValueKey<String>('host-responses-clear'),
+                    label: l10n.hostCustomersClearFilter,
+                    leading: CatchIcon(CatchIcons.close),
+                    size: CatchChipSize.sm,
+                    onPressed: onClearFilters,
+                  ),
+                if (onOpenQuery != null)
+                  CatchChip.filter(
+                    key: const ValueKey<String>('host-responses-query'),
+                    label: l10n.hostResponseQueryOpenAnswers,
+                    leading: CatchIcon(CatchIcons.magic),
+                    size: CatchChipSize.sm,
+                    onPressed: onOpenQuery,
+                  ),
+              ],
+            ),
+          if (state.version case final version?)
+            CatchText(
+              key: const ValueKey<String>('host-responses-version'),
+              version.selected == null
+                  ? l10n.hostAudienceResponsesAllVersions
+                  : l10n.hostAudienceResultsVersion(version: version.selected!),
+              variant: CatchTextVariant.bodySmall,
+              tone: CatchTextTone.secondary,
+            ),
+          if (state.filterSummary case final summary?)
+            CatchText(
+              summary,
+              key: const ValueKey<String>('host-responses-filter-summary'),
+              variant: CatchTextVariant.bodySmall,
+              tone: CatchTextTone.secondary,
             ),
           if (state.status == HostResponsesStatus.loading)
             CatchSkeleton.content(
@@ -94,15 +177,26 @@ class HostResponsesBody extends StatelessWidget {
                 ],
               ),
             )
+          else if (state.entries.isEmpty && !state.canLoadMore)
+            CatchEmptyState(
+              key: const ValueKey<String>('host-responses-empty'),
+              icon: CatchIcons.document,
+              title: state.filtered
+                  ? l10n.hostFormResponsesNoMatchesTitle
+                  : l10n.hostFormResponsesEmptyTitle,
+              message: state.filtered
+                  ? l10n.hostFormResponsesNoMatchesBody
+                  : l10n.hostFormResponsesEmptyBody,
+            )
           else
             CatchSection(
-              empty: l10n.hostFormsResponsesEmpty,
               children: [
                 for (final entry in state.entries)
                   HostFormResponseRow(
                     key: ValueKey<String>('host-responses-${entry.entryId}'),
                     entry: entry,
                     now: now,
+                    showForm: !state.forForm,
                     onTap: () => onOpen(entry),
                   ),
               ],

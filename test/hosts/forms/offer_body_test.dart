@@ -31,6 +31,10 @@ class _Calls {
   int copy = 0;
   int admit = 0;
   int retry = 0;
+  int change = 0;
+  int create = 0;
+  int refresh = 0;
+  int close = 0;
 }
 
 Future<_Calls> _pump(WidgetTester tester, HostOfferState state) async {
@@ -54,6 +58,10 @@ Future<_Calls> _pump(WidgetTester tester, HostOfferState state) async {
       onBankChecked: (_) {},
       onAdmit: () => calls.admit++,
       onRetry: () => calls.retry++,
+      onChangeEvent: () => calls.change++,
+      onCreateEvent: () => calls.create++,
+      onRefreshOffers: () => calls.refresh++,
+      onCloseExisting: () => calls.close++,
     ),
   );
   return calls;
@@ -195,5 +203,98 @@ void main() {
 
     await tester.tap(find.text('Try again'));
     expect(calls.retry, 1);
+  });
+
+  testWidgets('offers a new event while none is chosen, then Change event', (
+    tester,
+  ) async {
+    final calls = await _pump(
+      tester,
+      HostOfferState(stage: HostOfferStage.events, events: _events),
+    );
+    await tester.tap(find.byKey(const ValueKey('host-offer-create-event')));
+    expect(calls.create, 1);
+    expect(find.byKey(const ValueKey('host-offer-change-event')), findsNothing);
+
+    final chosen = await _pump(
+      tester,
+      HostOfferState(
+        stage: HostOfferStage.existing,
+        events: _events,
+        event: _events.first,
+        canChangeEvent: true,
+        issued: true,
+        progress: HostOfferProgress.existing,
+        existing: const [
+          HostOfferExisting(
+            item: {'offerId': 'offer-1'},
+            name: 'Tara Menon',
+            status: HostOfferStatus.offered,
+          ),
+        ],
+      ),
+    );
+    expect(find.byKey(const ValueKey('host-offer-create-event')), findsNothing);
+    expect(find.text('Loading offer…'), findsOneWidget);
+    expect(
+      find.text('Offers recorded. Sending and admission are separate steps.'),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const ValueKey('host-offer-change-event')));
+    await tester.tap(find.text('Refresh offers'));
+    expect([chosen.change, chosen.refresh], [1, 1]);
+  });
+
+  testWidgets('the ready offer says it holds no place', (tester) async {
+    await _pump(
+      tester,
+      HostOfferState(
+        stage: HostOfferStage.review,
+        event: _events.first,
+        recipients: const ['Tara Menon'],
+        amount: 'Free',
+      ),
+    );
+    expect(
+      find.text('Creating an offer does not reserve a place.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('an open offer of a selection goes back to every offer, says '
+      'what WhatsApp does and gives the admission error', (tester) async {
+    final calls = await _pump(
+      tester,
+      HostOfferState(
+        stage: HostOfferStage.selected,
+        event: _events.first,
+        canCloseExisting: true,
+        selected: HostOfferSelected(
+          name: 'Tara Menon',
+          status: HostOfferStatus.offered,
+          expiresAt: DateTime(2026, 11, 14, 20),
+          manual: const HostOfferManual(status: HostManualPaymentStatus.none),
+          admission: const HostOfferAdmission(
+            phase: HostOfferAdmissionPhase.check,
+            failed: true,
+            error: 'This event is full.',
+          ),
+        ),
+      ),
+    );
+    expect(
+      find.text(
+        'Opens WhatsApp with editable text. You review and press Send; '
+        'Catch cannot track delivery or replies.',
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Creating an offer does not reserve a place.'),
+      findsOneWidget,
+    );
+    expect(find.text('This event is full.'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('host-offer-close-existing')));
+    expect(calls.close, 1);
   });
 }

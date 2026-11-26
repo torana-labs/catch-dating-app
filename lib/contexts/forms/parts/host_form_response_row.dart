@@ -38,12 +38,36 @@ String? hostFormAnswerText(Object? answer) {
   return trimmed == null || trimmed.isEmpty ? null : trimmed;
 }
 
+/// Where an answer came from: the application's source, the response's
+/// link label, or the form's direct link.
+String hostFormEntrySource(AppLocalizations l10n, HostFormInboxEntry entry) {
+  if (entry.application case final application?) {
+    return hostApplicationSourceText(l10n, application.sourceKind);
+  }
+  final label = entry.response?.sourceLabel?.trim();
+  return label == null || label.isEmpty
+      ? l10n.hostFormResponseDirectSource
+      : label;
+}
+
+/// How an application reached the host: their form, an import or a
+/// connected tool.
+String hostApplicationSourceText(
+  AppLocalizations l10n,
+  HostApplicationSourceKind source,
+) => switch (source) {
+  HostApplicationSourceKind.native => l10n.hostApplicationsSourceNative,
+  HostApplicationSourceKind.tabularImport => l10n.hostApplicationsSourceImport,
+  HostApplicationSourceKind.connector => l10n.hostApplicationsSourceConnector,
+};
+
 /// How long ago an answer arrived, in the compact form rows use.
 String hostFormAgo(DateTime at, DateTime now) =>
     AppTimeFormatters.compactRelativeTime(at, now: now);
 
-/// One answer in Responses: the person, their highlighted answers, when they
-/// sent it and where it stands.
+/// One answer in Responses: the person, their highlighted answers (after
+/// the form's name when [showForm]), when they sent it and from where, and
+/// where it stands.
 class HostFormResponseRow extends StatelessWidget {
   const HostFormResponseRow({
     super.key,
@@ -51,6 +75,7 @@ class HostFormResponseRow extends StatelessWidget {
     required this.now,
     required this.onTap,
     this.action,
+    this.showForm = false,
   });
 
   final HostFormInboxEntry entry;
@@ -62,6 +87,9 @@ class HostFormResponseRow extends StatelessWidget {
   /// Let in, on the form page's waiting rows.
   final CatchIndexRowAction? action;
 
+  /// Lead the line with the form's name, for a list of every form's answers.
+  final bool showForm;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -69,7 +97,10 @@ class HostFormResponseRow extends StatelessWidget {
     final review = entry.application?.reviewStatus;
     final withdrawn =
         entry.response?.status == HostFormResponseStatus.withdrawn;
-    final answers = hostFormEntryAnswers(entry);
+    final answers = [
+      if (showForm) ?entry.response?.formTitle,
+      hostFormEntryAnswers(entry),
+    ].where((part) => part.trim().isNotEmpty).join(' · ');
     return CatchIndexRow(
       title: name ?? l10n.hostFormsAnonymous,
       onTap: onTap,
@@ -77,7 +108,10 @@ class HostFormResponseRow extends StatelessWidget {
       density: CatchIndexRowSize.compact,
       leading: CatchAvatar.system(size: CatchAvatarSize.md, name: name ?? ''),
       subtitle: answers.isEmpty ? null : answers,
-      meta: action == null ? hostFormAgo(entry.submittedAt, now) : null,
+      meta: action == null
+          ? '${hostFormAgo(entry.submittedAt, now)} · '
+                '${hostFormEntrySource(l10n, entry)}'
+          : null,
       badge: action != null
           ? null
           : review != null

@@ -179,6 +179,35 @@ void main() {
     expect(edited, 'kamla');
   });
 
+  testWidgets('the guest list adds a guest and opens a group', (tester) async {
+    var added = 0;
+    String? opened = 'none';
+    await pumpPlannerBody(
+      tester,
+      HostProgrammeGuestsBody(
+        state: plannerState,
+        filter: HostProgrammeGuestFilter.all,
+        onView: (_) {},
+        onFilter: (_) {},
+        onImport: () {},
+        onOpenHousehold: (_) {},
+        onRetry: () {},
+        groups: plannerGuests.groups,
+        onAddGuest: () => added++,
+        onEditGroup: (group) => opened = group?.groupId,
+      ),
+    );
+    await tester.tap(find.byKey(const ValueKey('host-programme-guests-add')));
+    expect(added, 1);
+    final group = plannerGuests.groups.first;
+    final row = find.byKey(ValueKey('host-programme-group-${group.groupId}'));
+    await tester.ensureVisible(row);
+    await tester.tap(row);
+    expect(opened, group.groupId);
+    await tester.tap(find.text('New group'));
+    expect(opened, isNull);
+  });
+
   testWidgets('the guest list offers phone contacts when allowed', (
     tester,
   ) async {

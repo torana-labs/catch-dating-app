@@ -49,7 +49,6 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customer_edit
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_route_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
@@ -63,7 +62,6 @@ import 'package:catch_dating_app/pages/chat/event_profile_screen.dart';
 import 'package:catch_dating_app/pages/event/event_detail_screen.dart';
 import 'package:catch_dating_app/pages/organizer/organizer_detail_screen.dart';
 import 'package:catch_dating_app/pages/start/start_welcome_route_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_rooms_screen.dart';
 import 'package:catch_dating_app/routing/host_legacy_redirects.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
@@ -378,9 +376,10 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     audienceView: HostAudienceView.forms,
     path: Routes.hostResponseQueryOfferScreen.path,
     name: Routes.hostResponseQueryOfferScreen.name,
-    builder: (context, state) => HostResponseOfferScreen.query(
+    builder: (context, state) => HostOfferScreen.query(
       organizerId: _routeOrganizerQueryId(state)!,
-      queryController: state.extra is HostResponseQueryController
+      formId: state.pathParameters['formId']!,
+      query: state.extra is HostResponseQueryController
           ? state.extra! as HostResponseQueryController
           : null,
     ),
@@ -506,7 +505,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostWorkGuestsScreen.path,
     name: Routes.hostWorkGuestsScreen.name,
     builder: (context, state) =>
-        ProgramGuestDeskScreen(programId: state.pathParameters['programId']!),
+        StaffGuestsScreen(programId: state.pathParameters['programId']!),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.today,
@@ -804,6 +803,9 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     builder: (context, state) => HostResponseScreen.application(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
       applicationId: state.pathParameters['applicationId']!,
+      queue: state.extra is HostResponsesQueue
+          ? state.extra! as HostResponsesQueue
+          : null,
     ),
   ),
   HostWorkspaceDestination(
@@ -855,6 +857,9 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     builder: (context, state) => HostResponseScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
       responseId: state.pathParameters['responseId']!,
+      queue: state.extra is HostResponsesQueue
+          ? state.extra! as HostResponsesQueue
+          : null,
     ),
   ),
   HostWorkspaceDestination(

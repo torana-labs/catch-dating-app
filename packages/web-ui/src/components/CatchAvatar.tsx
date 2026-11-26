@@ -4,8 +4,11 @@ import {useState, type CSSProperties, type ReactNode} from "react";
 import type {SharedGround} from "./palette";
 import styles from "./CatchAvatar.module.css";
 
-/** Flutter `CatchAvatarStatus`. */
-export type CatchAvatarStatus = "none" | "online";
+/**
+ * Flutter `CatchAvatarStatus`: the dot at the corner. `online` and `checkedIn`
+ * (a guest already in, at the door) are green, `away` is yellow.
+ */
+export type CatchAvatarStatus = "none" | "online" | "checkedIn" | "away";
 /** Flutter `CatchAvatarVariant`. */
 export type CatchAvatarVariant = "circle" | "square";
 
@@ -14,6 +17,34 @@ export interface CatchAvatarColors {
   accent: string;
   deep: string;
   soft: string;
+}
+
+/**
+ * Flutter `CatchAvatarSize`: the system diameters and the initials' type size,
+ * both in px, from the size and spacing tokens. From xl up the initials take
+ * the display voice.
+ */
+export const catchAvatarSizes = {
+  xs: {extent: 24, initials: 12},
+  sm: {extent: 28, initials: 12},
+  md: {extent: 40, initials: 14},
+  lg: {extent: 48, initials: 16},
+  xl: {extent: 64, initials: 24},
+  xxl: {extent: 104, initials: 40},
+} as const;
+export type CatchAvatarSize = keyof typeof catchAvatarSizes;
+
+/** Flutter `CatchAvatarColor`: the fills behind system initials, in Flutter's order. */
+export const catchAvatarColors = ["ink", "indigo", "run", "dinner", "games", "courts", "nightsOut"] as const;
+export type CatchAvatarColor = (typeof catchAvatarColors)[number];
+
+/** The colours `catchAvatarColorOf` picks from, in Flutter's order. */
+export const catchAvatarColorPalette = ["run", "dinner", "games", "courts", "nightsOut", "indigo"] as const satisfies readonly CatchAvatarColor[];
+
+/** Flutter `CatchAvatarColor.of`: the same name keeps the same colour everywhere. */
+export function catchAvatarColorOf(name: string): CatchAvatarColor {
+  const hash = [...name].reduce((h, character) => (h * 31 + (character.codePointAt(0) ?? 0)) & 0x7fffffff, 7);
+  return catchAvatarColorPalette[hash % catchAvatarColorPalette.length];
 }
 
 interface CatchAvatarFrame {
@@ -38,6 +69,25 @@ export interface CatchAvatarDefaultProps extends CatchAvatarFrame {
   /** Blurs and scrims a photo or the person's initials. */
   obscured?: boolean;
   recipe?: "default";
+  status?: CatchAvatarStatus;
+  variant?: CatchAvatarVariant;
+}
+
+/**
+ * `CatchAvatar.system`: a photo, or initials on a palette colour (picked from
+ * the name when omitted), at one of the system sizes. A square variant is an
+ * organiser logo. It takes no ring.
+ */
+export interface CatchAvatarSystemProps {
+  borderColor?: never;
+  borderWidth?: never;
+  color?: CatchAvatarColor;
+  imageUrl?: string;
+  /** Overrides the initials derived from `name`. */
+  initials?: string;
+  name?: string;
+  recipe: "system";
+  size: CatchAvatarSize;
   status?: CatchAvatarStatus;
   variant?: CatchAvatarVariant;
 }
@@ -71,7 +121,8 @@ export type CatchAvatarProps =
   | CatchAvatarDefaultProps
   | CatchAvatarCountProps
   | CatchAvatarVeiledProps
-  | CatchAvatarMonogramProps;
+  | CatchAvatarMonogramProps
+  | CatchAvatarSystemProps;
 
 /** Flutter `catchAvatarInitialsOf`: two letters of one word, else the first letters of two. */
 export function catchAvatarInitialsOf(value: string) {
@@ -90,18 +141,19 @@ const personTone = (name: string) => [...name].reduce((sum, character) => sum + 
 
 /**
  * Flutter's `CatchAvatar`: a photo or initials in a circle or square, with an
- * optional ring and online dot, plus the count, veiled and monogram recipes.
- * Avatars are decorative: the name beside them carries the identity. Initials
+ * optional ring and status dot, plus the system, count, veiled and monogram
+ * recipes. Avatars are decorative, as in Flutter, whose dot has no semantics:
+ * the name and copy beside them carry the identity and any status, such as
+ * "Checked in". Initials
  * are drawn from CSS so they stay out of the visible text of a control an
  * avatar sits in, which must match that control's name (axe-core 4.14).
  */
 export function CatchAvatar(props: CatchAvatarProps) {
   const [failed, setFailed] = useState<string | null>(null);
   const borderWidth = props.borderWidth ?? 0;
-  const variant = props.recipe === undefined || props.recipe === "default" || props.recipe === "monogram"
-    ? props.variant ?? "circle"
-    : "circle";
-  const frame = {
+  const variant = props.recipe === "count" || props.recipe === "veiled" ? "circle" : props.variant ?? "circle";
+  // A system avatar takes its extent and initials size from the tokens, in CSS.
+  const frame = props.recipe === "system" ? undefined : {
     "--catch-avatar-size": `${props.size}px`,
     "--catch-avatar-inner": `${props.size - borderWidth * 2}px`,
     "--catch-avatar-ring": `${borderWidth}px`,
@@ -132,6 +184,21 @@ export function CatchAvatar(props: CatchAvatarProps) {
       surface = <span className={styles.monogram} data-display={display || undefined} data-ground={props.ground} data-initials={label} />;
       break;
     }
+    case "system": {
+      const label = props.initials ?? catchAvatarInitialsOf(props.name ?? "");
+      const initialsSurface = (
+        <span
+          className={styles.system}
+          data-color={props.color ?? catchAvatarColorOf(props.name ?? "")}
+          data-display={catchAvatarSizes[props.size].initials >= displayMinimumSize || undefined}
+          data-initials={label}
+        />
+      );
+      const photo = props.imageUrl && failed !== props.imageUrl ? props.imageUrl : null;
+      surface = photo ? <img alt="" className={styles.photo} onError={() => setFailed(photo)} src={photo} /> : initialsSurface;
+      status = props.status ?? "none";
+      break;
+    }
     default: {
       const name = props.name ?? "";
       const label = props.initials ?? catchAvatarInitialsOf(name);
@@ -155,11 +222,17 @@ export function CatchAvatar(props: CatchAvatarProps) {
   }
 
   return (
-    <span aria-hidden="true" className={styles.avatar} data-recipe={props.recipe ?? "default"} style={frame}>
+    <span
+      aria-hidden="true"
+      className={styles.avatar}
+      data-recipe={props.recipe ?? "default"}
+      data-size={props.recipe === "system" ? props.size : undefined}
+      style={frame}
+    >
       <span className={styles.viewport} data-obscured={obscure || undefined} data-variant={variant}>
         {surface}
       </span>
-      {status === "online" ? <span className={styles.status} /> : null}
+      {status === "none" ? null : <span className={styles.status} data-status={status} />}
     </span>
   );
 }
