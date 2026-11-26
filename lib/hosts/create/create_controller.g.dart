@@ -73,7 +73,7 @@ final class CreateControllerProvider
   }
 }
 
-String _$createControllerHash() => r'40c35b5b4a89b501ace6fcf392f90f84996204b7';
+String _$createControllerHash() => r'ca0eafb532de91d5b292411064de799b82aa65dd';
 
 /// The create flow: the draft as the form, the create command once the
 /// basics and the date are in, and the details, preferences and publication
