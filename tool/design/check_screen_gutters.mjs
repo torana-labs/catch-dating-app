@@ -5,8 +5,9 @@ import {fileURLToPath} from "node:url";
 import {isAppPackageSource, screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 import {fromRepo, relativeToRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
+import {readSplitRegistry} from "../lib/split_registry.mjs";
+import {screenRegistrySpec} from "./lib/screen_registries.mjs";
 
-const defaultScreenContractsPath = "design/screens/catch.screens.json";
 
 const edgeInsetsPattern =
   /\bEdgeInsets(?:Directional)?\.(?:all|only|symmetric|fromLTRB)\s*\(/gu;
@@ -35,11 +36,9 @@ if (isCliEntrypoint) runCli();
 
 export function scanScreenGutters({
   root = repoRoot,
-  screenContractsPath = defaultScreenContractsPath,
 } = {}) {
   const contractedFiles = collectContractFiles({
     root,
-    screenContractsPath,
   });
   const files = collectPresentationFiles(root);
   for (const file of contractedFiles) files.add(file);
@@ -152,9 +151,10 @@ function collectPresentationFiles(root) {
   return files;
 }
 
-function collectContractFiles({root, screenContractsPath}) {
+function collectContractFiles({root}) {
   const files = new Set();
-  const screenContracts = readJsonIfExists(path.join(root, screenContractsPath));
+  const screenContracts = fs.existsSync(path.join(root, screenRegistrySpec.index)) ?
+    readSplitRegistry(root, screenRegistrySpec) : null;
 
   for (const screen of screenContracts?.screens ?? []) {
     addBinding(files, screen.source);
@@ -436,16 +436,6 @@ function walk(directory) {
     if (entry.isFile()) files.push(fullPath);
   }
   return files;
-}
-
-function readJsonIfExists(file) {
-  if (!fs.existsSync(file)) return null;
-  try {
-    return JSON.parse(fs.readFileSync(file, "utf8"));
-  } catch (error) {
-    console.error(`Failed to parse ${normalizePath(relativeTo(repoRoot, file))}: ${error.message}`);
-    process.exit(1);
-  }
 }
 
 function lineForOffset(source, offset) {
