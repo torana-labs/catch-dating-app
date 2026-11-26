@@ -7,7 +7,7 @@ import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
+import 'package:catch_dating_app/hosts/create/create_route_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_journey/host_organizer_journey_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
@@ -37,9 +37,18 @@ import 'package:intl/intl.dart';
 /// callbacks into navigation. Every read behind it is a listener or a cached
 /// read, so nothing here refreshes on return or resume.
 class HostTodayScreen extends ConsumerStatefulWidget {
-  const HostTodayScreen({super.key, this.initialOrganizerId, this.now});
+  const HostTodayScreen({
+    super.key,
+    this.initialOrganizerId,
+    this.now,
+    this.openRequests = false,
+  });
 
   final String? initialOrganizerId;
+
+  /// Opens the requests queue once the organizer is known: the
+  /// `view=requests` link (the old Audience Requests tab) lands here.
+  final bool openRequests;
 
   /// A fixed clock for previews and tests; null follows the app clock.
   final DateTime? now;
@@ -51,6 +60,7 @@ class HostTodayScreen extends ConsumerStatefulWidget {
 class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
   DateTime? _clockNow;
   Timer? _tick;
+  bool _requestsOpened = false;
 
   DateTime get _now => widget.now ?? _clockNow ?? DateTime.now();
 
@@ -205,6 +215,15 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
         cityName: organizer.location,
       );
       final state = ref.watch(hostTodayControllerProvider(request));
+      if (widget.openRequests && !_requestsOpened) {
+        _requestsOpened = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          unawaited(
+            showHostTodayRequestsSheet(context, organizerId: organizer.id),
+          );
+        });
+      }
       body = state.status == HostTodayStatus.error
           ? CatchLocalizedErrorState(
               state.error!,

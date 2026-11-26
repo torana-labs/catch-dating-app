@@ -6,11 +6,15 @@ import 'package:catch_dating_app/contexts/bookings/data/event_participation_repo
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_catch_format.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_coach.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
+import 'package:catch_dating_app/contexts/insights/data/host_event_coach.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_bar_indicator.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_metric_tile.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_night_row.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_source_meter.dart';
+import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_state.dart';
@@ -273,7 +277,9 @@ class HostEventReportRequest {
 /// participation roster (who booked and came), the roster view (new faces),
 /// the attendees (the faces), the reviews, the organizer's coming events,
 /// and the event's row in the cached host report (ticket sales, payments and
-/// pairs who matched). A failed or pending report leaves those figures out.
+/// pairs who matched) with its coach block, analysed by `EventSuccessCoach`
+/// with the event's playbook. A failed or pending report leaves those
+/// figures out.
 @riverpod
 HostEventReportState hostEventReportController(
   Ref ref,
@@ -317,6 +323,7 @@ HostEventReportState hostEventReportController(
       : catchAsyncStateFromAsyncValue(
           ref.watch(hostAnalyticsProvider(read)),
         ).value?.data;
+  final coach = report?.eventCoach;
   final row = report?.topEvents
       .where((row) => row.eventId == event.id)
       .firstOrNull;
@@ -361,6 +368,23 @@ HostEventReportState hostEventReportController(
     stayInTouch: row == null || row.mutualMatchCount <= 0
         ? null
         : row.mutualMatchCount,
+    coach: switch (coach?.scorecard) {
+      final scorecard? => const EventSuccessCoach().analyze(
+        playbook:
+            ref
+                .watch(watchEventSuccessPlanProvider(event.id))
+                .value
+                ?.playbook ??
+            EventSuccessPlaybookLibrary.recommendedFor(
+              activityType: event.activityKind,
+            ),
+        scorecard: scorecard,
+      ),
+      null => null,
+    },
+    coachWithheld: coach?.status == HostEventCoachStatus.withheld
+        ? coach?.caption
+        : null,
     people: [
       for (final attendee in (attendees ?? const []).take(3))
         attendee.displayName,

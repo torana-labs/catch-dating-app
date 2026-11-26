@@ -6,6 +6,8 @@ import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
+import 'package:catch_dating_app/hosts/create/create_route_screen.dart';
+import 'package:catch_dating_app/hosts/create/edit_event_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_defaults_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_publish_screen.dart';
@@ -13,12 +15,16 @@ import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/events/events_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_screen.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_screen.dart';
+import 'package:catch_dating_app/hosts/forms/form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/forms/form_new_screen.dart';
+import 'package:catch_dating_app/hosts/forms/form_preview_screen.dart';
 import 'package:catch_dating_app/hosts/forms/form_questions_screen.dart';
 import 'package:catch_dating_app/hosts/forms/form_screen.dart';
+import 'package:catch_dating_app/hosts/forms/form_settings_screen.dart';
 import 'package:catch_dating_app/hosts/forms/form_share_screen.dart';
 import 'package:catch_dating_app/hosts/forms/forms_screen.dart';
 import 'package:catch_dating_app/hosts/forms/offer_screen.dart';
+import 'package:catch_dating_app/hosts/forms/offer_settings_screen.dart';
 import 'package:catch_dating_app/hosts/forms/response_screen.dart';
 import 'package:catch_dating_app/hosts/forms/responses_screen.dart';
 import 'package:catch_dating_app/hosts/forms/responses_state.dart';
@@ -39,20 +45,13 @@ import 'package:catch_dating_app/hosts/people/people_screen.dart';
 import 'package:catch_dating_app/hosts/people/person_screen.dart';
 import 'package:catch_dating_app/hosts/people/saved_group_screen.dart';
 import 'package:catch_dating_app/hosts/people/sends/sends_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
-import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_preview_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_preferences_route_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_route_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_operator_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_create_organizer_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/programmes.dart';
@@ -110,9 +109,14 @@ HostOrganizersScreen hostOrganizerScreenForUri(Uri uri) => HostOrganizersScreen(
   ),
 );
 
-/// Legacy query links resolve to the same typed record route as user navigation.
+/// Legacy query links resolve to the same typed record route as user
+/// navigation. The old Requests tab (`view=requests`) opens Today's requests
+/// queue.
 @visibleForTesting
 String? hostAudienceRecordRedirect(Uri uri) {
+  if (uri.queryParameters['view'] == HostAudienceView.requests.name) {
+    return uri.replace(path: Routes.hostTodayScreen.path).toString();
+  }
   final response = uri.queryParameters['responseId'];
   final application = uri.queryParameters['applicationId'];
   if (response == null && application == null) return null;
@@ -138,8 +142,8 @@ String? hostAudienceRecordRedirect(Uri uri) {
       .toString();
 }
 
-/// One form's route: its page, its questions or its answers on the
-/// system; its settings and payments on the form workspace.
+/// One form's route: its page, questions, answers or settings on the
+/// system; its payments on the form workspace.
 @visibleForTesting
 Widget hostFormScreenForUri(Uri uri, {required String formId}) {
   final organizerId = uri.queryParameters['organizerId'] ?? '';
@@ -152,14 +156,15 @@ Widget hostFormScreenForUri(Uri uri, {required String formId}) {
       organizerId: organizerId,
       formId: formId,
     ),
-    final view?
-        when view == HostFormWorkspaceView.settings ||
-            view == HostFormWorkspaceView.payments =>
-      HostFormBuilderScreen(
-        organizerId: organizerId,
-        formId: formId,
-        initialView: view,
-      ),
+    HostFormWorkspaceView.settings => HostFormSettingsScreen(
+      organizerId: organizerId,
+      formId: formId,
+    ),
+    HostFormWorkspaceView.payments => HostFormBuilderScreen(
+      organizerId: organizerId,
+      formId: formId,
+      initialView: HostFormWorkspaceView.payments,
+    ),
     _ => HostFormScreen(organizerId: organizerId, formId: formId),
   };
 }
@@ -329,7 +334,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     audienceView: HostAudienceView.responses,
     path: Routes.hostResponseOfferPreferencesScreen.path,
     name: Routes.hostResponseOfferPreferencesScreen.name,
-    builder: (context, state) => HostResponseOfferPreferencesRouteScreen(
+    builder: (context, state) => HostOfferSettingsScreen(
       organizerId: _routeOrganizerQueryId(state)!,
       eventId: state.pathParameters['eventId']!,
       onBack: () => hostWorkspaceBack(
@@ -351,7 +356,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     audienceView: HostAudienceView.forms,
     path: Routes.hostResponseQueryOfferPreferencesScreen.path,
     name: Routes.hostResponseQueryOfferPreferencesScreen.name,
-    builder: (context, state) => HostResponseOfferPreferencesRouteScreen(
+    builder: (context, state) => HostOfferSettingsScreen(
       organizerId: _routeOrganizerQueryId(state)!,
       eventId: state.pathParameters['eventId']!,
       onBack: () => hostWorkspaceBack(
@@ -405,7 +410,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostWorkEventScreen.path,
     name: Routes.hostWorkEventScreen.name,
     builder: (context, state) =>
-        HostEventOperatorScreen(eventId: state.pathParameters['eventId']!),
+        StaffEventScreen(eventId: state.pathParameters['eventId']!),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.today,
@@ -685,37 +690,15 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     name: Routes.hostCreateEventScreen.name,
     builder: (context, state) {
       final extra = state.extra;
-      return HostCreateEventRouteScreen(
+      return CreateRouteScreen(
         organizerId: state.pathParameters['organizerId']!,
-        initialOrganizer: switch (extra) {
-          final HostCreateEventRouteArguments arguments =>
-            arguments.initialOrganizer,
-          final Organizer organizer => organizer,
-          _ => null,
+        arguments: switch (extra) {
+          final HostCreateEventRouteArguments arguments => arguments,
+          final Organizer organizer => HostCreateEventRouteArguments(
+            initialOrganizer: organizer,
+          ),
+          _ => const HostCreateEventRouteArguments(),
         },
-        initialPrefill: switch (extra) {
-          final HostCreateEventRouteArguments arguments =>
-            arguments.initialPrefill,
-          _ => null,
-        },
-        initialDraft: extra is HostCreateEventRouteArguments
-            ? extra.initialDraft
-            : null,
-
-        initialSavedEventId: extra is HostCreateEventRouteArguments
-            ? extra.initialSavedEventId
-            : null,
-        externalBookingMode: switch (extra) {
-          final HostCreateEventRouteArguments arguments =>
-            arguments.externalBookingMode,
-          _ => false,
-        },
-        promptForDrafts: extra is HostCreateEventRouteArguments
-            ? extra.promptForDrafts
-            : true,
-        returnToResponsesOnSave: extra is HostCreateEventRouteArguments
-            ? extra.returnToResponsesOnSave
-            : false,
       );
     },
   ),
@@ -765,7 +748,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     parent: Routes.hostAppEventManageScreen,
     path: Routes.hostAppEditEventScreen.path,
     name: Routes.hostAppEditEventScreen.name,
-    builder: (context, state) => EditHostedEventRouteScreen(
+    builder: (context, state) => EditEventRouteScreen(
       organizerId: state.pathParameters['organizerId']!,
       eventId: state.pathParameters['eventId']!,
       initialEvent: routeEventExtra(state),
@@ -818,7 +801,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
         : null,
     path: Routes.hostApplicationDetailScreen.path,
     name: Routes.hostApplicationDetailScreen.name,
-    builder: (context, state) => HostApplicationDetailScreen(
+    builder: (context, state) => HostResponseScreen.application(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
       applicationId: state.pathParameters['applicationId']!,
     ),

@@ -257,6 +257,308 @@
           "nextAction": {"type": "string", "minLength": 1, "maxLength": 240}
         }
       }
+    },
+    "eventCoach": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "Event-scoped post-event coach figures from eventSuccessScorecards/{eventId}, only on an event report. The scorecard carries catch, match and chat counts, so a host sees it only when at least groupSizeFloor guests checked in; below that status is withheld and scorecard is null. Admin reads apply no floor (groupSizeFloor 0).",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "groupSizeFloor",
+        "caption",
+        "scorecard"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "withheld"
+          ]
+        },
+        "groupSizeFloor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 500
+        },
+        "caption": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "scorecard": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "bookedCount",
+            "checkedInCount",
+            "feedbackCount",
+            "attendeesWhoMetTwoPlusPeople",
+            "catchSentCount",
+            "attendeesWhoCaughtSomeone",
+            "catchRecipientCount",
+            "mutualMatchCount",
+            "chatStartedCount",
+            "safetyIncidentCount",
+            "catchRate",
+            "averageWelcomeRating",
+            "averageStructureRating",
+            "conversationGraph",
+            "funnel"
+          ],
+          "properties": {
+            "bookedCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "checkedInCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "feedbackCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "attendeesWhoMetTwoPlusPeople": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "catchSentCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "attendeesWhoCaughtSomeone": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "catchRecipientCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "mutualMatchCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "chatStartedCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "safetyIncidentCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "catchRate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "averageWelcomeRating": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "averageStructureRating": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "conversationGraph": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "responseCount",
+                "skippedCount",
+                "conversationCount",
+                "attendeesWithTwoPlusConversations",
+                "excludedAttendeeCount",
+                "assignedConversationCount",
+                "assignedOpportunityCount"
+              ],
+              "properties": {
+                "responseCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "skippedCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "conversationCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "attendeesWithTwoPlusConversations": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "excludedAttendeeCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "assignedConversationCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "assignedOpportunityCount": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            "funnel": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "inviteLinkCount",
+                "inviteOpenCount",
+                "totalDemandCount",
+                "requestCount",
+                "pendingRequestCount",
+                "approvedRequestCount",
+                "declinedRequestCount",
+                "directSignupCount",
+                "waitlistJoinCount",
+                "waitlistOfferCount",
+                "waitlistOfferActiveCount",
+                "waitlistOfferAcceptedCount",
+                "waitlistOfferDeclinedCount",
+                "waitlistOfferExpiredCount",
+                "checkoutStartedCount",
+                "paymentPendingCount",
+                "paymentCompletedCount",
+                "paymentFailedCount",
+                "paymentRefundedCount",
+                "bookedCount",
+                "checkedInCount",
+                "noShowCount",
+                "catchSentCount",
+                "attendeesWhoCaughtSomeone",
+                "mutualMatchCount",
+                "chatStartedCount",
+                "repeatAttendeeCount"
+              ],
+              "properties": {
+                "inviteLinkCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "inviteOpenCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "totalDemandCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "requestCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "pendingRequestCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "approvedRequestCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "declinedRequestCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "directSignupCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "waitlistJoinCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "waitlistOfferCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "waitlistOfferActiveCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "waitlistOfferAcceptedCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "waitlistOfferDeclinedCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "waitlistOfferExpiredCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "checkoutStartedCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "paymentPendingCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "paymentCompletedCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "paymentFailedCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "paymentRefundedCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "bookedCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "checkedInCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "noShowCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "catchSentCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "attendeesWhoCaughtSomeone": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "mutualMatchCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "chatStartedCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "repeatAttendeeCount": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {

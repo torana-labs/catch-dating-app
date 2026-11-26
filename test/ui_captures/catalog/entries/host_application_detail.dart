@@ -4,7 +4,7 @@
 import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/contexts/forms/data/host_application_repository.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
-import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
+import 'package:catch_dating_app/hosts/forms/response_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' show AsyncData;
 import '../../fixtures/host_audience_journey_fixture.dart';
@@ -18,7 +18,7 @@ final hostApplicationDetailCapture = ScreenCaptureEntry(
   routeIds: const <String>['hostApplicationDetailScreen'],
   device: CaptureDevice.iphone17Pro,
   marketingFixtureKeys: const <String>['hostAudience.applications.detail'],
-  builder: (_) => const HostApplicationDetailScreen(
+  builder: (_) => const HostResponseScreen.application(
     organizerId: 'org_1',
     applicationId: 'design-application-1',
   ),

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
@@ -8,7 +9,13 @@ import 'package:flutter/widgets.dart';
 
 /// Step one in board order: the photo with two add cards, the name, the
 /// format chips with the chosen format's note, and what it is like. A
-/// social run adds distance and pace, as its note says.
+/// social run adds distance and pace, as its note says. With [onIncluded]
+/// and [onAccessibility] it adds the guest details shown on the event: what
+/// is included and how accessible it is.
+///
+/// Editing a saved event keeps its format and photos as they are, checks
+/// the distance of a moving event, and adds [trailing] fields under the
+/// guest details.
 class CreateBasicsBody extends StatelessWidget {
   const CreateBasicsBody({
     super.key,
@@ -19,7 +26,10 @@ class CreateBasicsBody extends StatelessWidget {
     required this.onDistance,
     required this.onPace,
     required this.onAddPhoto,
+    this.onIncluded,
+    this.onAccessibility,
     this.showTitle = false,
+    this.trailing = const <Widget>[],
   });
 
   final CreateFlowState state;
@@ -29,9 +39,14 @@ class CreateBasicsBody extends StatelessWidget {
   final ValueChanged<String> onDistance;
   final ValueChanged<String> onPace;
   final VoidCallback onAddPhoto;
+  final ValueChanged<String>? onIncluded;
+  final ValueChanged<String>? onAccessibility;
 
   /// The desktop editor names the step above the form.
   final bool showTitle;
+
+  /// Fields an edit adds under the description.
+  final List<Widget> trailing;
 
   static const _paces = ['easy', 'moderate', 'fast', 'competitive'];
 
@@ -41,6 +56,13 @@ class CreateBasicsBody extends StatelessWidget {
     final draft = state.draft;
     final format = state.format;
     final photos = state.photoUrls;
+    final edit = state.edit;
+    final states = <WidgetState>{
+      if (edit != null && !state.canChange) WidgetState.disabled,
+    };
+    final moving =
+        edit?.event.eventFormat.activityKind.isDistanceBased ??
+        format == CreateFormat.run;
     final addPhoto = state.canAddPhotos && !state.uploadingPhotos
         ? onAddPhoto
         : null;
@@ -75,12 +97,13 @@ class CreateBasicsBody extends StatelessWidget {
                   semanticLabel: context.l10n.hostCreatePhotos,
                 ),
               ),
-            CatchStack(
-              direction: CatchStackDirection.row,
-              gap: CatchStackGap.g8,
-              equal: true,
-              children: addCards.take(2).toList(),
-            ),
+            if (edit == null)
+              CatchStack(
+                direction: CatchStackDirection.row,
+                gap: CatchStackGap.g8,
+                equal: true,
+                children: addCards.take(2).toList(),
+              ),
             if (state.eventId == null)
               CatchText(
                 context.l10n.hostCreateAddPhotoLater,
@@ -98,6 +121,7 @@ class CreateBasicsBody extends StatelessWidget {
                 .createPrivateEventSetupCallablePayloadBasicsName,
             initialValue: draft.name ?? '',
             onChanged: onName,
+            states: states,
             textInputAction: TextInputAction.next,
             errorText: state.problems.contains(CreateProblem.name)
                 ? context.l10n.hostCreateNameNeeded
@@ -125,7 +149,8 @@ class CreateBasicsBody extends StatelessWidget {
                     mode: CatchChipMode.single,
                     dot: option.tint,
                     colourWhenSelected: true,
-                    onPressed: () => onFormat(option),
+                    // A saved event keeps the format it was set up with.
+                    onPressed: edit == null ? () => onFormat(option) : null,
                   ),
               ],
             ),
@@ -142,7 +167,7 @@ class CreateBasicsBody extends StatelessWidget {
             ),
           ],
         ),
-        if (format == CreateFormat.run) ...[
+        if (moving) ...[
           CatchFieldLanes.single(
             child: CatchField.input(
               key: const ValueKey<String>('create-distance'),
@@ -155,7 +180,16 @@ class CreateBasicsBody extends StatelessWidget {
                 decimal: true,
               ),
               suffixText: 'km',
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(
+                  RegExp(context.l10n.hostsEditHostedEventScreenBodyDD),
+                ),
+              ],
               onChanged: onDistance,
+              states: states,
+              errorText: state.problems.contains(CreateProblem.distance)
+                  ? _distanceError(context.l10n, draft.distance)
+                  : null,
             ),
           ),
           CatchStack(
@@ -176,7 +210,7 @@ class CreateBasicsBody extends StatelessWidget {
                       selected: draft.paceName == pace,
                       mode: CatchChipMode.single,
                       size: CatchChipSize.sm,
-                      onPressed: () => onPace(pace),
+                      onPressed: states.isEmpty ? () => onPace(pace) : null,
                     ),
                 ],
               ),
@@ -192,13 +226,68 @@ class CreateBasicsBody extends StatelessWidget {
                 .updatePrivateEventDetailsCallablePayloadDetailsDescription,
             initialValue: draft.description ?? '',
             onChanged: onDescription,
+            states: states,
             minLines: 3,
             maxLines: 6,
             keyboardType: TextInputType.multiline,
             maxLength: 2000,
           ),
         ),
+        if (onIncluded != null && onAccessibility != null) ...[
+          CatchText(
+            context.l10n.hostsEventGuestDetailsTitle,
+            variant: CatchTextVariant.labelAction,
+          ),
+          CatchFieldLanes.single(
+            child: CatchField.input(
+              key: CreateEventFormKeys.included,
+              copy: copy,
+              title: context.l10n.hostsEventIncludedTitle,
+              helperText: context.l10n.hostsEventGuestDetailsVisibility,
+              placeholder: context.l10n.hostsEventIncludedHint,
+              contract: CatchContractConstraints
+                  .createEventCallablePayloadEventFormatActivityDetailsPublicDetailsIncluded,
+              labelMode: CatchFieldLabelTextMode.optional,
+              initialValue: draft.included ?? '',
+              states: states,
+              minLines: 2,
+              maxLines: 4,
+              keyboardType: TextInputType.multiline,
+              textCapitalization: TextCapitalization.sentences,
+              onChanged: onIncluded!,
+            ),
+          ),
+          CatchFieldLanes.single(
+            child: CatchField.input(
+              key: CreateEventFormKeys.accessibility,
+              copy: copy,
+              title: context.l10n.hostsEventAccessibilityTitle,
+              placeholder: context.l10n.hostsEventAccessibilityHint,
+              contract: CatchContractConstraints
+                  .createEventCallablePayloadEventFormatActivityDetailsPublicDetailsAccessibility,
+              labelMode: CatchFieldLabelTextMode.optional,
+              initialValue: draft.accessibility ?? '',
+              states: states,
+              minLines: 2,
+              maxLines: 4,
+              keyboardType: TextInputType.multiline,
+              textCapitalization: TextCapitalization.sentences,
+              onChanged: onAccessibility!,
+            ),
+          ),
+        ],
+        ...trailing,
       ],
     );
   }
+}
+
+/// Why an edited distance cannot be saved.
+String _distanceError(AppLocalizations l10n, String? value) {
+  final text = (value ?? '').trim();
+  if (text.isEmpty) return l10n.hostsEditHostedEventScreenBodyRequired;
+  if (double.tryParse(text) == null) {
+    return l10n.hostsEditHostedEventScreenBodyInvalid;
+  }
+  return l10n.hostsEditHostedEventScreenBodyMustBe0;
 }

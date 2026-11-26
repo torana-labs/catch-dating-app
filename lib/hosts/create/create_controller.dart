@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_view.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_details_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_default_view_reads.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
@@ -13,13 +13,15 @@ import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.d
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/create/create_draft_values.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
+import 'package:catch_dating_app/hosts/create/create_policy_fields.dart';
+import 'package:catch_dating_app/hosts/create/create_policy_values.dart';
+import 'package:catch_dating_app/hosts/create/edit_event_values.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_draft_restore.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
-import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_platform/errors/app_error_context.dart' as app_ops;
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
@@ -53,12 +55,17 @@ class CreateFlowArgs {
 /// basics and the date are in, and the details, preferences and publication
 /// commands after it. The event's setup view reaches it through the three
 /// setup controllers, which follow their listeners; nothing here polls.
-// provider-graph: high-fan-out:createControllerProvider accepted -- The nine dependencies form one create flow: the local draft and the organizer's saved drafts, the setup defaults and their view, the details, preferences and publication step controllers it drives, Firebase Functions for the series callable and the error logger.
+// provider-graph: high-fan-out:createControllerProvider accepted -- The ten dependencies form one create flow: the local draft and the organizer's saved drafts, the setup defaults and their view, the details, preferences and publication step controllers it drives, a resumed private event's saved policy, Firebase Functions for the series callable and the error logger.
 @riverpod
-class CreateController extends _$CreateController {
+class CreateController extends _$CreateController with CreatePolicyFields {
   late String _requestId;
   String? _submittedSignature;
   bool _hydrated = false;
+
+  /// Resuming: the saved event's admission policy has been read (or failed).
+  bool _savedPolicyRead = true;
+  Object? _savedPolicyError;
+  bool _detailsLoading = false;
   String _refundPolicy = 'standard';
   final _subscriptions = <ProviderSubscription<Object?>>[];
 
@@ -72,7 +79,7 @@ class CreateController extends _$CreateController {
       }
     });
     final starting = args.initialDraft ?? args.initialPrefill?.values;
-    final draft =
+    var draft =
         (starting ??
                 EventDraft(
                   id: newPrivateEventRequestId(),
@@ -84,10 +91,17 @@ class CreateController extends _$CreateController {
               externalBookingMode:
                   starting?.externalBookingMode ?? args.externalBookingMode,
             );
+    if (starting == null && args.initialSavedEventId == null) {
+      draft = createDraftWithPolicyDefaults(
+        draft,
+        args.organizer.hostDefaults.eventPolicy,
+      );
+    }
     _requestId = draft.eventCreateRequestId ?? newPrivateEventRequestId();
     _submittedSignature = draft.eventCreatePayloadSignature;
     final eventId = args.initialSavedEventId ?? draft.eventCreateReceiptEventId;
     _hydrated = args.initialSavedEventId == null;
+    _savedPolicyRead = _hydrated;
     if (eventId != null) {
       Future.microtask(() => _follow(eventId));
     }
@@ -101,7 +115,8 @@ class CreateController extends _$CreateController {
   }
 
   /// The organizer's event defaults fill an untouched price and places, and
-  /// set the refund policy a paid event starts with. They are a convenience:
+  /// set the refund policy a paid event starts with; a fresh draft took the
+  /// organizer's event policy defaults in [build]. They are a convenience:
   /// without the defaults view the flow keeps its own starting values.
   Future<void> _prefillFromDefaults({required bool fresh}) =>
       // Future.sync still turns a synchronous read failure into an error the
@@ -115,18 +130,15 @@ class CreateController extends _$CreateController {
         if (defaults == null || !ref.mounted) return;
         _refundPolicy = defaults.refundPolicy ?? _refundPolicy;
         if (!fresh) return;
+        final booking = defaults.bookingMode;
+        // A saved event and a host's own choice keep their cancellation.
         state = state.copyWith(
           waitlist: defaults.waitlistEnabled,
-          approveEach: defaults.bookingMode == null
-              ? null
-              : defaults.bookingMode == 'askFirst',
-        );
-        final draft = state.draft;
-        final price = defaults.startingPriceMinor;
-        state = state.copyWith(
-          draft: draft.copyWith(
-            price: draft.price ?? (price == null ? null : '${price ~/ 100}'),
-            capacity: draft.capacity ?? defaults.places?.toString(),
+          approveEach: booking == null ? null : booking == 'askFirst',
+          draft: createDraftWithSetupDefaults(
+            state.draft,
+            defaults,
+            keepCancellation: policyTouched || args.initialSavedEventId != null,
           ),
         );
       }, onError: (Object _) {});
@@ -136,6 +148,7 @@ class CreateController extends _$CreateController {
 
   // ---- the form ----
 
+  @override
   void edit(EventDraft Function(EventDraft draft) change) {
     state = state.copyWith(
       draft: change(state.draft),
@@ -199,6 +212,10 @@ class CreateController extends _$CreateController {
       ),
     ),
   );
+
+  /// Resuming sends the policy only once the host changes an admission
+  /// field; [_onSavedPolicy] filled the fields from the saved one first.
+  bool get _sendsPolicy => args.initialSavedEventId == null || policyTouched;
 
   void setWaitlist(bool on) => state = state.copyWith(waitlist: on);
 
@@ -333,8 +350,14 @@ class CreateController extends _$CreateController {
         if (draft.eventLocalStartTime == null) CreateProblem.start,
       },
       CreateStep.tickets => {
-        if (!draft.externalBookingMode && createPricePaise(draft.price) == null)
-          CreateProblem.price,
+        if (!draft.externalBookingMode) ...{
+          if (createPricePaise(draft.price) == null) CreateProblem.price,
+          if (_sendsPolicy)
+            ...editPolicyProblems(
+              draft,
+              savedInviteCode: args.initialSavedEventId != null,
+            ),
+        },
       },
       CreateStep.plan || CreateStep.share => const {},
     };
@@ -369,26 +392,11 @@ class CreateController extends _$CreateController {
         logError: ref.read(errorLoggerProvider),
       );
     }
-    final city = defaultCityOptions
-        .where(
-          (option) =>
-              option.effectiveCityId == cityId &&
-              option.effectiveMarketId == marketId,
-        )
-        .firstOrNull;
-    return PrivateEventBasics(
-      name: (draft.name ?? '').trim(),
-      city: EventSetupValue.set(
-        EventSetupCity(cityId: cityId, marketId: marketId),
-      ),
-      localDate: draft.eventLocalDate!,
-      localStartTime: draft.eventLocalStartTime!,
-      timezone: EventSetupValue.set(
-        timezone ??
-            city?.timeZone ??
-            args.organizer.hostDefaults.timezone ??
-            '',
-      ),
+    return createBasicsFor(
+      draft,
+      cityId: cityId,
+      marketId: marketId,
+      timezone: timezone ?? args.organizer.hostDefaults.timezone,
     );
   }
 
@@ -462,15 +470,7 @@ class CreateController extends _$CreateController {
     );
     if (current.error != null) throw current.error!;
     if (patch.eventFormat != null && !current.canEditFormat) {
-      patch = PrivateEventDetailsPatch(
-        description: patch.description,
-        durationMinutes: patch.durationMinutes,
-        meetingLocation: patch.meetingLocation,
-        itinerary: patch.itinerary,
-        admissionTerms: patch.admissionTerms,
-        planVisibleToGuests: patch.planVisibleToGuests,
-        externalBooking: patch.externalBooking,
-      );
+      patch = createPatchWithoutFormat(patch);
       if (!patch.isValid) return;
     }
     await ref
@@ -485,16 +485,16 @@ class CreateController extends _$CreateController {
 
   Future<void> _saveTickets() async {
     final draft = state.draft;
+    // Without the saved policy a rebuilt one would reset what it holds.
+    if (policyTouched && _savedPolicyError != null) throw _savedPolicyError!;
     await _saveExternalBooking(draft);
     if (!draft.externalBookingMode) {
-      final price = createPricePaise(draft.price)!;
       await _saveDetails(
         PrivateEventDetailsPatch(
-          admissionTerms: PrivateEventAdmissionTerms(
-            capacityLimit: int.tryParse(draft.capacity ?? '') ?? 30,
-            priceInPaise: price,
-            currency: 'INR',
-            cancellationPolicyId: price == 0 ? 'notApplicable' : _refundPolicy,
+          admissionTerms: createAdmissionTerms(
+            draft,
+            refundPolicy: _refundPolicy,
+            includePolicy: _sendsPolicy,
           ),
         ),
       );
@@ -508,14 +508,16 @@ class CreateController extends _$CreateController {
     if (current.error != null) throw current.error!;
     final intents = current.intents;
     final resolved = current.resolvedValues;
-    final booking = state.approveEach ? 'askFirst' : 'anyone';
+    final asksFirst = createAsksFirst(draft, approveEach: state.approveEach);
+    final booking = asksFirst ? 'askFirst' : 'anyone';
+    final preset = createPreferencePreset(draft);
     final bookingSaved =
         resolved['bookingMode'] == booking ||
-        (!state.approveEach && resolved['bookingMode'] == null);
+        (!asksFirst && resolved['bookingMode'] == null);
     final waitlistSaved =
         resolved['waitlistEnabled'] == state.waitlist ||
         (state.waitlist && resolved['waitlistEnabled'] == null);
-    if (intents.admissionPreset.value == state.admission.preset &&
+    if (intents.admissionPreset.value == preset &&
         bookingSaved &&
         waitlistSaved) {
       return;
@@ -525,19 +527,11 @@ class CreateController extends _$CreateController {
           privateEventPreferencesControllerProvider(_scope(eventId)).notifier,
         )
         .save(
-          PrivateEventPreferenceIntents(
-            usualDurationMinutes: intents.usualDurationMinutes,
-            preferredVenueId: intents.preferredVenueId,
-            offerValidityMinutes: intents.offerValidityMinutes,
-            collectionPreference: intents.collectionPreference,
-            currency: intents.currency,
-            offerMessageTemplate: intents.offerMessageTemplate,
-            paymentInstructions: intents.paymentInstructions,
-            reusablePaymentPage: intents.reusablePaymentPage,
-            admissionPreset: EventSetupValue.set(state.admission.preset),
-            expectedAmountMinor: intents.expectedAmountMinor,
-            bookingMode: EventSetupValue.set(booking),
-            waitlistEnabled: EventSetupValue.set(state.waitlist),
+          createTicketIntents(
+            intents,
+            preset: preset,
+            booking: booking,
+            waitlist: state.waitlist,
           ),
         );
     current = await _untilPreferences(
@@ -668,6 +662,15 @@ class CreateController extends _$CreateController {
           fireImmediately: true,
         ),
       );
+    if (!_savedPolicyRead) {
+      _subscriptions.add(
+        ref.listen<AsyncValue<PrivateEventSavedPolicy?>>(
+          watchPrivateEventPolicyProvider(eventId),
+          (_, saved) => _onSavedPolicy(saved),
+          fireImmediately: true,
+        ),
+      );
+    }
     unawaited(
       ref.read(privateEventDetailsControllerProvider(scope).notifier).load(),
     );
@@ -688,9 +691,10 @@ class CreateController extends _$CreateController {
       _hydrated = true;
       draft = createDraftFromSaved(draft, event);
     }
+    _detailsLoading = event == null && details.error == null && !_hydrated;
     state = state.copyWith(
       draft: draft,
-      loadingSaved: event == null && details.error == null && !_hydrated,
+      loadingSaved: _detailsLoading || !_savedPolicyRead,
       canAddPhotos: details.canAddPhotos,
       uploadingPhotos: details.uploading,
       photoUrls: [
@@ -698,6 +702,21 @@ class CreateController extends _$CreateController {
           photo.url,
       ],
       published: event?.publicationState == 'published',
+    );
+  }
+
+  /// Resuming: the saved admission policy fills the fields once, before the
+  /// steps show, so changing one field keeps the rest.
+  void _onSavedPolicy(AsyncValue<PrivateEventSavedPolicy?> saved) {
+    if (_savedPolicyRead || saved.isLoading) return;
+    _savedPolicyRead = true;
+    _savedPolicyError = saved.error;
+    final policy = saved.value;
+    state = state.copyWith(
+      draft: policy == null || policyTouched
+          ? null
+          : createDraftWithSavedPolicy(state.draft, policy),
+      loadingSaved: _detailsLoading,
     );
   }
 

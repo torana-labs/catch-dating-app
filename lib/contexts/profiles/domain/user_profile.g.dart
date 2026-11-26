@@ -153,6 +153,12 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
   prefsShowInCrossPaths: json['prefsShowInCrossPaths'] as bool? ?? false,
   prefsCrossPathsInvitations:
       json['prefsCrossPathsInvitations'] as bool? ?? false,
+  prefsHideReligion: json['prefsHideReligion'] as bool? ?? true,
+  prefsHideRelationshipGoal:
+      json['prefsHideRelationshipGoal'] as bool? ?? false,
+  prefsHideDrinking: json['prefsHideDrinking'] as bool? ?? false,
+  prefsHideSmoking: json['prefsHideSmoking'] as bool? ?? false,
+  prefsHideChildren: json['prefsHideChildren'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$UserProfileToJson(
@@ -203,6 +209,11 @@ Map<String, dynamic> _$UserProfileToJson(
   'prefsShowOnMap': instance.prefsShowOnMap,
   'prefsShowInCrossPaths': instance.prefsShowInCrossPaths,
   'prefsCrossPathsInvitations': instance.prefsCrossPathsInvitations,
+  'prefsHideReligion': instance.prefsHideReligion,
+  'prefsHideRelationshipGoal': instance.prefsHideRelationshipGoal,
+  'prefsHideDrinking': instance.prefsHideDrinking,
+  'prefsHideSmoking': instance.prefsHideSmoking,
+  'prefsHideChildren': instance.prefsHideChildren,
 };
 
 const _$GenderEnumMap = {

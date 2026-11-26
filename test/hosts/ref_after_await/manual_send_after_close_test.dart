@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_manual_send_task.dart';
+import 'package:catch_dating_app/hosts/people/sends/sends_screen.dart';
+import 'package:catch_dating_app/hosts/people/sends/sends_sheets_body.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_list.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/theme/app_theme.dart';
@@ -16,6 +17,8 @@ import 'package:url_launcher/url_launcher.dart' show LaunchMode;
 // A manual send opens WhatsApp, then records that the handoff opened. The
 // host can close the sheet while WhatsApp is opening; the handoff must still
 // be recorded, or the task stays "not opened" though the message went out.
+// The sheet is Sends' manual send sheet, wired the way Sends wires it: the
+// commands and link controller are read before anything is awaited.
 
 void main() {
   setUpAll(loadCatchTestFonts);
@@ -112,7 +115,22 @@ class _Probe {
           theme: AppTheme.light,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(body: HostManualSendTaskSheet(task: _task)),
+          home: Scaffold(
+            body: Consumer(
+              builder: (context, ref, _) => HostManualSendSheet(
+                task: _task,
+                onOpenWhatsapp: (task, {required stillOpen}) =>
+                    openHostManualSendHandoff(
+                      commands: ref.read(hostAudienceControllerProvider),
+                      links: ref.read(externalLinkControllerProvider),
+                      task: task,
+                      stillOpen: stillOpen,
+                      openFailedMessage: 'WhatsApp did not open',
+                    ),
+                onMark: (_, _) async {},
+              ),
+            ),
+          ),
         ),
       ),
     );

@@ -4,16 +4,21 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_quer
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_memory.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_revenue.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_timeline.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_manual_send_task.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automation.dart';
 import 'package:catch_dating_app/hosts/people/automations_state.dart';
 import 'package:catch_dating_app/hosts/people/compose_state.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_people.dart';
 import 'package:catch_dating_app/hosts/people/messages_state.dart';
 import 'package:catch_dating_app/hosts/people/people_state.dart';
 import 'package:catch_dating_app/hosts/people/person_state.dart';
 import 'package:catch_dating_app/hosts/people/saved_group_state.dart';
+import 'package:catch_dating_app/hosts/people/sends/sends_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 
 import 'package:catch_test_support/events_test_helpers.dart';
@@ -426,4 +431,127 @@ HostSavedAudience handPickedGroupAudience(int count) => HostSavedAudience(
   lastPreviewAt: DateTime(2026, 10, 20),
   createdAt: DateTime(2026, 9),
   updatedAt: DateTime(2026, 10, 20),
+);
+
+/// Tuesday Trivia Night as the Messages scope.
+final messagesEventScope = HostInboxScope.event(composeEvent.id);
+
+/// Messages narrowed to Tuesday Trivia Night: two booked people and one
+/// prospective one, with [segment] open. With [withThreads] false the
+/// roster is known but nobody has written yet.
+HostMessagesState messagesEventState({
+  HostInboxAudienceSegment segment = HostInboxAudienceSegment.booked,
+  bool withThreads = true,
+}) {
+  final booked = [
+    for (final thread in messagesThreads.where((t) => t.eventId == 'trivia'))
+      HostMessageThread(
+        personId: thread.personId,
+        name: thread.name,
+        preview: thread.preview,
+        at: thread.at,
+        unread: thread.unread,
+        tonight: thread.tonight,
+        eventId: thread.eventId,
+        eventIds: const ['trivia'],
+        booked: true,
+      ),
+  ];
+  final prospective = [
+    HostMessageThread(
+      personId: 'uid:tm',
+      name: 'Tara Menon',
+      preview: 'Is the trivia okay for first timers?',
+      at: DateTime(2026, 10, 25, 12),
+      eventId: 'trivia',
+      eventIds: const ['trivia'],
+      booked: false,
+    ),
+  ];
+  return HostMessagesState(
+    status: HostMessagesStatus.ready,
+    scope: messagesEventScope,
+    segment: segment,
+    scopes: HostMessagesScopes(events: [composeEvent]),
+    threads: !withThreads
+        ? const []
+        : segment == HostInboxAudienceSegment.booked
+        ? booked
+        : prospective,
+    bookedCount: withThreads ? booked.length : 0,
+    prospectiveCount: withThreads ? prospective.length : 0,
+    unreadCount: 2,
+    automationsOn: 6,
+    automationsSent: 1204,
+  );
+}
+
+/// Messages narrowed to General inquiries: the conversations about no
+/// event.
+HostMessagesState messagesGeneralState() => HostMessagesState(
+  status: HostMessagesStatus.ready,
+  scope: const HostInboxScope.general(),
+  scopes: HostMessagesScopes(events: [composeEvent]),
+  threads: messagesThreads.where((t) => t.eventId == null).toList(),
+  unreadCount: 1,
+  automationsOn: 6,
+  automationsSent: 1204,
+);
+
+/// Messages with nothing to show yet.
+const messagesEmptyState = HostMessagesState(
+  status: HostMessagesStatus.ready,
+  automationsOn: 6,
+  automationsSent: 0,
+);
+
+/// Messages that could not be read, with [error] as the reason.
+HostMessagesState messagesErrorState(Object error) =>
+    HostMessagesState(status: HostMessagesStatus.error, error: error);
+
+final _sendsAt = DateTime(2026, 10, 27, 18);
+
+/// Sends: last night's announcement to the booked guests and one personal
+/// WhatsApp handoff waiting to be marked as sent.
+final sendsState = HostSendsState(
+  history: LivePages(
+    items: [
+      HostAnnouncementSendSummary(
+        broadcastId: 'broadcast-1',
+        eventId: composeEvent.id,
+        eventName: 'Tuesday Trivia Night',
+        audience: 'booked',
+        recipientCount: 24,
+        sentAt: _sendsAt,
+        partialFailure: false,
+        activityAt: _sendsAt,
+      ),
+    ],
+    hasMore: false,
+  ),
+  historyStatus: HostSendsReadStatus.ready,
+  tasks: LivePages(
+    items: [
+      HostManualSendTask(
+        organizerId: peopleOrganizer.id,
+        taskId: 'task-1',
+        contactId: 'contact-rk',
+        displayName: 'Rhea Kapoor',
+        status: HostManualSendTaskStatus.handoffOpened,
+        active: true,
+        revision: 1,
+        phoneE164: '+919800000001',
+        prefillText: 'See you tonight',
+        openCount: 1,
+        createdAt: _sendsAt,
+        updatedAt: _sendsAt,
+        openedAt: _sendsAt,
+        expiresAt: _sendsAt.add(const Duration(days: 30)),
+      ),
+    ],
+    hasMore: false,
+  ),
+  tasksStatus: HostSendsReadStatus.ready,
+  quota: 2,
+  quotaStatus: HostSendsReadStatus.ready,
 );

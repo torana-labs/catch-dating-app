@@ -18,6 +18,41 @@ extension on DoorFilter {
   };
 }
 
+/// Who a phone from the staff work list is at the door.
+enum DoorRole { manager, staff }
+
+/// What this phone may do at the door. An organizer manager does
+/// everything; event staff do what their grant allows. The server checks
+/// every command again, so this only hides what would be refused.
+@immutable
+class DoorAccess {
+  const DoorAccess({
+    this.checkIn = true,
+    this.reviewClaims = true,
+    this.manage = true,
+    this.role,
+    this.until,
+  });
+
+  /// Check in, undo and scan tickets.
+  final bool checkIn;
+
+  /// Approve or reject web guests asking to be matched to a name.
+  final bool reviewClaims;
+
+  /// Walk-ins, letting in, offering places and the guest labels from the
+  /// organizer audience: the part of the door only managers have.
+  final bool manage;
+
+  /// Who this phone is at the door when it came through the staff work
+  /// list; null on the door a host opens from the event, which shows no
+  /// access line.
+  final DoorRole? role;
+
+  /// When an event staff grant ends; null for a manager.
+  final DateTime? until;
+}
+
 /// Everything the door body shows, as plain values.
 @immutable
 class DoorState {

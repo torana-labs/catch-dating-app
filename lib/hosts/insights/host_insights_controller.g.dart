@@ -116,7 +116,9 @@ final class HostInsightsControllerFamily extends $Family
 /// participation roster (who booked and came), the roster view (new faces),
 /// the attendees (the faces), the reviews, the organizer's coming events,
 /// and the event's row in the cached host report (ticket sales, payments and
-/// pairs who matched). A failed or pending report leaves those figures out.
+/// pairs who matched) with its coach block, analysed by `EventSuccessCoach`
+/// with the event's playbook. A failed or pending report leaves those
+/// figures out.
 
 @ProviderFor(hostEventReportController)
 final hostEventReportControllerProvider = HostEventReportControllerFamily._();
@@ -125,7 +127,9 @@ final hostEventReportControllerProvider = HostEventReportControllerFamily._();
 /// participation roster (who booked and came), the roster view (new faces),
 /// the attendees (the faces), the reviews, the organizer's coming events,
 /// and the event's row in the cached host report (ticket sales, payments and
-/// pairs who matched). A failed or pending report leaves those figures out.
+/// pairs who matched) with its coach block, analysed by `EventSuccessCoach`
+/// with the event's playbook. A failed or pending report leaves those
+/// figures out.
 
 final class HostEventReportControllerProvider
     extends
@@ -139,7 +143,9 @@ final class HostEventReportControllerProvider
   /// participation roster (who booked and came), the roster view (new faces),
   /// the attendees (the faces), the reviews, the organizer's coming events,
   /// and the event's row in the cached host report (ticket sales, payments and
-  /// pairs who matched). A failed or pending report leaves those figures out.
+  /// pairs who matched) with its coach block, analysed by `EventSuccessCoach`
+  /// with the event's playbook. A failed or pending report leaves those
+  /// figures out.
   HostEventReportControllerProvider._({
     required HostEventReportControllerFamily super.from,
     required HostEventReportRequest super.argument,
@@ -194,13 +200,15 @@ final class HostEventReportControllerProvider
 }
 
 String _$hostEventReportControllerHash() =>
-    r'25445f688500bd12e2ef57346dd36555833a9655';
+    r'0c6cf4786fb4d27230ec094e315c4705d2b45892';
 
 /// The report for one past event, composed from its read owners: the
 /// participation roster (who booked and came), the roster view (new faces),
 /// the attendees (the faces), the reviews, the organizer's coming events,
 /// and the event's row in the cached host report (ticket sales, payments and
-/// pairs who matched). A failed or pending report leaves those figures out.
+/// pairs who matched) with its coach block, analysed by `EventSuccessCoach`
+/// with the event's playbook. A failed or pending report leaves those
+/// figures out.
 
 final class HostEventReportControllerFamily extends $Family
     with
@@ -221,7 +229,9 @@ final class HostEventReportControllerFamily extends $Family
   /// participation roster (who booked and came), the roster view (new faces),
   /// the attendees (the faces), the reviews, the organizer's coming events,
   /// and the event's row in the cached host report (ticket sales, payments and
-  /// pairs who matched). A failed or pending report leaves those figures out.
+  /// pairs who matched) with its coach block, analysed by `EventSuccessCoach`
+  /// with the event's playbook. A failed or pending report leaves those
+  /// figures out.
 
   HostEventReportControllerProvider call(HostEventReportRequest request) =>
       HostEventReportControllerProvider._(argument: request, from: this);

@@ -31,31 +31,3 @@ Widget eventSuccessStrictEventSuccessConversationCueCard(BuildContext context) {
     componentName: "EventSuccessConversationCueCard",
   );
 }
-
-@widgetbook.UseCase(
-  name: "EventSuccessReportSectionList",
-  type: EventSuccessReportSectionList,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
-)
-Widget eventSuccessStrictEventSuccessPostEventReport(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.featureBlocks,
-    componentName: "EventSuccessReportSectionList",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventSuccessRecommendationTile",
-  type: EventSuccessRecommendationTile,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
-)
-Widget eventSuccessStrictEventSuccessRecommendationTile(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.featureBlocks,
-    componentName: "EventSuccessRecommendationTile",
-  );
-}

@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
+import 'package:catch_dating_app/contexts/organizers/data/host_event_staff_repository.dart';
 import 'package:catch_dating_app/hosts/door/door_body.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
+import 'package:catch_dating_app/hosts/programmes/staff/staff_event_screen.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -22,6 +24,7 @@ Future<_Calls> _pump(
   WidgetTester tester,
   DoorState state, {
   Size size = const Size(390, 1400),
+  DoorAccess access = const DoorAccess(),
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -43,6 +46,7 @@ Future<_Calls> _pump(
             onScan: () => calls.scans++,
             onRetrySync: () => calls.retries++,
             onDiscardRefused: () => calls.discards++,
+            access: access,
           ),
         ),
       ),
@@ -164,5 +168,94 @@ void main() {
     await _pump(tester, const DoorState.loading());
 
     expect(find.byType(CatchSkeleton), findsOneWidget);
+  });
+
+  group('event staff', () {
+    HostEventOperatorAccess staff(Set<HostEventOperatorPermission> extra) =>
+        HostEventOperatorAccess(
+          eventId: doorEventId,
+          organizerId: 'org-1',
+          title: 'Trivia night',
+          startAt: doorNow,
+          endAt: doorNow.add(const Duration(hours: 3)),
+          eventStatus: 'active',
+          actorRole: HostEventOperatorRole.operator,
+          permissions: {HostEventOperatorPermission.viewRoster, ...extra},
+          grantExpiresAt: DateTime(2026, 10, 28, 1),
+        );
+
+    testWidgets('a view-only grant shows the guests without actions or the '
+        'scanner, and says who is at the door until when', (tester) async {
+      final calls = await _pump(
+        tester,
+        doorBoardState(),
+        access: doorAccessFor(staff(const {})),
+      );
+
+      expect(find.text('Dev Patel'), findsOneWidget);
+      expect(find.text('Check in'), findsNothing);
+      expect(find.byKey(const ValueKey<String>('door-scan')), findsNothing);
+      expect(find.byKey(const ValueKey<String>('door-search')), findsOneWidget);
+      expect(find.text('Event staff'), findsOneWidget);
+      expect(find.textContaining('Expires'), findsOneWidget);
+      expect(
+        find.textContaining('only the guest roster, check-in controls'),
+        findsOneWidget,
+      );
+      expect(calls.actions, isEmpty);
+    });
+
+    testWidgets('a check-in grant checks guests in and scans, but cannot let '
+        'in or offer', (tester) async {
+      final access = doorAccessFor(
+        staff(const {HostEventOperatorPermission.setAttendance}),
+      );
+      final calls = await _pump(tester, doorBoardState(), access: access);
+
+      expect(find.text('Check in'), findsNWidgets(4));
+      await tester.tap(find.byKey(const ValueKey<String>('door-scan')));
+      expect(calls.scans, 1);
+      expect(access.manage, isFalse);
+      expect(access.reviewClaims, isFalse);
+
+      await _pump(
+        tester,
+        doorBoardState(filter: DoorFilter.asked),
+        access: access,
+      );
+      expect(find.text('Zoya Merchant'), findsOneWidget);
+      expect(find.text('Let in'), findsNothing);
+    });
+
+    testWidgets('a manager from the work list gets the whole door and the '
+        'manager line', (tester) async {
+      final access = doorAccessFor(
+        HostEventOperatorAccess(
+          eventId: doorEventId,
+          organizerId: 'org-1',
+          title: 'Trivia night',
+          startAt: doorNow,
+          endAt: doorNow.add(const Duration(hours: 3)),
+          eventStatus: 'active',
+          actorRole: HostEventOperatorRole.manager,
+          permissions: HostEventOperatorPermission.values.toSet(),
+          grantExpiresAt: null,
+        ),
+      );
+      await _pump(tester, doorBoardState(), access: access);
+
+      expect(access.manage && access.checkIn && access.reviewClaims, isTrue);
+      expect(find.text('Organizer manager'), findsOneWidget);
+      expect(find.textContaining('Expires'), findsNothing);
+      expect(find.text('Check in'), findsNWidgets(4));
+    });
+
+    testWidgets('the door a host opens from the event shows no access line', (
+      tester,
+    ) async {
+      await _pump(tester, doorBoardState());
+
+      expect(find.byKey(const ValueKey<String>('door-access')), findsNothing);
+    });
   });
 }
