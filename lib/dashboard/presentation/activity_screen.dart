@@ -153,6 +153,9 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
         context.l10n.dashboardActivityScreenVisiblecopyMarkNotificationsRead;
     final activityResource =
         context.l10n.dashboardActivityScreenVisiblecopyActivityScreen;
+    // Read before the await: a failure that lands after the screen closed is
+    // still logged.
+    final logger = ref.read(errorLoggerProvider);
     try {
       await ActivityController.markAllReadMutation.run(
         ref,
@@ -161,19 +164,17 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
             .markAllRead(notifications: unread, uid: uid),
       );
     } catch (error, stackTrace) {
-      ref
-          .read(errorLoggerProvider)
-          .logAppException(
-            normalizeBackendError(
-              error,
-              stackTrace: stackTrace,
-              context: BackendErrorContext(
-                service: BackendService.local,
-                action: markReadAction,
-                resource: activityResource,
-              ),
-            ),
-          );
+      logger.logAppException(
+        normalizeBackendError(
+          error,
+          stackTrace: stackTrace,
+          context: BackendErrorContext(
+            service: BackendService.local,
+            action: markReadAction,
+            resource: activityResource,
+          ),
+        ),
+      );
     }
   }
 

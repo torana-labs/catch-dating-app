@@ -70,6 +70,9 @@ class _HostProgrammeGuestsScreenState
       final url = AppConfig.publicSiteUrl.resolve(
         '/family/${Uri.encodeComponent(link.token)}',
       );
+      // A share sheet for a screen that is gone helps nobody; the link stays
+      // issued and the next send shares it again.
+      if (!mounted) return;
       await ref
           .read(externalShareControllerProvider)
           .shareText(
