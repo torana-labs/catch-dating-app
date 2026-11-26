@@ -303,6 +303,8 @@ import 'package:widgetbook_workspace/hosts/operations/workflow_components.dart'
     as _widgetbook_workspace_hosts_operations_workflow_components;
 import 'package:widgetbook_workspace/hosts/organizer_live_guide_use_cases.dart'
     as _widgetbook_workspace_hosts_organizer_live_guide_use_cases;
+import 'package:widgetbook_workspace/hosts/organizer_messaging_use_cases.dart'
+    as _widgetbook_workspace_hosts_organizer_messaging_use_cases;
 import 'package:widgetbook_workspace/hosts/organizer_moments_use_cases.dart'
     as _widgetbook_workspace_hosts_organizer_moments_use_cases;
 import 'package:widgetbook_workspace/hosts/people_duplicates_use_cases.dart'
@@ -9589,6 +9591,56 @@ final directories = <_widgetbook.WidgetbookNode>[
                         builder:
                             _widgetbook_workspace_hosts_host_setup_claim_use_cases
                                 .hostSetupFoundStates,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Organiser',
+            children: [
+              _widgetbook.WidgetbookFolder(
+                name: 'WhatsApp Business',
+                children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'OrganizerMessagingBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Active',
+                        builder:
+                            _widgetbook_workspace_hosts_organizer_messaging_use_cases
+                                .messagingActive,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Could not load',
+                        builder:
+                            _widgetbook_workspace_hosts_organizer_messaging_use_cases
+                                .messagingError,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Not connected, web',
+                        builder:
+                            _widgetbook_workspace_hosts_organizer_messaging_use_cases
+                                .messagingNotConnected,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Verification pending',
+                        builder:
+                            _widgetbook_workspace_hosts_organizer_messaging_use_cases
+                                .messagingTesting,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'OrganizerMessagingScreen',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Signed-out scope',
+                        builder:
+                            _widgetbook_workspace_hosts_organizer_messaging_use_cases
+                                .messagingScreen,
                       ),
                     ],
                   ),

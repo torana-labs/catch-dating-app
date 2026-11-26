@@ -7,7 +7,7 @@
       "lib/routing/consumer_router.dart",
       "lib/routing/host_router.dart"
     ],
-    "routeContractSha256": "d210e1abc5512e7b2935290755a4661d30babc3e92ce04e6dcf9d029cb64431d",
+    "routeContractSha256": "651eccf2a9e563c6820805f3c0bf1b679130b9a9ab83ef690c569a82dbd23c75",
     "goRouteCount": 138,
     "shellBranchCount": 8,
     "enumRouteCount": 115,
@@ -1590,8 +1590,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostOrganizerMessagingScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostMessagingSetupScreen(organizerId:state.pathParameters['organizerId']!)",
-      "presentationTarget": "HostMessagingSetupScreen",
+      "presentationExpression": "(context,state)=>OrganizerMessagingScreen(organizerId:state.pathParameters['organizerId']!)",
+      "presentationTarget": "OrganizerMessagingScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
