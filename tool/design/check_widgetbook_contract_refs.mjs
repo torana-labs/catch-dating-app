@@ -5,10 +5,10 @@ import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {extractCallBlocks} from "../lib/dart_call_blocks.mjs";
 import {isPlannedWithoutDart} from "./component_concepts.mjs";
+import {readWidgetbookUseCases} from "./lib/widgetbook_use_cases.mjs";
 
 const componentRegistryPath = fromRepo("design/components/catch.components.json");
 const screenContractsPath = fromRepo("design/screens/catch.screens.json");
-const widgetbookDirectoriesPath = fromRepo("widgetbook/lib/main.directories.g.dart");
 const widgetbookPrimitiveContractsPath = fromRepo("widgetbook/lib/primitives/contracts");
 const requiredFoundationSpecimens = [
   {
@@ -105,13 +105,14 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
 function checkRefs({summary = false} = {}) {
   const componentRegistry = readJson(componentRegistryPath);
   const screenContracts = readJson(screenContractsPath);
-  const widgetbookSource = fs.readFileSync(widgetbookDirectoriesPath, "utf8");
-  const widgetbook = parseWidgetbookDirectories(widgetbookSource);
+  // build_runner's main.directories.g.dart isn't committed. The use cases come
+  // from the annotations; node tool/design/lib/widgetbook_use_cases.mjs
+  // --verify-generated proves they match the generator wherever it runs.
+  const widgetbook = deriveWidgetbookDirectories(readWidgetbookUseCases(repoRoot));
   const primitiveContracts = collectPrimitiveContractUseCases();
   const widgetbookSources = collectWidgetbookUseCaseSources();
 
   const errors = [
-    ...validateGeneratedWidgetbookUseCases(widgetbook, widgetbookSources),
     ...validateComponentPreviews(componentRegistry, widgetbook),
     ...validatePrimitiveContractUseCases(componentRegistry, primitiveContracts),
     ...validateFoundationSpecimens(widgetbook),
@@ -122,10 +123,9 @@ function checkRefs({summary = false} = {}) {
   if (summary || errors.length === 0) {
     console.log(
       [
-        `Widgetbook contract refs: ${relativeToRepo(widgetbookDirectoriesPath)}`,
+        "Widgetbook contract refs: widgetbook/lib @widgetbook.UseCase annotations",
         `Components: ${widgetbook.componentNames.size}`,
         `Use case builders: ${widgetbook.builderNames.size}`,
-        `Generated builder refs: ${widgetbook.builderRefs.length}`,
         `Annotated Widgetbook use cases: ${widgetbookSources.useCases.length}`,
         `Formal primitive contract previews: ${primitiveContracts.contractIds.size}`,
         `Required foundation specimens: ${requiredFoundationSpecimens.length}`,
@@ -140,39 +140,6 @@ function checkRefs({summary = false} = {}) {
     for (const error of errors) console.error(`- ${error}`);
     process.exit(1);
   }
-}
-
-function validateGeneratedWidgetbookUseCases(widgetbook, widgetbookSources) {
-  const errors = [];
-
-  for (const ref of widgetbook.builderRefs) {
-    if (!ref.sourcePath) {
-      errors.push(
-        `${relativeToRepo(widgetbookDirectoriesPath)}: generated builder ${ref.alias}.${ref.builder} has no matching widgetbook_workspace import.`
-      );
-      continue;
-    }
-
-    const sourceKey = `${ref.sourcePath}:${ref.builder}`;
-    if (widgetbookSources.useCaseKeys.has(sourceKey)) continue;
-
-    const sourceState = widgetbookSources.functionKeys.has(sourceKey)
-      ? "the function exists but is not annotated with @widgetbook.UseCase"
-      : "the function is missing";
-    errors.push(
-      `${relativeToRepo(widgetbookDirectoriesPath)}: generated builder ${ref.alias}.${ref.builder} is stale; ${sourceState} in ${ref.sourcePath}.`
-    );
-  }
-
-  for (const useCase of widgetbookSources.useCases) {
-    const generatedKey = `${useCase.sourcePath}:${useCase.builder}`;
-    if (widgetbook.generatedUseCaseKeys.has(generatedKey)) continue;
-    errors.push(
-      `${useCase.sourcePath}:${useCase.builder}: annotated @widgetbook.UseCase is missing from ${relativeToRepo(widgetbookDirectoriesPath)}. Run Widgetbook build_runner and fix any generator errors.`
-    );
-  }
-
-  return errors;
 }
 
 function validateComponentPreviews(componentRegistry, widgetbook) {
@@ -305,7 +272,7 @@ export function validateGeometrySpecimens(widgetbook, widgetbookSources) {
     }
     if (!widgetbook.generatedUseCaseKeys.has(sourceKey)) {
       errors.push(
-        `geometry.${slug(specimen.component)}: required geometry use case is missing from generated Widgetbook directories.`
+        `geometry.${slug(specimen.component)}: required geometry use case is missing from the Widgetbook use-case annotations.`
       );
     }
   }
@@ -339,30 +306,11 @@ function collectPreviewRefs(screenContracts) {
   return refs;
 }
 
-function parseWidgetbookDirectories(source) {
-  const importAliases = parseWidgetbookWorkspaceImports(source);
-  const builderRefs = [
-    ...source.matchAll(/builder:\s*([A-Za-z0-9_]+)\s*\.\s*([A-Za-z0-9_]+),/gu),
-  ].map((match) => ({
-    alias: match[1],
-    builder: match[2],
-    sourcePath: importAliases.get(match[1]) ?? null,
-  }));
-  const generatedUseCaseKeys = new Set(
-    builderRefs
-      .filter((ref) => ref.sourcePath)
-      .map((ref) => `${ref.sourcePath}:${ref.builder}`)
-  );
-  const componentNames = new Set(
-    [...source.matchAll(/WidgetbookComponent\(\s*name: '([^']+)'/gu)].map(
-      (match) => match[1]
-    )
-  );
-  const useCaseNames = new Set(
-    [...source.matchAll(/WidgetbookUseCase\(\s*name: '([^']+)'/gu)].map(
-      (match) => match[1]
-    )
-  );
+export function deriveWidgetbookDirectories(useCases) {
+  const builderRefs = useCases.map(({builder, sourcePath}) => ({builder, sourcePath}));
+  const generatedUseCaseKeys = new Set(builderRefs.map((ref) => `${ref.sourcePath}:${ref.builder}`));
+  const componentNames = new Set(useCases.map((useCase) => useCase.component));
+  const useCaseNames = new Set(useCases.map((useCase) => useCase.name));
   const builderNames = new Set(builderRefs.map((ref) => ref.builder));
   const acceptedPreviewIds = new Set(builderNames);
 
@@ -383,16 +331,6 @@ function parseWidgetbookDirectories(source) {
     generatedUseCaseKeys,
     acceptedPreviewIds,
   };
-}
-
-function parseWidgetbookWorkspaceImports(source) {
-  const imports = new Map();
-  for (const match of source.matchAll(
-    /import\s+'package:widgetbook_workspace\/([^']+)'\s+as\s+([A-Za-z0-9_]+);/gu
-  )) {
-    imports.set(match[2], `widgetbook/lib/${match[1]}`);
-  }
-  return imports;
 }
 
 function collectWidgetbookUseCaseSources() {

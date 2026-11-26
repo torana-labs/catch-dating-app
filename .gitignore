@@ -157,6 +157,10 @@ apps/host/lib/catch_ui_lints_probe
 /packages/l10n/lib/generated/app_localizations.dart
 /packages/l10n/lib/generated/app_localizations_en.dart
 
+# Widgetbook's directory tree: build_runner output (cd widgetbook && dart run
+# build_runner build). Node checks read the @widgetbook.UseCase annotations.
+/widgetbook/lib/main.directories.g.dart
+
 # Route and widget catalog inventories: derived from live source by the checks
 # that read them; --update/--write put a copy under build/generated/.
 /tool/ui_capture/route_inventory.json

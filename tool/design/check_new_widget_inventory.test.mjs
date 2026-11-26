@@ -162,6 +162,7 @@ test("new-widget gate uses exact registry and Widgetbook identities without read
     "tool/design/lib/new_widget_inventory_declarations.mjs",
     "tool/design/lib/owned_composition_renderers.mjs",
     "tool/design/lib/production_widget_roots.mjs",
+    "tool/design/lib/widgetbook_use_cases.mjs",
   ]) {
     fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
     fs.copyFileSync(path.join(repoRoot, file), path.join(root, file));
@@ -179,9 +180,12 @@ test("new-widget gate uses exact registry and Widgetbook identities without read
   };
   const sourceFile = "packages/catch_ui/lib/src/components/catch_button.dart";
   write(sourceFile, "class CatchButton extends StatelessWidget { Widget build(BuildContext context) => const SizedBox(); }\n");
-  const widgetbookFile = "widgetbook/lib/main.directories.g.dart";
+  // Widgetbook coverage comes from @widgetbook.UseCase annotations.
+  const widgetbookFile = "widgetbook/lib/use_cases.dart";
+  const useCases = (...types) => types.map((type, index) =>
+    `@widgetbook.UseCase(name: 'States', type: ${type})\nWidget useCase${index}(BuildContext context) => const SizedBox();\n`).join("");
   const registryFile = "design/components/catch.components.json";
-  write(widgetbookFile, "WidgetbookComponent(name: 'CatchButton', useCases: [])");
+  write(widgetbookFile, useCases("CatchButton"));
   const registry = {components: [{dart: {symbol: "CatchButton", file: sourceFile}}]};
   write(registryFile, JSON.stringify(registry));
   const run = () => spawnSync(process.execPath,
@@ -207,12 +211,12 @@ test("new-widget gate uses exact registry and Widgetbook identities without read
 
   registry.components[0].dart.file = sourceFile;
   write(registryFile, JSON.stringify(registry));
-  write(widgetbookFile, "WidgetbookComponent(name: 'CatchOtherButton', useCases: [])");
+  write(widgetbookFile, useCases("CatchOtherButton"));
   const missingPreview = run();
   assert.equal(missingPreview.status, 1);
   assert.deepEqual(JSON.parse(missingPreview.stdout).addedWidgets[0].issues, ["missing-widgetbook"]);
 
-  write(widgetbookFile, "WidgetbookComponent(name: 'CatchButton', useCases: [])\nWidgetbookComponent(name: 'ProfilePanel', useCases: [])");
+  write(widgetbookFile, useCases("CatchButton", "ProfilePanel"));
   const featureFile = "lib/profile/presentation/profile.dart";
   write(featureFile, "class ProfilePanel extends StatelessWidget {}\n");
   const invalidFeature = run();
@@ -222,7 +226,7 @@ test("new-widget gate uses exact registry and Widgetbook identities without read
   ["noncanonical-feature-widget-name", "noncanonical-feature-widget-file"]);
   fs.rmSync(path.join(root, featureFile));
   write("lib/profile/presentation/profile_section.dart", "class ProfileSection extends StatelessWidget {}\n");
-  write(widgetbookFile, "WidgetbookComponent(name: 'CatchButton', useCases: [])\nWidgetbookComponent(name: 'ProfileSection', useCases: [])");
+  write(widgetbookFile, useCases("CatchButton", "ProfileSection"));
   const validFeature = run();
   assert.equal(validFeature.status, 0, validFeature.stderr);
   assert.equal(JSON.parse(validFeature.stdout).summary.coveredNewWidgets, 2);
@@ -232,8 +236,7 @@ test("new-widget gate uses exact registry and Widgetbook identities without read
   registry.components[0].aliases = ["PrimaryButton"];
   write(registryFile, JSON.stringify(registry));
   write("lib/profile/presentation/primary_button.dart", "class PrimaryButton extends StatelessWidget {}\n");
-  write(widgetbookFile, "WidgetbookComponent(name: 'CatchButton', useCases: [])\n" +
-    "WidgetbookComponent(name: 'ProfileSection', useCases: [])\nWidgetbookComponent(name: 'PrimaryButton', useCases: [])");
+  write(widgetbookFile, useCases("CatchButton", "ProfileSection", "PrimaryButton"));
   const duplicate = run();
   assert.equal(duplicate.status, 1);
   const added = JSON.parse(duplicate.stdout).addedWidgets.find(({name}) => name === "PrimaryButton");
@@ -253,6 +256,7 @@ test("context domain and data layers stay out of the new-widget inventory", (t) 
     "tool/design/lib/new_widget_inventory_declarations.mjs",
     "tool/design/lib/owned_composition_renderers.mjs",
     "tool/design/lib/production_widget_roots.mjs",
+    "tool/design/lib/widgetbook_use_cases.mjs",
   ]) {
     fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
     fs.copyFileSync(path.join(repoRoot, file), path.join(root, file));
@@ -268,7 +272,6 @@ test("context domain and data layers stay out of the new-widget inventory", (t) 
     fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
     fs.writeFileSync(path.join(root, file), text);
   };
-  write("widgetbook/lib/main.directories.g.dart", "");
   write("design/components/catch.components.json", JSON.stringify({components: []}));
   const helper = "Widget eventBanner() => const SizedBox();\n";
   write("lib/contexts/events/domain/event_banner.dart", helper);
@@ -297,6 +300,7 @@ test("a scaffolded screen under an app package passes with no use case, and a ca
     "tool/design/lib/new_widget_inventory_declarations.mjs",
     "tool/design/lib/owned_composition_renderers.mjs",
     "tool/design/lib/production_widget_roots.mjs",
+    "tool/design/lib/widgetbook_use_cases.mjs",
   ]) {
     fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
     fs.copyFileSync(path.join(repoRoot, file), path.join(root, file));
@@ -312,7 +316,6 @@ test("a scaffolded screen under an app package passes with no use case, and a ca
     fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
     fs.writeFileSync(path.join(root, file), text);
   };
-  write("widgetbook/lib/main.directories.g.dart", "");
   write("design/components/catch.components.json", JSON.stringify({components: []}));
   write("apps/host/lib/today/today_screen.dart",
     "class TodayScreen extends ConsumerWidget { const TodayScreen({super.key}); Widget build(BuildContext context, WidgetRef ref) => const TodayBody(); }\n");

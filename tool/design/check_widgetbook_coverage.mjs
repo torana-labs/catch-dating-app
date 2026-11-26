@@ -5,6 +5,7 @@ import path from "node:path";
 import {screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 import {buildWidgetClassification} from "./generate_widget_classification.mjs";
+import {widgetbookComponentNames} from "./lib/widgetbook_use_cases.mjs";
 
 const args = process.argv.slice(2);
 const writeIndex = args.indexOf("--write");
@@ -297,15 +298,7 @@ function parseWidgetSourceLine(line) {
 }
 
 function parseWidgetbookComponentNames() {
-  const source = fs.readFileSync(
-    fromRepo("widgetbook/lib/main.directories.g.dart"),
-    "utf8",
-  );
-  return new Set(
-    [...source.matchAll(/WidgetbookComponent\(\s*name:\s*'([^']+)'/gu)].map(
-      (match) => match[1],
-    ),
-  );
+  return widgetbookComponentNames();
 }
 
 function loadDecisionLedger(path) {
