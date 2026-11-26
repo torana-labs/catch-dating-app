@@ -30,8 +30,6 @@ export {
   createOrganizerContact,
   createOrganizerContactNote,
   exportOrganizerContacts,
-  getOrganizerContactDetail,
-  listOrganizerContacts,
   mutateOrganizerContact,
   mutateOrganizerContactNote,
   recordOrganizerContactOutreach,
@@ -39,7 +37,6 @@ export {
 export {resolveOrganizerCommunicationPlan} from
   "./organizerCommunicationPlans";
 export {
-  getOrganizerApplicationDetail,
   importOrganizerApplications,
   listOrganizerApplications,
   previewOrganizerApplicationImport,
@@ -50,8 +47,6 @@ export {
   createOrganizerForm,
   deleteOrganizerFormDraft,
   duplicateOrganizerForm,
-  getOrganizerFormEditor,
-  listOrganizerFormTemplates,
   publishOrganizerForm,
   setOrganizerFormLifecycle,
   updateOrganizerFormDraft,
@@ -62,14 +57,12 @@ export {
   createOrganizerFormAssetIntent,
   createOrganizerFormShareLink,
   finalizeOrganizerFormAsset,
-  getOrganizerFormShareAssets,
   getPublicOrganizerForm,
   saveOrganizerFormResponseDraft,
   submitOrganizerFormResponse,
   withdrawOrganizerFormResponse,
 } from "./organizerFormResponses";
 export {
-  getOrganizerFormAnalytics,
   getOrganizerFormResponseDetail,
   listOrganizerFormResponses,
 } from "./organizerFormOperations";
@@ -85,7 +78,6 @@ export {
 } from "./organizerFormConversions";
 export {
   createOrganizerFormAutomation,
-  listOrganizerFormAutomationRuns,
   onOrganizerFormResponseAutomated,
   onOrganizerApplicationAutomated,
   onOrganizerAttendanceAutomated,
@@ -97,18 +89,15 @@ export {
   unmergeOrganizerContacts,
 } from "./organizerContactMerges";
 export {
-  listOrganizerContactMergeCandidates,
   reviewOrganizerContactMergeCandidate,
 } from "./organizerContactMergeReview";
 export {
   resolveOrganizerAudienceMembers,
   archiveOrganizerSavedAudience,
-  listOrganizerSavedAudiences,
   previewOrganizerSavedAudience,
   upsertOrganizerSavedAudience,
 } from "./organizerSavedAudiences";
 export {
-  listOrganizerManualSendTasks,
   markOrganizerManualSendTask,
   openOrganizerManualSendTask,
   prepareOrganizerManualSendTask,
@@ -171,4 +160,3 @@ export {promoteFormCommunicationIntent} from
   "./organizerFormConsentPromotion";
 export {updateOrganizerEventSetupDefaults}
   from "./eventSetupDefaults/callables";
-export {listMyOrganizerJourneys} from "./organizerJourney";

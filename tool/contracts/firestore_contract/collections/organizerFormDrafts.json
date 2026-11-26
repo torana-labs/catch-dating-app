@@ -15,7 +15,6 @@
   "exportedFunctions": [
     "createOrganizerForm",
     "updateOrganizerFormDraft",
-    "getOrganizerFormEditor",
     "validateOrganizerFormDraft",
     "publishOrganizerForm",
     "duplicateOrganizerForm",

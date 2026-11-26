@@ -1757,11 +1757,6 @@ export const updateOrganizerFormDraft = onCall(
   (request) => updateOrganizerFormDraftHandler(request)
 );
 
-export const getOrganizerFormEditor = onCall(
-  appCheckCallableOptionsWithLimits(organizerFormCallableLimits),
-  (request) => getOrganizerFormEditorHandler(request)
-);
-
 export const validateOrganizerFormDraft = onCall(
   appCheckCallableOptionsWithLimits(organizerFormCallableLimits),
   (request) => validateOrganizerFormDraftHandler(request)
@@ -1790,7 +1785,3 @@ export const deleteOrganizerFormDraft = onCall(
   (request) => deleteOrganizerFormDraftHandler(request)
 );
 
-export const listOrganizerFormTemplates = onCall(
-  appCheckCallableOptionsWithLimits(organizerFormCallableLimits),
-  (request) => listOrganizerFormTemplatesHandler(request)
-);

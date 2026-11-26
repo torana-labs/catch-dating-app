@@ -1818,7 +1818,3 @@ export const createOrganizerFormShareLink = onCall(
   (request) => createOrganizerFormShareLinkHandler(request)
 );
 
-export const getOrganizerFormShareAssets = onCall(
-  appCheckCallableOptionsWithLimits(publicCallableLimits),
-  (request) => getOrganizerFormShareAssetsHandler(request)
-);

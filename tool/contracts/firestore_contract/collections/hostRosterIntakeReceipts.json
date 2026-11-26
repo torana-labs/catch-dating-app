@@ -8,14 +8,13 @@
   "rulesTestNames": [
     "keeps Host roster intake sessions and receipts server-only"
   ],
-  "owner": "manageHostRosterIntake callable",
+  "owner": "none since manageHostRosterIntake retired (#2174)",
   "writerContext": "bookings",
   "read": "server only; exact replay receipt returned through manager callable",
   "write": "server only; atomically created with canonical roster import",
-  "exportedFunctions": [
-    "manageHostRosterIntake"
-  ],
+  "exportedFunctions": [],
   "migrationNotes": [
-    "Separate bounded receipt avoids duplicating the reviewed payload into the session document."
+    "Separate bounded receipt avoids duplicating the reviewed payload into the session document.",
+    "manageHostRosterIntake, its only writer, was retired in Nov 2026 after the Host 1.0.6 floor raise (#2174); nothing writes or reads this collection now, and its retirement follows with the unread-collection cleanup."
   ]
 }

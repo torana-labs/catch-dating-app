@@ -59,7 +59,6 @@ import {
   type ProgramInboxDeps,
 } from "./access";
 import {
-  getProgramAssistantSettingsHandler,
   resolveProgramSender,
   updateProgramAssistantSettingsHandler,
 } from "./assistantSettings";
@@ -258,10 +257,6 @@ export async function sendProgramWhatsappReplyHandler(
 
 const callableLimits = {timeoutSeconds: 60, maxInstances: 20};
 
-export const listProgramWhatsappThreads = onCall(
-  appCheckCallableOptionsWithLimits(callableLimits),
-  (request) => listProgramWhatsappThreadsHandler(request));
-
 export const markProgramWhatsappThreadRead = onCall(
   appCheckCallableOptionsWithLimits(callableLimits),
   (request) => markProgramWhatsappThreadReadHandler(request));
@@ -283,10 +278,6 @@ export const setProgramWhatsappThreadHandling = onCall(
 export const upsertProgramWhatsappCannedReply = onCall(
   appCheckCallableOptionsWithLimits(callableLimits),
   (request) => upsertProgramWhatsappCannedReplyHandler(request));
-
-export const getProgramAssistantSettings = onCall(
-  appCheckCallableOptionsWithLimits(callableLimits),
-  (request) => getProgramAssistantSettingsHandler(request));
 
 export const updateProgramAssistantSettings = onCall(
   appCheckCallableOptionsWithLimits(callableLimits),

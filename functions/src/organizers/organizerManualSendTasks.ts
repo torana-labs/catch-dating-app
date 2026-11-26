@@ -822,10 +822,6 @@ export const prepareOrganizerManualSendTask = onCall(
   appCheckCallableOptionsWithLimits(manualTaskCallableLimits),
   (request) => prepareOrganizerManualSendTaskHandler(request),
 );
-export const listOrganizerManualSendTasks = onCall(
-  appCheckCallableOptionsWithLimits(manualTaskCallableLimits),
-  (request) => listOrganizerManualSendTasksHandler(request),
-);
 export const openOrganizerManualSendTask = onCall(
   appCheckCallableOptionsWithLimits(manualTaskCallableLimits),
   (request) => openOrganizerManualSendTaskHandler(request),
