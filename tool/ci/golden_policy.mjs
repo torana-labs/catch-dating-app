@@ -24,6 +24,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {isNightlyRun} from "./ci_nightly.mjs";
 
 export const FAILURE_TITLE = "Golden or capture failure";
 export const DRIFT_TITLE = "Golden baselines drifted";
@@ -76,7 +77,7 @@ export const owedFromFailureIssue = (texts) => latestRecord(texts, FAILURE_MARKE
 export const suitesFromDriftIssue = (texts) => latestRecord(texts, DRIFT_MARKER, (value) => names(value.suites))?.suites ?? null;
 
 const link = (job) => (job.html_url ? `[${job.name}](${job.html_url})` : job.name);
-const mainRun = (run) => ["push", "schedule"].includes(run?.event) && run?.head_branch === "main" &&
+const mainRun = (run) => (run?.event === "push" || isNightlyRun(run)) && run?.head_branch === "main" &&
   SHA.test(String(run?.head_sha ?? ""));
 
 /**

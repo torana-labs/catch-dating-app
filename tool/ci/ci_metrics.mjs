@@ -23,10 +23,13 @@ import assert from "node:assert/strict";
 import {execFile, spawnSync} from "node:child_process";
 import {promisify} from "node:util";
 import {fileURLToPath} from "node:url";
+import {isNightlyRun} from "./ci_nightly.mjs";
 
 export const ISSUE_TITLE = "Weekly CI metrics";
 export const REQUIRED_CI_JOB = "Required CI";
+// "schedule" is the nightly's row: the dispatched nightly (isNightlyRun) counts there too.
 const EVENTS = ["pull_request", "merge_group", "push", "schedule"];
+const eventOf = (run) => (isNightlyRun(run) ? "schedule" : run.event);
 const FOOTER = "\n\n---\n_Posted by the CI metrics workflow (tool/ci/ci_metrics.mjs)._";
 const MARKER = /<!-- ci-metrics:(\{.*?\}) -->/su;
 // A main push run that reused the merge queue's result runs only its plan and
@@ -107,7 +110,7 @@ export function summarize({runs, jobsByRun, mergedPullRequests}) {
   const events = {};
   const allLatestJobs = [];
   for (const event of EVENTS) {
-    const counted = runs.filter((run) => run.event === event && run.status === "completed" &&
+    const counted = runs.filter((run) => eventOf(run) === event && run.status === "completed" &&
       !["cancelled", "skipped"].includes(run.conclusion));
     const answers = [];
     const linux = [];

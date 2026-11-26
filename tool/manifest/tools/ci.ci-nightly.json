@@ -1,0 +1,30 @@
+{
+  "id": "ci:ci-nightly",
+  "category": "ci",
+  "path": "tool/ci/ci_nightly.mjs",
+  "command": "node tool/ci/ci_nightly.mjs",
+  "surface": "remote-read",
+  "checkSafety": "local-readonly",
+  "status": "active",
+  "description": "Once-a-day gate for the CI nightly (owner decision, 26 Nov 2026): ci-nightly.yml wakes after each push CI run on main and on its fallback cron, and dispatches ci.yml on main with nightly: true only when no wake has today (the ci-nightly-<date> marker artifact or a CI nightly run already exists) and only from 02:00 UTC. Also exports isNightlyRun and nightlyRuns, which every nightly-only consumer uses to recognise the dispatched nightly (titled CI nightly) and the scheduled ones from before. Reads the Actions API and writes dispatch, day, marker and reason to GITHUB_OUTPUT.",
+  "checks": [
+    "node --check tool/ci/ci_nightly.mjs",
+    "node --test tool/ci/ci_nightly.test.mjs"
+  ],
+  "impactPaths": [
+    ".github/workflows/ci-nightly.yml",
+    ".github/workflows/ci.yml",
+    ".github/workflows/main-red-alert.yml",
+    ".github/workflows/marketing-captures.yml",
+    "tool/ci/ci_nightly.test.mjs",
+    "tool/ci/daily_once_gate.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "role": "finder",
+  "runbook": "docs/release_operations.md#once-a-day-reports"
+}

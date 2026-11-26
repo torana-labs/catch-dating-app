@@ -146,7 +146,10 @@ test("the selection-miss job reads only main's failed nightlies and can only wri
   assert.match(workflow, /^permissions: \{\}$/mu);
   const job = workflow.slice(workflow.indexOf("\n  selection-miss:\n"));
   assert.ok(job.length > 1, "main-red-alert.yml has a selection-miss job");
-  assert.match(job, /if: \$\{\{ github\.event\.workflow_run\.head_branch == 'main' && github\.event\.workflow_run\.event == 'schedule' && github\.event\.workflow_run\.conclusion == 'failure' \}\}/u);
+  // The nightly: dispatched by ci-nightly.yml and titled "CI nightly" since 26 Nov 2026, scheduled before.
+  assert.ok(job.includes("if: ${{ github.event.workflow_run.head_branch == 'main' && (github.event.workflow_run.event == 'schedule' || " +
+    "(github.event.workflow_run.event == 'workflow_dispatch' && github.event.workflow_run.display_title == 'CI nightly')) && " +
+    "github.event.workflow_run.conclusion == 'failure' }}"), "selection-miss runs on a failed nightly only");
   assert.match(job, /permissions:\n\s+actions: read\n\s+contents: read\n\s+issues: write\n/u);
   assert.doesNotMatch(job, /contents: write|pull-requests: write|actions: write/u);
   assert.match(job, /ref: \$\{\{ github\.event\.workflow_run\.head_sha \}\}/u);
