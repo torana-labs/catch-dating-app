@@ -64,7 +64,10 @@ test("a Catch user's paid admission is also their app booking", async () => {
   assert.equal(participation?.status, "signedUp");
   assert.equal(participation?.paymentId, h.paymentId);
   assert.equal(participation?.genderAtSignup, "woman");
-  assert.equal(participation?.cohortAtSignup, "womenInterestedInMen");
+  // Organisers read the booking, so the cohort is kept privately (#2493).
+  assert.equal(Object.hasOwn(participation ?? {}, "cohortAtSignup"), false);
+  assert.equal(h.store.get(`eventBookingPrivateFacts/${eventId}_${uid}`)
+    ?.cohortAtSignup, "womenInterestedInMen");
   const event = h.store.get(`events/${eventId}`)!;
   assert.equal(event.bookedCount, 1);
   assert.deepEqual(event.cohortCounts, {womenInterestedInMen: 4});
