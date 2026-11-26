@@ -26,7 +26,9 @@ import 'package:go_router/go_router.dart';
 /// no other hotels.
 ///
 /// It reads the hotel's inbound board live (long lists open 25 rows at a
-/// time) and its room board.
+/// time) and its room board. Departures and Room list open the hotel's
+/// read-only departures and allocated rooms (`view=departures`,
+/// `view=rooms`).
 /// Arrived records a car reaching the hotel (`markProgramTripArrived`);
 /// Give keys checks the guest in (`upsertProgramStay`).
 class StaffHotelDeskScreen extends ConsumerStatefulWidget {
@@ -125,6 +127,20 @@ class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
                   'hotelId': widget.hotelId,
                 },
                 queryParameters: {'view': 'departures'},
+              ),
+            ),
+            CatchButton(
+              key: const ValueKey<String>('staff-hotel-room-list'),
+              label: l10n.hostStaffHotelRoomList,
+              size: CatchButtonSize.sm,
+              variant: CatchButtonVariant.secondary,
+              onPressed: () => context.pushNamed(
+                Routes.hostWorkHotelScreen.name,
+                pathParameters: {
+                  'programId': widget.programId,
+                  'hotelId': widget.hotelId,
+                },
+                queryParameters: {'view': 'rooms'},
               ),
             ),
           ],
