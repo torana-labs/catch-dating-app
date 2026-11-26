@@ -8,7 +8,9 @@ export function requireCatchBookingAuthority(event: EventDocument): void {
     throw new HttpsError("failed-precondition",
       "This event is not open for public booking.");
   }
-  if (event.eventOrigin?.bookingAuthority !== "catch") {
+  // Tickets sold elsewhere keep Catch booking closed, as on the website.
+  if (event.eventOrigin?.bookingAuthority !== "catch" ||
+      event.externalBooking !== undefined) {
     throw new HttpsError(
       "failed-precondition",
       "Booking for this event stays with the Host's original platform."
