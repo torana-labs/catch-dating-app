@@ -11,26 +11,6 @@ import 'fixtures.dart';
 import 'preview.dart';
 
 @widgetbook.UseCase(
-  name: 'Defaults states',
-  type: OrganizerHostDefaultsStep,
-  path: '[P1 product surfaces]/Host create club',
-)
-Widget organizerHostDefaultsStepCatalogStates(BuildContext context) {
-  return const WidgetbookPageCatalogFrame(
-    title: 'OrganizerHostDefaultsStep',
-    contractId: 'component.host.club.host_defaults_step',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'prefilled',
-        child: WidgetbookHostDeviceFrame(
-          child: _OrganizerHostDefaultsStepFrame(),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Policy defaults states',
   type: OrganizerPolicyDefaultsCard,
   path: '[P1 product surfaces]/Host create club',
@@ -75,30 +55,6 @@ Widget createOrganizerStepHeaderCatalogStates(BuildContext context) {
       ),
     ],
   );
-}
-
-class _OrganizerHostDefaultsStepFrame extends StatefulWidget {
-  const _OrganizerHostDefaultsStepFrame();
-
-  @override
-  State<_OrganizerHostDefaultsStepFrame> createState() =>
-      _OrganizerHostDefaultsStepFrameState();
-}
-
-class _OrganizerHostDefaultsStepFrameState
-    extends State<_OrganizerHostDefaultsStepFrame> {
-  final _formKey = GlobalKey<FormState>();
-  var _defaults = widgetbookOrganizer.hostDefaults;
-
-  @override
-  Widget build(BuildContext context) {
-    return OrganizerHostDefaultsStep(
-      formKey: _formKey,
-      defaults: _defaults,
-      currencyCode: currencyCodeForCityName(widgetbookOrganizer.location),
-      onChanged: (defaults) => setState(() => _defaults = defaults),
-    );
-  }
 }
 
 class _OrganizerPolicyDefaultsCardFrame extends StatefulWidget {

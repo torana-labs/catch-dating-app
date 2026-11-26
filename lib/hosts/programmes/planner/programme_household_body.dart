@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/parts/programme_household_row.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/parts/programme_reply_badge.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
@@ -8,7 +9,8 @@ import 'package:flutter/widgets.dart';
 
 /// One household in board order: its side, groups, size and whether it
 /// has replied, the person to call, each member's answer for each
-/// function, and Send their link again.
+/// function (tap a member to change their answers), and Send their link
+/// again.
 class HostProgrammeHouseholdBody extends StatelessWidget {
   const HostProgrammeHouseholdBody({
     super.key,
@@ -17,6 +19,7 @@ class HostProgrammeHouseholdBody extends StatelessWidget {
     required this.onCall,
     required this.onSendLink,
     required this.onRetry,
+    this.onEditMember,
     this.sending = false,
   });
 
@@ -27,6 +30,10 @@ class HostProgrammeHouseholdBody extends StatelessWidget {
   final ValueChanged<String> onCall;
   final VoidCallback? onSendLink;
   final VoidCallback onRetry;
+
+  /// Opens a member's answers to change them; null when they cannot be
+  /// changed (an archived programme).
+  final ValueChanged<ProgramGuestRow>? onEditMember;
 
   /// The RSVP link is being made.
   final bool sending;
@@ -115,7 +122,10 @@ class HostProgrammeHouseholdBody extends StatelessWidget {
                       programmeReplyBadge(l10n, state.reply(member, function)),
                   ],
                 ),
-                onTap: null,
+                onTap: switch (onEditMember) {
+                  final edit? => () => edit(member),
+                  null => null,
+                },
               ),
           ],
         ),

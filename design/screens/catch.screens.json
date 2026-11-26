@@ -10073,11 +10073,11 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostOrganizerAvatar"
+              "HostOrganizerSwitcherSheet"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/widgets/host_organizer_switcher_sheet.dart",
-              "symbol": "HostOrganizerAvatar"
+              "symbol": "HostOrganizerSwitcherSheet"
             },
             "currentOwner": "HostTodayHeader + HostEventsOrganizerSection + HostShellScreen",
             "targetOwner": "direct destination titles plus shell-owned organizer identity",
@@ -10096,7 +10096,7 @@
             "migration": "HostTodayHeader renders Today, organizer identity, and a capable-width date without a creation action. HostEventsOrganizerSection renders the direct Events title and New event action. HostShellScreen shows the selected organizer as the rail and sidebar header and opens HostOrganizerSwitcherSheet with haptic feedback from that header or a long press on the Organizer destination when multiple organizers are available.",
             "previewIds": [
               "hostHomeRouteStates",
-              "HostOrganizerAvatar/Navigation identity states"
+              "HostOrganizerSwitcherSheet/Long-press switcher states"
             ]
           },
           {
@@ -19599,7 +19599,7 @@
           },
           {
             "file": "lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart",
-            "symbol": "OrganizerHostDefaultsStep"
+            "symbol": "OrganizerPolicyDefaultsCard"
           }
         ],
         "mutationOwners": [
@@ -19746,7 +19746,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart",
-              "symbol": "OrganizerHostDefaultsStep"
+              "symbol": "OrganizerPolicyDefaultsCard"
             },
             "currentOwner": "CreateOrganizerScreen",
             "targetOwner": "provider-free host defaults sections",
@@ -24092,8 +24092,8 @@
         }
       ],
       "source": {
-        "file": "lib/programs/presentation/program_guests_screen.dart",
-        "symbol": "ProgramGuestsScreen"
+        "file": "lib/programs/presentation/program_guest_desk_screen.dart",
+        "symbol": "ProgramGuestDeskScreen"
       },
       "shell": {
         "owner": "host",
@@ -24119,8 +24119,8 @@
         "primary": "programGuestList",
         "files": [
           {
-            "file": "lib/programs/presentation/program_guests_screen.dart",
-            "symbol": "ProgramGuestsScreen"
+            "file": "lib/programs/presentation/program_guest_desk_screen.dart",
+            "symbol": "ProgramGuestDeskScreen"
           },
           {
             "file": "lib/contexts/programmes/data/program_setup_repository.dart",
@@ -24154,20 +24154,20 @@
           "id": "loading",
           "kind": "loading",
           "status": "implemented",
-          "source": "ProgramGuestsScreen renders the canonical loading viewport while providers resolve.",
+          "source": "ProgramGuestDeskScreen renders the canonical loading viewport while providers resolve.",
           "nextAction": "Review against program design references when they land.",
           "previewIds": [
-            "ProgramGuestsScreen/Screen states"
+            "ProgramGuestDeskScreen/Screen states"
           ]
         },
         {
           "id": "error",
           "kind": "error",
           "status": "implemented",
-          "source": "ProgramGuestsScreen renders CatchLocalizedErrorState with scoped retry.",
+          "source": "ProgramGuestDeskScreen renders CatchLocalizedErrorState with scoped retry.",
           "nextAction": "Review against program design references when they land.",
           "previewIds": [
-            "ProgramGuestsScreen/Screen states"
+            "ProgramGuestDeskScreen/Screen states"
           ]
         },
         {
@@ -24177,7 +24177,7 @@
           "source": "Household sections and unaffiliated guests render the function RSVP matrix, group chips and per-guest edit and RSVP controls.",
           "nextAction": "Review against program design references when they land.",
           "previewIds": [
-            "ProgramGuestsScreen/Screen states",
+            "ProgramGuestDeskScreen/Screen states",
             "ProgramGuestsPageBody/Body states"
           ]
         },
@@ -24188,13 +24188,13 @@
           "source": "Programs without guests render CatchEmptyState with add and import calls to action.",
           "nextAction": "Review against program design references when they land.",
           "previewIds": [
-            "ProgramGuestsScreen/Screen states",
+            "ProgramGuestDeskScreen/Screen states",
             "ProgramGuestsPageBody/Body states"
           ]
         }
       ],
       "composition": {
-        "currentLayout": "ProgramGuestsScreen composes the group ledger, household sections with per-function RSVP cells, the unaffiliated guest lane and guest, group and household dialogs through CatchRouteScaffold.",
+        "currentLayout": "ProgramGuestDeskScreen composes the group ledger, household sections with per-function RSVP cells, the unaffiliated guest lane and guest, group and household dialogs through CatchRouteScaffold.",
         "targetLayout": "The matrix stays joined on listProgramGuests and keeps household, group and RSVP writes behind the shared workspace controller.",
         "sections": [
           {
