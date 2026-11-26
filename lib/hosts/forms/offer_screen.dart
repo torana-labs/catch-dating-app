@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_setup_view.dart';
+import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_view_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/contexts/forms/data/host_application_repository.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_admission.dart';
+import 'package:catch_dating_app/hosts/create/create_route_screen.dart';
 import 'package:catch_dating_app/hosts/forms/forms_controller.dart';
 import 'package:catch_dating_app/hosts/forms/offer_body.dart';
 import 'package:catch_dating_app/hosts/forms/offer_state.dart';
@@ -12,19 +15,24 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_contr
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_admission_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_manual_payment_review_controller.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/clipboard.dart';
 import 'package:catch_platform/device/external_links.dart';
+import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/experimental/scope.dart';
+
+part 'offer_frame.dart';
 
 /// Offering one person a place at an event.
 ///
@@ -38,12 +46,30 @@ class HostOfferScreen extends ConsumerStatefulWidget {
   const HostOfferScreen({
     super.key,
     required this.organizerId,
-    required this.responseId,
+    required String this.responseId,
     this.recipientLabel,
-  });
+  }) : formId = null,
+       query = null;
+
+  /// Offering the people chosen in a response query: one offer each, for
+  /// up to 25 people, on the same event. Opened without its query (a typed
+  /// link), it says offers are not available.
+  const HostOfferScreen.query({
+    super.key,
+    required this.organizerId,
+    required String this.formId,
+    required this.query,
+  }) : responseId = null,
+       recipientLabel = null;
 
   final String organizerId;
-  final String responseId;
+  final String? responseId;
+
+  /// The form whose answers were queried, for a selection.
+  final String? formId;
+
+  /// The query whose chosen answers the offer goes to.
+  final HostResponseQueryController? query;
 
   /// The name from the answer the offer was opened from; fresh reads still
   /// decide whether this person can be offered.
@@ -57,6 +83,82 @@ class _HostOfferScreenState extends ConsumerState<HostOfferScreen> {
   String? _accountId;
   bool _accountLost = false;
 
+  /// An event made from this offer, offered as soon as it is ready.
+  HostOfferEventTarget? _created;
+  bool _creating = false;
+
+  bool _current(String accountId) =>
+      mounted &&
+      !_accountLost &&
+      _accountId == accountId &&
+      ref.read(uidProvider).asData?.value == accountId &&
+      ref.read(firebaseAuthProvider).currentUser?.uid == accountId;
+
+  /// Makes a new event, waits for its setup to be written, checks it is
+  /// still this organizer's active event and (for a selection) that the
+  /// chosen answers did not change, then offers it.
+  Future<void> _createEvent() async {
+    final account = _accountId;
+    final query = widget.query;
+    final selection = query?.selectionIntent;
+    if (_creating || account == null || !_current(account)) return;
+    final setupViews = ref.read(hostEventSetupViewReadsProvider);
+    _creating = true;
+    try {
+      final eventId = await context.pushNamed<String>(
+        Routes.hostCreateEventScreen.name,
+        pathParameters: {'organizerId': widget.organizerId},
+        extra: const HostCreateEventRouteArguments(
+          returnToResponsesOnSave: true,
+        ),
+      );
+      if (eventId == null || !_current(account)) return;
+      if (query != null &&
+          (selection == null ||
+              !await query.revalidateSelection(
+                ids: selection.ids,
+                resultHash: selection.resultHash,
+              ))) {
+        throw StateError('Response selection changed.');
+      }
+      // The server writes the new event's setup view just after create.
+      final summary = await firstCompleteSetupView(
+        setupViews.watch(organizerId: widget.organizerId, eventId: eventId),
+      );
+      if (!_current(account)) return;
+      if (summary.organizerId != widget.organizerId ||
+          summary.eventId != eventId ||
+          summary.status != 'active') {
+        throw StateError('Event changed.');
+      }
+      final current = query?.selectionIntent;
+      if (selection != null &&
+          (current?.resultHash != selection.resultHash ||
+              current!.ids.join('\u0000') != selection.ids.join('\u0000'))) {
+        throw StateError('Response selection changed.');
+      }
+      final created = HostOfferEventTarget(
+        eventId: summary.eventId,
+        name: summary.name,
+        startTime: DateTime.fromMillisecondsSinceEpoch(summary.startTimeMillis),
+        timezone: summary.timezone,
+        publicationState: 'private',
+        setupRevision: summary.setupRevision,
+      );
+      if (mounted) setState(() => _created = created);
+    } on Object catch (error) {
+      if (mounted && _current(account)) {
+        showCatchNoticeError(
+          context,
+          error,
+          errorContext: AppErrorContext.event,
+        );
+      }
+    } finally {
+      _creating = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final account = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
@@ -65,12 +167,20 @@ class _HostOfferScreenState extends ConsumerState<HostOfferScreen> {
     if (_accountId != null && (uid != _accountId || liveUid != _accountId)) {
       _accountLost = true;
     }
-    final available = !_accountLost && uid != null && uid == liveUid;
+    final available =
+        !_accountLost &&
+        uid != null &&
+        uid == liveUid &&
+        (widget.responseId != null || widget.query != null);
     if (!available) {
       final l10n = context.l10n;
       return CatchRoot(
         child: CatchScreen(
-          topBar: hostOfferTopBar(l10n, widget.recipientLabel),
+          topBar: hostOfferTopBar(
+            l10n,
+            widget.recipientLabel,
+            count: widget.query?.selectionIntent?.ids.length,
+          ),
           body: CatchPageBody(
             child: CatchEmptyState(
               icon: CatchIcons.people,
@@ -81,19 +191,21 @@ class _HostOfferScreenState extends ConsumerState<HostOfferScreen> {
       );
     }
     _accountId = uid;
+    final query = widget.query;
     final offers = (
       accountId: uid,
       organizerId: widget.organizerId,
-      sourceId: widget.responseId,
+      sourceId: query ?? widget.responseId!,
     );
     ref.watch(hostEventOfferControllerProvider(offers));
+    final created = _created;
     final scope = (
       offers: offers,
-      query: null,
+      query: query,
       responseId: widget.responseId,
-      initialEventId: null,
-      initialTargetId: null,
-      initialTargetRevision: null,
+      initialEventId: created?.eventId,
+      initialTargetId: created?.eventId,
+      initialTargetRevision: created?.setupRevision,
     );
     final gateways = ref.read(hostOfferGatewaysProvider);
     final gateway = gateways.offers;
@@ -101,9 +213,13 @@ class _HostOfferScreenState extends ConsumerState<HostOfferScreen> {
     return _HostOfferScope(
       scope: scope,
       recipient: widget.recipientLabel,
+      onCreateEvent: _createEvent,
+      creatingEvent: _creating,
       dependencies: HostEventOfferWorkspaceDependencies(
         organizerId: widget.organizerId,
         accountId: uid,
+        queryController: query,
+        initialEventTarget: created,
         responseId: widget.responseId,
         offerScope: offers,
         watchOffers: reads.watchOffers,
@@ -142,15 +258,26 @@ class _HostOfferScreenState extends ConsumerState<HostOfferScreen> {
           queryParameters: {
             ...GoRouterState.of(context).uri.queryParameters,
             'organizerId': widget.organizerId,
+            if (query != null) '_parentQueryFormId': widget.formId!,
           },
+          extra: query,
         ),
         openEventSettings: (eventId) => context.pushNamed<void>(
-          Routes.hostResponseOfferPreferencesScreen.name,
-          pathParameters: {'eventId': eventId, 'responseId': widget.responseId},
+          query == null
+              ? Routes.hostResponseOfferPreferencesScreen.name
+              : Routes.hostResponseQueryOfferPreferencesScreen.name,
+          pathParameters: {
+            'eventId': eventId,
+            if (query == null)
+              'responseId': widget.responseId!
+            else
+              'formId': widget.formId!,
+          },
           queryParameters: {
             ...GoRouterState.of(context).uri.queryParameters,
             'organizerId': widget.organizerId,
           },
+          extra: query,
         ),
         now: DateTime.now,
       ),
@@ -158,14 +285,22 @@ class _HostOfferScreenState extends ConsumerState<HostOfferScreen> {
   }
 }
 
-/// The offer's top bar: Offer a place, to whom, and Close.
-CatchTopBar hostOfferTopBar(AppLocalizations l10n, String? recipient) =>
-    CatchTopBar(
-      variant: CatchTopBarVariant.tool,
-      title: l10n.hostFormsOfferTitle,
-      kicker: recipient == null ? null : l10n.hostFormsOfferTo(name: recipient),
-      back: CatchTopBarBack(label: l10n.hostFormsClose, close: true),
-    );
+/// The offer's top bar: Offer a place, to whom (or to how many people),
+/// and Close.
+CatchTopBar hostOfferTopBar(
+  AppLocalizations l10n,
+  String? recipient, {
+  int? count,
+}) => CatchTopBar(
+  variant: CatchTopBarVariant.tool,
+  title: l10n.hostFormsOfferTitle,
+  kicker: recipient != null
+      ? l10n.hostFormsOfferTo(name: recipient)
+      : count != null
+      ? l10n.hostEventOfferChooseForRecipients(count: count)
+      : null,
+  back: CatchTopBarBack(label: l10n.hostFormsClose, close: true),
+);
 
 /// Owns the offer workspace for this route: the workspace and its
 /// dependencies are overridden here, so pending work is disposed with it.
@@ -173,11 +308,15 @@ class _HostOfferScope extends StatelessWidget {
   const _HostOfferScope({
     required this.scope,
     required this.dependencies,
+    required this.onCreateEvent,
+    required this.creatingEvent,
     this.recipient,
   });
 
   final HostEventOfferWorkspaceScope scope;
   final HostEventOfferWorkspaceDependencies dependencies;
+  final VoidCallback onCreateEvent;
+  final bool creatingEvent;
   final String? recipient;
 
   @override
@@ -194,6 +333,8 @@ class _HostOfferScope extends StatelessWidget {
       key: ValueKey(scope),
       scope: scope,
       recipient: recipient,
+      onCreateEvent: onCreateEvent,
+      creatingEvent: creatingEvent,
     ),
   );
 }
@@ -202,9 +343,17 @@ class _HostOfferScope extends StatelessWidget {
 /// workspace, the payment check and the admission, and draws the screen.
 @Dependencies([HostEventOfferWorkspaceController])
 class _HostOfferFrame extends ConsumerStatefulWidget {
-  const _HostOfferFrame({super.key, required this.scope, this.recipient});
+  const _HostOfferFrame({
+    super.key,
+    required this.scope,
+    required this.onCreateEvent,
+    required this.creatingEvent,
+    this.recipient,
+  });
 
   final HostEventOfferWorkspaceScope scope;
+  final VoidCallback onCreateEvent;
+  final bool creatingEvent;
   final String? recipient;
 
   @override
@@ -215,6 +364,10 @@ class _HostOfferFrameState extends ConsumerState<_HostOfferFrame> {
   String _reference = '';
   String _manualNote = '';
   bool _bankChecked = false;
+
+  /// The admission session already checked on open, so a new session (a
+  /// new offer revision) is checked again once.
+  HostFormAdmissionSession? _checked;
 
   HostEventOfferWorkspaceController get _workspace => ref.read(
     hostEventOfferWorkspaceControllerProvider(widget.scope).notifier,
@@ -232,7 +385,11 @@ class _HostOfferFrameState extends ConsumerState<_HostOfferFrame> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final scope = widget.scope;
-    final topBar = hostOfferTopBar(l10n, widget.recipient);
+    final topBar = hostOfferTopBar(
+      l10n,
+      widget.recipient,
+      count: scope.query?.selectionIntent?.ids.length,
+    );
     final ws = ref.watch(hostEventOfferWorkspaceControllerProvider(scope));
     final offer = ws.selectedOffer;
     final manualApplies = offer != null && _manualApplies(offer);
@@ -276,6 +433,24 @@ class _HostOfferFrameState extends ConsumerState<_HostOfferFrame> {
     final admission = session == null
         ? null
         : ref.watch(hostFormAdmissionControllerProvider(session));
+    // An offered person's place is checked as soon as their offer opens.
+    if (session != null &&
+        session != _checked &&
+        admission != null &&
+        !admission.busy &&
+        admission.preview == null &&
+        admission.pending == null &&
+        admission.receipt == null) {
+      _checked = session;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        unawaited(
+          ref
+              .read(hostFormAdmissionControllerProvider(session).notifier)
+              .review(),
+        );
+      });
+    }
     final state = _state(l10n, ws, manual, admission);
     return CatchRoot(
       child: CatchScreen(
@@ -305,293 +480,38 @@ class _HostOfferFrameState extends ConsumerState<_HostOfferFrame> {
               ? () {}
               : () => unawaited(_admit(session, state.selected?.admission)),
           onRetry: () => unawaited(_workspace.retry()),
+          onChangeEvent: _workspace.changeEvent,
+          onCreateEvent: widget.onCreateEvent,
+          onRefreshOffers: () => unawaited(_workspace.refreshOffers()),
+          onCloseExisting: _workspace.closeExisting,
         ),
         dock: _dock(l10n, ws, state, manualScope, manual),
       ),
     );
   }
 
-  HostOfferState _state(
-    AppLocalizations l10n,
-    HostEventOfferWorkspaceState ws,
-    HostManualPaymentReviewState? manual,
-    HostFormAdmissionState? admission,
-  ) {
-    String? nameOf(String? contactId) => ws.details
-        .where((detail) => detail.contactId == contactId)
-        .firstOrNull
-        ?.response
-        .identity
-        .primaryLabel;
-    final event = ws.event;
+  /// Checks the ready offer with the server, without sending it.
+  Future<void> _preview(HostEventOfferWorkspaceState ws) async {
+    final draft = ws.draft;
     final configuration = ws.configuration;
-    final draft = ws.draft;
-    final selected = ws.selectedOffer;
-    final flow = ws.offerFlow;
-    final sameDraft = draft != null && identical(flow.draft, draft);
-    final HostOfferStage stage;
-    if (event == null) {
-      stage = ws.events.isEmpty && ws.loading
-          ? HostOfferStage.loading
-          : HostOfferStage.events;
-    } else if (ws.preparing) {
-      stage = HostOfferStage.loading;
-    } else if (ws.missingContacts.isNotEmpty) {
-      stage = HostOfferStage.needsContact;
-    } else if (configuration != null &&
-        configuration.suggestedExpiresAt == null) {
-      stage = HostOfferStage.needsSettings;
-    } else if (selected != null) {
-      stage = HostOfferStage.selected;
-    } else if (draft != null && ws.commitRequestId != null) {
-      stage = HostOfferStage.review;
-    } else if (ws.personalMode && configuration != null) {
-      stage = HostOfferStage.personalLinks;
-    } else if (ws.offers.isNotEmpty) {
-      stage = HostOfferStage.existing;
-    } else {
-      stage = ws.loading ? HostOfferStage.loading : HostOfferStage.events;
-    }
-    final terms = configuration?.paymentTerms;
-    final amountMinor = terms?['expectedAmountMinor'];
-    final currency = terms?['currency'];
-    final handoff = ws.handoff;
-    return HostOfferState(
-      stage: stage,
-      recipient: widget.recipient,
-      events: [for (final target in ws.events) _event(target)],
-      canLoadMoreEvents: ws.nextEventCursor != null && event == null,
-      event: event == null ? null : _event(event),
-      missing: [
-        for (final detail in ws.missingContacts)
-          HostOfferPerson(
-            id: detail.response.responseId,
-            name: detail.response.identity.primaryLabel,
-          ),
-      ],
-      personal: [
-        for (final detail in ws.details)
-          if (detail.contactId case final contactId?)
-            HostOfferPerson(
-              id: contactId,
-              name: detail.response.identity.primaryLabel,
-            ),
-      ],
-      recipients: [
-        for (final row in draft?.rows ?? const <HostOfferRow>[])
-          nameOf(row.contactId) ?? l10n.hostFormsAnonymous,
-      ],
-      amount: amountMinor == 0
-          ? l10n.hostFormsOfferFree
-          : amountMinor is int && currency is String
-          ? formatMinorCurrency(amountMinor, currencyCode: currency)
-          : null,
-      expiresAt: draft?.rows.firstOrNull?.expiresAt,
-      sent: sameDraft && flow.status == HostOfferFlowStatus.committed,
-      sendFailed: sameDraft && flow.status == HostOfferFlowStatus.failure,
-      existing: [
-        for (final item in ws.offers)
-          HostOfferExisting(
-            item: item,
-            name: nameOf(item['contactId'] as String?),
-            status: HostOfferStatus.values
-                .where((status) => status.name == item['effectiveStatus'])
-                .firstOrNull,
-          ),
-      ],
-      selected: selected == null
-          ? null
-          : HostOfferSelected(
-              name: nameOf(selected.contactId),
-              status: selected.effectiveStatus,
-              expiresAt: selected.expiresAt,
-              message: handoff?.kind == 'prepared'
-                  ? handoff?.editableText
-                  : null,
-              blocked: handoff?.kind == 'blocked',
-              copied: ws.messageCopied,
-              openFailed: ws.handoffOpenFailed,
-              canOpenWhatsapp: handoff?.whatsappUrl != null,
-              manual: _manualApplies(selected)
-                  ? HostOfferManual(
-                      status: selected.manualPayment.status,
-                      reference: selected.manualPayment.evidenceReference,
-                      failed:
-                          manual?.error != null ||
-                          manual?.pendingMutation != null,
-                      busy: manual?.busy ?? true,
-                    )
-                  : null,
-              admission: admission == null
-                  ? null
-                  : HostOfferAdmission(
-                      phase: admission.receipt != null
-                          ? HostOfferAdmissionPhase.done
-                          : admission.pending != null
-                          ? (admission.pending!.needsReview
-                                ? HostOfferAdmissionPhase.again
-                                : HostOfferAdmissionPhase.saved)
-                          : admission.preview?.canCommit == true
-                          ? (admission.preview!.seatAlreadyOccupied == true
-                                ? HostOfferAdmissionPhase.keep
-                                : HostOfferAdmissionPhase.ready)
-                          : HostOfferAdmissionPhase.check,
-                      blocker: admission.preview?.blocker,
-                      failed: admission.error != null,
-                      busy: admission.busy,
-                    ),
-            ),
-      busy: ws.loading,
-      canCancel: ws.canCancelPreparation,
-      failed: ws.error != null,
-      stale: ws.selectionStale,
-      canRetry: !ws.hasUnresolvedCommand,
-    );
+    if (draft == null || configuration == null) return;
+    await ref
+        .read(hostEventOfferControllerProvider(widget.scope.offers).notifier)
+        .preview(
+          draft: draft,
+          now: DateTime.now(),
+          eventStartsAt: configuration.startsAt,
+        );
   }
 
-  CatchDock _dock(
-    AppLocalizations l10n,
-    HostEventOfferWorkspaceState ws,
-    HostOfferState state,
-    HostManualPaymentReviewScope? manualScope,
-    HostManualPaymentReviewState? manual,
-  ) {
-    final cancel = CatchDockAction(
-      label: state.canCancel
-          ? l10n.hostFormsOfferStop
-          : l10n.hostFormsOfferCancel,
-      onPressed: state.canCancel
-          ? _workspace.cancelPreparation
-          : () => Navigator.of(context).maybePop(),
-    );
-    final selected = state.selected;
-    final payment = selected?.manual;
-    if (manualScope != null && manual != null && payment != null) {
-      final controller = ref.read(
-        hostManualPaymentReviewControllerProvider(manualScope).notifier,
-      );
-      final busy =
-          manual.busy || manual.checkingPending || !manual.actorAvailable;
-      if (manual.pendingMutation != null) {
-        return CatchDock(
-          primary: CatchDockAction(
-            label: l10n.hostFormsTryAgain,
-            loading: busy,
-            onPressed: busy ? null : () => unawaited(controller.retry()),
-          ),
-        );
-      }
-      switch (payment.status) {
-        case HostManualPaymentStatus.none:
-          return CatchDock(
-            primary: CatchDockAction(
-              label: l10n.hostFormsOfferPaymentRecord,
-              loading: busy,
-              onPressed: busy || _reference.trim().isEmpty
-                  ? null
-                  : () => unawaited(controller.recordReference(_reference)),
-            ),
-          );
-        case HostManualPaymentStatus.evidenceSubmitted:
-          final deciding = busy || manual.pendingDecision != null;
-          return CatchDock(
-            primary: CatchDockAction(
-              label: l10n.hostFormsOfferPaymentAttest,
-              loading: busy,
-              onPressed: deciding || !_bankChecked
-                  ? null
-                  : () => unawaited(
-                      controller.review(
-                        decision: HostManualPaymentStatus.hostAttestedReceived,
-                        note: _manualNote,
-                        bankReceiptChecked: _bankChecked,
-                      ),
-                    ),
-            ),
-            secondary: CatchDockAction(
-              label: l10n.hostFormsOfferPaymentReject,
-              onPressed: deciding
-                  ? null
-                  : () => unawaited(
-                      controller.review(
-                        decision: HostManualPaymentStatus.rejected,
-                        note: _manualNote,
-                        bankReceiptChecked: _bankChecked,
-                      ),
-                    ),
-            ),
-          );
-        case HostManualPaymentStatus.hostAttestedReceived ||
-            HostManualPaymentStatus.rejected:
-          break;
-      }
-    }
-    switch (state.stage) {
-      case HostOfferStage.review:
-        return CatchDock(
-          primary: CatchDockAction(
-            label: l10n.hostFormsOfferSend,
-            loading: ws.loading,
-            onPressed: ws.loading || state.sent ? null : () => _send(ws),
-          ),
-          secondary: cancel,
-        );
-      case HostOfferStage.personalLinks:
-        return CatchDock(
-          primary: CatchDockAction(
-            label: l10n.hostFormsOfferNext,
-            loading: ws.loading,
-            onPressed: ws.loading
-                ? null
-                : () => unawaited(_workspace.previewPersonal()),
-          ),
-          secondary: cancel,
-        );
-      case HostOfferStage.selected:
-        return CatchDock(
-          primary: CatchDockAction(
-            label: l10n.hostFormsOfferDone,
-            onPressed: () => Navigator.of(context).maybePop(),
-          ),
-        );
-      case HostOfferStage.loading ||
-          HostOfferStage.events ||
-          HostOfferStage.needsContact ||
-          HostOfferStage.needsSettings ||
-          HostOfferStage.existing:
-        return CatchDock(
-          primary: CatchDockAction(label: l10n.hostFormsOfferSend),
-          secondary: cancel,
-        );
-    }
-  }
-
-  /// Previews the ready offer when it has not been checked, then commits it
-  /// under its saved request id.
-  Future<void> _send(HostEventOfferWorkspaceState ws) async {
-    final draft = ws.draft;
+  /// Sends the checked offer under its saved request id; a failed send
+  /// retries with the same id.
+  Future<void> _commit(HostEventOfferWorkspaceState ws) async {
     final requestId = ws.commitRequestId;
-    final configuration = ws.configuration;
-    if (draft == null || requestId == null || configuration == null) return;
-    final provider = hostEventOfferControllerProvider(widget.scope.offers);
-    final offers = ref.read(provider.notifier);
-    var view = ref.read(provider);
-    bool ready(HostOfferFlowView view) =>
-        identical(view.draft, draft) &&
-        (view.canCommit ||
-            view.status == HostOfferFlowStatus.failure &&
-                view.pendingRequestId == requestId);
-    if (!ready(view)) {
-      await offers.preview(
-        draft: draft,
-        now: DateTime.now(),
-        eventStartsAt: configuration.startsAt,
-      );
-      if (!mounted) return;
-      view = ref.read(provider);
-      if (!ready(view)) return;
-    }
-    await offers.commit(requestId);
+    if (requestId == null) return;
+    await ref
+        .read(hostEventOfferControllerProvider(widget.scope.offers).notifier)
+        .commit(requestId);
   }
 
   Future<void> _admit(

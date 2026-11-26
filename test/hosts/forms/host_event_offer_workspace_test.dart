@@ -18,6 +18,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_c
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_offer_workspace_policy.dart';
+import 'package:catch_dating_app/hosts/forms/offer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_workspace_section.dart';
@@ -49,6 +50,61 @@ part 'host_offer_preparation_cases.dart';
 @Dependencies([HostEventOfferWorkspaceController])
 void main() {
   _preparationRegressionTests();
+  testWidgets('the new offer previews before it sends and says it holds no '
+      'place', (tester) async {
+    final auth = _SwitchingAuth('manager');
+    final storage = MemoryCommandJournalStorage();
+    final functions = _RouteFunctions();
+    final firestore = await _routeFirestore();
+    final offers = _Offers();
+    addTearDown(storage.close);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('manager')),
+          firebaseAuthProvider.overrideWithValue(auth),
+          firebaseFunctionsProvider.overrideWithValue(functions),
+          firebaseFirestoreProvider.overrideWithValue(firestore),
+          eventOfferConfigurationReadsProvider.overrideWithValue(
+            _GatedConfigurationReads(),
+          ),
+          commandJournalStorageProvider.overrideWithValue(() async => storage),
+          hostEventOfferDependenciesProvider.overrideWithValue(
+            HostEventOfferDependencies(gateway: offers),
+          ),
+          hostFormResponseDetailProvider(
+            organizerId: 'org',
+            responseId: 'response-one',
+          ).overrideWith((ref) async => _detail('contact-one')),
+          hostFormResponseReadBackProvider(
+            'org',
+          ).overrideWithValue((_) async => _detail('contact-one')),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const HostOfferScreen(
+            organizerId: 'org',
+            responseId: 'response-one',
+          ),
+        ),
+      ),
+    );
+    await pumpUntilFound(
+      tester,
+      find.byKey(const ValueKey('host-offer-event-event-one')),
+    );
+    await tester.tap(find.byKey(const ValueKey('host-offer-event-event-one')));
+    final l10n = AppLocalizationsEn();
+    await pumpUntilFound(tester, find.text(l10n.hostEventOfferPreview));
+    expect(find.text(l10n.hostEventOfferNoReservation), findsOneWidget);
+    expect(find.text(l10n.hostFormsOfferSend), findsNothing);
+    await tester.tap(find.text(l10n.hostEventOfferPreview));
+    await pumpUntilFound(tester, find.text(l10n.hostFormsOfferSend));
+    expect(offers.previewCalls, 1);
+    expect(tester.takeException(), isNull);
+  });
   testWidgets('route footer follows event choice and clears on account loss', (
     tester,
   ) async {
