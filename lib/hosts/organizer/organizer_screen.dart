@@ -6,6 +6,7 @@ import 'package:catch_dating_app/hosts/organizer/organizer_body.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_controller.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_section.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_journey/host_organizer_journey_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -171,6 +172,14 @@ class OrganizerScreen extends ConsumerWidget {
         await showCatchBottomSheet<void>(
           context: context,
           builder: (_) => HostOrganizerJourneySheet(organizerId: organizer.id),
+        );
+      case OrganizerAction.tracking:
+        await showCatchBottomSheet<void>(
+          context: context,
+          builder: (_) => CatchSheet.standard(
+            title: context.l10n.hostsTrackingSettingsTitle,
+            child: HostTrackingSettingsSection(organizerId: organizer.id),
+          ),
         );
       case OrganizerAction.rehearse:
         await context.pushNamed<void>(

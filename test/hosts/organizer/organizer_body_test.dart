@@ -83,6 +83,7 @@ void main() {
     await tester.tap(find.text('Event defaults'));
     await tester.tap(find.text('Live event guide'));
     await tester.tap(find.text('Your page so far'));
+    await tester.tap(find.text('Meta Pixel and Google Analytics'));
     await tester.tap(find.text('Rehearse a night'));
     await tester.tap(find.text('Settings'));
     await tester.tap(find.text('Help'));
@@ -97,6 +98,7 @@ void main() {
       OrganizerAction.eventDefaults,
       OrganizerAction.liveGuide,
       OrganizerAction.journey,
+      OrganizerAction.tracking,
       OrganizerAction.rehearse,
       OrganizerAction.settings,
       OrganizerAction.help,

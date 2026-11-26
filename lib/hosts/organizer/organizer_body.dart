@@ -119,6 +119,13 @@ class OrganizerBody extends StatelessWidget {
               onTap: () => onAction(OrganizerAction.journey),
             ),
             CatchIndexRow(
+              key: const ValueKey<String>('organizer-row-tracking'),
+              title: l10n.hostsTrackingSettingsTitle,
+              density: CatchIndexRowSize.regular,
+              chevron: true,
+              onTap: () => onAction(OrganizerAction.tracking),
+            ),
+            CatchIndexRow(
               key: const ValueKey<String>('organizer-row-rehearse'),
               title: l10n.hostOrganizerRowRehearse,
               subtitle: l10n.hostOrganizerRowRehearseNote,

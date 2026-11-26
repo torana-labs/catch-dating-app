@@ -35,6 +35,7 @@ enum OrganizerAction {
   eventDefaults,
   liveGuide,
   journey,
+  tracking,
   rehearse,
   settings,
   help,
