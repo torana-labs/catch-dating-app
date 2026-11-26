@@ -45581,6 +45581,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Night tools'**
   String get hostLiveTools;
+
+  /// Practice tools section title: directions and automatic updates for made-up guests who join late.
+  ///
+  /// In en, this message translates to:
+  /// **'Late joiners'**
+  String get hostRehearsalLateJoinTitle;
+
+  /// Practice tools late joiners section note.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a made-up guest joining directions, or set up automatic updates for them. Practice sends nothing to real guests.'**
+  String get hostRehearsalLateJoinBody;
+
+  /// Late joiner row and sheet status when practice automation is enabled for the guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic updates on'**
+  String get hostRehearsalLateJoinAutomatic;
+
+  /// Late joiner status: scripted practice delivery outcomes automation has still to play.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No practice outcomes left} =1{1 practice outcome left} other{{count} practice outcomes left}}'**
+  String hostRehearsalLateJoinOutcomesLeft({required int count});
+
+  /// Late joiner sheet: other joining points the guest may pick between in a reply.
+  ///
+  /// In en, this message translates to:
+  /// **'Places they can choose later'**
+  String get hostRehearsalLateJoinLaterChoices;
+
+  /// Late joiner sheet: section title for the directions preview.
+  ///
+  /// In en, this message translates to:
+  /// **'What they will be told'**
+  String get hostRehearsalLateJoinPreview;
+
+  /// Late joiner preview before the group's departure is recorded.
+  ///
+  /// In en, this message translates to:
+  /// **'The group has not left yet. You can publish directions once its departure is recorded; automatic updates wait for it.'**
+  String get hostRehearsalLateJoinAwaitingDeparture;
+
+  /// Late joiner preview when the confirmed destination is outside the rule.
+  ///
+  /// In en, this message translates to:
+  /// **'The group is heading to {place}, which this late arrival rule does not allow for joining.'**
+  String hostRehearsalLateJoinOutsidePolicy({required String place});
+
+  /// Late joiner preview when the confirmed place has closed late entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Late entry is closed at this place, so these directions cannot be published.'**
+  String get hostRehearsalLateJoinEntryClosed;
+
+  /// Late joiner sheet: publishes the joining directions to the made-up guest now.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish directions'**
+  String get hostRehearsalLateJoinPublish;
+
+  /// Late joiner sheet: why Publish directions is unavailable in another help mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Send automatically to publish directions.'**
+  String get hostRehearsalLateJoinPublishNeedsAutomatic;
+
+  /// Late joiner sheet: resumes paused practice automation for the guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume automatic updates'**
+  String get hostRehearsalLateJoinResume;
+
+  /// Late joiner sheet: the most recent directions the made-up guest was sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest directions'**
+  String get hostRehearsalLateJoinLatest;
+
+  /// Late joiner sheet: the made-up guest's reply to the latest directions.
+  ///
+  /// In en, this message translates to:
+  /// **'Replied: {choice}'**
+  String hostRehearsalLateJoinReplied({required String choice});
 }
 
 class _AppLocalizationsDelegate
