@@ -10,7 +10,7 @@ const activityChoicePattern =
 const accordionPattern = /\bCatchAccordionController\s*\(/gu;
 const eventDisclosurePaths = [
   "lib/hosts/presentation/event_management/",
-  "lib/hosts/presentation/edit_hosted_event_screen.dart",
+  "lib/hosts/create/",
 ];
 
 const isCliEntrypoint =

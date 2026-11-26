@@ -127,9 +127,11 @@ import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_handlers.dart';
 import 'package:catch_dating_app/hosts/create/create_plan_body.dart';
 import 'package:catch_dating_app/hosts/create/create_plan_screen.dart';
+import 'package:catch_dating_app/hosts/create/create_route_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_share_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_when_screen.dart';
+import 'package:catch_dating_app/hosts/create/edit_event_screen.dart';
 import 'package:catch_dating_app/hosts/create/widgets/create_calendar_sheet.dart';
 import 'package:catch_dating_app/hosts/door/door_scan_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
@@ -145,10 +147,8 @@ import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
-import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
@@ -3613,11 +3613,17 @@ Widget _hostManageRouteCapture({
 }
 
 Future<void> _verifyScheduleLockedCapture(WidgetTester tester) async {
-  expect(find.text('Schedule locked'), findsOneWidget);
+  expect(find.text('Schedule locked', skipOffstage: false), findsOneWidget);
   expect(
-    find.byType(HostedEventScheduleSection, skipOffstage: false),
+    find.byKey(const ValueKey('create-locked-schedule'), skipOffstage: false),
     findsOneWidget,
   );
+}
+
+/// Taps Save changes so the edit shows what it cannot be saved without.
+Future<void> _driveEditValidationCapture(WidgetTester tester) async {
+  await tester.tap(find.text('Save changes'));
+  await tester.pump();
 }
 
 enum _HostManageInviteLinkMutationCaptureMode { pending, error }
@@ -10468,7 +10474,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       organizerValue: const AsyncLoading<Organizer?>(),
     ),
     builder: (context) =>
-        HostCreateEventRouteScreen(organizerId: _dashboardHostOrganizer.id),
+        CreateRouteScreen(organizerId: _dashboardHostOrganizer.id),
   ),
   ScreenCaptureEntry(
     id: 'host_create_route_error',
@@ -10481,7 +10487,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ),
     ),
     builder: (context) =>
-        HostCreateEventRouteScreen(organizerId: _dashboardHostOrganizer.id),
+        CreateRouteScreen(organizerId: _dashboardHostOrganizer.id),
   ),
   ScreenCaptureEntry(
     id: 'host_create_route_offline',
@@ -10494,7 +10500,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ),
     ),
     builder: (context) =>
-        HostCreateEventRouteScreen(organizerId: _dashboardHostOrganizer.id),
+        CreateRouteScreen(organizerId: _dashboardHostOrganizer.id),
   ),
   ScreenCaptureEntry(
     id: 'host_create_not_found',
@@ -10504,7 +10510,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       organizerValue: const AsyncData<Organizer?>(null),
     ),
     builder: (context) =>
-        HostCreateEventRouteScreen(organizerId: _dashboardHostOrganizer.id),
+        CreateRouteScreen(organizerId: _dashboardHostOrganizer.id),
   ),
   ScreenCaptureEntry(
     id: 'host_create_unauthorized',
@@ -10513,9 +10519,11 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostCreateEventProviderOverrides(
       uid: HostOperationsFixtures.guestUid,
     ),
-    builder: (context) => HostCreateEventRouteScreen(
+    builder: (context) => CreateRouteScreen(
       organizerId: _dashboardHostOrganizer.id,
-      initialOrganizer: _dashboardHostOrganizer,
+      arguments: HostCreateEventRouteArguments(
+        initialOrganizer: _dashboardHostOrganizer,
+      ),
     ),
   ),
   ScreenCaptureEntry(
@@ -10528,9 +10536,11 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
           HostOperationsFixtures.hostUid,
       organizerValue: const AsyncLoading<Organizer?>(),
     ),
-    builder: (context) => HostCreateEventRouteScreen(
+    builder: (context) => CreateRouteScreen(
       organizerId: _dashboardHostOrganizer.id,
-      initialOrganizer: _dashboardHostOrganizer,
+      arguments: HostCreateEventRouteArguments(
+        initialOrganizer: _dashboardHostOrganizer,
+      ),
     ),
   ),
   ScreenCaptureEntry(
@@ -10554,10 +10564,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostEditEventProviderOverrides(
       event: _dashboardHostEvent,
     ),
-    builder: (context) => EditHostedEventScreen(
+    builder: (context) => EditEventScreen(
       organizer: _dashboardHostOrganizer,
       event: _dashboardHostEvent,
-      loadMapTiles: false,
+      enableNetworkTiles: false,
       now: () => _captureNow,
     ),
   ),
@@ -10569,7 +10579,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       organizerValue: const AsyncLoading<Organizer?>(),
       eventValue: const AsyncLoading<Event?>(),
     ),
-    builder: (context) => EditHostedEventRouteScreen(
+    builder: (context) => EditEventRouteScreen(
       organizerId: _dashboardHostOrganizer.id,
       eventId: _dashboardEditableHostEvent.id,
     ),
@@ -10584,7 +10594,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         StackTrace.empty,
       ),
     ),
-    builder: (context) => EditHostedEventRouteScreen(
+    builder: (context) => EditEventRouteScreen(
       organizerId: _dashboardHostOrganizer.id,
       eventId: _dashboardEditableHostEvent.id,
     ),
@@ -10599,7 +10609,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         StackTrace.empty,
       ),
     ),
-    builder: (context) => EditHostedEventRouteScreen(
+    builder: (context) => EditEventRouteScreen(
       organizerId: _dashboardHostOrganizer.id,
       eventId: _dashboardEditableHostEvent.id,
     ),
@@ -10611,7 +10621,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostEditEventProviderOverrides(
       eventValue: const AsyncData<Event?>(null),
     ),
-    builder: (context) => EditHostedEventRouteScreen(
+    builder: (context) => EditEventRouteScreen(
       organizerId: _dashboardHostOrganizer.id,
       eventId: _dashboardEditableHostEvent.id,
     ),
@@ -10623,7 +10633,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostEditEventProviderOverrides(
       uid: HostOperationsFixtures.guestUid,
     ),
-    builder: (context) => EditHostedEventRouteScreen(
+    builder: (context) => EditEventRouteScreen(
       organizerId: _dashboardHostOrganizer.id,
       eventId: _dashboardEditableHostEvent.id,
     ),
@@ -10635,10 +10645,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostEditEventProviderOverrides(
       event: _dashboardScheduleLockedHostEvent,
     ),
-    builder: (context) => EditHostedEventScreen(
+    builder: (context) => EditEventScreen(
       organizer: _dashboardHostOrganizer,
       event: _dashboardScheduleLockedHostEvent,
-      loadMapTiles: false,
+      enableNetworkTiles: false,
       now: () => _captureNow,
     ),
     drive: _verifyScheduleLockedCapture,
@@ -10650,10 +10660,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostEditEventProviderOverrides(
       event: _dashboardCancelledHostEvent,
     ),
-    builder: (context) => EditHostedEventScreen(
+    builder: (context) => EditEventScreen(
       organizer: _dashboardHostOrganizer,
       event: _dashboardCancelledHostEvent,
-      loadMapTiles: false,
+      enableNetworkTiles: false,
       now: () => _captureNow,
     ),
   ),
@@ -10665,10 +10675,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       event: _dashboardPrivateAccessHostEvent,
       privateAccessValue: const AsyncLoading<EventPrivateAccess?>(),
     ),
-    builder: (context) => EditHostedEventScreen(
+    builder: (context) => EditEventScreen(
       organizer: _dashboardHostOrganizer,
       event: _dashboardPrivateAccessHostEvent,
-      loadMapTiles: false,
+      enableNetworkTiles: false,
       now: () => _captureNow,
     ),
   ),
@@ -10679,13 +10689,13 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostEditEventProviderOverrides(
       event: _dashboardValidationHostEvent,
     ),
-    builder: (context) => EditHostedEventScreen(
+    builder: (context) => EditEventScreen(
       organizer: _dashboardHostOrganizer,
       event: _dashboardValidationHostEvent,
-      loadMapTiles: false,
+      enableNetworkTiles: false,
       now: () => _captureNow,
-      formAutovalidateMode: AutovalidateMode.always,
     ),
+    drive: _driveEditValidationCapture,
   ),
   ScreenCaptureEntry(
     id: 'edit_hosted_event_location_selected',
@@ -10694,10 +10704,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostEditEventProviderOverrides(
       event: _dashboardPinnedLocationHostEvent,
     ),
-    builder: (context) => EditHostedEventScreen(
+    builder: (context) => EditEventScreen(
       organizer: _dashboardHostOrganizer,
       event: _dashboardPinnedLocationHostEvent,
-      loadMapTiles: false,
+      enableNetworkTiles: false,
       now: () => _captureNow,
     ),
   ),
@@ -10710,10 +10720,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => _HostEditEventMutationCapture(
       mode: _HostEditEventMutationCaptureMode.submitPending,
-      child: EditHostedEventScreen(
+      child: EditEventScreen(
         organizer: _dashboardHostOrganizer,
         event: _dashboardEditableHostEvent,
-        loadMapTiles: false,
+        enableNetworkTiles: false,
         now: () => _captureNow,
       ),
     ),
@@ -10727,10 +10737,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => _HostEditEventMutationCapture(
       mode: _HostEditEventMutationCaptureMode.submitError,
-      child: EditHostedEventScreen(
+      child: EditEventScreen(
         organizer: _dashboardHostOrganizer,
         event: _dashboardEditableHostEvent,
-        loadMapTiles: false,
+        enableNetworkTiles: false,
         now: () => _captureNow,
       ),
     ),
@@ -10743,10 +10753,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostEditEventProviderOverrides(
       event: _dashboardEditableHostEvent,
     ),
-    builder: (context) => EditHostedEventScreen(
+    builder: (context) => EditEventScreen(
       organizer: _dashboardHostOrganizer,
       event: _dashboardEditableHostEvent,
-      loadMapTiles: false,
+      enableNetworkTiles: false,
       now: () => _captureNow,
     ),
   ),
@@ -10758,10 +10768,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostEditEventProviderOverrides(
       event: _dashboardEditableHostEvent,
     ),
-    builder: (context) => EditHostedEventScreen(
+    builder: (context) => EditEventScreen(
       organizer: _dashboardHostOrganizer,
       event: _dashboardEditableHostEvent,
-      loadMapTiles: false,
+      enableNetworkTiles: false,
       now: () => _captureNow,
     ),
   ),
@@ -10772,10 +10782,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostEditEventProviderOverrides(
       event: _dashboardEditableHostEvent,
     ),
-    builder: (context) => EditHostedEventScreen(
+    builder: (context) => EditEventScreen(
       organizer: _dashboardHostOrganizer,
       event: _dashboardEditableHostEvent,
-      loadMapTiles: false,
+      enableNetworkTiles: false,
       now: () => _captureNow,
     ),
   ),
