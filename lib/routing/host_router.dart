@@ -109,9 +109,14 @@ HostOrganizersScreen hostOrganizerScreenForUri(Uri uri) => HostOrganizersScreen(
   ),
 );
 
-/// Legacy query links resolve to the same typed record route as user navigation.
+/// Legacy query links resolve to the same typed record route as user
+/// navigation. The old Requests tab (`view=requests`) opens Today's requests
+/// queue.
 @visibleForTesting
 String? hostAudienceRecordRedirect(Uri uri) {
+  if (uri.queryParameters['view'] == HostAudienceView.requests.name) {
+    return uri.replace(path: Routes.hostTodayScreen.path).toString();
+  }
   final response = uri.queryParameters['responseId'];
   final application = uri.queryParameters['applicationId'];
   if (response == null && application == null) return null;
