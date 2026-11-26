@@ -5,7 +5,7 @@ import path from "node:path";
 import test from "node:test";
 import {
   checkFlutterL10n,
-  compareGeneratedFiles,
+  missingGeneratedFiles,
   languageVersion,
 } from "./lib/check_flutter_l10n_generated.mjs";
 
@@ -18,37 +18,23 @@ function withTempDir(callback) {
   }
 }
 
-test("comparison reports missing and stale generated outputs", () => {
+test("the check reports every output gen-l10n did not write", () => {
   withTempDir((root) => {
-    const expectedDir = path.join(root, "expected");
-    const actualDir = path.join(root, "actual");
-    fs.mkdirSync(expectedDir);
-    fs.mkdirSync(actualDir);
-    fs.writeFileSync(path.join(expectedDir, "one.dart"), "expected");
-    fs.writeFileSync(path.join(expectedDir, "two.dart"), "expected");
-    fs.writeFileSync(path.join(actualDir, "one.dart"), "stale");
-    assert.deepEqual(compareGeneratedFiles({
-      expectedDir,
-      actualDir,
-      files: ["one.dart", "two.dart"],
-    }), [
-      "Tracked localization output is stale: one.dart",
+    fs.writeFileSync(path.join(root, "one.dart"), "generated");
+    assert.deepEqual(missingGeneratedFiles({actualDir: root, files: ["one.dart", "two.dart"]}), [
       "Flutter did not generate expected localization output: two.dart",
     ]);
   });
 });
 
-test("checker generates only inside a disposable project and compares tracked output", () => {
+test("checker generates only inside a disposable project and reads nothing tracked from the output directory", () => {
   withTempDir((repositoryRoot) => {
     const packageRoot = path.join(repositoryRoot, "packages", "l10n");
     const sourceDir = path.join(packageRoot, "lib");
-    const expectedDir = path.join(sourceDir, "generated");
-    fs.mkdirSync(expectedDir, {recursive: true});
+    fs.mkdirSync(sourceDir, {recursive: true});
     fs.writeFileSync(path.join(sourceDir, "app_en.arb"), "{}");
     fs.writeFileSync(path.join(packageRoot, "l10n.yaml"), "arb-dir: lib\noutput-dir: lib/generated\n");
     fs.writeFileSync(path.join(packageRoot, "pubspec.yaml"), "name: catch_l10n\nenvironment:\n  sdk: ^3.12.0\n");
-    fs.writeFileSync(path.join(expectedDir, "app_localizations.dart"), "one");
-    fs.writeFileSync(path.join(expectedDir, "app_localizations_en.dart"), "two");
 
     let generatorCwd = null;
     let generatorPubspec = null;

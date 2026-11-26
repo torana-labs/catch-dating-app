@@ -516,7 +516,7 @@ test("shared CI controls and unknown workflow or verifier files retain full vali
   for (const file of [
     ".github/workflows/ci.yml", ".github/workflows/tools-ci.yml",
     ".github/actions/setup-flutter/action.yml", ".github/workflows/new-ci.yml",
-    "tool/ci/generated_inventories.mjs", "tool/ci/delivery_core.mjs",
+    "tool/ci/delivery_core.mjs",
     "tool/ci/package_web_hosting.mjs", "tool/ci/new_backend_verifier.mjs",
     "tool/harness/component_graph.json", "tool/ci/toolchain.env",
   ]) {
@@ -1462,7 +1462,7 @@ test("nothing PR validation executes can be harness-scoped", () => {
       `${file} runs in PR validation and must keep its validation`);
   }
   // Negative control: narrowing a script PR CI runs is caught.
-  const probe = "tool/ci/generated_inventories.mjs";
+  const probe = "tool/ci/check_flutter_workspace_analysis.mjs";
   assert.ok(scripts.has(probe), "negative control must be a PR-validation script");
   const widened = clone(graph);
   widened.classifications.find((entry) => entry.id === "harness-scoped-control").paths.include.push(probe);

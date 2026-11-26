@@ -3,12 +3,12 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
+import {buildInventory} from "../ui_capture/check_route_inventory.mjs";
 
 const manifestPath = fromRepo(
   "design/source_packs/host-v2/host-coverage-manifest.json",
 );
 const shellPath = fromRepo("lib/routing/shell/host_shell_navigation.dart");
-const routeInventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
 const captureCoveragePath = fromRepo("tool/ui_capture/capture_coverage.json");
 const isCliEntrypoint =
   process.argv[1] &&
@@ -145,7 +145,7 @@ export function validateHostShellCoverage({
 
 function checkHostShellCoverage() {
   const manifest = readJson(manifestPath);
-  const routeInventory = readJson(routeInventoryPath);
+  const routeInventory = buildInventory();
   const captureCoverage = readJson(captureCoveragePath);
   const shellSource = fs.readFileSync(shellPath, "utf8");
   const errors = validateHostShellCoverage({

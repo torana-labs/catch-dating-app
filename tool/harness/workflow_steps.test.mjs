@@ -540,11 +540,16 @@ test("freshness selection uses explicit graph requirements and never loses unava
   const noPackages = planCodegenFreshness({...options, packageAvailable: () => false});
   assert.deepEqual(noPackages.filter((check) => !check.runnable).map((check) => check.codegenId),
     ["contracts.schema-projections", "copy.structured-domain"]);
+  // The generated localizations aren't tracked either: flutter.l10n always
+  // generates, and a sparse omission can only hide a tracked output.
+  const l10n = planCodegenFreshness(options).find((entry) => entry.codegenId === "flutter.l10n");
+  assert.equal(l10n.command, l10n.writeCommand);
   const sparse = planCodegenFreshness({...options,
     sparsePaths: repositoryPaths.filter((file) => file.startsWith("packages/l10n/lib/generated/")),
     fileAvailable: (file) => !file.startsWith("packages/l10n/lib/generated/")});
-  assert.match(sparse.find((entry) => entry.codegenId === "flutter.l10n").reasons.join("; "),
+  assert.match(sparse.find((entry) => entry.codegenId === "copy.structured-domain").reasons.join("; "),
     /unmaterialized output/u);
+  assert.ok(sparse.find((entry) => entry.codegenId === "flutter.l10n").runnable);
   const missingOutput = planCodegenFreshness({...options,
     fileAvailable: () => false});
   assert.ok(missingOutput.every((check) => check.runnable),

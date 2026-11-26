@@ -110,7 +110,7 @@ function listClosedTools(manifest, {category, json}) {
 }
 
 async function checkTools(args) {
-  const {categories, ids, manifestOnly, marketingChecksInReact, generatedInventoriesMaterialized,
+  const {categories, ids, manifestOnly, marketingChecksInReact,
     deferVisualReport} = parseCheckArgs(args);
   const manifest = loadManifest();
   const tools = categories.length === 0 ? selectTools(manifest, {ids}) :
@@ -147,7 +147,7 @@ async function checkTools(args) {
     requireSelection(tools.filter((tool) => tool.category === category), {category, ids});
   }
   requireSelection(tools, {ids});
-  await runChecks(tools, {marketingChecksInReact, generatedInventoriesMaterialized, deferVisualReport});
+  await runChecks(tools, {marketingChecksInReact, deferVisualReport});
 }
 
 // Checks read the Admin and Functions import graphs, which include modules their
@@ -181,36 +181,10 @@ function deferredVisualReport({toolId, command}) {
     command === "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --report";
 }
 
-function materializedInventoryOwnsCheck({toolId, command}) {
-  return (toolId === "design:widget-catalog" && command === "node tool/design/generate_widget_catalog.mjs --check") ||
-    (["ui-capture:route-inventory", "design:parity-gate"].includes(toolId) &&
-      command === "node tool/ui_capture/check_route_inventory.mjs --check");
-}
-
-// Execute proof only in full consumer checkouts, like the registered checks
-// below. Planning stays usable from its declared sparse module closure.
-function verifyProducerCommand(script, flag) {
-  const result = spawnSync(process.execPath, [script, flag], {cwd: repoRoot,
-    encoding: "utf8", maxBuffer: 1024 * 1024});
-  if (result.status !== 0) throw new Error(result.stderr?.trim() || result.error?.message ||
-    `Producer verification failed: ${script}`);
-}
-
-async function runChecks(tools, {marketingChecksInReact = false,
-  generatedInventoriesMaterialized = false, deferVisualReport = false} = {}) {
+async function runChecks(tools, {marketingChecksInReact = false, deferVisualReport = false} = {}) {
   if (marketingChecksInReact && process.env.GITHUB_ACTIONS !== "true") {
     console.error("--marketing-checks-in-react requires the same-run CI marketing lane.");
     process.exitCode = 64;
-    return;
-  }
-  const verifyProducerProofs = async () => {
-    if (generatedInventoriesMaterialized) {
-      verifyProducerCommand("tool/ci/generated_inventories.mjs", "--verify-materialized");
-    }
-  };
-  try { await verifyProducerProofs(); } catch (error) {
-    console.error(`Cannot reuse CI producer checks: ${error.message}`);
-    process.exitCode = 1;
     return;
   }
   if (!generateBuildModules()) {
@@ -264,10 +238,6 @@ async function runChecks(tools, {marketingChecksInReact = false,
       console.log(`==> ${toolId}: provided by the required same-run React marketing lane.`);
       continue;
     }
-    if (generatedInventoriesMaterialized && materializedInventoryOwnsCheck({toolId, command})) {
-      console.log(`==> ${toolId}: provided by verified exact-source inventory generation.`);
-      continue;
-    }
     console.log(`==> ${toolId}: ${command}`);
     const {prerequisite, rest} = splitSharedPrerequisite(command);
     if (prerequisite) {
@@ -297,12 +267,6 @@ async function runChecks(tools, {marketingChecksInReact = false,
   if (failures.length > 0) {
     reportToolFailures(failures);
     process.exitCode = failures[0].status || 1;
-    return;
-  }
-  // Selected checks must not invalidate evidence reused by this invocation.
-  try { await verifyProducerProofs(); } catch (error) {
-    console.error(`CI producer checks were invalidated: ${error.message}`);
-    process.exitCode = 1;
     return;
   }
   console.log("Tool checks passed.");
@@ -348,20 +312,7 @@ async function affectedToolChecks(args) {
   }
 
   if (options.commitWindow && options.paths) throw new Error("--commit-window cannot override committed paths.");
-  const committedOnly = options.check && options.generatedInventoriesMaterialized;
-  if (committedOnly) {
-    // Setup was planned before these generated outputs were materialized. Prove
-    // that authored inputs still match the commit before reusing that same diff;
-    // otherwise local output edits can select checks whose setup never ran.
-    try {
-      verifyProducerCommand("tool/ci/generated_inventories.mjs", "--verify-materialized");
-    } catch (error) {
-      console.error(`Cannot reuse CI producer checks: ${error.message}`);
-      process.exitCode = 1;
-      return;
-    }
-  }
-  const changedPaths = options.paths ?? changedPathsSince({...options, committedOnly});
+  const changedPaths = options.paths ?? changedPathsSince(options);
   const importGraph = options.importOwners ?
     JSON.parse(fs.readFileSync(options.importOwners, "utf8")) : null;
   const baseManifest = options.paths || options.full ? null : manifestAt(options.base);
@@ -424,7 +375,6 @@ async function affectedToolChecks(args) {
     return;
   }
   await runChecks(tools, {marketingChecksInReact: options.marketingChecksInReact,
-    generatedInventoriesMaterialized: options.generatedInventoriesMaterialized,
     deferVisualReport: options.deferVisualReport});
 }
 
@@ -690,7 +640,6 @@ function parseCheckArgs(args) {
   });
   return {categories, ids, manifestOnly,
     marketingChecksInReact: args.includes("--marketing-checks-in-react"),
-    generatedInventoriesMaterialized: args.includes("--generated-inventories-materialized"),
     deferVisualReport: args.includes("--defer-visual-report")};
 }
 
@@ -711,7 +660,6 @@ function parseAffectedToolArgs(args) {
     importOwners: valueAfter(args, "--import-owners"),
     mode: valueAfter(args, "--mode") ?? "pr",
     marketingChecksInReact: args.includes("--marketing-checks-in-react"),
-    generatedInventoriesMaterialized: args.includes("--generated-inventories-materialized"),
     deferVisualReport: args.includes("--defer-visual-report"),
     githubOutput: valueAfter(args, "--github-output"),
   };
@@ -744,8 +692,6 @@ Commands:
   --import-owners reads node tool/impact/import_owners.mjs output so each check also owns the files it imports.
   CI check execution may add --marketing-checks-in-react only when its required
     aggregate owns the same-run React marketing lane.
-  --generated-inventories-materialized verifies this job's source-bound receipt
-    and current output bytes before reusing route/catalog drift checks.
   --defer-visual-report skips the report-only Storybook visual comparison, which
     CI runs in its nightly alone (#2426); every other check still runs.
   run <tool-id> [args...]

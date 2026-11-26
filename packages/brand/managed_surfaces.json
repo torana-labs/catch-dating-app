@@ -44,7 +44,6 @@
     {"path": "fastlane/metadata/host/android/en-US/*.txt", "kind": "text"}
   ],
   "regenerated": [
-    "packages/l10n/lib/generated/app_localizations_en.dart",
     "packages/l10n/lib/generated/structured_domain_copy.g.dart",
     "apps/consumer/ios/Runner/Info.plist",
     "apps/host/ios/Runner/Info.plist",
