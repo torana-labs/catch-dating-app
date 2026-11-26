@@ -17,9 +17,9 @@ import 'package:go_router/go_router.dart';
 
 /// Your page: the logo, photos, fields and kinds of night the public page
 /// shows. It keeps the typed draft until Save changes sends it through the
-/// existing organizer update; a new logo or photo is sent as soon as it is
-/// picked, through the existing media update. The organizer listener brings
-/// the result back.
+/// existing organizer update; a new, moved or removed logo or photo is sent
+/// straight away through the existing media update. The organizer listener
+/// brings the result back.
 class OrganizerPageEditScreen extends ConsumerStatefulWidget {
   const OrganizerPageEditScreen({super.key, this.initialOrganizerId});
 
@@ -94,12 +94,17 @@ class _PageEditScreenState extends ConsumerState<OrganizerPageEditScreen> {
             PageEditField.email => _draft!.copyWith(email: value),
           };
         }),
+        onType: (type) => setState(() => _draft = _draft!.copyWith(type: type)),
+        onCity: (city) => setState(() => _draft = _draft!.copyWith(city: city)),
         onFormat: (format) => setState(() => _draft = _draft!.toggle(format)),
         onListed: (listed) =>
             setState(() => _draft = _draft!.copyWith(listed: listed)),
         onChangeLogo: () => unawaited(_changeLogo(organizer)),
         onAddPhotos: () => unawaited(_addPhotos(organizer)),
-        onRemovePhoto: (index) => unawaited(_removePhoto(organizer, index)),
+        onPhoto: (index) => unawaited(_photoOptions(organizer, index)),
+        onRemoveLogo: organizer.logoPhotoUrl == null
+            ? null
+            : () => unawaited(_removeLogo(organizer)),
       );
     }
 
@@ -201,6 +206,76 @@ class _PageEditScreenState extends ConsumerState<OrganizerPageEditScreen> {
     );
   }
 
+  /// Moves a photo, makes it the cover or takes it off the page.
+  Future<void> _photoOptions(Organizer organizer, int index) async {
+    final l10n = context.l10n;
+    final count = organizer.organizerPhotos.length;
+    final action = await showCatchBottomSheet<_PhotoAction>(
+      context: context,
+      builder: (context) => CatchSheet.standard(
+        title: l10n.coreOrderedPhotoPickerActionPhotoOptions,
+        child: CatchStack(
+          gap: CatchStackGap.none,
+          children: [
+            for (final (action, label, enabled) in [
+              (
+                _PhotoAction.cover,
+                l10n.coreOrderedPhotoPickerActionSetAsCover,
+                index > 0,
+              ),
+              (
+                _PhotoAction.earlier,
+                l10n.coreOrderedPhotoPickerActionMoveEarlier,
+                index > 0,
+              ),
+              (
+                _PhotoAction.later,
+                l10n.coreOrderedPhotoPickerActionMoveLater,
+                index < count - 1,
+              ),
+              (
+                _PhotoAction.remove,
+                l10n.coreOrderedPhotoPickerActionRemove,
+                true,
+              ),
+            ])
+              CatchMenuRow<_PhotoAction>.sheet(
+                key: ValueKey<String>('page-edit-photo-${action.name}'),
+                item: CatchMenuItem<_PhotoAction>(
+                  value: action,
+                  label: label,
+                  enabled: enabled,
+                  danger: action == _PhotoAction.remove,
+                ),
+                onSelected: (value, _) => Navigator.of(context).pop(value),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (action == null || !mounted) return;
+    final photos = _existingPhotos(organizer);
+    final to = switch (action) {
+      _PhotoAction.cover => 0,
+      _PhotoAction.earlier => index - 1,
+      _PhotoAction.later => index + 1,
+      _PhotoAction.remove => null,
+    };
+    if (to == null) return _removePhoto(organizer, index);
+    photos.insert(to, photos.removeAt(index));
+    await _runMedia(
+      () => ref
+          .read(hostOrganizerEditControllerProvider)
+          .updateOrganizerMedia(organizer: organizer, photoInputs: photos),
+    );
+  }
+
+  Future<void> _removeLogo(Organizer organizer) => _runMedia(
+    () => ref
+        .read(hostOrganizerEditControllerProvider)
+        .updateOrganizerMedia(organizer: organizer, removeLogo: true),
+  );
+
   Future<void> _removePhoto(Organizer organizer, int index) async {
     final l10n = context.l10n;
     final confirmed = await showCatchAdaptiveDialog<bool>(
@@ -260,3 +335,6 @@ class _PageEditScreenState extends ConsumerState<OrganizerPageEditScreen> {
     }
   }
 }
+
+/// What a host picked for one photo.
+enum _PhotoAction { cover, earlier, later, remove }
