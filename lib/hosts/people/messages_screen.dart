@@ -127,16 +127,19 @@ class _HostMessagesScreenState extends ConsumerState<HostMessagesScreen> {
                 selection: threadId,
                 scope: widget.threadScope,
               );
-        if (conversation != null && !split) {
-          return HostConversationScreen(
+        // On a phone the open conversation fills the screen; its pane
+        // header carries the person, back and the actions.
+        final fullConversation = conversation != null && !split;
+        final Widget body;
+        if (fullConversation) {
+          body = HostConversationScreen(
             key: ValueKey<HostConversationRequest>(conversation),
             request: conversation,
             drafts: _drafts,
+            presentation: HostConversationPresentation.pane,
             onBack: () => _closeThread(organizer!.id),
           );
-        }
-        final Widget body;
-        if (organizer == null) {
+        } else if (organizer == null) {
           body = HostPeopleScopeBody(
             organizer: scope,
             onRetry: () => retryHostPeopleOrganizer(ref, scope.uid),
@@ -179,6 +182,13 @@ class _HostMessagesScreenState extends ConsumerState<HostMessagesScreen> {
                     null => const HostInboxScope.general(),
                   },
                 }),
+              },
+            ),
+            onSends: () => context.goNamed(
+              Routes.hostInboxScreen.name,
+              queryParameters: {
+                'organizerId': organizer.id,
+                'workspace': 'campaigns',
               },
             ),
             onAutomations: () => context.pushNamed(
@@ -228,24 +238,29 @@ class _HostMessagesScreenState extends ConsumerState<HostMessagesScreen> {
         }
         return CatchScreen(
           key: const ValueKey<String>('host-messages-screen'),
-          bodyScrolls: !split || organizer == null,
-          topBar: CatchTopBar(
-            variant: CatchTopBarVariant.tabHome,
-            kicker: organizer?.name,
-            title: l10n.hostPeopleTitle,
-            actions: [
-              CatchButton(
-                label: l10n.hostPeopleMessage,
-                leading: CatchIcon(CatchIcons.add, size: CatchIconSize.md),
-                onPressed: organizer == null
-                    ? null
-                    : () => context.pushNamed(
-                        Routes.hostNewMessageScreen.name,
-                        queryParameters: {'organizerId': organizer.id},
+          bodyScrolls: !fullConversation && (!split || organizer == null),
+          topBar: fullConversation
+              ? null
+              : CatchTopBar(
+                  variant: CatchTopBarVariant.tabHome,
+                  kicker: organizer?.name,
+                  title: l10n.hostPeopleTitle,
+                  actions: [
+                    CatchButton(
+                      label: l10n.hostPeopleMessage,
+                      leading: CatchIcon(
+                        CatchIcons.add,
+                        size: CatchIconSize.md,
                       ),
-              ),
-            ],
-          ),
+                      onPressed: organizer == null
+                          ? null
+                          : () => context.pushNamed(
+                              Routes.hostNewMessageScreen.name,
+                              queryParameters: {'organizerId': organizer.id},
+                            ),
+                    ),
+                  ],
+                ),
           body: body,
         );
       },

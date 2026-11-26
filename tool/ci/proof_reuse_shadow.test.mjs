@@ -7,7 +7,7 @@ import test from "node:test";
 import YAML from "yaml";
 import {ELIGIBLE_LANES, KEYS_JOB, LANE_JOBS, RECORD_TITLE, changesCi, compareShadow, decideVerdicts, hasherVersion,
   isMiss, laneClass, laneResult, prFromHeadRef, readRecord, summaryMarkdown} from "./proof_reuse_shadow.mjs";
-import {comparedLanes} from "../nx/shadow_plan.mjs";
+import {comparedLanes} from "../nx/lanes.mjs";
 
 const workflow = (file) => fs.readFileSync(new URL(`../../.github/workflows/${file}`, import.meta.url), "utf8");
 const ci = YAML.parse(workflow("ci.yml"));

@@ -26,6 +26,7 @@ class HostMessagesBody extends StatelessWidget {
     required this.onOpenThread,
     required this.onAutomations,
     required this.onRetry,
+    this.onSends,
     this.onScope,
     this.onSegment,
     this.onSearch,
@@ -43,6 +44,10 @@ class HostMessagesBody extends StatelessWidget {
   final ValueChanged<HostMessageThread> onOpenThread;
   final VoidCallback onAutomations;
   final VoidCallback onRetry;
+
+  /// Opens Sends: campaigns, announcements, follower updates and the
+  /// handoffs to send by hand.
+  final VoidCallback? onSends;
 
   /// Picks a scope; null lists every conversation.
   final ValueChanged<HostInboxScope?>? onScope;
@@ -250,6 +255,15 @@ class HostMessagesBody extends StatelessWidget {
           chevron: true,
           onTap: onAutomations,
         ),
+        if (onSends case final sends?)
+          CatchIndexRow(
+            key: const ValueKey<String>('host-messages-sends'),
+            title: l10n.hostMessagingWorkspaceSends,
+            subtitle: l10n.hostSendsSubtitle,
+            icon: CatchIcons.send,
+            chevron: true,
+            onTap: sends,
+          ),
         if (ready && state.partial)
           CatchNotice.inline(
             key: const ValueKey<String>('host-messages-partial'),

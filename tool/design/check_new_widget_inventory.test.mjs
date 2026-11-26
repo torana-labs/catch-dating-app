@@ -53,15 +53,9 @@ test("typed factories require their exact real source identities", () => {
       library: "lib/host_memberships/presentation/host_membership_profile_section.dart",
       owner: null, name: "hostMembershipProfileField", returnType: "CatchField",
     },
-    {
-      file: "lib/routing/host_inbox_route.dart",
-      library: "lib/routing/host_router.dart",
-      owner: null, name: "hostInboxScreenForUri", returnType: "HostInboxScreen",
-    },
   ];
   const typeSources = [
     "packages/catch_ui/lib/src/components/catch_field.dart",
-    "lib/hosts/presentation/inbox/host_inbox_screen.dart",
   ];
   const typeDeclarations = typeSources.flatMap((file) => {
     const source = fs.readFileSync(path.join(repoRoot, file), "utf8");

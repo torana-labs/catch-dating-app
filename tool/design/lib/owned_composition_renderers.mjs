@@ -47,8 +47,6 @@ declare("lib/programs/presentation/program_events_row.dart",
 declare("lib/host_memberships/presentation/host_membership_profile_section.dart",
   "lib/host_memberships/presentation/host_membership_profile_section.dart", null,
   ["hostMembershipProfileField"], ["CatchField"]);
-declare("lib/routing/host_inbox_route.dart", "lib/routing/host_router.dart", null,
-  ["hostInboxScreenForUri"], ["HostInboxScreen"]);
 // Route-argument factories: each router turns its route's URI and extra into
 // the screen it mounts. They construct one screen (or pick one of a route's
 // screens by its view), add no UI of their own, and sit beside the GoRoutes
