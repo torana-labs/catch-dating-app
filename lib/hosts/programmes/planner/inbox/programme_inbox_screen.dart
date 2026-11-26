@@ -118,24 +118,36 @@ class _HostProgrammeInboxScreenState
     }
   }
 
+  /// Sends a reply. The composer clears itself as it hands the text over, so
+  /// nothing here clears it once the reply lands: by then the host may have
+  /// typed the next message. A failed reply puts its text back, unless the
+  /// host has moved on (left, opened another conversation or typed again).
   void _send(ProgramWhatsappThread thread, String text) {
     final body = text.trim();
     if (body.isEmpty) return;
+    final threadId = thread.summary.threadId;
     final cannedReplyId = _cannedReplyId;
+    _cannedReplyId = null;
     unawaited(
       _run(() async {
-        await ref
-            .read(programmeInboxCommandsProvider)
-            .sendWhatsappReply(
-              programId: widget.programId,
-              threadId: thread.summary.threadId,
-              text: body,
-              idempotencyKey: _key('reply'),
-              lastInboundAt: thread.summary.lastInboundAt,
-              cannedReplyId: cannedReplyId,
-            );
-        _composer.clear();
-        _cannedReplyId = null;
+        try {
+          await ref
+              .read(programmeInboxCommandsProvider)
+              .sendWhatsappReply(
+                programId: widget.programId,
+                threadId: threadId,
+                text: body,
+                idempotencyKey: _key('reply'),
+                lastInboundAt: thread.summary.lastInboundAt,
+                cannedReplyId: cannedReplyId,
+              );
+        } on Object {
+          if (mounted && _threadId == threadId && _composer.text.isEmpty) {
+            _composer.text = body;
+            _cannedReplyId = cannedReplyId;
+          }
+          rethrow;
+        }
       }, context.l10n.hostProgrammeInboxSendFailed),
     );
   }
