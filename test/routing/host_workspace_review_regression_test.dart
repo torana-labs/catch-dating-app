@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_preferences_route_screen.dart';
+import 'package:catch_dating_app/hosts/forms/offer_settings_screen.dart';
 import 'package:catch_dating_app/pages/chat/event_chat_controller.dart';
 import 'package:catch_dating_app/pages/chat/event_chat_participants_controller.dart';
 import 'package:catch_dating_app/pages/chat/event_chat_participants_screen.dart';
@@ -233,8 +233,8 @@ void main() {
         addTearDown(router.dispose);
         await pumpWorkspace(tester, router, signedIn: false);
         tester
-            .widget<HostResponseOfferPreferencesRouteScreen>(
-              find.byType(HostResponseOfferPreferencesRouteScreen),
+            .widget<HostOfferSettingsScreen>(
+              find.byType(HostOfferSettingsScreen),
             )
             .onBack();
         await pumpFeatureUi(tester);
