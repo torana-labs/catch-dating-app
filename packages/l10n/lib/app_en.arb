@@ -3252,13 +3252,6 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_feature_blocks"
   },
-  "eventSuccessEventSuccessFeatureBlocksSubtitleAConcreteReportSurface": "A concrete report surface that turns event outcomes into the next change the host should make.",
-  "@eventSuccessEventSuccessFeatureBlocksSubtitleAConcreteReportSurface": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (subtitle).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_feature_blocks"
-  },
   "eventSuccessEventSuccessFeatureBlocksLabelCheckIn16e104": "Check-in",
   "@eventSuccessEventSuccessFeatureBlocksLabelCheckIn16e104": {
     "description": "Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).",
@@ -10267,20 +10260,6 @@
   "hostsHostAnalyticsLabelAllTime": "All time",
   "@hostsHostAnalyticsLabelAllTime": {
     "description": "Scope label for lifetime club identity metrics.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_analytics"
-  },
-  "hostsHostAnalyticsLabelPartial": "Partial",
-  "@hostsHostAnalyticsLabelPartial": {
-    "description": "Badge for a partially available Host metric.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_analytics"
-  },
-  "hostsHostAnalyticsLabelMissing": "Missing",
-  "@hostsHostAnalyticsLabelMissing": {
-    "description": "Badge for an unavailable Host metric.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_analytics"
