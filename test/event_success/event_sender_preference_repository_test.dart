@@ -11,14 +11,6 @@ void main() {
   for (final channel in EventSenderChannel.values) {
     group(channel.name, () {
       final scope = senderScope(channel);
-      final suffix = channel == EventSenderChannel.whatsapp
-          ? 'Whatsapp'
-          : channel == EventSenderChannel.sms
-          ? 'Sms'
-          : 'Rcs';
-      final preference = channel == EventSenderChannel.sms
-          ? 'EventAssistanceSmsPreference'
-          : 'Event${suffix}Preference';
       late ParticipationTestFunctions functions;
       late EventSenderPreferenceRepository repository;
       setUp(() {
@@ -31,19 +23,27 @@ void main() {
         () async {
           functions.response = senderPageRaw(scope);
           await repository.list(scope);
-          expect(functions.calls.single.name, 'listEvent${suffix}Preferences');
+          // One callable per action; the channel travels with the request
+          // (issue #2494).
+          expect(functions.calls.single.name, 'listEventMessagePreferences');
           expect(functions.calls.single.input, {
-            'eventId': scope.eventId,
-            'attendeeId': scope.attendeeId,
-            'cursor': null,
+            'channel': channel.name,
+            'request': {
+              'eventId': scope.eventId,
+              'attendeeId': scope.attendeeId,
+              'cursor': null,
+            },
           });
           functions.response = senderResponse(scope);
           final view = await repository.fetch(scope, 'sender-1');
-          expect(functions.calls.last.name, 'get$preference');
+          expect(functions.calls.last.name, 'getEventMessagePreference');
           expect(functions.calls.last.input, {
-            'eventId': scope.eventId,
-            'attendeeId': scope.attendeeId,
-            'senderId': 'sender-1',
+            'channel': channel.name,
+            'request': {
+              'eventId': scope.eventId,
+              'attendeeId': scope.attendeeId,
+              'senderId': 'sender-1',
+            },
           });
           final change = view.prepareChange(
             requestId: 'one',
@@ -57,9 +57,12 @@ void main() {
             patch: {'revision': 3, 'preference': 'disabled'},
           );
           final replay = await repository.apply(change);
-          expect(functions.calls.last.name, 'set$preference');
+          expect(functions.calls.last.name, 'setEventMessagePreference');
           expect(functions.calls[2].input, functions.calls[3].input);
-          expect(functions.calls.last.input, change.toJson());
+          expect(functions.calls.last.input, {
+            'channel': channel.name,
+            'request': change.toJson(),
+          });
           expect(replay.view.preference, EventSenderPreference.disabled);
         },
       );

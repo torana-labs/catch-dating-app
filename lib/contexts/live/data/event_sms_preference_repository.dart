@@ -8,7 +8,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_sms_preference_repository.g.dart';
 
-/// Enrollment and withdrawal use the verified-participant callable authority.
+/// Enrollment and withdrawal use the verified-participant callable authority:
+/// the one event-day preference callable for every channel (issue #2494).
 class EventSmsPreferenceRepository {
   const EventSmsPreferenceRepository(this._functions);
   final FirebaseFunctions _functions;
@@ -17,16 +18,17 @@ class EventSmsPreferenceRepository {
       withBackendErrorContext(
         () async {
           final response = await _functions
-              .httpsCallable('getEventAssistanceSmsPreference')
-              .call<Object?>(
-                GetEventAssistanceSmsPreferenceCallableRequest(
+              .httpsCallable('getEventMessagePreference')
+              .call<Object?>({
+                'channel': 'sms',
+                'request': GetEventAssistanceSmsPreferenceCallableRequest(
                   eventId: scope.eventId,
                   attendeeId: scope.attendeeId,
                   senderId: scope.senderId == 'catch-event-sms'
                       ? null
                       : scope.senderId,
                 ).toJson(),
-              );
+              });
           final result = EventSmsPreferenceResult.fromCallableData(
             response.data,
             expectedScope: scope,
@@ -48,8 +50,8 @@ class EventSmsPreferenceRepository {
       withBackendErrorContext(
         () async {
           final response = await _functions
-              .httpsCallable('setEventAssistanceSmsPreference')
-              .call<Object?>(change.toJson());
+              .httpsCallable('setEventMessagePreference')
+              .call<Object?>({'channel': 'sms', 'request': change.toJson()});
           final result = EventSmsPreferenceResult.fromCallableData(
             response.data,
             expectedScope: change.snapshot.scope,
