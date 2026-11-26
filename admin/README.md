@@ -159,7 +159,9 @@ supply default is the open Indore + Mumbai review queue. Schedule, cancellation,
 capacity, pricing, payments,
 attendance, and policy fields are intentionally read-only in this first
 canonical editor. The same Events workspace also calls
-`adminListExternalEventDetails` for read-only `externalEvents/{id}` supply:
+`adminListExternalEventDetails` for read-only `externalEvents/{id}` supply
+(with `eventId` alone it reads exactly that document, which is how
+`/events/external/:externalEventId` loads, whatever the event's date or status):
 reviewed external candidates stay outbound-only, do not use Catch booking,
 payments, reservations, or waitlists, and remain separate from canonical
 Catch-hosted `events/{id}` documents until a policy-owned importer exists.

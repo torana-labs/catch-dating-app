@@ -29,8 +29,6 @@
     "facts",
     "eventEvidence",
     "reviews",
-    "fitNotes",
-    "missingEvidence",
     "sources",
     "claim",
     "publicApi",
@@ -101,14 +99,6 @@
     "reviews": {
       "type": "array",
       "items": {"$ref": "#/definitions/publicReview"}
-    },
-    "fitNotes": {
-      "type": "array",
-      "items": {"$ref": "#/definitions/nonEmptyString"}
-    },
-    "missingEvidence": {
-      "type": "array",
-      "items": {"$ref": "#/definitions/nonEmptyString"}
     },
     "sources": {
       "type": "array",
