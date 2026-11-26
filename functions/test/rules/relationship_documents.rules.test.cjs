@@ -1102,6 +1102,35 @@ describe("firestore.rules", () => {
         "contactPermissions", "catch")));
     });
 
+    it("lets only the guest read their event-day consent document (#2494)", async () => {
+      const event = {senderKind: "event", senderId: "event-1",
+        organizerId: "club-1",
+        grants: {"sms:eventService": {status: "optedIn",
+          endpointE164: "+919800000001", receiptId: "sms-consent:1",
+          termsVersion: "catch-event-service-sms-v1",
+          source: "participantSettings", updatedAt: Timestamp.now(),
+          expiresAt: Timestamp.now(), revision: 1,
+          senderId: "catch-event-sms", senderIdentityHash: "a".repeat(64),
+          attendeeId: "attendee-1", attendeeGeneration: "b".repeat(64),
+          recipientEndpointId: "sms:endpoint-1", evidence: null}},
+        granted: ["sms:eventService"], updatedAt: Timestamp.now(),
+        expiresAt: Timestamp.now()};
+      await seed(["organizers", "club-1"], organizer());
+      await seed(["users", "runner-1", "contactPermissions", "event_event-1"],
+        event);
+      await assertSucceeds(getDoc(doc(authedDb("runner-1"), "users",
+        "runner-1", "contactPermissions", "event_event-1")));
+      // Another guest, the organiser's manager and an unrelated account.
+      for (const other of ["runner-2", "host-1", "stranger-1"]) {
+        await assertFails(getDoc(doc(authedDb(other), "users", "runner-1",
+          "contactPermissions", "event_event-1")));
+      }
+      await assertFails(getDocs(query(collectionGroup(authedDb("host-1"),
+        "contactPermissions"), where("senderId", "==", "event-1"))));
+      await assertFails(setDoc(doc(authedDb("runner-1"), "users", "runner-1",
+        "contactPermissions", "event_event-2"), event));
+    });
+
     it("keeps invite secrets, touches, share intents, and attribution server-only", async () => {
       const paths = [
         ["eventInviteLinkSecrets", "invite-1"],

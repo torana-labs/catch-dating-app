@@ -22,6 +22,9 @@ import {
   setEventWhatsappPreferenceHandler,
 } from "./whatsappPreferenceHandlers";
 
+import {readEventContactPermission} from
+  "../../shared/eventContactPermissions";
+import {permissionFromEventGrant} from "./eventContactGrants";
 const start = Date.parse("2026-09-07T12:00:00Z");
 
 test("a reviewed WhatsApp grant cannot move to a changed verified number",
@@ -166,8 +169,16 @@ test("verified opt-in records exact consent without changing the roster",
     assert.equal(receipt.copyHash, WHATSAPP_CONSENT_HASH);
     assert.equal(whatsappPermissionHasReceipt(permission, receipt), true);
     assert.deepEqual(await h.read(h.attendeePath), roster);
-    assert.equal(h.fake.entries().some(([path]) => path.startsWith("users/")),
-      false);
+    // The only write under users/ is the guest's event consent document
+    // (issue #2494), which rebuilds into this exact permission.
+    const eventPath = `users/${h.actor.uid}/contactPermissions/` +
+      `event_${h.context.eventId}`;
+    assert.deepEqual(h.fake.entries().map(([path]) => path)
+      .filter((path) => path.startsWith("users/")), [eventPath]);
+    const document = readEventContactPermission(await h.read(eventPath),
+      h.context.eventId)!;
+    assert.deepEqual(permissionFromEventGrant("whatsapp", h.actor.uid, document,
+      document.grants["whatsapp:eventService"]!), permission);
   });
 
 test("replayed grants cannot undo withdrawal or change request meaning",

@@ -242,17 +242,35 @@ export function extendTaskScope({repository, options, runner = runGit}) {
   return withClaimsLock(repository, () => {
     const claim = claimForWorktree(repository, worktreePath);
     const inspection = inspectClaim({repository, claim, runner});
-    if (inspection.blockers.length > 0) {
-      return {status: 1, result: {operation: "scope", ...inspection, extended: false}};
-    }
     const claimedPaths = normalizeClaimedPaths([...claim.claimedPaths, ...additionalPaths]);
-    const overlap = readClaims(repository).find((other) =>
-      other.claimPath !== claim.claimPath &&
-      scopeSetsOverlap(claimedPaths, other.claimedPaths));
-    if (overlap != null) {
-      throw new TaskUsageError(
-        `Task scope overlaps ${overlap.taskId} at ${overlap.worktreePath}.`,
-      );
+    // Changed paths outside the claim (committed or dirty) are adopted only
+    // when this request names them and no other live claim overlaps them, so
+    // a session that edited before scoping can repair its claim with scope
+    // alone. Every other inspection blocker still refuses.
+    const blockingPaths = inspection.outOfScopePaths.filter((changedPath) =>
+      !claimedPaths.some((claimedPath) => pathIsWithinScope(changedPath, claimedPath)));
+    const blockers = inspection.blockers.filter((blocker) =>
+      blocker !== "out_of_scope_changes" || blockingPaths.length > 0);
+    if (blockers.length > 0) {
+      return {status: 1, result: scopeResult({
+        outcome: "refused",
+        blockers,
+        blockingPaths,
+        inspection,
+        note: blockingPaths.length > 0
+          ? "Changed paths outside the claim are not covered by --paths. Name them in --paths to adopt them, or remove those changes."
+          : "Resolve the blockers above; scope did not change the claim.",
+      })};
+    }
+    for (const other of readClaims(repository)) {
+      if (other.claimPath === claim.claimPath) continue;
+      const overlapping = claimedPaths.filter((entry) =>
+        scopeSetsOverlap([entry], other.claimedPaths));
+      if (overlapping.length > 0) {
+        throw new TaskUsageError(
+          `Task scope overlaps ${other.taskId} at ${other.worktreePath}: ${overlapping.join(", ")}. scope did not change the claim.`,
+        );
+      }
     }
     const addedPaths = claimedPaths.filter((entry) => !claim.claimedPaths.includes(entry));
     if (addedPaths.length > 0) {
@@ -271,12 +289,43 @@ export function extendTaskScope({repository, options, runner = runGit}) {
         if (fs.existsSync(temporaryPath)) fs.unlinkSync(temporaryPath);
       }
     }
+    const adoptedPaths = inspection.outOfScopePaths;
+    const updated = adoptedPaths.length > 0
+      ? inspectClaim({repository, claim: {...claim, claimedPaths}, runner})
+      : {...inspection, claimedPaths};
     return {
       status: 0,
-      result: {operation: "scope", ...inspection, claimedPaths, addedPaths,
-        extended: addedPaths.length > 0},
+      result: scopeResult({
+        outcome: addedPaths.length > 0 ? "extended" : "unchanged",
+        blockers: updated.blockers,
+        blockingPaths: [],
+        inspection: updated,
+        addedPaths,
+        adoptedPaths,
+      }),
     };
   });
+}
+
+// scope reports its own outcome first; the claim's inspection follows under
+// claimStatus so a refusal never reads as "status": "claimed".
+function scopeResult({outcome, blockers, blockingPaths, inspection, addedPaths = [],
+  adoptedPaths = [], note}) {
+  const claimDetails = {...inspection};
+  delete claimDetails.status;
+  delete claimDetails.blockers;
+  return {
+    operation: "scope",
+    result: outcome,
+    extended: addedPaths.length > 0,
+    addedPaths,
+    adoptedPaths,
+    blockers,
+    blockingPaths,
+    ...(note == null ? {} : {note}),
+    claimStatus: inspection.status,
+    ...claimDetails,
+  };
 }
 
 export function finishTask({

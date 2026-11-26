@@ -220,6 +220,28 @@ test("imported listings stay out of search and never show intake prose",
     assert.deepEqual(claimed.fitNotes, []);
   });
 
+test("an approved listing with no description still reaches the site " +
+  "(#1354)", () => {
+  // What approval writes for a nomination whose profile could not be read.
+  const data = organizerFixture();
+  data.description = "";
+  data.publicProfile = {headline: null, summary: null, sourceSummary: null,
+    formats: [], facts: [], eventEvidence: []};
+  data.publicPage = {...data.publicPage, indexStatus: "noindex",
+    robots: "noindex, follow"};
+  const listing = projectPublicOrganizer("next-proof", data, markets);
+  assert.ok(listing, "the sourced summary stands in before validation");
+  assert.match(listing.description,
+    /^Next proof organizer is an event producer in /u);
+  assert.equal(listing.sourceSummary, listing.description);
+  assert.equal(listing.capabilities.claimRequest.state, "enabled");
+
+  // An owner's page shows its own copy, so an empty one stays off the site.
+  data.ownership.state = "claimed";
+  data.claim.state = "claimed";
+  assert.equal(projectPublicOrganizer("next-proof", data, markets), null);
+});
+
 test("organiser credibility uses followers and verified-review counts", () => {
   const data = {...organizerFixture(), rating: 4.5, reviewCount: 10,
     verifiedReviewCount: 4, followerCount: 23};

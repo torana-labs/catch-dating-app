@@ -285,6 +285,22 @@ test("release guidance routes Remote Config outside the bounded backend helper",
   );
 });
 
+test("release guidance lists only dormant Functions the deploy policy holds", () => {
+  const releaseGuide = fs.readFileSync(
+    new URL("../../docs/release_operations.md", import.meta.url),
+    "utf8",
+  );
+  const section = releaseGuide.split("### Dormant scheduled Functions")[1]
+    ?.split(/\n#{2,3} /u)[0];
+  assert.ok(section, "release guide keeps its dormant scheduled Functions list");
+  const documented = [...section.matchAll(/^- `([A-Za-z0-9]+)`$/gmu)]
+    .map((match) => match[1]);
+  assert.ok(documented.length > 0);
+  const dormant = new Set(dormantFirebaseFunctionTargets
+    .map((target) => target.slice("functions:".length)));
+  assert.deepEqual(documented.filter((name) => !dormant.has(name)), []);
+});
+
 function executorFixture(t) {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-firebase-executor-"));
   t.after(() => fs.rmSync(directory, {recursive: true, force: true}));

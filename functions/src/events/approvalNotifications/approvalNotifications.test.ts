@@ -265,6 +265,25 @@ test("withdrawal remains possible when application or event closes",
     )!;
     assert.equal(receipt.email, null);
     assert.equal(receipt.phoneE164, null);
+    // The same choice is the two bookingUpdates grants of the guest's event
+    // document, each with its own receipt (issue #2494).
+    const permission = h.db.read(
+      `users/${uid}/contactPermissions/event_${eventId}`)!;
+    assert.equal(permission.senderKind, "event");
+    assert.equal(permission.organizerId, org);
+    assert.deepEqual(permission.granted, []);
+    const grants = permission.grants as Record<string, {status: string;
+      receiptId: string; revision: number}>;
+    assert.equal(grants["phone:bookingUpdates"].status, "optedOut");
+    assert.equal(grants["email:bookingUpdates"].status, "optedOut");
+    assert.equal(grants["phone:bookingUpdates"].revision, 2);
+    const phoneReceipt = h.db.read(
+      `contactPermissionReceipts/${grants["phone:bookingUpdates"].receiptId}`)!;
+    assert.equal(phoneReceipt.decision, "optedOut");
+    assert.equal(phoneReceipt.purpose, "bookingUpdates");
+    assert.match(String(phoneReceipt.supersedesReceiptId), /^eapr_.*:phone$/);
+    assert.notEqual(phoneReceipt.supersedesReceiptId,
+      grants["phone:bookingUpdates"].receiptId);
   });
 
 test("approval creates two jobs once despite repeated review writes",
@@ -360,9 +379,9 @@ for (const change of [
       h.identity.phoneNumber = "+919999999998";
     }
     if (change === "consentRemoved") {
-      h.db.remove(
-        `eventApprovalNotificationPreferences/${preferenceId(eventId, uid)}`,
-      );
+      // The approval gate reads the choice from the guest's event
+      // document (issue #2494).
+      h.db.remove(`users/${uid}/contactPermissions/event_${eventId}`);
     }
     if (change === "senderDisabled") {
       h.db.write(`eventApprovalNotificationSettings/${org}`, {

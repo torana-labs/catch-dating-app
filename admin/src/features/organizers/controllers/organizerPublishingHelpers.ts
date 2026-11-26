@@ -79,6 +79,7 @@ export interface OrganizerValidationIssue {
 export interface OrganizerValidationOptions {
   publishing?: boolean;
   requireReviewNote?: boolean;
+  original?: OrganizerPublishingFormState;
 }
 
 export interface OrganizerDiffRow {
@@ -505,20 +506,30 @@ export function validateOrganizerPublishingForm(
     form.name,
     organizerPublishingFieldIds.name
   );
-  requireText(
-    issues,
-    "description",
-    "Description",
-    form.description,
-    organizerPublishingFieldIds.description
-  );
-  requireText(
-    issues,
-    "area",
-    "Area / locality",
-    form.area,
-    organizerPublishingFieldIds.area
-  );
+  // Existing published pages may have legacy gaps. An ordinary correction does
+  // not assert that those untouched fields meet today's publication rules.
+  const ordinaryPublishedEdit = !options.publishing &&
+    options.original?.publishStatus === "published" && form.publishStatus === "published";
+  if (!ordinaryPublishedEdit ||
+      normalizeComparable(options.original?.description) !== normalizeComparable(form.description)) {
+    requireText(
+      issues,
+      "description",
+      "Description",
+      form.description,
+      organizerPublishingFieldIds.description
+    );
+  }
+  if (!ordinaryPublishedEdit ||
+      normalizeComparable(options.original?.area) !== normalizeComparable(form.area)) {
+    requireText(
+      issues,
+      "area",
+      "Area / locality",
+      form.area,
+      organizerPublishingFieldIds.area
+    );
+  }
   requireText(
     issues,
     "slug",

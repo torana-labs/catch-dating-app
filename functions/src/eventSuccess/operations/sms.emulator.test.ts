@@ -41,6 +41,8 @@ import {withdrawalGrantId} from "./messageConsentCollections";
 
 const keys: GuestLinkSigningKeys = {currentKeyId: "sms-key-1",
   keyFor: () => Buffer.alloc(32, 7)};
+import {editEventGrant, expiredGrant, withdrawnGrant} from
+  "./eventContactTestSupport";
 const start = Date.parse("2026-09-06T14:30:00Z");
 
 function config(senderId = "sms-sender-1"): SmsConfig {
@@ -322,14 +324,19 @@ test("fresh source changes withhold a previously reserved send", async () => {
       await h.write(h.attendeePath,
         {...attendee, createdAt: {seconds: start / 1000, nanoseconds: 0}});
     }
+    // The gate reads the guest's event document (issue #2494).
     if (change === "permission") {
       await h.write(h.permissionPath,
         {...h.permission, status: "revoked"});
+      await editEventGrant(h, "guest-uid", h.context.eventId,
+        "sms:eventService", withdrawnGrant);
     }
     if (change === "expiredPermission") {
       h.clock.now++;
       await h.write(h.permissionPath,
         {...h.permission, expiresAt: h.clock.now});
+      await editEventGrant(h, "guest-uid", h.context.eventId,
+        "sms:eventService", expiredGrant(h.clock.now));
     }
     if (change === "grant") await h.guests.revokeLink(h.link.linkId);
     if (change === "sender") {
@@ -472,9 +479,14 @@ test("a scoped webpage reply prevents later SMS dispatch", async () => {
 test("missing event-service permission cannot inherit organizer marketing",
   async () => {
     const h = await harness();
-    await h.write(h.permissionPath, {...h.permission, purpose: "marketing"});
-    await assert.rejects(h.worker.dispatch(h.messageId, h.link.linkId),
-      /event-service SMS permission/);
+    // An organizer marketing grant is a different key in a different
+    // document; without the event's sms:eventService grant nothing is sent
+    // (issue #2494).
+    await editEventGrant(h, "guest-uid", h.context.eventId,
+      "sms:eventService", () => null);
+    const outcome = await h.worker.dispatch(h.messageId, h.link.linkId)
+      .catch((error: unknown) => error);
+    assert.notEqual((outcome as {kind?: string})?.kind, "submitted");
     assert.equal(h.requests.length, 0);
   });
 
