@@ -45,7 +45,7 @@ class OrganizerEventPolicyScreen extends ConsumerWidget {
                 error: read.error,
                 onRetry: () => retryHostOrganizerScope(ref),
               )
-            : _EventPolicyEditor(
+            : OrganizerEventPolicyEditor(
                 key: ValueKey<String>(organizer.id),
                 organizer: organizer,
                 isOwner: scope.isOwner,
@@ -55,9 +55,11 @@ class OrganizerEventPolicyScreen extends ConsumerWidget {
   }
 }
 
-/// Holds the defaults saver for one organizer while its policy is open.
-class _EventPolicyEditor extends ConsumerStatefulWidget {
-  const _EventPolicyEditor({
+/// The policy editor for one loaded organizer. It holds the defaults saver
+/// while the policy is open, so the screen keys it by organizer id and a new
+/// organizer starts a new saver. Only the owner edits; a manager reads.
+class OrganizerEventPolicyEditor extends ConsumerStatefulWidget {
+  const OrganizerEventPolicyEditor({
     super.key,
     required this.organizer,
     required this.isOwner,
@@ -67,10 +69,12 @@ class _EventPolicyEditor extends ConsumerStatefulWidget {
   final bool isOwner;
 
   @override
-  ConsumerState<_EventPolicyEditor> createState() => _EventPolicyEditorState();
+  ConsumerState<OrganizerEventPolicyEditor> createState() =>
+      _OrganizerEventPolicyEditorState();
 }
 
-class _EventPolicyEditorState extends ConsumerState<_EventPolicyEditor> {
+class _OrganizerEventPolicyEditorState
+    extends ConsumerState<OrganizerEventPolicyEditor> {
   late final HostOrganizerDefaultsSaver _saver = HostOrganizerDefaultsSaver(
     initial: widget.organizer.hostDefaults,
     writer: (defaults) =>
@@ -95,7 +99,7 @@ class _EventPolicyEditorState extends ConsumerState<_EventPolicyEditor> {
   }
 
   @override
-  void didUpdateWidget(covariant _EventPolicyEditor oldWidget) {
+  void didUpdateWidget(covariant OrganizerEventPolicyEditor oldWidget) {
     super.didUpdateWidget(oldWidget);
     _saver.reconcile(widget.organizer.hostDefaults);
   }

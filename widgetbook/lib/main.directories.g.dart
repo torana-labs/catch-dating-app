@@ -9647,6 +9647,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Organizer',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'HostEventDefaultsScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Before the defaults load',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .hostEventDefaultsScreenUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostProfilePreviewSheet',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -9691,6 +9702,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'OrganizerEventPolicyEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Owner edits the policy',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerEventPolicyEditorUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'OrganizerEventPolicyScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -9715,6 +9737,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_organizer_live_guide_use_cases
                             .organizerLiveGuideBodyOwnerUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerLiveGuideEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Manager reads the guide',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerLiveGuideEditorUseCase,
                   ),
                 ],
               ),

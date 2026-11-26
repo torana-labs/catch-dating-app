@@ -25,19 +25,37 @@ class OrganizerAudienceBody extends StatelessWidget {
     final summary = state.summary;
     String count(int? value) =>
         value == null ? '—' : HostCountFormatters.compact(value);
-    Widget grid(List<(String, String)> tiles) => CatchStack(
-      children: [
-        for (var start = 0; start < tiles.length; start += 2)
-          CatchStack(
-            direction: CatchStackDirection.row,
-            equal: true,
-            children: [
-              for (final (label, value) in tiles.skip(start).take(2))
-                CatchMetricTile.stat(label: label, value: value),
-            ],
-          ),
-      ],
-    );
+    final allTime = <(String, String)>[
+      (
+        l10n.hostsHostOrganizerLabelMembers,
+        HostCountFormatters.compact(organizer.memberCount),
+      ),
+      (
+        organizer.reviewCount > 0
+            ? l10n.hostsHostOrganizerLabelRatingReviewcountReviews(
+                reviewCount: organizer.reviewCount,
+              )
+            : l10n.hostsHostOrganizerLabelRating,
+        state.rating,
+      ),
+      (l10n.hostsHostOrganizerLabelEventsHosted, count(state.eventCount)),
+      (l10n.hostsHostOrganizerLabelUpcoming, count(state.upcomingCount)),
+    ];
+    final crm = <(String, String)>[
+      (l10n.hostsHostOrganizerCrmContacts, count(summary?.contactCount)),
+      (
+        l10n.hostsHostOrganizerCrmPastAttendees,
+        count(summary?.pastAttendeeCount),
+      ),
+      (
+        l10n.hostsHostOrganizerCrmRepeatAttendees,
+        count(summary?.repeatAttendeeCount),
+      ),
+      (
+        l10n.hostsHostOrganizerCrmImportedContacts,
+        count(summary?.importedContactCount),
+      ),
+    ];
     return CatchPageBody.screen(
       children: [
         CatchSection(
@@ -45,28 +63,19 @@ class OrganizerAudienceBody extends StatelessWidget {
           title: l10n.hostsHostAnalyticsLabelAllTime,
           dividers: CatchSectionPlacement.none,
           children: [
-            grid([
-              (
-                l10n.hostsHostOrganizerLabelMembers,
-                HostCountFormatters.compact(organizer.memberCount),
-              ),
-              (
-                organizer.reviewCount > 0
-                    ? l10n.hostsHostOrganizerLabelRatingReviewcountReviews(
-                        reviewCount: organizer.reviewCount,
-                      )
-                    : l10n.hostsHostOrganizerLabelRating,
-                state.rating,
-              ),
-              (
-                l10n.hostsHostOrganizerLabelEventsHosted,
-                count(state.eventCount),
-              ),
-              (
-                l10n.hostsHostOrganizerLabelUpcoming,
-                count(state.upcomingCount),
-              ),
-            ]),
+            CatchStack(
+              children: [
+                for (final row in _rowsOfTwo(allTime))
+                  CatchStack(
+                    direction: CatchStackDirection.row,
+                    equal: true,
+                    children: [
+                      for (final (label, value) in row)
+                        CatchMetricTile.stat(label: label, value: value),
+                    ],
+                  ),
+              ],
+            ),
           ],
         ),
         CatchSection(
@@ -88,24 +97,19 @@ class OrganizerAudienceBody extends StatelessWidget {
                   onPressed: onRetry,
                 ),
               ),
-              OrganizerAudienceStatus.content => grid([
-                (
-                  l10n.hostsHostOrganizerCrmContacts,
-                  count(summary?.contactCount),
-                ),
-                (
-                  l10n.hostsHostOrganizerCrmPastAttendees,
-                  count(summary?.pastAttendeeCount),
-                ),
-                (
-                  l10n.hostsHostOrganizerCrmRepeatAttendees,
-                  count(summary?.repeatAttendeeCount),
-                ),
-                (
-                  l10n.hostsHostOrganizerCrmImportedContacts,
-                  count(summary?.importedContactCount),
-                ),
-              ]),
+              OrganizerAudienceStatus.content => CatchStack(
+                children: [
+                  for (final row in _rowsOfTwo(crm))
+                    CatchStack(
+                      direction: CatchStackDirection.row,
+                      equal: true,
+                      children: [
+                        for (final (label, value) in row)
+                          CatchMetricTile.stat(label: label, value: value),
+                      ],
+                    ),
+                ],
+              ),
             },
             if (summary != null && summary.truncated)
               CatchText(
@@ -157,3 +161,10 @@ class OrganizerAudienceBody extends StatelessWidget {
     );
   }
 }
+
+/// Splits [tiles] into rows of two for the stat grid; an odd last tile sits
+/// alone in its row.
+List<List<(String, String)>> _rowsOfTwo(List<(String, String)> tiles) => [
+  for (var start = 0; start < tiles.length; start += 2)
+    tiles.skip(start).take(2).toList(),
+];

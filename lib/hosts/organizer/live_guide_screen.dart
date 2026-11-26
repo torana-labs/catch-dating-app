@@ -44,7 +44,7 @@ class OrganizerLiveGuideScreen extends ConsumerWidget {
                 error: read.error,
                 onRetry: () => retryHostOrganizerScope(ref),
               )
-            : _LiveGuideEditor(
+            : OrganizerLiveGuideEditor(
                 key: ValueKey<String>(organizer.id),
                 organizer: organizer,
                 isOwner: scope.isOwner,
@@ -54,9 +54,11 @@ class OrganizerLiveGuideScreen extends ConsumerWidget {
   }
 }
 
-/// Holds the defaults saver for one organizer while its guide is open.
-class _LiveGuideEditor extends ConsumerStatefulWidget {
-  const _LiveGuideEditor({
+/// The guide editor for one loaded organizer. It holds the defaults saver
+/// while the guide is open, so the screen keys it by organizer id and a new
+/// organizer starts a new saver. Only the owner edits; a manager reads.
+class OrganizerLiveGuideEditor extends ConsumerStatefulWidget {
+  const OrganizerLiveGuideEditor({
     super.key,
     required this.organizer,
     required this.isOwner,
@@ -66,10 +68,12 @@ class _LiveGuideEditor extends ConsumerStatefulWidget {
   final bool isOwner;
 
   @override
-  ConsumerState<_LiveGuideEditor> createState() => _LiveGuideEditorState();
+  ConsumerState<OrganizerLiveGuideEditor> createState() =>
+      _OrganizerLiveGuideEditorState();
 }
 
-class _LiveGuideEditorState extends ConsumerState<_LiveGuideEditor> {
+class _OrganizerLiveGuideEditorState
+    extends ConsumerState<OrganizerLiveGuideEditor> {
   late final HostOrganizerDefaultsSaver _saver = HostOrganizerDefaultsSaver(
     initial: widget.organizer.hostDefaults,
     writer: (defaults) =>
@@ -94,7 +98,7 @@ class _LiveGuideEditorState extends ConsumerState<_LiveGuideEditor> {
   }
 
   @override
-  void didUpdateWidget(covariant _LiveGuideEditor oldWidget) {
+  void didUpdateWidget(covariant OrganizerLiveGuideEditor oldWidget) {
     super.didUpdateWidget(oldWidget);
     _saver.reconcile(widget.organizer.hostDefaults);
   }

@@ -1,4 +1,6 @@
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
+import 'package:catch_dating_app/hosts/events/event_defaults_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/audience_body.dart';
 import 'package:catch_dating_app/hosts/organizer/audience_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/audience_state.dart';
@@ -12,8 +14,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-// The organizer live event guide (the owner tunes it, a manager reads it)
-// and the host professional profile preview from Settings.
+// The organizer live event guide (the owner tunes it, a manager reads it),
+// the event policy and event defaults it sits beside, and the host
+// professional profile preview from Settings.
 
 const _path = '[P1 product surfaces]/Host/Organizer';
 
@@ -114,4 +117,32 @@ Widget organizerEventPolicyBodyUseCase(BuildContext context) =>
 )
 Widget organizerEventPolicyScreenUseCase(BuildContext context) => ProviderScope(
   child: OrganizerEventPolicyScreen(organizerId: _organizer.id),
+);
+
+@widgetbook.UseCase(
+  name: 'Owner edits the policy',
+  type: OrganizerEventPolicyEditor,
+  path: _path,
+)
+Widget organizerEventPolicyEditorUseCase(BuildContext context) => ProviderScope(
+  child: OrganizerEventPolicyEditor(organizer: _organizer, isOwner: true),
+);
+
+@widgetbook.UseCase(
+  name: 'Manager reads the guide',
+  type: OrganizerLiveGuideEditor,
+  path: _path,
+)
+Widget organizerLiveGuideEditorUseCase(BuildContext context) => ProviderScope(
+  child: OrganizerLiveGuideEditor(organizer: _organizer, isOwner: false),
+);
+
+@widgetbook.UseCase(
+  name: 'Before the defaults load',
+  type: HostEventDefaultsScreen,
+  path: _path,
+)
+Widget hostEventDefaultsScreenUseCase(BuildContext context) => ProviderScope(
+  overrides: [uidProvider.overrideWith((ref) => Stream.value(null))],
+  child: HostEventDefaultsScreen(organizerId: _organizer.id),
 );

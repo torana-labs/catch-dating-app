@@ -204,6 +204,7 @@ class _PageEditScreenState extends ConsumerState<OrganizerPageEditScreen> {
 
   Future<void> _addPhotos(Organizer organizer) async {
     final actions = ref.read(hostOrganizerEditControllerProvider);
+    // provider-graph: ownership-widget-async:_PageEditScreenState._addPhotos:await:hostOrganizerEditControllerProvider.pickOrganizerPhotos watch CAT156 -- Picking photos opens the system picker through the organizer edit controller; the widget only queues the picked images in its local upload list, which is per-photo progress feedback, not business data. Move the queue into a generated owner in the CAT156 migration.
     final picked = await actions.pickOrganizerPhotos();
     if (picked.isEmpty || !mounted) return;
     setState(() {
@@ -230,6 +231,7 @@ class _PageEditScreenState extends ConsumerState<OrganizerPageEditScreen> {
         );
       }
     });
+    // provider-graph: ownership-widget-async:_PageEditScreenState._sendUploads:await:hostOrganizerEditControllerProvider.updateOrganizerMedia watch CAT156 -- The save runs through the organizer edit media mutation, which owns its pending and error; the widget keeps per-photo upload progress and the Retry or Remove state for photos that failed. Move that queue into a generated owner in the CAT156 migration.
     final result = await _runMedia(
       () => ref
           .read(hostOrganizerEditControllerProvider)
@@ -286,6 +288,7 @@ class _PageEditScreenState extends ConsumerState<OrganizerPageEditScreen> {
     final upload = _uploads[id];
     if (upload == null) return;
     setState(() => _uploads.remove(id));
+    // provider-graph: ownership-widget-async:_PageEditScreenState._dropUpload:await:hostOrganizerEditControllerProvider.discardOrganizerMedia watch CAT156 -- Discarding a failed photo is storage cleanup through the organizer edit controller after the widget drops it from its local upload list. Move the list into a generated owner in the CAT156 migration.
     await ref
         .read(hostOrganizerEditControllerProvider)
         .discardOrganizerMedia(photoInputs: [upload.input]);
