@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/organizer/page_edit_body.dart';
 import 'package:catch_dating_app/hosts/organizer/page_edit_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
@@ -65,6 +66,23 @@ void main() {
       expect(one.formats, {CatchFormat.dinner});
     });
 
+    test('type and city go into the update; an @ before the handle is '
+        'dropped; a malformed email is not valid', () {
+      final organizer = lanternLane();
+      final draft = PageEditDraft.of(organizer).copyWith(
+        type: OrganizerType.venue,
+        city: 'Pune',
+        instagram: '@lanternlane',
+      );
+      final fields = draft.patchFor(organizer, isOwner: true).toFieldsJson();
+
+      expect(fields['organizerType'], 'venue');
+      expect(fields['location'], 'Pune');
+      expect(fields['instagramHandle'], 'lanternlane');
+      expect(draft.copyWith(email: 'not-an-email').valid, isFalse);
+      expect(draft.copyWith(email: 'hi@lantern.example').valid, isTrue);
+    });
+
     test('a blank name is not valid', () {
       expect(
         PageEditDraft.of(lanternLane()).copyWith(name: '  ').valid,
@@ -84,11 +102,14 @@ void main() {
         OrganizerPageEditBody(
           state: state,
           onField: (field, value) => calls.add((field, value)),
+          onType: calls.add,
+          onCity: calls.add,
           onFormat: calls.add,
           onListed: calls.add,
           onChangeLogo: () => calls.add('logo'),
           onAddPhotos: () => calls.add('photos'),
-          onRemovePhoto: calls.add,
+          onPhoto: calls.add,
+          onRemoveLogo: () => calls.add('remove-logo'),
         ),
       );
       return calls;
@@ -161,6 +182,44 @@ void main() {
       );
 
       expect(find.text('On your page'), findsNothing);
+      // Only the owner changes the details; the note says so and the
+      // kinds of night cannot be picked.
+      expect(
+        find.text('Only the organizer owner can edit organizer details.'),
+        findsOneWidget,
+      );
+      final calls = await pump(
+        tester,
+        OrganizerPageEditState(
+          organizer: organizer,
+          draft: PageEditDraft.of(organizer),
+          revision: 1,
+        ),
+      );
+      await tester.tap(find.text('Social runs'));
+      expect(calls, isEmpty);
+    });
+
+    testWidgets('the owner sees the type and city, and the out-of-step '
+        'listing says which channel is on', (tester) async {
+      final organizer = lanternLane();
+      await pump(
+        tester,
+        OrganizerPageEditState(
+          organizer: organizer,
+          draft: PageEditDraft.of(organizer),
+          revision: 1,
+          isOwner: true,
+        ),
+      );
+
+      expect(find.text('Organizer type'), findsOneWidget);
+      expect(find.text('Club'), findsOneWidget);
+      expect(find.text('City'), findsOneWidget);
+      expect(
+        find.text('Only the organizer owner can edit organizer details.'),
+        findsNothing,
+      );
     });
   });
 }

@@ -215,7 +215,7 @@ class OrganizerPageEditBody extends StatelessWidget {
           ],
         ),
         field(PageEditField.name, l10n.hostOrganizerPageName, draft.name),
-        CatchField.select<OrganizerType>(
+        CatchField<OrganizerType>.select(
           key: ValueKey<String>('page-edit-type-$revision'),
           copy: copy,
           title: l10n.hostsOrganizerTypeLabel,
@@ -231,7 +231,7 @@ class OrganizerPageEditBody extends StatelessWidget {
                 }
               : null,
         ),
-        CatchField.select<String>(
+        CatchField<String>.select(
           key: ValueKey<String>('page-edit-city-$revision'),
           copy: copy,
           title: l10n.hostsHostOrganizerProfileLabelCity,
