@@ -131,6 +131,8 @@ import {EVENT_PLAN_CHANGES, eventPlanChangeFields,
   eventPlanChangeSourceId} from "./planChangeRecords";
 import {updateEventMediaRecovery, EventMediaRecoveryReceipt} from
   "./eventMediaRecovery";
+import {readEventWithCohortCounts} from
+  "../domain/events/eventCohortCounts";
 
 interface EventMutationDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -369,7 +371,6 @@ export async function createEventHandler(
       bookedCount: 0,
       crossPathsPairHeldCount: 0,
       crossPathsPairConfirmedCount: 0,
-      crossPathsPairHeldCohortCounts: {},
       checkedInCount: 0,
       waitlistedCount: 0,
       status: "active" as const,
@@ -506,7 +507,8 @@ export async function updateEventHandler(
     }
     assertPublishedMutationTarget(eventSnap.data());
 
-    const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
+    const event = await readEventWithCohortCounts(tx, db, eventRef.id,
+      requireDoc<EventDocument>(eventSnap, "EventDocument"));
     if (event.status === "cancelled") {
       throw new HttpsError(
         "failed-precondition",
@@ -728,7 +730,8 @@ export async function cancelEventHandler(
     }
     assertPublishedMutationTarget(eventSnap.data());
 
-    const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
+    const event = await readEventWithCohortCounts(tx, db, eventRef.id,
+      requireDoc<EventDocument>(eventSnap, "EventDocument"));
     const organizerId = requireOrganizerId(event);
     const organizerRef = db.collection("organizers").doc(organizerId);
     const [organizerSnap, participantEdges] =
@@ -842,7 +845,8 @@ export async function deleteEventHandler(
     }
     assertPublishedMutationTarget(eventSnap.data());
 
-    const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
+    const event = await readEventWithCohortCounts(tx, db, eventRef.id,
+      requireDoc<EventDocument>(eventSnap, "EventDocument"));
     const organizerId = requireOrganizerId(event);
     const organizerRef = db.collection("organizers").doc(organizerId);
     const [
@@ -1088,8 +1092,6 @@ function buildCreateEventDoc(
     currency: data.currency ?? "INR",
     constraints: normalizeConstraints(data.constraints),
     eventPolicy,
-    cohortCounts: {},
-    waitlistedCohortCounts: {},
   };
 }
 

@@ -11,6 +11,7 @@
     "node --test tool/nx/select_lanes.test.mjs"
   ],
   "impactPaths": [
+    "tool/nx/lanes.mjs",
     "tool/nx/select_lanes.test.mjs",
     "tool/nx/lane_coverage.mjs"
   ],

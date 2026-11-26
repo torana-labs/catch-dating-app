@@ -341,7 +341,10 @@ path, and invokes reusable validation workflows only for affected targets.
 Pull requests, merge queues, main pushes, and nightly full validation use the
 explicit `pr`, `merge_group`, `main`, and `nightly` graph modes respectively.
 For `pr`, `merge_group` and `main`, `tool/nx/select_lanes.mjs` runs the lanes
-`nx affected` selects, and only those (design A; main from 22 Nov 2026). The planner's selection is a
+`nx affected` selects, and only those (design A; main from 22 Nov 2026). The
+lane list, the Nx project-to-lane map and the per-mode rules (capture freshness
+for app inputs in the queue only, iOS only for a native or build input, the slow
+lanes left to the queue) are `selectNxLanes` in `tool/nx/lanes.mjs`. The planner's selection is a
 shadow. The plan summary lists each lane the planner would also run, with the
 `shadow_plan.mjs` rule that explains it, or UNEXPLAINED. The count of
 unexplained lanes is the `planner_unexplained` output and is also stored in the
@@ -367,7 +370,7 @@ the Nx query (about 10 s) to a run that executes lanes for about 20 minutes.
 On main the native app builds (`flutter_build_android`, `_ios`, `_web`) run
 only for a native build input (owner decision, 22 Nov 2026): native project
 folders, pubspec files and lockfiles, Gradle, CocoaPods and Xcode files, and
-native plugin code (`nativeBuildInputGlobs` in `shadow_plan.mjs`). A Dart-only
+native plugin code (`nativeBuildInputGlobs` in `tool/nx/lanes.mjs`). A Dart-only
 app change relies on the merge queue's web smoke and the nightly full builds,
 so main runs neither; a build lane the CI caller graph selects (its workflow, a
 script it runs, a selector) still runs (`mainBuildLanes`). Main's builds upload
@@ -675,6 +678,33 @@ decision, 22 Nov 2026; evidence in
 
 The job takes no plan selection, and uploads `semantic-timings-<run>-<attempt>` for the budget report.
 
+### Tool buckets
+
+The full Tools matrix (control-plane changes, the nightly, a full dispatch)
+runs every active tool in six jobs, `Tool checks (bucket-1)` to
+`(bucket-6)`. `tool/ci/tool_buckets.mjs` (manifest `ci:tool-buckets`) assigns
+each tool to exactly one bucket by longest-first balancing over the measured
+seconds in `tool/ci/tool_bucket_timings.json`. Tools that share a check command
+or the shared Functions build are placed together, so the runner still runs
+each shared command once. A tool the file does not list
+yet counts as its `defaultSeconds`. Each bucket installs the browser only when
+the CI requirements of its tools need it, by the same projection the affected
+job uses.
+
+- See the split: `node tool/ci/tool_buckets.mjs plan`.
+- One bucket's tools or setup: `ids --bucket <n>`, `setup --bucket <n>`.
+- Refresh the timings after the buckets drift (the test fails when bucket
+  loads differ by more than a minute): save each bucket job's log from a recent
+  full-matrix run as `<run-id>-<job>.log`, then run
+  `node tool/ci/tool_buckets.mjs regenerate --runs <run-id,...> <log>...`.
+  GitHub returns only a log's last lines, so a long bucket log can start
+  partway; add `--fallback tool/ci/tool_bucket_timings.json` to keep the
+  current seconds for tools the new logs do not cover.
+  Logs from several runs are averaged per tool.
+
+Bucket names carry no meaning: no ruleset, Required CI need or test pins a
+tool to a named bucket, so a regenerated split changes only which job runs it.
+
 ### Selected Check Contracts
 
 The graph selects obligations; selection is not execution evidence. Selector-control
@@ -767,8 +797,9 @@ Local `node tool/harness/verify_local.mjs --base origin/main --list` resolves
 Tools checks through the same affected-tool planner and registered runner as CI,
 including full fallback. Literal package working directories are preserved;
 commands with unresolved environment or Actions context remain explicit gaps.
-Each Tools category bucket uses one runner invocation, so identical registered
-commands execute once across its categories in their declared order. Repeated
+Each Tools bucket uses one runner invocation, so identical registered commands
+execute once across its tools in manifest order; tools that share a command are
+always assigned to the same bucket (see Tool buckets). Repeated
 `--category` arguments retain that behavior locally; every category must exist
 before any check executes. Local checks
 stop on shell pipeline failures and incomplete ownership cannot report success.
@@ -815,7 +846,7 @@ pack. Failure or cancellation of the owning Tools lane still fails Required CI.
 
 Design parity source checks are explicit commands in the tools manifest (`tool/manifest/tools/`),
 shared by the local umbrella and the tool runner. Identical scanner commands run
-once within the Marketing/design tool bucket. Whole-product similarity and
+once: their tools always share one tool bucket. Whole-product similarity and
 advisory migration reports remain explicit `--reports` output. These prove
 source contracts, never live visual parity; generated reports do not replace UI
 journeys, renderer tests or ownership checks.

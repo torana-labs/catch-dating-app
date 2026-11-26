@@ -234,8 +234,9 @@ test("decideEventJoinRequestHandler declines active requests", async () => {
 
   assert.deepEqual(result, {decision: "declined", booked: false});
   assert.equal(h.firestore.get("events/event-1")?.waitlistedCount, 0);
+  // Cohort totals live in the server-only eventCohortCounts (#2493).
   assert.deepEqual(
-    h.firestore.get("events/event-1")?.waitlistedCohortCounts,
+    h.firestore.get("eventCohortCounts/event-1")?.waitlistedCohortCounts,
     {menInterestedInWomen: 0}
   );
   assert.equal(

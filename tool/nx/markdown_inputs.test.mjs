@@ -72,6 +72,7 @@ export const markdownMentions = {
   "tool/marketing/audit_website_imagery.mjs": "names the summary.md report it writes; a local finder CI does not run",
   "tool/marketing/import_hosted_captures.mjs": "checks the widget catalog its own import rewrote",
   "tool/nx/catch_projects.mjs": "Nx input patterns",
+  "tool/nx/lanes.mjs": "lane rules that classify Markdown paths (queue capture inputs, native build inputs)",
   "tool/nx/shadow_plan.mjs": "selection logic that classifies Markdown paths",
   "tool/nx/workflow_callers.mjs": "lists the pull request template as CI configuration no workflow runs",
   "tool/scaffold.mjs": "names the READMEs the generator writes",

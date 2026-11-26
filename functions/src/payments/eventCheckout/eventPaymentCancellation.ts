@@ -20,6 +20,8 @@ import {prepareSeatCommand, applySeatPlan, reservationPlaces,
   SeatAuthorityError} from "../../events/seatAuthority/seatAuthority";
 import {catchBookingCancellation, isPublicPaymentBooking} from
   "../../events/publicRegistration/catchBookingBridge";
+import {readEventWithCohortCounts} from
+  "../../domain/events/eventCohortCounts";
 function unavailable(): never {
   throw new HttpsError("failed-precondition",
     "Paid cancellation needs reconciliation.");
@@ -75,7 +77,9 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
     }
     const {eventId, organizerId, recipientUid} = payment;
     const eventRef = db.collection("events").doc(eventId);
-    const event = (await tx.get(eventRef)).data();
+    const stored = (await tx.get(eventRef)).data();
+    const event = stored ?
+      await readEventWithCohortCounts(tx, db, eventId, stored) : stored;
     const quote = input.guest ? eventGuestCancellationQuote(payment,
       nowMillis) : {refundAmountPaise: payment.amountPaise};
     if (input.guest) {

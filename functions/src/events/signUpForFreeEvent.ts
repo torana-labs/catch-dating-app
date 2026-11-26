@@ -45,6 +45,8 @@ import {
   readHostMembershipContext,
   recordHostMembershipBenefitUse,
 } from "../hostMemberships/entitlementReader";
+import {fetchEventWithCohortCounts} from
+  "../domain/events/eventCohortCounts";
 
 interface SignUpForFreeEventDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -112,7 +114,8 @@ export async function signUpForFreeEventHandler(
     throw new HttpsError("not-found", "User profile not found.");
   }
 
-  const event = requirePublicConfiguredEvent(eventSnap.data() as EventDocument);
+  const event = await fetchEventWithCohortCounts(db, eventId,
+    requirePublicConfiguredEvent(eventSnap.data() as EventDocument));
   const user = userSnap.data() as UserProfileDocument;
   const policy = eventPolicyFromEvent(event);
   const cohortId = cohortIdForUser(user);
