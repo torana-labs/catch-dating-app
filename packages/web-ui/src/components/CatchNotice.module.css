@@ -30,6 +30,7 @@
 .notice[data-tone="warning"] { --catch-notice-tone: var(--catch-theme-warning); }
 .notice[data-tone="danger"] { --catch-notice-tone: var(--catch-theme-danger); }
 .notice[data-tone="event"] { --catch-notice-tone: var(--catch-theme-primary); }
+.notice[data-tone="neutral"] { --catch-notice-tone: var(--catch-theme-ink2); }
 
 button.notice { cursor: pointer; }
 
@@ -112,4 +113,78 @@ button.notice:focus-visible {
     justify-self: start;
     margin: var(--catch-space-s2) 0 0;
   }
+}
+
+/*
+ * Flutter CatchNotice.inline: a block in the flow with no border or shadow,
+ * its fill the tone's tint (the tile for neutral) at radius md, 12px by 14px
+ * padding. The tone's deep colour draws a 20px glyph 1px down, 12px before
+ * the copy; the title is titleRow and the body bodySmall in ink, 2px apart.
+ * A quiet sm action sits under the copy at its start, or a footer 8px lower
+ * takes its place.
+ */
+.inline {
+  --catch-notice-inline-fill: var(--catch-theme-tint-indigo);
+  --catch-notice-inline-icon: var(--catch-theme-deep-indigo);
+
+  display: flex;
+  align-items: flex-start;
+  gap: var(--catch-space-s3);
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--catch-space-s3) var(--catch-space-micro14);
+  border-radius: var(--catch-radius-md);
+  background: var(--catch-notice-inline-fill);
+  color: var(--catch-theme-ink);
+}
+
+.inline[data-tone="success"] {
+  --catch-notice-inline-fill: var(--catch-theme-tint-mint);
+  --catch-notice-inline-icon: var(--catch-theme-deep-mint);
+}
+
+.inline[data-tone="warning"] {
+  --catch-notice-inline-fill: var(--catch-theme-tint-yellow);
+  --catch-notice-inline-icon: var(--catch-theme-deep-yellow);
+}
+
+.inline[data-tone="danger"] {
+  --catch-notice-inline-fill: var(--catch-theme-tint-coral);
+  --catch-notice-inline-icon: var(--catch-theme-deep-coral);
+}
+
+.inline[data-tone="neutral"] {
+  --catch-notice-inline-fill: var(--catch-theme-tile);
+  --catch-notice-inline-icon: var(--catch-theme-ink2);
+}
+
+.inlineIcon {
+  display: inline-flex;
+  flex: none;
+  margin-top: var(--catch-stroke-hairline);
+  color: var(--catch-notice-inline-icon);
+}
+
+.inlineIcon > svg {
+  width: 20px;
+  height: 20px;
+}
+
+.inlineCopy {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--catch-space-micro2);
+  min-width: 0;
+}
+
+.inlineCopy > :not(.inlineAction, .inlineFooter) { align-self: stretch; }
+
+.inlineAction { display: inline-flex; }
+
+.inlineFooter {
+  display: block;
+  align-self: stretch;
+  padding-top: var(--catch-space-s2);
 }

@@ -2693,7 +2693,12 @@
             "arrival-tap-to-open",
             "arrival-swipe-to-dismiss",
             "arrival-reduced-motion",
-            "dark"
+            "dark",
+            "inline-info",
+            "inline-success",
+            "inline-neutral",
+            "inline-action",
+            "inline-footer"
           ]
         },
         "notes": "CatchNoticeData is a plain object with icon as a node and accentColor as a CSS colour. The action is a D20 md secondary CatchButton and the dismiss control a 48px plain icon button. An arrival notice (onOpen) is one button that dismisses and opens; Escape dismisses it, standing in for the app's swipe. CatchNoticeRegion is the app-level overlay: one polite live region fixed above the bottom edge and safe area; the host owns timing, dedupe and priority."
@@ -10482,7 +10487,14 @@
             "default",
             "selected",
             "focused",
-            "disabled-by-null-action"
+            "disabled-by-null-action",
+            "row",
+            "tile",
+            "day",
+            "add",
+            "format",
+            "attention",
+            "vacant"
           ]
         },
         "notes": "One checked choice drawn as a tile: a button with role radio and aria-checked, its title and subtitle naming and describing it. The caller groups tiles in role radiogroup with a label. A null onTap disables the tile, as in Flutter."
@@ -16688,7 +16700,10 @@
             "monogram-display",
             "row",
             "row-veiled",
-            "dark"
+            "dark",
+            "status-checked-in",
+            "system-sizes",
+            "system-colors"
           ]
         },
         "notes": "CatchAvatar.count, .veiled and .monogram are recipe=\"count\" | \"veiled\" | \"monogram\" on the one component; CatchAvatarRow is the stack member. Avatars render aria-hidden: the name beside them carries the identity, as in the board rows and review items. A photo that fails to load falls back to initials, as Flutter's errorBuilder does."
