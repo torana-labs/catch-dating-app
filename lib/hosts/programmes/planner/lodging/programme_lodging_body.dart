@@ -8,6 +8,7 @@ import 'package:catch_dating_app/hosts/programmes/planner/lodging/programme_lodg
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -417,19 +418,26 @@ class _HostProgrammeLodgingBodyState extends State<HostProgrammeLodgingBody> {
             ),
           ),
         if (layers.length > 1)
-          CatchField<String>.choices(
-            key: const ValueKey<String>('host-programme-lodging-floor'),
-            copy: catchFieldCopy(l10n),
-            title: l10n.hostProgrammeLodgingFloor,
-            values: layers.keys.toList(),
-            itemLabelBuilder: (id) => layers[id]!,
-            selected: {?layerId},
-            onSelectionChanged: _pending || locked
-                ? null
-                : (value) => setState(() {
-                    _layerId = value.firstOrNull ?? _layerId;
-                    _destinationId = null;
-                  }),
+          CatchSection(
+            dividers: CatchSectionPlacement.none,
+            children: [
+              CatchField<String>.choices(
+                key: const ValueKey<String>('host-programme-lodging-floor'),
+                copy: catchFieldCopy(l10n),
+                title: l10n.hostProgrammeLodgingFloor,
+                contract: CatchContractConstraints
+                    .programLodgingConfigDocumentRoomsItemsFloor,
+                values: layers.keys.toList(),
+                itemLabelBuilder: (id) => layers[id]!,
+                selected: {?layerId},
+                onSelectionChanged: _pending || locked
+                    ? null
+                    : (value) => setState(() {
+                        _layerId = value.firstOrNull ?? _layerId;
+                        _destinationId = null;
+                      }),
+              ),
+            ],
           )
         else if (layerId != null)
           CatchText(

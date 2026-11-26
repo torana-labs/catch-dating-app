@@ -10,6 +10,7 @@ import 'package:catch_dating_app/hosts/programmes/planner/lodging/programme_lodg
 import 'package:catch_dating_app/hosts/programmes/planner/lodging/programme_lodging_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -146,22 +147,23 @@ class _HostProgrammeLodgingScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final value = ref.watch(_provider);
+    final read = catchAsyncStateFromAsyncValue(ref.watch(_provider));
     final _LodgingBar? bar;
     final Widget body;
     // A failed or reloading read never keeps showing the older private view.
-    if (value.hasError) {
+    final settled = read.isSettledData ? read.value : null;
+    if (read.error case final error?) {
       bar = _plainBar;
       body = CatchLocalizedErrorState(
-        value.error!,
+        error,
         context: AppErrorContext.event,
         onRetry: () => ref.invalidate(_provider),
       );
-    } else if (value.isLoading || !value.hasValue) {
+    } else if (settled == null) {
       bar = _plainBar;
       body = const CatchPageBody.screen(child: CatchLoadingIndicator());
     } else {
-      (bar, body) = _view(context, value.requireValue);
+      (bar, body) = _view(context, settled);
     }
     return CatchRoot(
       format: CatchFormat.nightsOut,

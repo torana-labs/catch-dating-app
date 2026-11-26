@@ -93,7 +93,7 @@ final class HostProgrammeLodgingControllerProvider
 }
 
 String _$hostProgrammeLodgingControllerHash() =>
-    r'b951b685a03b0d1300e00b268fa2f7bc529e5ae7';
+    r'269edd833cd9964ed699979a1e71a51d3e73c770';
 
 /// The stay planner's one state owner, over `manageProgramLodging`.
 ///

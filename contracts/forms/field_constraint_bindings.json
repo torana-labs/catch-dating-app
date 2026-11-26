@@ -327,6 +327,18 @@
       "readiness",
       "unavailableReason"
     ],
+    "programLodgingConfigDocument": [
+      "demand.items.guestId",
+      "groupParents.items.id",
+      "groupParents.items.parentIds.items",
+      "inventory.items.contractId",
+      "inventory.items.id",
+      "parties.items.guestIds.items",
+      "parties.items.id",
+      "rooms.items.floor",
+      "rooms.items.hotelId",
+      "rooms.items.resourceIds.items"
+    ],
     "programTransportPlanCallableResponse": [
       "groups.items.readiness",
       "unassigned.items.reason"

@@ -6,6 +6,7 @@ import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots
 import 'package:catch_dating_app/hosts/programmes/planner/lodging/programme_lodging_screen.dart';
 import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:catch_test_support/programmes/program_operations_fixture.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,7 +33,7 @@ void main() {
   ];
   Future<void> openSetup(WidgetTester tester) async {
     await tester.tap(find.text('Edit dates, sharing and inventory'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
   }
 
   final captures =

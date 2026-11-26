@@ -79,7 +79,14 @@ Future<void> _tapButton(WidgetTester tester, String label) async {
 Future<void> _chooseGuest(WidgetTester tester, String name) async {
   await tester.tap(find.text('Guest name'));
   await pumpFeatureUi(tester);
-  await tester.tap(find.text(name).last);
+  await tester.tap(
+    find.descendant(
+      of: find.byKey(
+        const ValueKey<String>('host-programme-lodging-member-guest'),
+      ),
+      matching: find.text(name),
+    ),
+  );
   await pumpFeatureUi(tester);
 }
 
@@ -195,7 +202,14 @@ void main() {
     expect(find.textContaining('Family contributor list'), findsOneWidget);
     await tester.tap(find.text('Groups'));
     await pumpFeatureUi(tester);
-    await tester.tap(find.text('Friends').last);
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(
+          const ValueKey<String>('host-programme-lodging-member-groups'),
+        ),
+        matching: find.text('Friends'),
+      ),
+    );
     await pumpFeatureUi(tester);
     await _tapButton(tester, 'Save membership choices');
     expect(repository.membershipSaves, 1);

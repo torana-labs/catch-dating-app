@@ -114,7 +114,13 @@ Future<void> _tap(WidgetTester tester, Finder finder) async {
 
 Future<void> _secondFloor(WidgetTester tester) async {
   await _tap(tester, find.text('Floor'));
-  await _tap(tester, find.textContaining('Hotel Two').last);
+  await _tap(
+    tester,
+    find.descendant(
+      of: _key('host-programme-lodging-floor'),
+      matching: find.textContaining('Hotel Two'),
+    ),
+  );
 }
 
 void main() {

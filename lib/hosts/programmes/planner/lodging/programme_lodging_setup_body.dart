@@ -5,6 +5,7 @@ import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart'
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -90,6 +91,8 @@ class _HostProgrammeLodgingSetupBodyState
             CatchField<String>.choices(
               copy: copy,
               title: l10n.hostProgrammeLodgingGuest,
+              contract: CatchContractConstraints
+                  .programLodgingConfigDocumentDemandItemsGuestId,
               values: catalog
                   .rows('guests')
                   .map((g) => requiredString(g, 'id'))
@@ -157,6 +160,8 @@ class _HostProgrammeLodgingSetupBodyState
             CatchField<String>.choices(
               copy: copy,
               title: l10n.hostProgrammeLodgingParty,
+              contract: CatchContractConstraints
+                  .programLodgingConfigDocumentPartiesItemsId,
               values: _draft
                   .rows('parties')
                   .map((p) => requiredString(p, 'id'))
@@ -196,6 +201,8 @@ class _HostProgrammeLodgingSetupBodyState
             CatchField<String>.choices(
               copy: copy,
               title: l10n.hostProgrammeLodgingDemand,
+              contract: CatchContractConstraints
+                  .programLodgingConfigDocumentPartiesItemsGuestIdsItems,
               mode: CatchChipMode.multiple,
               values: _draft
                   .rows('demand')
@@ -228,6 +235,8 @@ class _HostProgrammeLodgingSetupBodyState
             CatchField<String>.choices(
               copy: copy,
               title: l10n.hostProgrammeLodgingPinHotel,
+              contract: CatchContractConstraints
+                  .programLodgingConfigDocumentRoomsItemsHotelId,
               allowEmptySelection: true,
               values: catalog
                   .rows('hotels')
@@ -241,6 +250,8 @@ class _HostProgrammeLodgingSetupBodyState
             CatchField<String>.choices(
               copy: copy,
               title: l10n.hostProgrammeLodgingPinRoom,
+              contract: CatchContractConstraints
+                  .programLodgingConfigDocumentInventoryItemsId,
               allowEmptySelection: true,
               values: _draft
                   .rows('inventory')
@@ -303,6 +314,8 @@ class _HostProgrammeLodgingSetupBodyState
             CatchField<String>.choices(
               copy: copy,
               title: l10n.hostProgrammeLodgingInventory,
+              contract: CatchContractConstraints
+                  .programLodgingConfigDocumentInventoryItemsId,
               allowEmptySelection: true,
               values: _draft
                   .rows('inventory')
@@ -324,6 +337,8 @@ class _HostProgrammeLodgingSetupBodyState
             CatchField<String>.choices(
               copy: copy,
               title: l10n.hostProgrammeLodgingContract,
+              contract: CatchContractConstraints
+                  .programLodgingConfigDocumentInventoryItemsContractId,
               values: catalog
                   .rows('contracts')
                   .map((c) => requiredString(c, 'id'))
@@ -408,6 +423,8 @@ class _HostProgrammeLodgingSetupBodyState
             CatchField<String>.choices(
               copy: copy,
               title: l10n.hostProgrammeLodgingResources,
+              contract: CatchContractConstraints
+                  .programLodgingConfigDocumentRoomsItemsResourceIdsItems,
               mode: CatchChipMode.multiple,
               allowEmptySelection: true,
               values: _draft
@@ -486,6 +503,8 @@ class _HostProgrammeLodgingSetupBodyState
             CatchField<String>.choices(
               copy: copy,
               title: l10n.hostProgrammeLodgingGroup,
+              contract: CatchContractConstraints
+                  .programLodgingConfigDocumentGroupParentsItemsId,
               values: catalog
                   .rows('groups')
                   .map((g) => requiredString(g, 'id'))
@@ -505,6 +524,8 @@ class _HostProgrammeLodgingSetupBodyState
             CatchField<String>.choices(
               copy: copy,
               title: l10n.hostProgrammeLodgingParents,
+              contract: CatchContractConstraints
+                  .programLodgingConfigDocumentGroupParentsItemsParentIdsItems,
               mode: CatchChipMode.multiple,
               allowEmptySelection: true,
               values: catalog
@@ -531,24 +552,27 @@ class _HostProgrammeLodgingSetupBodyState
             dividers: CatchSectionPlacement.none,
             title: l10n.hostProgrammeLodgingAdoptions,
             children: [
-              CatchField<String>.choices(
+              CatchField<String>.select(
                 copy: copy,
                 title: l10n.hostProgrammeLodgingAdoptions,
+                contractExemption:
+                    'An active stay from the lodging catalog; manageProgramLodging adoptions bound its id at 180 characters.',
                 values: catalog
                     .rows('activeStays')
                     .map((s) => requiredString(s, 'id'))
                     .toList(),
-                selected: {?_stay},
+                value: _stay,
                 itemLabelBuilder: (id) {
                   final stay = catalog.row('activeStays', id);
                   return '${label('guests', requiredString(stay, 'guestId'))} · ${stay['roomLabel'] ?? ''}';
                 },
-                onSelectionChanged: (v) =>
-                    setState(() => _stay = v.firstOrNull),
+                onChanged: (v) => setState(() => _stay = v),
               ),
               CatchField<String>.choices(
                 copy: copy,
                 title: l10n.hostProgrammeLodgingParty,
+                contract: CatchContractConstraints
+                    .programLodgingConfigDocumentPartiesItemsId,
                 values: _draft
                     .rows('parties')
                     .map((p) => requiredString(p, 'id'))
@@ -565,6 +589,8 @@ class _HostProgrammeLodgingSetupBodyState
               CatchField<String>.choices(
                 copy: copy,
                 title: l10n.hostProgrammeLodgingInventory,
+                contract: CatchContractConstraints
+                    .programLodgingConfigDocumentInventoryItemsId,
                 values: _draft
                     .rows('inventory')
                     .map((u) => requiredString(u, 'id'))

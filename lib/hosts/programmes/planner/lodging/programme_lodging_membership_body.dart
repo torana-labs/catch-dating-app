@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart'
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -74,6 +75,8 @@ class HostProgrammeLodgingMembershipBody extends StatelessWidget {
               ),
               copy: copy,
               title: l10n.hostProgrammeLodgingGuest,
+              contract: CatchContractConstraints
+                  .programLodgingConfigDocumentPartiesItemsGuestIdsItems,
               values: catalog
                   .rows('guests')
                   .map((g) => requiredString(g, 'id'))
@@ -94,6 +97,8 @@ class HostProgrammeLodgingMembershipBody extends StatelessWidget {
                 ),
                 copy: copy,
                 title: l10n.hostProgrammeLodgingGroups,
+                contract: CatchContractConstraints
+                    .programLodgingConfigDocumentGroupParentsItemsParentIdsItems,
                 body: membership.label,
                 mode: CatchChipMode.multiple,
                 allowEmptySelection: true,
