@@ -38,13 +38,14 @@ export const strandedByRetirementCeiling = Object.freeze({
 
 /**
  * Debt the owner accepted on 11 Nov 2026 so the website could release, each
- * with the issue that pays it down by its due date. The baseline's
+ * with the issue that pays it down by its due date (first due 25 Nov 2026,
+ * moved to 10 Dec 2026 while #1670 is still open). The baseline's
  * `acceptedDebt` record may hold these and only these, as
  * "<issue> due <YYYY-MM-DD>". An entry still measured after its due date
  * fails the check; one that is paid down leaves both the gate and the record.
  * Delete this list with the record's last entry.
  */
-const acceptedPlan = "#1670 due 2026-11-25";
+const acceptedPlan = "#1670 due 2026-12-10";
 export const acceptedDebtCeiling = Object.freeze({
   "library.cross_framework_parity": Object.freeze({
     "catch.notice": acceptedPlan,
