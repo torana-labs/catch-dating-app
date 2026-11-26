@@ -85,150 +85,148 @@ class _HostMessagesScreenState extends ConsumerState<HostMessagesScreen> {
 
   @override
   Widget build(BuildContext context) => CatchRoot(
-    // The window width is read below the root that measures it.
-    child: LayoutBuilder(
-      builder: (context, constraints) => _build(
-        context,
-        split:
-            constraints.maxWidth >=
-            CatchPaneLayout.splitWidthOf(CatchPaneLayoutMode.listDetail),
-      ),
+    // The size class is read below the root that measures the window.
+    child: Builder(
+      builder: (context) {
+        final split =
+            CatchRootScope.sizeClassOf(context) != CatchWindowSize.compact;
+        final l10n = context.l10n;
+        final now = widget.now ?? ref.read(appClockProvider).now();
+        final scope = ref.watch(
+          hostPeopleOrganizerProvider(widget.initialOrganizerId),
+        );
+        final organizer = scope.organizer;
+        final threadId = widget.threadId?.trim();
+        final conversation =
+            organizer == null || threadId == null || threadId.isEmpty
+            ? null
+            : HostConversationRequest(
+                organizerId: organizer.id,
+                selection: threadId,
+                scope: widget.threadScope,
+              );
+        if (conversation != null && !split) {
+          return HostConversationScreen(
+            key: ValueKey<HostConversationRequest>(conversation),
+            request: conversation,
+            onBack: () => _closeThread(organizer!.id),
+          );
+        }
+        final Widget body;
+        if (organizer == null) {
+          body = HostPeopleScopeBody(
+            organizer: scope,
+            onRetry: () => retryHostPeopleOrganizer(ref, scope.uid),
+            onSignIn: () => context.go(Routes.authScreen.path),
+          );
+        } else {
+          final request = HostMessagesRequest(
+            organizerId: organizer.id,
+            day: DateTime(now.year, now.month, now.day),
+            filter: _filter,
+            scope: _scope,
+            segment: _segment,
+            query: _query,
+          );
+          final list = HostMessagesBody(
+            state: ref.watch(hostMessagesControllerProvider(request)),
+            now: now,
+            selectedThreadId: threadId,
+            onView: (view) => openHostPeopleView(context, view, organizer.id),
+            onFilter: (filter) => setState(() => _filter = filter),
+            onScope: (scope) => setState(() {
+              _scope = scope;
+              _segment = HostInboxAudienceSegment.booked;
+            }),
+            onSegment: (segment) => setState(() => _segment = segment),
+            onSearch: (query) => setState(() => _query = query),
+            onMoreCatch: _loadMoreCatch,
+            onMoreWhatsapp: () => ref
+                .read(hostWhatsappThreadPagesProvider(organizer.id).notifier)
+                .loadMore(),
+            onOpenThread: (thread) => context.goNamed(
+              Routes.hostInboxScreen.name,
+              queryParameters: {
+                'organizerId': organizer.id,
+                'threadId': thread.personId,
+                ...hostConversationScopeQuery(switch (_scope) {
+                  final scope? when !scope.isProgram => scope,
+                  _ => switch (thread.eventId) {
+                    final eventId? => HostInboxScope.event(eventId),
+                    null => const HostInboxScope.general(),
+                  },
+                }),
+              },
+            ),
+            onAutomations: () => context.pushNamed(
+              Routes.hostAudienceAutomationsScreen.name,
+              queryParameters: {'organizerId': organizer.id},
+            ),
+            onRetry: () {
+              retryHostMessagesReads(ref, organizer.id);
+              if (_scope?.programId case final programId?) {
+                ref.invalidate(
+                  hostInboxProgramAudiencePagesProvider(
+                    organizer.id,
+                    programId,
+                  ),
+                );
+              }
+            },
+          );
+          body = split
+              ? CatchPaneLayout(
+                  pattern: CatchPaneLayoutMode.listDetail,
+                  detailOpen: conversation != null,
+                  children: [
+                    CatchScrollView(primary: false, child: list),
+                    if (conversation != null)
+                      HostConversationScreen(
+                        key: ValueKey<HostConversationRequest>(conversation),
+                        request: conversation,
+                        presentation: HostConversationPresentation.pane,
+                        onBack: () => _closeThread(organizer.id),
+                      )
+                    else
+                      CatchScrollView(
+                        primary: false,
+                        child: CatchPageBody(
+                          child: CatchEmptyState(
+                            icon: CatchIcons.chat,
+                            title: l10n.hostInboxSelectConversationTitle,
+                            message: l10n.hostInboxSelectConversationBody,
+                          ),
+                        ),
+                      ),
+                  ],
+                )
+              : list;
+        }
+        return CatchScreen(
+          key: const ValueKey<String>('host-messages-screen'),
+          bodyScrolls: !split || organizer == null,
+          topBar: CatchTopBar(
+            variant: CatchTopBarVariant.tabHome,
+            kicker: organizer?.name,
+            title: l10n.hostPeopleTitle,
+            actions: [
+              CatchButton(
+                label: l10n.hostPeopleMessage,
+                leading: CatchIcon(CatchIcons.add, size: CatchIconSize.md),
+                onPressed: organizer == null
+                    ? null
+                    : () => context.pushNamed(
+                        Routes.hostNewMessageScreen.name,
+                        queryParameters: {'organizerId': organizer.id},
+                      ),
+              ),
+            ],
+          ),
+          body: body,
+        );
+      },
     ),
   );
-
-  Widget _build(BuildContext context, {required bool split}) {
-    final l10n = context.l10n;
-    final now = widget.now ?? ref.read(appClockProvider).now();
-    final scope = ref.watch(
-      hostPeopleOrganizerProvider(widget.initialOrganizerId),
-    );
-    final organizer = scope.organizer;
-    final threadId = widget.threadId?.trim();
-    final conversation =
-        organizer == null || threadId == null || threadId.isEmpty
-        ? null
-        : HostConversationRequest(
-            organizerId: organizer.id,
-            selection: threadId,
-            scope: widget.threadScope,
-          );
-    if (conversation != null && !split) {
-      return HostConversationScreen(
-        key: ValueKey<HostConversationRequest>(conversation),
-        request: conversation,
-        onBack: () => _closeThread(organizer!.id),
-      );
-    }
-    final Widget body;
-    if (organizer == null) {
-      body = HostPeopleScopeBody(
-        organizer: scope,
-        onRetry: () => retryHostPeopleOrganizer(ref, scope.uid),
-        onSignIn: () => context.go(Routes.authScreen.path),
-      );
-    } else {
-      final request = HostMessagesRequest(
-        organizerId: organizer.id,
-        day: DateTime(now.year, now.month, now.day),
-        filter: _filter,
-        scope: _scope,
-        segment: _segment,
-        query: _query,
-      );
-      final list = HostMessagesBody(
-        state: ref.watch(hostMessagesControllerProvider(request)),
-        now: now,
-        selectedThreadId: threadId,
-        onView: (view) => openHostPeopleView(context, view, organizer.id),
-        onFilter: (filter) => setState(() => _filter = filter),
-        onScope: (scope) => setState(() {
-          _scope = scope;
-          _segment = HostInboxAudienceSegment.booked;
-        }),
-        onSegment: (segment) => setState(() => _segment = segment),
-        onSearch: (query) => setState(() => _query = query),
-        onMoreCatch: _loadMoreCatch,
-        onMoreWhatsapp: () => ref
-            .read(hostWhatsappThreadPagesProvider(organizer.id).notifier)
-            .loadMore(),
-        onOpenThread: (thread) => context.goNamed(
-          Routes.hostInboxScreen.name,
-          queryParameters: {
-            'organizerId': organizer.id,
-            'threadId': thread.personId,
-            ...hostConversationScopeQuery(switch (_scope) {
-              final scope? when !scope.isProgram => scope,
-              _ => switch (thread.eventId) {
-                final eventId? => HostInboxScope.event(eventId),
-                null => const HostInboxScope.general(),
-              },
-            }),
-          },
-        ),
-        onAutomations: () => context.pushNamed(
-          Routes.hostAudienceAutomationsScreen.name,
-          queryParameters: {'organizerId': organizer.id},
-        ),
-        onRetry: () {
-          retryHostMessagesReads(ref, organizer.id);
-          if (_scope?.programId case final programId?) {
-            ref.invalidate(
-              hostInboxProgramAudiencePagesProvider(organizer.id, programId),
-            );
-          }
-        },
-      );
-      body = split
-          ? CatchPaneLayout(
-              pattern: CatchPaneLayoutMode.listDetail,
-              detailOpen: conversation != null,
-              children: [
-                CatchScrollView(primary: false, child: list),
-                if (conversation != null)
-                  HostConversationScreen(
-                    key: ValueKey<HostConversationRequest>(conversation),
-                    request: conversation,
-                    presentation: HostConversationPresentation.pane,
-                    onBack: () => _closeThread(organizer.id),
-                  )
-                else
-                  CatchScrollView(
-                    primary: false,
-                    child: CatchPageBody(
-                      child: CatchEmptyState(
-                        icon: CatchIcons.chat,
-                        title: l10n.hostInboxSelectConversationTitle,
-                        message: l10n.hostInboxSelectConversationBody,
-                      ),
-                    ),
-                  ),
-              ],
-            )
-          : list;
-    }
-    return CatchScreen(
-      key: const ValueKey<String>('host-messages-screen'),
-      bodyScrolls: !split || organizer == null,
-      topBar: CatchTopBar(
-        variant: CatchTopBarVariant.tabHome,
-        kicker: organizer?.name,
-        title: l10n.hostPeopleTitle,
-        actions: [
-          CatchButton(
-            label: l10n.hostPeopleMessage,
-            leading: CatchIcon(CatchIcons.add, size: CatchIconSize.md),
-            onPressed: organizer == null
-                ? null
-                : () => context.pushNamed(
-                    Routes.hostNewMessageScreen.name,
-                    queryParameters: {'organizerId': organizer.id},
-                  ),
-          ),
-        ],
-      ),
-      body: body,
-    );
-  }
 
   void _closeThread(String organizerId) => context.goNamed(
     Routes.hostInboxScreen.name,

@@ -17,6 +17,7 @@ import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -81,7 +82,11 @@ class _HostConversationScreenState
     super.didUpdateWidget(oldWidget);
     if (oldWidget.request != widget.request) {
       _saveDraft();
+      // The next build reattaches the drafts for the new conversation.
+      _openContext = null;
       _route = null;
+      _drafts?.removeListener(_syncDraft);
+      _drafts = null;
       _markedLatest.clear();
       _readFailures.clear();
       _composer.text = '';
@@ -98,8 +103,12 @@ class _HostConversationScreenState
     super.dispose();
   }
 
-  HostConversationState get _state =>
-      ref.read(hostConversationControllerProvider(widget.request));
+  /// The draft context of the conversation last built, kept so the
+  /// listeners and dispose never read providers.
+  String? _openContext;
+
+  String? _openKey(String route) =>
+      _openContext == null ? null : '$_openContext/$route';
 
   void _trackLatest() {
     final atLatest = _scroll.position.pixels <= CatchSpacing.s12;
@@ -110,14 +119,16 @@ class _HostConversationScreenState
     final drafts = _drafts;
     final route = _route;
     if (drafts == null || route == null) return;
-    drafts.setText(_draftKey(_state, route), _composer.text);
+    final key = _openKey(route);
+    if (key != null) drafts.setText(key, _composer.text);
   }
 
   void _syncDraft() {
     final drafts = _drafts;
     final route = _route;
     if (!mounted || drafts == null) return;
-    final text = route == null ? '' : drafts.text(_draftKey(_state, route));
+    final key = route == null ? null : _openKey(route);
+    final text = key == null ? '' : drafts.text(key);
     if (_composer.text != text) _composer.text = text;
     setState(() {});
   }
@@ -154,6 +165,7 @@ class _HostConversationScreenState
     final state = ref.watch(hostConversationControllerProvider(widget.request));
     final drafts = ref.watch(hostConversationDraftsProvider);
     if (state.status == HostConversationStatus.ready) {
+      _openContext = _draftContext(state);
       _attachDrafts(drafts, state);
       _markVisibleRead(state);
       _scheduleWindowClose(state.nextWindowClose);
@@ -163,7 +175,42 @@ class _HostConversationScreenState
         : _sending(state)
         ? HostConversationSending.text
         : HostConversationSending.idle;
-    final actions = _actions(context, state);
+    // Share card, Report and Block, for a person with a verified Catch
+    // conversation.
+    final conversationId = state.actionConversationId;
+    final personUid = state.person?.linkedUid;
+    final actions = conversationId == null || personUid == null
+        ? null
+        : CatchActionMenu<HostConversationAction>(
+            key: ValueKey<String>('${state.person?.key}/actions'),
+            tooltip: l10n.chatsChatScreenTooltipChatActions,
+            variant: CatchIconActionVariant.plain,
+            onSelected: _acting
+                ? null
+                : (action) =>
+                      unawaited(_act(state, action, conversationId, personUid)),
+            items: [
+              if (hasShareableChatMessages(state.actionMessages))
+                CatchActionMenuItem(
+                  value: HostConversationAction.share,
+                  label: l10n.chatsChatScreenLabelShareCard,
+                  icon: CatchIcons.platformShare(
+                    platform: defaultTargetPlatform,
+                  ),
+                ),
+              CatchActionMenuItem(
+                value: HostConversationAction.report,
+                label: l10n.chatsChatScreenLabelReport,
+                icon: CatchIcons.flag,
+              ),
+              CatchActionMenuItem(
+                value: HostConversationAction.block,
+                label: l10n.chatsChatScreenLabelBlock,
+                icon: CatchIcons.block,
+                isDestructive: true,
+              ),
+            ],
+          );
     final body = HostConversationBody(
       state: state,
       composer: _composer,
@@ -202,45 +249,6 @@ class _HostConversationScreenState
         actions: [?actions],
       ),
       body: body,
-    );
-  }
-
-  /// Share card, Report and Block, for a person with a verified Catch
-  /// conversation.
-  Widget? _actions(BuildContext context, HostConversationState state) {
-    final l10n = context.l10n;
-    final conversationId = state.actionConversationId;
-    final personUid = state.person?.linkedUid;
-    if (conversationId == null || personUid == null) return null;
-    return CatchActionMenu<HostConversationAction>(
-      key: ValueKey<String>('${state.person?.key}/actions'),
-      tooltip: l10n.chatsChatScreenTooltipChatActions,
-      variant: CatchIconActionVariant.plain,
-      onSelected: _acting
-          ? null
-          : (action) =>
-                unawaited(_act(state, action, conversationId, personUid)),
-      items: [
-        if (hasShareableChatMessages(state.actionMessages))
-          CatchActionMenuItem(
-            value: HostConversationAction.share,
-            label: l10n.chatsChatScreenLabelShareCard,
-            icon: CatchIcons.platformShare(
-              platform: Theme.of(context).platform,
-            ),
-          ),
-        CatchActionMenuItem(
-          value: HostConversationAction.report,
-          label: l10n.chatsChatScreenLabelReport,
-          icon: CatchIcons.flag,
-        ),
-        CatchActionMenuItem(
-          value: HostConversationAction.block,
-          label: l10n.chatsChatScreenLabelBlock,
-          icon: CatchIcons.block,
-          isDestructive: true,
-        ),
-      ],
     );
   }
 

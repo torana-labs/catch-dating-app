@@ -14014,7 +14014,7 @@
             "symbol": "HostInboxViewModel"
           },
           {
-            "file": "lib/hosts/presentation/inbox/host_inbox_view_model.dart",
+            "file": "lib/hosts/people/conversation/conversation_people.dart",
             "symbol": "resolveHostInboxScope"
           },
           {

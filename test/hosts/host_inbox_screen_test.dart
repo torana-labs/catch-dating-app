@@ -62,7 +62,9 @@ void main() {
   setUp(() => AppConfig.configureEntrypointRole(AppRole.host));
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
-  for (final selection in <String?>[null, 'uid:guest', 'catch-a', 'wa-a']) {
+  // A selected thread opens on Messages; conversation_containment_test
+  // covers each selection there.
+  for (final selection in <String?>[null]) {
     testWidgets(
       'program screen contains shared history for selection $selection',
       (tester) async {

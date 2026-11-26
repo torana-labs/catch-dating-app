@@ -52,6 +52,8 @@ class HostConversationRequest {
 /// The reply drafts for the signed-in account: kept while the Host app
 /// runs so a draft survives moving between conversations, and dropped with
 /// the account.
+// keepalive: account-scoped: rebuilt (and the old drafts disposed) whenever
+// the signed-in uid changes, so no draft outlives its account.
 @Riverpod(keepAlive: true)
 HostReplyDrafts hostConversationDrafts(Ref ref) {
   ref.watch(uidProvider.select((uid) => uid.value));
@@ -413,19 +415,16 @@ void retryHostConversationReads(
 /// controller.
 @riverpod
 HostConversationCommands hostConversationCommands(Ref ref) =>
-    HostConversationCommands(
-      ref.watch(conversationRepositoryProvider),
-      ref.watch(hostWhatsappRepositoryProvider),
-    );
+    HostConversationCommands(ref);
 
 class HostConversationCommands {
-  const HostConversationCommands(this._conversations, this._whatsapp);
+  const HostConversationCommands(this._ref);
 
-  final ConversationRepository _conversations;
-  final HostWhatsappRepository _whatsapp;
+  final Ref _ref;
 
-  Future<void> markRead(String conversationId, String uid) =>
-      _conversations.markRead(conversationId: conversationId, uid: uid);
+  Future<void> markRead(String conversationId, String uid) => _ref
+      .read(conversationRepositoryProvider)
+      .markRead(conversationId: conversationId, uid: uid);
 
   /// The conversation and inbox listeners deliver the saved reply.
   Future<void> reply({
@@ -433,10 +432,12 @@ class HostConversationCommands {
     required HostWhatsappThreadDetail thread,
     required String body,
     required String idempotencyKey,
-  }) => _whatsapp.sendWhatsappReply(
-    organizerId: organizerId,
-    thread: thread,
-    body: body,
-    idempotencyKey: idempotencyKey,
-  );
+  }) => _ref
+      .read(hostWhatsappRepositoryProvider)
+      .sendWhatsappReply(
+        organizerId: organizerId,
+        thread: thread,
+        body: body,
+        idempotencyKey: idempotencyKey,
+      );
 }
