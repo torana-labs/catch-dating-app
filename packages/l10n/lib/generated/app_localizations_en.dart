@@ -18002,29 +18002,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostRehearsalEntryUpcoming => 'Rehearse your next event';
 
   @override
-  String get hostRehearsalStartTitle => 'Start dress rehearsal';
-
-  @override
-  String get hostRehearsalStartSubtitle => 'Choose a starting point';
-
-  @override
-  String hostRehearsalStartUpcoming({required String title}) {
-    return 'Rehearse $title';
-  }
-
-  @override
-  String hostRehearsalStartUpcomingDescription({required int count}) {
-    return 'Uses its format and $count-person guest list. You can adjust the rehearsal copy.';
-  }
-
-  @override
-  String get hostRehearsalStartCustom => 'Create a custom rehearsal';
-
-  @override
-  String get hostRehearsalStartCustomDescription =>
-      'Start with organiser defaults, then choose the format, guests and scenario.';
-
-  @override
   String get hostRehearsalEntrySample => 'Practise hosting';
 
   @override
@@ -19089,17 +19066,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Ask the organizer to assign you guest relations or program coordinator duty for this program.';
 
   @override
-  String get programsGuestNotInvited => 'Not invited';
-
-  @override
-  String programsGuestFunctionStatus({
-    required String functionName,
-    required String status,
-  }) {
-    return '$functionName: $status';
-  }
-
-  @override
   String get programsOperationsReviewTitle => 'Review saved changes';
 
   @override
@@ -19151,9 +19117,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Saved operations could not be read or saved. Free device space and try again. Keep the app’s saved data if you need support.';
 
   @override
-  String get programsRecoveryAction => 'Recover saved work';
-
-  @override
   String get programsRecoveryTitle => 'Saved work recovery';
 
   @override
@@ -19166,27 +19129,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get programsOperationsPassengersNotReady =>
       'Every passenger must be marked ready at the curb before this vehicle departs.';
-
-  @override
-  String get programsArrivalsOutboxTitle => 'Offline queue';
-
-  @override
-  String get programsArrivalsOutboxSync => 'Sync now';
-
-  @override
-  String get programsArrivalsOutboxClear => 'Review changes';
-
-  @override
-  String get programsDoorRsvpAttending => 'Attending';
-
-  @override
-  String get programsDoorRsvpDeclined => 'Declined';
-
-  @override
-  String get programsDoorRsvpMaybe => 'Maybe';
-
-  @override
-  String get programsDoorRsvpPending => 'No RSVP';
 
   @override
   String get programsRoomsTitle => 'Room board';
@@ -19318,19 +19260,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get programsRoomsStatusCancelled => 'Cancelled';
-
-  @override
-  String programsArrivalsOutboxPending({required int count}) {
-    return '$count change(s) queued while offline. They will sync when connectivity returns.';
-  }
-
-  @override
-  String programsArrivalsOutboxReview({
-    required int pending,
-    required int review,
-  }) {
-    return '$pending pending, $review need review before they can sync.';
-  }
 
   @override
   String hostResponseFilterSelectionLimit({required int count}) {
@@ -20018,14 +19947,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsGuestsTitle => 'Guests & RSVP';
 
   @override
-  String get programsGuestsGridTitle => 'Households × functions';
-
-  @override
-  String programsGuestsGridSubtitle({required String function}) {
-    return 'RSVP state for $function';
-  }
-
-  @override
   String get programsGuestsAddGuest => 'Add guest';
 
   @override
@@ -20037,10 +19958,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get programsGuestsGroupsTitle => 'Groups';
-
-  @override
-  String get programsGuestsGroupsSubtitle =>
-      'Grouping dimensions for audience and allocation cuts';
 
   @override
   String get programsGuestsGroupsEmpty => 'No groups yet.';
@@ -20095,9 +20012,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String programsGuestsGroupDeleteMessage({required String label}) {
     return 'Remove $label? Guests keep their RSVP rows.';
   }
-
-  @override
-  String get programsGuestsMutationFailed => 'Couldn\'t save';
 
   @override
   String get programsGuestsNoHousehold => 'No household';

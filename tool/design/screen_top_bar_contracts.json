@@ -310,24 +310,6 @@
       "leading": "back"
     },
     {
-      "path": "lib/programs/presentation/program_guest_desk_screen.dart",
-      "role": "compact",
-      "expression": "CatchLegacyTopBar.route",
-      "owner": "CatchLegacyTopBar",
-      "surface": "CatchRouteScaffold",
-      "leading": "back",
-      "occurrences": 5
-    },
-    {
-      "path": "lib/programs/presentation/program_guests_screen.dart",
-      "role": "compact",
-      "expression": "CatchLegacyTopBar.route",
-      "owner": "CatchLegacyTopBar",
-      "surface": "CatchRouteScaffold",
-      "leading": "back",
-      "occurrences": 5
-    },
-    {
       "path": "lib/programs/presentation/program_hotel_rooms_screen.dart",
       "role": "compact",
       "expression": "CatchLegacyTopBar.route",

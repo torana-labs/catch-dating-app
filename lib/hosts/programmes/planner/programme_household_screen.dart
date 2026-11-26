@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_guest_commands.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_household_body.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_answers_sheet.dart';
 import 'package:catch_dating_app/programs/presentation/program_workspace_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
@@ -21,7 +23,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Send their link again mints the household RSVP token with
 /// `issueProgramHouseholdRsvpLink` and hands the link to the share sheet;
-/// Call opens the phone.
+/// Call opens the phone. Tapping a member opens their answers for every
+/// function, and each change is recorded with `recordProgramFunctionRsvp`
+/// (an uninvited function takes an answer too).
 class HostProgrammeHouseholdScreen extends ConsumerStatefulWidget {
   const HostProgrammeHouseholdScreen({
     super.key,
@@ -73,6 +77,25 @@ class _HostProgrammeHouseholdScreenState
               ? null
               : () => unawaited(_sendLink(household.label)),
           onRetry: () => refreshHostProgramme(ref, widget.programId),
+          onEditMember: household == null || archived
+              ? null
+              : (member) => unawaited(
+                  editHostProgrammeAnswers(
+                    context,
+                    ref,
+                    programId: widget.programId,
+                    guest: member,
+                    household: household.label,
+                    answers: [
+                      for (final function in state.functions)
+                        HostProgrammeAnswer(
+                          functionId: function.functionId,
+                          name: function.name,
+                          reply: state.reply(member, function),
+                        ),
+                    ],
+                  ),
+                ),
         ),
       ),
     );

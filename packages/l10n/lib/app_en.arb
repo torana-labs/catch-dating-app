@@ -23615,58 +23615,6 @@
     "x-owner": "product",
     "x-surface": "event_rehearsal.presentation"
   },
-  "hostRehearsalStartTitle": "Start dress rehearsal",
-  "@hostRehearsalStartTitle": {
-    "description": "Title for the rehearsal starting-point sheet.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_rehearsal.presentation"
-  },
-  "hostRehearsalStartSubtitle": "Choose a starting point",
-  "@hostRehearsalStartSubtitle": {
-    "description": "Supporting copy for the rehearsal starting-point sheet.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_rehearsal.presentation"
-  },
-  "hostRehearsalStartUpcoming": "Rehearse {title}",
-  "@hostRehearsalStartUpcoming": {
-    "description": "Choice that starts from an upcoming event.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_rehearsal.presentation",
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
-  "hostRehearsalStartUpcomingDescription": "Uses its format and {count}-person guest list. You can adjust the rehearsal copy.",
-  "@hostRehearsalStartUpcomingDescription": {
-    "description": "Explains what is copied from the selected upcoming event.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_rehearsal.presentation",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "hostRehearsalStartCustom": "Create a custom rehearsal",
-  "@hostRehearsalStartCustom": {
-    "description": "Choice that starts from organizer defaults.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_rehearsal.presentation"
-  },
-  "hostRehearsalStartCustomDescription": "Start with organiser defaults, then choose the format, guests and scenario.",
-  "@hostRehearsalStartCustomDescription": {
-    "description": "Explains the editable custom rehearsal path.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_rehearsal.presentation"
-  },
   "hostRehearsalEntrySample": "Practise hosting",
   "@hostRehearsalEntrySample": {
     "description": "Dress rehearsal entry and optional configuration: EntrySample.",
@@ -25508,10 +25456,6 @@
   "@programsGuestDeskAccessTitle": {"description": "Locked guest desk heading when the actor lacks an active desk duty.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_guest_desk_screen"},
   "programsGuestDeskAccessMessage": "Ask the organizer to assign you guest relations or program coordinator duty for this program.",
   "@programsGuestDeskAccessMessage": {"description": "Guest desk access guidance. Other staff duties do not grant guest desk access.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_guest_desk_screen"},
-  "programsGuestNotInvited": "Not invited",
-  "@programsGuestNotInvited": {"description": "Function invitation badge when the guest is explicitly not invited, independently of RSVP status.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_guests_screen"},
-  "programsGuestFunctionStatus": "{functionName}: {status}",
-  "@programsGuestFunctionStatus": {"description": "Guest badge combining the organizer-provided function name with its localized invitation or RSVP status.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_guests_screen", "placeholders": {"functionName": {"type": "String"}, "status": {"type": "String"}}},
   "programsOperationsReviewTitle": "Review saved changes",
   "@programsOperationsReviewTitle": {"description": "Program saved operation review and recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
   "programsOperationsReviewBody": "Check the current arrivals and trip records before dismissing a change. Dismissal stops this saved change from syncing; it does not undo work already recorded. Record any correction from the current journey.",
@@ -25540,8 +25484,6 @@
   "@coreSavedOperationsQuarantined": {"description": "Shared attendance/program command journal contains quarantined records requiring recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "core.app_error_message"},
   "coreSavedOperationsUnavailable": "Saved operations could not be read or saved. Free device space and try again. Keep the app’s saved data if you need support.",
   "@coreSavedOperationsUnavailable": {"description": "Shared attendance/program command journal storage is unavailable; original data must be preserved.", "x-audience": "host", "x-owner": "product", "x-surface": "core.app_error_message"},
-  "programsRecoveryAction": "Recover saved work",
-  "@programsRecoveryAction": {"description": "Opens recovery options when the local operations journal cannot be read.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
   "programsRecoveryTitle": "Saved work recovery",
   "@programsRecoveryTitle": {"description": "Title of the saved operations recovery sheet and exported file.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
   "programsRecoveryBody": "Export a recovery copy for review with support. It includes this account’s saved operations across all programs on this device and may contain private guest or trip details. Choose a trusted place to save it. Exporting does not repair, send, or delete any saved operation. Keep the original app data until recovery is complete.",
@@ -25550,20 +25492,6 @@
   "@programsRecoveryExport": {"description": "Opens the platform file share or download flow for a recovery copy; does not automatically contact support.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
   "programsOperationsPassengersNotReady": "Every passenger must be marked ready at the curb before this vehicle departs.",
   "@programsOperationsPassengersNotReady": {"description": "Program saved operation review and recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
-  "programsArrivalsOutboxTitle": "Offline queue",
-  "@programsArrivalsOutboxTitle": {"description": "Program operations copy: programsArrivalsOutboxTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
-  "programsArrivalsOutboxSync": "Sync now",
-  "@programsArrivalsOutboxSync": {"description": "Program operations copy: programsArrivalsOutboxSync.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
-  "programsArrivalsOutboxClear": "Review changes",
-  "@programsArrivalsOutboxClear": {"description": "Program operations copy: programsArrivalsOutboxClear.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
-  "programsDoorRsvpAttending": "Attending",
-  "@programsDoorRsvpAttending": {"description": "RSVP badge: attending.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_door_screen"},
-  "programsDoorRsvpDeclined": "Declined",
-  "@programsDoorRsvpDeclined": {"description": "RSVP badge: declined.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_door_screen"},
-  "programsDoorRsvpMaybe": "Maybe",
-  "@programsDoorRsvpMaybe": {"description": "RSVP badge: maybe.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_door_screen"},
-  "programsDoorRsvpPending": "No RSVP",
-  "@programsDoorRsvpPending": {"description": "RSVP badge: pending.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_door_screen"},
   "programsRoomsTitle": "Room board",
   "@programsRoomsTitle": {"description": "Program operations copy: programsRoomsTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_rooms_screen"},
   "programsRoomsSubtitle": "Stays & blocks",
@@ -25634,10 +25562,6 @@
   "@programsRoomsStatusCheckedOut": {"description": "Program operations copy: programsRoomsStatusCheckedOut.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_rooms_screen"},
   "programsRoomsStatusCancelled": "Cancelled",
   "@programsRoomsStatusCancelled": {"description": "Program operations copy: programsRoomsStatusCancelled.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_rooms_screen"},
-  "programsArrivalsOutboxPending": "{count} change(s) queued while offline. They will sync when connectivity returns.",
-  "@programsArrivalsOutboxPending": {"description": "Program operations copy: programsArrivalsOutboxPending.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen", "placeholders": {"count": {"type": "int"}}},
-  "programsArrivalsOutboxReview": "{pending} pending, {review} need review before they can sync.",
-  "@programsArrivalsOutboxReview": {"description": "Program operations copy: programsArrivalsOutboxReview.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen", "placeholders": {"pending": {"type": "int"}, "review": {"type": "int"}}},
   "hostResponseFilterSelectionLimit": "Choose up to {count} options per question.",
   "@hostResponseFilterSelectionLimit": {"description": "Shown only when a response filter selection exceeds the API limit.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation"},
   "eventMatchingTitle": "Use form answers for event matching",
@@ -26030,10 +25954,6 @@
   "@programsWorkspaceFunctionSave": {"description": "Program workspace copy: programsWorkspaceFunctionSave.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsGuestsTitle": "Guests & RSVP",
   "@programsGuestsTitle": {"description": "Program workspace copy: programsGuestsTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsGuestsGridTitle": "Households × functions",
-  "@programsGuestsGridTitle": {"description": "Program workspace copy: programsGuestsGridTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsGuestsGridSubtitle": "RSVP state for {function}",
-  "@programsGuestsGridSubtitle": {"description": "Program workspace copy: programsGuestsGridSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace", "placeholders": {"function": {"type": "String"}}},
   "programsGuestsAddGuest": "Add guest",
   "@programsGuestsAddGuest": {"description": "Program workspace copy: programsGuestsAddGuest.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsGuestsEmptyTitle": "No guests yet",
@@ -26042,8 +25962,6 @@
   "@programsGuestsEmptyMessage": {"description": "Program workspace copy: programsGuestsEmptyMessage.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsGuestsGroupsTitle": "Groups",
   "@programsGuestsGroupsTitle": {"description": "Program workspace copy: programsGuestsGroupsTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsGuestsGroupsSubtitle": "Grouping dimensions for audience and allocation cuts",
-  "@programsGuestsGroupsSubtitle": {"description": "Program workspace copy: programsGuestsGroupsSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsGuestsGroupsEmpty": "No groups yet.",
   "@programsGuestsGroupsEmpty": {"description": "Program workspace copy: programsGuestsGroupsEmpty.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsGuestsGroupNew": "New group",
@@ -26074,8 +25992,6 @@
   "@programsGuestsGroupDeleteTitle": {"description": "Program workspace copy: programsGuestsGroupDeleteTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsGuestsGroupDeleteMessage": "Remove {label}? Guests keep their RSVP rows.",
   "@programsGuestsGroupDeleteMessage": {"description": "Program workspace copy: programsGuestsGroupDeleteMessage.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace", "placeholders": {"label": {"type": "String"}}},
-  "programsGuestsMutationFailed": "Couldn''t save",
-  "@programsGuestsMutationFailed": {"description": "Program workspace copy: programsGuestsMutationFailed.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsGuestsNoHousehold": "No household",
   "@programsGuestsNoHousehold": {"description": "Program workspace copy: programsGuestsNoHousehold.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsGuestsShareRsvpLink": "Share RSVP link",

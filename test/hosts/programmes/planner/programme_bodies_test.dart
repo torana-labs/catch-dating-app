@@ -160,6 +160,76 @@ void main() {
     expect(sent, 1);
   });
 
+  testWidgets('a household member opens their answers to change them', (
+    tester,
+  ) async {
+    String? edited;
+    await pumpPlannerBody(
+      tester,
+      HostProgrammeHouseholdBody(
+        state: plannerState,
+        householdId: 'mehra',
+        onCall: (_) {},
+        onSendLink: () {},
+        onRetry: () {},
+        onEditMember: (member) => edited = member.guestId,
+      ),
+    );
+    await tester.tap(find.byKey(const ValueKey('host-programme-member-kamla')));
+    expect(edited, 'kamla');
+  });
+
+  testWidgets('the guest list adds a guest and opens a group', (tester) async {
+    var added = 0;
+    String? opened = 'none';
+    await pumpPlannerBody(
+      tester,
+      HostProgrammeGuestsBody(
+        state: plannerState,
+        filter: HostProgrammeGuestFilter.all,
+        onView: (_) {},
+        onFilter: (_) {},
+        onImport: () {},
+        onOpenHousehold: (_) {},
+        onRetry: () {},
+        groups: plannerGuests.groups,
+        onAddGuest: () => added++,
+        onEditGroup: (group) => opened = group?.groupId,
+      ),
+    );
+    await tester.tap(find.byKey(const ValueKey('host-programme-guests-add')));
+    expect(added, 1);
+    final group = plannerGuests.groups.first;
+    final row = find.byKey(ValueKey('host-programme-group-${group.groupId}'));
+    await tester.ensureVisible(row);
+    await tester.tap(row);
+    expect(opened, group.groupId);
+    await tester.tap(find.text('New group'));
+    expect(opened, isNull);
+  });
+
+  testWidgets('the guest list offers phone contacts when allowed', (
+    tester,
+  ) async {
+    var opened = 0;
+    await pumpPlannerBody(
+      tester,
+      HostProgrammeGuestsBody(
+        state: plannerState,
+        filter: HostProgrammeGuestFilter.all,
+        onView: (_) {},
+        onFilter: (_) {},
+        onImport: () {},
+        onOpenHousehold: (_) {},
+        onRetry: () {},
+        onPhoneImport: () => opened++,
+      ),
+    );
+    expect(find.text('Import phone contacts'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('program-guests-phone-import')));
+    expect(opened, 1);
+  });
+
   testWidgets('travel shows what needs the planner', (tester) async {
     HostProgrammeTravelLink? link;
     await pumpPlannerBody(

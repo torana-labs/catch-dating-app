@@ -29076,42 +29076,6 @@ abstract class AppLocalizations {
   /// **'Rehearse your next event'**
   String get hostRehearsalEntryUpcoming;
 
-  /// Title for the rehearsal starting-point sheet.
-  ///
-  /// In en, this message translates to:
-  /// **'Start dress rehearsal'**
-  String get hostRehearsalStartTitle;
-
-  /// Supporting copy for the rehearsal starting-point sheet.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose a starting point'**
-  String get hostRehearsalStartSubtitle;
-
-  /// Choice that starts from an upcoming event.
-  ///
-  /// In en, this message translates to:
-  /// **'Rehearse {title}'**
-  String hostRehearsalStartUpcoming({required String title});
-
-  /// Explains what is copied from the selected upcoming event.
-  ///
-  /// In en, this message translates to:
-  /// **'Uses its format and {count}-person guest list. You can adjust the rehearsal copy.'**
-  String hostRehearsalStartUpcomingDescription({required int count});
-
-  /// Choice that starts from organizer defaults.
-  ///
-  /// In en, this message translates to:
-  /// **'Create a custom rehearsal'**
-  String get hostRehearsalStartCustom;
-
-  /// Explains the editable custom rehearsal path.
-  ///
-  /// In en, this message translates to:
-  /// **'Start with organiser defaults, then choose the format, guests and scenario.'**
-  String get hostRehearsalStartCustomDescription;
-
   /// Dress rehearsal entry and optional configuration: EntrySample.
   ///
   /// In en, this message translates to:
@@ -30993,21 +30957,6 @@ abstract class AppLocalizations {
   /// **'Ask the organizer to assign you guest relations or program coordinator duty for this program.'**
   String get programsGuestDeskAccessMessage;
 
-  /// Function invitation badge when the guest is explicitly not invited, independently of RSVP status.
-  ///
-  /// In en, this message translates to:
-  /// **'Not invited'**
-  String get programsGuestNotInvited;
-
-  /// Guest badge combining the organizer-provided function name with its localized invitation or RSVP status.
-  ///
-  /// In en, this message translates to:
-  /// **'{functionName}: {status}'**
-  String programsGuestFunctionStatus({
-    required String functionName,
-    required String status,
-  });
-
   /// Program saved operation review and recovery.
   ///
   /// In en, this message translates to:
@@ -31092,12 +31041,6 @@ abstract class AppLocalizations {
   /// **'Saved operations could not be read or saved. Free device space and try again. Keep the app’s saved data if you need support.'**
   String get coreSavedOperationsUnavailable;
 
-  /// Opens recovery options when the local operations journal cannot be read.
-  ///
-  /// In en, this message translates to:
-  /// **'Recover saved work'**
-  String get programsRecoveryAction;
-
   /// Title of the saved operations recovery sheet and exported file.
   ///
   /// In en, this message translates to:
@@ -31121,48 +31064,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Every passenger must be marked ready at the curb before this vehicle departs.'**
   String get programsOperationsPassengersNotReady;
-
-  /// Program operations copy: programsArrivalsOutboxTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Offline queue'**
-  String get programsArrivalsOutboxTitle;
-
-  /// Program operations copy: programsArrivalsOutboxSync.
-  ///
-  /// In en, this message translates to:
-  /// **'Sync now'**
-  String get programsArrivalsOutboxSync;
-
-  /// Program operations copy: programsArrivalsOutboxClear.
-  ///
-  /// In en, this message translates to:
-  /// **'Review changes'**
-  String get programsArrivalsOutboxClear;
-
-  /// RSVP badge: attending.
-  ///
-  /// In en, this message translates to:
-  /// **'Attending'**
-  String get programsDoorRsvpAttending;
-
-  /// RSVP badge: declined.
-  ///
-  /// In en, this message translates to:
-  /// **'Declined'**
-  String get programsDoorRsvpDeclined;
-
-  /// RSVP badge: maybe.
-  ///
-  /// In en, this message translates to:
-  /// **'Maybe'**
-  String get programsDoorRsvpMaybe;
-
-  /// RSVP badge: pending.
-  ///
-  /// In en, this message translates to:
-  /// **'No RSVP'**
-  String get programsDoorRsvpPending;
 
   /// Program operations copy: programsRoomsTitle.
   ///
@@ -31379,21 +31280,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancelled'**
   String get programsRoomsStatusCancelled;
-
-  /// Program operations copy: programsArrivalsOutboxPending.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} change(s) queued while offline. They will sync when connectivity returns.'**
-  String programsArrivalsOutboxPending({required int count});
-
-  /// Program operations copy: programsArrivalsOutboxReview.
-  ///
-  /// In en, this message translates to:
-  /// **'{pending} pending, {review} need review before they can sync.'**
-  String programsArrivalsOutboxReview({
-    required int pending,
-    required int review,
-  });
 
   /// Shown only when a response filter selection exceeds the API limit.
   ///
@@ -32571,18 +32457,6 @@ abstract class AppLocalizations {
   /// **'Guests & RSVP'**
   String get programsGuestsTitle;
 
-  /// Program workspace copy: programsGuestsGridTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Households × functions'**
-  String get programsGuestsGridTitle;
-
-  /// Program workspace copy: programsGuestsGridSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'RSVP state for {function}'**
-  String programsGuestsGridSubtitle({required String function});
-
   /// Program workspace copy: programsGuestsAddGuest.
   ///
   /// In en, this message translates to:
@@ -32606,12 +32480,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Groups'**
   String get programsGuestsGroupsTitle;
-
-  /// Program workspace copy: programsGuestsGroupsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Grouping dimensions for audience and allocation cuts'**
-  String get programsGuestsGroupsSubtitle;
 
   /// Program workspace copy: programsGuestsGroupsEmpty.
   ///
@@ -32702,12 +32570,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove {label}? Guests keep their RSVP rows.'**
   String programsGuestsGroupDeleteMessage({required String label});
-
-  /// Program workspace copy: programsGuestsMutationFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Couldn\'\'t save'**
-  String get programsGuestsMutationFailed;
 
   /// Program workspace copy: programsGuestsNoHousehold.
   ///
