@@ -12,7 +12,7 @@ bool hostFormQuestionHasChoices(HostFormQuestionKind kind) =>
 
 /// One question in the builder: a tile with the question, its kind, the
 /// Required or Optional chip and its choices as tags. Opened, it edits the
-/// wording and the choices in place.
+/// wording and the choices in place, and More settings opens the rest.
 class HostFormQuestionTile extends StatelessWidget {
   const HostFormQuestionTile({
     super.key,
@@ -24,6 +24,7 @@ class HostFormQuestionTile extends StatelessWidget {
     required this.onOptionChanged,
     required this.onAddOption,
     required this.onRemove,
+    this.onSettings,
   });
 
   final HostFormQuestion question;
@@ -36,6 +37,9 @@ class HostFormQuestionTile extends StatelessWidget {
   final void Function(int index, String label) onOptionChanged;
   final VoidCallback onAddOption;
   final VoidCallback onRemove;
+
+  /// Opens the question's other settings; null hides More settings.
+  final VoidCallback? onSettings;
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +116,16 @@ class HostFormQuestionTile extends StatelessWidget {
                     leading: CatchIcon(CatchIcons.add),
                     size: CatchChipSize.sm,
                     onPressed: onAddOption,
+                  ),
+                if (onSettings case final onSettings?)
+                  CatchButton(
+                    key: ValueKey<String>(
+                      'host-forms-question-settings-${question.questionId}',
+                    ),
+                    label: l10n.hostFormsQuestionMore,
+                    variant: CatchButtonVariant.secondary,
+                    size: CatchButtonSize.sm,
+                    onPressed: onSettings,
                   ),
                 CatchButton(
                   label: l10n.hostFormsQuestionRemove,
