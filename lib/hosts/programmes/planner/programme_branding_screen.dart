@@ -70,6 +70,7 @@ class _HostProgrammeBrandingScreenState
     final l10n = context.l10n;
     final branding = _branding ?? program.branding;
     final show = _showCredit ?? program.branding.creditLine != null;
+    final container = ProviderScope.containerOf(context, listen: false);
     setState(() {
       _saving = true;
       _error = null;
@@ -82,8 +83,8 @@ class _HostProgrammeBrandingScreenState
             expectedRevision: program.revision,
             branding: show ? branding : branding.copyWith(clearCredit: true),
           );
-      refreshHostProgramme(ref, widget.programId);
-      ref.invalidate(programPhotosViewProvider(widget.programId, null));
+      refreshHostProgrammeIn(container, widget.programId);
+      container.invalidate(programPhotosViewProvider(widget.programId, null));
       if (mounted) context.pop();
     } on Object {
       if (mounted) {

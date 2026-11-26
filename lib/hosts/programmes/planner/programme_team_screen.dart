@@ -74,6 +74,7 @@ class HostProgrammeTeamScreen extends ConsumerWidget {
       builder: (_) => const HostProgrammeInviteSheet(),
     );
     if (invite == null || !context.mounted) return;
+    final container = ProviderScope.containerOf(context, listen: false);
     final now = ref.read(appClockProvider).now();
     final latest = now.add(const Duration(days: 14));
     final after = endsAt.add(const Duration(days: 1));
@@ -102,7 +103,7 @@ class HostProgrammeTeamScreen extends ConsumerWidget {
         ],
       ),
     );
-    if (ok) refreshHostProgramme(ref, programId);
+    if (ok) refreshHostProgrammeIn(container, programId);
   }
 
   Future<void> _remove(
@@ -120,6 +121,7 @@ class HostProgrammeTeamScreen extends ConsumerWidget {
       danger: true,
     );
     if (confirmed != true || !context.mounted) return;
+    final container = ProviderScope.containerOf(context, listen: false);
     final ok = await runHostProgrammeCommand(
       context,
       ref,
@@ -128,6 +130,6 @@ class HostProgrammeTeamScreen extends ConsumerWidget {
       run: (controller) =>
           controller.revokeStaff(programId: programId, member: member),
     );
-    if (ok) refreshHostProgramme(ref, programId);
+    if (ok) refreshHostProgrammeIn(container, programId);
   }
 }

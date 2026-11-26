@@ -39,6 +39,8 @@ class _HostProgrammePhotosScreenState
   Future<void> _add() async {
     final l10n = context.l10n;
     final functionId = _functionId;
+    // The photo is registered even if the screen closes during the upload.
+    final container = ProviderScope.containerOf(context, listen: false);
     setState(() => _uploading = true);
     var ok = true;
     try {
@@ -49,7 +51,7 @@ class _HostProgrammePhotosScreenState
             kind: ProgramAssetKind.photo,
           );
       if (asset != null) {
-        await ref
+        await container
             .read(hostProgrammePlannerCommandsProvider.notifier)
             .upsertPhoto(
               programId: widget.programId,

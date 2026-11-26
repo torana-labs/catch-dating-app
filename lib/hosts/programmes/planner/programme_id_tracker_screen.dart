@@ -55,6 +55,7 @@ class _HostProgrammeIdTrackerScreenState
     ProgramGuestIdDecision decision,
   ) async {
     final l10n = context.l10n;
+    final container = ProviderScope.containerOf(context, listen: false);
     setState(() => _busy = true);
     var ok = true;
     try {
@@ -71,7 +72,7 @@ class _HostProgrammeIdTrackerScreenState
     } on Object {
       ok = false;
     }
-    ref.invalidate(programIdTrackerProvider(widget.programId, _hotelId));
+    container.invalidate(programIdTrackerProvider(widget.programId, _hotelId));
     if (!mounted) return;
     setState(() => _busy = false);
     if (!ok) {

@@ -72,6 +72,7 @@ class _HostProgrammeAttendanceScreenState
     final state = ref.read(
       hostProgrammeAttendanceControllerProvider(widget.programId),
     );
+    final logger = ref.read(errorLoggerProvider);
     setState(() => _exporting = true);
     try {
       await ref
@@ -88,9 +89,7 @@ class _HostProgrammeAttendanceScreenState
             },
           );
     } on Object catch (error, stackTrace) {
-      ref
-          .read(errorLoggerProvider)
-          .logError(error, stackTrace, reason: 'export programme attendance');
+      logger.logError(error, stackTrace, reason: 'export programme attendance');
       if (mounted) {
         showCatchNoticeError(
           context,

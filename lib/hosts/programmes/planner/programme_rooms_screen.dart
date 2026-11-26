@@ -115,11 +115,15 @@ class _HostProgrammeRoomsScreenState
   Future<void> _place(String hotelId, List<(String, String)> placements) async {
     if (placements.isEmpty) return;
     final l10n = context.l10n;
+    // Captured before the first write: placing continues, and the board
+    // still refreshes, if the screen closes mid-way.
+    final logger = ref.read(errorLoggerProvider);
+    final container = ProviderScope.containerOf(context, listen: false);
     setState(() => _busy = true);
     var placed = 0;
     try {
       for (final (guestId, roomBlockId) in placements) {
-        await ref
+        await container
             .read(programStayActionsProvider.notifier)
             .saveStay(
               programId: widget.programId,
@@ -131,9 +135,7 @@ class _HostProgrammeRoomsScreenState
         placed++;
       }
     } on Object catch (error, stackTrace) {
-      ref
-          .read(errorLoggerProvider)
-          .logError(error, stackTrace, reason: 'place a guest in a room');
+      logger.logError(error, stackTrace, reason: 'place a guest in a room');
       if (mounted) {
         showCatchNoticeError(
           context,
@@ -142,12 +144,12 @@ class _HostProgrammeRoomsScreenState
         );
       }
     }
+    refreshHostProgrammeRoomsIn(container, widget.programId, hotelId);
     if (!mounted) return;
     setState(() {
       _busy = false;
       _guestId = null;
     });
-    refreshHostProgrammeRooms(ref, widget.programId, hotelId);
     if (placed > 0) {
       showCatchNotice(context, l10n.hostProgrammeRoomsPlaced(count: placed));
     }
