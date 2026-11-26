@@ -1,8 +1,7 @@
 import * as admin from "firebase-admin";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
-import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
+import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
-import {appCheckCallableOptions} from "../shared/callableOptions";
 import {validateManageHostRosterIntakeCallablePayload} from
   "../shared/generated/validators/manageHostRosterIntakeInput";
 import type {
@@ -332,9 +331,6 @@ function enumValue<T extends string>(value: unknown, values: readonly T[],
   }
   return value as T;
 }
-
-export const manageHostRosterIntake = onCall(appCheckCallableOptions,
-  (request) => manageHostRosterIntakeHandler(request));
 
 function managerAuthorizer(db: Firestore): AuthorizeHostRosterSession {
   return async ({tx, hostUid, organizerId, eventId}) => {

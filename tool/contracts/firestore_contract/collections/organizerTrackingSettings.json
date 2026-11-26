@@ -10,10 +10,9 @@
   ],
   "owner": "organizer analytics tracking settings callables",
   "writerContext": "insights",
-  "read": "current organizer managers get it directly while their account is not deleted (a document never saved reads as missing); older Host builds and the website read the getOrganizerTrackingSettings callable projection",
+  "read": "current organizer managers get it directly while their account is not deleted (a document never saved reads as missing); the getOrganizerTrackingSettings callable was retired in Nov 2026 (#2174)",
   "write": "server only; setOrganizerTrackingSettings",
   "exportedFunctions": [
-    "getOrganizerTrackingSettings",
     "setOrganizerTrackingSettings"
   ],
   "migrationNotes": [
