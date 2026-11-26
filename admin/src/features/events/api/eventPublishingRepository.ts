@@ -24,6 +24,14 @@ export function listExternalEventProfiles(
   return listExternalEventDetails(payload);
 }
 
+/** One imported event by id, read directly rather than found in a list. */
+export async function loadExternalEventProfile(
+  eventId: string
+): Promise<AdminListExternalEventDetailsResponse["rows"][number] | null> {
+  const response = await listExternalEventDetails({eventId});
+  return response.rows.find((row) => row.eventId === eventId) ?? null;
+}
+
 export function loadEventProfile(
   payload: AdminGetEventDetailsPayload
 ): Promise<AdminGetEventDetailsResponse> {
