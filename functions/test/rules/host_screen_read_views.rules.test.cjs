@@ -17,6 +17,8 @@ const {
   setDoc,
   where,
 } = require("firebase/firestore");
+const {writeOrganizerWithAccess} =
+  require("./organizerAccessGrantFixture.cjs");
 const {accessGrantFromView, accessGrantPath} =
   require("./programAccessGrantFixture.cjs");
 
@@ -41,6 +43,8 @@ after(() => testEnv.cleanup());
 
 const authed = (uid) => testEnv.authenticatedContext(uid, {
   phone_number: "+919999999999"}).firestore();
+const seedOrganizer = (organizerId, data) => testEnv.withSecurityRulesDisabled(
+  (ctx) => writeOrganizerWithAccess(ctx.firestore(), organizerId, data));
 const seedRaw = (segments, data) => testEnv.withSecurityRulesDisabled(
   (ctx) => setDoc(doc(ctx.firestore(), ...segments), data));
 
@@ -169,7 +173,7 @@ describe("Moments board rules", () => {
     });
 
   it("gives event rows to the event organiser's managers only", async () => {
-    await seedRaw(["organizers", "org-1"], {hostUserId: "host-1",
+    await seedOrganizer("org-1", {hostUserId: "host-1",
       ownerUserId: "owner-9", hostUserIds: ["host-1", "cohost-1"]});
     await seedRaw(["events", "event-1"], {organizerId: "org-1",
       name: "Winter Mixer"});

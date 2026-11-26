@@ -10,18 +10,27 @@ import {
 import {BLOCKED_SIGNUP_ATTEMPTS} from "./bannedIdentities";
 import {safetyRetainUntil} from "./safetyPolicy";
 
+/** Event feedback concerns materialized for safety review. */
+export const EVENT_SAFETY_REPORTS = "eventSafetyReports";
+/** Moderation tickets about an account. */
+export const MODERATION_FLAGS = "moderationFlags";
+
 /** Case records purged once their 180 days after deletion have passed. */
 const RETAINED_COLLECTIONS = [
   "reports",
   ACCOUNT_SAFETY_ACTIONS,
   BLOCKED_SIGNUP_ATTEMPTS,
+  EVENT_SAFETY_REPORTS,
+  MODERATION_FLAGS,
 ] as const;
 
 /**
  * Starts the 180-day clock on a deleted account's case records and removes
  * what only served the live account (its standing, notices and organizer
  * blocks). Banned phone and device hashes stay so the ban keeps holding.
- * Reports are marked by the report cleanup in account deletion.
+ * Reports are marked by the report cleanup in account deletion. Event
+ * safety reports the account made and moderation tickets about it get the
+ * same clock (#2468); retention is never extended past it.
  * @param {FirebaseFirestore.Firestore} db Firestore.
  * @param {string} uid Deleted account.
  * @param {number} deletedAtMillis Deletion time.
@@ -32,15 +41,24 @@ export async function retainSafetyRecordsForDeletedAccount(
   deletedAtMillis: number
 ): Promise<void> {
   const retainUntil = safetyRetainUntil(deletedAtMillis);
-  const [actions, attempts, notices, blocks] = await Promise.all([
-    db.collection(ACCOUNT_SAFETY_ACTIONS).where("uid", "==", uid).get(),
-    db.collection(BLOCKED_SIGNUP_ATTEMPTS)
-      .where("attemptedUid", "==", uid).get(),
-    db.collection(`${ACCOUNT_SAFETY_NOTICES}/${uid}/items`).get(),
-    db.collection(ORGANIZER_GUEST_BLOCKS).where("uid", "==", uid).get(),
-  ]);
+  const [actions, attempts, notices, blocks, eventReports, flags] =
+    await Promise.all([
+      db.collection(ACCOUNT_SAFETY_ACTIONS).where("uid", "==", uid).get(),
+      db.collection(BLOCKED_SIGNUP_ATTEMPTS)
+        .where("attemptedUid", "==", uid).get(),
+      db.collection(`${ACCOUNT_SAFETY_NOTICES}/${uid}/items`).get(),
+      db.collection(ORGANIZER_GUEST_BLOCKS).where("uid", "==", uid).get(),
+      db.collection(EVENT_SAFETY_REPORTS)
+        .where("reporterUserId", "==", uid).get(),
+      db.collection(MODERATION_FLAGS).where("targetUserId", "==", uid).get(),
+    ]);
   const writes: Array<(batch: FirebaseFirestore.WriteBatch) => void> = [];
-  for (const doc of [...actions.docs, ...attempts.docs]) {
+  for (const doc of [...actions.docs, ...attempts.docs,
+    ...eventReports.docs, ...flags.docs]) {
+    // An earlier deletion's clock (the other party's) is never pushed out.
+    const current = doc.data().retainUntil;
+    if (current instanceof Timestamp &&
+        current.toMillis() <= retainUntil.toMillis()) continue;
     writes.push((batch) => batch.update(doc.ref, {retainUntil}));
   }
   for (const doc of [...notices.docs, ...blocks.docs]) {

@@ -2,13 +2,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_invite_links.schema.json",
   "title": "EventInviteLinkDocument",
-  "description": "Opaque event invitation metadata stored at eventInviteLinks/{inviteLinkId}. The public bearer token is stored separately in a server-only secret document.",
+  "description": "Opaque event invitation metadata stored at eventInviteLinks/{inviteLinkId}. The public bearer token is stored separately in a server-only secret document. Links carry no catch, match or chat counts: a link can stand for one person, so those counts would reveal an individual guest's dating activity to the organiser.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "eventInviteLinks",
   "x-firestore-path": "eventInviteLinks/{inviteLinkId}",
   "x-document-id-field": "id",
-  "x-owner": "event invite link callables and event-success scorecard recomputation",
+  "x-owner": "event invite link callables and funnel-attribution triggers",
   "required": [
     "eventId",
     "organizerId",
@@ -21,9 +21,6 @@
     "confirmedCount",
     "paidCount",
     "checkedInCount",
-    "catcherCount",
-    "matchCount",
-    "chatStartedCount",
     "disabledAt",
     "createdAt",
     "updatedAt"
@@ -185,21 +182,6 @@
       "type": "integer",
       "minimum": 0,
       "x-catch-ownership": "callable-owned"
-    },
-    "catcherCount": {
-      "type": "integer",
-      "minimum": 0,
-      "x-catch-ownership": "trigger-owned"
-    },
-    "matchCount": {
-      "type": "integer",
-      "minimum": 0,
-      "x-catch-ownership": "trigger-owned"
-    },
-    "chatStartedCount": {
-      "type": "integer",
-      "minimum": 0,
-      "x-catch-ownership": "trigger-owned"
     },
     "disabledAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",

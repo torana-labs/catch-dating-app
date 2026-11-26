@@ -546,6 +546,42 @@ function eventAccessGrantRow(grant) {
   }
 }
 
+let organizerAccessGrantModule = null;
+function functionsOrganizerAccessGrant() {
+  try {
+    organizerAccessGrantModule ??= createFunctionsRequire()(
+      "./lib/domain/access/organizerAccessGrants.js");
+  } catch (error) {
+    throw new Error(
+      "The access-grants-organizers migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return organizerAccessGrantModule;
+}
+
+/**
+ * An organiser's missing access documents from its manager fields, as the
+ * team commands write them (#2474 step 3): the fields are the one
+ * definition of organiser manager, so a team edge alone grants nothing.
+ */
+async function organizerAccessEntries(db, organizerId, organizer) {
+  if (!validId(organizerId)) return [];
+  const {organizerAccessHolders, organizerAccessGrant} =
+    functionsOrganizerAccessGrant();
+  const entries = [];
+  for (const [uid, role] of organizerAccessHolders(organizer)) {
+    if (!validId(uid)) continue;
+    const id = `organizer__${organizerId}__${uid}`;
+    const existing = await db.collection("accessGrants").doc(id).get();
+    if (existing.exists) continue;
+    entries.push({targetId: id, data: organizerAccessGrant({organizerId, uid,
+      role, grantedBy: null,
+      updatedAt: organizer.updatedAt ?? organizer.createdAt ?? new Date()})});
+  }
+  return entries;
+}
+
 /** Every field the refresh compares; updatedAt records when a command ran. */
 const accessGrantFields = [
   "scopeType", "scopeId", "uid", "organizerId", "role", "status",
@@ -934,6 +970,260 @@ function collapseStackedPromptBlankLines(value) {
  * their replacement; see ./copy_forward.mjs for the guarantees.
  * Lanes add their migration here; the CLI runs them by name or in order.
  */
+
+let eventContactModules = null;
+function functionsEventContacts() {
+  try {
+    const load = createFunctionsRequire();
+    const ops = (name) => load(`./lib/eventSuccess/operations/${name}.js`);
+    eventContactModules ??= {
+      ...ops("eventContactGrants"),
+      ...load("./lib/shared/eventContactPermissions.js"),
+      ...load("./lib/events/approvalNotifications/contactGrants.js"),
+      preferenceId: load("./lib/events/approvalNotifications/model.js").preferenceId,
+      validPreference: load(
+        "./lib/shared/generated/validators/eventApprovalPreferenceDocument.js",
+      ).validateEventApprovalPreferenceDocument,
+      parsers: {
+        sms: [ops("smsPermissionRecords").parseSmsPermission,
+          ops("smsConsent").parseSmsConsentReceipt],
+        whatsapp: [ops("whatsappPermissionRecords").parseWhatsappPermission,
+          ops("whatsappConsent").parseWhatsappConsentReceipt],
+        rcs: [ops("rcsConsent").parseRcsPermission,
+          ops("rcsConsent").parseRcsConsentReceipt],
+      },
+      Timestamp: load("firebase-admin/firestore").Timestamp,
+    };
+  } catch (error) {
+    throw new Error(
+      "The contact-permissions-events migration needs compiled Functions; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return eventContactModules;
+}
+
+const eventPermissionRows = new Map();
+/**
+ * Every event-day permission of one event with the guest it belongs to:
+ * evidence.subjectUid, RCS subjectUid, or the current receipt's actorUid.
+ * A row with a problem (unreadable, no current receipt, no recoverable uid)
+ * is reported, never copied.
+ */
+async function eventPermissions(db, eventId) {
+  if (eventPermissionRows.has(eventId)) return eventPermissionRows.get(eventId);
+  const {parsers, eventPermissionSubject} = functionsEventContacts();
+  const rows = [];
+  const snap = await db.collection("eventAssistancePermissions")
+    .where("context.eventId", "==", eventId).get();
+  for (const doc of snap.docs) {
+    const parse = parsers[doc.data()?.channel];
+    let permission = null;
+    try {
+      permission = parse ? parse[0](doc.data()) : null;
+    } catch {
+      permission = null;
+    }
+    if (!permission || permission.permissionId !== doc.id) {
+      rows.push({id: doc.id, problem: "unreadable permission"});
+      continue;
+    }
+    const stored = (await db.collection("eventAssistanceConsentReceipts")
+      .doc(permission.currentReceiptId).get()).data();
+    let receipt = null;
+    try {
+      receipt = stored ? parse[1](stored) : null;
+    } catch {
+      receipt = null;
+    }
+    const uid = eventPermissionSubject(permission) ?? receipt?.actorUid ?? null;
+    rows.push({id: doc.id, permission, receipt, uid,
+      problem: !receipt ? "no current receipt" :
+        !validId(uid) ? "no recoverable uid" : null});
+  }
+  eventPermissionRows.set(eventId, rows);
+  return rows;
+}
+
+const millisOf = (value) => typeof value?.toMillis === "function" ?
+  value.toMillis() : NaN;
+
+/**
+ * The guest's event document, built from their event-day permissions (the
+ * latest per channel: one grant per channel per event) and their
+ * approval-notification choice, by the converters the live writers use.
+ */
+async function eventContactDocument(db, eventId, uid) {
+  const m = functionsEventContacts();
+  const rows = (await eventPermissions(db, eventId))
+    .filter((row) => !row.problem && row.uid === uid);
+  const notes = [];
+  const grants = {};
+  let organizerId = null;
+  let latest = 0;
+  for (const channel of ["sms", "rcs", "whatsapp"]) {
+    const mine = rows.filter((row) => row.permission.channel === channel)
+      .sort((a, b) => b.permission.updatedAt - a.permission.updatedAt ||
+        (a.id < b.id ? -1 : 1));
+    if (mine.length === 0) continue;
+    if (mine.length > 1) {
+      notes.push(`${channel}: ${mine.length} permissions (another sender or ` +
+        "roster row); kept the latest, so the guest is asked again");
+    }
+    const [top] = mine;
+    grants[m.eventServiceKeys[channel]] =
+      m.eventGrantFromPermission(uid, top.permission, top.receipt);
+    organizerId = top.permission.context.organizerId;
+    latest = Math.max(latest, top.permission.updatedAt);
+  }
+  if (new Set(rows.map((row) => row.permission.attendeeId)).size > 1) {
+    notes.push("two roster rows for one guest in this event");
+  }
+  const preference = (await db.collection("eventApprovalNotificationPreferences")
+    .doc(m.preferenceId(eventId, uid)).get()).data();
+  if (m.validPreference(preference) && preference.uid === uid &&
+      preference.eventId === eventId) {
+    if (organizerId && preference.organizerId !== organizerId) {
+      notes.push("approval choice names another organiser; left out");
+    } else {
+      Object.assign(grants, m.bookingUpdatesFromPreference(preference).grants);
+      organizerId = preference.organizerId;
+      latest = Math.max(latest, preference.updatedAtMillis);
+    }
+  }
+  if (!organizerId) return null;
+  const expiresAt = m.eventContactExpiry(grants);
+  return {notes, data: {senderKind: "event", senderId: eventId, organizerId,
+    grants, granted: m.effectiveEventContactKeys(grants, latest),
+    updatedAt: m.Timestamp.fromMillis(latest),
+    ...(expiresAt ? {expiresAt} : {})}};
+}
+
+/**
+ * The guest's event document to create, or a skip reason. A document the
+ * live writers already hold is current when each of its grants is at least
+ * as recent as the one built here; otherwise the built one is planned and
+ * reported as a conflict, never written over the live one.
+ */
+async function eventContactTarget(db, eventId, uid) {
+  if ((await db.collection("deletedUsers").doc(uid).get()).exists) {
+    return {entries: [], reason: "deleted account"};
+  }
+  const m = functionsEventContacts();
+  const built = await eventContactDocument(db, eventId, uid);
+  if (!built) return {entries: [], reason: "nothing to copy"};
+  const targetId = `${uid}/contactPermissions/${m.eventSenderKey(eventId)}`;
+  const existing = (await db.collection("users").doc(targetId).get()).data();
+  if (existing && Object.entries(built.data.grants).every(([key, grant]) =>
+    millisOf(existing.grants?.[key]?.updatedAt) >= millisOf(grant.updatedAt))) {
+    return {entries: [], reason: "already current"};
+  }
+  return {entries: [{targetId, data: built.data,
+    ...(built.notes.length ? {note: built.notes.join("; ")} : {})}]};
+}
+
+const eventPermissionPlans = new Map();
+/** One plan per permission; only the guest's first permission emits. */
+function eventPermissionPlan(data, id, db) {
+  if (!eventPermissionPlans.has(id)) {
+    eventPermissionPlans.set(id, (async () => {
+      const eventId = data?.context?.eventId;
+      if (!validId(eventId)) return {entries: [], reason: "no event"};
+      const rows = await eventPermissions(db, eventId);
+      const row = rows.find((entry) => entry.id === id);
+      if (!row || row.problem) {
+        return {entries: [], reason: row?.problem ?? "unreadable permission"};
+      }
+      const first = rows.filter((entry) => !entry.problem &&
+        entry.uid === row.uid).map((entry) => entry.id).sort()[0];
+      if (first !== id) {
+        return {entries: [], reason: "folded into the guest's event document"};
+      }
+      return eventContactTarget(db, eventId, row.uid);
+    })());
+  }
+  return eventPermissionPlans.get(id);
+}
+
+const approvalPreferencePlans = new Map();
+/** A choice with no event-day permission beside it gets its own document. */
+function approvalPreferencePlan(data, id, db) {
+  if (!approvalPreferencePlans.has(id)) {
+    approvalPreferencePlans.set(id, (async () => {
+      const m = functionsEventContacts();
+      if (!m.validPreference(data) || id !== m.preferenceId(data.eventId, data.uid)) {
+        return {entries: [], reason: "inconsistent preference"};
+      }
+      const rows = await eventPermissions(db, data.eventId);
+      if (rows.some((row) => !row.problem && row.uid === data.uid)) {
+        return {entries: [], reason: "folded into the guest's event document"};
+      }
+      return eventContactTarget(db, data.eventId, data.uid);
+    })());
+  }
+  return approvalPreferencePlans.get(id);
+}
+
+const eventReceiptPlans = new Map();
+/** An event-day receipt's copy, same id; a link receipt takes its guest from the permission. */
+function eventReceiptPlan(data, id, db) {
+  if (!eventReceiptPlans.has(id)) {
+    eventReceiptPlans.set(id, (async () => {
+      const m = functionsEventContacts();
+      const parse = m.parsers[data?.channel];
+      let receipt = null;
+      try {
+        receipt = parse ? parse[1](data) : null;
+      } catch {
+        receipt = null;
+      }
+      if (!receipt || receipt.receiptId !== id) {
+        return {entries: [], reason: "unreadable receipt"};
+      }
+      const rows = await eventPermissions(db, receipt.context.eventId);
+      const uid = receipt.actorUid ?? rows.find((row) => !row.problem &&
+        row.permission.channel === receipt.channel &&
+        row.permission.attendeeId === receipt.attendeeId &&
+        row.permission.senderId === receipt.senderId)?.uid ?? null;
+      if (!validId(uid)) return {entries: [], reason: "no recoverable uid"};
+      if ((await db.collection("deletedUsers").doc(uid).get()).exists) {
+        return {entries: [], reason: "deleted account"};
+      }
+      if ((await db.collection("contactPermissionReceipts").doc(id).get()).exists) {
+        return {entries: [], reason: "already written by the live writer"};
+      }
+      return {entries: [{targetId: id, data: {
+        ...m.eventReceiptFromReceipt(uid, receipt), supersedesReceiptId: null}}]};
+    })());
+  }
+  return eventReceiptPlans.get(id);
+}
+
+const approvalReceiptPlans = new Map();
+/** An approval receipt (a copy of one choice revision) becomes two: phone and email. */
+function approvalReceiptPlan(data, id, db) {
+  if (!approvalReceiptPlans.has(id)) {
+    approvalReceiptPlans.set(id, (async () => {
+      const m = functionsEventContacts();
+      if (!m.validPreference(data) || data.receiptId !== id) {
+        return {entries: [], reason: "unreadable receipt"};
+      }
+      if ((await db.collection("deletedUsers").doc(data.uid).get()).exists) {
+        return {entries: [], reason: "deleted account"};
+      }
+      const entries = [];
+      for (const {receiptId, receipt} of m.bookingUpdatesFromPreference(data).receipts) {
+        if ((await db.collection("contactPermissionReceipts").doc(receiptId).get()).exists) {
+          continue;
+        }
+        entries.push({targetId: receiptId,
+          data: {...receipt, supersedesReceiptId: null}});
+      }
+      return {entries, reason: "already written by the live writer"};
+    })());
+  }
+  return approvalReceiptPlans.get(id);
+}
 
 export const MIGRATIONS = [
   {
@@ -1673,6 +1963,43 @@ export const MIGRATIONS = [
           // updatedAt records when a command ran; it is never refreshed.
           delete row.updatedAt;
           return row;
+        },
+      },
+    ],
+  },
+  {
+    name: "access-grants-organizers",
+    description:
+      "Security rules and requireOrganizerManager decide organiser management " +
+      "from accessGrants (#2474 step 3), which every command that changes an " +
+      "organiser's hostUserId, ownerUserId or hostUserIds writes in the same " +
+      "transaction. Every owner and manager those fields name without an " +
+      "access document gets one (owner: ownerUserId, else hostUserId); a " +
+      "team edge alone grants nothing. Then every organiser access document " +
+      "whose role differs from the fields is rewritten. Organisers and team " +
+      "edges are never changed and nothing is deleted. Build Functions first.",
+    steps: [
+      {
+        source: "organizers",
+        target: "accessGrants",
+        skipReason: "every holder already has an access document",
+        expand: (data, id, db) => organizerAccessEntries(db, id, data),
+      },
+      {
+        kind: "fill",
+        collection: "accessGrants",
+        refresh: ["role", "status", "scopeType", "scopeId", "uid",
+          "organizerId"],
+        fill: async (data, id, db) => {
+          if (data.scopeType !== "organizer" || !validId(data.scopeId) ||
+              typeof data.uid !== "string") return null;
+          const organizer = await db.collection("organizers")
+            .doc(data.scopeId).get();
+          const {organizerAccessHolders} = functionsOrganizerAccessGrant();
+          const role = organizerAccessHolders(organizer.data()).get(data.uid);
+          if (!role) return null; // Reported by the plan, never deleted.
+          return {scopeType: "organizer", scopeId: data.scopeId,
+            uid: data.uid, organizerId: data.scopeId, role, status: "active"};
         },
       },
     ],
@@ -2553,6 +2880,55 @@ export const MIGRATIONS = [
           return {...profile, eventId: data.eventId, uid: data.uid,
             expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)};
         },
+      },
+    ],
+  },
+  {
+    name: "contact-permissions-events",
+    description:
+      "Issue #2494 step 1: event-day consent moves into " +
+      "users/{uid}/contactPermissions/event_{eventId}. Each guest's " +
+      "event-day sms, rcs and whatsapp permissions (the latest per channel) " +
+      "and approval-notification choice become one event document, built by " +
+      "the converters the live writers use; the guest is the permission's " +
+      "subject or its current receipt's actor. Every event-day consent " +
+      "receipt is copied to contactPermissionReceipts (same id) and every " +
+      "approval receipt becomes a phone and an email receipt. Notes report " +
+      "two senders or two roster rows for one guest on one channel. Deleted " +
+      "accounts and permissions without a recoverable guest are skipped. A " +
+      "document the live writers already hold is never replaced; one older " +
+      "than the built copy is a conflict. Sources are never changed. Build " +
+      "Functions first.",
+    steps: [
+      {
+        source: "eventAssistanceConsentReceipts",
+        target: "contactPermissionReceipts",
+        skipReason: async (data, id, db) => (await eventReceiptPlan(data, id, db)).reason,
+        expand: async (data, id, db) => (await eventReceiptPlan(data, id, db)).entries,
+      },
+      {
+        source: "eventApprovalNotificationReceipts",
+        target: "contactPermissionReceipts",
+        skipReason: async (data, id, db) =>
+          (await approvalReceiptPlan(data, id, db)).reason,
+        expand: async (data, id, db) => (await approvalReceiptPlan(data, id, db)).entries,
+      },
+      {
+        source: "eventAssistancePermissions",
+        target: "users",
+        targetLabel: "users/{uid}/contactPermissions/event_{eventId}",
+        skipReason: async (data, id, db) =>
+          (await eventPermissionPlan(data, id, db)).reason,
+        expand: async (data, id, db) => (await eventPermissionPlan(data, id, db)).entries,
+      },
+      {
+        source: "eventApprovalNotificationPreferences",
+        target: "users",
+        targetLabel: "users/{uid}/contactPermissions/event_{eventId}",
+        skipReason: async (data, id, db) =>
+          (await approvalPreferencePlan(data, id, db)).reason,
+        expand: async (data, id, db) =>
+          (await approvalPreferencePlan(data, id, db)).entries,
       },
     ],
   },

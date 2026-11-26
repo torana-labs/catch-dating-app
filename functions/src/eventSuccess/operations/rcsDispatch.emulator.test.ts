@@ -128,6 +128,14 @@ test("RCS never borrows SMS consent, and fallback never borrows RCS consent",
             (value as {channel?: string}).channel ?? "")) {
         other.fake.remove(path);
       }
+      // The gates read the guest's event document (issue #2494).
+      if (path.startsWith("users/") && path.includes("/contactPermissions/")) {
+        const {grants, ...document} =
+          value as {grants: Record<string, unknown>};
+        other.fake.write(path, {...document, grants: Object.fromEntries(
+          Object.entries(grants)
+            .filter(([key]) => key === "rcs:eventService"))});
+      }
     }
     assert.equal((await other.dispatch()).kind, "waiting");
     assert.equal(other.requests.filter((r) => r.method !== "GET").length, 0);

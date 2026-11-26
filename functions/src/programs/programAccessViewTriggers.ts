@@ -1,30 +1,29 @@
-import * as admin from "firebase-admin";
-import {onDocumentWritten} from "firebase-functions/v2/firestore";
+import {defineProjections} from "../platform/dispatch/runtime";
 import {
   changedOrganizerManagers,
   reconcileOrganizerManagerViews,
 } from "./programAccessView";
 
-const options = {retry: true};
-
 /**
  * An organizer gaining or losing a manager (its hostUserId, ownerUserId or
- * hostUserIds, the fields requireProgramSetupAccess and the rules read): that
- * account's view of every programme of the organizer, so a new manager gets
- * the setup flag and a removed one loses it. Other organizer writes return
- * without reading anything.
+ * hostUserIds): that account's view of every programme of the organizer, so
+ * a new manager gets the setup flag and a removed one loses it. Other
+ * organizer writes match nothing.
  *
  * The flag is display only: released Host builds gate the programme list on
- * it offline, and no security rule reads it. Programme authority itself is
- * written in each grant command's transaction (programAuthorityWrites), so
- * grants and programmes need no trigger (issue #2474).
+ * it offline, and no security rule reads it. Programme authority is written
+ * in each grant command's transaction (programAuthorityWrites), and
+ * organiser authority in each team command's (accessGrants, #2474 step 3).
+ * Served by the organizers dispatcher (issue #2451) in place of the retired
+ * onProgramAccessViewOrganizerChanged trigger; it re-reads its sources in a
+ * transaction per view, so a retry or a replay converges.
  */
-export const onProgramAccessViewOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{organizerId}",
-}, async (event) => {
-  const changed = changedOrganizerManagers(event.data?.before.data(),
-    event.data?.after.data());
-  if (changed.length === 0) return;
-  await reconcileOrganizerManagerViews(admin.firestore(),
-    event.params.organizerId, changed);
-});
+export const programAccessViewOrganizerProjections = defineProjections(
+  "organizers", [{
+    id: "programAccessViewOrganizerManagers", kind: "projection",
+    when: (change) =>
+      changedOrganizerManagers(change.before, change.after).length > 0,
+    run: (change, ctx) => reconcileOrganizerManagerViews(ctx.db,
+      change.documentId, changedOrganizerManagers(change.before,
+        change.after)),
+  }]);

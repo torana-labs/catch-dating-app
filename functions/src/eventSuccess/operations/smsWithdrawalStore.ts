@@ -19,6 +19,9 @@ import {
   smsWithdrawalMatchesPermission,
 } from "./smsWithdrawalRecords";
 import {withdrawalGrantId} from "./messageConsentCollections";
+import {EventContactPermissionWriter} from
+  "../../messaging/eventContactPermissions";
+import {writeEventChannelDecision} from "./eventContactGrants";
 
 interface Facts {authority: WithdrawalGrant; permission: Permission}
 
@@ -77,9 +80,12 @@ export class SmsWithdrawalStore {
         decision: "revoke", copyVersion: null, copyHash: null,
         appliedRevision: next.revision, createdAt: now,
         permissionHash: operationContentHash(next)});
+      const contact = await EventContactPermissionWriter.read(this.db, tx,
+        authority.subjectUid, permission.context.eventId);
       tx.create(receiptRef, receipt);
       tx.set(this.db.collection(smsCollections.permissions)
         .doc(permission.permissionId), next);
+      writeEventChannelDecision(tx, contact, next, receipt, now);
       return {outcome: "applied", view: this.view({...facts,
         permission: next}, now)};
     });

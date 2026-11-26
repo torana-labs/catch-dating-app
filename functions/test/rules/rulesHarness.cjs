@@ -33,6 +33,8 @@ const firestoreRules = fs.readFileSync(
   "utf8",
 );
 
+const {writeOrganizerWithAccess} = require("./organizerAccessGrantFixture.cjs");
+
 const projectId = "demo-catch-rules";
 
 let testEnv;
@@ -635,6 +637,13 @@ function eventReviewId(eventId, reviewerUserId) {
 
 async function seed(pathSegments, data) {
   await testEnv.withSecurityRulesDisabled(async (context) => {
+    // An organiser is never written without its access documents (#2474
+    // step 3): every command that changes its managers writes both.
+    if (pathSegments.length === 2 && pathSegments[0] === "organizers") {
+      await writeOrganizerWithAccess(context.firestore(), pathSegments[1],
+        data);
+      return;
+    }
     await setDoc(doc(context.firestore(), ...pathSegments), data);
   });
 }

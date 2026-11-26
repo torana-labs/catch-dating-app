@@ -51,7 +51,7 @@ export {
   onAssistanceSettingChanged, onAssistanceProgressChanged,
   onAssistanceRuntimeConfigChanged,
   onAssistanceMembershipChanged, onAssistanceMessageChanged,
-  onAssistancePermissionChanged, onAssistanceBudgetChanged,
+  onAssistanceBudgetChanged,
   onAssistanceRcsSenderChanged, onAssistanceRcsSubscriptionChanged,
   onAssistanceSmsSenderChanged,
   onAssistanceWhatsappSenderChanged,

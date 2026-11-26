@@ -7,6 +7,8 @@ const {
   initializeTestEnvironment,
 } = require("@firebase/rules-unit-testing");
 const {Timestamp, doc, setDoc} = require("firebase/firestore");
+const {writeOrganizerWithAccess} =
+  require("./rules/organizerAccessGrantFixture.cjs");
 
 const projectRoot = path.resolve(__dirname, "..", "..");
 const firestoreRules = fs.readFileSync(
@@ -50,6 +52,13 @@ function match(overrides = {}) {
 
 async function seedFirestore(pathSegments, data) {
   await testEnv.withSecurityRulesDisabled(async (context) => {
+    // An organiser is never written without its access documents (#2474
+    // step 3), which the organiser media rules read.
+    if (pathSegments.length === 2 && pathSegments[0] === "organizers") {
+      await writeOrganizerWithAccess(context.firestore(), pathSegments[1],
+        data);
+      return;
+    }
     await setDoc(doc(context.firestore(), ...pathSegments), data);
   });
 }
@@ -452,7 +461,7 @@ describe("storage.rules", () => {
       await assertSucceeds(authedStorage("manager-1").ref(paths[1]).delete());
     });
 
-    it("uses active organizer team edges for v2 organizer and event media", async () => {
+    it("uses the organiser access documents, not team edges, for v2 organizer and event media", async () => {
       await seedFirestore(["organizers", "organizer-1"], {
         hostUserId: "owner-1",
         ownerUserId: "owner-1",
@@ -480,16 +489,30 @@ describe("storage.rules", () => {
         organizerId: "organizer-1",
       });
 
-      await assertSucceeds(
+      // A team edge alone grants nothing (#2474 step 3); the owner, whose
+      // access document the organiser write carries, uploads.
+      await assertFails(
         uploadImage(
           authedStorage("manager-edge"),
           "organizers/organizer-1/media/team-media-00001/original.jpg",
         ),
       );
-      await assertSucceeds(
+      await assertFails(
         uploadImage(
           authedStorage("manager-edge"),
           "events/event-1/media/team-event-00001/original.jpg",
+        ),
+      );
+      await assertSucceeds(
+        uploadImage(
+          authedStorage("owner-1"),
+          "organizers/organizer-1/media/team-media-00002/original.jpg",
+        ),
+      );
+      await assertSucceeds(
+        uploadImage(
+          authedStorage("owner-1"),
+          "events/event-1/media/team-event-00002/original.jpg",
         ),
       );
       await assertFails(
@@ -733,7 +756,8 @@ describe("storage.rules", () => {
         "events/event-1/hostPhotoUploads/hostPhoto0000000002/original.png",
         {contentType: "image/png"},
       ));
-      await assertSucceeds(uploadHostPhoto(
+      // A team edge alone is not organiser management (#2474 step 3).
+      await assertFails(uploadHostPhoto(
         "manager-edge",
         "events/event-1/hostPhotoUploads/hostPhoto0000000003/original.jpeg",
       ));

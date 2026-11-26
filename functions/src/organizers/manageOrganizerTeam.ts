@@ -34,6 +34,8 @@ import {
   hostProfileSeedPatch,
   professionalHostSnapshot,
 } from "../shared/hostProfiles";
+import {stageOrganizerAccessGrants} from
+  "../domain/access/organizerAccessGrants";
 
 interface ManageOrganizerTeamDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -112,6 +114,10 @@ export async function addOrganizerManagerHandler(
     ].sort((a, b) => ids.indexOf(a.uid) - ids.indexOf(b.uid));
     const patch = {hostUserIds: ids, hostProfiles: profiles};
     tx.update(organizerRef, patch);
+    // The new manager's access commits with the organiser (#2474 step 3).
+    stageOrganizerAccessGrants(tx, db, {organizerId: data.organizerId,
+      before: organizer, after: {...organizer, ...patch},
+      grantedBy: callerUid, updatedAt: admin.firestore.Timestamp.now()});
     tx.set(teamRef, activeOrganizerTeamMembershipPatch({
       organizerId: data.organizerId,
       uid: targetUid,
@@ -173,6 +179,10 @@ export async function removeOrganizerManagerHandler(
         .filter((host) => host.uid !== data.uid),
     };
     tx.update(organizerRef, patch);
+    // The removal is in force for rules the moment it commits (#2474).
+    stageOrganizerAccessGrants(tx, db, {organizerId: data.organizerId,
+      before: organizer, after: {...organizer, ...patch},
+      grantedBy: callerUid, updatedAt: admin.firestore.Timestamp.now()});
     tx.set(teamRef, {
       status: "removed",
       removedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -274,6 +284,11 @@ export async function transferOrganizerOwnershipHandler(
       "ownership.claimedByUid": data.uid,
     };
     tx.update(organizerRef, patch);
+    // Both roles change in the transfer's own commit (#2474 step 3).
+    stageOrganizerAccessGrants(tx, db, {organizerId: data.organizerId,
+      before: organizer, after: {...organizer, ownerUserId: data.uid,
+        hostUserId: data.uid, hostUserIds: ids},
+      grantedBy: callerUid, updatedAt: admin.firestore.Timestamp.now()});
     tx.set(previousTeamRef, activeOrganizerTeamMembershipPatch({
       organizerId: data.organizerId,
       uid: callerUid,

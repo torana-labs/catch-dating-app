@@ -8,6 +8,8 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import {HttpsError} from "firebase-functions/v2/https";
 import {eventParticipationId} from "../shared/relationshipDocuments";
+import {bookingPrivateFactsRef, fetchBookingCohorts, legacyBookingCohort,
+  storedBookingCohort} from "../shared/bookingPrivateFacts";
 import {requireDoc} from "../shared/validation";
 import {eventRuntimeParticipantId} from "./eventRuntime";
 import {
@@ -57,12 +59,15 @@ export async function loadEventSuccessRoster(
       snap,
       "EventBookingDocument"
     ));
-  const [consumerProfiles, publicProfiles] = await Promise.all([
-    Promise.all(consumerEdges.map((edge) =>
-      db.collection("users").doc(edge.uid).get())),
-    Promise.all(consumerEdges.map((edge) =>
-      db.collection("publicProfiles").doc(edge.uid).get())),
-  ]);
+  const [consumerProfiles, publicProfiles, bookingCohorts] =
+    await Promise.all([
+      Promise.all(consumerEdges.map((edge) =>
+        db.collection("users").doc(edge.uid).get())),
+      Promise.all(consumerEdges.map((edge) =>
+        db.collection("publicProfiles").doc(edge.uid).get())),
+      fetchBookingCohorts(db, eventId, consumerEdges.map((edge) =>
+        ({uid: edge.uid, booking: edge}))),
+    ]);
   const byUid = new Map<string, EventSuccessRosterParticipant>();
   consumerEdges.forEach((edge, index) => {
     if (edge.status !== "signedUp" && edge.status !== "attended") return;
@@ -94,7 +99,7 @@ export async function loadEventSuccessRoster(
       displayName: profile.displayName || profile.name ||
         publicProfile?.name || edge.uid,
       arrivalGroup: null,
-      cohortAtSignup: edge.cohortAtSignup ??
+      cohortAtSignup: bookingCohorts.get(edge.uid) ??
         cohortFor(gender, interests),
       profile,
       activityAttributes: activityAttributesForProfile(profile),
@@ -165,11 +170,13 @@ export async function loadEventSuccessRosterParticipant(
     runtimeSnap,
     userSnap,
     publicProfileSnap,
+    privateFactsSnap,
   ] = await Promise.all([
     participationRef.get(),
     runtimeRef.get(),
     db.collection("users").doc(uid).get(),
     db.collection("publicProfiles").doc(uid).get(),
+    bookingPrivateFactsRef(db, eventParticipationId(eventId, uid)).get(),
   ]);
   if (participationSnap.exists) {
     const edge = requireDoc<EventBookingDocument>(
@@ -204,8 +211,8 @@ export async function loadEventSuccessRosterParticipant(
         displayName: profile.displayName || profile.name ||
           publicProfile?.name || uid,
         arrivalGroup: null,
-        cohortAtSignup: edge.cohortAtSignup ??
-          cohortFor(gender, interests),
+        cohortAtSignup: storedBookingCohort(privateFactsSnap.data(), eventId,
+          uid) ?? legacyBookingCohort(edge) ?? cohortFor(gender, interests),
         profile,
         activityAttributes: activityAttributesForProfile(profile),
         source: "catchParticipation",

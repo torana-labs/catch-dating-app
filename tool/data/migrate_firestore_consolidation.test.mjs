@@ -1069,6 +1069,38 @@ test("program-access-views-organizer-managers adds manager views and the flag on
   assert.equal(again.totals.conflicts, 0);
 });
 
+test("access-grants-organizers grants every holder the manager fields name, never a team edge alone", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "access-grants-organizers");
+  const db = fakeDb({
+    "organizers/o1": {hostUserId: "legacy-1", ownerUserId: "owner-1",
+      hostUserIds: ["owner-1", "mgr-1"], hostProfiles: [{uid: "shown-only"}]},
+    "organizers/o2": {hostUserId: "host-2", hostUserIds: []},
+    "organizers/o3": {hostUserId: null, ownerUserId: null, hostUserIds: []},
+    "organizerTeamMemberships/o1_team-only": {organizerId: "o1", uid: "team-only",
+      role: "manager", status: "active"},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.steps[0].toCreate.length, 4);
+  assert.equal(plan.totals.conflicts, 0);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["accessGrants/organizer__o1__owner-1"].role, "owner");
+  assert.equal(db.data["accessGrants/organizer__o1__legacy-1"].role, "manager");
+  assert.equal(db.data["accessGrants/organizer__o1__mgr-1"].role, "manager");
+  assert.equal(db.data["accessGrants/organizer__o2__host-2"].role, "owner");
+  assert.equal(db.data["accessGrants/organizer__o1__team-only"], undefined);
+  assert.equal(db.data["accessGrants/organizer__o1__shown-only"], undefined);
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0, "a rerun writes nothing");
+  assert.equal(again.totals.conflicts, 0);
+  // A role that drifted from the fields is refreshed once.
+  db.data["accessGrants/organizer__o1__mgr-1"] = {
+    ...db.data["accessGrants/organizer__o1__mgr-1"], role: "owner"};
+  const repair = await planMigration(db, migration);
+  assert.equal(repair.steps[1].toFill.length, 1);
+  await applyMigrationPlan(db, repair);
+  assert.equal(db.data["accessGrants/organizer__o1__mgr-1"].role, "manager");
+});
+
 test("access-grants-events grants each event staff member once, permissions ending at the operator window", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "access-grants-events");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
@@ -1687,6 +1719,95 @@ test("unknown migration names are rejected", () => {
 });
 
 // structuredClone, keeping timestamp-like values (anything with toMillis).
+test("contact-permissions-events builds the documents the live writers write", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "contact-permissions-events");
+  const load = createFunctionsRequire();
+  const {ProgressFirestore} = load("./lib/eventSuccess/operations/groupProgressTestFixtures.js");
+  const {SmsPreferenceStore} = load("./lib/eventSuccess/operations/smsPreferenceStore.js");
+  const {SMS_CONSENT_VERSION, CATCH_EVENT_SMS_SENDER_ID} =
+    load("./lib/eventSuccess/operations/smsConsent.js");
+  const {preferenceId} = load("./lib/events/approvalNotifications/model.js");
+  const start = Date.parse("2026-09-07T12:00:00Z");
+  const live = new ProgressFirestore();
+  live.write("events/event-one", {organizerId: "organizer-one", status: "active",
+    name: "Test event", endTime: {seconds: (start + 3_600_000) / 1000, nanoseconds: 0}});
+  live.write("eventAttendees/attendee-one", {organizerId: "organizer-one",
+    eventId: "event-one", linkedUid: "guest-one", phoneE164: "+919999999999",
+    status: "registered", createdAt: {seconds: start / 1000, nanoseconds: 5}});
+  live.write(`eventAssistanceSmsSenders/${CATCH_EVENT_SMS_SENDER_ID}`, {
+    schemaVersion: 1, senderId: CATCH_EVENT_SMS_SENDER_ID, revision: 1,
+    provider: "gupshup", senderIdentity: "catchPlatform", country: "IN",
+    status: "ready", mask: "CATCHS", principalEntityId: "12345",
+    credentialVersion: "projects/catchdates-dev/secrets/EVENT_SMS/versions/1",
+    activation: {useCaseApprovalId: "fixture-approval",
+      senderApprovalId: "fixture-header", approvedAt: start - 1000,
+      validUntil: start + 86_400_000},
+    maxSegments: 3, quote: {revision: 1, currency: "INR",
+      maxMicrosPerSegment: 500_000, validUntil: start + 86_400_000},
+    templates: [{templateId: "fixture", revision: 1, purpose: "joiningUpdate",
+      dltTemplateId: "123456", status: "approved", parts: [
+        {kind: "variable", name: "instruction", maxCharacters: 150},
+        {kind: "literal", text: " Reply: "},
+        {kind: "variable", name: "responseUrl", maxCharacters: 160}]}]});
+  // The live writer grants SMS and records both the old and the new rows.
+  const store = new SmsPreferenceStore(live, () => start);
+  const actor = {uid: "guest-one", phone: "+919999999999"};
+  const scope = {eventId: "event-one", attendeeId: "attendee-one"};
+  const view = (await store.get(actor, scope)).view;
+  const result = await store.set(actor, {...scope, requestId: "grant-1",
+    expectedRevision: null, expectedReviewHash: view.reviewHash,
+    decision: {kind: "grant", copyVersion: SMS_CONSENT_VERSION}});
+  assert.equal(result.outcome, "applied");
+  const written = Object.fromEntries(live.entries());
+  const eventPath = "users/guest-one/contactPermissions/event_event-one";
+  assert.ok(written[eventPath]);
+  // An approval choice with no event-day permission beside it.
+  const choice = {eventId: "event-two", organizerId: "organizer-one", uid: "guest-two",
+    revision: 1, choices: {phoneUpdates: true, emailUpdates: false},
+    phoneE164: "+919812345678", email: null, termsVersion: "event-approval-v1",
+    receiptId: "eapr_two", updatedAtMillis: start};
+  const old = Object.fromEntries(Object.entries(written).filter(([key]) =>
+    !key.startsWith("users/") && !key.startsWith("contactPermissionReceipts/")));
+  const db = fakeDb({...old,
+    [`eventApprovalNotificationPreferences/${preferenceId("event-two", "guest-two")}`]: choice,
+    "eventApprovalNotificationReceipts/eapr_two": choice,
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.conflicts, 0);
+  const [eventReceipts, approvalReceipts, permissions, preferences] = plan.steps;
+  assert.equal(eventReceipts.toCreate.length, 1);
+  assert.equal(approvalReceipts.toCreate.length, 2);
+  assert.equal(permissions.toCreate.length, 1);
+  assert.equal(preferences.toCreate.length, 1);
+  await applyMigrationPlan(db, plan);
+  // Exactly what the live writer wrote: the event document and its receipt.
+  const millis = (value) => JSON.parse(JSON.stringify(value, (key, item) =>
+    item && typeof item === "object" && typeof item._seconds === "number" ?
+      item._seconds * 1000 + Math.floor(item._nanoseconds / 1e6) : item));
+  assert.deepEqual(millis(db.data[eventPath]), millis(written[eventPath]));
+  const receiptId = written[eventPath].grants["sms:eventService"].receiptId;
+  assert.deepEqual(millis(db.data[`contactPermissionReceipts/${receiptId}`]),
+    millis(written[`contactPermissionReceipts/${receiptId}`]));
+  const alone = db.data["users/guest-two/contactPermissions/event_event-two"];
+  assert.deepEqual(alone.granted, ["phone:bookingUpdates"]);
+  assert.equal(alone.grants["email:bookingUpdates"].status, "optedOut");
+  assert.equal(alone.expiresAt, undefined);
+  // Sources are untouched, a second run creates nothing, and a document the
+  // live writer already holds is never replaced.
+  assert.deepEqual(db.data["eventApprovalNotificationReceipts/eapr_two"], choice);
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+  const stale = millis(db.data[eventPath]);
+  db.data[eventPath].grants["sms:eventService"] = {
+    ...db.data[eventPath].grants["sms:eventService"], updatedAt: {
+      toMillis: () => start - 1}};
+  const conflicted = await planMigration(db, migration);
+  assert.equal(conflicted.totals.conflicts, 1);
+  await assert.rejects(applyMigrationPlan(db, conflicted), /different data/u);
+  assert.ok(stale);
+});
+
 function clone(value) {
   if (value === null || typeof value !== "object") return value;
   if (typeof value.toMillis === "function") return value;

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/organizers/domain/claimable_organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_draft.dart';
 import 'package:catch_dating_app/hosts/onboarding/onboarding_controller.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_details_screen.dart';
@@ -9,6 +10,8 @@ import 'package:catch_dating_app/hosts/onboarding/setup_payments_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_draft_controller.dart';
+import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_error_context.dart' as app_ops;
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/routing/route_contract.dart';
@@ -65,6 +68,61 @@ class _HostSetupScreenState extends ConsumerState<HostSetupScreen> {
     if (mounted && restored != null) {
       ref.read(hostSetupControllerProvider.notifier).restore(restored);
     }
+  }
+
+  /// Sends the claim the form holds; review comes next.
+  Future<void> _sendClaim() async {
+    final claim = ref.read(hostSetupControllerProvider).claim;
+    final organizer = claim.organizer;
+    final role = claim.role;
+    if (!claim.canSend || organizer == null || role == null) return;
+    String? requestId;
+    try {
+      await HostOrganizerClaimController.requestMutation.run(ref, (tx) async {
+        requestId = await tx
+            .get(hostOrganizerClaimControllerProvider.notifier)
+            .request(
+              organizerId: organizer.organizerId,
+              claimantName: claim.claimantName,
+              role: role,
+            );
+        return requestId!;
+      });
+    } catch (_) {
+      // The mutation holds the error; the claim form shows it.
+      return;
+    }
+    final sent = requestId;
+    if (!mounted || sent == null) return;
+    ref.read(hostSetupControllerProvider.notifier).claimSent(sent);
+  }
+
+  /// The website's claim page, where Instagram or Luma proves the page is
+  /// the host's and hands it over at once.
+  void _verifyClaim() {
+    final claim = ref.read(hostSetupControllerProvider).claim;
+    final organizer = claim.organizer;
+    if (organizer == null) return;
+    final requestId = claim.requestId;
+    final url = AppConfig.publicSiteUrl.resolve(
+      Uri(
+        path: '/claim/${organizer.organizerId}',
+        queryParameters: requestId == null ? null : {'requestId': requestId},
+      ).toString(),
+    );
+    unawaited(
+      app_ops.runLoggingAppErrors(
+        () async {
+          await ref.read(externalLinkControllerProvider).openExternal(url);
+        },
+        context: const app_ops.AppErrorContext(
+          operation: app_ops.AppOperation.plugin,
+          action: 'open the website claim check',
+          resource: 'url_launcher',
+        ),
+        logError: ref.read(errorLoggerProvider),
+      ),
+    );
   }
 
   void _close() {
@@ -167,10 +225,18 @@ class _HostSetupScreenState extends ConsumerState<HostSetupScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(hostSetupControllerProvider);
     final organizerId = state.organizerId;
+    final candidates = state.step == HostSetupStep.start
+        ? (ref.watch(hostClaimableOrganizersProvider).value ??
+                  ClaimableOrganizers.none)
+              .candidatesToOffer
+        : const <ClaimableOrganizer>[];
     return switch (state.step) {
       HostSetupStep.start => HostSetupFindScreen(
         onClose: _close,
         onNext: _next,
+        candidates: candidates,
+        onSendClaim: () => unawaited(_sendClaim()),
+        onVerifyClaim: _verifyClaim,
       ),
       HostSetupStep.details => HostSetupDetailsScreen(
         onPickLogo: () => unawaited(_pickLogo()),

@@ -155,32 +155,36 @@ service cloud.firestore {
         );
     }
 
-    function isOrganizerHostData(organizerData) {
-      return organizerData.hostUserId == request.auth.uid
-        || (
-          organizerData.keys().hasAny(['ownerUserId'])
-          && organizerData.ownerUserId == request.auth.uid
-        )
-        || (
-          organizerData.keys().hasAny(['hostUserIds'])
-          && request.auth.uid in organizerData.hostUserIds
-        );
+    // Organiser management, read from the account's
+    // accessGrants/organizer__{organizerId}__{uid} document (#2474 step 3):
+    // the one definition of organiser owner and manager. Every command that
+    // changes an organiser's hostUserId, ownerUserId or hostUserIds writes it
+    // in the same transaction, and requireOrganizerManager reads it too.
+    function organizerAccessPath(organizerId) {
+      return /databases/$(database)/documents/accessGrants/$('organizer__' + organizerId + '__' + request.auth.uid);
     }
 
+    function isOrganizerManagerOf(organizerId) {
+      // A signed-out request has no uid, so the path fails and so does this.
+      let access = organizerAccessPath(organizerId);
+      return exists(access) && organizerAccessLive(get(access).data);
+    }
+
+    // The id names the organiser and the account, so the fields need only
+    // say the grant is live.
+    function organizerAccessLive(grant) {
+      return grant.status == 'active' && grant.uid == request.auth.uid;
+    }
+
+    function isOrganizerOwnerOf(organizerId) {
+      return isOrganizerManagerOf(organizerId)
+        && get(organizerAccessPath(organizerId)).data.role == 'owner';
+    }
+
+    // A missing event or organizerId fails the lookup, and so the check.
     function isOrganizerHostForEvent(eventId) {
-      return exists(/databases/$(database)/documents/events/$(eventId))
-        && get(/databases/$(database)/documents/events/$(eventId))
-          .data.keys().hasAny(['organizerId'])
-        && exists(/databases/$(database)/documents/organizers/$(
-          get(/databases/$(database)/documents/events/$(eventId))
-            .data.organizerId
-        ))
-        && isOrganizerHostData(get(
-          /databases/$(database)/documents/organizers/$(
-            get(/databases/$(database)/documents/events/$(eventId))
-              .data.organizerId
-          )
-        ).data);
+      return isOrganizerManagerOf(
+        get(/databases/$(database)/documents/events/$(eventId)).data.organizerId);
     }
 
     function eventStaffGrantDocId(eventId, uid) {
@@ -494,6 +498,10 @@ service cloud.firestore {
           'prefsRunStatusUpdates', 'prefsOrganizerUpdates',
           'prefsWeeklyDigest', 'prefsShowOnMap', 'prefsShowInCrossPaths',
           'prefsCrossPathsInvitations',
+          // Hide switches for the sensitive answers (#2493), set through
+          // updateUserProfile; tolerated, never needed, on create.
+          'prefsHideReligion', 'prefsHideRelationshipGoal',
+          'prefsHideDrinking', 'prefsHideSmoking', 'prefsHideChildren',
           // Server-owned lifecycle fields. These must be tolerated on existing
           // retained docs, but clients cannot create or change them.
           'deleted',
@@ -1494,22 +1502,14 @@ service cloud.firestore {
     // unapproved drafts or the intake pipeline.
     // The canonical organizer holds contact details, host defaults,
     // provenance, intake, admin search, ownership and claim state, so only
-    // the organizer's own hosts, owner and active team read it (#1221).
+    // the organizer's owner and managers read it (#1221; their access
+    // documents, #2474).
     // Everyone else reads publicOrganizers/{organizerId}; the apps fall back
     // to it when this read is denied.
-    function hasActiveOrganizerTeamMembership(organizerId) {
-      let membership = /databases/$(database)/documents/organizerTeamMemberships/$(
-        organizerId + '_' + request.auth.uid);
-      return exists(membership)
-        && get(membership).data.organizerId == organizerId
-        && get(membership).data.uid == request.auth.uid
-        && get(membership).data.status == 'active';
-    }
 
     match /organizers/{organizerId} {
       allow get: if isAuthed() && !isDeletedUser(request.auth.uid)
-        && (isOrganizerHostData(resource.data)
-          || hasActiveOrganizerTeamMembership(organizerId));
+        && isOrganizerManagerOf(organizerId);
       // Same field shape as the Host app's own queries, so Firestore can
       // prove them; browse lists use publicOrganizers.
       allow list: if isAuthed() && (resource.data.hostUserId == request.auth.uid
@@ -1562,11 +1562,7 @@ service cloud.firestore {
             exists(/databases/$(database)/documents/organizers/$(
               resource.data.organizerId
             ))
-            && isOrganizerHostData(get(
-              /databases/$(database)/documents/organizers/$(
-                resource.data.organizerId
-              )
-            ).data)
+            && isOrganizerManagerOf(resource.data.organizerId)
           )
         );
       allow write: if false;
@@ -1581,11 +1577,7 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/organizers/$(
           resource.data.organizerId
         ))
-        && isOrganizerHostData(get(
-          /databases/$(database)/documents/organizers/$(
-            resource.data.organizerId
-          )
-        ).data);
+        && isOrganizerManagerOf(resource.data.organizerId);
       allow create, update, delete: if false;
     }
 
@@ -1597,11 +1589,7 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/organizers/$(
           resource.data.organizerId
         ))
-        && isOrganizerHostData(get(
-          /databases/$(database)/documents/organizers/$(
-            resource.data.organizerId
-          )
-        ).data);
+        && isOrganizerManagerOf(resource.data.organizerId);
       allow create, update, delete: if false;
     }
 
@@ -1630,13 +1618,13 @@ service cloud.firestore {
     }
 
     // Host list views contain only the explicitly allowlisted presentation DTO.
-    // Authority always comes from the current organizer, never from the view.
+    // Authority always comes from the organiser access document, never from
+    // the view.
     function isHostSummaryManager(organizerId) {
       return isAuthed() && !isDeletedUser(request.auth.uid)
         && organizerId is string
         && exists(/databases/$(database)/documents/organizers/$(organizerId))
-        && isOrganizerHostData(get(
-          /databases/$(database)/documents/organizers/$(organizerId)).data);
+        && isOrganizerManagerOf(organizerId);
     }
     // A summary manager of an organizer that is active and not archived.
     // Reads that the setup commands' authority gated on an active organizer
@@ -1784,14 +1772,10 @@ service cloud.firestore {
       allow get, list: if isHostSummaryManager(resource.data.organizerId);
       allow write: if false;
     }
-    // The organizer's current owner (ownerUserId, else the primary host).
+    // The organizer's current owner: its access document's role.
     function isHostSummaryOwner(organizerId) {
-      let organizer = get(/databases/$(database)/documents/organizers/$(
-        organizerId)).data;
       return isHostSummaryManager(organizerId)
-        && (organizer.get('ownerUserId', null) != null
-          ? organizer.ownerUserId == request.auth.uid
-          : organizer.get('hostUserId', null) == request.auth.uid);
+        && isOrganizerOwnerOf(organizerId);
     }
     // Catch's sent and closed bills to an organizer, as listOrganizerBills
     // returns them: only its owner reads them.
@@ -3095,6 +3079,14 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // A booking cohort encodes the guest's gender and who they are interested
+    // in (their sexual orientation). Organisers read eventBookings and
+    // eventWaitlistOffers, so the cohort lives here, where no client and no
+    // organiser can read it (#2493).
+    match /eventBookingPrivateFacts/{bookingId} {
+      allow read, write: if false;
+    }
+
     // TRANSITIONAL legacy mirror of eventBookings for released app builds,
     // written only by onEventBookingMirroredToLegacy. Same readers as
     // eventBookings; phase 2 of the rename removes this block.
@@ -3244,14 +3236,11 @@ service cloud.firestore {
     // The canonical event holds booking counts by gender and cohort, Cross
     // Paths pair counts, admin search, demo markers, setup defaults, provider
     // evidence and the runtime join id, and rules cannot hide single fields
-    // (#1666). So only the organizer's own hosts, owner and active team, and
+    // (#1666). So only the organizer's owner and managers, and
     // the event's staff, read it. Everyone else reads publicEvents/{eventId};
     // the apps fall back to it when this read is denied.
     function readsCanonicalEvent(organizerId) {
-      return organizerId is string
-        && (isHostSummaryManager(organizerId)
-          || (isAuthed() && !isDeletedUser(request.auth.uid)
-            && hasActiveOrganizerTeamMembership(organizerId)));
+      return organizerId is string && isHostSummaryManager(organizerId);
     }
 
     match /events/{eventId} {
@@ -3917,9 +3906,12 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // FIX-12: scorecards hold event-level catch, match and chat counts.
+    // Hosts get no direct read until an event-level stats screen applies
+    // the group-size floor (config/guestDataVisibility); the server still
+    // computes them.
     match /eventSuccessScorecards/{eventId} {
-      allow read: if isAuthed() && isOrganizerHostForEvent(eventId);
-      allow write: if false;
+      allow read, write: if false;
     }
 
     // ── Participant success / marketplace metrics ───────────────────────────

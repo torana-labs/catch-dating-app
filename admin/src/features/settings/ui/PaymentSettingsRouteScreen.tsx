@@ -58,6 +58,7 @@ export function PaymentSettingsRouteScreen({
   const plans = useOrganizerEntitlementController({actorUid, onError, onNotice});
   const budgets = useMessagingBudgetController({onError, onNotice});
   const [month] = useState(() => lastMonth(Date.now()));
+  // lease-exempt: builds last month's ledger CSV and writes nothing.
   const ledger = useMutation({mutationFn: () => exportMoneyLedger(month.month)});
   const editing = edit === "terms" ? terms : edit === "organizer-terms" ? organizerTerms : null;
   useEffect(() => {

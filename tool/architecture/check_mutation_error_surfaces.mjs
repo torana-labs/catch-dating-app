@@ -51,24 +51,198 @@ function scopeFailure(reason) {
 
 export function scanFile({relativePath, source}) {
   if (!isBuildMethodMutationPendingCandidate(source)) return [];
-  const mutationVariables = mutationVariableExpressions(source);
-  const covered = coveredMutationSurfaces(source, mutationVariables);
-  const uncoveredPendingLines = pendingLines(source, mutationVariables).filter(
-    (pending) => !isPendingCovered(pending, covered),
-  );
-  if (uncoveredPendingLines.length === 0) return [];
+  // Coverage is judged per build method on comment-free code, so a comment
+  // or a sibling build method naming the same variable cannot suppress a
+  // finding (the same unit catch_mutation_pending_requires_error uses).
+  const {code, stringMask} = maskDartComments(source);
+  const sourceLines = source.split(/\r?\n/u);
+  const findings = [];
+  for (const body of buildMethodBodies(code, stringMask)) {
+    const bodySource = code.slice(body.start, body.end);
+    const lineOffset = countNewlines(code, body.start);
+    const mutationVariables = mutationVariableExpressions(bodySource);
+    const covered = coveredMutationSurfaces(bodySource, mutationVariables);
+    for (const pending of pendingLines(bodySource, mutationVariables)) {
+      if (isPendingCovered(pending, covered)) continue;
+      const line = pending.line + lineOffset;
+      const located = {...pending, line, text: sourceLines[line - 1].trim()};
+      findings.push({
+        path: relativePath,
+        line,
+        reason: `build method reads ${mutationLabel(
+          located,
+        )} pending state but has no matching mutation error surface`,
+        variableName: located.variableName,
+        mutationExpression: located.mutationExpression,
+        text: located.text,
+        pendingLines: [located],
+      });
+    }
+  }
+  return findings;
+}
 
-  return uncoveredPendingLines.map((pending) => ({
-    path: relativePath,
-    line: pending.line,
-    reason: `build method reads ${mutationLabel(
-      pending,
-    )} pending state but has no matching mutation error surface`,
-    variableName: pending.variableName,
-    mutationExpression: pending.mutationExpression,
-    text: pending.text,
-    pendingLines: [pending],
-  }));
+/**
+ * Returns the source with every comment replaced by spaces (newlines kept, so
+ * offsets and line numbers still match) and a mask of string-literal offsets.
+ * String-aware, so `//` inside a URL literal is not a comment; interpolation
+ * code inside `${...}` is treated as code.
+ */
+export function maskDartComments(source) {
+  const out = source.split("");
+  const stringMask = new Uint8Array(source.length + 1);
+  const stack = [];
+  const length = source.length;
+  const blank = (from, to) => {
+    for (let index = from; index < to; index += 1) {
+      if (out[index] !== "\n" && out[index] !== "\r") out[index] = " ";
+    }
+  };
+  const markString = (from, to) => {
+    for (let index = from; index < to && index < length; index += 1) stringMask[index] = 1;
+  };
+  let index = 0;
+  while (index < length) {
+    const top = stack.at(-1);
+    const char = source[index];
+    if (top?.kind === "string") {
+      const close = top.quote.repeat(top.triple ? 3 : 1);
+      if (!top.raw && char === "\\") {
+        markString(index, index + 2);
+        index += 2;
+      } else if (!top.raw && char === "$" && source[index + 1] === "{") {
+        markString(index, index + 2);
+        stack.push({kind: "interpolation", depth: 0});
+        index += 2;
+      } else if (source.startsWith(close, index)) {
+        markString(index, index + close.length);
+        stack.pop();
+        index += close.length;
+      } else if (!top.triple && char === "\n") {
+        stack.pop();
+        index += 1;
+      } else {
+        markString(index, index + 1);
+        index += 1;
+      }
+      continue;
+    }
+    if (char === "/" && source[index + 1] === "/") {
+      let end = index;
+      while (end < length && source[end] !== "\n") end += 1;
+      blank(index, end);
+      index = end;
+      continue;
+    }
+    if (char === "/" && source[index + 1] === "*") {
+      let depth = 1;
+      let end = index + 2;
+      while (end < length && depth > 0) {
+        if (source.startsWith("/*", end)) {
+          depth += 1;
+          end += 2;
+        } else if (source.startsWith("*/", end)) {
+          depth -= 1;
+          end += 2;
+        } else {
+          end += 1;
+        }
+      }
+      blank(index, end);
+      index = end;
+      continue;
+    }
+    if (char === "'" || char === '"') {
+      const raw = source[index - 1] === "r" && !/[\w$]/u.test(source[index - 2] ?? "");
+      const triple = source.startsWith(char.repeat(3), index);
+      const width = triple ? 3 : 1;
+      markString(index, index + width);
+      stack.push({kind: "string", quote: char, triple, raw});
+      index += width;
+      continue;
+    }
+    if (top?.kind === "interpolation") {
+      if (char === "{") {
+        top.depth += 1;
+      } else if (char === "}") {
+        if (top.depth === 0) {
+          markString(index, index + 1);
+          stack.pop();
+          index += 1;
+          continue;
+        }
+        top.depth -= 1;
+      }
+    }
+    index += 1;
+  }
+  return {code: out.join(""), stringMask};
+}
+
+/** Offsets of each `Widget build(...)` body: a block, or an arrow expression. */
+export function buildMethodBodies(code, stringMask) {
+  const bodies = [];
+  for (const match of code.matchAll(/\bWidget\s+build\s*\(/gu)) {
+    if (stringMask[match.index]) continue;
+    if (bodies.some((body) => match.index >= body.start && match.index < body.end)) {
+      continue;
+    }
+    const paramsClose = matchingClose(code, stringMask, match.index + match[0].length - 1);
+    if (paramsClose < 0) continue;
+    let start = paramsClose + 1;
+    while (start < code.length && /\s/u.test(code[start])) start += 1;
+    let end = -1;
+    if (code[start] === "{") {
+      end = matchingClose(code, stringMask, start);
+    } else if (code.startsWith("=>", start)) {
+      end = expressionEnd(code, stringMask, start + 2);
+    }
+    if (end < 0) continue;
+    bodies.push({start, end: end + 1});
+  }
+  return bodies;
+}
+
+// A function, not a const map: runCli() runs at module top, before any const
+// below it is initialised.
+function closerFor(char) {
+  return char === "(" ? ")" : char === "[" ? "]" : char === "{" ? "}" : null;
+}
+
+function matchingClose(code, stringMask, openIndex) {
+  const stack = [];
+  for (let index = openIndex; index < code.length; index += 1) {
+    if (stringMask[index]) continue;
+    const char = code[index];
+    if (closerFor(char) != null) {
+      stack.push(closerFor(char));
+    } else if (char === ")" || char === "]" || char === "}") {
+      if (stack.pop() !== char) return -1;
+      if (stack.length === 0) return index;
+    }
+  }
+  return -1;
+}
+
+function expressionEnd(code, stringMask, fromIndex) {
+  let depth = 0;
+  for (let index = fromIndex; index < code.length; index += 1) {
+    if (stringMask[index]) continue;
+    const char = code[index];
+    if (closerFor(char) != null) depth += 1;
+    else if (char === ")" || char === "]" || char === "}") depth -= 1;
+    else if (char === ";" && depth === 0) return index;
+    if (depth < 0) return -1;
+  }
+  return -1;
+}
+
+function countNewlines(text, endIndex) {
+  let count = 0;
+  for (let index = 0; index < endIndex; index += 1) {
+    if (text[index] === "\n") count += 1;
+  }
+  return count;
 }
 
 function collectDartFiles(root) {
@@ -96,7 +270,7 @@ function isBuildMethodMutationPendingCandidate(source) {
     /\bWidget\s+build\s*\(/u.test(source) &&
     /\bref\.(?:watch|read)\s*\(/u.test(source) &&
     /\.isPending\b/u.test(source) &&
-    /\b[Mm]utation\b/u.test(source)
+    /[Mm]utation/u.test(source)
   );
 }
 
@@ -305,7 +479,8 @@ function printHelp() {
   node tool/architecture/check_mutation_error_surfaces.mjs --root <repo-root>
 
 Scans production lib/**/*.dart and apps/*/lib/**/*.dart build methods, excluding
-.g.dart files.
+.g.dart files. Each Widget build method is judged on its own, with comments
+ignored.
 Missing, non-directory or empty input scopes fail the check.
 Any watched mutation whose
 isPending state is read must also expose a matching mutation error surface, such

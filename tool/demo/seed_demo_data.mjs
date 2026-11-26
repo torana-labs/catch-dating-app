@@ -867,6 +867,10 @@ function buildSeed({
         memberships.push(member.uid === host.uid ?
           buildOwnerSeat({organizerId: organizer.id, uid: member.uid, now}) :
           buildFollow({organizerId: organizer.id, uid: member.uid, now}));
+        if (member.uid === host.uid) {
+          memberships.push(buildOwnerAccess({organizerId: organizer.id,
+            uid: member.uid, now, seedMarker}));
+        }
       }
 
       for (let runIndex = 0; runIndex < scenario.eventsPerOrganizer; runIndex += 1) {
@@ -1138,14 +1142,17 @@ export function publicProfileFromUserDoc(userDoc) {
     occupation: userDoc.occupation,
     company: userDoc.company,
     education: userDoc.education,
-    religion: userDoc.religion,
+    // Hide switches, as the Functions projection applies them (#2493):
+    // religion is hidden unless turned on.
+    ...(userDoc.prefsHideReligion === false ? {religion: userDoc.religion} : {}),
     languages: userDoc.languages,
-    relationshipGoal: userDoc.relationshipGoal,
-    drinking: userDoc.drinking,
-    smoking: userDoc.smoking,
+    ...(userDoc.prefsHideRelationshipGoal === true ? {} :
+      {relationshipGoal: userDoc.relationshipGoal}),
+    ...(userDoc.prefsHideDrinking === true ? {} : {drinking: userDoc.drinking}),
+    ...(userDoc.prefsHideSmoking === true ? {} : {smoking: userDoc.smoking}),
     workout: userDoc.workout,
     diet: userDoc.diet,
-    children: userDoc.children,
+    ...(userDoc.prefsHideChildren === true ? {} : {children: userDoc.children}),
     activityPreferences: normalizedActivityPreferences(userDoc),
   };
 }
@@ -1366,6 +1373,35 @@ function buildFollow({organizerId, uid, now}) {
       pushNotificationsEnabled: true,
       followedAt: admin.firestore.Timestamp.fromDate(offsetDate(now, {days: -18})),
       unfollowedAt: null,
+    },
+  };
+}
+
+/**
+ * The owner's organiser access document (#2474 step 3), the one record rules
+ * and requireOrganizerManager read for organiser management. Its id does not
+ * start with the seed prefix, so it carries the seed marker for cleanup.
+ */
+function buildOwnerAccess({organizerId, uid, now, seedMarker}) {
+  return {
+    collection: "accessGrants",
+    id: `organizer__${organizerId}__${uid}`,
+    doc: {
+      ...seedMarker,
+      scopeType: "organizer",
+      scopeId: organizerId,
+      uid,
+      organizerId,
+      role: "owner",
+      status: "active",
+      activeFromMillis: 0,
+      expiresAtMillis: null,
+      reach: {},
+      assignments: [],
+      grantedBy: null,
+      revision: 0,
+      updatedAt: admin.firestore.Timestamp.fromDate(offsetDate(now, {days: -18})),
+      version: 1,
     },
   };
 }

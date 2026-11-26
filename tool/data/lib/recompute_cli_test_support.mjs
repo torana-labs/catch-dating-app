@@ -7,7 +7,7 @@ import {fileURLToPath, pathToFileURL} from "node:url";
 
 // The actual CLI runs in a child with local SDK replacements. No installed
 // Firebase SDK or projection module can be used by these entrypoint controls.
-export function verifyRecomputeCli(t, cli, data, {reads = 2} = {}) {
+export function verifyRecomputeCli(t, cli, data, {reads = 2, writes = 1} = {}) {
   const run = fakeSdkCli(t, cli, data);
   const aliases = JSON.parse(fs.readFileSync(new URL("../../../.firebaserc", import.meta.url), "utf8")).projects;
   for (const {args, env, project} of [
@@ -62,7 +62,7 @@ export function verifyRecomputeCli(t, cli, data, {reads = 2} = {}) {
     assert.equal(result.status, 0, result.stderr);
     assert.equal(result.report.emulatorHost, host);
     assert.equal(result.report.reads.length, reads);
-    assert.equal(result.report.writes.length, 1);
+    assert.equal(result.report.writes.length, writes);
     assert.equal(result.report.commits, 1);
     assert.match(result.stdout, /Applied/u);
   }
@@ -96,6 +96,7 @@ function fakeSdkCli(t, cli, data) {
       doc: (path) => ({path}),
       batch: () => ({
         update: (ref, patch) => report.writes.push({path: ref.path, patch}),
+        set: (ref, value) => report.writes.push({path: ref.path, set: value}),
         commit: async () => {report.commits++; save();},
       }),
     });

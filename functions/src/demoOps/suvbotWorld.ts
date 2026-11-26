@@ -45,6 +45,8 @@ import {seatReservationDocId} from "../events/seatAuthority/firestoreAdapter";
 import {catchUidSeatKey, seatIdentityAliasId, seatIdentityValueHash,
   seatVerifiedPhoneProofId} from "../events/seatIdentityAuthority";
 import {suvbotWorldBundle} from "./generated/suvbotDemoWorlds";
+import {organizerAccessGrant, organizerAccessGrantId} from
+  "../domain/access/organizerAccessGrants";
 
 export const SUVBOT_DEMO_MOMENTS = [
   {
@@ -362,6 +364,18 @@ export function buildSuvbotWorldPlan(
     }
   }
 
+  // The world's host holds the organiser through its access document, as a
+  // created organiser's owner does (#2474 step 3); it carries the demo
+  // marker so a reset removes it with the organiser.
+  const worldHostUid = ids.cast(world.host.personaId);
+  docs.push({
+    path: `accessGrants/${organizerAccessGrantId(ids.organizer,
+      worldHostUid)}`,
+    data: {...organizerAccessGrant({organizerId: ids.organizer,
+      uid: worldHostUid, role: "owner", grantedBy: null,
+      updatedAt: ts(new Date(clock.at(firstMoment).getTime() -
+        30 * 24 * HOUR_MS))}), ...marker},
+  });
   docs.push({
     path: `organizers/${ids.organizer}`,
     data: organizerDoc({

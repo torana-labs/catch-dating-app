@@ -4,6 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import {fileURLToPath} from "node:url";
 import {
   executeTaskCommand,
   TaskUsageError,
@@ -195,20 +196,93 @@ test("scope rejects overlap and invalid options without changing either claim", 
   }
 });
 
-test("scope refuses to retroactively claim existing dirty or committed out-of-scope edits", (context) => {
+test("scope adopts committed and dirty out-of-scope paths that the request names", (context) => {
+  for (const committed of [true, false]) {
+    const fixture = createRepository(context);
+    const execution = start(fixture, "scope-adopt", ["owned"]);
+    const worktree = execution.result.worktreePath;
+    const claimBefore = JSON.parse(fs.readFileSync(execution.result.claimPath, "utf8"));
+    fs.appendFileSync(path.join(worktree, "outside.txt"), "edited before scoping\n");
+    if (committed) commitAll(worktree, "outside edit");
+    const headBefore = gitText(worktree, ["rev-parse", "HEAD"]);
+    assert.ok(guard(worktree, ["doctor"]).result.blockers.includes("out_of_scope_changes"));
+
+    const result = guard(worktree, ["scope", "--paths", "outside.txt"]);
+    assert.equal(result.status, 0, committed ? "committed" : "dirty");
+    assert.equal(result.result.result, "extended");
+    assert.equal(result.result.extended, true);
+    assert.deepEqual(result.result.addedPaths, ["outside.txt"]);
+    assert.deepEqual(result.result.adoptedPaths, ["outside.txt"]);
+    assert.deepEqual(result.result.blockers, []);
+    assert.deepEqual(result.result.outOfScopePaths, []);
+    assert.deepEqual(Object.keys(result.result).slice(0, 2), ["operation", "result"]);
+    assert.equal(result.result.status, undefined);
+    assert.deepEqual(JSON.parse(fs.readFileSync(execution.result.claimPath, "utf8")),
+      {...claimBefore, claimedPaths: ["outside.txt", "owned"]});
+    assert.equal(gitText(worktree, ["rev-parse", "HEAD"]), headBefore);
+    assert.equal(fs.readFileSync(path.join(worktree, "outside.txt"), "utf8").endsWith("edited before scoping\n"), true);
+    assert.deepEqual(guard(worktree, ["doctor"]).result.blockers, []);
+  }
+});
+
+test("scope refuses to adopt an out-of-scope path that another live claim overlaps", (context) => {
   const fixture = createRepository(context);
-  const execution = start(fixture, "scope-retroactive", ["owned"]);
+  const execution = start(fixture, "scope-adopt-overlap", ["owned"]);
+  const worktree = execution.result.worktreePath;
+  const other = start(fixture, "scope-adopt-owner", ["outside.txt"]);
+  const before = fs.readFileSync(execution.result.claimPath, "utf8");
+  const otherBefore = fs.readFileSync(other.result.claimPath, "utf8");
+  fs.appendFileSync(path.join(worktree, "outside.txt"), "edited under another claim\n");
+  commitAll(worktree, "outside edit");
+  assert.throws(() => guard(worktree, ["scope", "--paths", "outside.txt"]),
+    (error) => error instanceof TaskUsageError &&
+      /overlaps scope-adopt-owner .*: outside\.txt\. scope did not change the claim/u.test(error.message));
+  assert.equal(fs.readFileSync(execution.result.claimPath, "utf8"), before);
+  assert.equal(fs.readFileSync(other.result.claimPath, "utf8"), otherBefore);
+  assert.ok(guard(worktree, ["doctor"]).result.blockers.includes("out_of_scope_changes"));
+});
+
+test("scope refuses when changed out-of-scope paths fall outside the request", (context) => {
+  const fixture = createRepository(context);
+  const execution = start(fixture, "scope-adopt-partial", ["owned"]);
   const worktree = execution.result.worktreePath;
   const before = fs.readFileSync(execution.result.claimPath, "utf8");
-  fs.appendFileSync(path.join(worktree, "outside.txt"), "outside edit\n");
-  for (const committed of [false, true]) {
-    if (committed) commitAll(worktree, "outside edit");
-    const result = guard(worktree, ["scope", "--paths", "outside.txt"]);
-    assert.equal(result.status, 1);
+  fs.appendFileSync(path.join(worktree, "outside.txt"), "committed outside\n");
+  commitAll(worktree, "outside edit");
+  fs.writeFileSync(path.join(worktree, "stray.txt"), "dirty and unnamed\n");
+  for (const paths of ["outside.txt", "unrelated"]) {
+    const result = guard(worktree, ["scope", "--paths", paths]);
+    assert.equal(result.status, 1, paths);
+    assert.equal(result.result.result, "refused");
     assert.equal(result.result.extended, false);
-    assert.ok(result.result.blockers.includes("out_of_scope_changes"));
+    assert.deepEqual(result.result.addedPaths, []);
+    assert.deepEqual(result.result.blockers, ["out_of_scope_changes"]);
+    assert.deepEqual(result.result.blockingPaths,
+      paths === "outside.txt" ? ["stray.txt"] : ["outside.txt", "stray.txt"]);
     assert.equal(fs.readFileSync(execution.result.claimPath, "utf8"), before);
   }
+});
+
+test("a scope refusal leads with its outcome rather than the claim status", (context) => {
+  const fixture = createRepository(context);
+  const execution = start(fixture, "scope-refusal-output", ["owned"]);
+  const worktree = execution.result.worktreePath;
+  fs.writeFileSync(path.join(worktree, "stray.txt"), "dirty and unnamed\n");
+  const result = guard(worktree, ["scope", "--paths", "outside.txt"]);
+  assert.equal(result.status, 1);
+  assert.deepEqual(Object.keys(result.result).slice(0, 8), ["operation", "result", "extended",
+    "addedPaths", "adoptedPaths", "blockers", "blockingPaths", "note"]);
+  assert.equal(result.result.operation, "scope");
+  assert.equal(result.result.result, "refused");
+  assert.equal(result.result.status, undefined);
+  assert.equal(result.result.claimStatus, "claimed");
+  assert.deepEqual(result.result.blockingPaths, ["stray.txt"]);
+  assert.match(result.result.note, /not covered by --paths/u);
+  const printed = spawnSync(process.execPath,
+    [fileURLToPath(new URL("./worktree_guard.mjs", import.meta.url)), "scope", "--paths", "outside.txt"],
+    {cwd: worktree, encoding: "utf8"});
+  assert.equal(printed.status, 1);
+  assert.match(printed.stdout, /^\{\n {2}"operation": "scope",\n {2}"result": "refused",/u);
 });
 
 test("scope refuses changed branch identity and lost base ancestry", (context) => {

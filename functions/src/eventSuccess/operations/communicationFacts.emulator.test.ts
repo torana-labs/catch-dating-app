@@ -245,6 +245,8 @@ test("missing receipts, changed phones and expiry withhold preparation",
     const permission = parseSmsPermission(h.fake.read(
       smsCollections.permissions + "/" + id));
     h.fake.remove(SMS_CONSENT_RECEIPTS + "/" + permission.currentReceiptId);
+    // The gate reads the receipt's copy in contactPermissionReceipts.
+    h.fake.remove("contactPermissionReceipts/" + permission.currentReceiptId);
     assert.equal((await contacts(h))[1].state.kind, "blocked");
     await h.write(h.attendeePath, {...await h.read(h.attendeePath),
       phoneE164: "+919888888888"});

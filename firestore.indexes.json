@@ -8619,6 +8619,28 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "accessGrants",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "scopeType",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "role",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "mode": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [
@@ -8643,6 +8665,25 @@
     },
     {
       "collectionGroup": "adConversionDeliveries",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "DESCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "arrayConfig": "CONTAINS",
+          "queryScope": "COLLECTION"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "contactPermissions",
       "fieldPath": "expiresAt",
       "ttl": true,
       "indexes": [

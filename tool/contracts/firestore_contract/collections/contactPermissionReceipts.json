@@ -20,9 +20,17 @@
     "getOrganizerFormPayment",
     "withdrawParticipantMessagingPermission",
     "onOrganizerMessagingWebhookEventCreated",
-    "requestAccountDeletion"
+    "requestAccountDeletion",
+    "setEventAssistanceSmsPreference",
+    "setEventWhatsappPreference",
+    "setEventRcsPreference",
+    "withdrawEventAssistanceSms",
+    "withdrawEventWhatsapp",
+    "withdrawEventRcs",
+    "manageEventApprovalNotifications"
   ],
   "migrationNotes": [
-    "Issue #2460. The one receipt log for contact consent: it replaced catchCommunicationPermissionReceipts and organizerCommunicationPermissionReceipts and keeps their ids. Account deletion deletes a person's receipts; whether to keep them anonymised instead awaits counsel (OQ-C2)."
+    "Issue #2460. The one receipt log for contact consent: it replaced catchCommunicationPermissionReceipts and organizerCommunicationPermissionReceipts and keeps their ids. Account deletion deletes a person's receipts; whether to keep them anonymised instead awaits counsel (OQ-C2).",
+    "Issue #2494 phase 2 step 1. Event receipts (senderKind event) join the log: each event-day channel decision keeps its eventAssistanceConsentReceipts id and its event-only fields in event, and each approval-notification choice revision writes a phone and an email receipt."
   ]
 }

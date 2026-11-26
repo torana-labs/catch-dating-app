@@ -136,8 +136,11 @@ function scopeFor(collection: Collection, documentId: string,
     attendeeId = null;
     break;
   case "eventAssistanceGroupProgress": attendeeId = null; break;
+  // contactPermissions: one event-day channel grant, shaped by
+  // eventContactSourceChanges (issue #2494).
   case "eventAssistanceGuests":
   case "eventAssistancePermissions":
+  case "contactPermissions":
   case "eventAssistanceMemberships": break;
   case "eventAssistanceMessages": {
     const intent = object(value.intent);
@@ -192,6 +195,7 @@ function projection(collection: Collection, snapshot: Snapshot) {
     "status", "expiresAt", "groupDuties"]; break;
   case "eventAssistanceGuests":
   case "eventAssistancePermissions":
+  case "contactPermissions":
   case "eventAssistanceSettings":
   case "eventAssistanceGroupProgress":
   case "eventAssistanceMemberships":

@@ -26,6 +26,8 @@ import {
   eventParticipationPatch,
   eventBookingsByStatusInTransaction,
 } from "../shared/relationshipDocuments";
+import {readBookingCohort, writeBookingCohort} from
+  "../shared/bookingPrivateFacts";
 import {checkRateLimit} from "../shared/rateLimit";
 import {
   claimUserEventScheduleInTransaction,
@@ -225,11 +227,11 @@ export async function joinEventWaitlistHandler(
         uid: userId,
         status: "waitlisted",
         genderAtSignup: user.gender,
-        cohortAtSignup,
       }),
       ...inviteAttributionWriteFields(inviteAttribution),
     };
     tx.set(participationRef, waitlisting, {merge: true});
+    writeBookingCohort({db, tx, eventId, uid: userId, cohortAtSignup});
     incrementInviteLinkCounterInTransaction({
       tx,
       db,
@@ -326,9 +328,8 @@ export async function leaveEventWaitlistHandler(
     }
     const scheduledEvent = requireEventTimeRange(event);
 
-    const cohortAtSignup =
-      (existingParticipation as {cohortAtSignup?: string} | null)
-        ?.cohortAtSignup;
+    const cohortAtSignup = await readBookingCohort({db, tx, eventId,
+      uid: userId, booking: existingParticipation});
     const currentWaitlistedCount =
       event.waitlistedCount ?? 1;
     const rosterSlot = await readCatchBookingRoster({db, tx, eventId,

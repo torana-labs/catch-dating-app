@@ -22,6 +22,10 @@ import {Permission, ConsentReceipt, parseRcsPermission,
   rcsSenderHash, rcsStopHash, rcsPermissionHasReceipt,
   rcsPermissionClearsStop, RCS_CONSENT_VERSION, RCS_CONSENT_HASH,
   RCS_CONSENT_TEXT} from "./rcsConsent";
+import {EventContactPermissionWriter} from
+  "../../messaging/eventContactPermissions";
+import {requireOneEventRow, writeEventChannelDecision} from
+  "./eventContactGrants";
 
 /** Only Firebase Auth's signed UID and phone claim enter this boundary. */
 export interface RcsPreferenceActor {uid: string; phone: string | null}
@@ -148,9 +152,15 @@ export class RcsPreferenceStore {
         reviewedStopHash: granting ? rcsStopHash(facts.subscription) : null,
         permissionHash: operationContentHash(permission),
         appliedRevision: permission.revision, createdAt: now});
+      if (granting) {
+        await requireOneEventRow(this.db, tx, input.eventId, actor.uid);
+      }
+      const contact = await EventContactPermissionWriter.read(this.db, tx,
+        actor.uid, input.eventId);
       tx.create(receiptRef, receipt);
       tx.set(this.db.collection(rcsConsentCollections.permissions)
         .doc(permission.permissionId), permission);
+      writeEventChannelDecision(tx, contact, permission, receipt, now);
       return {outcome: "applied", view: this.view(actor, input,
         {...facts, permission, receipt}, now)};
     });
