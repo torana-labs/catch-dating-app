@@ -67,7 +67,7 @@ class HostFormSettingsScreen extends ConsumerWidget {
           onRetry: notifier.reload,
         ),
       );
-    } else if (editor == null || uid == null) {
+    } else if (editor == null) {
       body = const CatchPageBody.screen(child: CatchLoadingIndicator());
     } else {
       body = HostFormSettingsBody(

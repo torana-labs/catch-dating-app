@@ -164,10 +164,14 @@ class _HostFormSettingsTargetSectionState
         : targets.event(currentEventId);
     return CatchSection(
       title: l10n.hostFormTargetTitle,
-      note: widget.hasPublishedVersion
-          ? l10n.hostFormTargetPublishedNotice
-          : null,
+      dividers: CatchSectionPlacement.none,
       children: [
+        if (widget.hasPublishedVersion)
+          CatchText(
+            l10n.hostFormTargetPublishedNotice,
+            variant: CatchTextVariant.bodySmall,
+            tone: CatchTextTone.secondary,
+          ),
         if (kind == HostFormTargetKind.campaign)
           CatchIndexRow(
             title: l10n.hostFormTargetTitle,
@@ -212,52 +216,78 @@ class _HostFormSettingsTargetSectionState
             chevron: true,
             onTap: _openEvents,
           ),
-          if (_choosing) ..._eventChoices(l10n, targets),
+          if (_choosing)
+            HostFormTargetEventChoices(
+              targets: targets,
+              definition: definition,
+              onChoose: _chooseEvent,
+            ),
         ],
       ],
     );
   }
+}
 
-  List<Widget> _eventChoices(
-    AppLocalizations l10n,
-    HostFormTargetController targets,
-  ) => [
-    if (targets.loading && targets.events.isEmpty)
-      const CatchLoadingIndicator(),
-    if (targets.hasLoadFailure)
-      CatchNotice.inline(
-        body: l10n.hostFormTargetLoadFailed,
-        tone: CatchNoticeTone.danger,
-        action: CatchNoticeAction(
-          label: l10n.sharedActionTryAgain,
-          onPressed: targets.canLoadMore ? targets.loadMore : targets.refresh,
-        ),
-      ),
-    if (targets.loaded && targets.events.isEmpty && !targets.hasLoadFailure)
-      CatchText(
-        l10n.hostFormTargetNoUpcomingEvents,
-        variant: CatchTextVariant.bodySmall,
-        tone: CatchTextTone.secondary,
-      ),
-    for (final event in targets.events)
-      CatchIndexRow(
-        key: ValueKey<String>('host-form-target-event-${event.eventId}'),
-        title: (event.name?.trim().isNotEmpty ?? false)
-            ? event.name!
-            : l10n.hostEventOfferUntitledEvent,
-        subtitle: AppTimeFormatters.dateTime(event.startTime.toLocal()),
-        selected:
-            widget.definition.defaultTargetKind == HostFormTargetKind.event &&
-            widget.definition.defaultTargetId == event.eventId,
-        chevron: true,
-        onTap: () => _chooseEvent(event),
-      ),
-    if (targets.canLoadMore && !targets.hasLoadFailure)
-      CatchButton(
-        label: l10n.hostEventOfferLoadMoreEvents,
-        variant: CatchButtonVariant.secondary,
-        fullWidth: true,
-        onPressed: targets.loadMore,
-      ),
-  ];
+/// The organizer's upcoming events to bind the form to, a page at a time,
+/// with their loading, failed and empty states.
+class HostFormTargetEventChoices extends StatelessWidget {
+  const HostFormTargetEventChoices({
+    super.key,
+    required this.targets,
+    required this.definition,
+    required this.onChoose,
+  });
+
+  final HostFormTargetController targets;
+  final HostFormDefinition definition;
+  final ValueChanged<HostOfferEventTarget> onChoose;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return CatchStack(
+      gap: CatchStackGap.g8,
+      children: [
+        if (targets.loading && targets.events.isEmpty)
+          const CatchLoadingIndicator(),
+        if (targets.hasLoadFailure)
+          CatchNotice.inline(
+            body: l10n.hostFormTargetLoadFailed,
+            tone: CatchNoticeTone.danger,
+            action: CatchNoticeAction(
+              label: l10n.sharedActionTryAgain,
+              onPressed: targets.canLoadMore
+                  ? targets.loadMore
+                  : targets.refresh,
+            ),
+          ),
+        if (targets.loaded && targets.events.isEmpty && !targets.hasLoadFailure)
+          CatchText(
+            l10n.hostFormTargetNoUpcomingEvents,
+            variant: CatchTextVariant.bodySmall,
+            tone: CatchTextTone.secondary,
+          ),
+        for (final event in targets.events)
+          CatchIndexRow(
+            key: ValueKey<String>('host-form-target-event-${event.eventId}'),
+            title: (event.name?.trim().isNotEmpty ?? false)
+                ? event.name!
+                : l10n.hostEventOfferUntitledEvent,
+            subtitle: AppTimeFormatters.dateTime(event.startTime.toLocal()),
+            selected:
+                definition.defaultTargetKind == HostFormTargetKind.event &&
+                definition.defaultTargetId == event.eventId,
+            chevron: true,
+            onTap: () => onChoose(event),
+          ),
+        if (targets.canLoadMore && !targets.hasLoadFailure)
+          CatchButton(
+            label: l10n.hostEventOfferLoadMoreEvents,
+            variant: CatchButtonVariant.secondary,
+            fullWidth: true,
+            onPressed: targets.loadMore,
+          ),
+      ],
+    );
+  }
 }

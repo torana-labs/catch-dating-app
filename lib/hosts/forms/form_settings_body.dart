@@ -33,8 +33,9 @@ class HostFormSettingsBody extends StatelessWidget {
 
   final String organizerId;
 
-  /// The signed-in manager the editor is bound to.
-  final String accountId;
+  /// The signed-in manager the editor is bound to; null hides the target
+  /// choice until the account is known.
+  final String? accountId;
   final HostFormEditorState state;
   final HostFormEditorController editor;
 
@@ -98,20 +99,24 @@ class HostFormSettingsBody extends StatelessWidget {
               ),
             ],
           ),
-          HostFormSettingsTargetSection(
-            organizerId: organizerId,
-            accountId: accountId,
-            definition: definition,
-            editor: editor,
-            hasPublishedVersion: state.editor.form.activeVersionId != null,
-          ),
+          if (accountId case final accountId?)
+            HostFormSettingsTargetSection(
+              organizerId: organizerId,
+              accountId: accountId,
+              definition: definition,
+              editor: editor,
+              hasPublishedVersion: state.editor.form.activeVersionId != null,
+            ),
           CatchSection(
             title: l10n.hostAudienceFormAccess,
-            note:
-                '${hostFormBuilderIdentityConsequence(context, definition.identityPolicy)}. '
-                '${l10n.hostFormConsequenceNoMessagingPermission}',
             dividers: CatchSectionPlacement.none,
             children: [
+              CatchText(
+                '${hostFormBuilderIdentityConsequence(context, definition.identityPolicy)}. '
+                '${l10n.hostFormConsequenceNoMessagingPermission}',
+                variant: CatchTextVariant.bodySmall,
+                tone: CatchTextTone.secondary,
+              ),
               CatchField<HostFormIdentityPolicy>.select(
                 copy: copy,
                 title: l10n.hostFormIdentityLabel,
@@ -304,13 +309,17 @@ class _HostFormMessagingSection extends StatelessWidget {
         definition.identityPolicy == HostFormIdentityPolicy.phoneVerified;
     return CatchSection(
       title: l10n.hostFormMessagingTitle,
-      note: definition.usesPurposeMessaging
-          ? l10n.hostFormMessagingPurposeHelp
-          : phoneVerified
-          ? l10n.hostFormMessagingHelp
-          : l10n.hostFormMessagingPhoneRequired,
       dividers: CatchSectionPlacement.none,
       children: [
+        CatchText(
+          definition.usesPurposeMessaging
+              ? l10n.hostFormMessagingPurposeHelp
+              : phoneVerified
+              ? l10n.hostFormMessagingHelp
+              : l10n.hostFormMessagingPhoneRequired,
+          variant: CatchTextVariant.bodySmall,
+          tone: CatchTextTone.secondary,
+        ),
         if (!definition.usesPurposeMessaging) ...[
           CatchField.toggle(
             copy: copy,
@@ -454,21 +463,25 @@ class _HostFormDateField extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final date = value;
-    return CatchField.action(
-      copy: catchFieldCopy(l10n),
-      title: title,
-      valueText: date == null
-          ? l10n.hostFormDateNotSet
-          : MaterialLocalizations.of(context).formatMediumDate(date.toLocal()),
-      actions: date == null
-          ? null
-          : CatchIconAction(
-              tooltip: l10n.hostFormClearDate,
-              variant: CatchIconActionVariant.plain,
-              onPressed: () => onChanged(null),
-              child: CatchIcon(CatchIcons.close),
-            ),
-      onTap: () => unawaited(_pick(context)),
+    return CatchFieldLanes.single(
+      child: CatchField.action(
+        copy: catchFieldCopy(l10n),
+        title: title,
+        valueText: date == null
+            ? l10n.hostFormDateNotSet
+            : MaterialLocalizations.of(
+                context,
+              ).formatMediumDate(date.toLocal()),
+        actions: date == null
+            ? null
+            : CatchIconAction(
+                tooltip: l10n.hostFormClearDate,
+                variant: CatchIconActionVariant.plain,
+                onPressed: () => onChanged(null),
+                child: CatchIcon(CatchIcons.close),
+              ),
+        onTap: () => unawaited(_pick(context)),
+      ),
     );
   }
 
@@ -602,7 +615,7 @@ class _HostFormLogicSection extends StatelessWidget {
     );
     return CatchSection(
       title: l10n.hostFormLogic,
-      note: l10n.hostFormLogicHelp,
+      dividers: CatchSectionPlacement.none,
       action: CatchSectionAction(
         label: l10n.hostFormAddRule,
         onPressed: hasQuestions
@@ -616,15 +629,23 @@ class _HostFormLogicSection extends StatelessWidget {
             : null,
       ),
       children: [
+        CatchText(
+          l10n.hostFormLogicHelp,
+          variant: CatchTextVariant.bodySmall,
+          tone: CatchTextTone.secondary,
+        ),
         for (final (index, rule) in definition.logicRules.indexed)
           CatchIndexRow(
             key: ValueKey<String>('host-form-logic-rule-${rule.ruleId}'),
             title: hostFormLogicRuleSummary(context, definition, rule),
             titleMaxLines: 3,
             onTap: null,
-            action: CatchIndexRowAction(
-              label: l10n.hostFormRemoveRule,
+            trailing: CatchIconAction(
+              key: ValueKey<String>('host-form-logic-remove-${rule.ruleId}'),
+              tooltip: l10n.hostFormRemoveRule,
+              variant: CatchIconActionVariant.plain,
               onPressed: () => editor.removeLogicRule(index),
+              child: CatchIcon(CatchIcons.delete),
             ),
           ),
       ],

@@ -116,10 +116,15 @@ class HostFormSettingsPaymentRows extends StatelessWidget {
     final busy = state.pending;
     return CatchSection(
       title: l10n.hostFormPaymentTitle,
-      note: fee == null
-          ? l10n.hostFormPaymentHelp
-          : l10n.hostFormPaymentPublishHelp,
+      dividers: CatchSectionPlacement.none,
       children: [
+        CatchText(
+          fee == null
+              ? l10n.hostFormPaymentHelp
+              : l10n.hostFormPaymentPublishHelp,
+          variant: CatchTextVariant.bodySmall,
+          tone: CatchTextTone.secondary,
+        ),
         CatchIndexRow(
           key: const ValueKey<String>('host-form-fee'),
           title: fee == null
@@ -128,21 +133,25 @@ class HostFormSettingsPaymentRows extends StatelessWidget {
           titleMaxLines: 3,
           subtitle: fee?.refundPolicy,
           onTap: null,
-          action: CatchIndexRowAction(
-            label: fee == null
-                ? l10n.hostFormPaymentConfigure
-                : l10n.hostFormPaymentEdit,
-            variant: CatchIndexRowActionVariant.primary,
-            onPressed: busy || !canCollect || !phoneVerified
-                ? null
-                : () => unawaited(_edit(context, ready)),
-          ),
+        ),
+        CatchButton(
+          key: const ValueKey<String>('host-form-fee-edit'),
+          label: fee == null
+              ? l10n.hostFormPaymentConfigure
+              : l10n.hostFormPaymentEdit,
+          variant: CatchButtonVariant.secondary,
+          fullWidth: true,
+          onPressed: busy || !canCollect || !phoneVerified
+              ? null
+              : () => unawaited(_edit(context, ready)),
         ),
         if (fee != null)
-          CatchIndexRow(
+          CatchButton(
             key: const ValueKey<String>('host-form-fee-remove'),
-            title: l10n.hostFormPaymentRemove,
-            onTap: busy ? null : () => onChanged(null),
+            label: l10n.hostFormPaymentRemove,
+            variant: CatchButtonVariant.quiet,
+            fullWidth: true,
+            onPressed: busy ? null : () => onChanged(null),
           ),
         if (!phoneVerified)
           CatchNotice.inline(
@@ -167,7 +176,7 @@ class HostFormSettingsPaymentRows extends StatelessWidget {
         else ...[
           // The same single organizer account as Payouts: events, forms and
           // memberships all collect through it.
-          for (final connection in setup.liveConnections)
+          for (final connection in setup.liveConnections) ...[
             CatchIndexRow(
               key: ValueKey<String>(
                 'host-form-connection-${connection.connectionId}',
@@ -177,40 +186,51 @@ class HostFormSettingsPaymentRows extends StatelessWidget {
                   '${_connectionStatus(l10n, connection)} · '
                   '${connection.mode == HostFormPaymentMode.test ? l10n.hostFormPaymentTest : l10n.hostFormPaymentLive}',
               onTap: null,
-              action: CatchIndexRowAction(
-                label: l10n.hostFormPaymentDisconnect,
-                onPressed: busy
-                    ? null
-                    : () => unawaited(
-                        _confirmDisconnect(context, connection.connectionId),
-                      ),
-              ),
             ),
-          if (setup.liveConnections.isEmpty)
-            CatchIndexRow(
+            CatchButton(
+              key: ValueKey<String>(
+                'host-form-disconnect-${connection.connectionId}',
+              ),
+              label: l10n.hostFormPaymentDisconnect,
+              variant: CatchButtonVariant.quiet,
+              fullWidth: true,
+              onPressed: busy
+                  ? null
+                  : () => unawaited(
+                      _confirmDisconnect(context, connection.connectionId),
+                    ),
+            ),
+          ],
+          if (setup.liveConnections.isEmpty) ...[
+            CatchText(
+              l10n.hostFormPaymentConnectHelp,
+              variant: CatchTextVariant.bodySmall,
+              tone: CatchTextTone.secondary,
+            ),
+            CatchButton(
               key: const ValueKey<String>('host-form-connect'),
-              title: l10n.hostFormPaymentConnect,
-              subtitle: l10n.hostFormPaymentConnectHelp,
-              onTap: null,
-              action: CatchIndexRowAction(
-                label: l10n.hostFormPaymentConnect,
-                variant: CatchIndexRowActionVariant.primary,
-                onPressed: busy ? null : onConnect,
-              ),
-            )
-          else if (setup.razorpayConnectionState !=
-              HostRazorpayConnectionState.ready)
-            CatchIndexRow(
-              key: const ValueKey<String>('host-form-reconnect'),
-              title: l10n.hostPayoutsRazorpayReconnectTitle,
-              subtitle: l10n.hostFormPaymentConnectHelp,
-              onTap: null,
-              action: CatchIndexRowAction(
-                label: l10n.hostPayoutsRazorpayReconnectTitle,
-                variant: CatchIndexRowActionVariant.primary,
-                onPressed: busy ? null : onReconnect,
-              ),
+              label: l10n.hostFormPaymentConnect,
+              leading: CatchIcon(CatchIcons.openExternal),
+              fullWidth: true,
+              status: busy ? CatchButtonStatus.loading : CatchButtonStatus.idle,
+              onPressed: busy ? null : onConnect,
             ),
+          ] else if (setup.razorpayConnectionState !=
+              HostRazorpayConnectionState.ready) ...[
+            CatchText(
+              l10n.hostFormPaymentConnectHelp,
+              variant: CatchTextVariant.bodySmall,
+              tone: CatchTextTone.secondary,
+            ),
+            CatchButton(
+              key: const ValueKey<String>('host-form-reconnect'),
+              label: l10n.hostPayoutsRazorpayReconnectTitle,
+              leading: CatchIcon(CatchIcons.openExternal),
+              fullWidth: true,
+              status: busy ? CatchButtonStatus.loading : CatchButtonStatus.idle,
+              onPressed: busy ? null : onReconnect,
+            ),
+          ],
           if (ready.isEmpty)
             CatchNotice.inline(
               title: l10n.hostFormPaymentConfigure,
