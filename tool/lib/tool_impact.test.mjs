@@ -195,11 +195,9 @@ test("design authority ledgers select their exact consuming checks", () => {
       ["architecture:ui-composition-contracts", "design:screen-coverage"],
     ],
     [
+      // The route inventory is derived, not committed: its generator selects
+      // every check that reads the routes.
       "tool/ui_capture/check_route_inventory.mjs",
-      ["architecture:ui-composition-contracts", "ui-capture:route-inventory"],
-    ],
-    [
-      "lib/routing/host_router.dart",
       [
         "architecture:ui-composition-contracts",
         "design:host-shell-coverage",
