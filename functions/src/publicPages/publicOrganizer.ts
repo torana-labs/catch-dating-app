@@ -77,7 +77,6 @@ export function projectPublicOrganizer(
   });
   listing.facts = listing.facts.filter((fact) =>
     !authorityFactLabel.test(fact.label.trim()));
-  listing.fitNotes = [];
   listing.eventEvidence = listing.eventEvidence.filter((event) =>
     publicHttpsUrl(event.sourceHref));
   const raw = data as Raw;
@@ -188,8 +187,6 @@ function listingFromOrganizerDocument(
     eventEvidence: publicProfile.eventEvidence ?? [],
     // Reviews are attached by the page builder, never read from the document.
     reviews: [],
-    fitNotes: [],
-    missingEvidence: [],
     sources: publicSourcesForListing(organizer.publicSources ?? []),
     claim: {
       href: claimHref,

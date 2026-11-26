@@ -206,6 +206,14 @@ const fastGateCheckoutClosure = [
   "/integration_test/",
 ];
 
+/** One top-level job of a workflow, up to the next job. */
+function jobBlock(source, id) {
+  const start = source.indexOf(`\n  ${id}:\n`);
+  assert.notEqual(start, -1, `Missing job ${id}`);
+  const next = source.slice(start + 1).search(/\n  [a-z][\w-]*:\n/u);
+  return next === -1 ? source.slice(start + 1) : source.slice(start + 1, start + 1 + next + 1);
+}
+
 function namedStep(source, name) {
   const marker = `      - name: ${name}`;
   const start = source.indexOf(marker);
@@ -364,7 +372,7 @@ test("Flutter analysis covers every pubspec and empty test selections fail close
   // Visibility-only: pull requests and queue groups don't spend a runner turn on it.
   assert.match(coverageJob, /if: \$\{\{ github.event_name != 'pull_request' && github.event_name != 'merge_group' \}\}/u);
   // The aggregate accepts a skipped coverage job only where coverage is meant to skip.
-  const coverageAggregate = flutter.slice(flutter.indexOf("  analyze-and-test:"));
+  const coverageAggregate = jobBlock(flutter, "analyze-and-test");
   assert.match(coverageAggregate, /\[\[ "\$\{COVERAGE_RESULT\}" == "skipped" && \( "\$\{EVENT_NAME\}" == "pull_request" \|\| "\$\{EVENT_NAME\}" == "merge_group" \) \]\]/u);
   assert.match(coverageAggregate, /"\$\{coverage_ok\}" != "true"/u);
   assert.doesNotMatch(coverageJob, /flutter test|setup-flutter/u);
@@ -438,7 +446,7 @@ test("Flutter CI runs every package suite and Widgetbook in one job without mask
   assert.match(table, /\| Build Widgetbook web app \| not run: its setup or an earlier step failed \|/u);
 
   assert.match(flutter, /needs:\n(?:      - .*\n)*      - app-package-tests/u);
-  const aggregateJob = flutter.slice(flutter.indexOf("  analyze-and-test:"));
+  const aggregateJob = jobBlock(flutter, "analyze-and-test");
   assert.doesNotMatch(aggregateJob, /widgetbook|WIDGETBOOK/u);
   const aggregate = extractSteps(flutter)
     .find((step) => step.name === "Check Flutter CI results");
@@ -2196,4 +2204,29 @@ for (const job of ${JSON.stringify(jobs)}) console.log(JSON.stringify(job));
   assert.equal(decideWith({jobs: [...deferredJobs, deferredJobs[0]]}), "deferred=false", "two plan jobs");
   assert.equal(decideWith({binding: "{}"}), "deferred=false", "a binding exists: import it");
   assert.equal(decideWith({failApi: true}), "deferred=false", "the jobs API failed");
+});
+
+test("Flutter CI checks committed generated outputs on Linux, report-only until it is made blocking", () => {
+  const flutter = workflow("flutter-ci.yml");
+  const visual = workflow("visual-integration-ci.yml");
+  const job = jobBlock(flutter, "generated-outputs");
+  assert.match(job, /^  generated-outputs:\n(?:    #.*\n)*    name: Committed Flutter generated outputs are current\n/mu);
+  assert.match(job, /\n    runs-on: ubuntu-latest\n/u);
+  // Every event that runs the Flutter lane runs it: pull requests and queue groups included.
+  assert.doesNotMatch(job, /\n    if:/u);
+  // Report-only (owner decision, 26 Nov 2026): a failure leaves the lane's
+  // workflow_call result, and so Required CI, green; the aggregate never waits on it.
+  assert.match(job, /\n    continue-on-error: true\n/u);
+  assert.doesNotMatch(jobBlock(flutter, "analyze-and-test"), /generated-outputs/u);
+  // The same generation and verification the macOS goldens job runs on main.
+  // The step's run script, without the comments that lead into the next step.
+  const runOf = (step) => step.slice(step.indexOf("        run:")).replace(/\n\s*(?:#.*)?$/gmu, "").trimEnd();
+  for (const name of ["Generate Flutter source outputs", "Resolve Widgetbook dependencies",
+    "Generate Widgetbook directories", "Verify committed Flutter outputs are current"]) {
+    assert.equal(runOf(namedStep(job, name)), runOf(namedStep(jobBlock(visual, "goldens"), name)), name);
+  }
+  // A stale output leaves a patch to apply.
+  assert.match(namedStep(job, "Upload generated output drift"),
+    /if: \$\{\{ failure\(\) && steps\.codegen-current\.outcome == 'failure' \}\}/u);
+  assert.match(job, /name: generated-flutter-drift-linux-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/u);
 });
