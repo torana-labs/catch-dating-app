@@ -22,6 +22,7 @@ class HostResponsesBody extends StatelessWidget {
     this.onSort,
     this.onFilters,
     this.onClearFilters,
+    this.onOpenQuery,
   });
 
   final HostResponsesState state;
@@ -41,6 +42,9 @@ class HostResponsesBody extends StatelessWidget {
 
   /// Clears the version and answer filters.
   final VoidCallback? onClearFilters;
+
+  /// Opens Filter by answers on the live version; null hides it.
+  final VoidCallback? onOpenQuery;
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +98,9 @@ class HostResponsesBody extends StatelessWidget {
               ],
               onChanged: onFilter,
             ),
-          if (onSort != null || (state.canFilter && onFilters != null))
+          if (onSort != null ||
+              onOpenQuery != null ||
+              (state.canFilter && onFilters != null))
             CatchStack(
               direction: CatchStackDirection.row,
               gap: CatchStackGap.g8,
@@ -122,6 +128,22 @@ class HostResponsesBody extends StatelessWidget {
                     size: CatchChipSize.sm,
                     onPressed: onFilters,
                   ),
+                if (state.filterCount > 0 && onClearFilters != null)
+                  CatchChip.filter(
+                    key: const ValueKey<String>('host-responses-clear'),
+                    label: l10n.hostCustomersClearFilter,
+                    leading: CatchIcon(CatchIcons.close),
+                    size: CatchChipSize.sm,
+                    onPressed: onClearFilters,
+                  ),
+                if (onOpenQuery != null)
+                  CatchChip.filter(
+                    key: const ValueKey<String>('host-responses-query'),
+                    label: l10n.hostResponseQueryOpenAnswers,
+                    leading: CatchIcon(CatchIcons.magic),
+                    size: CatchChipSize.sm,
+                    onPressed: onOpenQuery,
+                  ),
               ],
             ),
           if (state.version case final version?)
@@ -134,24 +156,11 @@ class HostResponsesBody extends StatelessWidget {
               tone: CatchTextTone.secondary,
             ),
           if (state.filterSummary case final summary?)
-            CatchStack(
-              gap: CatchStackGap.g4,
-              children: [
-                CatchText(
-                  summary,
-                  key: const ValueKey<String>('host-responses-filter-summary'),
-                  variant: CatchTextVariant.bodySmall,
-                  tone: CatchTextTone.secondary,
-                ),
-                if (onClearFilters != null)
-                  CatchButton(
-                    key: const ValueKey<String>('host-responses-clear'),
-                    label: l10n.hostCustomersClearFilter,
-                    variant: CatchButtonVariant.quiet,
-                    size: CatchButtonSize.sm,
-                    onPressed: onClearFilters,
-                  ),
-              ],
+            CatchText(
+              summary,
+              key: const ValueKey<String>('host-responses-filter-summary'),
+              variant: CatchTextVariant.bodySmall,
+              tone: CatchTextTone.secondary,
             ),
           if (state.status == HostResponsesStatus.loading)
             CatchSkeleton.content(

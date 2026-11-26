@@ -8,6 +8,7 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.
 import 'package:catch_dating_app/contexts/forms/parts/host_form_labels.dart';
 import 'package:catch_dating_app/hosts/forms/responses_body.dart';
 import 'package:catch_dating_app/hosts/forms/responses_filter_sheet.dart';
+import 'package:catch_dating_app/hosts/forms/responses_query_workspace.dart';
 import 'package:catch_dating_app/hosts/forms/responses_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
@@ -59,6 +60,9 @@ class _HostResponsesScreenState extends ConsumerState<HostResponsesScreen> {
   HostResponsesFilter? _filterChoice;
   late HostResponsesView _view = widget.initialView;
   bool _oldestFirst = false;
+
+  /// Filter by answers is open in place of the list.
+  bool _queryOpen = false;
 
   /// The version listed: unset until the form's live version is known, then
   /// that version, or null for every version.
@@ -174,6 +178,30 @@ class _HostResponsesScreenState extends ConsumerState<HostResponsesScreen> {
             .read(hostFormResponsesControllerProvider(request!).notifier)
             .retry(),
       );
+    } else if (_queryOpen &&
+        _view == HostResponsesView.responses &&
+        formId != null &&
+        versionId != null &&
+        uid != null) {
+      body = HostResponsesQueryWorkspace(
+        organizerId: widget.organizerId,
+        formId: formId,
+        versionId: versionId,
+        accountId: uid,
+        now: widget.now,
+        onExit: () => setState(() => _queryOpen = false),
+        onOpenResponse: (responseId) => context.pushNamed(
+          Routes.hostFormResponseDetailScreen.name,
+          pathParameters: {'responseId': responseId},
+          queryParameters: {'organizerId': widget.organizerId},
+        ),
+        onOffer: (query) => context.pushNamed<void>(
+          Routes.hostResponseQueryOfferScreen.name,
+          pathParameters: {'formId': formId},
+          queryParameters: {'organizerId': widget.organizerId},
+          extra: query,
+        ),
+      );
     } else {
       body = HostResponsesBody(
         state: state,
@@ -196,6 +224,9 @@ class _HostResponsesScreenState extends ConsumerState<HostResponsesScreen> {
         onSort: _chooseSort,
         onFilters: formId == null ? null : _openFilters,
         onClearFilters: _filterCount == 0 ? null : _clearFilters,
+        onOpenQuery: versionId == null
+            ? null
+            : () => setState(() => _queryOpen = true),
         onOpen: (entry) => _open(
           entry,
           request,
