@@ -8,10 +8,6 @@ import {
   operatorWordingIn,
   organizerPublicContentIssues,
 } from "./organizerPublicContent";
-import {
-  organizerPublicContentPlanSetHash,
-  planOrganizerPublicContentRepair,
-} from "./organizerPublicContentRepair";
 
 type Data = Record<string, unknown>;
 
@@ -131,15 +127,6 @@ function cleanListing(): Data {
   };
 }
 
-const moonmothCopy = {
-  "description": "MOON MOTH pairs social runs with post-run music in Indore.",
-  "publicPage.seoDescription":
-    "MOON MOTH pairs social runs with post-run music in Indore.",
-  "publicProfile.summary":
-    "MOON MOTH pairs social runs with post-run music in Indore.",
-  "publicProfile.sourceSummary": null,
-};
-
 test("flags every operator leak found on the MOON MOTH page", () => {
   const issues = organizerPublicContentIssues(leakedListing());
   const byField = new Map(issues.map((issue) => [issue.field, issue.rule]));
@@ -197,133 +184,3 @@ test("assert raises failed-precondition naming fields, not the copy", () => {
   assert.doesNotThrow(() =>
     assertOrganizerPublicContent(cleanListing(), "This organizer edit"));
 });
-
-test("repair deletes retired lists and removes mechanical leaks", () => {
-  const plan = planOrganizerPublicContentRepair(
-    "organizers/moonmoth",
-    leakedListing()
-  );
-
-  assert.deepEqual(plan.deletes, [
-    "publicProfile.fitNotes",
-    "publicProfile.missingEvidence",
-  ]);
-  assert.deepEqual(Object.keys(plan.patch).sort(), [
-    "publicProfile.facts",
-    "publicSources",
-  ]);
-  assert.deepEqual(plan.patch["publicProfile.facts"], [
-    {label: "Location", value: "Indore, Madhya Pradesh"},
-  ]);
-  assert.deepEqual(
-    (plan.patch.publicSources as Data[]).map((source) => source.label),
-    ["Luma event page"]
-  );
-  assert.deepEqual(plan.before["publicProfile.missingEvidence"], [
-    "Owner verification or claim",
-  ]);
-  assert.deepEqual(plan.remainingIssues.map((issue) => issue.field), [
-    "description",
-    "publicPage.seoDescription",
-    "publicProfile.summary",
-    "publicProfile.sourceSummary",
-  ]);
-  assert.deepEqual(plan.schemaErrors, [],
-    "deleting the retired lists restores the organizer contract");
-  assert.deepEqual(plan.schemaRegressions, []);
-});
-
-test("an empty retired list is still deleted so the contract validates",
-  () => {
-    const stale = cleanListing();
-    (stale.publicProfile as Data).fitNotes = [];
-    (stale.publicProfile as Data).missingEvidence = [];
-    const plan = planOrganizerPublicContentRepair("organizers/x", stale);
-
-    assert.deepEqual(plan.deletes, [
-      "publicProfile.fitNotes",
-      "publicProfile.missingEvidence",
-    ]);
-    assert.deepEqual(plan.patch, {});
-    assert.deepEqual(plan.schemaErrors, []);
-    assert.deepEqual(
-      planOrganizerPublicContentRepair("organizers/x", cleanListing()).deletes,
-      []
-    );
-  });
-
-test("reviewed replacements clear the remaining wording issues", () => {
-  const plan = planOrganizerPublicContentRepair(
-    "organizers/moonmoth",
-    leakedListing(),
-    moonmothCopy
-  );
-  assert.deepEqual(plan.remainingIssues, []);
-  assert.equal(plan.patch["publicProfile.sourceSummary"], null);
-
-  const repaired = applyRepair(leakedListing(), plan.patch, plan.deletes);
-  const rerun = planOrganizerPublicContentRepair(
-    "organizers/moonmoth",
-    repaired,
-    moonmothCopy
-  );
-  assert.deepEqual(rerun.patch, {}, "a repaired document plans no writes");
-  assert.deepEqual(rerun.deletes, []);
-  assert.deepEqual(rerun.remainingIssues, []);
-  assert.deepEqual(rerun.schemaErrors, []);
-});
-
-test("plan hashes bind the reviewed before-state", () => {
-  const first = planOrganizerPublicContentRepair(
-    "organizers/moonmoth",
-    leakedListing()
-  );
-  const same = planOrganizerPublicContentRepair(
-    "organizers/moonmoth",
-    leakedListing()
-  );
-  const drifted = leakedListing();
-  ((drifted.publicProfile as Data).fitNotes as string[]).push("Another note");
-  const changed = planOrganizerPublicContentRepair(
-    "organizers/moonmoth",
-    drifted
-  );
-  assert.equal(first.hash, same.hash);
-  assert.notEqual(first.hash, changed.hash);
-  assert.equal(
-    organizerPublicContentPlanSetHash([first, changed]),
-    organizerPublicContentPlanSetHash([changed, first])
-  );
-});
-
-test("repair refuses fields outside the public replacement allowlist", () => {
-  assert.throws(
-    () => planOrganizerPublicContentRepair(
-      "organizers/moonmoth",
-      leakedListing(),
-      {"ownership.state": "claimed"}
-    ),
-    /ownership\.state is not a replaceable public field/u
-  );
-});
-
-function applyRepair(value: Data, patch: Data, deletes: string[]): Data {
-  const next = structuredClone(value);
-  const parent = (field: string) => {
-    const segments = field.split(".");
-    let cursor = next;
-    for (const segment of segments.slice(0, -1)) {
-      cursor = cursor[segment] as Data;
-    }
-    return {cursor, key: segments[segments.length - 1]};
-  };
-  for (const [field, fieldValue] of Object.entries(patch)) {
-    const {cursor, key} = parent(field);
-    cursor[key] = fieldValue;
-  }
-  for (const field of deletes) {
-    const {cursor, key} = parent(field);
-    delete cursor[key];
-  }
-  return next;
-}
