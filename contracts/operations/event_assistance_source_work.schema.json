@@ -61,7 +61,8 @@
             "eventAssistanceRcsSenders",
             "eventAssistanceRcsSubscriptions",
             "eventAssistancePermissions",
-            "eventAssistanceBudgets"
+            "eventAssistanceBudgets",
+            "contactPermissions"
           ]
         },
         "documentId": {

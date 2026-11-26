@@ -23,6 +23,10 @@ import {
   SMS_CONSENT_HASH, SMS_CONSENT_RECEIPTS, SMS_CONSENT_TEXT,
   SMS_CONSENT_VERSION, smsPermissionHasReceipt,
 } from "./smsConsent";
+import {EventContactPermissionWriter} from
+  "../../messaging/eventContactPermissions";
+import {requireOneEventRow, writeEventChannelDecision} from
+  "./eventContactGrants";
 
 /** UID and phone claim are derived from Firebase Auth, never request data. */
 export interface SmsPreferenceActor {uid: string; phone: string | null}
@@ -147,9 +151,15 @@ export class SmsPreferenceStore {
         copyHash: granting ? SMS_CONSENT_HASH : null,
         appliedRevision: permission.revision, createdAt: now,
         permissionHash: operationContentHash(permission)});
+      if (granting) {
+        await requireOneEventRow(this.db, tx, input.eventId, actor.uid);
+      }
+      const contact = await EventContactPermissionWriter.read(this.db, tx,
+        actor.uid, input.eventId);
       tx.create(reference, receipt);
       tx.set(this.db.collection(smsCollections.permissions).doc(permissionId),
         permission);
+      writeEventChannelDecision(tx, contact, permission, receipt, now);
       return {outcome: "applied", view: this.view(actor, input,
         {...facts, permission, receipt}, now)};
     });

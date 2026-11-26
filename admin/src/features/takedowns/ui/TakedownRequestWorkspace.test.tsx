@@ -1,7 +1,7 @@
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {cleanup, fireEvent, render, screen, waitFor} from "@testing-library/react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
-import {sampleTakedownDetail, type TakedownDetail, type TakedownStep} from "../api/takedownRepository";
+import {getTakedownRequest, sampleTakedownDetail, type TakedownDetail, type TakedownStep} from "../api/takedownRepository";
 import {activeDeadline, deadlineLabel, takedownInfoTemplates} from "../controllers/takedownLabels";
 import {TakedownRequestWorkspace} from "./TakedownRequestWorkspace";
 
@@ -36,6 +36,7 @@ const withRequest = (patch: Partial<TakedownDetail["request"]>, detail: Partial<
 
 beforeEach(() => {
   repository.steps = [];
+  vi.mocked(getTakedownRequest).mockClear();
 });
 afterEach(cleanup);
 
@@ -68,10 +69,14 @@ describe("takedown request workspace", () => {
   });
 
   it("asks for more only with a fixed template, and declines only with a fixed reason", async () => {
-    draw(sampleTakedownDetail);
+    const {notices} = draw(sampleTakedownDetail);
     fireEvent.change(await screen.findByLabelText("Ask for more"), {target: {value: "replyFromDomainEmail"}});
     expect(screen.getByText(takedownInfoTemplates.replyFromDomainEmail.message)).toBeTruthy();
     fireEvent.click(screen.getByRole("button", {name: "Record that we asked"}));
+    // One step at a time: the operation lease refuses a second write until the first settles.
+    await waitFor(() => expect(notices).toHaveLength(1));
+    await waitFor(() => expect(getTakedownRequest).toHaveBeenCalledTimes(2));
+    await new Promise((resolve) => setTimeout(resolve, 0));
     fireEvent.change(screen.getByLabelText("Decline it"), {target: {value: "couldNotVerify"}});
     fireEvent.click(screen.getByRole("button", {name: "Decline"}));
     await waitFor(() => expect(repository.steps.map((step) => step.action)).toEqual(["requestInfo", "decline"]));

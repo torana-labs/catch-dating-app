@@ -529,15 +529,19 @@ async function main() {
     "packages/platform/lib/schema_contracts/generated/INDEX.md",
     renderGeneratedIndex({dartCallableRequests, runtimeModules})
   );
+  // INDEX.md lists each one with its reason; most are admin- or
+  // Functions-only callables that never need a Dart class (#2204).
   if (!checkOnly && dartCallableRequests.ungenerable.length > 0) {
     console.log(
       `[callable_request_dtos.g.dart] ${dartCallableRequests.ungenerable.length} ` +
-      `schemas not yet generatable (hand-written callable helpers still own them):`
+      "callable schemas keep hand-written or no Dart helpers; reasons in " +
+      "packages/platform/lib/schema_contracts/generated/INDEX.md."
     );
-    for (const entry of dartCallableRequests.ungenerable) {
-      console.log(`  - ${entry.name}: ${entry.reason}`);
-    }
   }
+  addTextOutput(
+    FUNCTIONS_GENERATED_MANIFEST,
+    renderFunctionsGeneratedManifest(generatedFiles)
+  );
 
   const staleFiles = publishSchemaOutputs({
     root: repoRoot, files: generatedFiles, checkOnly, retiredFiles: retiredOutputs,
@@ -2521,6 +2525,25 @@ function tsTypeImports(currentTypeName, source) {
     imports.push(`import type {${spec.name}} from "${typeImportPath(spec)}";`);
   }
   return imports.length === 0 ? "" : `${imports.join("\n")}\n\n`;
+}
+
+// The Functions prebuild (functions/scripts/check-generated-modules.cjs)
+// reads this list, so a clone that never ran this generator fails at once
+// with the command to run instead of with a wall of tsc errors (#2204).
+export const FUNCTIONS_GENERATED_MANIFEST =
+  "functions/src/shared/generated/generatedModules.json";
+
+/** The functions/-relative modules this generator writes under functions/src. */
+export function renderFunctionsGeneratedManifest(files) {
+  const modules = files.map((file) => file.path)
+    .filter((file) => file.startsWith("functions/src/") &&
+      file !== FUNCTIONS_GENERATED_MANIFEST)
+    .map((file) => file.slice("functions/".length))
+    .sort();
+  return `${JSON.stringify({
+    generator: "tool/contracts/generate_schema_contracts.mjs",
+    modules,
+  }, null, 2)}\n`;
 }
 
 function addTextOutput(relativePath, content) {

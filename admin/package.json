@@ -13,6 +13,7 @@
     "check:bundle-budget": "node scripts/checkBundleBudget.mjs --check",
     "check:storybook-bundle-budget": "node scripts/checkStorybookBundleBudget.mjs --check",
     "check:query-state": "node ../tool/web/check_react_query_state.mjs --check --surface admin",
+    "check:pending-operations": "node ../tool/web/check_admin_pending_operations.mjs --check",
     "check:ui-components": "node ../tool/web/check_react_component_governance.mjs --check --surface admin",
     "check:component-registry": "node ../tool/web/check_admin_components.mjs --check",
     "check:feature-ui-size": "node ../tool/web/check_admin_feature_ui_size.mjs --check",
@@ -33,7 +34,7 @@
     "test:watch": "vitest --project=unit",
     "check:brand": "npm --workspace @catch/brand run check && npm --workspace @catch/brand test",
     "pretypecheck": "npm run check:brand && npm run generate",
-    "typecheck": "npm run check:css-tokens && npm run check:ui && npm run check:ui-components && npm run check:feature-exports && npm run check:component-registry && npm run check:feature-ui-size && npm run check:query-state && tsc -p tsconfig.json --noEmit --pretty false && tsc -p tsconfig.node.json --noEmit --pretty false",
+    "typecheck": "npm run check:css-tokens && npm run check:ui && npm run check:ui-components && npm run check:feature-exports && npm run check:component-registry && npm run check:feature-ui-size && npm run check:query-state && npm run check:pending-operations && tsc -p tsconfig.json --noEmit --pretty false && tsc -p tsconfig.node.json --noEmit --pretty false",
     "check:feature-exports": "node ../tool/web/check_admin_feature_exports.mjs --check",
     "check:css-tokens": "stylelint \"src/**/*.css\" && node ../packages/web-config/lint/check-stylelint-suppressions.mjs \"src/**/*.css\" && node --test ../packages/web-config/lint/stylelint.test.mjs",
     "check:ui": "node ../tool/web/check_react_ui.mjs --surface admin"
@@ -46,7 +47,7 @@
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "firebase": "^12.19.0",
-    "lucide-react": "^1.74.0",
+    "lucide-react": "^1.71.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-router": "^8.5.1"

@@ -1,5 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useCallback} from "react";
+import {useAdminPendingOperationGuard} from "../../../../shared/pendingOperation";
 import {
   decideSupplyIntakePolicy,
   listSupplyIntakePolicies,
@@ -13,10 +14,13 @@ export function useSupplyIntakePolicyController({onError, onNotice}: {
   onNotice: (message: string) => void;
 }) {
   const queryClient = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const page = useQuery({queryKey: policiesKey, queryFn: listSupplyIntakePolicies});
   const deciding = useMutation({mutationFn: decideSupplyIntakePolicy});
 
   const decide = useCallback(async (input: SupplyIntakePolicyDecision): Promise<boolean> => {
+    const operation = beginOperation();
+    if (!operation) return false;
     onError(null);
     try {
       await deciding.mutateAsync(input);
@@ -28,8 +32,10 @@ export function useSupplyIntakePolicyController({onError, onNotice}: {
     } catch (error) {
       onError(error instanceof Error ? error.message : String(error));
       return false;
+    } finally {
+      endOperation(operation);
     }
-  }, [deciding, onError, onNotice, queryClient]);
+  }, [beginOperation, deciding, endOperation, onError, onNotice, queryClient]);
 
   return {page, policies: page.data?.policies ?? [], decide, isDeciding: deciding.isPending};
 }

@@ -84,6 +84,6 @@ export {reconcilePublicEventPayments, onCancelledPublicEventPayments} from
 export {manageEventApprovalNotifications} from
   "./approvalNotifications/preferences";
 export {onEventApplicationApprovalNotification,
-  onEventApprovalNotificationPreference, onEventApprovalNotificationMessage,
+  onEventApprovalNotificationMessage,
   onEventApprovalWhatsappReceipt, retryEventApprovalNotifications} from
   "./approvalNotifications/triggers";

@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import {logger} from "firebase-functions";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {isDeepStrictEqual} from "node:util";
 import {
@@ -47,6 +48,11 @@ import {organizerContactProjectedFields} from "./organizerContactFields";
 import {validateHostMembershipDocument} from
   "../shared/generated/validators/hostMembershipDocument";
 import {membershipIsEntitled} from "../hostMemberships/entitlement";
+import {readEventContactPermission} from "../shared/eventContactPermissions";
+import {enqueueEventContactPermissionWork} from
+  "../eventSuccess/operations/eventContactPermissionWork";
+import {enqueueApprovalForChoices} from
+  "../events/approvalNotifications/work";
 import {hostMembershipId} from "../hostMemberships/ids";
 import {
   isStaleSourceEvent,
@@ -809,10 +815,24 @@ export const onEventAttendeeAudienceProjected = onDocumentWritten(
 // onOrganizerCommunicationPreferenceAudienceProjected (issue #2460): a new
 // name, so the deploy deletes the old trigger and creates this one rather
 // than patching a live trigger's document filter.
+//
+// Event documents (event_{eventId}, issue #2494) never reach an audience.
+// Their channel grants wake live work and their approval-notification
+// choices enqueue approval notifications, which onAssistancePermissionChanged
+// and onEventApprovalNotificationPreference did before; both are idempotent
+// per trigger event, so a retry is safe.
 export const onContactPermissionAudienceProjected =
   onDocumentWritten(
-    {document: "users/{uid}/contactPermissions/{senderKey}", retry: true},
+    {document: "users/{uid}/contactPermissions/{senderKey}", retry: true,
+      timeoutSeconds: 120},
     async (event) => {
+      const senderKey = event.params.senderKey;
+      if (senderKey.startsWith("event_")) {
+        await dispatchEventContactPermission(event.params.uid,
+          senderKey.slice("event_".length), event.id, Date.parse(event.time),
+          event.data?.before, event.data?.after);
+        return;
+      }
       const before = event.data?.before.data() as
         ContactPermission | undefined;
       const after = event.data?.after.data() as
@@ -827,6 +847,37 @@ export const onContactPermissionAudienceProjected =
       );
     }
   );
+
+type PermissionSnapshot = FirebaseFirestore.DocumentSnapshot | undefined;
+
+/** Live work and approval notifications for one event document write. */
+export async function dispatchEventContactPermission(uid: string,
+  eventId: string, triggerEventId: string, occurredAt: number,
+  beforeSnap: PermissionSnapshot, afterSnap: PermissionSnapshot,
+  db: FirebaseFirestore.Firestore = admin.firestore()): Promise<void> {
+  const side = (snap: PermissionSnapshot) => {
+    if (!snap?.exists) return null;
+    try {
+      const value = readEventContactPermission(snap.data(), eventId);
+      return value ? {value, generation: snap.createTime} : null;
+    } catch {
+      logger.error("Unreadable event contact permission",
+        {uid, eventId, triggerEventId});
+      return null;
+    }
+  };
+  const before = side(beforeSnap);
+  const after = side(afterSnap);
+  await enqueueEventContactPermissionWork(db,
+    {triggerEventId, eventId, occurredAt, before, after});
+  const choices = (value: typeof after) => JSON.stringify([
+    value?.value.grants["phone:bookingUpdates"] ?? null,
+    value?.value.grants["email:bookingUpdates"] ?? null]);
+  if (after?.value.grants["phone:bookingUpdates"] &&
+      choices(before) !== choices(after)) {
+    await enqueueApprovalForChoices(db, uid, eventId);
+  }
+}
 
 /** CRM view of a validated paid membership; anything else reads as none. */
 export function contactMembershipProjection(raw: unknown, organizerId: string,

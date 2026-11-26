@@ -4,9 +4,9 @@ import {GuestSourceFacts, guestSourceFactsFromSnapshots} from "./guestRecords";
 import {rcsCallbackClock} from "./rcsCallbackRecords";
 import {RcsConfig, parseRcsConfig, rcsPhoneHash} from "./rcsProtocol";
 import {readRcsSubscription, RcsSubscription} from "./rcsSubscriptions";
-import {Permission, rcsConsentCollections, rcsPermissionId,
-  parseRcsPermission, parseRcsConsentReceipt, rcsPermissionHasReceipt,
+import {Permission, rcsPermissionId, rcsPermissionHasReceipt,
   rcsPermissionClearsStop} from "./rcsConsent";
+import {readEventChannelConsent} from "./eventContactGrants";
 
 export type RcsPermissionScope = {context: Permission["context"];
   attendeeId: string; senderId: string};
@@ -29,16 +29,21 @@ export async function readRcsMessagePermission(db: Firestore, tx: Transaction,
   const {context, attendeeId, senderId} = scope;
   if (context.mode !== "live" || senderId !== config.senderId) return missing;
   const id = rcsPermissionId(context, attendeeId, senderId);
-  const [permissionSnap, eventSnap, attendeeSnap] = await tx.getAll(
-    db.collection(rcsConsentCollections.permissions).doc(id),
+  const [eventSnap, attendeeSnap] = await tx.getAll(
     db.collection("events").doc(context.eventId),
     db.collection("eventAttendees").doc(attendeeId));
-  if (!permissionSnap.exists) return missing;
-  const permission = parseRcsPermission(permissionSnap.data());
+  const attendee = attendeeSnap.data();
+  // The row's linked guest owns the consent; an unlinked row has none, and
+  // no one's permission document is read for it (issue #2494).
+  const uid = attendee?.linkedUid;
+  if (typeof uid !== "string" || uid.length === 0) return missing;
+  const consent = await readEventChannelConsent(db, tx, "rcs", uid,
+    context.eventId);
+  if (!consent) return missing;
+  const {permission, receipt} = consent;
   if (permission.status !== "granted") return suppressed;
   const source = guestSourceFactsFromSnapshots(context, attendeeId,
     eventSnap, attendeeSnap);
-  const attendee = attendeeSnap.data();
   if (permission.permissionId !== id ||
       permission.sender.agentId !== config.agentId ||
       permission.attendeeGeneration !== source.attendeeGeneration ||
@@ -50,10 +55,6 @@ export async function readRcsMessagePermission(db: Firestore, tx: Transaction,
       permission.subjectUid !== attendee?.linkedUid ||
       permission.updatedAt > now || permission.expiresAt <= now ||
       now >= Math.floor(source.eventEnd) + 86_400_000) return missing;
-  const receiptSnap = await tx.get(db.collection(rcsConsentCollections.receipts)
-    .doc(permission.currentReceiptId));
-  const receipt = receiptSnap.exists ?
-    parseRcsConsentReceipt(receiptSnap.data()) : null;
   if (!rcsPermissionHasReceipt(permission, receipt)) return missing;
   const subscription = await readRcsSubscription(db, tx, config.agentId,
     rcsPhoneHash(permission.phoneE164)!, now);

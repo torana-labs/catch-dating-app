@@ -139,7 +139,6 @@ Function deployment plans:
 - `expireCrossPathsPairHolds`
 - `expireEventRehearsals`
 - `expireEventWaitlistOffers`
-- `sendEventReminders`
 
 They were undeployed from dev and production on 2026-09-02 after live
 queries found no pending campaigns, delivery operations, rehearsal sessions,
@@ -934,7 +933,13 @@ each major upgrade needs its own impact review and full selected CI evidence.
 Dependabot pull requests merge without a click.
 `.github/workflows/dependabot-auto-merge.yml` turns on auto-merge for every
 Dependabot pull request that is not a major version, so it joins the merge
-queue once Required CI passes. It acts as the repository's auto-merge GitHub
+queue once Required CI passes. It first waits for the pull request's whole CI
+run, and turns auto-merge on only when every job passed or was skipped,
+including the reporting lanes (tools, operations, docs-policy, app-builds)
+that Required CI leaves out under the sprint floor. A person reads those lanes
+before merging their own pull request; nobody reads them for a Dependabot
+update, and #2553 merged with the icon-catalog check red in the tools lane. A
+red or unfinished run leaves the update for a manual merge. It acts as the repository's auto-merge GitHub
 App, not the built-in Actions token: GitHub starts no workflows for events
 that token causes, and a dependency merge must start `main`'s workflows like
 any other. The App has read-and-write Contents, Pull requests and Workflows

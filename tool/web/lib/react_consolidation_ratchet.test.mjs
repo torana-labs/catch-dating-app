@@ -10,6 +10,7 @@ import {
   acceptedDebtCeiling, acceptedDifferences, baselinePath, consolidationDifferences, consolidationSnapshot, fixedAllowanceCount,
   mergeBaseCssBudgets, pageCssBudgets, parseConsolidationBaseline, previousConsolidationBaseline,
   strandedByRetirementCeiling, strandedDifferences,
+  withCurrentAcceptedPlans,
 } from "./react_consolidation_ratchet.mjs";
 import {loadToolsManifest} from "../../lib/tools_manifest.mjs";
 
@@ -88,6 +89,20 @@ const probes = [
     for (const document of [accepted({[id]: "#1670 due 2027-01-01"}), accepted({[id]: plan}, []),
       accepted({"packages/web-ui/src/components/Other.tsx::Other": plan}), {...empty(), acceptedDebt: {[library]: {}}},
       {...empty(), acceptedDebt: []}]) assert.throws(() => parseConsolidationBaseline(document));
+  }],
+  ["a merge base recording a superseded due date parses as the current plan, and nothing else is rewritten", () => {
+    const gate = "screens.web_adapters";
+    const [[id, plan]] = Object.entries(acceptedDebtCeiling[gate]);
+    const base = (record) => {
+      const document = empty(); document.gates[gate] = Object.keys(record); document.acceptedDebt = {[gate]: record};
+      return document;
+    };
+    assert.throws(() => parseConsolidationBaseline(base({[id]: "#1670 due 2026-11-25"})));
+    assert.deepEqual(withCurrentAcceptedPlans(base({[id]: "#1670 due 2026-11-25"})).acceptedDebt, {[gate]: {[id]: plan}});
+    assert.ok(parseConsolidationBaseline(withCurrentAcceptedPlans(base({[id]: "#1670 due 2026-11-25"}))));
+    assert.throws(() => parseConsolidationBaseline(withCurrentAcceptedPlans(base({[id]: "#1670 due 2026-11-01"}))));
+    const other = "packages/web-ui/src/components/Other.tsx::Other";
+    assert.throws(() => parseConsolidationBaseline(withCurrentAcceptedPlans(base({[other]: "#1670 due 2026-11-25"}))));
   }],
   ["accepted debt is not new debt until its due date, then fails naming its issue unless paid down", () => {
     const gate = "library.cross_framework_parity";
