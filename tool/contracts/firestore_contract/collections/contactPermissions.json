@@ -6,12 +6,13 @@
   "dartModel": null,
   "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
   "rulesTestNames": [
-    "lets a guest get and list only their own contact permissions"
+    "lets a guest get and list only their own contact permissions",
+    "lets only the guest read their event-day consent document (#2494)"
   ],
   "owner": "messaging contact permission writer, called in the same transaction by every consent writer",
   "writerContext": "messaging",
   "read": "the guest gets and lists only their own documents by path while their account is not deleted; no organiser reads them directly, organisers get counts and audiences through the server's senderId + granted collection-group query",
-  "write": "server only; written in the transaction of every consent decision (registration, follow by phone, form submission and promotion, inbound STOP, withdrawal), deleted at account deletion",
+  "write": "server only; written in the transaction of every consent decision (registration, follow by phone, form submission and promotion, inbound STOP, withdrawal, event-day preferences and withdrawal links, approval-notification choices), deleted at account deletion and, for event documents, by TTL after expiresAt",
   "exportedFunctions": [
     "registerPublicEvent",
     "followOrganizerByPhone",
@@ -20,10 +21,18 @@
     "getOrganizerFormPayment",
     "withdrawParticipantMessagingPermission",
     "onOrganizerMessagingWebhookEventCreated",
-    "requestAccountDeletion"
+    "requestAccountDeletion",
+    "setEventAssistanceSmsPreference",
+    "setEventWhatsappPreference",
+    "setEventRcsPreference",
+    "withdrawEventAssistanceSms",
+    "withdrawEventWhatsapp",
+    "withdrawEventRcs",
+    "manageEventApprovalNotifications"
   ],
   "migrationNotes": [
     "Issue #2460. One document per sender and person, the only record of contact consent since step 3 retired catchCommunicationPreferences, organizerCommunicationPreferences and their two receipt collections. Each channel:purpose answer names the receipt that proves it and, for an opt-in, the number it covers; granted lists the effective keys.",
-    "The contact-permissions migration in tool/data/migrate_firestore_consolidation.mjs converted the data recorded before the writers (prod and dev held none)."
+    "The contact-permissions migration in tool/data/migrate_firestore_consolidation.mjs converted the data recorded before the writers (prod and dev held none).",
+    "Issue #2494 phase 2 step 1. Event documents, event_{eventId}, hold each guest's event-day sms, rcs and whatsapp grants (one per channel per event, bound to one roster row, one sender identity and one number until expiresAt) and their approval-notification choices (phone:bookingUpdates, email:bookingUpdates). The six event-day preference and withdrawal stores and manageEventApprovalNotifications write them in the transaction that still writes eventAssistancePermissions and eventApprovalNotificationPreferences; the send gates and the approval gate read only them. expiresAt is the TTL field. The contact-permissions-events migration in tool/data/migrate_firestore_consolidation.mjs builds them from the old collections."
   ]
 }

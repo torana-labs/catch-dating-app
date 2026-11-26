@@ -23,6 +23,9 @@ import type {EventApprovalPreferenceDocument as Preference} from
   "../../shared/generated/eventApprovalPreferenceDocument";
 import {loadIdentity, readApplication, type LoadIdentity} from "./source";
 import {preferenceId, terms} from "./model";
+import {bookingUpdatesFromPreference} from "./contactGrants";
+import {EventContactPermissionWriter} from
+  "../../messaging/eventContactPermissions";
 export const preferences = "eventApprovalNotificationPreferences";
 export const receipts = "eventApprovalNotificationReceipts";
 export const settings = "eventApprovalNotificationSettings";
@@ -180,8 +183,14 @@ export async function manageEventApprovalNotificationsHandler(
         "Contact details are unavailable.",
       );
     }
+    // The event document carries the same choice as two grants
+    // (issue #2494); the approval gate reads them.
+    const contact = await EventContactPermissionWriter.read(db, tx, uid,
+      data.eventId);
     tx.create(db.collection(receipts).doc(receiptId), next);
     tx.set(ref, next);
+    contact.write(tx, {organizerId,
+      ...bookingUpdatesFromPreference(next), nowMillis: next.updatedAtMillis});
     return projection(revision, data.choices);
   });
 }
