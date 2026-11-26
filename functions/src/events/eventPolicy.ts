@@ -4,6 +4,8 @@ import type {
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {eventParticipationId} from "../shared/relationshipDocuments";
+import {bookingPrivateFactsRef, storedBookingCohort} from
+  "../shared/bookingPrivateFacts";
 import {requireEventPolicyTerms} from "./configuredEvent";
 
 export const cohortIds = {
@@ -560,15 +562,18 @@ export async function rosterWithReservedWaitlistOffers(
   const offers = offerSnap.docs.map((doc) => doc.data());
   if (offers.length === 0) return baseRoster;
 
-  const participationSnaps = await Promise.all(
-    offers.map((offer) => db
+  const [participationSnaps, privateSnaps] = await Promise.all([
+    Promise.all(offers.map((offer) => db
       .collection("eventBookings")
       .doc(eventParticipationId(eventId, String(offer.uid ?? "")))
-      .get())
-  );
+      .get())),
+    Promise.all(offers.map((offer) => bookingPrivateFactsRef(db,
+      eventParticipationId(eventId, String(offer.uid ?? ""))).get())),
+  ]);
   return rosterWithReservableOfferData({
     baseRoster,
-    offers,
+    offers: withPrivateOfferCohorts(eventId, offers,
+      privateSnaps.map((snap) => snap.data())),
     participationData: participationSnaps.map((snap) => snap.data()),
     excludeUid: options.excludeUid,
     nowMillis: options.nowMillis ?? Date.now(),
@@ -600,14 +605,17 @@ export async function rosterWithReservedWaitlistOffersInTransaction(
   if (offerSnap.empty) return baseRoster;
 
   const offers = offerSnap.docs.map((doc) => doc.data());
-  const participationSnaps = await Promise.all(
-    offers.map((offer) => tx.get(db
+  const [participationSnaps, privateSnaps] = await Promise.all([
+    Promise.all(offers.map((offer) => tx.get(db
       .collection("eventBookings")
-      .doc(eventParticipationId(eventId, String(offer.uid ?? "")))))
-  );
+      .doc(eventParticipationId(eventId, String(offer.uid ?? "")))))),
+    Promise.all(offers.map((offer) => tx.get(bookingPrivateFactsRef(db,
+      eventParticipationId(eventId, String(offer.uid ?? "")))))),
+  ]);
   return rosterWithReservableOfferData({
     baseRoster,
-    offers,
+    offers: withPrivateOfferCohorts(eventId, offers,
+      privateSnaps.map((snap) => snap.data())),
     participationData: participationSnaps.map((snap) => snap.data()),
     excludeUid: options.excludeUid,
     nowMillis: options.nowMillis ?? Date.now(),
@@ -769,6 +777,27 @@ export function hasAcceptedWaitlistOfferAccess(
   if (data.waitlistOfferStatus !== "accepted") return false;
   const expiresAtMillis = timestampLikeMillis(data.waitlistOfferExpiresAt);
   return expiresAtMillis !== null && expiresAtMillis > nowMillis;
+}
+
+/**
+ * Each offer with the cohort it reserves, read from the server-only booking
+ * facts (#2493). Offers written before then carried it themselves.
+ * @param {string} eventId The event.
+ * @param {Array<FirebaseFirestore.DocumentData | undefined>} offers Offers.
+ * @param {Array<FirebaseFirestore.DocumentData | undefined>} privateFacts
+ *   The booking facts of each offer's guest, in the same order.
+ * @return {Array<FirebaseFirestore.DocumentData | undefined>} The offers.
+ */
+function withPrivateOfferCohorts(eventId: string,
+  offers: Array<FirebaseFirestore.DocumentData | undefined>,
+  privateFacts: Array<FirebaseFirestore.DocumentData | undefined>):
+  Array<FirebaseFirestore.DocumentData | undefined> {
+  return offers.map((offer, index) => {
+    const uid = typeof offer?.uid === "string" ? offer.uid : "";
+    const cohortAtOffer = storedBookingCohort(privateFacts[index], eventId,
+      uid, "cohortAtOffer");
+    return cohortAtOffer && offer ? {...offer, cohortAtOffer} : offer;
+  });
 }
 
 function rosterWithReservableOfferData(params: {

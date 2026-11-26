@@ -161,6 +161,9 @@ export function createAccountDeletionHarness(params: {
           setWrites.push({path: ref.path, data, options});
           seed[ref.path] = options?.merge ? {...seed[ref.path], ...data} : data;
         }),
+        delete: (ref: FakeDocumentReference) => pending.push(() => {
+          delete seed[ref.path];
+        }),
         update: (ref: FakeDocumentReference, data: FakeDocumentData) =>
           pending.push(() => {
             assert.ok(seed[ref.path]);
