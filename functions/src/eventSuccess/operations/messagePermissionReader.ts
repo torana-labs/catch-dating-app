@@ -8,15 +8,13 @@ import {parseWhatsappStop, WHATSAPP_ENDPOINT_STOPS, whatsappStopId} from
   "../../shared/organizerWhatsappStops";
 import {GuestSourceFacts, readGuestSourceFacts, requireDocumentId} from
   "./guestRecords";
-import {Permission as SmsPermission, parseSmsPermission, smsCollections,
-  smsPermissionId} from "./smsPermissionRecords";
-import {parseSmsConsentReceipt, SMS_CONSENT_RECEIPTS,
-  smsPermissionHasReceipt} from "./smsConsent";
-import {Permission as WhatsappPermission, parseWhatsappPermission,
-  WHATSAPP_PERMISSIONS, whatsappPermissionId} from
+import {Permission as SmsPermission, smsPermissionId} from
+  "./smsPermissionRecords";
+import {smsPermissionHasReceipt} from "./smsConsent";
+import {Permission as WhatsappPermission, whatsappPermissionId} from
   "./whatsappPermissionRecords";
-import {parseWhatsappConsentReceipt, WHATSAPP_CONSENT_RECEIPTS,
-  whatsappPermissionHasReceipt} from "./whatsappConsent";
+import {whatsappPermissionHasReceipt} from "./whatsappConsent";
+import {readEventChannelConsent} from "./eventContactGrants";
 import {whatsappEndpointHash} from "./whatsappReplyProtocol";
 
 export type MessagePermissionScope = {context: SmsPermission["context"];
@@ -31,19 +29,20 @@ export async function readSmsMessagePermission(db: Firestore, tx: Transaction,
   requireClock(now);
   const {context, attendeeId, senderId} = scope;
   const id = smsPermissionId(context, attendeeId, senderId);
-  const [permissionSnap, attendeeSnap] = await tx.getAll(
-    db.collection(smsCollections.permissions).doc(id),
-    db.collection("eventAttendees").doc(attendeeId));
-  if (!permissionSnap.exists) return missing();
-  const permission = parseSmsPermission(permissionSnap.data());
+  // The row's linked guest owns the consent; an unlinked row has none, and
+  // no one's permission document is read for it (issue #2494).
+  const attendeeSnap = await tx.get(db.collection("eventAttendees")
+    .doc(attendeeId));
+  const attendee = attendeeSnap.data();
+  const uid = linkedUid(attendee);
+  if (uid === null) return missing();
+  const consent = await readEventChannelConsent(db, tx, "sms", uid,
+    context.eventId);
+  if (!consent) return missing();
+  const {permission, receipt} = consent;
   if (permission.status !== "granted") return suppressed();
-  const receiptSnap = await tx.get(db.collection(SMS_CONSENT_RECEIPTS)
-    .doc(permission.currentReceiptId));
-  const receipt = receiptSnap.exists ?
-    parseSmsConsentReceipt(receiptSnap.data()) : null;
   if (!smsPermissionHasReceipt(permission, receipt)) return missing();
   const source = await readGuestSourceFacts(db, tx, context, attendeeId);
-  const attendee = attendeeSnap.data();
   if (permission.permissionId !== id || permission.senderId !== senderId ||
       permission.attendeeGeneration !== source.attendeeGeneration ||
       !messageRecipientMatches(permission.recipientBinding, {
@@ -67,14 +66,17 @@ export async function readWhatsappMessagePermission(db: Firestore,
   if (connection.organizerId !== context.organizerId ||
       connection.channel !== "whatsapp") return missing();
   const id = whatsappPermissionId(context, attendeeId, senderId);
-  const [permissionSnap, attendeeSnap] = await tx.getAll(
-    db.collection(WHATSAPP_PERMISSIONS).doc(id),
-    db.collection("eventAttendees").doc(attendeeId));
-  if (!permissionSnap.exists) return missing();
-  const permission = parseWhatsappPermission(permissionSnap.data());
+  const attendeeSnap = await tx.get(db.collection("eventAttendees")
+    .doc(attendeeId));
+  const attendee = attendeeSnap.data();
+  const uid = linkedUid(attendee);
+  if (uid === null) return missing();
+  const consent = await readEventChannelConsent(db, tx, "whatsapp", uid,
+    context.eventId);
+  if (!consent) return missing();
+  const {permission, receipt} = consent;
   if (permission.status !== "granted") return suppressed();
   const source = await readGuestSourceFacts(db, tx, context, attendeeId);
-  const attendee = attendeeSnap.data();
   if (permission.permissionId !== id ||
       permission.attendeeGeneration !== source.attendeeGeneration ||
       !messageRecipientMatches(permission.recipientBinding, {
@@ -88,12 +90,9 @@ export async function readWhatsappMessagePermission(db: Firestore,
       now >= Math.floor(source.eventEnd) + 86_400_000) return missing();
   const endpointHash = whatsappEndpointHash(permission.phoneE164)!;
   const stopId = whatsappStopId(context.organizerId, endpointHash);
-  const [receiptSnap, stopSnap] = await tx.getAll(
-    db.collection(WHATSAPP_CONSENT_RECEIPTS).doc(permission.currentReceiptId),
-    db.collection(WHATSAPP_ENDPOINT_STOPS).doc(stopId));
-  const receipt = receiptSnap.exists ?
-    parseWhatsappConsentReceipt(receiptSnap.data()) : null;
   if (!whatsappPermissionHasReceipt(permission, receipt)) return missing();
+  const stopSnap = await tx.get(db.collection(WHATSAPP_ENDPOINT_STOPS)
+    .doc(stopId));
   const stop = stopSnap.exists ? parseWhatsappStop(stopSnap.data()) : null;
   if (stop && (stop.stopId !== stopId || stop.observedAt > now ||
       stop.stoppedAt >= permission.evidence.acceptedAt)) return suppressed();
@@ -115,6 +114,11 @@ export async function readWhatsappMessagePermission(db: Firestore,
   return {kind: "allowed", permission, source, stop};
 }
 
+function linkedUid(attendee: FirebaseFirestore.DocumentData | undefined):
+  string | null {
+  const uid = attendee?.linkedUid;
+  return typeof uid === "string" && uid.length > 0 ? uid : null;
+}
 function missing(): Blocked {
   return {kind: "blocked", reason: "missingPermission"};
 }
