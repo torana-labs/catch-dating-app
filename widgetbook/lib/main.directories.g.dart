@@ -253,6 +253,8 @@ import 'package:widgetbook_workspace/hosts/host_setup_claim_use_cases.dart'
     as _widgetbook_workspace_hosts_host_setup_claim_use_cases;
 import 'package:widgetbook_workspace/hosts/host_system_parts_use_cases.dart'
     as _widgetbook_workspace_hosts_host_system_parts_use_cases;
+import 'package:widgetbook_workspace/hosts/host_today_requests_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_today_requests_use_cases;
 import 'package:widgetbook_workspace/hosts/operations/analytics.dart'
     as _widgetbook_workspace_hosts_operations_analytics;
 import 'package:widgetbook_workspace/hosts/operations/audiences.dart'
@@ -10357,6 +10359,61 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_booking_provider_use_cases
                             .hostRuntimeClaimListState,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Today',
+            children: [
+              _widgetbook.WidgetbookFolder(
+                name: 'Requests',
+                children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostTodayRequestDetailBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'A live waitlist offer',
+                        builder:
+                            _widgetbook_workspace_hosts_host_today_requests_use_cases
+                                .hostTodayRequestPersonOffered,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'A request, then the next person',
+                        builder:
+                            _widgetbook_workspace_hosts_host_today_requests_use_cases
+                                .hostTodayRequestPersonAsked,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostTodayRequestsBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Cut off and no one waiting',
+                        builder:
+                            _widgetbook_workspace_hosts_host_today_requests_use_cases
+                                .hostTodayRequestsEdges,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Everyone waiting',
+                        builder:
+                            _widgetbook_workspace_hosts_host_today_requests_use_cases
+                                .hostTodayRequestsWaiting,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostTodayRequestsSheet',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Opened from a join request row',
+                        builder:
+                            _widgetbook_workspace_hosts_host_today_requests_use_cases
+                                .hostTodayRequestsSheet,
+                      ),
+                    ],
                   ),
                 ],
               ),
