@@ -5,6 +5,14 @@
   "command": "dart tool/audit/frontend_error_candidates.dart",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "flutter",
+      "flutter-pub"
+    ]
+  },
   "description": "Scans frontend, provider, plugin, and local error-handling migration candidates.",
   "checks": [
     "dart analyze tool/audit/frontend_error_candidates.dart",

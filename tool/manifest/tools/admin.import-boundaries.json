@@ -5,6 +5,12 @@
   "command": "node tool/admin/check_import_boundaries.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Checks React admin app, feature, shared, and generated import boundaries.",
   "impactPaths": [
     "tool/admin/check_import_boundaries.test.mjs"

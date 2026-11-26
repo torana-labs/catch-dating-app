@@ -5,6 +5,12 @@
   "command": "swift tool/store/generate_catch_host_app_store_screenshots.swift",
   "surface": "local-writes-repo",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "platforms": [
     "darwin"
   ],

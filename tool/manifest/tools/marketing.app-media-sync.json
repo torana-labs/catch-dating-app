@@ -5,6 +5,13 @@
   "command": "node tool/marketing/sync_website_media.mjs",
   "surface": "local-writes-repo",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
   "description": "Syncs app-derived marketing capture slots into website assets. Tools checks the authored manifest; the capture producer and the release import check image bytes and provenance.",
   "checks": [
     "node --check tool/marketing/sync_website_media.mjs",

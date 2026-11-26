@@ -7,6 +7,12 @@
   "guard": "none",
   "guardReason": "Posts the weekly metrics comment with gh unless --dry-run; meant to run only from ci-metrics.yml.",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "impactPaths": [
     ".github/workflows/ci-metrics.yml",
     "tool/ci/ci_metrics.mjs",

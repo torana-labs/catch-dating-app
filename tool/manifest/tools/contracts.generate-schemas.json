@@ -5,6 +5,12 @@
   "command": "node tool/contracts/generate_schema_contracts.mjs",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Generates isolated Functions schemas, validators and catalogs plus test/tool inventories, paths and cross-runtime contracts.",
   "checks": [
     "node --check tool/contracts/generate_schema_contracts.mjs",

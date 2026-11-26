@@ -5,6 +5,12 @@
   "command": "node tool/firebase/validate_google_maps_config.mjs",
   "surface": "remote-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Validates native/web Google Maps config and optional Places secret wiring.",
   "checks": [
     "node --check tool/firebase/validate_google_maps_config.mjs"

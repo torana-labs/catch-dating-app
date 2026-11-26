@@ -5,6 +5,12 @@
   "command": "bash tool/check_riverpod_lint.sh",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Verifies Riverpod's analysis_server_plugin diagnostics are active in dart analyze.",
   "checks": [
     "bash -n tool/check_riverpod_lint.sh"

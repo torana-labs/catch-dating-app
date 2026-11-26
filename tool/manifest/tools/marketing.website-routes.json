@@ -5,6 +5,13 @@
   "command": "node tool/marketing/check_website_routes.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
   "description": "Validates marketing website route contracts against React routes, validated metadata content, postbuild, generated organizer-listing sources, active-market eligibility, and Firebase Hosting 404 behavior.",
   "checks": [
     "node --check tool/marketing/check_website_routes.mjs",

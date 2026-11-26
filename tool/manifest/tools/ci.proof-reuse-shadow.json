@@ -5,6 +5,13 @@
   "command": "node tool/ci/proof_reuse_shadow.mjs",
   "surface": "remote-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
   "impactPaths": [
     ".github/workflows/ci.yml",
     "tool/ci/proof_reuse_shadow.mjs",

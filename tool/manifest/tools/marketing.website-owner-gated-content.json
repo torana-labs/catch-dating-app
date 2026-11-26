@@ -5,6 +5,13 @@
   "command": "node --experimental-strip-types --test website/scripts/ownerGatedContent.test.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
   "description": "Proves privacy, terms, help, and contact content contracts remain null, unregistered, and unlinked until owner-supplied content exists.",
   "checks": [
     "node --check website/scripts/ownerGatedContent.test.mjs",

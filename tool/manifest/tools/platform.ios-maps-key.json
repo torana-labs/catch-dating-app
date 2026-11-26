@@ -5,6 +5,12 @@
   "command": "./tool/write_ios_maps_key_xcconfig.sh",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Writes the iOS Google Maps xcconfig for a selected environment.",
   "checks": [
     "bash -n tool/write_ios_maps_key_xcconfig.sh"

@@ -5,6 +5,13 @@
   "command": "npm --workspace catch-admin run build",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
   "description": "Builds the admin production surface, then ratchets the generated Vite-manifest JavaScript entry and largest async chunk.",
   "checks": [
     "node --check admin/scripts/checkBundleBudget.mjs",

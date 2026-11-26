@@ -5,6 +5,12 @@
   "command": "bash tool/test_app_shell_integration.sh",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Runs all deterministic headless app-shell suites or a bounded native smoke/all scope on an explicitly selected Flutter device.",
   "checks": [
     "bash -n tool/test_app_shell_integration.sh",

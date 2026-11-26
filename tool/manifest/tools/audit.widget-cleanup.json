@@ -5,6 +5,13 @@
   "command": "bash tool/widget_cleanup_scan.sh",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "ripgrep"
+    ]
+  },
   "description": "Fails on any live widget/design-system cleanup candidate.",
   "checks": [
     "bash -n tool/widget_cleanup_scan.sh",

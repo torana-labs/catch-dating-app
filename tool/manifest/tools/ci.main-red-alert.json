@@ -7,6 +7,12 @@
   "guard": "none",
   "guardReason": "Opens, comments on and closes the main-CI alert issue with gh; meant to run only from main-red-alert.yml.",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "impactPaths": [
     ".github/workflows/main-red-alert.yml",
     "tool/ci/main_red_alert.mjs",
