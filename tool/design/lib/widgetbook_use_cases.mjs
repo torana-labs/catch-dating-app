@@ -120,7 +120,7 @@ export function generatedUseCaseKeys(source) {
   const keys = [];
   let component = null;
   for (const match of source.matchAll(
-    /WidgetbookComponent\(\s*name:\s*'((?:\\.|[^'])*)'|WidgetbookUseCase\(\s*name:\s*'((?:\\.|[^'])*)',\s*builder:\s*([A-Za-z0-9_]+)\s*\.\s*([A-Za-z0-9_]+)/gu,
+    /WidgetbookComponent\(\s*name:\s*'((?:\\.|[^'\\])*)'|WidgetbookUseCase\(\s*name:\s*'((?:\\.|[^'\\])*)',\s*builder:\s*([A-Za-z0-9_]+)\s*\.\s*([A-Za-z0-9_]+)/gu,
   )) {
     if (match[1] !== undefined) component = unescape(match[1]);
     else keys.push(`${component}|${unescape(match[2])}|${aliases.get(match[3]) ?? `?${match[3]}`}|${match[4]}`);
