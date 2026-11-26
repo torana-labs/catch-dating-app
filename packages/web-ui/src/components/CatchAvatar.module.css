@@ -2,8 +2,10 @@
  * Flutter CatchAvatar, CatchAvatarViewport and CatchAvatarInitialsSurface:
  * initials at 0.34 of the size (activity 0.32, counts 0.30), the activity
  * pigment at 150 degrees with a 13px print and a 16% inner rule, a 20% dim,
- * the obscuring 3.5px blur at 1.16 scale under a 16% scrim, a 9px online dot,
- * square corners at radius md, and the ring as padding in its colour.
+ * the obscuring 3.5px blur at 1.16 scale under a 16% scrim, a 9px status dot
+ * (green online or checked in, yellow away), square corners at radius md, and
+ * the ring as padding in its colour. CatchAvatar.system: the six token sizes
+ * with their initials sizes, and initials on ink, indigo or a format accent.
  */
 .avatar {
   position: relative;
@@ -18,6 +20,19 @@
 }
 
 .avatar:has(.viewport[data-variant="square"]) { border-radius: var(--catch-radius-md); }
+
+/* Flutter CatchAvatarSize: the extent and the initials' size, from the tokens. */
+.avatar[data-size="xs"] { --catch-avatar-size: var(--catch-size-avatar-xs); --catch-avatar-initials: var(--catch-space-s3); }
+.avatar[data-size="sm"] { --catch-avatar-size: var(--catch-size-avatar-sm); --catch-avatar-initials: var(--catch-space-s3); }
+.avatar[data-size="md"] { --catch-avatar-size: var(--catch-size-avatar-md); --catch-avatar-initials: var(--catch-space-micro14); }
+.avatar[data-size="lg"] { --catch-avatar-size: var(--catch-size-avatar-lg); --catch-avatar-initials: var(--catch-space-s4); }
+.avatar[data-size="xl"] { --catch-avatar-size: var(--catch-size-avatar-xl); --catch-avatar-initials: var(--catch-space-s6); }
+.avatar[data-size="xxl"] { --catch-avatar-size: var(--catch-size-avatar-xxl); --catch-avatar-initials: var(--catch-space-s10); }
+
+.avatar[data-size] {
+  --catch-avatar-inner: var(--catch-avatar-size);
+  --catch-avatar-ring: 0px;
+}
 
 .viewport {
   position: relative;
@@ -89,7 +104,8 @@
 /* Initials come from CSS so they never join a surrounding control's visible text. */
 .person::before,
 .activity::before,
-.monogram::before {
+.monogram::before,
+.system::before {
   content: attr(data-initials);
 }
 
@@ -120,7 +136,18 @@
   composes: ground from "./grounds.module.css";
 }
 
-.monogram[data-display] {
+/* Flutter CatchAvatarColor.resolve: each fill with the ink of its initials. */
+.system { font-size: var(--catch-avatar-initials); }
+.system[data-color="ink"] { background: var(--catch-theme-ink); color: var(--catch-theme-surface); }
+.system[data-color="indigo"] { background: var(--catch-theme-indigo); color: var(--catch-palette-black); }
+.system[data-color="run"] { background: var(--catch-format-run-accent); color: var(--catch-format-run-ink); }
+.system[data-color="dinner"] { background: var(--catch-format-dinner-accent); color: var(--catch-format-dinner-ink); }
+.system[data-color="games"] { background: var(--catch-format-games-accent); color: var(--catch-format-games-ink); }
+.system[data-color="courts"] { background: var(--catch-format-courts-accent); color: var(--catch-format-courts-ink); }
+.system[data-color="nightsOut"] { background: var(--catch-format-nights-out-accent); color: var(--catch-format-nights-out-ink); }
+
+.monogram[data-display],
+.system[data-display] {
   font-family: var(--catch-font-voice), sans-serif;
   font-stretch: 78%;
   word-spacing: var(--catch-font-word-spacing-voice);
@@ -140,3 +167,5 @@
   border-radius: var(--catch-radius-pill);
   background: var(--catch-theme-success);
 }
+
+.status[data-status="away"] { background: var(--catch-theme-format-games); }
