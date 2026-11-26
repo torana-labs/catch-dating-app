@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_event_message_preferences_response.schema.json",
+  "title": "ListEventMessagePreferencesCallableResponse",
+  "description": "The channel's own sender list, returned by listEventMessagePreferences (issue #2494 step 2).",
+  "anyOf": [
+    {
+      "$ref": "./list_event_sms_preferences_response.schema.json"
+    },
+    {
+      "$ref": "./list_event_rcs_preferences_response.schema.json"
+    },
+    {
+      "$ref": "./list_event_whatsapp_preferences_response.schema.json"
+    }
+  ]
+}
