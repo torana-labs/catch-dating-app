@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/forms/data/host_application_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
+import 'package:catch_dating_app/hosts/forms/response_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_review_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,7 +42,7 @@ final responseReviewPreview = HostResponseReviewDetail(
 
 @widgetbook.UseCase(
   name: 'Existing application link',
-  type: HostApplicationDetailScreen,
+  type: HostResponseScreen,
   path: '[P1 product surfaces]/Host operations/Response review',
 )
 Widget responseReviewApplicationPreview(BuildContext context) => ProviderScope(
@@ -53,7 +53,7 @@ Widget responseReviewApplicationPreview(BuildContext context) => ProviderScope(
       applicationId: 'application_1',
     )).overrideWith((_) async => responseReviewPreview),
   ],
-  child: const HostApplicationDetailScreen(
+  child: const HostResponseScreen.application(
     organizerId: 'org_1',
     applicationId: 'application_1',
   ),
