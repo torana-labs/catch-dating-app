@@ -18,7 +18,7 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: OrganizerHostDefaultsStep(
+          body: _PolicyDefaults(
             formKey: GlobalKey<FormState>(),
             defaults: const OrganizerHostDefaults(),
             currencyCode: 'INR',
@@ -95,7 +95,7 @@ void main() {
         theme: AppTheme.light,
         home: StatefulBuilder(
           builder: (context, setState) => Scaffold(
-            body: OrganizerHostDefaultsStep(
+            body: _PolicyDefaults(
               formKey: formKey,
               defaults: defaults,
               currencyCode: 'INR',
@@ -155,7 +155,7 @@ void main() {
         theme: AppTheme.light,
         home: StatefulBuilder(
           builder: (context, setState) => Scaffold(
-            body: OrganizerHostDefaultsStep(
+            body: _PolicyDefaults(
               formKey: formKey,
               defaults: defaults,
               currencyCode: 'INR',
@@ -201,4 +201,47 @@ void main() {
     );
     expect(formKey.currentState!.validate(), isTrue);
   });
+}
+
+/// Mounts the live [OrganizerPolicyDefaultsCard] the way the organizer event
+/// defaults screen does: inside a form, with the activity choice wired to
+/// the organizer defaults.
+class _PolicyDefaults extends StatelessWidget {
+  const _PolicyDefaults({
+    required this.formKey,
+    required this.defaults,
+    required this.currencyCode,
+    required this.onChanged,
+  });
+
+  final GlobalKey<FormState> formKey;
+  final OrganizerHostDefaults defaults;
+  final String currencyCode;
+  final ValueChanged<OrganizerHostDefaults> onChanged;
+
+  @override
+  Widget build(BuildContext context) => Form(
+    key: formKey,
+    child: ListView(
+      children: [
+        CatchSectionList(
+          emptyStateOmitted: true,
+          gap: 0,
+          children: [
+            OrganizerPolicyDefaultsCard(
+              defaults: defaults.eventPolicy,
+              currencyCode: currencyCode,
+              activityKind: defaults.primaryActivityKind,
+              onActivityChanged: (activityKind) => onChanged(
+                defaults.copyWith(primaryActivityKind: activityKind),
+              ),
+              onChanged: (update) => onChanged(
+                defaults.copyWith(eventPolicy: update(defaults.eventPolicy)),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
 }

@@ -1,5 +1,3 @@
-import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
-import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +22,6 @@ Widget _hostHomeExactCatalog(BuildContext context, String focus) {
 }
 
 Widget _hostHomePreviewFor(BuildContext context, String focus) {
-  final organizer = HostOperationsFixtures.primaryOrganizer;
   return switch (focus) {
     'CatchEmptyState' => CatchEmptyState(
       title: 'No clubs yet',
@@ -37,13 +34,6 @@ Widget _hostHomePreviewFor(BuildContext context, String focus) {
           onPressed: () {},
         ),
       ],
-    ),
-    'HostOrganizerAvatar' => HostOrganizerAvatar(
-      organizer: organizer.copyWith(
-        profileImageUrl: 'assets/fixtures/club_hero_portrait.jpg',
-      ),
-      size: CatchLayout.appShellNavigationIdentityExtent,
-      selected: true,
     ),
     _ => Text('No exact preview registered for $focus.'),
   };
