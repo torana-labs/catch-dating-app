@@ -271,6 +271,13 @@ with no recorded list, an older provenance format or recipe, an unreadable or
 incomplete list (the harness roots and entry file must be in it), or a listed
 file that no longer exists is stale and renders again.
 
+The localizations (`packages/l10n/lib/generated/`) are build output that git
+ignores (component graph entry `flutter.l10n`, `tracked: false`). The jobs that
+validate a capture run Node only and can't regenerate them, so the list
+records that generator's declared inputs in `tool/harness/component_graph.json`
+(the template ARB, `l10n.yaml` and the toolchain pin among them) in their place.
+A copy edit stales a capture just as an edit to the generated file did.
+
 Known gap: a constant read only by another constant, where neither file
 executes and the second is not named by an executed file that imports it (a
 multi-hop const chain), is not in the list, so changing it does not stale the
