@@ -284,6 +284,14 @@ abstract class UserProfile with _$UserProfile {
     @Default(true) bool prefsShowOnMap,
     @Default(false) bool prefsShowInCrossPaths,
     @Default(false) bool prefsCrossPathsInvitations,
+
+    // Hide switches (#2493, FIX-8): a hidden answer reaches no other guest
+    // and no organiser. A missing religion switch means hidden.
+    @Default(true) bool prefsHideReligion,
+    @Default(false) bool prefsHideRelationshipGoal,
+    @Default(false) bool prefsHideDrinking,
+    @Default(false) bool prefsHideSmoking,
+    @Default(false) bool prefsHideChildren,
   }) = _UserProfile;
 
   factory UserProfile.fromJson(Map<String, dynamic> json) =>

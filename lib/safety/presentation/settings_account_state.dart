@@ -49,6 +49,11 @@ final class SettingsPreferenceValues {
     required this.eventStatusUpdates,
     required this.organizerUpdates,
     required this.weeklyDigest,
+    required this.showReligion,
+    required this.showRelationshipGoal,
+    required this.showDrinking,
+    required this.showSmoking,
+    required this.showChildren,
   });
 
   const SettingsPreferenceValues.defaults()
@@ -60,7 +65,12 @@ final class SettingsPreferenceValues {
       eventReminders = true,
       eventStatusUpdates = true,
       organizerUpdates = true,
-      weeklyDigest = false;
+      weeklyDigest = false,
+      showReligion = false,
+      showRelationshipGoal = true,
+      showDrinking = true,
+      showSmoking = true,
+      showChildren = true;
 
   factory SettingsPreferenceValues.fromProfile(UserProfile profile) {
     return SettingsPreferenceValues(
@@ -73,6 +83,11 @@ final class SettingsPreferenceValues {
       eventStatusUpdates: profile.prefsRunStatusUpdates,
       organizerUpdates: profile.prefsOrganizerUpdates,
       weeklyDigest: profile.prefsWeeklyDigest,
+      showReligion: !profile.prefsHideReligion,
+      showRelationshipGoal: !profile.prefsHideRelationshipGoal,
+      showDrinking: !profile.prefsHideDrinking,
+      showSmoking: !profile.prefsHideSmoking,
+      showChildren: !profile.prefsHideChildren,
     );
   }
 
@@ -86,6 +101,13 @@ final class SettingsPreferenceValues {
   final bool organizerUpdates;
   final bool weeklyDigest;
 
+  // Whether each profile answer reaches other guests (#2493, FIX-8).
+  final bool showReligion;
+  final bool showRelationshipGoal;
+  final bool showDrinking;
+  final bool showSmoking;
+  final bool showChildren;
+
   bool valueFor(SettingsPreference preference) {
     return switch (preference) {
       SettingsPreference.showInCrossPaths => showInCrossPaths,
@@ -97,6 +119,11 @@ final class SettingsPreferenceValues {
       SettingsPreference.eventStatusUpdates => eventStatusUpdates,
       SettingsPreference.organizerUpdates => organizerUpdates,
       SettingsPreference.weeklyDigest => weeklyDigest,
+      SettingsPreference.showReligion => showReligion,
+      SettingsPreference.showRelationshipGoal => showRelationshipGoal,
+      SettingsPreference.showDrinking => showDrinking,
+      SettingsPreference.showSmoking => showSmoking,
+      SettingsPreference.showChildren => showChildren,
     };
   }
 
@@ -131,6 +158,14 @@ final class SettingsPreferenceValues {
         organizerUpdates,
       ),
       weeklyDigest: selected(SettingsPreference.weeklyDigest, weeklyDigest),
+      showReligion: selected(SettingsPreference.showReligion, showReligion),
+      showRelationshipGoal: selected(
+        SettingsPreference.showRelationshipGoal,
+        showRelationshipGoal,
+      ),
+      showDrinking: selected(SettingsPreference.showDrinking, showDrinking),
+      showSmoking: selected(SettingsPreference.showSmoking, showSmoking),
+      showChildren: selected(SettingsPreference.showChildren, showChildren),
     );
   }
 }
