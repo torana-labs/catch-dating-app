@@ -756,11 +756,11 @@ jobs:
             echo '### Committed generated outputs are stale'
             echo
             echo 'Run build_runner in the root, apps/host, apps/consumer and widgetbook and commit the result,'
-            echo 'or apply the `generated-flutter-drift-linux` patch from this run.'
+            echo 'or apply the generated-flutter-drift-linux patch from this run.'
             echo
-            echo '```'
+            echo '~~~'
             git diff --stat -- '*.g.dart' '*.freezed.dart'
-            echo '```'
+            echo '~~~'
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload generated output drift
