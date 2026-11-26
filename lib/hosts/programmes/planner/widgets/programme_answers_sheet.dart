@@ -54,6 +54,7 @@ class _HostProgrammeAnswersSheetState extends State<HostProgrammeAnswersSheet> {
   Future<void> _choose(String functionId, HostProgrammeReply reply) async {
     if (_saving != null || _replies[functionId] == reply) return;
     setState(() => _saving = functionId);
+    // provider-graph: ownership-widget-async-callback:_HostProgrammeAnswersSheetState._choose:await:widget.onAnswer watch CAT156 -- The sheet holds only which answer is being saved and the answers it shows; the caller's command owns the write and its error, and a failed write leaves the old answer.
     final saved = await widget.onAnswer(functionId, reply);
     if (!mounted) return;
     setState(() {
