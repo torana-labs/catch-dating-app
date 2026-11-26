@@ -90,29 +90,30 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
               key: const ValueKey<String>('host-rehearsal-late-join-status'),
               copy: copy,
               title: l10n.eventAssistanceRuntimeTitle,
-              body: view.remainingOutcomes == null
-                  ? null
-                  : l10n.hostRehearsalLateJoinOutcomesLeft(
-                      count: view.remainingOutcomes!,
-                    ),
-              valueText: hostRehearsalLateJoinStatusLabel(l10n, view.status),
+              body: [
+                hostRehearsalLateJoinStatusLabel(l10n, view.status),
+                if (view.remainingOutcomes case final count?)
+                  l10n.hostRehearsalLateJoinOutcomesLeft(count: count),
+              ].join(' · '),
+              bodyMaxLines: 4,
             ),
             if (view.latestText case final text?)
               CatchField.read(
                 key: const ValueKey<String>('host-rehearsal-late-join-latest'),
                 copy: copy,
                 title: l10n.hostRehearsalLateJoinLatest,
-                body: text,
-                valueText: view.latestReply == null
-                    ? null
-                    : l10n.hostRehearsalLateJoinReplied(
-                        choice: view.latestReply!,
-                      ),
+                body: [
+                  text,
+                  if (view.latestReply case final reply?)
+                    l10n.hostRehearsalLateJoinReplied(choice: reply),
+                ].join('\n'),
+                bodyMaxLines: 8,
               ),
           ],
         ),
         if (view.groups.length > 1)
           CatchRail(
+            wrap: CatchRailMode.always,
             label: l10n.eventAssistanceMovementGroup,
             children: [
               for (final group in view.groups)
@@ -138,6 +139,7 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
                 variant: CatchTextVariant.sectionTitle,
               ),
               CatchRail(
+                wrap: CatchRailMode.always,
                 label: l10n.eventAssistanceLateJoinWhere,
                 children: [
                   for (final point in points)
@@ -165,6 +167,7 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
                   variant: CatchTextVariant.sectionTitle,
                 ),
                 CatchRail(
+                  wrap: CatchRailMode.always,
                   label: l10n.hostRehearsalLateJoinLaterChoices,
                   children: [
                     for (final point in points)
@@ -194,6 +197,7 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
               variant: CatchTextVariant.sectionTitle,
             ),
             CatchRail(
+              wrap: CatchRailMode.always,
               label: l10n.eventAssistanceLateJoinMode,
               children: [
                 for (final mode in HostRehearsalLateJoinMode.values)
@@ -217,6 +221,7 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
               copy: copy,
               title: l10n.eventAssistanceLateJoinTitle,
               body: _rulesSummary(l10n, view.rules),
+              bodyMaxLines: 4,
               onTap: _editing ? onRules : null,
             ),
             CatchField.nav(
@@ -225,7 +230,7 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
               title: l10n.eventAssistanceRuntimeChannels,
               body: view.routes
                   .map((r) => runtimeRouteLabel(l10n, r))
-                  .join(' → '),
+                  .join(', '),
               onTap: _editing ? onChannels : null,
             ),
             CatchField.action(
