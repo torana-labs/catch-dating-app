@@ -14,54 +14,6 @@ HostAudienceView hostAudienceViewFromName(String? name) =>
       orElse: () => HostAudienceView.people,
     );
 
-/// Canonical Audience destination owner for route-level loading, auth, error,
-/// and no-organizer states.
-///
-/// Those states replace only the page body. The Audience title, peer tabs,
-/// semantic body rhythm, responsive content lane, scroll ownership, and shell
-/// terminal clearance remain identical to the loaded destination.
-class HostAudienceStateScaffold extends StatelessWidget {
-  const HostAudienceStateScaffold({
-    super.key,
-    required this.selected,
-    required this.scrollKey,
-    required this.slivers,
-    this.onChanged,
-  }) : assert(slivers.length > 0);
-
-  final HostAudienceView selected;
-  final PageStorageKey<String> scrollKey;
-  final List<Widget> slivers;
-  final ValueChanged<HostAudienceView>? onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchRootScreenScaffold.withPrimaryRail(
-      header: const CatchRootScreenHeader.custom(HostAudienceHeader()),
-      actions: HostAudienceTabRail(
-        selected: selected,
-        selectionPosition: selected.index.toDouble(),
-        onChanged: onChanged ?? (view) => _openView(context, view),
-      ),
-      body: CatchRootScreenBody.single(
-        page: CatchRootScreenPageSpec.scroll(
-          page: CatchRootScreenPageScrollView.standard(
-            scrollKey: scrollKey,
-            children: slivers,
-          ),
-        ),
-      ),
-    );
-  }
-
-  static void _openView(BuildContext context, HostAudienceView view) {
-    context.goNamed(
-      Routes.hostAudienceScreen.name,
-      queryParameters: {'view': view.name},
-    );
-  }
-}
-
 class HostAudienceTabRail extends StatelessWidget
     implements CatchPrimaryRail, CatchScaledPreferredSize {
   const HostAudienceTabRail({

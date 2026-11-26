@@ -18002,29 +18002,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostRehearsalEntryUpcoming => 'Rehearse your next event';
 
   @override
-  String get hostRehearsalStartTitle => 'Start dress rehearsal';
-
-  @override
-  String get hostRehearsalStartSubtitle => 'Choose a starting point';
-
-  @override
-  String hostRehearsalStartUpcoming({required String title}) {
-    return 'Rehearse $title';
-  }
-
-  @override
-  String hostRehearsalStartUpcomingDescription({required int count}) {
-    return 'Uses its format and $count-person guest list. You can adjust the rehearsal copy.';
-  }
-
-  @override
-  String get hostRehearsalStartCustom => 'Create a custom rehearsal';
-
-  @override
-  String get hostRehearsalStartCustomDescription =>
-      'Start with organiser defaults, then choose the format, guests and scenario.';
-
-  @override
   String get hostRehearsalEntrySample => 'Practise hosting';
 
   @override
@@ -19151,9 +19128,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Saved operations could not be read or saved. Free device space and try again. Keep the app’s saved data if you need support.';
 
   @override
-  String get programsRecoveryAction => 'Recover saved work';
-
-  @override
   String get programsRecoveryTitle => 'Saved work recovery';
 
   @override
@@ -19166,15 +19140,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get programsOperationsPassengersNotReady =>
       'Every passenger must be marked ready at the curb before this vehicle departs.';
-
-  @override
-  String get programsArrivalsOutboxTitle => 'Offline queue';
-
-  @override
-  String get programsArrivalsOutboxSync => 'Sync now';
-
-  @override
-  String get programsArrivalsOutboxClear => 'Review changes';
 
   @override
   String get programsDoorRsvpAttending => 'Attending';
@@ -19318,19 +19283,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get programsRoomsStatusCancelled => 'Cancelled';
-
-  @override
-  String programsArrivalsOutboxPending({required int count}) {
-    return '$count change(s) queued while offline. They will sync when connectivity returns.';
-  }
-
-  @override
-  String programsArrivalsOutboxReview({
-    required int pending,
-    required int review,
-  }) {
-    return '$pending pending, $review need review before they can sync.';
-  }
 
   @override
   String hostResponseFilterSelectionLimit({required int count}) {

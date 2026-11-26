@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_stepper.dart'
     show EventSuccessCountdownStepper;
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart'
-    show HostOrganizerAvatar, HostOrganizerSwitcherSheet;
+    show HostOrganizerSwitcherSheet;
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/theme/app_theme.dart';
@@ -490,27 +490,9 @@ class _IdentitySwitcherFamily extends StatelessWidget {
       id: 'identity-switchers · I1–I3',
       title: 'Compact identity switchers',
       description:
-          'Compare the navigation avatar, its selected state, and the long-press '
-          'organizer sheet used to change the global Host context.',
+          'The long-press organizer sheet used to change the global Host '
+          'context.',
       cards: [
-        _PreviewCard(
-          title: 'Navigation identity',
-          note: 'Real organizer art in the stable bottom-navigation footprint.',
-          child: HostOrganizerAvatar(
-            organizer: logoOrganizer,
-            size: CatchLayout.appShellNavigationIdentityExtent,
-          ),
-        ),
-        _PreviewCard(
-          title: 'Selected identity',
-          note:
-              'Selection stays legible without adding a second top-bar control.',
-          child: HostOrganizerAvatar(
-            organizer: logoOrganizer,
-            size: CatchLayout.appShellNavigationIdentityExtent,
-            selected: true,
-          ),
-        ),
         _PreviewCard(
           title: 'Long-press switcher',
           note: 'The sheet retains full organizer names and selected state.',
