@@ -5,7 +5,7 @@
   "x-callable-aliases": [
     "manageProgramLodging"
   ],
-  "description": "Strict role-specific lodging result. Coordinator context is private; hotelBoard contains only allowlisted operational fields.",
+  "description": "Strict role-specific lodging result. Coordinator context is private; hotelBoard contains only allowlisted operational fields: room facts and labels, and each guest's display name and dates, never contact details.",
   "type": "object",
   "anyOf": [
     {
@@ -408,11 +408,17 @@
       "additionalProperties": false,
       "required": [
         "kind",
+        "hotelLabel",
         "rows"
       ],
       "properties": {
         "kind": {
           "const": "hotelBoard"
+        },
+        "hotelLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
         },
         "rows": {
           "type": "array",
@@ -426,6 +432,7 @@
               "physicalRoomId",
               "zoneId",
               "roomType",
+              "roomLabel",
               "guests"
             ],
             "properties": {
@@ -461,6 +468,18 @@
                 "minLength": 1,
                 "maxLength": 80
               },
+              "roomLabel": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 40
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "guests": {
                 "type": "array",
                 "maxItems": 100,
@@ -469,6 +488,7 @@
                   "additionalProperties": false,
                   "required": [
                     "guestId",
+                    "displayName",
                     "arrival",
                     "departure"
                   ],
@@ -477,6 +497,11 @@
                       "type": "string",
                       "minLength": 1,
                       "maxLength": 180
+                    },
+                    "displayName": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200
                     },
                     "arrival": {
                       "type": "string",
