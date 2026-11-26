@@ -762,10 +762,6 @@ export const updateOrganizerProgram = onCall(
   appCheckCallableOptionsWithLimits(programCallableLimits),
   (request) => updateOrganizerProgramHandler(request)
 );
-export const listOrganizerPrograms = onCall(
-  appCheckCallableOptionsWithLimits(programCallableLimits),
-  (request) => listOrganizerProgramsHandler(request)
-);
 export const getOrganizerProgram = onCall(
   appCheckCallableOptionsWithLimits(programCallableLimits),
   (request) => getOrganizerProgramHandler(request)

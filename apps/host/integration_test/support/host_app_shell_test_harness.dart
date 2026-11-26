@@ -20,7 +20,6 @@ import 'package:catch_platform/riverpod_ui/catch_localized_error_scaffold.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_platform/schema_contracts/generated/host_attention_policies.g.dart';
-import 'package:catch_test_support/hosts/host_crm_response_fixtures.dart';
 import 'package:catch_test_support/organizers_test_helpers.dart'
     show buildOrganizer;
 import 'package:catch_test_support/test_pump_helpers.dart';
@@ -282,7 +281,6 @@ class HostShellBackend {
         'enabled': false,
         'candidates': const <Object?>[],
       },
-      'listMyOrganizerJourneys' => {'journeys': const <Object?>[]},
       // The shell asks for the plan on wide screens: a social host, no
       // weddings plan, so the Host tabs stay.
       'getOrganizerEntitlement' => {
@@ -293,20 +291,6 @@ class HostShellBackend {
         'grants': const <Object?>[],
         'meters': const {'flightDaysUsed': 0, 'waConversationsUsed': 0},
         'skuCatalog': const <String, Object?>{},
-      },
-      // The Organiser tab and Payments read the Catch bills: none yet.
-      'listOrganizerBills' => {'bills': const <Object?>[]},
-      // Payments reads the free trial: no event yet, so it has not started.
-      'getOrganizerBillingStatus' => {
-        'organizerId': organizerId,
-        'trial': {
-          'state': 'notStarted',
-          'anchor': null,
-          'days': 30,
-          'startsAtMillis': null,
-          'endsAtMillis': null,
-          'daysLeft': null,
-        },
       },
       // The event report's photos for checked-in guests: none shared yet.
       'listEventHostPhotos' => {
@@ -331,7 +315,6 @@ class HostShellBackend {
       'createPrivateEventSetup' => _createPrivateEvent(request),
       'createPrivateEventSeries' => _createPrivateEventSeries(request),
       'updatePrivateEventDetails' => _updatePrivateEventDetails(request),
-      'listOrganizerPrograms' => {'programs': const <Object?>[]},
       // Today's Last 30 days: an organizer with no bookings yet.
       'getHostAnalytics' => {
         'generatedAt': DateTime.now().toUtc().toIso8601String(),
@@ -362,29 +345,6 @@ class HostShellBackend {
         'embeddedSignup': const <String, Object?>{},
         'connection': null,
         'templates': const <Object?>[],
-      },
-      'listOrganizerContacts' => {
-        ...crmEmptyAudiencePageData(),
-        'organizerId': organizerId,
-      },
-      // People's Possible duplicates row: the review finds no pairs.
-      'listOrganizerContactMergeCandidates' => {
-        'organizerId': organizerId,
-        'candidates': const <Object?>[],
-        'dismissedCandidates': const <Object?>[],
-        'nextCursor': null,
-        'truncated': false,
-      },
-      // People's saved groups and Messages' automations: none yet.
-      'listOrganizerSavedAudiences' => {
-        'organizerId': organizerId,
-        'audiences': const <Object?>[],
-        'nextCursor': null,
-      },
-      'listOrganizerFormAutomationRuns' => {
-        'rules': const <Object?>[],
-        'runs': const <Object?>[],
-        'nextCursor': null,
       },
       // Plan step edits, pause/resume, close-out and the crawl stop change
       // answer as applied; their listeners keep what the journey seeded.

@@ -849,7 +849,3 @@ export const getOrganizerFormResponseDetail = onCall(
   (request) => getOrganizerFormResponseDetailHandler(request)
 );
 
-export const getOrganizerFormAnalytics = onCall(
-  appCheckCallableOptionsWithLimits(managerCallableLimits),
-  (request) => getOrganizerFormAnalyticsHandler(request)
-);

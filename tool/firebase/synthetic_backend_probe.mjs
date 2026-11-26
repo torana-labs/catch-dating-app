@@ -172,12 +172,12 @@ export function buildSyntheticProbePlan({
   ];
   const callables = environment !== "prod" || allowProdCallables ? [
     {
-      // The Host app reads its form list from Firestore now; the template
-      // catalog is the forms surface it still reads through a Function.
-      id: "organizer-form-templates",
-      name: "listOrganizerFormTemplates",
+      // A manager-only read the Host safety screen still makes through a
+      // Function (listOrganizerFormTemplates retired with Host 1.0.6).
+      id: "organizer-guest-blocks",
+      name: "listOrganizerGuestBlocks",
       payload: {organizerId},
-      responseValidator: "validateListOrganizerFormTemplatesCallableResponse",
+      responseValidator: "validateListOrganizerGuestBlocksCallableResponse",
     },
   ] : [];
   return {firestore, callables};

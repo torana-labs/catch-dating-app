@@ -9,8 +9,6 @@ export {
   deliverOrganizerBillNotice,
   retryOrganizerBillNoticesHourly,
 } from "./billNotices";
-export {listOrganizerBills} from "./organizerOwnBills";
-export {getOrganizerBillingStatus} from "./organizerBillingStatus";
 export {manageOrganizerBillingPlan} from "./organizerBillingPlan";
 export {adminManageMoneySettings} from "./moneySettings";
 export {adminManageNominatorCredits} from "./nominatorCredits";
