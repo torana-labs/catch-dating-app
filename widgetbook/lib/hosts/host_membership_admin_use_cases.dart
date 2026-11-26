@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_admin.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/hosted_event_membership_rules_section.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_event_membership_rules_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_membership_plan_editor_sheet.dart';
@@ -10,7 +9,6 @@ import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/host_memberships/fixtures.dart';
-import 'package:widgetbook_workspace/hosts/operations/shell_fixture.dart';
 import 'package:widgetbook_workspace/support/page_preview.dart';
 import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 import 'package:widgetbook_workspace/utility/preview.dart';
@@ -80,36 +78,6 @@ Widget hostMembershipsCardStates(BuildContext context) =>
           ),
         ],
       ),
-    );
-
-@widgetbook.UseCase(
-  name: 'Owner loaded',
-  type: HostOrganizerMembershipsScreen,
-  path: _path,
-)
-Widget hostOrganizerMembershipsScreenLoaded(BuildContext context) =>
-    WidgetbookPageCatalogFrame(
-      title: 'HostOrganizerMembershipsScreen',
-      contractId: 'screen.host.clubs',
-      children: [
-        WidgetbookPageStateCard(
-          label: 'owner loaded',
-          child: WidgetbookHostShellScope(
-            child: WidgetbookFixtureScope(
-              overrides: [
-                hostMembershipsControllerProvider(
-                  HostOperationsFixtures.primaryOrganizer.id,
-                ).overrideWith(_PreviewMembershipsController.new),
-              ],
-              child: WidgetbookUtilityDeviceFrame(
-                child: HostOrganizerMembershipsScreen(
-                  organizerId: HostOperationsFixtures.primaryOrganizer.id,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
     );
 
 @widgetbook.UseCase(

@@ -1,15 +1,30 @@
-part of 'host_operations_screen_test.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
+import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/errors/provider_retry_policy.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
+import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
+import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
+import 'package:catch_ui/catch_ui.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:riverpod/misc.dart' show Override;
 
-/// The add-a-person route is still drawn by the legacy editor; its form
-/// rules stay covered here after the legacy directory and detail retired.
-void _registerHostOperationsCustomerAddTests() {
+/// The add-a-person route is still drawn by the legacy editor. Its form rules
+/// moved here from the retired organiser workspace test library.
+void main() {
+  setUp(() => AppConfig.configureEntrypointRole(AppRole.host));
+  tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
   testWidgets('manual customer form captures useful identity and memory', (
     tester,
   ) async {
-    await _pumpHostScreen(
-      tester,
-      const HostAddCustomerScreen(organizerId: 'organizer-1'),
-    );
+    await _pumpAddCustomer(tester);
 
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
     expect(find.byType(CatchSheet), findsNothing);
@@ -22,54 +37,23 @@ void _registerHostOperationsCustomerAddTests() {
       findsOneWidget,
     );
     expect(
-      tester
-          .widget<CatchField>(
-            find.byKey(const ValueKey('host-add-customer-name')),
-          )
-          .title,
+      _fieldTitle(tester, 'host-add-customer-name'),
       'Name shown to your team',
     );
-    expect(
-      tester
-          .widget<CatchField>(
-            find.byKey(const ValueKey('host-add-customer-phone')),
-          )
-          .title,
-      'Mobile number',
-    );
-    expect(
-      tester
-          .widget<CatchField>(
-            find.byKey(const ValueKey('host-add-customer-email')),
-          )
-          .title,
-      'Email',
-    );
+    expect(_fieldTitle(tester, 'host-add-customer-phone'), 'Mobile number');
+    expect(_fieldTitle(tester, 'host-add-customer-email'), 'Email');
     await tester.ensureVisible(
       find.byKey(const ValueKey('host-add-customer-memory')),
     );
     await tester.tap(find.byKey(const ValueKey('host-add-customer-memory')));
     await pumpFeatureUi(tester);
-    expect(
-      tester
-          .widget<CatchField>(
-            find.byKey(const ValueKey('host-add-customer-note')),
-          )
-          .title,
-      'Private note',
-    );
+    expect(_fieldTitle(tester, 'host-add-customer-note'), 'Private note');
     expect(
       find.textContaining('does not grant permission to send messages'),
       findsOneWidget,
     );
 
-    await tester.enterText(
-      find.descendant(
-        of: find.byKey(const ValueKey('host-add-customer-name')),
-        matching: find.byType(TextField),
-      ),
-      'Name only',
-    );
+    await tester.enterText(_input('host-add-customer-name'), 'Name only');
     await tester.tap(find.byKey(const ValueKey('host-add-customer-submit')));
     await pumpFeatureUi(tester);
 
@@ -84,26 +68,15 @@ void _registerHostOperationsCustomerAddTests() {
       'Add person accepts only $endpoint and retains values on failure',
       (tester) async {
         final controller = _CreatePersonProbe();
-        await _pumpHostScreen(
+        await _pumpAddCustomer(
           tester,
-          const HostAddCustomerScreen(organizerId: 'organizer-1'),
           overrides: [
             hostCustomersControllerProvider.overrideWithValue(controller),
           ],
         );
+        await tester.enterText(_input('host-add-customer-name'), 'Maya Kapoor');
         await tester.enterText(
-          find.descendant(
-            of: find.byKey(const ValueKey('host-add-customer-name')),
-            matching: find.byType(TextField),
-          ),
-          'Maya Kapoor',
-        );
-        final field = find.descendant(
-          of: find.byKey(ValueKey('host-add-customer-$endpoint')),
-          matching: find.byType(TextField),
-        );
-        await tester.enterText(
-          field,
+          _input('host-add-customer-$endpoint'),
           endpoint == 'phone' ? '+919876543210' : 'MAYA@Example.COM',
         );
         await tester.tap(
@@ -137,8 +110,48 @@ void _registerHostOperationsCustomerAddTests() {
   }
 }
 
+Finder _input(String key) => find.descendant(
+  of: find.byKey(ValueKey(key)),
+  matching: find.byType(TextField),
+);
+
+String? _fieldTitle(WidgetTester tester, String key) =>
+    tester.widget<CatchField>(find.byKey(ValueKey(key))).title;
+
+Future<void> _pumpAddCustomer(
+  WidgetTester tester, {
+  List<Override> overrides = const [],
+}) async {
+  final router = GoRouter(
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (_, _) =>
+            const HostAddCustomerScreen(organizerId: 'organizer-1'),
+      ),
+    ],
+  );
+  await tester.pumpWidget(
+    ProviderScope(
+      retry: catchProviderRetry,
+      overrides: [
+        firebaseFirestoreProvider.overrideWithValue(FakeFirebaseFirestore()),
+        ...overrides,
+      ],
+      child: MaterialApp.router(
+        theme: AppTheme.light,
+        routerConfig: router,
+        builder: (context, child) =>
+            CatchNoticeOverlay(child: child ?? const SizedBox.shrink()),
+      ),
+    ),
+  );
+  await pumpFeatureUi(tester);
+}
+
 class _CreatePersonProbe extends Fake implements HostCustomersController {
   final requests = <Map<String, String?>>[];
+
   @override
   Future<HostCreatedCustomer> createCustomer({
     required String organizerId,

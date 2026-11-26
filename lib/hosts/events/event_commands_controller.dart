@@ -4,8 +4,6 @@ import 'package:catch_dating_app/contexts/account/data/require_signed_in_uid.dar
 import 'package:catch_dating_app/contexts/bookings/data/host_attendance_outbox.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/data/event_publication_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
-import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/hosts/events/event_plan_state.dart';
@@ -98,24 +96,6 @@ class HostEventCommands extends _$HostEventCommands {
             status: HostAttendanceOutboxStatus.pending,
           ),
           offline: ref.read(isObviouslyOfflineProvider),
-        );
-  }
-
-  /// Saves the organizer's event defaults through the progressive setup
-  /// defaults command, fenced on their revision and reviewed hash.
-  Future<void> updateDefaults({
-    required ManagerEventSetupDefaults current,
-    required ManagerEventSetupPreferences next,
-  }) async {
-    requireSignedInUid(ref, action: 'save event defaults');
-    await ref
-        .read(managerEventSetupDefaultsRepositoryProvider)
-        .update(
-          ManagerEventSetupDefaultsUpdateRequest.forChange(
-            current: current,
-            requestId: hostEventRequestId(),
-            next: next,
-          ),
         );
   }
 }
