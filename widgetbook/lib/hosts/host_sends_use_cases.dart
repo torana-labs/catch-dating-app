@@ -3,7 +3,7 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_reposi
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_campaign.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_manual_send_task.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
-import 'package:catch_dating_app/hosts/people/sends/campaign_body.dart';
+import 'package:catch_dating_app/hosts/people/sends/campaign_screen.dart';
 import 'package:catch_dating_app/hosts/people/sends/sends_body.dart';
 import 'package:catch_dating_app/hosts/people/sends/sends_detail_body.dart';
 import 'package:catch_dating_app/hosts/people/sends/sends_screen.dart';
@@ -160,7 +160,11 @@ Widget sendsCampaignReport(BuildContext context) => _phone(
   ),
 );
 
-@widgetbook.UseCase(name: 'Setup loading', type: HostCampaignBody, path: _path)
+@widgetbook.UseCase(
+  name: 'Setup loading',
+  type: HostCampaignScreen,
+  path: _path,
+)
 Widget sendsCampaignBody(BuildContext context) => ProviderScope(
   overrides: [
     hostMessagingSetupProvider(
@@ -168,7 +172,7 @@ Widget sendsCampaignBody(BuildContext context) => ProviderScope(
     ).overrideWithValue(const AsyncLoading()),
   ],
   child: _phone(
-    HostCampaignBody(organizer: buildOrganizer(id: 'preview-organizer')),
+    HostCampaignScreen(organizer: buildOrganizer(id: 'preview-organizer')),
   ),
 );
 
@@ -177,8 +181,13 @@ Widget sendsCampaignBody(BuildContext context) => ProviderScope(
   type: HostManualSendSheet,
   path: _path,
 )
-Widget sendsTaskSheet(BuildContext context) =>
-    _phone(HostManualSendSheet(task: _task));
+Widget sendsTaskSheet(BuildContext context) => _phone(
+  HostManualSendSheet(
+    task: _task,
+    onOpenWhatsapp: (task) async => task,
+    onMark: (_, _) async {},
+  ),
+);
 
 @widgetbook.UseCase(
   name: 'Check options results',
@@ -196,6 +205,7 @@ Widget sendsReplanSheet(BuildContext context) =>
 Widget sendsFollowerSheet(BuildContext context) => _phone(
   HostFollowerUpdateSheet(
     remainingQuota: 2,
+    weeklyQuota: 3,
     requestIdFactory: () => 'preview',
     onSubmit: ({required requestId, required text, required whatsapp}) async =>
         null,

@@ -6,9 +6,10 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_reposi
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_campaign.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_manual_send_task.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_posts_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/people/people_controller.dart';
-import 'package:catch_dating_app/hosts/people/sends/campaign_body.dart';
+import 'package:catch_dating_app/hosts/people/sends/campaign_screen.dart';
 import 'package:catch_dating_app/hosts/people/sends/sends_body.dart';
 import 'package:catch_dating_app/hosts/people/sends/sends_controller.dart';
 import 'package:catch_dating_app/hosts/people/sends/sends_detail_body.dart';
@@ -19,7 +20,9 @@ import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dar
 import 'package:catch_dating_app/hosts/presentation/host_organizer_post_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -168,7 +171,7 @@ class _HostSendsScreenState extends ConsumerState<HostSendsScreen> {
                             onSettings: () => _openSettings(organizer.id),
                           ),
                           HostSendsCompose(:final savedAudienceId) =>
-                            HostCampaignBody(
+                            HostCampaignScreen(
                               key: ValueKey<String?>(
                                 '${organizer.id}/$savedAudienceId',
                               ),
@@ -327,6 +330,7 @@ class _HostSendsScreenState extends ConsumerState<HostSendsScreen> {
     final posted = await showHostFollowerUpdateSheet(
       context: context,
       remainingQuota: remainingQuota,
+      weeklyQuota: OrganizerPostsRepository.weeklyQuota,
       requestIdFactory: HostOrganizerPostController.generateRequestId,
       whatsappAvailable: whatsappAvailable,
       onSubmitPost: ({required requestId, required text, required whatsapp}) =>
@@ -338,7 +342,8 @@ class _HostSendsScreenState extends ConsumerState<HostSendsScreen> {
                 requestId: requestId,
                 text: text,
                 whatsapp: whatsapp,
-              ),
+              )
+              .then((response) => response.whatsapp?.queuedCount),
     );
     if (!mounted || !posted) return;
     setState(() => _flow = null);
@@ -368,8 +373,35 @@ class _HostSendsScreenState extends ConsumerState<HostSendsScreen> {
   Future<void> _openTask(HostManualSendTask task) async {
     await showCatchBottomSheet<bool>(
       context: context,
-      builder: (_) => HostManualSendSheet(task: task),
+      builder: (_) => HostManualSendSheet(
+        task: task,
+        onOpenWhatsapp: _openWhatsapp,
+        onMark: (task, action) => ref
+            .read(hostAudienceControllerProvider)
+            .markManualSendTask(task, action),
+      ),
     );
+  }
+
+  /// Checks the stored number again, opens WhatsApp with the prepared
+  /// message and records that it opened.
+  Future<HostManualSendTask> _openWhatsapp(HostManualSendTask task) async {
+    final commands = ref.read(hostAudienceControllerProvider);
+    final l10n = context.l10n;
+    // provider-graph: ownership-widget-async:_HostSendsScreenState._openWhatsapp:await:hostAudienceControllerProvider.validateManualSendTaskLaunch watch CAT156 -- Carried from the manual send sheet: the audience controller re-checks the number, the external link controller opens WhatsApp and the audience controller records the open; the sheet holds the busy flag and the returned task.
+    final validated = await commands.validateManualSendTaskLaunch(task);
+    // provider-graph: ownership-widget-async:_HostSendsScreenState._openWhatsapp:await:externalLinkControllerProvider.openWhatsappHandoff watch CAT156 -- Carried from the manual send sheet; see above.
+    final opened = await ref
+        .read(externalLinkControllerProvider)
+        .openWhatsappHandoff(
+          phoneE164: validated.phoneE164,
+          message: validated.prefillText,
+        );
+    if (!opened) {
+      throw ExternalActionException(l10n.hostCustomersWhatsappOpenFailed);
+    }
+    // provider-graph: ownership-widget-async:_HostSendsScreenState._openWhatsapp:await:hostAudienceControllerProvider.recordManualHandoffOpened watch CAT156 -- Carried from the manual send sheet; see above.
+    return commands.recordManualHandoffOpened(validated);
   }
 
   Future<void> _replan(

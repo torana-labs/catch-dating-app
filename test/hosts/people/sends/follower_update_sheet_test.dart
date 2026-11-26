@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/contexts/organizers/data/organizer_callable_responses.dart';
 import 'package:catch_dating_app/hosts/people/sends/sends_sheets_body.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
@@ -27,6 +26,7 @@ void main() {
                   showHostFollowerUpdateSheet(
                     context: context,
                     remainingQuota: 2,
+                    weeklyQuota: 3,
                     requestIdFactory: () => 'request-${requestSequence++}',
                     onSubmitPost:
                         ({
@@ -86,6 +86,7 @@ void main() {
                   showHostFollowerUpdateSheet(
                     context: context,
                     remainingQuota: 2,
+                    weeklyQuota: 3,
                     requestIdFactory: () => 'request-${requestSequence++}',
                     onSubmitPost:
                         ({
@@ -156,6 +157,7 @@ void main() {
                     showHostFollowerUpdateSheet(
                       context: context,
                       remainingQuota: 2,
+                      weeklyQuota: 3,
                       requestIdFactory: () => 'request-1',
                       whatsappAvailable: available,
                       onSubmitPost:
@@ -165,29 +167,7 @@ void main() {
                             required whatsapp,
                           }) async {
                             sentOnWhatsapp = whatsapp;
-                            return CreateOrganizerPostCallableResponse(
-                              postId: 'post-1',
-                              remainingWeeklyQuota: 1,
-                              deliveryStatus: 'pending',
-                              recipientCount: 0,
-                              excludedCount: 0,
-                              activityAvailableCount: 0,
-                              pushAttemptedCount: 0,
-                              pushAcceptedCount: 0,
-                              pushFailedCount: 0,
-                              pushUnknownCount: 0,
-                              idempotentReplay: false,
-                              whatsapp: whatsapp
-                                  ? const OrganizerPostWhatsappCounts(
-                                      status: 'collecting',
-                                      queuedCount: 4,
-                                      skippedCount: 9,
-                                      sentCount: 0,
-                                      deliveredCount: 0,
-                                      failedCount: 0,
-                                    )
-                                  : null,
-                            );
+                            return whatsapp ? 4 : null;
                           },
                     ),
                   ),
@@ -235,6 +215,7 @@ void main() {
           home: Scaffold(
             body: HostFollowerUpdateSheet(
               remainingQuota: 2,
+              weeklyQuota: 3,
               requestIdFactory: () => 'request-1',
               onSubmit:
                   ({

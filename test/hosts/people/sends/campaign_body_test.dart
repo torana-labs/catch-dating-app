@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audienc
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/people/sends/campaign_body.dart';
+import 'package:catch_dating_app/hosts/people/sends/campaign_screen.dart';
 import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/organizers_test_helpers.dart';
@@ -80,7 +80,7 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: SingleChildScrollView(
-              child: HostCampaignBody(
+              child: HostCampaignScreen(
                 organizer: organizer,
                 initialSavedAudienceId: audience.audienceId,
               ),

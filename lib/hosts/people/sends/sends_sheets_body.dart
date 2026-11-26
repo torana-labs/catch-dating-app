@@ -2,36 +2,46 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_communication_plan.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_manual_send_task.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_callable_responses.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_posts_repository.dart';
 import 'package:catch_dating_app/hosts/people/sends/sends_body.dart';
-import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_l10n/l10n.dart';
-import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
-import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// One personal WhatsApp handoff: where it is and what Catch can and cannot
 /// prove, Open WhatsApp (the stored number is checked again first), Skip,
 /// and Mark as sent once WhatsApp has opened. Pops true when the handoff
-/// changed.
-class HostManualSendSheet extends ConsumerStatefulWidget {
-  const HostManualSendSheet({super.key, required this.task});
+/// changed. The commands come from Sends.
+class HostManualSendSheet extends StatefulWidget {
+  const HostManualSendSheet({
+    super.key,
+    required this.task,
+    required this.onOpenWhatsapp,
+    required this.onMark,
+  });
 
   final HostManualSendTask task;
 
+  /// Checks the number, opens WhatsApp and records it; resolves the task
+  /// as it now stands.
+  final Future<HostManualSendTask> Function(HostManualSendTask task)
+  onOpenWhatsapp;
+
+  /// Records the host's mark (sent or skipped).
+  final Future<void> Function(
+    HostManualSendTask task,
+    HostManualSendTaskAction action,
+  )
+  onMark;
+
   @override
-  ConsumerState<HostManualSendSheet> createState() =>
-      _HostManualSendSheetState();
+  State<HostManualSendSheet> createState() => _HostManualSendSheetState();
 }
 
-class _HostManualSendSheetState extends ConsumerState<HostManualSendSheet> {
+class _HostManualSendSheetState extends State<HostManualSendSheet> {
   late HostManualSendTask _task = widget.task;
   bool _busy = false;
 
@@ -89,24 +99,7 @@ class _HostManualSendSheetState extends ConsumerState<HostManualSendSheet> {
     if (_busy) return;
     setState(() => _busy = true);
     try {
-      final commands = ref.read(hostAudienceControllerProvider);
-      // provider-graph: ownership-widget-async:_HostManualSendSheetState._openWhatsapp:await:hostAudienceControllerProvider.validateManualSendTaskLaunch watch CAT156 -- Carried from the manual send sheet: the audience controller re-checks the stored number, the external link controller opens WhatsApp, and the audience controller records the open; this method holds only the local busy flag and the returned task.
-      final validated = await commands.validateManualSendTaskLaunch(_task);
-      // provider-graph: ownership-widget-async:_HostManualSendSheetState._openWhatsapp:await:externalLinkControllerProvider.openWhatsappHandoff watch CAT156 -- Carried from the manual send sheet; see above.
-      final opened = await ref
-          .read(externalLinkControllerProvider)
-          .openWhatsappHandoff(
-            phoneE164: validated.phoneE164,
-            message: validated.prefillText,
-          );
-      if (!opened) {
-        if (!mounted) return;
-        throw ExternalActionException(
-          context.l10n.hostCustomersWhatsappOpenFailed,
-        );
-      }
-      // provider-graph: ownership-widget-async:_HostManualSendSheetState._openWhatsapp:await:hostAudienceControllerProvider.recordManualHandoffOpened watch CAT156 -- Carried from the manual send sheet; see above.
-      final updated = await commands.recordManualHandoffOpened(validated);
+      final updated = await widget.onOpenWhatsapp(_task);
       if (mounted) setState(() => _task = updated);
     } on Object catch (error) {
       if (mounted) {
@@ -125,10 +118,7 @@ class _HostManualSendSheetState extends ConsumerState<HostManualSendSheet> {
     if (_busy) return;
     setState(() => _busy = true);
     try {
-      // provider-graph: ownership-widget-async:_HostManualSendSheetState._mark:await:hostAudienceControllerProvider.markManualSendTask watch CAT156 -- Carried from the manual send sheet: the audience controller records the host's mark; this method holds only the local busy flag and closes the sheet.
-      await ref
-          .read(hostAudienceControllerProvider)
-          .markManualSendTask(_task, action);
+      await widget.onMark(_task, action);
       if (mounted) Navigator.of(context).pop(true);
     } on Object catch (error) {
       if (mounted) {
@@ -196,10 +186,10 @@ String hostManualReplanBody(
         null => l10n.hostManualSendReplanUnavailable,
       };
 
-/// Posts a follower update; resolves the post response once the callable
-/// accepts it.
+/// Posts a follower update; resolves once the callable accepts it, with
+/// the WhatsApp messages queued (null when WhatsApp was not asked for).
 typedef HostFollowerUpdateSubmit =
-    Future<CreateOrganizerPostCallableResponse?> Function({
+    Future<int?> Function({
       required String requestId,
       required String text,
       required bool whatsapp,
@@ -213,12 +203,16 @@ class HostFollowerUpdateSheet extends StatefulWidget {
   const HostFollowerUpdateSheet({
     super.key,
     required this.remainingQuota,
+    required this.weeklyQuota,
     required this.requestIdFactory,
     required this.onSubmit,
     this.whatsappAvailable = false,
   });
 
   final int remainingQuota;
+
+  /// Follower updates an organizer may post in seven days.
+  final int weeklyQuota;
   final String Function() requestIdFactory;
   final HostFollowerUpdateSubmit onSubmit;
   final bool whatsappAvailable;
@@ -257,7 +251,7 @@ class _HostFollowerUpdateSheetState extends State<HostFollowerUpdateSheet> {
       subtitle: l10n
           .hostsHostOrganizerToolsSubtitleRemainingquotaOfWeeklyquotaPosts(
             remainingQuota: widget.remainingQuota,
-            weeklyQuota: OrganizerPostsRepository.weeklyQuota,
+            weeklyQuota: widget.weeklyQuota,
           ),
       footer: CatchButton.sheet(
         role: CatchButtonEmphasis.commit,
@@ -337,13 +331,13 @@ class _HostFollowerUpdateSheetState extends State<HostFollowerUpdateSheet> {
       _error = null;
     });
     try {
-      final response = await widget.onSubmit(
+      final queued = await widget.onSubmit(
         requestId: _requestId,
         text: text,
         whatsapp: widget.whatsappAvailable && _whatsapp,
       );
       if (mounted) {
-        Navigator.of(context).pop(HostFollowerUpdatePosted(response));
+        Navigator.of(context).pop(HostFollowerUpdatePosted(queued));
       }
     } on Object catch (error) {
       if (!mounted) return;
@@ -361,6 +355,7 @@ class _HostFollowerUpdateSheetState extends State<HostFollowerUpdateSheet> {
 Future<bool> showHostFollowerUpdateSheet({
   required BuildContext context,
   required int remainingQuota,
+  required int weeklyQuota,
   required String Function() requestIdFactory,
   required HostFollowerUpdateSubmit onSubmitPost,
   bool whatsappAvailable = false,
@@ -369,20 +364,19 @@ Future<bool> showHostFollowerUpdateSheet({
     context: context,
     builder: (_) => HostFollowerUpdateSheet(
       remainingQuota: remainingQuota,
+      weeklyQuota: weeklyQuota,
       requestIdFactory: requestIdFactory,
       whatsappAvailable: whatsappAvailable,
       onSubmit: onSubmitPost,
     ),
   );
   if (posted != null && context.mounted) {
-    final whatsapp = posted.response?.whatsapp;
+    final queued = posted.whatsappQueued;
     showCatchNotice(
       context,
-      whatsapp == null
+      queued == null
           ? context.l10n.hostsHostOrganizerToolsCatchbuttonPostedToFollowers
-          : context.l10n.hostFollowerUpdatePostedWhatsapp(
-              count: whatsapp.queuedCount,
-            ),
+          : context.l10n.hostFollowerUpdatePostedWhatsapp(count: queued),
     );
   }
   return posted != null;
@@ -390,7 +384,8 @@ Future<bool> showHostFollowerUpdateSheet({
 
 /// What the follower update sheet pops once the callable accepted the post.
 final class HostFollowerUpdatePosted {
-  const HostFollowerUpdatePosted(this.response);
+  const HostFollowerUpdatePosted(this.whatsappQueued);
 
-  final CreateOrganizerPostCallableResponse? response;
+  /// WhatsApp messages queued; null when WhatsApp was not asked for.
+  final int? whatsappQueued;
 }

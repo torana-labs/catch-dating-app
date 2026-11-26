@@ -703,22 +703,22 @@
           "routes": [
             "hostInboxScreen"
           ],
-          "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-          "symbol": "_HostInboxScreenState",
-          "family": "adaptive-workspace",
-          "expression": "CatchScaffold.workspace",
-          "bodyGeometry": "full-bleed",
-          "topEdge": "body-owned"
+          "file": "lib/hosts/people/messages_screen.dart",
+          "symbol": "_HostMessagesScreenState",
+          "family": "root",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
         },
         {
           "routes": [
             "hostInboxScreen"
           ],
-          "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-          "symbol": "_HostInboxScreenState",
-          "family": "adaptive-workspace",
-          "expression": "CatchRootScreenScrollView.withPrimaryRail",
-          "bodyGeometry": "full-bleed",
+          "file": "lib/hosts/people/sends/sends_screen.dart",
+          "symbol": "_HostSendsScreenState",
+          "family": "root",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
           "topEdge": "safe-area"
         },
         {
@@ -733,7 +733,7 @@
           "topEdge": "route-chrome"
         }
       ],
-      "reason": "Host Inbox declares its compact root-scroll and expanded workspace variants; setup remains a pushed route."
+      "reason": "Host Inbox is Messages (with the open conversation) and Sends, each a CatchScreen at the inbox root; setup remains a pushed route."
     },
     "screen.host.chat": {
       "owners": [
