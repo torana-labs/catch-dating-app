@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_itinerary_editor.dart';
 import 'package:catch_dating_app/pages/event/event_detail_information_state.dart';
 import 'package:catch_dating_app/pages/event/widgets/event_detail_fact_list.dart';
 import 'package:catch_dating_app/pages/event/widgets/event_detail_overview_section.dart';
@@ -10,7 +9,6 @@ import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/events_test_helpers.dart';
-import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -98,42 +96,6 @@ void main() {
     expect(find.text('Water stop'), findsOneWidget);
     expect(find.textContaining('10m'), findsOneWidget);
     expect(find.textContaining('At 1km on the route'), findsOneWidget);
-  });
-
-  testWidgets('editing itinerary preserves route distance and can clear it', (
-    tester,
-  ) async {
-    List<EventItineraryItem>? result;
-    const item = EventItineraryItem(
-      id: 'stop1',
-      kind: EventItineraryKind.stop,
-      offsetMinutes: 5,
-      title: 'Water stop',
-      routeDistanceMeters: 1000,
-    );
-    await pump(
-      tester,
-      EventItineraryEditor(
-        items: const [item],
-        hasRoutePath: true,
-        onChanged: (items) => result = items,
-      ),
-    );
-    await tester.tap(find.text('Water stop'));
-    await pumpFeatureUi(tester);
-    await tester.tap(find.text(AppLocalizationsEn().hostsEventItinerarySave));
-    await pumpFeatureUi(tester);
-    expect(result!.single.routeDistanceMeters, 1000);
-    await tester.tap(find.text('Water stop'));
-    await pumpFeatureUi(tester);
-    final field = find.descendant(
-      of: find.byKey(const ValueKey('event-itinerary-route-distance')),
-      matching: find.byType(EditableText),
-    );
-    await tester.enterText(field, '');
-    await tester.tap(find.text(AppLocalizationsEn().hostsEventItinerarySave));
-    await pumpFeatureUi(tester);
-    expect(result!.single.routeDistanceMeters, isNull);
   });
 
   test('event-local time uses stored zone and preserves legacy fallback', () {

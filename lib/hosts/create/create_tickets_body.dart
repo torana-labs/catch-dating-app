@@ -1,10 +1,12 @@
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 /// The places a new event starts with.
 const createDefaultPlaces = 30;
@@ -12,6 +14,10 @@ const createDefaultPlaces = 30;
 /// Step three in board order: where tickets are sold, the price beside the
 /// places, who can come, and how payouts work. Selling elsewhere keeps the
 /// price and places off the event.
+///
+/// Editing a saved event keeps the price in the event's currency and puts
+/// who can come in the policy fields of [trailing]; once bookings lock the
+/// policy, those fields show it read-only instead of the price and places.
 class CreateTicketsBody extends StatelessWidget {
   const CreateTicketsBody({
     super.key,
@@ -24,6 +30,7 @@ class CreateTicketsBody extends StatelessWidget {
     this.onApproveEach,
     this.onBookingLink,
     this.showTitle = false,
+    this.trailing = const <Widget>[],
   });
 
   final CreateFlowState state;
@@ -38,10 +45,95 @@ class CreateTicketsBody extends StatelessWidget {
   final ValueChanged<String>? onBookingLink;
   final bool showTitle;
 
+  /// Fields an edit adds after the price and places.
+  final List<Widget> trailing;
+
   @override
   Widget build(BuildContext context) {
     final copy = catchFieldCopy(context.l10n);
     final draft = state.draft;
+    final edit = state.edit;
+    if (edit != null) {
+      // A saved event: the price in its currency beside the places, then
+      // the policy fields.
+      final locale = Localizations.localeOf(context).toLanguageTag();
+      final symbol = NumberFormat.simpleCurrency(
+        locale: locale,
+        name: edit.currencyCode,
+      ).currencySymbol;
+      final frozen = !state.canChange;
+      final places = int.tryParse(draft.capacity ?? '') ?? createDefaultPlaces;
+      return CatchStack(
+        gap: CatchStackGap.g24,
+        children: [
+          if (showTitle)
+            CatchText(
+              context.l10n.hostCreateStepTitle(step: CreateStep.tickets.name),
+              variant: CatchTextVariant.displaySection,
+            ),
+          if (!edit.policyLocked)
+            CatchStack(
+              direction: CatchStackDirection.row,
+              gap: CatchStackGap.g16,
+              equal: true,
+              align: CatchStackAlign.baseline,
+              children: [
+                CatchFieldLanes.single(
+                  child: CatchField.input(
+                    key: CreateEventFormKeys.price,
+                    copy: copy,
+                    title: context.l10n.hostCreatePricePerPlace,
+                    contract: CatchContractConstraints
+                        .updateEventCallablePayloadFieldsPriceInPaise,
+                    initialValue: draft.price ?? '',
+                    prefixText: symbol,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(
+                          context.l10n.hostsEditHostedEventScreenVisiblecopyDD,
+                        ),
+                      ),
+                    ],
+                    states: {if (frozen) WidgetState.disabled},
+                    onChanged: onPrice,
+                    errorText: state.problems.contains(CreateProblem.price)
+                        ? context.l10n.hostCreatePriceNeeded
+                        : null,
+                  ),
+                ),
+                CatchStack(
+                  gap: CatchStackGap.g8,
+                  children: [
+                    CatchText(
+                      context.l10n.hostCreatePlaces,
+                      variant: CatchTextVariant.labelAction,
+                    ),
+                    CatchStepper(
+                      key: CreateEventFormKeys.capacity,
+                      value: places,
+                      min: 1,
+                      max:
+                          CatchContractConstraints
+                              .updateEventCallablePayloadFieldsCapacityLimit
+                              .maximum ??
+                          1000,
+                      decreaseSemanticLabel: context.l10n.hostCreateFewerPlaces,
+                      increaseSemanticLabel: context.l10n.hostCreateMorePlaces,
+                      onChanged: frozen
+                          ? null
+                          : (value) => onPlaces(value.toInt()),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ...trailing,
+        ],
+      );
+    }
     final elsewhere = draft.externalBookingMode;
     final places = int.tryParse(draft.capacity ?? '') ?? createDefaultPlaces;
     return CatchStack(

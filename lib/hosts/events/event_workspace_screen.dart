@@ -5,6 +5,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/hosts/create/create_route_screen.dart';
 import 'package:catch_dating_app/hosts/events/access/event_door_screen.dart';
 import 'package:catch_dating_app/hosts/events/access/event_guest_sources_screen.dart';
 import 'package:catch_dating_app/hosts/events/access/event_share_screen.dart';
@@ -15,7 +16,6 @@ import 'package:catch_dating_app/hosts/events/event_workspace_body.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -347,7 +347,6 @@ class _HostEventWorkspaceActions {
               event: event,
               createdAt: DateTime.now(),
             ),
-            promptForDrafts: false,
           ),
         );
       case HostEventWorkspaceAction.team:
