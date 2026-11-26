@@ -18,6 +18,7 @@ import {fileURLToPath} from "node:url";
 import {REPORTING_LANES, REQUIRED_CI_JOB, laneOfJob} from "./required_ci_floor.mjs";
 import {MOBILE_BLOCK_JOBS} from "./golden_policy.mjs";
 import {isNightlyRun, nightlyRuns} from "./ci_nightly.mjs";
+import {githubIssueApi, oldestOpen, openIssueOnce, settleToHead, sleepMs} from "../lib/github_issues.mjs";
 
 export const ISSUE_TITLE = "Main CI is red";
 export const FLOOR_EXIT_TITLE = "Main CI green for 7 days: reporting lanes can block again";
@@ -358,18 +359,36 @@ function gh(args, input) {
   return result.stdout;
 }
 
-function main() {
-  const repository = process.env.GITHUB_REPOSITORY;
-  const runId = process.env.RUN_ID;
-  assert.match(repository ?? "", /^[\w.-]+\/[\w.-]+$/u, "GITHUB_REPOSITORY is required");
-  assert.match(runId ?? "", /^[1-9][0-9]*$/u, "RUN_ID is required");
-  const run = JSON.parse(gh(["api", `repos/${repository}/actions/runs/${runId}`]));
-  const jobs = JSON.parse(gh(["api", "--paginate", "--slurp", `repos/${repository}/actions/runs/${runId}/jobs?per_page=100&filter=latest`]))
+/**
+ * Applies a decision through the issue api. Opening goes through
+ * openIssueOnce, so two alert runs opening at once leave one issue.
+ */
+export function applyDecision(api, decision) {
+  if (decision.action === "open") return openIssueOnce(api, {title: decision.title, body: decision.body});
+  if (decision.action === "comment" || decision.action === "close") {
+    api.comment(decision.issue, decision.body);
+    if (decision.action === "close") api.close(decision.issue, "completed");
+  }
+  return null;
+}
+
+/**
+ * The head run's decision, applied by an older run once the head run's own
+ * alert finished (settleToHead): only opening or closing, so the head run's
+ * comments are never posted twice.
+ */
+export function settleDecision(decision, run) {
+  if (decision.action !== "open" && decision.action !== "close") return {action: "none", reason: "head_unchanged"};
+  return {...decision, body: `Settled to the latest main run (${run.html_url}) after a parallel alert run.\n\n${decision.body}`};
+}
+
+/** Reads what decideAlert needs for `run` and decides. */
+function alertFor(repository, api, run) {
+  const jobs = JSON.parse(gh(["api", "--paginate", "--slurp", `repos/${repository}/actions/runs/${run.id}/jobs?per_page=100&filter=latest`]))
     .flatMap((page) => page.jobs ?? []);
-  const issues = JSON.parse(gh(["api", `repos/${repository}/issues?state=open&creator=github-actions%5Bbot%5D&per_page=100`]));
-  const openIssue = issues.find((issue) => issue.title === ISSUE_TITLE && !issue.pull_request) ?? null;
-  const owed = openIssue ? owedFromIssue([openIssue.body, ...JSON.parse(gh(["api", "--paginate", "--slurp",
-    `repos/${repository}/issues/${openIssue.number}/comments?per_page=100`])).flat().map((comment) => comment.body)]) : null;
+  const issues = api.listOpen();
+  const openIssue = oldestOpen(issues, ISSUE_TITLE);
+  const owed = openIssue ? owedFromIssue(api.texts(openIssue)) : null;
   let nightlies = null;
   if (isNightlyRun(run) && FAILED.has(run.conclusion)) {
     try {
@@ -378,31 +397,48 @@ function main() {
       nightlies = null; // The alert still posts; the window reads "unknown".
     }
   }
-  const decision = decideAlert({run, jobs, openIssue, nightlies, owed});
-  if (decision.action === "open") {
-    gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${decision.title}`, "-F", "body=@-"], decision.body);
-  } else if (decision.action === "comment" || decision.action === "close") {
-    gh(["api", "-X", "POST", `repos/${repository}/issues/${decision.issue}/comments`, "-F", "body=@-"], decision.body);
-    if (decision.action === "close") {
-      gh(["api", "-X", "PATCH", `repos/${repository}/issues/${decision.issue}`, "-f", "state=closed", "-f", "state_reason=completed"]);
-    }
-  }
+  return {issues, openIssue, owed, decision: decideAlert({run, jobs, openIssue, nightlies, owed})};
+}
+
+/** Which CI runs the alert follows: main's push runs and the nightly. */
+export const alertCounts = (run) => run.event === "push" || isNightlyRun(run);
+
+function main() {
+  const repository = process.env.GITHUB_REPOSITORY;
+  const runId = process.env.RUN_ID;
+  assert.match(repository ?? "", /^[\w.-]+\/[\w.-]+$/u, "GITHUB_REPOSITORY is required");
+  assert.match(runId ?? "", /^[1-9][0-9]*$/u, "RUN_ID is required");
+  const api = githubIssueApi(gh, repository);
+  const run = JSON.parse(gh(["api", `repos/${repository}/actions/runs/${runId}`]));
+  const {issues, openIssue, owed, decision} = alertFor(repository, api, run);
+  const opened = applyDecision(api, decision);
   console.log(`Main CI alert: ${decision.action}${decision.reason ? ` (${decision.reason})` : ""} ` +
-    `(run ${runId}, ${run.conclusion})`);
+    `(run ${runId}, ${run.conclusion})${opened?.closed.length ? `, closed duplicate(s) ${opened.closed.join(", ")}` : ""}`);
+  const settled = settleToHead({run, counts: alertCounts, alertTitle: alertRunTitle, sleep: () => sleepMs(15000),
+    listRuns: () => JSON.parse(gh(["api", "-H", "Cache-Control: no-cache",
+      `repos/${repository}/actions/workflows/ci.yml/runs?branch=main&status=completed&per_page=30`])).workflow_runs ?? [],
+    listAlertRuns: () => JSON.parse(gh(["api", "-H", "Cache-Control: no-cache",
+      `repos/${repository}/actions/workflows/main-red-alert.yml/runs?per_page=100`])).workflow_runs ?? [],
+    settle: (head) => {
+      const headAlert = settleDecision(alertFor(repository, api, head).decision, head);
+      applyDecision(api, headAlert);
+      console.log(`Main CI alert: settled to head run ${head.id}: ${headAlert.action}${headAlert.reason ? ` (${headAlert.reason})` : ""}`);
+    }});
+  console.log(`Main CI alert: head run ${settled.status}${settled.head ? ` (${settled.head})` : ""}`);
   // An alert that owes only the golden and capture jobs does not hold the floor.
   const owedAfter = (decision.body && owedFromIssue([decision.body])) || owed;
   const mobileOwed = Boolean(owedAfter && !owedAfter.unknown && onlyMobileBlockFailures(owedAfter.jobs));
-  if (run.conclusion === "success") floorExit(repository, issues, Boolean(openIssue && decision.action !== "close" && !mobileOwed));
+  if (run.conclusion === "success") floorExit(repository, api, issues, Boolean(openIssue && decision.action !== "close" && !mobileOwed));
   if (run.event === "push") {
     try {
-      uncoveredTip(repository);
+      uncoveredTip(repository, api);
     } catch (error) {
       console.log(`Uncovered main commits: not checked (${error.message.split("\n")[0]})`);
     }
   }
 }
 
-function uncoveredTip(repository) {
+function uncoveredTip(repository, api) {
   const runs = JSON.parse(gh(["api", "-H", "Cache-Control: no-cache",
     `repos/${repository}/actions/workflows/ci.yml/runs?branch=main&event=push&per_page=100`])).workflow_runs ?? [];
   const memo = new Map();
@@ -417,10 +453,8 @@ function uncoveredTip(repository) {
   };
   const {uncovered, unknown} = uncoveredCommits({runs, now: Date.now(), contains});
   // Read the issue afresh: the alert above may have opened or closed it.
-  const issues = JSON.parse(gh(["api", `repos/${repository}/issues?state=open&creator=github-actions%5Bbot%5D&per_page=100`]));
-  const openIssue = issues.find((issue) => issue.title === ISSUE_TITLE && !issue.pull_request) ?? null;
-  const texts = (issue) => [issue.body, ...JSON.parse(gh(["api", "--paginate", "--slurp",
-    `repos/${repository}/issues/${issue.number}/comments?per_page=100`])).flat().map((comment) => comment.body)];
+  const openIssue = oldestOpen(api.listOpen(), ISSUE_TITLE);
+  const texts = (issue) => api.texts(issue);
   const reported = openIssue ? reportedUncovered(texts(openIssue)) : new Set();
   // Alert issues closed in the last 3 days, so a commit reported before an early close is counted.
   const since = new Date(Date.now() - 3 * 24 * HOUR).toISOString();
@@ -429,22 +463,18 @@ function uncoveredTip(repository) {
     .filter((issue) => issue.title === ISSUE_TITLE && !issue.pull_request);
   const counts = uncoveredReportCounts([...(openIssue ? texts(openIssue) : []), ...closed.flatMap(texts)]);
   const decision = decideUncovered({uncovered, openIssue, reported, counts});
-  if (decision.action === "open") {
-    gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${decision.title}`, "-F", "body=@-"], decision.body);
-  } else if (decision.action === "comment") {
-    gh(["api", "-X", "POST", `repos/${repository}/issues/${decision.issue}/comments`, "-F", "body=@-"], decision.body);
-  }
+  applyDecision(api, decision);
   console.log(`Uncovered main commits: ${decision.action} (${uncovered.length} uncovered` +
     `${unknown.length ? `, ${unknown.length} unknown` : ""})`);
 }
 
-function floorExit(repository, issues, alertOpen) {
+function floorExit(repository, api, issues, alertOpen) {
   const now = Date.now();
   const from = new Date(now - (FLOOR_EXIT_DAYS + 1) * DAY).toISOString().slice(0, 10);
   const runs = JSON.parse(gh(["api", "--paginate", "--slurp",
     `repos/${repository}/actions/workflows/ci.yml/runs?branch=main&created=%3E%3D${from}&per_page=100`]))
     .flatMap((page) => page.workflow_runs ?? []);
-  const openIssue = issues.find((issue) => issue.title === FLOOR_EXIT_TITLE && !issue.pull_request) ?? null;
+  const openIssue = oldestOpen(issues, FLOOR_EXIT_TITLE);
   // Read the jobs of failed runs in the window; a run that cannot be read still counts as red.
   const since = now - FLOOR_EXIT_DAYS * DAY;
   const mobileOnly = new Set();
@@ -460,9 +490,7 @@ function floorExit(repository, issues, alertOpen) {
     }
   }
   const decision = decideFloorExit({runs, now, openIssue, alertOpen, mobileOnly});
-  if (decision.action === "open") {
-    gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${decision.title}`, "-F", "body=@-"], decision.body);
-  }
+  if (decision.action === "open") applyDecision(api, decision);
   console.log(`Sprint floor exit: ${decision.action}${decision.reason ? ` (${decision.reason})` : ""}`);
 }
 

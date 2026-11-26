@@ -20,7 +20,9 @@
     "tool/ci/selection_miss_report.mjs",
     "tool/ci/selection_miss_report.test.mjs",
     "tool/lib/functions_module_graph.mjs",
-    "tool/lib/functions_test_selection.mjs"
+    "tool/lib/functions_test_selection.mjs",
+    "tool/lib/github_issues.mjs",
+    "tool/lib/github_issues.test.mjs"
   ],
   "description": "After a failed nightly, checks each failing Functions unit and emulator test against the pull request selection of every commit since the last green nightly, and opens or comments on one 'Test selection missed a failing test' issue for any test none selected. Report-only.",
   "checks": [
