@@ -76,6 +76,10 @@
         "type": "string"
       },
       "x-catch-ownership": "trigger-owned"
+    },
+    "retainUntil": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "description": "Set when the account the record names is deleted: purgeRetainedSafetyRecords deletes the record 180 days later (safety retention)."
     }
   }
 }
