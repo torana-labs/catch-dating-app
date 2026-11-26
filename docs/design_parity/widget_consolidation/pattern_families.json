@@ -381,8 +381,8 @@
       "intent": "Review the bottom-navigation organizer avatar and long-press switcher sheet that together expose the current Host context without duplicating identity in screen top bars.",
       "priority": "P1",
       "status": "implemented",
-      "targetContract": "HostOrganizerAvatar",
-      "qualityReference": "HostOrganizerAvatar",
+      "targetContract": "HostOrganizerSwitcherSheet",
+      "qualityReference": "HostOrganizerSwitcherSheet",
       "decisionSource": "user-approved:2026-07-13",
       "acceptedVisualDelta": [
         "The Organizer navigation destination opens the switcher only on long press when multiple organizers are available.",
@@ -425,10 +425,9 @@
       "members": [
         {
           "symbol": "HostOrganizerAvatar",
-          "disposition": "repair",
-          "target": "HostOrganizerAvatar",
-          "preview": "required",
-          "rationale": "Show real organizer art with a deterministic fallback in bottom navigation, provide selected state there, and expose full organizer options in a dedicated long-press sheet."
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "Retired 26 Nov 2026: the redesigned four-tab Host shell has no navigation avatar, and organizer art now draws through CatchAvatar.system on the organizer page. The long-press sheet stays the switcher."
         },
         {
           "symbol": "HostOrganizerSwitcherSheet",

@@ -11,7 +11,7 @@ import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_route_controller.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_route_state.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_screen.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/persistence/command_journal_provider.dart';
@@ -263,7 +263,8 @@ class _Fixture {
         GoRoute(
           path: Routes.hostProgramGuestsScreen.path,
           name: Routes.hostProgramGuestsScreen.name,
-          builder: (_, _) => const ProgramGuestsScreen(programId: _programId),
+          builder: (_, _) =>
+              const HostProgrammeGuestsScreen(programId: _programId),
         ),
         GoRoute(
           path: Routes.hostWorkPhoneImportScreen.path,

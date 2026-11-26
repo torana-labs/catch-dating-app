@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy_defaults.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
@@ -15,64 +14,6 @@ import 'package:flutter/services.dart';
 
 typedef EventPolicyDefaultsUpdate =
     EventPolicyDefaults Function(EventPolicyDefaults current);
-
-class OrganizerHostDefaultsStep extends StatelessWidget {
-  const OrganizerHostDefaultsStep({
-    super.key,
-    required this.formKey,
-    required this.defaults,
-    required this.currencyCode,
-    required this.onChanged,
-    this.scrollable = true,
-    this.padding,
-  });
-
-  final GlobalKey<FormState> formKey;
-  final OrganizerHostDefaults defaults;
-  final String currencyCode;
-  final ValueChanged<OrganizerHostDefaults> onChanged;
-  final bool scrollable;
-  final EdgeInsetsGeometry? padding;
-
-  @override
-  Widget build(BuildContext context) {
-    final content = CatchSectionList(
-      emptyStateOmitted: true,
-      gap: 0,
-      children: [
-        OrganizerPolicyDefaultsCard(
-          defaults: defaults.eventPolicy,
-          currencyCode: currencyCode,
-          activityKind: defaults.primaryActivityKind,
-          onActivityChanged: (activityKind) => onChanged(
-            defaults.copyWith(
-              primaryActivityKind: activityKind,
-              supportedActivityKinds:
-                  defaults.effectiveSupportedActivityKinds.contains(
-                    activityKind,
-                  )
-                  ? defaults.supportedActivityKinds
-                  : [...defaults.supportedActivityKinds, activityKind],
-            ),
-          ),
-          onChanged: (update) => onChanged(
-            defaults.copyWith(eventPolicy: update(defaults.eventPolicy)),
-          ),
-        ),
-      ],
-    );
-
-    return Form(
-      key: formKey,
-      child: scrollable
-          ? ListView(
-              padding: padding ?? CatchInsets.formStepBodyWithBottomActions,
-              children: [content],
-            )
-          : Padding(padding: padding ?? EdgeInsets.zero, child: content),
-    );
-  }
-}
 
 class OrganizerPolicyDefaultsCard extends StatefulWidget {
   const OrganizerPolicyDefaultsCard({

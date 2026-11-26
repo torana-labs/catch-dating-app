@@ -231,6 +231,8 @@ import 'package:widgetbook_workspace/hosts/host_person_messaging_use_cases.dart'
     as _widgetbook_workspace_hosts_host_person_messaging_use_cases;
 import 'package:widgetbook_workspace/hosts/host_phone_import_use_cases.dart'
     as _widgetbook_workspace_hosts_host_phone_import_use_cases;
+import 'package:widgetbook_workspace/hosts/host_programme_answers_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_programme_answers_use_cases;
 import 'package:widgetbook_workspace/hosts/host_rehearsal_practice_use_cases.dart'
     as _widgetbook_workspace_hosts_host_rehearsal_practice_use_cases;
 import 'package:widgetbook_workspace/hosts/host_response_export_use_cases.dart'
@@ -1920,46 +1922,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_catalog_celebration
                     .catchCelebrationScreenCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'PaperCelebrationDetailRow',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_catalog_celebration
-                    .paperCelebrationDetailRowCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'PaperCelebrationDetailsCard',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_catalog_celebration
-                    .paperCelebrationDetailsCardCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'PaperCelebrationIcon',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_catalog_celebration
-                    .paperCelebrationIconCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'PaperCelebrationScaffold',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_catalog_celebration
-                    .paperCelebrationScaffoldCatalogStates,
               ),
             ],
           ),
@@ -7040,17 +7002,6 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
-          _widgetbook.WidgetbookComponent(
-            name: 'EventRehearsalStartSheet',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Starting point sheet',
-                builder:
-                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
-                        .rehearsalStartSheet,
-              ),
-            ],
-          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(
@@ -9766,6 +9717,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Programmes',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'HostProgrammeAnswersSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'A guest with mixed answers',
+                    builder:
+                        _widgetbook_workspace_hosts_host_programme_answers_use_cases
+                            .hostProgrammeAnswersSheetUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostProgrammeGuestFilterTabBar',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10129,17 +10091,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'OrganizerHostDefaultsStep',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Defaults states',
-                builder:
-                    _widgetbook_workspace_hosts_operations_create_organizer_defaults
-                        .organizerHostDefaultsStepCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'OrganizerPolicyDefaultsCard',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -10426,6 +10377,11 @@ final directories = <_widgetbook.WidgetbookNode>[
                         _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostEmptyStateStates,
                   ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Covered by host home route states',
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostHomeRouteStates,
+                  ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
@@ -10435,21 +10391,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Shared Audience header',
                     builder: _widgetbook_workspace_hosts_operations_audiences
                         .hostAudienceHeaderStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostOrganizerAvatar',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by host home route states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostHomeRouteStates,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Navigation identity states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostOrganizerIdentityPillStates,
                   ),
                 ],
               ),
@@ -12653,16 +12594,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Program arrivals',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'ProgramArrivalsOutboxBanner',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Banner states',
-                builder: _widgetbook_workspace_programs_use_cases
-                    .programArrivalsOutboxBannerStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'ProgramJournalRecoverySheet',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -12679,16 +12610,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Review states',
                 builder: _widgetbook_workspace_programs_use_cases
                     .programOperationReviewSheetStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ProgramOperationsNotice',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Notice states',
-                builder: _widgetbook_workspace_programs_use_cases
-                    .programOperationsNoticeStates,
               ),
             ],
           ),
@@ -12744,16 +12665,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Body states',
                 builder: _widgetbook_workspace_programs_workspace_use_cases
                     .programGuestsPageBodyStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ProgramGuestsScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Screen states',
-                builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programGuestsScreenStates,
               ),
             ],
           ),
