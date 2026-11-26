@@ -8645,6 +8645,12 @@
   ],
   "fieldOverrides": [
     {
+      "collectionGroup": "eventGuestDisclosures",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": []
+    },
+    {
       "collectionGroup": "adConversionContexts",
       "fieldPath": "expiresAt",
       "ttl": true,

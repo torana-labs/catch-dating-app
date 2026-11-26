@@ -3311,6 +3311,24 @@ organiser's hosts in an event chat never receive a guest's sensitive
 mini-profile answers (gender, age, relationship goal, drinking, smoking,
 children), even when the guest shared them with the other guests.
 
+### Admission-policy disclosures
+
+What an organiser may read about a guest beyond the card (name, first photo,
+city) depends on the event's admission format, declared in
+`contracts/catalogs/admission_visibility.json` (#2493, FIX-19). Today only a
+gender-balanced format (`balancedSingles`, `fixedCohortCaps`) adds a field:
+the guest's gender. `functions/src/shared/admissionVisibility.ts` writes it to
+`eventGuestDisclosures/{eventId}__{uid}` in the transaction of the booking,
+waitlist or request, and deletes it when the guest cancels, leaves the
+waitlist or deletes their account. The event's organiser managers may get one
+guest's disclosure until `expiresAt` (the event's end plus the catalog's
+retention days); a TTL policy removes it after that. No screen reads it yet,
+and `eventBookings` keeps `genderAtSignup` until the Host app reads
+disclosures. `grantKey` stays null until profile-share grants exist. The
+owner approved the catalog's `disclosure` lines, the 7-day retention and
+that orientation is never shown; the booking sheet shows them once the
+Guest app reads the catalog.
+
 ### Standalone Host Operational Attendees
 
 `eventAttendees` is the Host operations roster. It complements rather than
