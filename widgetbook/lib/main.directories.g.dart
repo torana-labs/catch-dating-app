@@ -249,6 +249,8 @@ import 'package:widgetbook_workspace/hosts/host_send_intent_use_cases.dart'
     as _widgetbook_workspace_hosts_host_send_intent_use_cases;
 import 'package:widgetbook_workspace/hosts/host_setup_claim_use_cases.dart'
     as _widgetbook_workspace_hosts_host_setup_claim_use_cases;
+import 'package:widgetbook_workspace/hosts/host_staff_guests_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_staff_guests_use_cases;
 import 'package:widgetbook_workspace/hosts/host_system_parts_use_cases.dart'
     as _widgetbook_workspace_hosts_host_system_parts_use_cases;
 import 'package:widgetbook_workspace/hosts/operations/analytics.dart'
@@ -9833,6 +9835,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                         builder:
                             _widgetbook_workspace_hosts_host_system_parts_use_cases
                                 .staffDispatchCarCardUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'StaffGuestsBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Coordinator',
+                        builder:
+                            _widgetbook_workspace_hosts_host_staff_guests_use_cases
+                                .staffGuestsBodyUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'StaffGuestsScreen',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Guest relations',
+                        builder:
+                            _widgetbook_workspace_hosts_host_staff_guests_use_cases
+                                .staffGuestsScreenUseCase,
                       ),
                     ],
                   ),
