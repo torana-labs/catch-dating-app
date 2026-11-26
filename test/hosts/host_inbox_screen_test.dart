@@ -33,7 +33,6 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_scope_menu.
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_list.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
 import 'package:catch_dating_app/pages/chat/widgets/chat_input.dart';
 import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
@@ -51,7 +50,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'inbox/host_inbox_test_fixtures.dart' as inbox_fixture;
+import 'people/conversation/conversation_fixtures.dart' as inbox_fixture;
 
 part 'host_inbox_sends_tests.dart';
 
@@ -63,7 +62,9 @@ void main() {
   setUp(() => AppConfig.configureEntrypointRole(AppRole.host));
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
-  for (final selection in <String?>[null, 'uid:guest', 'catch-a', 'wa-a']) {
+  // A selected thread opens on Messages; conversation_containment_test
+  // covers each selection there.
+  for (final selection in <String?>[null]) {
     testWidgets(
       'program screen contains shared history for selection $selection',
       (tester) async {
@@ -91,7 +92,6 @@ void main() {
         expect(find.text('Catch catch-a'), findsNothing);
         expect(find.text('WhatsApp wa-a'), findsNothing);
         expect(find.text('Same name'), findsNothing);
-        expect(find.byType(HostPersonConversationPageBody), findsNothing);
         expect(find.byType(ChatInput), findsNothing);
         expect(find.byTooltip('New message'), findsNothing);
         expect(find.text('GENERAL'), findsNothing);
@@ -128,7 +128,6 @@ void main() {
     expect(find.text('Program conversations unavailable'), findsWidgets);
     expect(find.text('Catch catch-a'), findsNothing);
     expect(find.text('WhatsApp wa-a'), findsNothing);
-    expect(find.byType(HostPersonConversationPageBody), findsNothing);
     expect(find.byType(ChatInput), findsNothing);
     expect(find.text('GENERAL'), findsNothing);
   });

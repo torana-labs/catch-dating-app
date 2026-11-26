@@ -4,14 +4,17 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
-import 'package:catch_dating_app/pages/chat/widgets/chat_input.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_controller.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_drafts.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_pages_controller.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_people.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_screen.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -19,7 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'host_inbox_test_fixtures.dart';
+import 'conversation_fixtures.dart';
 
 class _Conversations extends Fake implements ConversationRepository {
   final sent = <({String endpoint, String body, String? operation})>[];
@@ -57,24 +60,37 @@ class _Whatsapp extends Fake implements HostWhatsappRepository {
 
 void main() {
   Widget screen(
-    HostReplyDrafts drafts,
     _Conversations conversations,
     _Whatsapp whatsapp, {
     String detailUid = 'guest',
     bool validCatch = true,
   }) {
     final source = preview('source-id', 'guest');
-    final person = composeHostInboxPeople(
-      organizerId: 'org',
-      scope: const HostInboxScope.general(),
-      segment: HostInboxAudienceSegment.booked,
-      catchThreads: [source],
-      whatsappThreads: [wa('wa-id', 'contact', uid: 'guest')],
-      participations: null,
-    ).people.single;
+    final drafts = HostReplyDrafts();
+    addTearDown(drafts.dispose);
     final container = ProviderContainer(
       overrides: [
         uidProvider.overrideWithValue(const AsyncData('host')),
+        watchEventsForOrganizerProvider(
+          'org',
+        ).overrideWithValue(const AsyncData(<Event>[])),
+        hostInboxCatchViewModelProvider.overrideWithValue(
+          AsyncData(
+            ChatsListViewModel(
+              newMatches: const [],
+              conversations: [source],
+              totalThreadCount: 1,
+            ),
+          ),
+        ),
+        hostWhatsappThreadPagesProvider('org').overrideWithBuild(
+          (ref, notifier) => Stream.value(
+            LivePages(
+              items: [wa('wa-id', 'contact', uid: 'guest')],
+              hasMore: false,
+            ),
+          ),
+        ),
         matchStreamProvider('source-id').overrideWithValue(
           AsyncData(
             validCatch
@@ -126,11 +142,15 @@ void main() {
       container: container,
       child: MaterialApp(
         theme: AppTheme.light,
-        home: Scaffold(
-          body: HostPersonConversationPageBody(
-            person: person,
-            scope: const HostInboxScope.general(),
+        home: CatchRoot(
+          child: HostConversationScreen(
+            request: const HostConversationRequest(
+              organizerId: 'org',
+              selection: 'source-id',
+              scope: HostInboxScope.general(),
+            ),
             drafts: drafts,
+            onBack: () {},
           ),
         ),
       ),
@@ -138,61 +158,46 @@ void main() {
   }
 
   Finder route(String label) =>
-      find.byWidgetPredicate((w) => w is CatchButton && w.label == label);
+      find.byWidgetPredicate((w) => w is CatchChip && w.label == label);
+  CatchComposerInput composer(WidgetTester tester) =>
+      tester.widget<CatchComposerInput>(find.byType(CatchComposerInput));
 
   testWidgets(
     'person transcript retains source identity and sends on only the selected route',
     (tester) async {
-      final drafts = HostReplyDrafts();
-      addTearDown(drafts.dispose);
       final conversations = _Conversations();
       final whatsapp = _Whatsapp();
-      await tester.pumpWidget(screen(drafts, conversations, whatsapp));
+      await tester.pumpWidget(screen(conversations, whatsapp));
       await pumpFeatureUi(tester);
       expect(
         find.byKey(const ValueKey('catch:source-id/same')),
         findsOneWidget,
       );
       expect(find.byKey(const ValueKey('whatsapp:wa-id/same')), findsOneWidget);
-      expect(tester.widget<ChatInput>(find.byType(ChatInput)).onSend, isNull);
+      expect(composer(tester).onSend, isNull);
       await tester.tap(route('Catch'));
       await pumpFeatureUi(tester);
       await tester.enterText(find.byType(EditableText), 'Catch draft');
       await tester.tap(route('WhatsApp'));
       await pumpFeatureUi(tester);
-      expect(
-        tester.widget<ChatInput>(find.byType(ChatInput)).controller.text,
-        isEmpty,
-      );
+      expect(composer(tester).controller!.text, isEmpty);
       await tester.enterText(find.byType(EditableText), 'WhatsApp draft');
       await tester.tap(route('Catch'));
       await pumpFeatureUi(tester);
-      expect(
-        tester.widget<ChatInput>(find.byType(ChatInput)).controller.text,
-        'Catch draft',
-      );
-      await tester.tap(find.byKey(ChatInput.sendButtonKey));
-      await pumpUntilFound(
-        tester,
-        find.byWidgetPredicate((w) => w is ChatInput && w.sending),
-      );
+      expect(composer(tester).controller!.text, 'Catch draft');
+      await tester.tap(find.byTooltip('Send message'));
+      await tester.pump();
       expect(conversations.sent.single.endpoint, 'source-id');
       expect(conversations.sent.single.body, 'Catch draft');
       expect(conversations.sent.single.operation, isNotEmpty);
       expect(whatsapp.sent, isEmpty);
-      expect(tester.widget<ChatInput>(find.byType(ChatInput)).sending, isTrue);
+      expect(composer(tester).onSend, isNull);
       conversations.completion.complete();
       await pumpFeatureUi(tester);
-      expect(
-        tester.widget<ChatInput>(find.byType(ChatInput)).controller.text,
-        isEmpty,
-      );
+      expect(composer(tester).controller!.text, isEmpty);
       await tester.tap(route('WhatsApp'));
       await pumpFeatureUi(tester);
-      expect(
-        tester.widget<ChatInput>(find.byType(ChatInput)).controller.text,
-        'WhatsApp draft',
-      );
+      expect(composer(tester).controller!.text, 'WhatsApp draft');
       await tester.pumpWidget(const SizedBox.shrink());
     },
   );
@@ -200,11 +205,8 @@ void main() {
   testWidgets(
     'revoked membership and a changed identity link cannot leak source history',
     (tester) async {
-      final drafts = HostReplyDrafts();
-      addTearDown(drafts.dispose);
       await tester.pumpWidget(
         screen(
-          drafts,
           _Conversations(),
           _Whatsapp(),
           detailUid: 'another',
@@ -216,7 +218,7 @@ void main() {
       expect(find.text('WhatsApp history'), findsNothing);
       expect(route('Catch'), findsNothing);
       expect(route('WhatsApp'), findsNothing);
-      expect(tester.widget<ChatInput>(find.byType(ChatInput)).onSend, isNull);
+      expect(composer(tester).onSend, isNull);
       await tester.pumpWidget(const SizedBox.shrink());
     },
   );

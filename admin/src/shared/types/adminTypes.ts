@@ -928,6 +928,8 @@ export interface AdminListEventDetailsResponse {
 }
 
 export interface AdminListExternalEventDetailsPayload {
+  /** Reads exactly this externalEvents/{eventId} document; refused with list filters. */
+  eventId?: string | null;
   query?: string | null;
   citySlug?: string | null;
   citySlugs?: string[] | null;

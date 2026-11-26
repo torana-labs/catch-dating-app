@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'host_inbox_program_audience_controller.dart';
+part of 'conversation_programme_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator

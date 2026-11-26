@@ -11,25 +11,25 @@ import 'package:catch_dating_app/contexts/programmes/data/organizer_program_view
 import 'package:catch_dating_app/contexts/programmes/data/program_guest_directory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_catch_pages_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_person_page_body.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_program_audience_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
-import 'package:catch_dating_app/pages/chat/widgets/chat_input.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_body.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_controller.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_drafts.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_pages_controller.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_people.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_programme_controller.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_screen.dart';
 import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
-import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'host_inbox_test_fixtures.dart';
+import 'conversation_fixtures.dart';
 
 class _Programs extends Fake implements ProgramSetupRepository {
   final details = <String, Completer<OrganizerProgramDetail>>{};
@@ -114,14 +114,7 @@ void main() {
   const unavailable = 'Program conversations unavailable';
   final event = buildEvent(id: 'event', organizerId: 'org');
 
-  Future<
-    ({
-      ProviderContainer container,
-      _Conversations conversations,
-      HostReplyDrafts drafts,
-    })
-  >
-  mount(
+  Future<({ProviderContainer container, _Conversations conversations})> mount(
     WidgetTester tester,
     _Programs programs,
     ValueNotifier<({String organizer, HostInboxScope scope, String selection})>
@@ -131,6 +124,7 @@ void main() {
     final source = preview('catch-a', 'guest', events: ['event']);
     final conversations = _Conversations();
     final drafts = HostReplyDrafts();
+    addTearDown(drafts.dispose);
     final container = ProviderContainer(
       overrides: [
         uidProvider.overrideWithValue(const AsyncData('host')),
@@ -208,7 +202,6 @@ void main() {
       ],
     );
     addTearDown(container.dispose);
-    addTearDown(drafts.dispose);
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
@@ -217,21 +210,24 @@ void main() {
           home: Scaffold(
             body: ValueListenableBuilder(
               valueListenable: route,
-              builder: (context, value, child) => HostInboxPersonPageBody(
-                organizerId: value.organizer,
-                selection: value.selection,
-                scope: value.scope,
-                now: DateTime(2026, 10, 26),
-                segment: HostInboxAudienceSegment.booked,
-                drafts: drafts,
-                onBack: () {},
+              builder: (context, value, child) => CatchRoot(
+                child: HostConversationScreen(
+                  request: HostConversationRequest(
+                    organizerId: value.organizer,
+                    selection: value.selection,
+                    scope: value.scope,
+                  ),
+                  drafts: drafts,
+                  presentation: HostConversationPresentation.pane,
+                  onBack: () {},
+                ),
               ),
             ),
           ),
         ),
       ),
     );
-    return (container: container, conversations: conversations, drafts: drafts);
+    return (container: container, conversations: conversations);
   }
 
   ValueNotifier<({String organizer, HostInboxScope scope, String selection})>
@@ -246,8 +242,8 @@ void main() {
   }
 
   void expectContained(_Conversations conversations) {
-    expect(find.byType(HostPersonConversationPageBody), findsNothing);
-    expect(find.byType(ChatInput), findsNothing);
+    expect(find.byType(HostConversationThreadSection), findsNothing);
+    expect(find.byType(CatchComposerInput), findsNothing);
     expect(find.text('Private event history'), findsNothing);
     expect(find.text('Same name'), findsNothing);
     expect(conversations.markedRead, 0);
@@ -312,7 +308,7 @@ void main() {
       await tester.pump();
       programs.details['a']!.completeError(StateError('denied'));
       await pumpFeatureUi(tester);
-      expect(find.byType(CatchLocalizedErrorState), findsOneWidget);
+      expect(find.byType(CatchErrorState), findsOneWidget);
       expect(programs.guestReads, isEmpty);
       expectContained(harness.conversations);
       route.value = (
@@ -323,7 +319,7 @@ void main() {
       await tester.pump();
       programs.allow('b');
       await pumpFeatureUi(tester);
-      expect(find.byType(CatchLocalizedErrorState), findsOneWidget);
+      expect(find.byType(CatchErrorState), findsOneWidget);
       expect(programs.guestReads, isEmpty);
       expectContained(harness.conversations);
     },
@@ -346,7 +342,7 @@ void main() {
       await tester.pump();
       programs.details['a']!.completeError(StateError('revoked'));
       await pumpFeatureUi(tester);
-      expect(find.byType(CatchLocalizedErrorState), findsOneWidget);
+      expect(find.byType(CatchErrorState), findsOneWidget);
       expectContained(harness.conversations);
     },
   );
@@ -371,7 +367,7 @@ void main() {
       );
       // Keep the positive control to a canonical Catch event endpoint.
       await pumpFeatureUi(tester);
-      expect(find.byType(HostPersonConversationPageBody), findsOneWidget);
+      expect(find.byType(HostConversationThreadSection), findsOneWidget);
       expect(find.text('Private event history'), findsOneWidget);
       expect(harness.conversations.markedRead, 1);
       route.value = (
@@ -380,7 +376,7 @@ void main() {
         selection: 'catch-a',
       );
       await pumpFeatureUi(tester);
-      expect(find.byType(ChatInput), findsNothing);
+      expect(find.byType(CatchComposerInput), findsNothing);
       expect(find.text('Private event history'), findsNothing);
       expect(harness.conversations.markedRead, 1);
     },

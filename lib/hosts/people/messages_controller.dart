@@ -1,12 +1,21 @@
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_automation_reads.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/people/automations_controller.dart';
 import 'package:catch_dating_app/hosts/people/automations_state.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_pages_controller.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_people.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_programme_controller.dart';
 import 'package:catch_dating_app/hosts/people/messages_state.dart';
 import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,13 +23,17 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'messages_controller.g.dart';
 
-/// Which conversations Messages shows, and the day Tonight means.
+/// Which conversations Messages shows: the chip, the scope and segment,
+/// the name search, and the day Tonight means.
 @immutable
 class HostMessagesRequest {
   const HostMessagesRequest({
     required this.organizerId,
     required this.day,
     this.filter = HostMessagesFilter.all,
+    this.scope,
+    this.segment = HostInboxAudienceSegment.booked,
+    this.query = '',
   });
 
   final String organizerId;
@@ -29,32 +42,55 @@ class HostMessagesRequest {
   final DateTime day;
   final HostMessagesFilter filter;
 
+  /// Null lists every conversation.
+  final HostInboxScope? scope;
+  final HostInboxAudienceSegment segment;
+  final String query;
+
   @override
   bool operator ==(Object other) =>
       other is HostMessagesRequest &&
       other.organizerId == organizerId &&
       other.day == day &&
-      other.filter == filter;
+      other.filter == filter &&
+      other.scope == scope &&
+      other.segment == segment &&
+      other.query == query;
 
   @override
-  int get hashCode => Object.hash(organizerId, day, filter);
+  int get hashCode =>
+      Object.hash(organizerId, day, filter, scope, segment, query);
 }
 
-/// Messages, composed from the Catch conversations listener, the WhatsApp
-/// threads listener, the organizer's events (for Tonight) and Automatic
-/// messages (for its row).
+// provider-graph: high-fan-out:hostMessagesControllerProvider accepted -- One route read model for the Messages list: the account, the live Catch conversations and their older pages, the WhatsApp thread pages, the organizer's events and programmes for the scope menu, the chosen event's bookings for Booked and Prospective, a programme's verified identity, and the Automatic messages summary. Each source answers one visible part of the same list, and splitting them would let the scope, counts and partial notice disagree.
+/// Messages, composed from the Catch conversations listener and its older
+/// pages, the WhatsApp threads listener and its pages, the organizer's
+/// events (for Tonight and the scope menu), their programmes, the chosen
+/// event's bookings (for Booked and Prospective) and Automatic messages
+/// (for its row). A programme scope reads only that programme's verified
+/// identity: no source carries per-message programme provenance.
 @riverpod
 HostMessagesState hostMessagesController(Ref ref, HostMessagesRequest request) {
   final organizerId = request.organizerId;
-  final catchRead = catchAsyncStateFromAsyncValue(
+  final scope = request.scope;
+  final uid = catchAsyncStateFromAsyncValue(ref.watch(uidProvider)).value;
+  final live = catchAsyncStateFromAsyncValue(
     ref.watch(chatsListViewModelProvider),
   );
+  final catchRead = catchAsyncStateFromAsyncValue(
+    ref.watch(hostInboxCatchViewModelProvider),
+  );
   final whatsappRead = catchAsyncStateFromAsyncValue(
-    ref.watch(hostWhatsappThreadsProvider(organizerId)),
+    ref.watch(hostWhatsappThreadPagesProvider(organizerId)),
   );
   final events = catchAsyncStateFromAsyncValue(
     ref.watch(watchEventsForOrganizerProvider(organizerId)),
   ).value;
+  final programmes =
+      catchAsyncStateFromAsyncValue(
+        ref.watch(organizerProgramListProvider(organizerId)),
+      ).value ??
+      const <OrganizerProgramSummary>[];
   final automations = ref.watch(
     hostAutomationsControllerProvider(
       organizerId,
@@ -64,50 +100,160 @@ HostMessagesState hostMessagesController(Ref ref, HostMessagesRequest request) {
   final automationsReady = automations.status == HostAutomationsStatus.ready;
   final automationsOn = automationsReady ? automations.onCount : null;
   final automationsSent = automationsReady ? automations.sentThisMonth : null;
+  final scopes = HostMessagesScopes(
+    events: orderHostInboxEvents(
+      events ?? const <Event>[],
+      now: ref.read(appClockProvider).now(),
+    ),
+    programmes: programmes,
+  );
+
+  if (scope?.programId case final programId?) {
+    final programme = catchAsyncStateFromAsyncValue(
+      ref.watch(hostInboxProgramAudiencePagesProvider(organizerId, programId)),
+    );
+    final page = programme.value;
+    return HostMessagesState(
+      status: HostMessagesStatus.ready,
+      filter: request.filter,
+      scope: scope,
+      query: request.query,
+      scopes: HostMessagesScopes(
+        events: scopes.events,
+        programmes: [
+          ...programmes,
+          if (page != null &&
+              !programmes.any((p) => p.programId == page.program.programId))
+            page.program,
+        ],
+      ),
+      automationsOn: automationsOn,
+      automationsSent: automationsSent,
+      programme: HostMessagesProgramme(
+        title: page?.program.title,
+        loading: page == null && !programme.hasError,
+        error: programme.hasError || programme.hasStaleError
+            ? programme.error
+            : null,
+      ),
+    );
+  }
 
   final catchView = catchRead.value;
-  final whatsapp = whatsappRead.value;
-  if (catchView == null || whatsapp == null) {
+  final whatsappPages = whatsappRead.value;
+  if (catchView == null || whatsappPages == null) {
     final error = catchRead.hasError ? catchRead.error : whatsappRead.error;
     final failed =
         (catchRead.hasError && catchView == null) ||
-        (whatsappRead.hasError && whatsapp == null);
+        (whatsappRead.hasError && whatsappPages == null);
     return HostMessagesState(
       status: failed ? HostMessagesStatus.error : HostMessagesStatus.loading,
       filter: request.filter,
+      scope: scope,
+      segment: request.segment,
+      query: request.query,
+      scopes: scopes,
       automationsOn: automationsOn,
       automationsSent: automationsSent,
       error: failed ? error : null,
     );
   }
+  final eventId = scope?.eventId;
+  final participations = eventId == null
+      ? null
+      : catchAsyncStateFromAsyncValue(
+          ref.watch(watchEventParticipationsForEventProvider(eventId)),
+        ).value;
+  final booked = participations == null
+      ? null
+      : EventParticipationRoster.fromParticipations(
+          participations.where((p) => p.eventId == eventId).toList(),
+        ).bookedIds.toSet();
   final tonight = <String>{
     for (final event in events ?? const <Event>[])
       if (!event.isCancelled && _sameDay(event.startTime, request.day))
         event.id,
   };
-  final all = composeHostMessageThreads(
+  final inScope = composeHostMessageThreads(
     organizerId: organizerId,
     catchThreads: [...catchView.newMatches, ...catchView.conversations],
-    whatsappThreads: whatsapp,
+    whatsappThreads: whatsappPages.items,
     tonightEventIds: tonight,
+    includeSource: switch (scope?.kind) {
+      null => null,
+      HostInboxScopeKind.general => (eventIds) => eventIds.isEmpty,
+      _ => (eventIds) => eventIds.contains(eventId),
+    },
+    bookedUids: eventId == null ? null : booked,
   );
+  final catchPages = uid == null
+      ? null
+      : ref.watch(hostInboxCatchPagesProvider(uid));
+  final catchHasMore =
+      catchPages?.canLoadMore(live.value?.sourceWindowMayHaveMore ?? true) ??
+      false;
+  final partialFailed =
+      live.hasError || catchRead.hasError || whatsappRead.hasError;
+  final partial =
+      partialFailed ||
+      catchHasMore ||
+      catchPages?.error != null ||
+      live.isLoading ||
+      catchRead.isLoading ||
+      whatsappRead.isLoading ||
+      whatsappPages.hasMore;
+  final query = request.query.trim().toLowerCase();
+  final visible = [
+    for (final thread in inScope)
+      if (switch (request.filter) {
+            HostMessagesFilter.all => true,
+            HostMessagesFilter.unread => thread.unread,
+            HostMessagesFilter.tonight => thread.tonight,
+          } &&
+          (eventId == null ||
+              thread.booked == null ||
+              thread.booked ==
+                  (request.segment == HostInboxAudienceSegment.booked)) &&
+          (query.isEmpty || thread.name.toLowerCase().contains(query)))
+        thread,
+  ];
+  final complete = !partial && (eventId == null || participations != null);
   return HostMessagesState(
     status: HostMessagesStatus.ready,
     filter: request.filter,
-    threads: switch (request.filter) {
-      HostMessagesFilter.all => all,
-      HostMessagesFilter.unread => [
-        for (final thread in all)
-          if (thread.unread) thread,
-      ],
-      HostMessagesFilter.tonight => [
-        for (final thread in all)
-          if (thread.tonight) thread,
-      ],
-    },
-    unreadCount: all.where((thread) => thread.unread).length,
+    scope: scope,
+    segment: request.segment,
+    query: request.query,
+    scopes: scopes,
+    threads: List.unmodifiable(visible),
+    unreadCount: inScope.where((thread) => thread.unread).length,
     automationsOn: automationsOn,
     automationsSent: automationsSent,
+    bookedCount: complete && eventId != null
+        ? inScope.where((thread) => thread.booked == true).length
+        : null,
+    prospectiveCount: complete && eventId != null
+        ? inScope.where((thread) => thread.booked == false).length
+        : null,
+    unclassifiedCount: eventId == null
+        ? 0
+        : inScope.where((thread) => thread.booked == null).length,
+    partial: partial,
+    partialFailed: partialFailed,
+    moreCatch: !catchHasMore
+        ? HostMessagesMore.none
+        : catchPages!.loadingMore
+        ? HostMessagesMore.loading
+        : catchPages.error != null
+        ? HostMessagesMore.failed
+        : HostMessagesMore.more,
+    moreWhatsapp: !whatsappPages.hasMore
+        ? HostMessagesMore.none
+        : whatsappPages.loadingMore
+        ? HostMessagesMore.loading
+        : whatsappPages.nextPageError != null
+        ? HostMessagesMore.failed
+        : HostMessagesMore.more,
   );
 }
 
@@ -121,6 +267,8 @@ List<HostMessageThread> composeHostMessageThreads({
   required List<ChatThreadPreview> catchThreads,
   required List<HostWhatsappThreadSummary> whatsappThreads,
   required Set<String> tonightEventIds,
+  bool Function(List<String> eventIds)? includeSource,
+  Set<String>? bookedUids,
 }) {
   final byPerson = <String, _HostThreadBuilder>{};
   for (final thread in catchThreads) {
@@ -128,7 +276,8 @@ List<HostMessageThread> composeHostMessageThreads({
     if (match.organizerId != organizerId ||
         !match.isOrganizerHostInquiry ||
         match.isBlocked ||
-        match.isClosed) {
+        match.isClosed ||
+        !(includeSource?.call(thread.eventIds) ?? true)) {
       continue;
     }
     byPerson
@@ -143,6 +292,7 @@ List<HostMessageThread> composeHostMessageThreads({
         );
   }
   for (final thread in whatsappThreads) {
+    if (!(includeSource?.call(thread.eventIds) ?? true)) continue;
     final personId = thread.linkedUid == null
         ? 'contact:${thread.contactId}'
         : 'uid:${thread.linkedUid}';
@@ -160,7 +310,7 @@ List<HostMessageThread> composeHostMessageThreads({
   }
   final threads = [
     for (final entry in byPerson.entries)
-      entry.value.build(entry.key, tonightEventIds),
+      entry.value.build(entry.key, tonightEventIds, bookedUids),
   ]..sort((a, b) => b.at.compareTo(a.at));
   return List.unmodifiable(threads);
 }
@@ -193,17 +343,24 @@ class _HostThreadBuilder {
     }
   }
 
-  HostMessageThread build(String personId, Set<String> tonight) =>
-      HostMessageThread(
-        personId: personId,
-        name: name,
-        photoUrl: photoUrl,
-        preview: preview,
-        at: at!,
-        unread: waiting,
-        tonight: eventIds.any(tonight.contains),
-        eventId: eventIds.isEmpty ? null : eventIds.last,
-      );
+  HostMessageThread build(
+    String personId,
+    Set<String> tonight,
+    Set<String>? bookedUids,
+  ) => HostMessageThread(
+    personId: personId,
+    name: name,
+    photoUrl: photoUrl,
+    preview: preview,
+    at: at!,
+    unread: waiting,
+    tonight: eventIds.any(tonight.contains),
+    eventId: eventIds.isEmpty ? null : eventIds.last,
+    eventIds: List.unmodifiable(eventIds),
+    booked: bookedUids == null || !personId.startsWith('uid:')
+        ? null
+        : bookedUids.contains(personId.substring(4)),
+  );
 }
 
 bool _sameDay(DateTime a, DateTime b) =>
@@ -211,7 +368,10 @@ bool _sameDay(DateTime a, DateTime b) =>
 
 /// Reads Messages again after a failure.
 void retryHostMessagesReads(WidgetRef ref, String organizerId) => ref
+  ..invalidate(uidProvider)
   ..invalidate(chatsListViewModelProvider)
+  ..invalidate(hostInboxCatchViewModelProvider)
+  ..invalidate(organizerProgramListProvider(organizerId))
   ..invalidate(hostWhatsappThreadPagesProvider(organizerId))
   ..invalidate(watchEventsForOrganizerProvider(organizerId))
   ..invalidate(hostFormAutomationRulesProvider(organizerId, null))

@@ -32,3 +32,12 @@ test("private setup cannot book even with legacy Catch provenance", () => {
       error.code === "failed-precondition");
   }
 });
+
+test("tickets sold elsewhere keep Catch booking closed", () => {
+  assert.throws(() => requireCatchBookingAuthority({
+    publicationState: "published",
+    eventOrigin: {bookingAuthority: "catch"},
+    externalBooking: {provider: "luma", url: "https://example.com/e"},
+  } as unknown as EventDocument), (error) => error instanceof HttpsError &&
+    error.code === "failed-precondition");
+});

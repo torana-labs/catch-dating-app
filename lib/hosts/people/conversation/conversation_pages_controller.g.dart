@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'host_inbox_catch_pages_controller.dart';
+part of 'conversation_pages_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator

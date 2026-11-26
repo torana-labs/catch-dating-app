@@ -1852,6 +1852,7 @@ function sampleExternalEventListRowMatches(
   row: AdminListExternalEventDetailsResponse["rows"][number],
   payload: AdminListExternalEventDetailsPayload
 ): boolean {
+  if (payload.eventId) return row.eventId === payload.eventId;
   if (payload.citySlug && row.citySlug !== payload.citySlug) return false;
   if (
     payload.citySlugs &&
