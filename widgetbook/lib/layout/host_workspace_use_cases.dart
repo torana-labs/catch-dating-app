@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_preferences_route_screen.dart';
+import 'package:catch_dating_app/hosts/forms/offer_settings_screen.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_dating_app/routing/host_router.dart';
 import 'package:catch_dating_app/routing/shell/shell_chrome.dart';
@@ -260,13 +260,13 @@ Widget hostWorkspaceEditorPane(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Signed-out preferences boundary',
-  type: HostResponseOfferPreferencesRouteScreen,
+  type: HostOfferSettingsScreen,
   path: '[Host]/Layout',
 )
 Widget hostOfferPreferencesRoute(BuildContext context) =>
     WidgetbookHostShellScope(
       uid: null,
-      child: HostResponseOfferPreferencesRouteScreen(
+      child: HostOfferSettingsScreen(
         organizerId: 'organizer',
         eventId: 'event',
         onBack: () {},

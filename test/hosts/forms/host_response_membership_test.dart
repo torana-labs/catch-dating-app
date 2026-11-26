@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/forms/data/host_application_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
+import 'package:catch_dating_app/hosts/forms/response_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
@@ -26,7 +26,7 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const HostApplicationDetailScreen(
+          home: const HostResponseScreen.application(
             organizerId: 'org-1',
             applicationId: 'app-1',
           ),
