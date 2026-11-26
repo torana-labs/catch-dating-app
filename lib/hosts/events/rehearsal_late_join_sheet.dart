@@ -49,13 +49,16 @@ void showHostRehearsalLateJoinSheet(
     showCatchBottomSheet<void>(
       context: context,
       builder: (_) =>
-          _HostRehearsalLateJoinSheet(sessionId: sessionId, actorId: actorId),
+          HostRehearsalLateJoinSheet(sessionId: sessionId, actorId: actorId),
     ),
   );
 }
 
-class _HostRehearsalLateJoinSheet extends ConsumerStatefulWidget {
-  const _HostRehearsalLateJoinSheet({
+/// The late joiner sheet for one made-up guest; see
+/// [showHostRehearsalLateJoinSheet] for what it reads and writes.
+class HostRehearsalLateJoinSheet extends ConsumerStatefulWidget {
+  const HostRehearsalLateJoinSheet({
+    super.key,
     required this.sessionId,
     required this.actorId,
   });
@@ -64,12 +67,12 @@ class _HostRehearsalLateJoinSheet extends ConsumerStatefulWidget {
   final String actorId;
 
   @override
-  ConsumerState<_HostRehearsalLateJoinSheet> createState() =>
+  ConsumerState<HostRehearsalLateJoinSheet> createState() =>
       _HostRehearsalLateJoinSheetState();
 }
 
 class _HostRehearsalLateJoinSheetState
-    extends ConsumerState<_HostRehearsalLateJoinSheet> {
+    extends ConsumerState<HostRehearsalLateJoinSheet> {
   HostRehearsalLateJoinChoices? _choices;
 
   EventRehearsalAssistanceEditorProvider get _editor =>

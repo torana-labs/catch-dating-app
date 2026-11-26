@@ -10180,6 +10180,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostRehearsalLateJoinSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'A late joiner sheet before the run moves',
+                    builder:
+                        _widgetbook_workspace_hosts_host_rehearsal_practice_use_cases
+                            .hostRehearsalLateJoinSheetUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostRehearsalPracticeScoresScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_destination.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_rules.dart';
@@ -7,6 +8,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_delivery_outcome.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_late_join_form.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_late_join_section.dart';
+import 'package:catch_dating_app/hosts/events/rehearsal_late_join_sheet.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_late_join_state.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_practice_scores_screen.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_practice_screen.dart';
@@ -150,6 +152,46 @@ Widget hostRehearsalLateJoinFormUseCase(BuildContext context) =>
         onPause: () {},
       ),
     );
+
+@widgetbook.UseCase(
+  name: 'A late joiner sheet before the run moves',
+  type: HostRehearsalLateJoinSheet,
+  path: _path,
+)
+Widget hostRehearsalLateJoinSheetUseCase(BuildContext context) =>
+    FutureBuilder<EventRehearsalBootstrap>(
+      future: loadRehearsalSettingsPreviewFixture(),
+      builder: (context, async) {
+        if (async.hasError) return Text('Preview unavailable: ${async.error}');
+        if (!async.hasData) return const CatchLoadingIndicator();
+        final rehearsal = async.requireData;
+        return ProviderScope(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value('host-1')),
+            eventRehearsalRepositoryProvider.overrideWith(
+              (ref) => _LateJoinRepository(rehearsal),
+            ),
+          ],
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: HostRehearsalLateJoinSheet(
+              sessionId: rehearsal.session.id,
+              actorId: rehearsal.actors.first.actorId,
+            ),
+          ),
+        );
+      },
+    );
+
+/// Answers the late joiner sheet's rehearsal read from the fixture.
+class _LateJoinRepository implements EventRehearsalRepository {
+  _LateJoinRepository(this.snapshot);
+  final EventRehearsalBootstrap snapshot;
+  @override
+  Future<EventRehearsalBootstrap> fetch(String sessionId) async => snapshot;
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 /// Loads the shared rehearsal fixture once and renders one practice screen
 /// over it, with the rehearsal read answered from the fixture.

@@ -80,6 +80,9 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
     final l10n = context.l10n;
     final copy = catchFieldCopy(l10n);
     final points = view.points;
+    final choices = {
+      for (final o in rehearsalOutcomeChoices) rehearsalOutcomeKey(o): o,
+    };
     return CatchStack(
       gap: CatchStackGap.g24,
       children: [
@@ -261,10 +264,80 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
             size: CatchButtonSize.sm,
             onPressed: onClearDeadline,
           ),
-        _HostRehearsalLateJoinOutcomes(
-          outcomes: view.outcomes,
-          enabled: _editing,
-          onChanged: onOutcomes,
+        CatchStack(
+          gap: CatchStackGap.g8,
+          children: [
+            CatchText(
+              l10n.hostEventRehearsalUpdatesScript,
+              variant: CatchTextVariant.sectionTitle,
+            ),
+            CatchText(
+              l10n.hostEventRehearsalUpdatesScriptBody,
+              variant: CatchTextVariant.bodySmall,
+              tone: CatchTextTone.secondary,
+            ),
+            CatchSection(
+              children: [
+                for (final (index, outcome) in view.outcomes.indexed)
+                  CatchField<String>.select(
+                    key: ValueKey<String>(
+                      'host-rehearsal-late-join-outcome-$index',
+                    ),
+                    copy: copy,
+                    title: l10n.hostEventRehearsalUpdatesAttempt(
+                      number: index + 1,
+                    ),
+                    contractExemption:
+                        'Closed synthetic receipt union, bounded to six entries.',
+                    values: choices.keys.toList(),
+                    value: rehearsalOutcomeKey(outcome),
+                    itemLabelBuilder: (key) =>
+                        rehearsalOutcomeLabel(l10n, choices[key]!),
+                    onChanged: _editing
+                        ? (key) {
+                            if (key == null) return;
+                            onOutcomes(
+                              [...view.outcomes]..[index] = choices[key]!,
+                            );
+                          }
+                        : null,
+                  ),
+              ],
+            ),
+            if (_editing)
+              CatchStack(
+                direction: CatchStackDirection.row,
+                wrap: true,
+                gap: CatchStackGap.g8,
+                children: [
+                  if (view.outcomes.length < 6)
+                    CatchButton(
+                      key: const ValueKey<String>(
+                        'host-rehearsal-late-join-add-outcome',
+                      ),
+                      label: l10n.hostEventRehearsalUpdatesAddOutcome,
+                      variant: CatchButtonVariant.quiet,
+                      size: CatchButtonSize.sm,
+                      onPressed: () => onOutcomes([
+                        ...view.outcomes,
+                        rehearsalOutcomeChoices.first,
+                      ]),
+                    ),
+                  if (view.outcomes.length > 1)
+                    CatchButton(
+                      key: const ValueKey<String>(
+                        'host-rehearsal-late-join-remove-outcome',
+                      ),
+                      label: l10n.hostEventRehearsalUpdatesRemoveOutcome,
+                      variant: CatchButtonVariant.quiet,
+                      size: CatchButtonSize.sm,
+                      onPressed: () => onOutcomes(
+                        view.outcomes.sublist(0, view.outcomes.length - 1),
+                      ),
+                    ),
+                ],
+              ),
+          ],
         ),
         if (view.previewKind case final kind?)
           CatchNotice.inline(
@@ -288,11 +361,36 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
             },
           ),
         if (view.error case final error?) CatchLocalizedErrorBanner(error),
-        _HostRehearsalLateJoinPhaseNotice(
-          phase: view.phase,
-          onRetry: onRetry,
-          onReload: onReload,
-        ),
+        ...switch (view.phase) {
+          HostRehearsalLateJoinPhase.retry => [
+            CatchNotice.inline(
+              tone: CatchNoticeTone.warning,
+              body: l10n.eventAssistanceRuntimeRetryBody,
+              action: CatchNoticeAction(
+                label: l10n.eventAssistanceLateJoinRetry,
+                onPressed: onRetry,
+              ),
+            ),
+          ],
+          HostRehearsalLateJoinPhase.refresh => [
+            CatchNotice.inline(
+              tone: CatchNoticeTone.warning,
+              body: l10n.eventAssistanceLateJoinRefreshBody,
+              action: CatchNoticeAction(
+                label: l10n.eventAssistanceLateJoinReload,
+                onPressed: onReload,
+              ),
+            ),
+          ],
+          HostRehearsalLateJoinPhase.applied => [
+            CatchNotice.inline(
+              tone: CatchNoticeTone.success,
+              body: l10n.hostEventRehearsalUpdatesSaved,
+            ),
+          ],
+          HostRehearsalLateJoinPhase.editing ||
+          HostRehearsalLateJoinPhase.submitting => const <Widget>[],
+        },
         CatchStack(
           gap: CatchStackGap.g8,
           children: [
@@ -336,139 +434,6 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
               ),
           ],
         ),
-      ],
-    );
-  }
-}
-
-/// The unresolved or confirmed command under the choices: retry the same
-/// command, reload the review, or the saved confirmation.
-class _HostRehearsalLateJoinPhaseNotice extends StatelessWidget {
-  const _HostRehearsalLateJoinPhaseNotice({
-    required this.phase,
-    required this.onRetry,
-    required this.onReload,
-  });
-
-  final HostRehearsalLateJoinPhase phase;
-  final VoidCallback onRetry;
-  final VoidCallback onReload;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return switch (phase) {
-      HostRehearsalLateJoinPhase.retry => CatchNotice.inline(
-        tone: CatchNoticeTone.warning,
-        body: l10n.eventAssistanceRuntimeRetryBody,
-        action: CatchNoticeAction(
-          label: l10n.eventAssistanceLateJoinRetry,
-          onPressed: onRetry,
-        ),
-      ),
-      HostRehearsalLateJoinPhase.refresh => CatchNotice.inline(
-        tone: CatchNoticeTone.warning,
-        body: l10n.eventAssistanceLateJoinRefreshBody,
-        action: CatchNoticeAction(
-          label: l10n.eventAssistanceLateJoinReload,
-          onPressed: onReload,
-        ),
-      ),
-      HostRehearsalLateJoinPhase.applied => CatchNotice.inline(
-        tone: CatchNoticeTone.success,
-        body: l10n.hostEventRehearsalUpdatesSaved,
-      ),
-      HostRehearsalLateJoinPhase.editing ||
-      HostRehearsalLateJoinPhase.submitting => const SizedBox.shrink(),
-    };
-  }
-}
-
-/// The practice delivery outcomes automation plays through, one to six.
-class _HostRehearsalLateJoinOutcomes extends StatelessWidget {
-  const _HostRehearsalLateJoinOutcomes({
-    required this.outcomes,
-    required this.enabled,
-    required this.onChanged,
-  });
-
-  final List<RehearsalDeliveryOutcome> outcomes;
-  final bool enabled;
-  final ValueChanged<List<RehearsalDeliveryOutcome>> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final copy = catchFieldCopy(l10n);
-    final choices = {
-      for (final o in rehearsalOutcomeChoices) rehearsalOutcomeKey(o): o,
-    };
-    return CatchStack(
-      gap: CatchStackGap.g8,
-      children: [
-        CatchText(
-          l10n.hostEventRehearsalUpdatesScript,
-          variant: CatchTextVariant.sectionTitle,
-        ),
-        CatchText(
-          l10n.hostEventRehearsalUpdatesScriptBody,
-          variant: CatchTextVariant.bodySmall,
-          tone: CatchTextTone.secondary,
-        ),
-        CatchSection(
-          children: [
-            for (final (index, outcome) in outcomes.indexed)
-              CatchField<String>.select(
-                key: ValueKey<String>(
-                  'host-rehearsal-late-join-outcome-$index',
-                ),
-                copy: copy,
-                title: l10n.hostEventRehearsalUpdatesAttempt(number: index + 1),
-                contractExemption:
-                    'Closed synthetic receipt union, bounded to six entries.',
-                values: choices.keys.toList(),
-                value: rehearsalOutcomeKey(outcome),
-                itemLabelBuilder: (key) =>
-                    rehearsalOutcomeLabel(l10n, choices[key]!),
-                onChanged: enabled
-                    ? (key) {
-                        if (key == null) return;
-                        onChanged([...outcomes]..[index] = choices[key]!);
-                      }
-                    : null,
-              ),
-          ],
-        ),
-        if (enabled)
-          CatchStack(
-            direction: CatchStackDirection.row,
-            wrap: true,
-            gap: CatchStackGap.g8,
-            children: [
-              if (outcomes.length < 6)
-                CatchButton(
-                  key: const ValueKey<String>(
-                    'host-rehearsal-late-join-add-outcome',
-                  ),
-                  label: l10n.hostEventRehearsalUpdatesAddOutcome,
-                  variant: CatchButtonVariant.quiet,
-                  size: CatchButtonSize.sm,
-                  onPressed: () =>
-                      onChanged([...outcomes, rehearsalOutcomeChoices.first]),
-                ),
-              if (outcomes.length > 1)
-                CatchButton(
-                  key: const ValueKey<String>(
-                    'host-rehearsal-late-join-remove-outcome',
-                  ),
-                  label: l10n.hostEventRehearsalUpdatesRemoveOutcome,
-                  variant: CatchButtonVariant.quiet,
-                  size: CatchButtonSize.sm,
-                  onPressed: () =>
-                      onChanged(outcomes.sublist(0, outcomes.length - 1)),
-                ),
-            ],
-          ),
       ],
     );
   }
