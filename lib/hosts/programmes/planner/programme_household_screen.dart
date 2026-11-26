@@ -114,7 +114,6 @@ class _HostProgrammeHouseholdScreenState
     HostProgrammeReply reply,
   ) async {
     try {
-      // provider-graph: ownership-widget-async:_HostProgrammeHouseholdScreenState._recordAnswer:await:programWorkspaceControllerProvider.recordFunctionRsvp watch CAT156 -- The workspace controller records the answer and owns its error; the sheet keeps the old answer when this returns false. Move the write into a planner command in the CAT156 migration.
       await ref
           .read(programWorkspaceControllerProvider.notifier)
           .recordFunctionRsvp(

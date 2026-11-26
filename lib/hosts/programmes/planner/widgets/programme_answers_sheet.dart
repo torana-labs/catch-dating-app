@@ -54,6 +54,7 @@ class _HostProgrammeAnswersSheetState extends State<HostProgrammeAnswersSheet> {
   Future<void> _choose(String functionId, HostProgrammeReply reply) async {
     if (_saving != null || _replies[functionId] == reply) return;
     setState(() => _saving = functionId);
+    // provider-graph: ownership-widget-async-callback:_HostProgrammeAnswersSheetState._choose:await:widget.onAnswer watch CAT156 -- The caller's onAnswer records the answer through the workspace controller, which owns the write, its error and the programme refresh. The sheet keeps only display state: the one function being saved (no second write starts meanwhile) and the replies it shows, changed only when onAnswer confirms the write, behind a mounted check. Move the write into a planner command in the CAT156 migration.
     final saved = await widget.onAnswer(functionId, reply);
     if (!mounted) return;
     setState(() {
