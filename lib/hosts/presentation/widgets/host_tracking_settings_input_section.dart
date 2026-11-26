@@ -76,17 +76,19 @@ class _HostTrackingSettingsInputSectionState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchLegacyText(
+                CatchText(
                   l10n.hostsTrackingSettingsPolicyBlocked,
                   key: const ValueKey('host-tracking-policy-blocked'),
-                  variant: CatchLegacyTextVariant.supporting,
+                  variant: CatchTextVariant.bodySmall,
+                  tone: CatchTextTone.secondary,
                 ),
                 if (!widget.current.canEdit) ...[
                   gapH12,
-                  CatchLegacyText(
+                  CatchText(
                     l10n.hostsTrackingSettingsUnclaimed,
                     key: const ValueKey('host-tracking-unclaimed'),
-                    variant: CatchLegacyTextVariant.supporting,
+                    variant: CatchTextVariant.bodySmall,
+                    tone: CatchTextTone.secondary,
                   ),
                 ],
               ],
@@ -132,9 +134,10 @@ class _HostTrackingSettingsInputSectionState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchLegacyText(
+                CatchText(
                   l10n.hostsTrackingSettingsPrivacy,
-                  variant: CatchLegacyTextVariant.supporting,
+                  variant: CatchTextVariant.bodySmall,
+                  tone: CatchTextTone.secondary,
                 ),
                 if (widget.error != null) ...[
                   gapH12,
@@ -143,9 +146,10 @@ class _HostTrackingSettingsInputSectionState
                     context: AppErrorContext.organizer,
                   ),
                   gapH6,
-                  CatchLegacyText(
+                  CatchText(
                     l10n.hostsTrackingSettingsReloadForConflict,
-                    variant: CatchLegacyTextVariant.supporting,
+                    variant: CatchTextVariant.bodySmall,
+                    tone: CatchTextTone.secondary,
                   ),
                 ],
                 gapH12,

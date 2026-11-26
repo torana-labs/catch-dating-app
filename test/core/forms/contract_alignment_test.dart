@@ -1,8 +1,9 @@
-import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/photo_upload_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/page_edit_body.dart';
+import 'package:catch_dating_app/hosts/organizer/page_edit_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
@@ -10,7 +11,6 @@ import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/organizers_test_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -44,7 +44,7 @@ void main() {
     );
   });
 
-  testWidgets('host club descriptors stay aligned with patch contracts', (
+  testWidgets('organizer page fields stay aligned with update contracts', (
     tester,
   ) async {
     final organizer = buildOrganizer(
@@ -54,17 +54,33 @@ void main() {
       phoneNumber: '+91 98765 43210',
       email: 'hello@catch.club',
     );
+    tester.view.physicalSize = const Size(390, 3200);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
     await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: Scaffold(
-            body: SingleChildScrollView(
-              child: HostOrganizerEditBody(
+      MaterialApp(
+        theme: AppTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: CatchRoot(
+          child: CatchScreen(
+            body: OrganizerPageEditBody(
+              state: OrganizerPageEditState(
                 organizer: organizer,
-                currentUid: 'host-contract-user',
+                draft: PageEditDraft.of(organizer),
+                revision: 1,
                 isOwner: true,
               ),
+              onField: (_, _) {},
+              onType: (_) {},
+              onCity: (_) {},
+              onFormat: (_) {},
+              onListed: (_) {},
+              onChangeLogo: () {},
+              onAddPhotos: () {},
+              onPhoto: (_) {},
+              onRetryUpload: (_) {},
+              onDropUpload: (_) {},
             ),
           ),
         ),
@@ -72,27 +88,24 @@ void main() {
     );
     await tester.pump();
 
-    final rows = tester
-        .widgetList<CatchFormList<UpdateOrganizerPatch>>(
-          find.byWidgetPredicate(
-            (widget) => widget is CatchFormList<UpdateOrganizerPatch>,
-          ),
-        )
-        .expand((list) => list.rows)
-        .toList(growable: false);
+    final paths = {
+      for (final field in tester.widgetList<CatchField<Object?>>(
+        find.byWidgetPredicate((widget) => widget is CatchField),
+      ))
+        if (field.contract case final contract?) contract.path,
+    };
     expect(
-      _alignmentIssues(rows, const {
-        'organizerType': 'updateOrganizerCallablePayload.fields.organizerType',
-        'name': 'updateOrganizerCallablePayload.fields.name',
-        'location': 'updateOrganizerCallablePayload.fields.location',
-        'area': 'updateOrganizerCallablePayload.fields.area',
-        'description': 'updateOrganizerCallablePayload.fields.description',
-        'instagramHandle':
-            'updateOrganizerCallablePayload.fields.instagramHandle',
-        'phoneNumber': 'updateOrganizerCallablePayload.fields.phoneNumber',
-        'email': 'updateOrganizerCallablePayload.fields.email',
-      }),
-      isEmpty,
+      paths,
+      containsAll(const [
+        'updateOrganizerCallablePayload.fields.organizerType',
+        'updateOrganizerCallablePayload.fields.name',
+        'updateOrganizerCallablePayload.fields.location',
+        'updateOrganizerCallablePayload.fields.area',
+        'updateOrganizerCallablePayload.fields.description',
+        'updateOrganizerCallablePayload.fields.instagramHandle',
+        'updateOrganizerCallablePayload.fields.phoneNumber',
+        'updateOrganizerCallablePayload.fields.email',
+      ]),
     );
   });
 
