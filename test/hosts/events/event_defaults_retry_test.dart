@@ -114,7 +114,7 @@ void main() {
 /// Lets the journal's preference writes and the save finish between frames.
 Future<void> _settle(WidgetTester tester) async {
   for (var i = 0; i < 3; i++) {
-    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+    await tester.runAsync(flushTestEventQueue);
     await tester.pump();
   }
 }

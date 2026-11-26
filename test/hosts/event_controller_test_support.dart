@@ -3,12 +3,10 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_publication_journal.dart';
 import 'package:catch_dating_app/contexts/events/data/event_publication_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_journal.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_journal.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
-import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_journal.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
@@ -16,7 +14,6 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/even
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_setup_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_defaults_controller.dart';
 import 'package:catch_test_support/hosts/read_model_feeds.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -432,82 +429,6 @@ class TestEventPublicationController {
   void invalidateActor() => _controller.invalidateActor();
   Future<void> changeTo(String value) => _controller.changeTo(value);
   Future<void> retry() => _controller.retry();
-}
-
-class _SeededHostManagerEventSetupDefaultsController
-    extends HostManagerEventSetupDefaultsController {
-  HostManagerEventSetupDefaultsState snapshot() => state;
-  void seed(HostManagerEventSetupDefaultsState value) => state = value;
-}
-
-class TestHostManagerEventSetupDefaultsController {
-  TestHostManagerEventSetupDefaultsController({
-    required String userId,
-    required String organizerId,
-    required ReadManagerEventSetupDefaults read,
-    required WriteManagerEventSetupDefaults write,
-    String? Function()? currentUserId,
-    ManagerEventSetupDefaultsJournal journal =
-        const ManagerEventSetupDefaultsJournal(),
-  }) {
-    scope = (userId: userId, organizerId: organizerId);
-    defaultsFeed = defaultsViewFeed(read, organizerId);
-    container = ProviderContainer(
-      overrides: [
-        uidProvider.overrideWith((ref) => Stream.value(userId)),
-        managerEventSetupDefaultsViewProvider(
-          organizerId,
-        ).overrideWith((ref) => defaultsFeed.stream),
-        hostManagerEventSetupDefaultsDependenciesProvider.overrideWithValue(
-          HostManagerEventSetupDefaultsDependencies(
-            write: refreshingAfter(write, [defaultsFeed]),
-            currentUserId: currentUserId,
-            journal: journal,
-          ),
-        ),
-        hostManagerEventSetupDefaultsControllerProvider(
-          scope,
-        ).overrideWith(_SeededHostManagerEventSetupDefaultsController.new),
-      ],
-    );
-    container.listen(
-      hostManagerEventSetupDefaultsControllerProvider(scope),
-      (_, _) {},
-    );
-    _controller =
-        container.read(
-              hostManagerEventSetupDefaultsControllerProvider(scope).notifier,
-            )
-            as _SeededHostManagerEventSetupDefaultsController;
-  }
-  late final ({String userId, String organizerId}) scope;
-  late final ReadModelFeed<ManagerEventSetupDefaultsView> defaultsFeed;
-  late final ProviderContainer container;
-  late final _SeededHostManagerEventSetupDefaultsController _controller;
-  HostManagerEventSetupDefaultsController get notifier => _controller;
-  HostManagerEventSetupDefaultsState get snapshot => _controller.snapshot();
-  void dispose() => container.dispose();
-  Future<void> load() => _controller.load();
-  Object? get error => snapshot.error;
-  set error(Object? value) => _controller.seed(snapshot.copyWith(error: value));
-  bool get loading => snapshot.loading;
-  set loading(bool value) =>
-      _controller.seed(snapshot.copyWith(loading: value));
-  bool get saving => snapshot.saving;
-  set saving(bool value) => _controller.seed(snapshot.copyWith(saving: value));
-  bool get actorAvailable => snapshot.actorAvailable;
-  set actorAvailable(bool value) =>
-      _controller.seed(snapshot.copyWith(actorAvailable: value));
-  ManagerEventSetupDefaults? get current => snapshot.current;
-  set current(ManagerEventSetupDefaults? value) =>
-      _controller.seed(snapshot.copyWith(current: value));
-  ManagerEventSetupDefaultsUpdateRequest? get pending => snapshot.pending;
-  set pending(ManagerEventSetupDefaultsUpdateRequest? value) =>
-      _controller.seed(snapshot.copyWith(pending: value));
-  bool get canEdit => snapshot.canEdit;
-  Future<void> save(ManagerEventSetupPreferences value) =>
-      _controller.save(value);
-  Future<void> retryPending() => _controller.retryPending();
 }
 
 Widget testOfferPreferencesScreen({

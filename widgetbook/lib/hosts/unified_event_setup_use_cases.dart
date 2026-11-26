@@ -11,7 +11,6 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/host
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_target_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_preferences_section.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -21,38 +20,6 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import '../support/page_preview.dart';
 import 'event_editor_preview.dart';
 import 'operations/preview.dart';
-
-@widgetbook.UseCase(
-  name: 'Manager-only future event preferences',
-  type: HostManagerEventSetupPreferencesSection,
-  path: '[P1 product surfaces]/Host operations',
-)
-Widget hostManagerEventSetupPreferencesSectionPreview(BuildContext context) =>
-    WidgetbookPageCatalogFrame(
-      title: 'HostManagerEventSetupPreferencesSection',
-      contractId: 'section.host.event.manager-preferences',
-      children: [
-        WidgetbookPageStateCard(
-          label: 'authorized read, save unavailable',
-          child: WidgetbookHostDeviceFrame(
-            child: Scaffold(
-              body: SingleChildScrollView(
-                child: HostManagerEventSetupPreferencesSection(
-                  preferences: const ManagerEventSetupPreferences(
-                    usualDurationMinutes: 90,
-                    offerValidityMinutes: 1440,
-                    collectionPreference:
-                        EventCollectionPreference.manualInstructions,
-                    currency: 'INR',
-                    paymentInstructions: 'Pay after your place is offered.',
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
 
 @widgetbook.UseCase(
   name: 'Published event offer preferences',

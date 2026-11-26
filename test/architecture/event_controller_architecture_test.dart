@@ -11,7 +11,6 @@ void main() {
         'event_management/create/private_event_preferences_controller',
         'event_management/create/event_offer_preferences_controller',
         'event_management/create/event_publication_controller',
-        'host_operations/host_manager_event_setup_defaults_controller',
         'forms/host_event_offer_controller',
         'forms/host_event_offer_workspace_controller',
         'forms/host_form_admission_controller',
