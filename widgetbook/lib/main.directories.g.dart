@@ -12653,52 +12653,42 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Program guests',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'ProgramGuestDeskScreen',
+            name: 'HostProgrammeGroupSheet',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Screen states',
+                name: 'New and existing group',
                 builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programGuestDeskScreenStates,
+                    .hostProgrammeGroupSheetStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ProgramGuestEditDialog',
+            name: 'HostProgrammeGuestSheet',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Guest edit dialog',
+                name: 'Add a guest',
                 builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programGuestEditDialogStates,
+                    .hostProgrammeGuestSheetStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ProgramGuestGroupEditDialog',
+            name: 'ProgrammeGuestGroupsSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Group edit dialog',
+                name: 'Groups with hotels',
                 builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programGuestGroupEditDialogStates,
+                    .programmeGuestGroupsSectionStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ProgramGuestsFunctionRow',
+            name: 'ProgrammeNoHouseholdSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Function row',
+                name: 'Guests with no household',
                 builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programGuestsFunctionRowStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ProgramGuestsPageBody',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Body states',
-                builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programGuestsPageBodyStates,
+                    .programmeNoHouseholdSectionStates,
               ),
             ],
           ),

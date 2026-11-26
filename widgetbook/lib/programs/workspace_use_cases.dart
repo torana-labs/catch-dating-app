@@ -1,41 +1,20 @@
-import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
-import 'package:catch_dating_app/contexts/programmes/data/program_staff_views_repository.dart';
-import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/parts/programme_guest_groups_section.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_group_sheet.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_guest_sheet.dart';
-import 'package:catch_dating_app/hosts/programmes/staff/staff_guests_screen.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../support/page_preview.dart';
-import '../support/widgetbook_harness.dart';
 import '../utility/fixtures.dart';
-import '../utility/preview.dart';
 
 const _organizerId = 'org_kapoor';
 const _programId = 'program_kapoor_shah';
 const _functionId = 'fn_sangeet';
 
 final _now = DateTime(2026, 2, 14, 14, 30);
-
-final _organizer = Organizer(
-  id: _organizerId,
-  name: 'Kapoor Family',
-  description: 'Wedding family organizer.',
-  location: 'in-mh-mumbai',
-  area: 'Mumbai',
-  hostUserId: 'uid_org',
-  createdAt: _now,
-);
 
 final _program = OrganizerProgramSettings(
   organizerId: _organizerId,
@@ -76,11 +55,6 @@ final _functions = [
     checkInEnabled: false,
     revision: 1,
   ),
-];
-
-final _guestFunctions = [
-  for (final fn in _functions)
-    ProgramGuestsFunction(functionId: fn.functionId, name: fn.name),
 ];
 
 final _stations = [
@@ -127,73 +101,6 @@ final _detail = OrganizerProgramDetail(
     'activeStaff': 2,
   },
 );
-
-final _deskAccess = ProgramWorkAccess(
-  programId: _programId,
-  organizerId: 'org_1',
-  title: 'Kapoor–Shah Wedding',
-  kind: ProgramKind.wedding,
-  timezone: 'Asia/Kolkata',
-  status: ProgramStatus.active,
-  actorRole: ProgramActorRole.staff,
-  duties: [
-    ProgramDutyAssignment(
-      duty: ProgramStaffDuty.guestRelations,
-      pickupPointIds: const {},
-      hotelIds: const {},
-      functionIds: const {},
-      expiresAt: _now.add(const Duration(hours: 8)),
-    ),
-  ],
-  grantExpiresAt: _now.add(const Duration(hours: 8)),
-  capabilities: const {},
-  pickupPoints: const [],
-  hotels: const [
-    ProgramHotel(hotelId: 'hotel_harbourview', name: 'Harbourview Palace'),
-  ],
-  functions: [
-    ProgramFunction(
-      functionId: _functionId,
-      name: 'Sangeet',
-      venueName: 'The Lakeshore Ballroom',
-      startsAt: _now.add(const Duration(hours: 3)),
-      endsAt: _now.add(const Duration(hours: 6)),
-      checkInEnabled: true,
-      status: ProgramFunctionStatus.scheduled,
-      expectedCount: 80,
-      checkedInCount: 61,
-    ),
-    ProgramFunction(
-      functionId: 'fn_ceremony',
-      name: 'Ceremony',
-      venueName: 'Lakeside Pavilion',
-      startsAt: _now.add(const Duration(days: 1, hours: 2)),
-      endsAt: _now.add(const Duration(days: 1, hours: 5)),
-      checkInEnabled: false,
-      status: ProgramFunctionStatus.scheduled,
-      expectedCount: 60,
-      checkedInCount: 0,
-    ),
-  ],
-  vehicleClasses: const [],
-);
-
-final _summaries = [
-  OrganizerProgramSummary(
-    programId: _programId,
-    title: 'Kapoor–Shah Wedding',
-    kind: ProgramKind.wedding,
-    status: ProgramStatus.active,
-    revision: 1,
-  ),
-  OrganizerProgramSummary(
-    programId: 'program_aisle_summit',
-    title: 'Aisle Summit 2026',
-    kind: ProgramKind.corporate,
-    status: ProgramStatus.draft,
-    revision: 1,
-  ),
-];
 
 ProgramGuestRow _guest(
   String id,
@@ -278,62 +185,6 @@ final _guestPage = ProgramGuestListPage(
   ],
 );
 
-final _staff = ProgramStaffList(
-  programId: _programId,
-  nextCursor: null,
-  members: [
-    ProgramStaffMember(
-      uid: 'uid_arjun',
-      displayName: 'Arjun Mehta',
-      phoneLastFour: '2841',
-      duties: [
-        ProgramDutyAssignment(
-          duty: ProgramStaffDuty.functionCheckIn,
-          pickupPointIds: const {},
-          hotelIds: const {},
-          functionIds: const {_functionId},
-          expiresAt: _now.add(const Duration(hours: 8)),
-        ),
-      ],
-      status: ProgramStaffStatus.active,
-      expiresAt: _now.add(const Duration(days: 4)),
-      revision: 1,
-    ),
-    ProgramStaffMember(
-      uid: 'uid_dev',
-      displayName: '',
-      phoneLastFour: '9930',
-      duties: [
-        ProgramDutyAssignment(
-          duty: ProgramStaffDuty.hotelDesk,
-          pickupPointIds: const {},
-          hotelIds: const {},
-          functionIds: const {},
-          expiresAt: _now.add(const Duration(days: 4)),
-        ),
-      ],
-      status: ProgramStaffStatus.active,
-      expiresAt: _now.add(const Duration(days: 4)),
-      revision: 2,
-    ),
-  ],
-);
-
-List<Override> _workspaceOverrides() => [
-  uidProvider.overrideWithValue(const AsyncData<String?>('uid_org')),
-  hostOperableOrganizersProvider(
-    'uid_org',
-  ).overrideWithValue(AsyncData([_organizer])),
-  organizerProgramListProvider(
-    _organizerId,
-  ).overrideWithValue(AsyncData(_summaries)),
-  organizerProgramDetailProvider(
-    _programId,
-  ).overrideWithValue(AsyncData(_detail)),
-  programGuestListProvider(_programId).overrideWithValue(AsyncData(_guestPage)),
-  programStaffStreamProvider(_programId).overrideWithValue(AsyncData(_staff)),
-];
-
 class _DialogFrame extends StatelessWidget {
   const _DialogFrame({required this.child});
 
@@ -353,60 +204,6 @@ class _DialogFrame extends StatelessWidget {
 }
 
 @widgetbook.UseCase(
-  name: 'Screen states',
-  type: StaffGuestsScreen,
-  path: '[P1 product surfaces]/Program guests',
-)
-Widget staffGuestsScreenStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'StaffGuestsScreen',
-    contractId: 'screen.programs.guests',
-    children: [
-      for (final scenario in [
-        (label: 'Expired guest relations duty', access: _deskAccess),
-        (
-          label: 'Manager access',
-          access: ProgramWorkAccess(
-            programId: _deskAccess.programId,
-            organizerId: _deskAccess.organizerId,
-            title: _deskAccess.title,
-            kind: _deskAccess.kind,
-            timezone: _deskAccess.timezone,
-            status: _deskAccess.status,
-            actorRole: ProgramActorRole.manager,
-            duties: const [],
-            grantExpiresAt: null,
-            capabilities: _deskAccess.capabilities,
-            pickupPoints: _deskAccess.pickupPoints,
-            hotels: _deskAccess.hotels,
-            functions: _deskAccess.functions,
-            vehicleClasses: _deskAccess.vehicleClasses,
-          ),
-        ),
-      ])
-        WidgetbookPageStateCard(
-          label: scenario.label,
-          child: WidgetbookUtilityDeviceFrame(
-            child: ProviderScope(
-              overrides: [
-                ..._workspaceOverrides(),
-                programWorkEntryProvider(_programId, null).overrideWithValue(
-                  AsyncData((
-                    value: scenario.access,
-                    snapshotAt: null,
-                    snapshotExpiresAt: null,
-                  )),
-                ),
-              ],
-              child: StaffGuestsScreen(programId: _programId, now: () => _now),
-            ),
-          ),
-        ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Add a guest',
   type: HostProgrammeGuestSheet,
   path: '[P1 product surfaces]/Program guests',
@@ -414,7 +211,7 @@ Widget staffGuestsScreenStates(BuildContext context) {
 Widget hostProgrammeGuestSheetStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
     title: 'HostProgrammeGuestSheet',
-    contractId: 'screen.programs.guests',
+    contractId: 'component.host.programme.guests',
     children: [
       WidgetbookPageStateCard(
         label: 'households and groups',
@@ -437,7 +234,7 @@ Widget hostProgrammeGuestSheetStates(BuildContext context) {
 Widget hostProgrammeGroupSheetStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
     title: 'HostProgrammeGroupSheet',
-    contractId: 'screen.programs.guests',
+    contractId: 'component.host.programme.guests',
     children: [
       WidgetbookPageStateCard(
         label: 'new group',
@@ -465,7 +262,7 @@ Widget hostProgrammeGroupSheetStates(BuildContext context) {
 Widget programmeGuestGroupsSectionStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
     title: 'ProgrammeGuestGroupsSection',
-    contractId: 'screen.programs.guests',
+    contractId: 'component.host.programme.guests',
     children: [
       WidgetbookPageStateCard(
         label: 'editable',
@@ -496,7 +293,7 @@ Widget programmeNoHouseholdSectionStates(BuildContext context) {
   );
   return WidgetbookPageCatalogFrame(
     title: 'ProgrammeNoHouseholdSection',
-    contractId: 'screen.programs.guests',
+    contractId: 'component.host.programme.guests',
     children: [
       WidgetbookPageStateCard(
         label: 'guests on their own',

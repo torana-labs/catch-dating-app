@@ -9,6 +9,7 @@ export 'staff_departures_screen.dart'
     show StaffDeparturesScreen, staffHotelScreenForUri;
 export 'staff_dispatch_screen.dart' show StaffDispatchScreen;
 export 'staff_door_screen.dart' show StaffDoorScreen;
+export 'staff_guests_screen.dart' show StaffGuestsScreen;
 export 'staff_hotel_desk_screen.dart' show StaffHotelDeskScreen;
 export 'staff_jobs_screen.dart' show StaffJobsScreen;
 export 'staff_lead_screen.dart' show StaffLeadScreen;
