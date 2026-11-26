@@ -71,7 +71,7 @@ test("commented accent builders cannot satisfy activity color ownership", () => 
 
 test("flags event accordions seeded with an expanded field", () => {
   const findings = scanHostEventFieldSource({
-    relativePath: "lib/hosts/presentation/edit_hosted_event_screen.dart",
+    relativePath: "lib/hosts/create/edit_event_screen.dart",
     source: "final accordion = CatchAccordionController(initialExpanded: 'pace');",
   });
 

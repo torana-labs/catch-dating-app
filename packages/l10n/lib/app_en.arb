@@ -4310,13 +4310,6 @@
     "x-owner": "product",
     "x-surface": "events.shared.map_pin_tile"
   },
-  "eventsMapPinTileTitleChooseOnMap": "Choose on map",
-  "@eventsMapPinTileTitleChooseOnMap": {
-    "description": "Product copy used by lib/events/shared/map_pin_tile.dart (title).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.shared.map_pin_tile"
-  },
   "exploreExploreMapScreenTooltipBackToExplore": "Back to Explore",
   "@exploreExploreMapScreenTooltipBackToExplore": {
     "description": "Product copy used by lib/explore/presentation/explore_map_screen.dart (tooltip).",
@@ -4760,20 +4753,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
   },
-  "hostsEditHostedEventScreenBodyDecreaseDuration": "Decrease duration",
-  "@hostsEditHostedEventScreenBodyDecreaseDuration": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.edit_hosted_event_screen"
-  },
-  "hostsEditHostedEventScreenBodyIncreaseDuration": "Increase duration",
-  "@hostsEditHostedEventScreenBodyIncreaseDuration": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.edit_hosted_event_screen"
-  },
   "hostsEditHostedEventScreenTitleLocationName": "Location name",
   "@hostsEditHostedEventScreenTitleLocationName": {
     "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).",
@@ -4802,27 +4781,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.edit_hosted_event_screen"
   },
-  "hostsEditHostedEventScreenTitleExtraDirections": "Extra directions",
-  "@hostsEditHostedEventScreenTitleExtraDirections": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.edit_hosted_event_screen"
-  },
-  "hostsEditHostedEventScreenPlaceholderEGMeetOutside": "e.g. Meet outside the blue gate, third entrance",
-  "@hostsEditHostedEventScreenPlaceholderEGMeetOutside": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (placeholder).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.edit_hosted_event_screen"
-  },
-  "hostsEditHostedEventScreenTitleDistanceKm": "Distance (km)",
-  "@hostsEditHostedEventScreenTitleDistanceKm": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.edit_hosted_event_screen"
-  },
   "hostsEditHostedEventScreenBodyDD": "^\\d*\\.?\\d*",
   "@hostsEditHostedEventScreenBodyDD": {
     "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (body).",
@@ -4840,34 +4798,6 @@
   "hostsEditHostedEventScreenBodyMustBe0": "Must be > 0",
   "@hostsEditHostedEventScreenBodyMustBe0": {
     "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.edit_hosted_event_screen"
-  },
-  "hostsEditHostedEventScreenTitleDescription": "Description",
-  "@hostsEditHostedEventScreenTitleDescription": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.edit_hosted_event_screen"
-  },
-  "hostsEditHostedEventScreenPlaceholderWhatShouldAttendeesExpect": "What should attendees expect? Any tips for the route or venue?",
-  "@hostsEditHostedEventScreenPlaceholderWhatShouldAttendeesExpect": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (placeholder).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.edit_hosted_event_screen"
-  },
-  "hostsEditHostedEventScreenTitleEventDate": "Event date",
-  "@hostsEditHostedEventScreenTitleEventDate": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.edit_hosted_event_screen"
-  },
-  "hostsEditHostedEventScreenTitleStartTime": "Start time",
-  "@hostsEditHostedEventScreenTitleStartTime": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.edit_hosted_event_screen"
@@ -4924,13 +4854,6 @@
   "hostsEditHostedEventScreenTextEditableUntilTheFirst": "Editable until the first booking or waitlist join.",
   "@hostsEditHostedEventScreenTextEditableUntilTheFirst": {
     "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.edit_hosted_event_screen"
-  },
-  "hostsEditHostedEventScreenTitleMaxAttendees": "Max attendees",
-  "@hostsEditHostedEventScreenTitleMaxAttendees": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.edit_hosted_event_screen"
@@ -5053,34 +4976,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.edit_hosted_event_screen"
-  },
-  "hostsHostCreateEventRouteLoadingScreenTitleEventBasics": "Event basics",
-  "@hostsHostCreateEventRouteLoadingScreenTitleEventBasics": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.host_create_event_route_loading_screen"
-  },
-  "hostsHostCreateEventRouteLoadingScreenBodyLoadingOrganizer": "Loading organizer",
-  "@hostsHostCreateEventRouteLoadingScreenBodyLoadingOrganizer": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.host_create_event_route_loading_screen"
-  },
-  "hostsEventDetailsStepTitleEventName": "Event name",
-  "@hostsEventDetailsStepTitleEventName": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
-  },
-  "hostsEventDetailsStepPlaceholderEventName": "Friday night social",
-  "@hostsEventDetailsStepPlaceholderEventName": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (placeholder).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
   },
   "hostsEventDetailsStepTitleDescription": "Description",
   "@hostsEventDetailsStepTitleDescription": {
@@ -7261,43 +7156,8 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.edit_hosted_event_screen"
   },
-  "hostsEditHostedEventScreenLabelSchedule": "Schedule",
-  "@hostsEditHostedEventScreenLabelSchedule": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.edit_hosted_event_screen"
-  },
-  "hostsEditHostedEventScreenLabelDuration": "Duration",
-  "@hostsEditHostedEventScreenLabelDuration": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.edit_hosted_event_screen"
-  },
-  "hostsEditHostedEventScreenLabelWhere": "Where",
-  "@hostsEditHostedEventScreenLabelWhere": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.edit_hosted_event_screen"
-  },
-  "hostsEditHostedEventScreenLabelEventDetails": "Event details",
-  "@hostsEditHostedEventScreenLabelEventDetails": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.edit_hosted_event_screen"
-  },
   "hostsEditHostedEventScreenLabelEventPolicy": "Event policy",
   "@hostsEditHostedEventScreenLabelEventPolicy": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.edit_hosted_event_screen"
-  },
-  "hostsEditHostedEventScreenLabelLocked": "Locked",
-  "@hostsEditHostedEventScreenLabelLocked": {
     "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
@@ -7625,20 +7485,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"
   },
-  "hostsEventDetailsStepLabelPaceLevel": "Pace level",
-  "@hostsEventDetailsStepLabelPaceLevel": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
-  },
-  "hostsWhereStepLabelMeetingLocation": "Meeting location",
-  "@hostsWhereStepLabelMeetingLocation": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.where_step"
-  },
   "hostsHostInboxScreenTitleNoGeneralInquiries": "No general inquiries",
   "@hostsHostInboxScreenTitleNoGeneralInquiries": {
     "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (title).",
@@ -7936,16 +7782,6 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_event_type_browse_grid"
-  },
-  "hostsEditHostedEventScreenTitleBasePriceCurrencycode": "Base price ({currencyCode})",
-  "@hostsEditHostedEventScreenTitleBasePriceCurrencycode": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).",
-    "placeholders": {
-      "currencyCode": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.edit_hosted_event_screen"
   },
   "hostsEditHostedEventScreenTitleStepCurrencycode": "Step ({currencyCode})",
   "@hostsEditHostedEventScreenTitleStepCurrencycode": {
@@ -10074,13 +9910,6 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "events.shared.event_joined_celebration_screen"
-  },
-  "hostsEditHostedEventRouteScreenTitleEditEvent": "Edit event",
-  "@hostsEditHostedEventRouteScreenTitleEditEvent": {
-    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_route_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.edit_hosted_event_route_screen"
   },
   "hostsEditHostedEventRouteScreenTitleEventNotFound": "Event not found",
   "@hostsEditHostedEventRouteScreenTitleEventNotFound": {
@@ -17437,8 +17266,6 @@
   "@sharedActionDelete": {"description": "Shared destructive delete action label.", "x-audience": "shared", "x-owner": "product", "x-surface": "core.widgets.confirmation"},
   "sharedValidationRequired": "Required",
   "@sharedValidationRequired": {"description": "Shared validation message for a required field.", "x-audience": "shared", "x-owner": "product", "x-surface": "core.forms.validation"},
-  "sharedValidationInvalid": "Invalid",
-  "@sharedValidationInvalid": {"description": "Shared validation message for an invalid field value.", "x-audience": "shared", "x-owner": "product", "x-surface": "core.forms.validation"},
   "sharedValidationMinimumOne": "Min 1",
   "@sharedValidationMinimumOne": {"description": "Shared validation message for positive integer inputs.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.validators"},
   "sharedValidationInviteCodeMinimum": "Min 4 chars",
@@ -17569,8 +17396,6 @@
   "@hostsEventEditSaveChanges": {"description": "Primary action for saving Host event edits.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_event_edit_screen_state"},
   "hostsEventEditUpdated": "Event updated.",
   "@hostsEventEditUpdated": {"description": "Success message after Host event edits are saved.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_event_edit_screen_state"},
-  "hostsEventEditMissingStartingPoint": "Pin a starting point before saving.",
-  "@hostsEventEditMissingStartingPoint": {"description": "Validation message for a missing event starting point.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_event_edit_screen_state"},
   "hostsEventEditInvalidSchedule": "Event start must be in the future.",
   "@hostsEventEditInvalidSchedule": {"description": "Validation message for an invalid Host event schedule.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_event_edit_screen_state"},
   "launchAccessValidationChooseCity": "Please choose your city",
@@ -20241,40 +20066,10 @@
   "@hostsRouteEventPlanTrackingHostOnly": {"description": "Host-only route tracking choice.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"},
   "hostsRouteEventPlanTrackingOperators": "Host and authorized operators",
   "@hostsRouteEventPlanTrackingOperators": {"description": "Authorized operator route tracking choice.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.route_event_plan_editor"},
-  "hostsEventItineraryTitle": "Run of show",
-  "@hostsEventItineraryTitle": {"description": "Event itinerary editor section title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
-  "hostsEventItineraryOffset": "Starts {minutes} minutes after the event begins",
-  "@hostsEventItineraryOffset": {"description": "Itinerary relative start time.", "placeholders": {"minutes": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
-  "hostsEventItineraryEdit": "Edit",
-  "@hostsEventItineraryEdit": {"description": "Edit itinerary entry action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
-  "hostsEventItineraryAdd": "Add itinerary step",
-  "@hostsEventItineraryAdd": {"description": "Add itinerary entry title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
-  "hostsEventItineraryAddBody": "Publish real timing, stops, transitions, and locations for attendees.",
-  "@hostsEventItineraryAddBody": {"description": "Add itinerary entry guidance.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
-  "hostsEventItineraryAddAction": "Add step",
-  "@hostsEventItineraryAddAction": {"description": "Add itinerary entry action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
-  "hostsEventItineraryDialogAdd": "Add run-of-show step",
-  "@hostsEventItineraryDialogAdd": {"description": "New itinerary entry dialog title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
-  "hostsEventItineraryDialogEdit": "Edit run-of-show step",
-  "@hostsEventItineraryDialogEdit": {"description": "Existing itinerary entry dialog title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
-  "hostsEventItineraryDelete": "Delete",
-  "@hostsEventItineraryDelete": {"description": "Delete itinerary entry action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
-  "hostsEventItinerarySave": "Save step",
-  "@hostsEventItinerarySave": {"description": "Save itinerary entry action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
-  "hostsEventItineraryFieldTitle": "Step title",
-  "@hostsEventItineraryFieldTitle": {"description": "Itinerary entry title field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
-  "hostsEventItineraryFieldTitleHint": "Gather, activity, stop, or finish",
-  "@hostsEventItineraryFieldTitleHint": {"description": "Itinerary entry title hint.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
   "hostsEventItineraryFieldOffset": "Minutes after start",
   "@hostsEventItineraryFieldOffset": {"description": "Itinerary offset field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
-  "hostsEventItineraryFieldDuration": "Duration in minutes",
-  "@hostsEventItineraryFieldDuration": {"description": "Itinerary duration field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
-  "hostsEventItineraryFieldDescription": "Attendee guidance",
-  "@hostsEventItineraryFieldDescription": {"description": "Itinerary guidance field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
   "hostsEventItineraryFieldKind": "Step type",
   "@hostsEventItineraryFieldKind": {"description": "Itinerary entry kind field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
-  "hostsEventItineraryUseMeetingPoint": "Use the event meeting point",
-  "@hostsEventItineraryUseMeetingPoint": {"description": "Copies meeting location into itinerary entry.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
   "hostsEventItineraryLocationTitle": "Stop location",
   "@hostsEventItineraryLocationTitle": {"description": "Optional exact location field for an itinerary entry.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_itinerary_editor"},
   "hostsEventItineraryLocationEmpty": "No exact location",
@@ -26461,13 +26256,6 @@
   "hostsEventAccessibilityHint": "Describe step-free access, seating, accessible toilets or activity demands.",
   "@hostsEventAccessibilityHint": {
     "description": "Prompts factual accessibility information, not a guarantee.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.event_guest_details_section"
-  },
-  "hostsEventGuestDetailsSave": "Save guest information",
-  "@hostsEventGuestDetailsSave": {
-    "description": "Saves both public guest notes on private event setup.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.event_guest_details_section"

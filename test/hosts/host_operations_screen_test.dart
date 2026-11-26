@@ -27,10 +27,10 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defau
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
+import 'package:catch_dating_app/hosts/create/create_route_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_defaults_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';

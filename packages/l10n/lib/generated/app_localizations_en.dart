@@ -2465,9 +2465,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventsMapPinTileTitlePinnedLocation => 'Pinned location';
 
   @override
-  String get eventsMapPinTileTitleChooseOnMap => 'Choose on map';
-
-  @override
   String get exploreExploreMapScreenTooltipBackToExplore => 'Back to Explore';
 
   @override
@@ -2692,14 +2689,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsCreateOrganizerPhotosPickerActionRemoveLogo => 'Remove';
 
   @override
-  String get hostsEditHostedEventScreenBodyDecreaseDuration =>
-      'Decrease duration';
-
-  @override
-  String get hostsEditHostedEventScreenBodyIncreaseDuration =>
-      'Increase duration';
-
-  @override
   String get hostsEditHostedEventScreenTitleLocationName => 'Location name';
 
   @override
@@ -2714,17 +2703,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsEditHostedEventScreenBodyRequired => 'Required';
 
   @override
-  String get hostsEditHostedEventScreenTitleExtraDirections =>
-      'Extra directions';
-
-  @override
-  String get hostsEditHostedEventScreenPlaceholderEGMeetOutside =>
-      'e.g. Meet outside the blue gate, third entrance';
-
-  @override
-  String get hostsEditHostedEventScreenTitleDistanceKm => 'Distance (km)';
-
-  @override
   String get hostsEditHostedEventScreenBodyDD => '^\\d*\\.?\\d*';
 
   @override
@@ -2732,19 +2710,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsEditHostedEventScreenBodyMustBe0 => 'Must be > 0';
-
-  @override
-  String get hostsEditHostedEventScreenTitleDescription => 'Description';
-
-  @override
-  String get hostsEditHostedEventScreenPlaceholderWhatShouldAttendeesExpect =>
-      'What should attendees expect? Any tips for the route or venue?';
-
-  @override
-  String get hostsEditHostedEventScreenTitleEventDate => 'Event date';
-
-  @override
-  String get hostsEditHostedEventScreenTitleStartTime => 'Start time';
 
   @override
   String get hostsEditHostedEventScreenTitleCancelledEvent => 'Cancelled event';
@@ -2774,9 +2739,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsEditHostedEventScreenTextEditableUntilTheFirst =>
       'Editable until the first booking or waitlist join.';
-
-  @override
-  String get hostsEditHostedEventScreenTitleMaxAttendees => 'Max attendees';
 
   @override
   String get hostsEditHostedEventScreenTextLoadingCurrentInviteCode =>
@@ -2836,20 +2798,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsEditHostedEventScreenTextScheduleChangesAreBlocked =>
       'Schedule changes are blocked here to avoid changing attendee commitments.';
-
-  @override
-  String get hostsHostCreateEventRouteLoadingScreenTitleEventBasics =>
-      'Event basics';
-
-  @override
-  String get hostsHostCreateEventRouteLoadingScreenBodyLoadingOrganizer =>
-      'Loading organizer';
-
-  @override
-  String get hostsEventDetailsStepTitleEventName => 'Event name';
-
-  @override
-  String get hostsEventDetailsStepPlaceholderEventName => 'Friday night social';
 
   @override
   String get hostsEventDetailsStepTitleDescription => 'Description';
@@ -4018,22 +3966,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsEditHostedEventScreenTitleEditEvent => 'Edit event';
 
   @override
-  String get hostsEditHostedEventScreenLabelSchedule => 'Schedule';
-
-  @override
-  String get hostsEditHostedEventScreenLabelDuration => 'Duration';
-
-  @override
-  String get hostsEditHostedEventScreenLabelWhere => 'Where';
-
-  @override
-  String get hostsEditHostedEventScreenLabelEventDetails => 'Event details';
-
-  @override
   String get hostsEditHostedEventScreenLabelEventPolicy => 'Event policy';
-
-  @override
-  String get hostsEditHostedEventScreenLabelLocked => 'Locked';
 
   @override
   String get hostsEditHostedEventScreenLabelAdmissionFormat =>
@@ -4183,12 +4116,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsRouteEventPlanRolePhotographer => 'Photographer';
-
-  @override
-  String get hostsEventDetailsStepLabelPaceLevel => 'Pace level';
-
-  @override
-  String get hostsWhereStepLabelMeetingLocation => 'Meeting location';
 
   @override
   String get hostsHostInboxScreenTitleNoGeneralInquiries =>
@@ -4390,13 +4317,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object remainingCount,
   }) {
     return 'Show $remainingCount more activity types';
-  }
-
-  @override
-  String hostsEditHostedEventScreenTitleBasePriceCurrencycode({
-    required Object currencyCode,
-  }) {
-    return 'Base price ($currencyCode)';
   }
 
   @override
@@ -5710,9 +5630,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return 'with $organizerName';
   }
-
-  @override
-  String get hostsEditHostedEventRouteScreenTitleEditEvent => 'Edit event';
 
   @override
   String get hostsEditHostedEventRouteScreenTitleEventNotFound =>
@@ -9871,9 +9788,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sharedValidationRequired => 'Required';
 
   @override
-  String get sharedValidationInvalid => 'Invalid';
-
-  @override
   String get sharedValidationMinimumOne => 'Min 1';
 
   @override
@@ -10110,10 +10024,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsEventEditUpdated => 'Event updated.';
-
-  @override
-  String get hostsEventEditMissingStartingPoint =>
-      'Pin a starting point before saving.';
 
   @override
   String get hostsEventEditInvalidSchedule =>
@@ -14700,60 +14610,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Host and authorized operators';
 
   @override
-  String get hostsEventItineraryTitle => 'Run of show';
-
-  @override
-  String hostsEventItineraryOffset({required int minutes}) {
-    return 'Starts $minutes minutes after the event begins';
-  }
-
-  @override
-  String get hostsEventItineraryEdit => 'Edit';
-
-  @override
-  String get hostsEventItineraryAdd => 'Add itinerary step';
-
-  @override
-  String get hostsEventItineraryAddBody =>
-      'Publish real timing, stops, transitions, and locations for attendees.';
-
-  @override
-  String get hostsEventItineraryAddAction => 'Add step';
-
-  @override
-  String get hostsEventItineraryDialogAdd => 'Add run-of-show step';
-
-  @override
-  String get hostsEventItineraryDialogEdit => 'Edit run-of-show step';
-
-  @override
-  String get hostsEventItineraryDelete => 'Delete';
-
-  @override
-  String get hostsEventItinerarySave => 'Save step';
-
-  @override
-  String get hostsEventItineraryFieldTitle => 'Step title';
-
-  @override
-  String get hostsEventItineraryFieldTitleHint =>
-      'Gather, activity, stop, or finish';
-
-  @override
   String get hostsEventItineraryFieldOffset => 'Minutes after start';
 
   @override
-  String get hostsEventItineraryFieldDuration => 'Duration in minutes';
-
-  @override
-  String get hostsEventItineraryFieldDescription => 'Attendee guidance';
-
-  @override
   String get hostsEventItineraryFieldKind => 'Step type';
-
-  @override
-  String get hostsEventItineraryUseMeetingPoint =>
-      'Use the event meeting point';
 
   @override
   String get hostsEventItineraryLocationTitle => 'Stop location';
@@ -20617,9 +20477,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsEventAccessibilityHint =>
       'Describe step-free access, seating, accessible toilets or activity demands.';
-
-  @override
-  String get hostsEventGuestDetailsSave => 'Save guest information';
 
   @override
   String get hostAccountDeletionConfirmation =>

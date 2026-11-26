@@ -4,10 +4,10 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/hosts/create/create_route_screen.dart';
 import 'package:catch_dating_app/hosts/events/events_body.dart';
 import 'package:catch_dating_app/hosts/events/events_controller.dart';
 import 'package:catch_dating_app/hosts/events/events_state.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/catch_async_state.dart';
@@ -194,7 +194,6 @@ class _HostEventsTabScreenState extends ConsumerState<HostEventsTabScreen> {
       extra: HostCreateEventRouteArguments(
         initialOrganizer: organizer,
         initialSavedEventId: savedEventId,
-        promptForDrafts: savedEventId == null,
       ),
     );
     _refreshHistoryWhenShown();
