@@ -4,12 +4,14 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {screenSourceRoots} from "../lib/flutter_source_roots.mjs";
+import {widgetbookComponentNames} from "./lib/widgetbook_use_cases.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const defaultRepoRoot = path.resolve(path.dirname(scriptPath), "../..");
 const defaultRegistryPath =
   "docs/design_parity/widget_consolidation/pattern_families.json";
-const widgetbookPath = "widgetbook/lib/main.directories.g.dart";
+// Widgetbook's build_runner output isn't committed; previews come from its annotations.
+const widgetbookPath = "Widgetbook's @widgetbook.UseCase annotations";
 
 const priorities = new Set(["P0", "P1", "P2"]);
 const statuses = new Set([
@@ -314,15 +316,10 @@ function collectEvidence(repoRoot, registry) {
   let sourceSymbols = new Set();
 
   if (previews.has("required")) {
-    const fullPath = path.resolve(repoRoot, widgetbookPath);
-    if (!fs.existsSync(fullPath)) {
-      errors.push(`${widgetbookPath} is required for preview validation but is missing`);
-    } else {
-      try {
-        widgetbookSymbols = parseWidgetbookSymbols(fs.readFileSync(fullPath, "utf8"));
-      } catch (error) {
-        errors.push(`${widgetbookPath} could not be read: ${error.message}`);
-      }
+    try {
+      widgetbookSymbols = widgetbookSymbolsFrom(widgetbookComponentNames(repoRoot));
+    } catch (error) {
+      errors.push(`${widgetbookPath} could not be read: ${error.message}`);
     }
   }
 
@@ -345,15 +342,10 @@ function collectRequestedPreviewStates(registry) {
   return previews;
 }
 
-export function parseWidgetbookSymbols(source) {
-  const symbols = new Set();
-  const pattern = /WidgetbookComponent\(\s*name:\s*'([^']+)'/gu;
-  for (const match of source.matchAll(pattern)) {
-    // The generator prints instantiated type arguments for multi-generic APIs;
-    // registry identity belongs to the declaring class, not its type arguments.
-    symbols.add(match[1].replace(/<.*>$/u, ""));
-  }
-  return symbols;
+export function widgetbookSymbolsFrom(componentNames) {
+  // Widgetbook names a multi-generic API with instantiated type arguments;
+  // registry identity belongs to the declaring class, not its type arguments.
+  return new Set([...componentNames].map((name) => name.replace(/<.*>$/u, "")));
 }
 
 function collectDartSourceSymbols(libRoot) {

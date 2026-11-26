@@ -6,6 +6,7 @@ import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {buildLintEnforcementOutputs} from "./build_lint_enforcement_tables.mjs";
 import {isPlannedWithoutDart} from "./component_concepts.mjs";
+import {widgetbookComponentNames} from "./lib/widgetbook_use_cases.mjs";
 
 const isCli = process.argv[1] &&
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
@@ -149,7 +150,6 @@ function runCli() {
   ].join("\n");
   const checkerSource = read("tool/architecture/check_ui_composition_contracts.dart");
   const harnessSource = read("tool/check_catch_ui_lints.sh");
-  const widgetbookSource = read("widgetbook/lib/main.directories.g.dart");
   const expectations = readJson("tool/design/generated/enforcement_expectations.json");
   const generated = buildLintEnforcementOutputs(registry);
   const generatedFiles = {
@@ -166,7 +166,7 @@ function runCli() {
     checkerCodes: extractCheckerCodes(checkerSource),
     harnessSource,
     generatedProbeMinimums: expectations.generatedProbeMinimums ?? {},
-    widgetbookNames: extractWidgetbookNames(widgetbookSource),
+    widgetbookNames: widgetbookComponentNames(),
     today: new Date().toISOString().slice(0, 10),
   });
   for (const relative of stale) {
@@ -184,14 +184,6 @@ function runCli() {
       `${metrics.enforcementCount} statically enforced; ${metrics.verificationCount} contract-verified; ` +
       `${metrics.waiverCount} temporary waivers; ${metrics.componentsWithoutDecision} without decisions; ` +
       `${metrics.orphanLintCodes} orphan codes; ${metrics.mappedCodes} mapped codes).`,
-  );
-}
-
-export function extractWidgetbookNames(source) {
-  return new Set(
-    [...source.matchAll(/WidgetbookComponent\(\s*name:\s*'([^']+)'/gu)].map(
-      (match) => match[1],
-    ),
   );
 }
 

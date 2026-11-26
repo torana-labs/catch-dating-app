@@ -21,6 +21,7 @@ import {
   productionWidgetGlobs,
   productionWidgetRoots,
 } from "./lib/production_widget_roots.mjs";
+import {widgetbookComponentNames} from "./lib/widgetbook_use_cases.mjs";
 
 const DEFAULT_OUTPUT = "build/reports/widget_classification.json";
 
@@ -29,10 +30,9 @@ export function buildWidgetClassification({
   updated = new Date().toISOString().slice(0, 10),
 } = {}) {
   const contractsPath = path.join(repoRoot, "design/components/catch.components.json");
-  const widgetbookPath = path.join(repoRoot, "widgetbook/lib/main.directories.g.dart");
   const contracts = readJson(contractsPath).components ?? [];
   const contractsBySymbol = buildContractSymbolMap(contracts);
-  const widgetbookNames = readWidgetbookNames(widgetbookPath);
+  const widgetbookNames = readWidgetbookNames(repoRoot);
   const widgets = collectProductionWidgetClassificationDeclarations({repoRoot})
     .map((declaration) => classifyDeclaration(
       declaration,
@@ -49,7 +49,7 @@ export function buildWidgetClassification({
       canonicalContracts:
         "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
       catalog:
-        "widgetbook/lib/main.directories.g.dart is the generated review-surface inventory used to determine catalog coverage.",
+        "Widgetbook's @widgetbook.UseCase annotations (tool/design/lib/widgetbook_use_cases.mjs) are the review-surface inventory used to determine catalog coverage.",
       privateHelperPolicy:
         "Private helper widgets are not an allowed destination. Private widget classes must be promoted, merged into a canonical public widget, or inlined/deleted.",
       generator: "tool/design/generate_widget_classification.mjs",
@@ -124,12 +124,9 @@ function listDartFiles(root) {
   return results;
 }
 
-function readWidgetbookNames(widgetbookPath) {
-  if (!fs.existsSync(widgetbookPath)) return new Set();
-  const source = fs.readFileSync(widgetbookPath, "utf8");
+function readWidgetbookNames(repoRoot) {
   const names = new Set();
-  for (const match of source.matchAll(/WidgetbookComponent\(\s*name: '([^']+)'/gu)) {
-    const name = match[1];
+  for (const name of widgetbookComponentNames(repoRoot)) {
     names.add(name);
     names.add(name.replace(/<.*>$/u, ""));
   }
