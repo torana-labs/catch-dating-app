@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/staff/staff_guests_screen.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
@@ -143,12 +143,12 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: const ProgramGuestDeskScreen(programId: 'program'),
+            home: const StaffGuestsScreen(programId: 'program'),
           ),
         ),
       );
       await pumpFeatureUi(tester);
-      expect(find.byTooltip('Share RSVP link'), findsOneWidget);
+      expect(find.text('Share RSVP link'), findsOneWidget);
       expect(
         find.text('Add guest'),
         duty == ProgramStaffDuty.programCoordinator
@@ -158,7 +158,7 @@ void main() {
     });
   }
 
-  testWidgets('archived guest desk does not offer RSVP link issuance', (
+  testWidgets('archived staff guest list does not offer RSVP link issuance', (
     tester,
   ) async {
     final access = _access(
@@ -179,13 +179,13 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const ProgramGuestDeskScreen(programId: 'program'),
+          home: const StaffGuestsScreen(programId: 'program'),
         ),
       ),
     );
     await pumpFeatureUi(tester);
     expect(find.text('Household'), findsOneWidget);
-    expect(find.byTooltip('Share RSVP link'), findsNothing);
+    expect(find.text('Share RSVP link'), findsNothing);
   });
 
   testWidgets('expired guest-relations grant does not expose RSVP sharing', (
@@ -206,12 +206,12 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const ProgramGuestDeskScreen(programId: 'program'),
+          home: const StaffGuestsScreen(programId: 'program'),
         ),
       ),
     );
     await pumpFeatureUi(tester);
-    expect(find.byTooltip('Share RSVP link'), findsNothing);
+    expect(find.text('Share RSVP link'), findsNothing);
   });
 
   test(

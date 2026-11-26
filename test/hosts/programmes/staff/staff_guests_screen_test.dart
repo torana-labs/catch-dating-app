@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/staff/staff_guests_screen.dart';
 import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
@@ -94,13 +94,13 @@ List<Override> _deskOverrides(Map<String, Object?> access) => [
 
 void main() {
   testWidgets(
-    'the staff guest desk hides coordinator mutations but keeps RSVP edits',
+    'the staff guest list hides coordinator mutations but keeps RSVP edits',
     (tester) async {
       final router = GoRouter(
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) => const ProgramGuestDeskScreen(programId: 'p-1'),
+            builder: (_, _) => const StaffGuestsScreen(programId: 'p-1'),
           ),
         ],
       );
@@ -123,8 +123,25 @@ void main() {
       await tester.runAsync(flushTestEventQueue);
       await pumpFeatureUi(tester);
       expect(find.text('Rohan Sharma'), findsOneWidget);
-      // RSVP editor is the sanctioned staff write path.
-      expect(find.text('Attending'), findsOneWidget);
+      // Changing answers is the sanctioned staff write path.
+      await tester.tap(
+        find.byKey(const ValueKey<String>('staff-guests-guest-g-1')),
+      );
+      await pumpFeatureUi(tester);
+      expect(
+        find.byKey(const ValueKey<String>('host-programme-answers-sheet')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey<String>('host-programme-answer-fn-1-coming')),
+        findsOneWidget,
+      );
+      Navigator.of(
+        tester.element(
+          find.byKey(const ValueKey('host-programme-answers-sheet')),
+        ),
+      ).pop();
+      await pumpFeatureUi(tester);
       // Coordinator-only roster mutations stay hidden.
       expect(find.text('Add guest'), findsNothing);
       expect(find.text('New group'), findsNothing);
@@ -133,40 +150,41 @@ void main() {
     },
   );
 
-  testWidgets('program coordinators retain roster mutations on the desk', (
-    tester,
-  ) async {
-    final router = GoRouter(
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (_, _) => const ProgramGuestDeskScreen(programId: 'p-1'),
+  testWidgets(
+    'program coordinators retain roster mutations on the guest list',
+    (tester) async {
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) => const StaffGuestsScreen(programId: 'p-1'),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        ProviderScope(
+          retry: (_, _) => null,
+          overrides: _deskOverrides(
+            _access(role: 'staff', duties: [_duty('programCoordinator')]),
+          ),
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
         ),
-      ],
-    );
-    addTearDown(router.dispose);
-    await tester.pumpWidget(
-      ProviderScope(
-        retry: (_, _) => null,
-        overrides: _deskOverrides(
-          _access(role: 'staff', duties: [_duty('programCoordinator')]),
-        ),
-        child: MaterialApp.router(
-          theme: AppTheme.light,
-          routerConfig: router,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-        ),
-      ),
-    );
-    await pumpFeatureUi(tester);
-    await tester.runAsync(flushTestEventQueue);
-    await pumpFeatureUi(tester);
-    expect(find.text('Rohan Sharma'), findsOneWidget);
-    expect(find.text('Add guest'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-    await tester.pumpWidget(const SizedBox.shrink());
-  });
+      );
+      await pumpFeatureUi(tester);
+      await tester.runAsync(flushTestEventQueue);
+      await pumpFeatureUi(tester);
+      expect(find.text('Rohan Sharma'), findsOneWidget);
+      expect(find.text('Add guest'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
 
   for (final scenario in <String, Map<String, Object?>>{
     'airport-only staff': _access(
@@ -194,14 +212,14 @@ void main() {
     },
     'manager': _access(role: 'manager'),
   }.entries) {
-    testWidgets('${scenario.key} gets the correct guest desk access', (
+    testWidgets('${scenario.key} gets the correct guest list access', (
       tester,
     ) async {
       final router = GoRouter(
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) => const ProgramGuestDeskScreen(programId: 'p-1'),
+            builder: (_, _) => const StaffGuestsScreen(programId: 'p-1'),
           ),
         ],
       );

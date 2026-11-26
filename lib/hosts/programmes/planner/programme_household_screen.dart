@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_guest_commands.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_household_body.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_answers_sheet.dart';
 import 'package:catch_dating_app/programs/presentation/program_workspace_controller.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -79,66 +79,26 @@ class _HostProgrammeHouseholdScreenState
           onRetry: () => refreshHostProgramme(ref, widget.programId),
           onEditMember: household == null || archived
               ? null
-              : (member) =>
-                    unawaited(_editAnswers(state, member, household.label)),
+              : (member) => unawaited(
+                  editHostProgrammeAnswers(
+                    context,
+                    ref,
+                    programId: widget.programId,
+                    guest: member,
+                    household: household.label,
+                    answers: [
+                      for (final function in state.functions)
+                        HostProgrammeAnswer(
+                          functionId: function.functionId,
+                          name: function.name,
+                          reply: state.reply(member, function),
+                        ),
+                    ],
+                  ),
+                ),
         ),
       ),
     );
-  }
-
-  Future<void> _editAnswers(
-    HostProgrammeState state,
-    ProgramGuestRow member,
-    String household,
-  ) => showCatchBottomSheet<void>(
-    context: context,
-    builder: (_) => HostProgrammeAnswersSheet(
-      guestName: member.displayName,
-      household: household,
-      answers: [
-        for (final function in state.functions)
-          HostProgrammeAnswer(
-            functionId: function.functionId,
-            name: function.name,
-            reply: state.reply(member, function),
-          ),
-      ],
-      onAnswer: (functionId, reply) =>
-          _recordAnswer(member.guestId, functionId, reply),
-    ),
-  );
-
-  Future<bool> _recordAnswer(
-    String guestId,
-    String functionId,
-    HostProgrammeReply reply,
-  ) async {
-    try {
-      // provider-graph: ownership-widget-async:_HostProgrammeHouseholdScreenState._recordAnswer:await:programWorkspaceControllerProvider.recordFunctionRsvp watch CAT156 -- The workspace controller records the answer and owns its error; the sheet keeps the old answer when this returns false. Move the write into a planner command in the CAT156 migration.
-      await ref
-          .read(programWorkspaceControllerProvider.notifier)
-          .recordFunctionRsvp(
-            programId: widget.programId,
-            functionId: functionId,
-            guestId: guestId,
-            rsvpStatus: hostProgrammeRsvpStatus(reply),
-            allowUninvited: true,
-          );
-      refreshHostProgramme(ref, widget.programId);
-      return true;
-    } on Object catch (error, stackTrace) {
-      ref
-          .read(errorLoggerProvider)
-          .logError(error, stackTrace, reason: 'record a guest answer');
-      if (mounted) {
-        showCatchNoticeError(
-          context,
-          error,
-          errorContext: AppErrorContext.event,
-        );
-      }
-      return false;
-    }
   }
 
   Future<void> _sendLink(String label) async {
