@@ -3324,9 +3324,10 @@ waitlist or deletes their account. The event's organiser managers may get one
 guest's disclosure until `expiresAt` (the event's end plus the catalog's
 retention days); a TTL policy removes it after that. No screen reads it yet,
 and `eventBookings` keeps `genderAtSignup` until the Host app reads
-disclosures. `grantKey` stays null until profile-share grants exist; the
-catalog's `disclosure` lines are drafts no screen shows until the owner
-approves them.
+disclosures. `grantKey` stays null until profile-share grants exist. The
+owner approved the catalog's `disclosure` lines, the 7-day retention and
+that orientation is never shown; the booking sheet shows them once the
+Guest app reads the catalog.
 
 ### Standalone Host Operational Attendees
 
