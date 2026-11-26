@@ -79,6 +79,7 @@ class _HostProgrammeLodgingBodyState extends State<HostProgrammeLodgingBody> {
   var _layout = HostProgrammeLodgingRoomsLayout.list;
   var _previewPending = false;
   var _moving = false;
+  var _boardOpen = false;
   var _epoch = 0;
   Object? _error;
 
@@ -158,6 +159,21 @@ class _HostProgrammeLodgingBodyState extends State<HostProgrammeLodgingBody> {
     }
   }
 
+  /// Leaves the board: the party, its destinations and the picked room go.
+  /// A move on its way keeps the board open until it settles.
+  void _closeBoard() {
+    if (_moving) return;
+    setState(() {
+      _epoch++;
+      _previewPending = false;
+      _boardOpen = false;
+      _partyId = null;
+      _destinationId = null;
+      _destinations = [];
+      _error = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final review = widget.review;
@@ -177,7 +193,7 @@ class _HostProgrammeLodgingBodyState extends State<HostProgrammeLodgingBody> {
     );
     return CatchPaneLayout(
       pattern: CatchPaneLayoutMode.listDetail,
-      detailOpen: _partyId != null,
+      detailOpen: _partyId != null || _boardOpen,
       children: [list, detail],
     );
   }
@@ -198,8 +214,12 @@ class _HostProgrammeLodgingBodyState extends State<HostProgrammeLodgingBody> {
       children: [
         CatchPaneHeader(
           title: l10n.hostProgrammeLodgingTitle,
-          note: l10n.hostProgrammeLodgingSubtitle,
           back: CatchTopBarBack(onPressed: widget.onBack),
+        ),
+        CatchText(
+          l10n.hostProgrammeLodgingSubtitle,
+          variant: CatchTextVariant.bodySmall,
+          tone: CatchTextTone.secondary,
         ),
         CatchStack(
           direction: CatchStackDirection.row,
@@ -350,6 +370,18 @@ class _HostProgrammeLodgingBodyState extends State<HostProgrammeLodgingBody> {
           ],
         ),
         CatchSection(
+          children: [
+            CatchIndexRow(
+              key: const ValueKey<String>('host-programme-lodging-board'),
+              icon: CatchIcons.hotel,
+              title: l10n.hostProgrammeLodgingRoomBoard,
+              value: '${review.units.length}',
+              chevron: true,
+              onTap: () => setState(() => _boardOpen = true),
+            ),
+          ],
+        ),
+        CatchSection(
           title: l10n.hostProgrammeLodgingParties,
           children: [
             for (final party in review.parties)
@@ -394,6 +426,10 @@ class _HostProgrammeLodgingBodyState extends State<HostProgrammeLodgingBody> {
         CatchPaneHeader(
           title: l10n.hostProgrammeLodgingRoomBoard,
           kicker: party?.label,
+          back: CatchTopBarBack(
+            label: l10n.hostProgrammeLodgingTitle,
+            onPressed: _closeBoard,
+          ),
         ),
         if (_error case final error?)
           CatchNotice.inline(
@@ -452,6 +488,14 @@ class _HostProgrammeLodgingBodyState extends State<HostProgrammeLodgingBody> {
           onPick: _pending || locked
               ? null
               : (id) => setState(() => _destinationId = id),
+          onSelectParty: _pending || locked
+              ? null
+              : (partyId) {
+                  final party = review.parties
+                      .where((p) => p.id == partyId)
+                      .firstOrNull;
+                  if (party != null) unawaited(_select(party));
+                },
         ),
         if (target != null) ...[
           CatchNotice.inline(

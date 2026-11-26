@@ -16,9 +16,11 @@ enum HostProgrammeLodgingRoomsLayout {
 /// One floor of the stay planner's room board as tiles: each room's label,
 /// the parties in it and whether its exact room is still pending.
 ///
-/// It reads nothing and writes nothing. A room the selected party could
-/// move to takes the attention ring and is tappable, an empty room the
-/// party cannot reach shows as vacant, and the picked room is selected.
+/// It reads nothing and writes nothing. Before a party is chosen, tapping
+/// a room chooses the movable party in it. Once the server has judged the
+/// rooms, a room the party could move to takes the attention ring, every
+/// judged room is tappable to see why, an empty room shows as vacant, and
+/// the picked room is selected.
 class HostProgrammeLodgingRooms extends StatelessWidget {
   const HostProgrammeLodgingRooms({
     super.key,
@@ -28,6 +30,7 @@ class HostProgrammeLodgingRooms extends StatelessWidget {
     required this.destinations,
     required this.selectedId,
     required this.onPick,
+    this.onSelectParty,
   });
 
   /// The rooms on the floor on show.
@@ -43,6 +46,10 @@ class HostProgrammeLodgingRooms extends StatelessWidget {
 
   /// Picks a judged room; null while a call is on its way.
   final ValueChanged<String>? onPick;
+
+  /// Chooses a room's movable party while no rooms are judged; null while
+  /// a call is on its way.
+  final ValueChanged<String>? onSelectParty;
 
   static const _perRow = 4;
 
@@ -64,6 +71,10 @@ class HostProgrammeLodgingRooms extends StatelessWidget {
           if (unit.partyIds.contains(party.id)) party.label,
       ];
       final pick = onPick;
+      final select = onSelectParty;
+      final movable = parties
+          .where((p) => p.canMove && unit.partyIds.contains(p.id))
+          .firstOrNull;
       return CatchChoiceTile(
         key: ValueKey<String>(
           'host-programme-lodging-room-${unit.inventoryId}',
@@ -81,9 +92,11 @@ class HostProgrammeLodgingRooms extends StatelessWidget {
             : names.isEmpty
             ? CatchChoiceTileEmphasis.vacant
             : CatchChoiceTileEmphasis.regular,
-        onTap: judged == null || pick == null
-            ? null
-            : () => pick(unit.inventoryId),
+        onTap: judged != null && pick != null
+            ? () => pick(unit.inventoryId)
+            : destinations.isEmpty && movable != null && select != null
+            ? () => select(movable.id)
+            : null,
       );
     }
 
