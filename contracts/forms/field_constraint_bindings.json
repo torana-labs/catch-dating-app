@@ -353,9 +353,6 @@
     "recordEventAssistanceCheckpointCallablePayload": [
       "command.payload.correctionReason"
     ],
-    "recordProgramFunctionRsvpCallablePayload": [
-      "rsvpStatus"
-    ],
     "requestOrganizerClaimCallablePayload": [
       "requesterName"
     ],
@@ -546,7 +543,6 @@
     ],
     "upsertProgramGuestGroupCallablePayload": [
       "dimension",
-      "hotelId",
       "label"
     ],
     "upsertProgramStayCallablePayload": [

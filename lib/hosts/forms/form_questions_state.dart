@@ -5,8 +5,21 @@ import 'package:flutter/foundation.dart';
 /// Where the question builder is: reading the draft or editing it.
 enum HostFormQuestionsStatus { loading, content }
 
-/// How the draft stands against the server.
-enum HostFormQuestionsSave { saved, unsaved, saving, failed }
+/// How the draft stands against the server. A conflict means the form
+/// changed elsewhere and must be reloaded before it can save.
+enum HostFormQuestionsSave { saved, unsaved, saving, failed, conflict }
+
+/// One section of the draft: its id and title, in form order.
+@immutable
+class HostFormQuestionsSection {
+  const HostFormQuestionsSection({
+    required this.sectionId,
+    required this.title,
+  });
+
+  final String sectionId;
+  final String title;
+}
 
 /// One question and where it sits in the draft.
 @immutable
@@ -28,7 +41,9 @@ class HostFormQuestionsState {
   const HostFormQuestionsState({
     required this.status,
     this.questions = const <HostFormQuestionSlot>[],
+    this.sections = const <HostFormQuestionsSection>[],
     this.openQuestionId,
+    this.issues = const <String>[],
     this.save = HostFormQuestionsSave.saved,
     this.blocked = false,
     this.busy = false,
@@ -40,9 +55,16 @@ class HostFormQuestionsState {
   final HostFormQuestionsStatus status;
   final List<HostFormQuestionSlot> questions;
 
+  /// The draft's sections, in order; the questions group under them by
+  /// [HostFormQuestionSlot.sectionIndex]. Empty lists the questions alone.
+  final List<HostFormQuestionsSection> sections;
+
   /// The question whose wording and choices are open for editing.
   final String? openQuestionId;
   final HostFormQuestionsSave save;
+
+  /// What stops or may stop the draft publishing, most important first.
+  final List<String> issues;
 
   /// The draft has an error that stops it publishing.
   final bool blocked;
@@ -59,5 +81,16 @@ class HostFormQuestionsState {
           questionIndex: questionIndex,
           question: question,
         ),
+  ];
+
+  /// Every section of [definition] in order.
+  static List<HostFormQuestionsSection> sectionsOf(
+    HostFormDefinition definition,
+  ) => [
+    for (final section in definition.sections)
+      HostFormQuestionsSection(
+        sectionId: section.sectionId,
+        title: section.title,
+      ),
   ];
 }

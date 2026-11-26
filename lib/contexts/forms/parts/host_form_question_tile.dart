@@ -12,7 +12,7 @@ bool hostFormQuestionHasChoices(HostFormQuestionKind kind) =>
 
 /// One question in the builder: a tile with the question, its kind, the
 /// Required or Optional chip and its choices as tags. Opened, it edits the
-/// wording and the choices in place.
+/// wording and the choices in place, and More settings opens the rest.
 class HostFormQuestionTile extends StatelessWidget {
   const HostFormQuestionTile({
     super.key,
@@ -24,6 +24,7 @@ class HostFormQuestionTile extends StatelessWidget {
     required this.onOptionChanged,
     required this.onAddOption,
     required this.onRemove,
+    this.onSettings,
   });
 
   final HostFormQuestion question;
@@ -37,11 +38,30 @@ class HostFormQuestionTile extends StatelessWidget {
   final VoidCallback onAddOption;
   final VoidCallback onRemove;
 
+  /// Opens the question's other settings; null hides More settings.
+  final VoidCallback? onSettings;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final label = question.label.trim();
     final choices = hostFormQuestionHasChoices(question.kind);
+    // At large text the question needs the row's width, so Required or
+    // Optional moves under it instead of squeezing it from the side.
+    final stacked =
+        MediaQuery.textScalerOf(context).scale(1) >= _stackedTextScale;
+    final requirement = CatchChip.choice(
+      key: ValueKey<String>(
+        'host-forms-question-required-${question.questionId}',
+      ),
+      label: question.required
+          ? l10n.hostFormsQuestionRequired
+          : l10n.hostFormsQuestionOptional,
+      selected: question.required,
+      mode: CatchChipMode.multiple,
+      size: CatchChipSize.sm,
+      onPressed: () => onRequiredChanged(!question.required),
+    );
     return CatchSurface(
       child: CatchStack(
         gap: CatchStackGap.g8,
@@ -53,24 +73,18 @@ class HostFormQuestionTile extends StatelessWidget {
             icon: CatchIcons.dragHandle,
             onTap: onOpen,
             density: CatchIndexRowSize.compact,
-            trailing: CatchChip.choice(
-              label: question.required
-                  ? l10n.hostFormsQuestionRequired
-                  : l10n.hostFormsQuestionOptional,
-              selected: question.required,
-              mode: CatchChipMode.multiple,
-              size: CatchChipSize.sm,
-              onPressed: () => onRequiredChanged(!question.required),
-            ),
+            trailing: stacked ? null : requirement,
           ),
-          if (choices && !open && question.options.isNotEmpty)
+          if (stacked || (choices && !open && question.options.isNotEmpty))
             CatchStack(
               direction: CatchStackDirection.row,
               gap: CatchStackGap.g6,
               wrap: true,
               children: [
-                for (final option in question.options)
-                  CatchChip.tag(label: option.label, size: CatchChipSize.sm),
+                if (stacked) requirement,
+                if (choices && !open)
+                  for (final option in question.options)
+                    CatchChip.tag(label: option.label, size: CatchChipSize.sm),
               ],
             ),
           if (open) ...[
@@ -113,6 +127,16 @@ class HostFormQuestionTile extends StatelessWidget {
                     size: CatchChipSize.sm,
                     onPressed: onAddOption,
                   ),
+                if (onSettings case final onSettings?)
+                  CatchButton(
+                    key: ValueKey<String>(
+                      'host-forms-question-settings-${question.questionId}',
+                    ),
+                    label: l10n.hostFormsQuestionMore,
+                    variant: CatchButtonVariant.secondary,
+                    size: CatchButtonSize.sm,
+                    onPressed: onSettings,
+                  ),
                 CatchButton(
                   label: l10n.hostFormsQuestionRemove,
                   variant: CatchButtonVariant.quiet,
@@ -126,4 +150,8 @@ class HostFormQuestionTile extends StatelessWidget {
       ),
     );
   }
+
+  /// The text scale from which Required or Optional sits under the
+  /// question, as system sections move their action under the title.
+  static const _stackedTextScale = 1.6;
 }
