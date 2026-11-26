@@ -9,6 +9,7 @@ import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/programmes/program_operations_fixture.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -79,10 +80,23 @@ void main() {
             theme: AppTheme.light,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const Scaffold(
-              body: ProgramOperationsNotice(
-                programId: 'program-1',
-                pickupPointId: 'pickup-1',
+            // Opens the review sheet the way the staff screens do (Look at
+            // them in `StaffOperationsScreen.reviewOperations`).
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => Center(
+                  child: CatchButton(
+                    label: 'Review changes',
+                    onPressed: () => showCatchBottomSheet<void>(
+                      context: context,
+                      builder: (_) => const ProgramOperationReviewSheet(
+                        programId: 'program-1',
+                        accountId: 'acct',
+                        pickupPointId: 'pickup-1',
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

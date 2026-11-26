@@ -1,8 +1,4 @@
-import 'package:catch_dating_app/contexts/programmes/data/program_guest_directory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
-import 'package:catch_dating_app/contexts/programmes/data/program_snapshot_reader.dart';
-import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
-import 'package:catch_dating_app/contexts/programmes/domain/phone_import_access.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_group_edit_dialog.dart';
@@ -11,185 +7,12 @@ import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
-import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
-import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-
-/// Household × function RSVP grid for the organizer workspace. One function
-/// is selected at a time; each household card lists members with their join
-/// state and a segmented RSVP editor that writes through
-/// `recordProgramFunctionRsvp`.
-class ProgramGuestsScreen extends ConsumerWidget {
-  const ProgramGuestsScreen({super.key, required this.programId});
-
-  final String programId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final detailAsync = ref.watch(organizerProgramDetailProvider(programId));
-    final guestsAsync = ref.watch(programGuestListProvider(programId));
-    final detailState = catchAsyncStateFromAsyncValue(detailAsync);
-    final program = detailState.isSettledData
-        ? detailState.value?.program
-        : null;
-    final workAccessAsync =
-        program?.kind == ProgramKind.wedding &&
-            program?.status != ProgramStatus.archived
-        ? ref.watch(programWorkEntryProvider(programId, null))
-        : null;
-    return CatchAsyncBoundary<OrganizerProgramDetail>(
-      retainDataOn: const {},
-      value: detailAsync,
-      onRetry: () => ref.invalidate(organizerProgramDetailProvider(programId)),
-      loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
-          title: context.l10n.programsGuestsTitle,
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
-          ),
-        ),
-        body: const CatchRouteBody.standardViewport(
-          child: CatchStateViewport.loading(accountForBottomOverlay: false),
-        ),
-      ),
-      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
-          title: context.l10n.programsGuestsTitle,
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
-          ),
-        ),
-        body: CatchRouteBody.standardViewport(
-          child: CatchLocalizedErrorState(
-            error,
-            context: AppErrorContext.event,
-            onRetry: onBoundaryRetry,
-          ),
-        ),
-      ),
-      builder: (context, detail) => CatchAsyncBoundary<ProgramGuestListPage>(
-        retainDataOn: const {},
-        value: guestsAsync,
-        onRetry: () =>
-            ref.invalidate(programGuestDirectoryStreamProvider(programId)),
-        loadingBuilder: (_) => CatchRouteScaffold(
-          topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
-            title: detail.program.title,
-            subtitle: context.l10n.programsGuestsTitle,
-            emphasis: scrolledUnder
-                ? CatchTopBarEmphasis.divided
-                : CatchTopBarEmphasis.plain,
-            navigation: const CatchTopBarNavigation(
-              mode: CatchTopBarNavigationMode.back,
-            ),
-          ),
-          body: const CatchRouteBody.standardViewport(
-            child: CatchStateViewport.loading(accountForBottomOverlay: false),
-          ),
-        ),
-        errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-          topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
-            title: detail.program.title,
-            subtitle: context.l10n.programsGuestsTitle,
-            emphasis: scrolledUnder
-                ? CatchTopBarEmphasis.divided
-                : CatchTopBarEmphasis.plain,
-            navigation: const CatchTopBarNavigation(
-              mode: CatchTopBarNavigationMode.back,
-            ),
-          ),
-          body: CatchRouteBody.standardViewport(
-            child: CatchLocalizedErrorState(
-              error,
-              context: AppErrorContext.event,
-              onRetry: onBoundaryRetry,
-            ),
-          ),
-        ),
-        builder: (context, page) => ProgramGuestsPageBody(
-          programId: programId,
-          programTitle: detail.program.title,
-          functions: [
-            for (final fn in detail.functions)
-              ProgramGuestsFunction(functionId: fn.functionId, name: fn.name),
-          ],
-          hotels: detail.hotels,
-          guestPage: page,
-          canManageGuests: true,
-          canShareRsvpLinks: detail.program.status != ProgramStatus.archived,
-          phoneImportSection:
-              workAccessAsync != null &&
-                  detail.program.kind == ProgramKind.wedding &&
-                  detail.program.status != ProgramStatus.archived
-              ? CatchAsyncBoundary<ProgramReadView<ProgramWorkAccess>>(
-                  retainDataOn: const {},
-                  value: workAccessAsync,
-                  onRetry: () =>
-                      ref.invalidate(programWorkEntryProvider(programId, null)),
-                  loadingBuilder: (_) => const CatchLoadingIndicator(),
-                  errorBuilder: (context, error, _, onRetry) =>
-                      error is PermissionException ||
-                          error is SignInRequiredException ||
-                          error is DocumentNotFoundException
-                      ? const SizedBox.shrink()
-                      : CatchLocalizedErrorState(
-                          error,
-                          context: AppErrorContext.event,
-                          mode: CatchErrorStateMode.inline,
-                          onRetry: onRetry,
-                          retryLabel: context.l10n.sharedActionTryAgain,
-                        ),
-                  builder: (context, result) {
-                    final access = result.value;
-                    if (result.snapshotAt != null ||
-                        access.programId != programId ||
-                        access.organizerId != detail.program.organizerId ||
-                        !access.isManager ||
-                        !canImportWeddingPhoneContacts(
-                          access,
-                          DateTime.now(),
-                        )) {
-                      return const SizedBox.shrink();
-                    }
-                    return CatchSection.action(
-                      title: context.l10n.phoneImportEntryTitle,
-                      message: context.l10n.phoneImportEntryHelp,
-                      actionKey: const ValueKey('program-guests-phone-import'),
-                      actionLabel: context.l10n.phoneImportChooseContacts,
-                      onAction: () => context.pushNamed(
-                        Routes.hostWorkPhoneImportScreen.name,
-                        pathParameters: {'programId': programId},
-                      ),
-                    );
-                  },
-                )
-              : null,
-        ),
-      ),
-    );
-  }
-}
-
-/// Guest desk for `guestRelations` staff landing from the work shell. Renders
-/// the same household × function grid as the organizer screen, sourced from
-/// `getProgramWorkAccess` instead of the manager-only `getOrganizerProgram`;
-/// guest/household/group mutations stay hidden unless the actor also holds
-/// `programCoordinator` (or is the organizer manager).
 
 /// The function columns the guest desk matrix renders. Both the organizer
 /// detail model and the staff work-access model map onto it.
@@ -200,6 +23,12 @@ class ProgramGuestsFunction {
   final String name;
 }
 
+/// The guest desk body (`ProgramGuestDeskScreen`, for `guestRelations` staff
+/// and managers on the work shell): the household by function RSVP grid
+/// with each member's join state and an RSVP editor that writes through
+/// `recordProgramFunctionRsvp`, household RSVP links, Add guest, and the
+/// guest groups with their hotels. Guest, household and group writes stay
+/// hidden unless the actor also holds `programCoordinator` or is a manager.
 class ProgramGuestsPageBody extends ConsumerStatefulWidget {
   const ProgramGuestsPageBody({
     super.key,
