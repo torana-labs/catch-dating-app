@@ -405,6 +405,28 @@
           "expression": "CatchScreen",
           "bodyGeometry": "standard",
           "topEdge": "safe-area"
+        },
+        {
+          "routes": [
+            "hostCreateEventScreen"
+          ],
+          "file": "lib/hosts/create/create_screen.dart",
+          "symbol": "_CreateScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        },
+        {
+          "routes": [
+            "hostCreateEventScreen"
+          ],
+          "file": "lib/hosts/create/widgets/create_step_layout.dart",
+          "symbol": "CreateStepLayout",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
         }
       ],
       "reason": "The create route resolves the organizer and host on a system screen, then opens the redesigned create flow."
@@ -1911,7 +1933,7 @@
       ],
       "reason": "Every create/edit location launch site shares the full-bleed map workspace owner."
     },
-    "RoutePathBuilderScreen": {
+    "CreateRoutePathScreen": {
       "owners": [
         {
           "file": "lib/hosts/create/create_route_path_screen.dart",
@@ -19796,9 +19818,9 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchLegacyTopBar",
-        "owner": "CatchLegacyTopBar",
-        "reason": "The source owns canonical compact route chrome."
+        "expression": "CatchTopBar",
+        "owner": "EditEventScreen",
+        "reason": "The tool top bar with Back over the shared create editor's edit page; the expanded editor puts Save changes in it."
       },
       "statePolicy": {
         "requiredStates": [

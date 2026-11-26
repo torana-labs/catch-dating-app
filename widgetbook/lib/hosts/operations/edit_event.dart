@@ -593,8 +593,6 @@ CreateFlowState _editState(Event event) {
 
 void _ignore([Object? _, Object? _]) {}
 
-Future<EventMeetingLocation?> _noPlace(EventMeetingLocation? _) async => null;
-
 final _createHandlers = CreateHandlers(
   onBack: _ignore,
   onNext: _ignore,
@@ -643,7 +641,6 @@ const _editHandlers = CreateEditHandlers(
   onDemandMax: _ignore,
   onAgeRange: _ignore,
   onCancellationPolicy: _ignore,
-  onPickStepPlace: _noPlace,
 );
 
 class _HostEditEventScope extends StatelessWidget {

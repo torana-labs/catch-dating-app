@@ -25,6 +25,7 @@ void main() {
     tester.view.physicalSize = const Size(430, 1600);
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
+    var current = step;
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
@@ -32,17 +33,25 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: SingleChildScrollView(
-            child: CreatePlanStepSheet(
-              step: step,
-              isNew: false,
-              onDone: onDone,
-              onRemove: () {},
-              onPickPlace: (_) async => const EventMeetingLocation(
-                name: 'Harbour steps',
-                latitude: 19.07,
-                longitude: 72.82,
+            // The screen picks the place and hands the step back, as the
+            // edit screen does.
+            child: StatefulBuilder(
+              builder: (context, setState) => CreatePlanStepSheet(
+                step: current,
+                isNew: false,
+                onDone: onDone,
+                onRemove: () {},
+                onPickPlace: (draft) => setState(
+                  () => current = draft.copyWith(
+                    location: const EventMeetingLocation(
+                      name: 'Harbour steps',
+                      latitude: 19.07,
+                      longitude: 72.82,
+                    ),
+                  ),
+                ),
+                showRouteDistance: true,
               ),
-              showRouteDistance: true,
             ),
           ),
         ),

@@ -167,7 +167,7 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
       final step? => CreatePlanStepSheet(
         step: step,
         isNew: _editingNew,
-        onPickPlace: edit.onPickStepPlace,
+        onPickPlace: (draft) => unawaited(_pickPlaceForStep(draft)),
         showRouteDistance:
             (state.draft.routePlan?['path'] as List?)?.isNotEmpty ?? false,
         onDone: (step) {
@@ -347,7 +347,6 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
           controller.edit((d) => d.copyWith(dynamicPricingMax: value)),
       onAgeRange: controller.setAgeRange,
       onCancellationPolicy: controller.setCancellationPolicy,
-      onPickStepPlace: _pickStepPlace,
     );
   }
 
@@ -471,6 +470,13 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
         longitude: result.coordinate.longitude,
       ),
     );
+  }
+
+  /// Picks [draft]'s own place and hands the step back to the open sheet.
+  Future<void> _pickPlaceForStep(EventItineraryItem draft) async {
+    final picked = await _pickStepPlace(draft.location);
+    if (picked == null || !mounted || _editing?.id != draft.id) return;
+    setState(() => _editing = draft.copyWith(location: picked));
   }
 
   Future<EventMeetingLocation?> _pickStepPlace(

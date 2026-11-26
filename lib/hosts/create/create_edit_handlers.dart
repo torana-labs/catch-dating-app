@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
@@ -24,7 +23,6 @@ class CreateEditHandlers {
     required this.onDemandMax,
     required this.onAgeRange,
     required this.onCancellationPolicy,
-    required this.onPickStepPlace,
   });
 
   /// Check the edit and send it.
@@ -47,8 +45,4 @@ class CreateEditHandlers {
   final ValueChanged<String> onDemandMax;
   final void Function(int minAge, int maxAge) onAgeRange;
   final ValueChanged<EventCancellationPolicyId> onCancellationPolicy;
-
-  /// Picks a plan step's own place, starting from [current].
-  final Future<EventMeetingLocation?> Function(EventMeetingLocation? current)
-  onPickStepPlace;
 }

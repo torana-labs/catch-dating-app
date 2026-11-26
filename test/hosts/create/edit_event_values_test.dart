@@ -21,12 +21,12 @@ void main() {
 
     EditEventRouteStatus resolve({
       CatchAsyncState<String?> uid = const CatchAsyncState.data('host-1'),
-      CatchAsyncState<Organizer?>? club,
+      CatchAsyncState<Organizer?>? organizerState,
       CatchAsyncState<Event?>? saved,
       Event? initialEvent,
     }) => EditEventRouteState.resolve(
       uid: uid,
-      organizer: club ?? CatchAsyncState<Organizer?>.data(organizer),
+      organizer: organizerState ?? CatchAsyncState<Organizer?>.data(organizer),
       event: saved ?? CatchAsyncState<Event?>.data(event),
       initialEvent: initialEvent,
     ).status;
@@ -36,11 +36,13 @@ void main() {
       EditEventRouteStatus.loading,
     );
     expect(
-      resolve(club: CatchAsyncState<Organizer?>.error(StateError('failed'))),
+      resolve(
+        organizerState: CatchAsyncState<Organizer?>.error(StateError('failed')),
+      ),
       EditEventRouteStatus.error,
     );
     expect(
-      resolve(club: const CatchAsyncState<Organizer?>.data(null)),
+      resolve(organizerState: const CatchAsyncState<Organizer?>.data(null)),
       EditEventRouteStatus.notFound,
     );
     expect(

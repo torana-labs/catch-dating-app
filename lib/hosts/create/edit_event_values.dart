@@ -357,10 +357,10 @@ Set<CreateProblem> editEventProblems({
     if (!scheduleLocked &&
         (start == null ||
             !start.isAfter(now) ||
-            start.isAfter(
+            DateUtils.dateOnly(start).isAfter(
               DateUtils.dateOnly(
                 now,
-              ).add(BusinessRules.eventEditDatePickerWindow + _oneDay),
+              ).add(BusinessRules.eventEditDatePickerWindow),
             )))
       CreateProblem.schedule,
     if ((draft.meetingPoint ?? '').trim().isEmpty) CreateProblem.placeName,
@@ -390,8 +390,6 @@ Set<CreateProblem> editEventProblems({
     },
   };
 }
-
-const _oneDay = Duration(days: 1);
 
 bool _positive(String? value) => (int.tryParse((value ?? '').trim()) ?? 0) > 0;
 

@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/contexts/events/domain/event_content_validation.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
@@ -30,10 +29,10 @@ class CreatePlanStepSheet extends StatefulWidget {
   final ValueChanged<EventItineraryItem> onDone;
   final VoidCallback onRemove;
 
-  /// Picks the step's own place; set when editing a saved event, which also
-  /// shows the kind and start fields.
-  final Future<EventMeetingLocation?> Function(EventMeetingLocation? current)?
-  onPickPlace;
+  /// Opens the place picker for the step as edited so far; the screen hands
+  /// the step back with its place. Set when editing a saved event, which
+  /// also shows the kind and start fields.
+  final ValueChanged<EventItineraryItem>? onPickPlace;
 
   /// The event has a drawn route, so a step can say how far along it is.
   final bool showRouteDistance;
@@ -48,15 +47,11 @@ class _CreatePlanStepSheetState extends State<CreatePlanStepSheet> {
   @override
   void didUpdateWidget(CreatePlanStepSheet oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.step.id != widget.step.id) _step = widget.step;
+    // A new step, or this step handed back with a picked place.
+    if (!identical(oldWidget.step, widget.step)) _step = widget.step;
   }
 
-  Future<void> _pickPlace() async {
-    final picked = await widget.onPickPlace?.call(_step.location);
-    if (picked != null && mounted) {
-      setState(() => _step = _step.copyWith(location: picked));
-    }
-  }
+  void _pickPlace() => widget.onPickPlace?.call(_step);
 
   @override
   Widget build(BuildContext context) {

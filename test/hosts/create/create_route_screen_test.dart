@@ -15,18 +15,18 @@ void main() {
     CreateRouteStatus status({
       HostCreateEventRouteArguments arguments =
           const HostCreateEventRouteArguments(),
-      CatchAsyncState<Organizer?>? club,
+      CatchAsyncState<Organizer?>? organizerState,
       CatchAsyncState<String?> uid = const CatchAsyncState.data('host-1'),
     }) => createRouteStatus(
       organizerId: 'club-1',
       arguments: arguments,
-      organizer: club ?? CatchAsyncState<Organizer?>.data(organizer),
+      organizer: organizerState ?? CatchAsyncState<Organizer?>.data(organizer),
       uid: uid,
     );
 
     test('maps the organizer read and the signed-in host', () {
       expect(
-        status(club: const CatchAsyncState<Organizer?>.loading()),
+        status(organizerState: const CatchAsyncState<Organizer?>.loading()),
         CreateRouteStatus.loading,
       );
       expect(
@@ -34,11 +34,13 @@ void main() {
         CreateRouteStatus.loading,
       );
       expect(
-        status(club: CatchAsyncState<Organizer?>.error(StateError('x'))),
+        status(
+          organizerState: CatchAsyncState<Organizer?>.error(StateError('x')),
+        ),
         CreateRouteStatus.error,
       );
       expect(
-        status(club: const CatchAsyncState<Organizer?>.data(null)),
+        status(organizerState: const CatchAsyncState<Organizer?>.data(null)),
         CreateRouteStatus.notFound,
       );
       expect(
@@ -52,7 +54,7 @@ void main() {
       expect(
         status(
           arguments: HostCreateEventRouteArguments(
-            initialOrganizer: buildOrganizer(id: 'other-club'),
+            initialOrganizer: buildOrganizer(id: 'other-organizer'),
           ),
         ),
         CreateRouteStatus.mismatch,
@@ -108,9 +110,9 @@ void main() {
       await pumpEventsTestApp(
         tester,
         CreateRouteScreen(
-          organizerId: 'path-club',
+          organizerId: 'path-organizer',
           arguments: HostCreateEventRouteArguments(
-            initialOrganizer: buildOrganizer(id: 'extra-club'),
+            initialOrganizer: buildOrganizer(id: 'extra-organizer'),
           ),
         ),
         signedInUid: 'host-1',
