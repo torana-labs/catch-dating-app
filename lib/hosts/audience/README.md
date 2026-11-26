@@ -96,8 +96,7 @@ These are schema declarations, not independent proof of runtime limits.
 
 **How do Forms, Responses and applications fit together?**
 
-- Source: [lib/hosts/presentation/forms](../presentation/forms)
-- Source: [lib/hosts/presentation/applications](../presentation/applications)
+- Source: [lib/hosts/forms](../forms)
 - Source: [functions/src/organizers/organizerForms.ts](../../../functions/src/organizers/organizerForms.ts)
 - Source: [contracts/shared/organizer_form_common.schema.json](../../../contracts/shared/organizer_form_common.schema.json)
 - Source: [contracts/shared/organizer_form_response_common.schema.json](../../../contracts/shared/organizer_form_response_common.schema.json)
@@ -126,8 +125,7 @@ These are schema declarations, not independent proof of runtime limits.
 Current implementation roots:
 
 - `lib/hosts/presentation/customers`
-- `lib/hosts/presentation/forms`
-- `lib/hosts/presentation/applications`
+- `lib/hosts/forms`
 
 ## This feature owns
 
@@ -183,11 +181,11 @@ Typed handoffs:
 | `HostDuplicateCommands` | `lib/hosts/people/duplicates/duplicates_controller.dart` | Actions: merge_customers, mark_different_people, reopen_duplicate, undo_customer_merge. |
 | `HostAudienceView` | `lib/hosts/presentation/host_audience_view.dart` | Closed peer-mode vocabulary for People, Audiences, Forms, and Responses. |
 | `HostFormsScreen` | `lib/hosts/forms/forms_screen.dart` | The Forms tab inside People; one form, its questions, responses, one answer and offers live beside it under lib/hosts/forms. |
-| `HostFormsDirectoryController` | `lib/hosts/presentation/forms/host_forms_directory_controller.dart` | Organizer form inventory state. |
-| `HostFormEditorController` | `lib/hosts/presentation/forms/host_forms_controller.dart` | Draft/editor state and publication actions. |
-| `HostFormResponsesController` | `lib/hosts/presentation/forms/host_form_operations_controller.dart` | Response list and review-facing projection. |
-| `HostFormAutomationsController` | `lib/hosts/presentation/forms/host_form_operations_controller.dart` | Automation configuration and run recovery. |
-| `HostApplicationsController` | `lib/hosts/presentation/applications/host_applications_controller.dart` | Application review and community membership decisions. |
+| `HostFormsDirectoryController` | `lib/hosts/forms/host_forms_directory_controller.dart` | Organizer form inventory state. |
+| `HostFormEditorController` | `lib/hosts/forms/host_forms_controller.dart` | Draft/editor state and publication actions. |
+| `HostFormResponsesController` | `lib/hosts/forms/host_form_operations_controller.dart` | Response list and review-facing projection. |
+| `HostFormAutomationsController` | `lib/hosts/forms/host_form_operations_controller.dart` | Automation configuration and run recovery. |
+| `HostApplicationsController` | `lib/hosts/forms/host_applications_controller.dart` | Application review and community membership decisions. |
 
 ## Shared dependencies
 
@@ -254,7 +252,7 @@ Typed handoffs:
 - `test/hosts/people/duplicates/duplicates_body_test.dart`
 - `test/hosts/people/duplicates/duplicates_flow_test.dart`
 - `test/hosts/forms/forms_body_test.dart`
-- `test/hosts/forms/host_form_builder_screen_test.dart`
+- `test/hosts/forms/form_payments_test.dart`
 - `test/hosts/host_operations_screen_test.dart`
 
 ## Maintenance
