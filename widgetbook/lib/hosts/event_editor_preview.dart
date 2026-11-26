@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
+import 'package:catch_dating_app/hosts/forms/offer_settings_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_setup_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,7 +44,7 @@ Widget eventPreferencesPreview(
       previewEventScope,
     ).overrideWith(() => _PublishedPreferencesPreview(state)),
   ],
-  child: HostOfferPaymentSetupPageBody(
+  child: HostOfferSettingsEditor(
     scope: previewEventScope,
     eventName: state.eventName,
     onBack: onBack,

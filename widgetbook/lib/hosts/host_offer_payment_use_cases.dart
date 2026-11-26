@@ -2,13 +2,10 @@ import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaul
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
+import 'package:catch_dating_app/hosts/forms/offer_settings_editor.dart';
+import 'package:catch_dating_app/hosts/forms/offer_settings_sections.dart';
+import 'package:catch_dating_app/hosts/forms/offer_settings_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_confirmation_section.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_details_section.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_mode_section.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_mode_tile.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_review_sheet.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_setup_page_body.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,66 +16,13 @@ import 'event_editor_preview.dart';
 import 'operations/preview.dart';
 
 @widgetbook.UseCase(
-  name: 'Offer payment collection modes',
-  type: HostOfferPaymentModeTile,
-  path: '[P1 product surfaces]/Host operations',
-)
-Widget hostOfferPaymentModeTilePreview(BuildContext context) =>
-    WidgetbookPageCatalogFrame(
-      title: 'HostOfferPaymentModeTile',
-      contractId: 'tile.host.event.offer.payment.mode',
-      children: [
-        WidgetbookPageStateCard(
-          label: 'picker options',
-          child: WidgetbookHostDeviceFrame(
-            child: Scaffold(
-              body: ListView(
-                padding: const EdgeInsets.all(CatchSpacing.s4),
-                children: [
-                  for (final mode in HostOfferPaymentMode.values) ...[
-                    HostOfferPaymentModeTile(
-                      mode: mode,
-                      selected: mode == HostOfferPaymentMode.free,
-                      editable: true,
-                      checkoutAvailable: false,
-                      onSelected: (_) {},
-                    ),
-                    const SizedBox(height: CatchSpacing.s3),
-                  ],
-                ],
-              ),
-            ),
-          ),
-        ),
-        WidgetbookPageStateCard(
-          label: 'collapsed summary reopens picker',
-          child: WidgetbookHostDeviceFrame(
-            child: Scaffold(
-              body: Padding(
-                padding: const EdgeInsets.all(CatchSpacing.s4),
-                child: HostOfferPaymentModeTile(
-                  mode: HostOfferPaymentMode.personalRequest,
-                  selected: true,
-                  editable: true,
-                  checkoutAvailable: false,
-                  onSelected: (_) {},
-                  summary: true,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-
-@widgetbook.UseCase(
   name: 'Offer payment mode section',
-  type: HostOfferPaymentModeSection,
+  type: HostOfferSettingsModeSection,
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostOfferPaymentModeSectionPreview(BuildContext context) =>
     WidgetbookPageCatalogFrame(
-      title: 'HostOfferPaymentModeSection',
+      title: 'HostOfferSettingsModeSection',
       contractId: 'section.host.event.offer.payment.mode',
       children: [
         WidgetbookPageStateCard(
@@ -86,14 +30,13 @@ Widget hostOfferPaymentModeSectionPreview(BuildContext context) =>
           child: WidgetbookHostDeviceFrame(
             child: Scaffold(
               body: SingleChildScrollView(
-                child: HostOfferPaymentModeSection(
+                child: HostOfferSettingsModeSection(
                   mode: null,
-                  pickerExpanded: true,
+                  expanded: true,
                   editable: true,
                   checkoutAvailable: false,
-                  first: true,
                   onSelected: (_) {},
-                  onExpandPicker: () {},
+                  onChange: () {},
                 ),
               ),
             ),
@@ -104,14 +47,13 @@ Widget hostOfferPaymentModeSectionPreview(BuildContext context) =>
           child: WidgetbookHostDeviceFrame(
             child: Scaffold(
               body: SingleChildScrollView(
-                child: HostOfferPaymentModeSection(
-                  mode: HostOfferPaymentMode.reusablePage,
-                  pickerExpanded: false,
+                child: HostOfferSettingsModeSection(
+                  mode: HostOfferSettingsMode.reusablePage,
+                  expanded: false,
                   editable: true,
                   checkoutAvailable: false,
-                  first: true,
                   onSelected: (_) {},
-                  onExpandPicker: () {},
+                  onChange: () {},
                 ),
               ),
             ),
@@ -122,44 +64,44 @@ Widget hostOfferPaymentModeSectionPreview(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Offer payment details',
-  type: HostOfferPaymentDetailsSection,
+  type: HostOfferSettingsDetailsSection,
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostOfferPaymentDetailsSectionPreview(BuildContext context) {
-  Widget card(String label, HostOfferPaymentMode mode) =>
+  Widget card(String label, HostOfferSettingsMode mode) =>
       WidgetbookPageStateCard(
         label: label,
         child: WidgetbookHostDeviceFrame(
           child: Scaffold(
             body: SingleChildScrollView(
-              child: HostOfferPaymentDetailsSection(
+              child: HostOfferSettingsDetailsSection(
                 mode: mode,
                 editable: true,
-                amountController: TextEditingController(text: '1200'),
-                currencyController: TextEditingController(text: 'INR'),
-                customValidityController: TextEditingController(),
-                pageUrlController: TextEditingController(
+                amount: TextEditingController(text: '1200'),
+                currency: TextEditingController(text: 'INR'),
+                customValidity: TextEditingController(),
+                pageUrl: TextEditingController(
                   text: 'https://pay.catch.app/p/saturday-mixer',
                 ),
-                instructionsController: TextEditingController(
+                instructions: TextEditingController(
                   text: 'UPI to saturdaymixer@okhdfc',
                 ),
-                messageController: TextEditingController(),
+                message: TextEditingController(),
                 validityCustom: false,
                 validityMinutes: 1440,
                 reuseAttested: true,
-                resolvedExpiryMillis: 1791043800000,
+                expiryMillis: 1791043800000,
                 openEditor: null,
                 instructionsError: null,
                 onFieldChanged: () {},
-                onValiditySelected: ({required custom, minutes}) {},
-                onValidityMinutesChanged: (_) {},
-                onReuseAttestedChanged: (_) {},
-                onInstructionsOpenChanged: (_) {},
+                onValidity: ({required custom, minutes}) {},
+                onValidityMinutes: (_) {},
+                onReuseAttested: (_) {},
+                onInstructionsOpen: (_) {},
                 onInstructionsCancel: () {},
                 onInstructionsSubmit: () {},
                 onInstructionsChanged: (_) {},
-                onMessageOpenChanged: (_) {},
+                onMessageOpen: (_) {},
                 onMessageCancel: () {},
                 onMessageSubmit: () {},
               ),
@@ -168,33 +110,33 @@ Widget hostOfferPaymentDetailsSectionPreview(BuildContext context) {
         ),
       );
   return WidgetbookPageCatalogFrame(
-    title: 'HostOfferPaymentDetailsSection',
+    title: 'HostOfferSettingsDetailsSection',
     contractId: 'section.host.event.offer.payment.details',
     children: [
-      card('manual instructions', HostOfferPaymentMode.manualInstructions),
-      card('reusable page', HostOfferPaymentMode.reusablePage),
-      card('free offer', HostOfferPaymentMode.free),
+      card('manual instructions', HostOfferSettingsMode.manualInstructions),
+      card('reusable page', HostOfferSettingsMode.reusablePage),
+      card('free offer', HostOfferSettingsMode.free),
     ],
   );
 }
 
 @widgetbook.UseCase(
   name: 'Offer payment confirmation contract',
-  type: HostOfferPaymentConfirmationSection,
+  type: HostOfferSettingsConfirmation,
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostOfferPaymentConfirmationSectionPreview(BuildContext context) =>
     WidgetbookPageCatalogFrame(
-      title: 'HostOfferPaymentConfirmationSection',
+      title: 'HostOfferSettingsConfirmation',
       contractId: 'section.host.event.offer.payment.confirmation',
       children: [
-        for (final mode in HostOfferPaymentMode.values)
+        for (final mode in HostOfferSettingsMode.values)
           WidgetbookPageStateCard(
             label: mode.name,
             child: WidgetbookHostDeviceFrame(
               child: Scaffold(
                 body: SingleChildScrollView(
-                  child: HostOfferPaymentConfirmationSection(mode: mode),
+                  child: HostOfferSettingsConfirmation(mode: mode),
                 ),
               ),
             ),
@@ -204,7 +146,7 @@ Widget hostOfferPaymentConfirmationSectionPreview(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Offer payment review sheet',
-  type: HostOfferPaymentReviewSheet,
+  type: HostOfferSettingsReviewSheet,
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostOfferPaymentReviewSheetPreview(BuildContext context) {
@@ -233,14 +175,14 @@ Widget hostOfferPaymentReviewSheetPreview(BuildContext context) {
     paymentTerms: {},
   );
   return WidgetbookPageCatalogFrame(
-    title: 'HostOfferPaymentReviewSheet',
+    title: 'HostOfferSettingsReviewSheet',
     contractId: 'sheet.host.event.offer.payment.review',
     children: [
       WidgetbookPageStateCard(
         label: 'changed terms',
         child: WidgetbookHostDeviceFrame(
           child: Scaffold(
-            body: HostOfferPaymentReviewSheet(
+            body: HostOfferSettingsReviewSheet(
               review: EventOfferPreferencesPreview(
                 request: EventOfferPreferencesUpdateRequest(
                   organizerId: 'preview-club',
@@ -265,7 +207,7 @@ Widget hostOfferPaymentReviewSheetPreview(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Offer payment setup step',
-  type: HostOfferPaymentSetupPageBody,
+  type: HostOfferSettingsEditor,
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostOfferPaymentSetupPageBodyPreview(BuildContext context) {
@@ -316,7 +258,7 @@ Widget hostOfferPaymentSetupPageBodyPreview(BuildContext context) {
       );
 
   return WidgetbookPageCatalogFrame(
-    title: 'HostOfferPaymentSetupPageBody',
+    title: 'HostOfferSettingsEditor',
     contractId: 'page.host.event.offer.payment.setup',
     children: [
       card('fresh event; picker open', controller()),
