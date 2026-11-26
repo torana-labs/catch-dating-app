@@ -272,6 +272,10 @@
         "functions/src/safety/accountDeletionSeats.ts"
       ]
     },
+    "eventBookingPrivateFacts": {
+      "handling": "deleted",
+      "how": "Deleted by accountDeletionSeats.ts in each booking's deletion transaction: the cohort is the guest's sexual orientation (#2493)."
+    },
     "eventBookings": {
       "handling": "kept",
       "reason": "The booking stays for the organiser's roster, the seat ledger and payments: accountDeletionSeats.ts marks it status deleted and cancels a Catch booking. The uid remains as the ledger's identity."
@@ -406,8 +410,7 @@
     },
     "eventSafetyReports": {
       "handling": "kept",
-      "needsDecision": true,
-      "reason": "Safety review item materialised from a feedback concern, naming the reporter. It is not in the 180-day safety retention set. Proposed: give it the same retention as reports."
+      "reason": "Safety case record kept 180 days after the reporter's deletion: retainSafetyRecordsForDeletedAccount sets retainUntil and purgeRetainedSafetyRecords purges it (safetyRetention.ts); an earlier clock is never extended (#2468)."
     },
     "eventSeatVerifiedPhones": {
       "handling": "kept",
@@ -672,8 +675,7 @@
     },
     "moderationFlags": {
       "handling": "kept",
-      "needsDecision": true,
-      "reason": "Moderation ticket about the account (targetUserId). It is not in the 180-day safety retention set. Proposed: give it the same retention as reports."
+      "reason": "Safety case record kept 180 days after the deletion of the account it is about: retainSafetyRecordsForDeletedAccount sets retainUntil and purgeRetainedSafetyRecords purges it (safetyRetention.ts); an earlier clock is never extended (#2468)."
     },
     "moneyIssueResolutions": {
       "handling": "kept",

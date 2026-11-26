@@ -71,6 +71,7 @@ export function useMessagingBudgetController({
   onNotice: (message: string | null) => void;
 }): MessagingBudgetController {
   const {beginOperation, endOperation} = useAdminPendingOperationGuard();
+  // lease-exempt: loads the budget review for the scope on screen and writes nothing.
   const reviewMutation = useMutation({
     mutationKey: adminQueryKeys.finance.messagingBudgetReview(),
     mutationFn: loadMessagingBudgetReview,

@@ -2,10 +2,17 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_list_external_event_details_payload.schema.json",
   "title": "AdminListExternalEventDetailsCallablePayload",
-  "description": "Callable payload accepted by adminListExternalEventDetails. This lists read-only externalEvents/{eventId} rows for the admin event supply workspace.",
+  "description": "Callable payload accepted by adminListExternalEventDetails. This lists read-only externalEvents/{eventId} rows for the admin event supply workspace, or, with eventId, reads exactly one of them.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "eventId": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[^/]+$",
+      "description": "Point read of one externalEvents/{eventId} document for an event's own Admin page. It returns at most one row and is refused alongside any list filter."
+    },
     "query": {"type": ["string", "null"], "maxLength": 160},
     "citySlug": {
       "anyOf": [

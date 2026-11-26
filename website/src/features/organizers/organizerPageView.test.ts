@@ -198,8 +198,14 @@ describe("organizerPageView", () => {
     expect(claimed.distribution[0]).toEqual({stars: 5, count: 142, label: copy.starsRow(5, 142)});
     const generated = view(generatedOrganizerPage).reviews;
     expect(generated.items.every((item) => item.note === "Harbour Line Run Club hasn’t claimed this page, so they can’t reply yet.")).toBe(true);
-    // An unclaimed page takes no new reviews: the read model disables writing them until the organiser claims it.
-    expect(generated.policy).toBe("This page doesn’t take new reviews until the organiser claims it. Reviews marked Unverified weren’t booked on Catch.");
+    expect(claimed.writable).toBe(false);
+    // Anyone can review an unclaimed page once one of its events has passed, marked Unverified.
+    expect(generated).toMatchObject({writable: true,
+      policy: "Anyone who went can review this page. Reviews marked Unverified weren’t booked on Catch."});
+    expect(view({...generatedOrganizerPage, pastMoments: []}).reviews).toMatchObject({writable: false,
+      policy: "Reviews open once one of these events has passed. Reviews marked Unverified weren’t booked on Catch."});
+    expect(view({...generatedOrganizerPage, reviewSummary: {...generatedOrganizerPage.reviewSummary, readState: "disabled"}})
+      .reviews.writable).toBe(false);
     expect(view(noReviewsOrganizerPage).reviews).toMatchObject({readable: true, items: [], average: null,
       unrated: "No rating yet. The rating counts only reviews from people who booked on Catch."});
   });

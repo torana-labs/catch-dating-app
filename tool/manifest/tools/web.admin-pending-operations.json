@@ -21,20 +21,12 @@
     "admin/src/shared/pendingOperation.tsx",
     "admin/src/shared/pendingOperation.test.tsx",
     "admin/src/shared/ui/AdminPrimitives/actions.tsx",
-    "admin/src/shared/ui/AdminPrimitives/shell.tsx",
-    "admin/src/features/safety/controllers/useAccessReviewController.ts",
-    "admin/src/features/settings/controllers/useTeamController.ts",
-    "admin/src/features/events/controllers/useEventPublishingController.ts",
-    "admin/src/features/events/controllers/useEventPageEditorController.ts",
-    "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
-    "admin/src/features/organizers/controllers/useOrganizerPageEditorController.ts",
-    "admin/src/features/safety/controllers/useSafetyTriageController.ts",
-    "admin/src/features/users/controllers/useUserAnalyticsController.ts"
+    "admin/src/shared/ui/AdminPrimitives/shell.tsx"
   ],
   "command": "node tool/web/check_admin_pending_operations.mjs --check",
   "surface": "local-read",
   "status": "active",
-  "description": "Enforces one exclusive Admin operation lease across the controllers it names, the shared workspace/navigation boundary, and immutable-snapshot regression proof.",
+  "description": "Enforces one exclusive Admin operation lease: it reads admin/src for every useMutation write, which must hold the lease or say why it needs none, and checks the shared workspace/navigation boundary and immutable-snapshot regression proof. The Admin lane runs it on every Admin change through typecheck.",
   "checks": [
     "node --check tool/web/check_admin_pending_operations.mjs",
     "node tool/web/check_admin_pending_operations.mjs --self-test",

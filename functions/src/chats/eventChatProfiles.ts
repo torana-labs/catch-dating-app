@@ -50,6 +50,7 @@ import {
 import {
   eventProfileCoreFields,
   eventProfilePhotos,
+  hostHiddenEventProfileCoreIds,
   readEventProfilePhoto,
 } from "./eventChatProfileProjection";
 
@@ -439,7 +440,7 @@ export async function getEventChatProfileHandler(
     maxRequests: 60, windowMs: 60 * 1000,
   });
   const inspect = async (tx: FirebaseFirestore.Transaction) => {
-    await requireEventChatMember(db, tx, data.eventId, uid);
+    const viewer = await requireEventChatMember(db, tx, data.eventId, uid);
     const target = await requireEventChatMember(
       db,
       tx,
@@ -461,6 +462,12 @@ export async function getEventChatProfileHandler(
         null;
     const {profile, photo} = await projectProfile(db, tx, data.eventId,
       data.participantUid, target, selected, deps.now().toDate());
+    // A guest shares with the other guests; an organiser's hosts in the chat
+    // never receive the guest's sensitive answers (#2493).
+    if (viewer.view.role === "host") {
+      profile.coreFields = profile.coreFields.filter((field) =>
+        !hostHiddenEventProfileCoreIds.has(field.fieldId));
+    }
     return {
       profile,
       photo,

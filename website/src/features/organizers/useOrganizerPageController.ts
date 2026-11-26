@@ -4,6 +4,7 @@ import {accountCopy} from "../../content/account";
 import {organizerPageCopy} from "../../content/organizerPage";
 import {trackMarketingEvent} from "../../analytics";
 import {setWebsiteOrganizerFollow} from "../../firebase";
+import {publicReviewsFirebaseConfigured} from "../../firebaseConfig";
 import {useWebsiteAccountController} from "../account/useWebsiteAccountController";
 import {observeOrganizerPageView, trackOrganizerAnalytics, trackOrganizerLinkClick} from "./analytics";
 import {observeOrganizerProviders} from "./observeOrganizerProviders";
@@ -22,16 +23,32 @@ export interface PhoneCodeChallenge {
 /**
  * Backends the page calls. Follow by phone (CAT-253) is live: the website's
  * phone-code sign-in, then followOrganizerByPhone with the follower's own
- * WhatsApp tick. Unverified reviews from anyone (CAT-169) stay null, and
- * their UI hidden, until that backend lands.
+ * WhatsApp tick. Reviews from anyone (CAT-169) post through
+ * createPublicOrganizerReview, which stores them unverified; the reply says
+ * whether the review is up or waiting for moderation.
  */
 export interface OrganizerPageBackends {
   followByPhone: null | {
     sendCode: (input: {phoneNumber: string; recaptchaId: string}) => Promise<PhoneCodeChallenge>;
     follow: (input: {organizerId: string; requestId: string; whatsappUpdates: boolean}) => Promise<void>;
   };
-  submitReview: null | ((input: {organizerId: string; rating: number; comment: string; reviewerName: string}) => Promise<void>);
+  submitReview: null | ((input: PublicReviewInput) => Promise<PublicReviewOutcome>);
 }
+
+export interface PublicReviewInput {
+  organizerId: string;
+  rating: number;
+  comment: string;
+  reviewerName: string;
+  /** The page the review was written on; the server checks it is the organiser's canonical page. */
+  submittedFromPath: string;
+}
+
+/** A posted review is up at once, or held for moderation first. */
+export type PublicReviewOutcome = "published" | "pending";
+
+/** The callable's comment limit (create_public_organizer_review_payload). */
+export const reviewCommentMaxLength = 1000;
 
 /** The reviewed copy version the WhatsApp tick shows (follower-whatsapp-v1). */
 export const followerWhatsappTermsVersion = "follower-whatsapp-v1";
@@ -49,7 +66,11 @@ export const organizerPageBackends: OrganizerPageBackends = {
         ...(whatsappUpdates ? {termsVersion: followerWhatsappTermsVersion} : {})});
     },
   },
-  submitReview: null,
+  submitReview: publicReviewsFirebaseConfigured ? async (input) => {
+    const {createPublicOrganizerReview} = await import("../../firebase");
+    const {review} = await createPublicOrganizerReview({...input, isAnonymous: false});
+    return review.moderationStatus === "published" ? "published" : "pending";
+  } : null,
 };
 
 const newRequestId = () => (globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`)
@@ -105,8 +126,9 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
   const [reviewText, setReviewText] = useState("");
   const [reviewName, setReviewName] = useState("");
   const [reviewError, setReviewError] = useState("");
-  const [reviewDone, setReviewDone] = useState(false);
-  const reviewMutation = useMutation({retry: false, gcTime: 0, mutationFn: (post: () => Promise<void>) => post()});
+  const [reviewDone, setReviewDone] = useState<PublicReviewOutcome | null>(null);
+  const reviewMutation = useMutation({retry: false, gcTime: 0,
+    mutationFn: (post: () => Promise<PublicReviewOutcome>) => post()});
 
   const previousUid = useRef(account.uid);
   useEffect(() => {
@@ -120,7 +142,7 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
     setWhatsappUpdates(false); challenge.current?.clear(); challenge.current = null;
     followRequestId.current = newRequestId();
     setShareOpen(false); setCopyState("idle");
-    setReviewOpen(false); setReviewStars(0); setReviewText(""); setReviewName(""); setReviewError(""); setReviewDone(false);
+    setReviewOpen(false); setReviewStars(0); setReviewText(""); setReviewName(""); setReviewError(""); setReviewDone(null);
   }, [listing.id]);
 
   useEffect(() => observeOrganizerPageView(listing, "listingView", "listing_page"), [listing]);
@@ -204,13 +226,14 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
     const submit = backends.submitReview;
     if (!reviewStars) {setReviewError(copy.reviewForm.noStars); return;}
     if (reviewText.trim().length < 20) {setReviewError(copy.reviewForm.tooShort); return;}
+    if (reviewText.trim().length > reviewCommentMaxLength) {setReviewError(copy.reviewForm.tooLong); return;}
     if (!reviewName.trim()) {setReviewError(copy.reviewForm.noName); return;}
     if (!submit || reviewMutation.isPending) return;
     setReviewError("");
     try {
-      await reviewMutation.mutateAsync(() =>
-        submit({organizerId: listing.id, rating: reviewStars, comment: reviewText.trim(), reviewerName: reviewName.trim()}));
-      setReviewDone(true);
+      const outcome = await reviewMutation.mutateAsync(() => submit({organizerId: listing.id, rating: reviewStars,
+        comment: reviewText.trim(), reviewerName: reviewName.trim(), submittedFromPath: page.path}));
+      setReviewDone(outcome);
     } catch {setReviewError(copy.reviewForm.failed);}
   }
 
@@ -252,7 +275,7 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
       copy: () => void copyLink(),
       copyState,
     },
-    review: backends.submitReview ? {
+    review: backends.submitReview && view.reviews.writable ? {
       open: reviewOpen,
       toggle: () => setReviewOpen((open) => !open),
       stars: reviewStars,
@@ -263,6 +286,7 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
       setName: (value: string) => {setReviewName(value); setReviewError("");},
       error: reviewError,
       pending: reviewMutation.isPending,
+      /** Set once posted: up at once, or waiting for moderation. */
       done: reviewDone,
       submit: () => void submitReview(),
     } : null,

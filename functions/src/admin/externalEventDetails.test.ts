@@ -51,6 +51,13 @@ class FakeCollectionRef {
     return new FakeQuery(this.firestore, this.path).limit(count);
   }
 
+  doc(id: string) {
+    const path = `${this.path}/${id}`;
+    const value = this.firestore.entries().find(([key]) => key === path)?.[1];
+    this.firestore.pointReads.push(path);
+    return {get: async () => Object.assign(new FakeSnapshot(value), {id})};
+  }
+
   orderBy(fieldPath: string, direction: "asc" | "desc" = "asc") {
     return new FakeQuery(this.firestore, this.path)
       .orderBy(fieldPath, direction);
@@ -152,6 +159,8 @@ class FakeQuery {
 }
 
 class FakeFirestore {
+  readonly pointReads: string[] = [];
+
   constructor(private readonly docs: Record<string, FakeData | undefined>) {}
 
   collection(collectionPath: string) {
@@ -428,5 +437,89 @@ test(
       ),
       (error) => assertHttpsCode(error, "permission-denied")
     );
+  }
+);
+
+test(
+  "adminListExternalEventDetailsHandler reads one event by id, not a list",
+  async () => {
+    const h = harness({
+      "externalEvents/ext-moonmoth-future-run": externalEventDoc(),
+      // Past and archived: no default list would return it.
+      "externalEvents/ext-moonmoth-old-run": externalEventDoc({
+        eventId: "ext-moonmoth-old-run",
+        title: "Old run",
+        startTime: new Date("2020-01-01T12:30:00.000Z"),
+        publicationStatus: "archived",
+      }),
+    });
+
+    const found = await adminListExternalEventDetailsHandler(
+      callableRequest("admin-1", {eventId: " ext-moonmoth-old-run "},
+        {admin: true}),
+      h.deps
+    );
+    assert.deepEqual(found.rows.map((row) => row.eventId),
+      ["ext-moonmoth-old-run"]);
+    assert.equal(found.rows[0].publicationStatus, "archived");
+    assert.deepEqual(h.firestore.pointReads,
+      ["externalEvents/ext-moonmoth-old-run"]);
+
+    const missing = await adminListExternalEventDetailsHandler(
+      callableRequest("admin-1", {eventId: "ext-nowhere"}, {admin: true}),
+      h.deps
+    );
+    assert.deepEqual(missing.rows, []);
+    assert.deepEqual(h.rateLimitCalls, [
+      "admin-1:adminListExternalEventDetails",
+      "admin-1:adminListExternalEventDetails",
+    ]);
+  }
+);
+
+test(
+  "adminListExternalEventDetailsHandler refuses an event id with list filters",
+  async () => {
+    const h = harness({
+      "externalEvents/ext-moonmoth-future-run": externalEventDoc(),
+    });
+    for (const filters of [{query: "nightfall"}, {limit: 5},
+      {timeWindow: "all"}, {citySlug: "indore"}]) {
+      await assert.rejects(
+        () => adminListExternalEventDetailsHandler(
+          callableRequest("admin-1",
+            {eventId: "ext-moonmoth-future-run", ...filters}, {admin: true}),
+          h.deps
+        ),
+        (error) => assertHttpsCode(error, "invalid-argument")
+      );
+    }
+    await assert.rejects(
+      () => adminListExternalEventDetailsHandler(
+        callableRequest("admin-1", {eventId: "externalEvents/x"},
+          {admin: true}),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "invalid-argument")
+    );
+    assert.deepEqual(h.firestore.pointReads, []);
+  }
+);
+
+test(
+  "adminListExternalEventDetailsHandler keeps the point read to its roles",
+  async () => {
+    const h = harness({
+      "externalEvents/ext-moonmoth-future-run": externalEventDoc(),
+    });
+    await assert.rejects(
+      () => adminListExternalEventDetailsHandler(
+        callableRequest("admin-1", {eventId: "ext-moonmoth-future-run"},
+          {salesStaff: true}),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "permission-denied")
+    );
+    assert.deepEqual(h.firestore.pointReads, []);
   }
 );

@@ -21,6 +21,9 @@ import {
   setEventAssistanceSmsPreferenceHandler,
 } from "./smsPreferenceHandlers";
 
+import {readEventContactPermission} from
+  "../../shared/eventContactPermissions";
+import {permissionFromEventGrant} from "./eventContactGrants";
 const start = Date.parse("2026-09-07T12:00:00Z");
 
 test("a reviewed grant cannot move to a changed verified number", async () => {
@@ -192,8 +195,16 @@ test("verified opt-in records exact consent without changing the roster",
     assert.equal(receipt.copyHash, SMS_CONSENT_HASH);
     assert.equal(smsPermissionHasReceipt(permission, receipt), true);
     assert.deepEqual(await h.read(h.attendeePath), roster);
-    assert.equal(h.fake.entries().some(([path]) => path.startsWith("users/")),
-      false);
+    // The only write under users/ is the guest's event consent document
+    // (issue #2494), which rebuilds into this exact permission.
+    const eventPath = `users/${h.actor.uid}/contactPermissions/` +
+      `event_${h.context.eventId}`;
+    assert.deepEqual(h.fake.entries().map(([path]) => path)
+      .filter((path) => path.startsWith("users/")), [eventPath]);
+    const document = readEventContactPermission(await h.read(eventPath),
+      h.context.eventId)!;
+    assert.deepEqual(permissionFromEventGrant("sms", h.actor.uid, document,
+      document.grants["sms:eventService"]!), permission);
   });
 
 test("replayed grants cannot undo withdrawal or change request meaning",

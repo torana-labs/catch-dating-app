@@ -21,8 +21,19 @@ export const contactPermissionReceiptsCollection = "contactPermissionReceipts";
 export type ContactSender =
   | {kind: "catch"}
   | {kind: "organizer"; organizerId: string};
-export type ContactGrantKey = ContactPermissionDocument["granted"][number];
-export type ContactPermissionReceipt = ContactPermissionReceiptDocument;
+/** Catch and organizer keys; event documents use eventContactPermissions. */
+export type ContactGrantKey = Extract<
+  ContactPermissionDocument["granted"][number],
+  "whatsapp:eventOperations" | "whatsapp:marketing" |
+  "whatsapp:followerUpdates" | "sms:marketing">;
+/** A catch or organizer receipt; event receipts carry more (issue #2494). */
+export type ContactPermissionReceipt = Omit<ContactPermissionReceiptDocument,
+  "senderKind" | "channel" | "purpose" | "organizerId" | "endpointEmail" |
+  "event"> & {
+  senderKind: "catch" | "organizer";
+  channel: "whatsapp" | "sms";
+  purpose?: "eventOperations" | "marketing" | "followerUpdates";
+};
 export type ContactSource = ContactPermissionReceiptDocument["source"];
 export interface ContactGrant {
   status: "optedIn" | "optedOut";
