@@ -10,7 +10,6 @@
   "write": "server only",
   "exportedFunctions": [
     "onEventAttendeeAudienceProjected",
-    "getOrganizerContactDetail",
     "mergeOrganizerContacts",
     "unmergeOrganizerContacts"
   ],

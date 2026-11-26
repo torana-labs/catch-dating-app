@@ -1678,15 +1678,6 @@ export const setOrganizerFormAutomationState = onCall(
   (request) => setOrganizerFormAutomationStateHandler(request),
 );
 
-export const listOrganizerFormAutomationRuns = onCall(
-  appCheckCallableOptionsWithLimits({
-    timeoutSeconds: 60,
-    maxInstances: 20,
-    concurrency: 20,
-  }),
-  (request) => listOrganizerFormAutomationRunsHandler(request),
-);
-
 export const onOrganizerFormResponseAutomated = onDocumentWritten(
   {
     document: "organizerFormResponses/{responseId}",

@@ -2,8 +2,5 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/get_event_attendance_report_payload.schema.json",
   "title": "GetEventAttendanceReportCallablePayload",
-  "$ref": "../shared/event_attendance_disposition.schema.json#/definitions/ReportInput",
-  "x-callable-aliases": [
-    "getEventAttendanceReport"
-  ]
+  "$ref": "../shared/event_attendance_disposition.schema.json#/definitions/ReportInput"
 }

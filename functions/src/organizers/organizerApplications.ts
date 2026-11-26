@@ -1515,11 +1515,6 @@ export const listOrganizerApplications = onCall(
   (request) => listOrganizerApplicationsHandler(request)
 );
 
-export const getOrganizerApplicationDetail = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 20}),
-  (request) => getOrganizerApplicationDetailHandler(request)
-);
-
 export const reviewOrganizerApplication = onCall(
   appCheckCallableOptionsWithSecrets([organizerContactIdentityKey],
     {timeoutSeconds: 60, maxInstances: 20}),
