@@ -139,7 +139,6 @@ Function deployment plans:
 - `expireCrossPathsPairHolds`
 - `expireEventRehearsals`
 - `expireEventWaitlistOffers`
-- `sendEventReminders`
 
 They were undeployed from dev and production on 2026-09-02 after live
 queries found no pending campaigns, delivery operations, rehearsal sessions,

@@ -6,10 +6,7 @@ import {
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {validateOrganizerApplicationDocument} from
   "../../shared/generated/validators/organizerApplicationDocument";
-import {validateEventApprovalPreferenceDocument} from
-  "../../shared/generated/validators/eventApprovalPreferenceDocument";
 import {messages} from "./model";
-import {preferences} from "./preferences";
 import {enqueueApproval, ApprovalNotificationWork} from "./work";
 import {ApprovalWhatsappReceipts} from "./whatsappReceipts";
 export const onEventApplicationApprovalNotification = onDocumentWritten(
@@ -37,37 +34,6 @@ export const onEventApplicationApprovalNotification = onDocumentWritten(
       after.linkedUid,
       after.targetId,
     );
-  },
-);
-export const onEventApprovalNotificationPreference = onDocumentWritten(
-  {
-    document: preferences + "/{preferenceId}",
-    retry: true,
-    timeoutSeconds: 120,
-    maxInstances: 5,
-  },
-  async (event) => {
-    const preference = event.data?.after.data();
-    if (!validateEventApprovalPreferenceDocument(preference)) {
-      return;
-    }
-    const db = admin.firestore();
-    const rows = await db
-      .collection("organizerApplications")
-      .where("linkedUid", "==", preference.uid)
-      .where("targetId", "==", preference.eventId)
-      .orderBy("submittedAt", "desc")
-      .limit(1)
-      .get();
-    if (!rows.docs[0]) return;
-    const ids = await enqueueApproval(
-      db,
-      rows.docs[0].id,
-      preference.uid,
-      preference.eventId,
-    );
-    const work = new ApprovalNotificationWork(db);
-    await Promise.all(ids.map((id) => work.processMessage(id, true)));
   },
 );
 export const onEventApprovalNotificationMessage = onDocumentWritten(

@@ -1,5 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useState} from "react";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {
   exportLedger,
   loadFinanceMonth,
@@ -32,6 +33,7 @@ export function useFinanceMonthController({initialMonth}: {
   initialMonth: string;
 }): FinanceMonthController {
   const client = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const [month, setMonth] = useState(initialMonth);
   const query = useQuery({queryKey: key(month),
     queryFn: () => loadFinanceMonth(month)});
@@ -41,6 +43,7 @@ export function useFinanceMonthController({initialMonth}: {
       input.amountMinor, input.note),
     onSuccess: () => client.invalidateQueries({queryKey: key(month)}),
   });
+  // lease-exempt: builds a CSV from the month's records and writes nothing.
   const ledger = useMutation({mutationFn: () => exportLedger(month)});
   const error = save.error ?? ledger.error;
   return {
@@ -54,12 +57,16 @@ export function useFinanceMonthController({initialMonth}: {
       if (rupees !== null && (!Number.isFinite(rupees) || rupees < 0)) {
         return false;
       }
+      const operation = beginOperation();
+      if (!operation) return false;
       try {
         await save.mutateAsync({category, note, amountMinor: rupees === null ?
           null : Math.round(rupees * 100)});
         return true;
       } catch {
         return false;
+      } finally {
+        endOperation(operation);
       }
     },
     exportMonth: async () => {

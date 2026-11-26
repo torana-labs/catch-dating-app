@@ -106,8 +106,11 @@ test("reviewed RCS consent records an exact independent grant", async () => {
     h.config.credentialVersion, "requestId", "decision"]) {
     assert.equal(JSON.stringify(result).includes(hidden), false, hidden);
   }
+  // Beside the old records: the guest's event consent document and its
+  // receipt copy (issue #2494).
   assert.ok(h.fake.entries().every(([path]) =>
-    ["events", "eventAttendees", ...Object.values(rcsConsentCollections)]
+    ["events", "eventAttendees", ...Object.values(rcsConsentCollections),
+      `users/${h.actor.uid}/contactPermissions`, "contactPermissionReceipts"]
       .some((collection) => path.startsWith(collection + "/"))));
 });
 
@@ -386,13 +389,22 @@ test("permission readers reject stale identities, lifetime and altered proof",
             seconds: (at - 86_400_000) / 1000, nanoseconds: 0,
           }});
       }
+      // The gate reads the guest's event document and its receipt copy
+      // (issue #2494); altering either is what an altered proof means now.
+      const eventPath = `users/${h.actor.uid}/contactPermissions/` +
+        `event_${h.context.eventId}`;
       if (change === "permission") {
-        await h.write(h.permissionPath,
-          {...before, expiresAt: before.expiresAt + 1000});
+        const document = await h.read(eventPath) as {grants: Record<string,
+          {expiresAt: {_seconds: number; _nanoseconds: number}}>};
+        const grant = document.grants["rcs:eventService"];
+        await h.write(eventPath, {...document, grants: {...document.grants,
+          "rcs:eventService": {...grant, expiresAt: {...grant.expiresAt,
+            _seconds: grant.expiresAt._seconds + 1}}}});
       }
       if (change === "receipt") {
         h.fake.remove(rcsConsentCollections.receipts +
         "/" + before.currentReceiptId);
+        h.fake.remove("contactPermissionReceipts/" + before.currentReceiptId);
       }
       assert.equal((await h.allowed()).kind, "blocked", change);
     }

@@ -1,4 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {
   loadMoneySettings,
   saveMoneySettings,
@@ -22,6 +23,7 @@ const key = ["admin", "settings", "money"] as const;
 /** Settings → Payments' GST switch, bill due day and nominator credit. */
 export function usePaymentSettingsController(): PaymentSettingsController {
   const client = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const query = useQuery({queryKey: key, queryFn: loadMoneySettings});
   const mutation = useMutation({
     mutationFn: (input: {revision: number; settings: MoneySettings}) =>
@@ -36,12 +38,16 @@ export function usePaymentSettingsController(): PaymentSettingsController {
     saveError: mutation.error instanceof Error ? mutation.error.message : null,
     save: async (change) => {
       if (!query.data) return false;
+      const operation = beginOperation();
+      if (!operation) return false;
       try {
         await mutation.mutateAsync({revision: query.data.revision,
           settings: change(query.data.settings)});
         return true;
       } catch {
         return false;
+      } finally {
+        endOperation(operation);
       }
     },
   };

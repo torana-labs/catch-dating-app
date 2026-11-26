@@ -993,7 +993,7 @@
         "onAssistanceMessageChanged",
         "onAssistanceWorkChanged",
         "evaluateDueEventAssistanceWork",
-        "onEventApprovalNotificationPreference",
+        "onContactPermissionAudienceProjected",
         "onEventApprovalNotificationMessage",
         "retryEventApprovalNotifications"
       ],
@@ -1198,7 +1198,7 @@
       "owner": "event-admission",
       "credentialClass": "provider-envelope",
       "consumers": [
-        "onEventApprovalNotificationPreference",
+        "onContactPermissionAudienceProjected",
         "onEventApprovalNotificationMessage",
         "retryEventApprovalNotifications"
       ],

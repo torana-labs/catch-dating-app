@@ -45,12 +45,11 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Storybook-only backends: the follow sheet without Firebase, and the review
-// form, which production hides until reviews (CAT-169) land.
+// Storybook-only backends: the follow sheet and the review form without Firebase.
 const previewBackends: OrganizerPageBackends = {
   followByPhone: {sendCode: async () => ({confirm: async () => undefined, clear: () => undefined}),
     follow: async () => undefined},
-  submitReview: async () => undefined,
+  submitReview: async () => "published",
 };
 
 function Providers({children, page}: {children: ReactNode; page: OrganizerPageRecord}) {
@@ -279,7 +278,7 @@ export const ReviewsGenerated: Story = {
   render: () => <SectionStory column="main" pages={[generatedOrganizerPage]} render={(controller) => <OrganizerReviewsSection controller={controller} />} />,
 };
 
-/** Anyone's review, which production shows once CAT-169 lands. */
+/** Anyone's review, on an unclaimed page once one of its events has passed (CAT-169). */
 export const ReviewForm: Story = {
   parameters: {catchComponent: {id: "organizer_reviews_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["review-form"]}},
   render: () => (

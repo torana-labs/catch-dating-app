@@ -463,3 +463,26 @@ export class ApprovalNotificationWork {
     }
   }
 }
+/**
+ * Enqueues approval notifications after the guest changes their choices for
+ * one event. onContactPermissionAudienceProjected calls it when the guest's
+ * event document changes its bookingUpdates grants; it took over from
+ * onEventApprovalNotificationPreference (issue #2494).
+ */
+export async function enqueueApprovalForChoices(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  eventId: string,
+): Promise<void> {
+  const rows = await db
+    .collection("organizerApplications")
+    .where("linkedUid", "==", uid)
+    .where("targetId", "==", eventId)
+    .orderBy("submittedAt", "desc")
+    .limit(1)
+    .get();
+  if (!rows.docs[0]) return;
+  const ids = await enqueueApproval(db, rows.docs[0].id, uid, eventId);
+  const work = new ApprovalNotificationWork(db);
+  await Promise.all(ids.map((id) => work.processMessage(id, true)));
+}

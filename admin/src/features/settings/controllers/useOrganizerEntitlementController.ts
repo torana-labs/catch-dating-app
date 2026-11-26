@@ -91,6 +91,7 @@ export function useOrganizerEntitlementController({
   onNotice: (message: string | null) => void;
 }): OrganizerEntitlementController {
   const {beginOperation, endOperation} = useAdminPendingOperationGuard();
+  // lease-exempt: looks up one organiser's plan and writes nothing.
   const loadMutation = useMutation({
     mutationKey: organizerEntitlementKeys.load(),
     mutationFn: loadOrganizerEntitlement,
