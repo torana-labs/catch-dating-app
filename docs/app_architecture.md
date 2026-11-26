@@ -5036,7 +5036,7 @@ Current aligned adopters:
 Defined variant:
 
 - `ARCH-SCREEN-001C` covers the host event route,
-  `lib/hosts/presentation/host_event_manage_route_screen.dart`. One canonical
+  `lib/hosts/events/event_route_screen.dart`. One canonical
   route owns the legacy Setup, Guests, Live and Report aliases and
   `hostEventRouteDestination` resolves each to a rebuilt screen: the event
   workspace and guest lists open without reading the event, and Live and

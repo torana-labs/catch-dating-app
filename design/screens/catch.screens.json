@@ -448,7 +448,7 @@
             "hostAppAttendanceSheet",
             "hostAppEventSuccessScreen"
           ],
-          "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
+          "file": "lib/hosts/events/event_route_screen.dart",
           "symbol": "HostEventManageRouteScreen",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
@@ -13204,14 +13204,14 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
+        "file": "lib/hosts/events/event_route_screen.dart",
         "symbol": "HostEventManageRouteScreen"
       },
       "stateController": {
         "primary": "HostEventManageRouteScreen + hostEventRouteDestination",
         "files": [
           {
-            "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
+            "file": "lib/hosts/events/event_route_screen.dart",
             "symbol": "HostEventManageRouteScreen"
           },
           {
@@ -13355,7 +13355,7 @@
               "HostManageAccessState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
+              "file": "lib/hosts/events/event_route_screen.dart",
               "symbol": "HostEventManageRouteScreen"
             },
             "currentOwner": "HostEventManageRouteScreen",

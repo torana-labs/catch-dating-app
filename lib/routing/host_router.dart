@@ -11,6 +11,7 @@ import 'package:catch_dating_app/hosts/create/edit_event_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_defaults_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_publish_screen.dart';
+import 'package:catch_dating_app/hosts/events/event_route_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/events/events_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_screen.dart';
@@ -50,7 +51,6 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_scre
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_route_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_create_organizer_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/programmes.dart';
