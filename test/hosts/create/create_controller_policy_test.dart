@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
@@ -130,11 +131,22 @@ void main() {
   late List<PrivateEventPreferenceIntents> preferences;
   late ProviderContainer container;
 
+  /// What the resumed event's document holds; null before its tickets.
+  PrivateEventSavedPolicy? savedPolicy;
+  Object? savedPolicyError;
+
   setUp(() {
     patches = [];
     preferences = [];
+    savedPolicy = null;
+    savedPolicyError = null;
     container = ProviderContainer(
       overrides: [
+        watchPrivateEventPolicyProvider('event-1').overrideWith(
+          (ref) => savedPolicyError == null
+              ? Stream.value(savedPolicy)
+              : Stream.error(savedPolicyError!),
+        ),
         hostEventSetupDefaultViewReadsProvider.overrideWithValue(_NoDefaults()),
         privateEventDetailsControllerProvider.overrideWith2(
           (_) => _FakeDetails(patches),
@@ -299,6 +311,68 @@ void main() {
   });
 
   group('resuming a saved event', () {
+    test(
+      'changing only the cancellation keeps the saved ages and caps',
+      () async {
+        savedPolicy = PrivateEventSavedPolicy(
+          eventPolicy: EventPolicyBundle.fixedCohortCapsEvent(
+            capacityLimit: 24,
+            basePriceInPaise: 49900,
+            maxMenInterestedInWomen: 10,
+            maxWomenInterestedInMen: 12,
+          ),
+          constraints: const EventConstraints(
+            minAge: 21,
+            maxAge: 35,
+            maxMen: 10,
+            maxWomen: 12,
+          ),
+          currency: 'INR',
+        );
+        final flow = args(savedEventId: 'event-1');
+        await settle();
+        expect(state(flow).loadingSaved, isFalse);
+        // The saved policy filled the admission fields before the steps show.
+        expect(state(flow).draft.admissionPreset, editFixedCohortCapsPreset);
+        expect(state(flow).draft.minAge, '21');
+        controller(flow)
+          ..edit((draft) => draft.copyWith(price: '499', capacity: '24'))
+          ..goTo(CreateStep.tickets)
+          ..setCancellationPolicy(EventCancellationPolicyId.strict);
+        await controller(flow).next();
+
+        expect(state(flow).error, isNull);
+        final terms = patches.single.admissionTerms!;
+        expect(terms.cancellationPolicyId, 'strict');
+        expect(terms.constraints, {
+          'minAge': 21,
+          'maxAge': 35,
+          'maxMen': 10,
+          'maxWomen': 12,
+        });
+        final policy = EventPolicyBundle.fromJson(terms.eventPolicy!);
+        expect(policy.usesFixedCohortCaps, isTrue);
+        expect(policy.cancellationPolicy.id, EventCancellationPolicyId.strict);
+        expect(preferences.single.admissionPreset.value, 'fixedCohortCaps');
+      },
+    );
+
+    test('an unread saved policy stops a changed policy from saving', () async {
+      savedPolicyError = StateError('offline');
+      final flow = args(savedEventId: 'event-1');
+      await settle();
+      expect(state(flow).loadingSaved, isFalse);
+      controller(flow)
+        ..edit((draft) => draft.copyWith(price: '499'))
+        ..goTo(CreateStep.tickets)
+        ..setCancellationPolicy(EventCancellationPolicyId.strict);
+      await controller(flow).next();
+
+      expect(state(flow).error, isA<StateError>());
+      expect(patches, isEmpty);
+      expect(state(flow).step, CreateStep.tickets);
+    });
+
     test('keeps its saved policy until the host changes it', () async {
       final flow = args(savedEventId: 'event-1');
       await settle();

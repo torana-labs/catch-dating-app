@@ -15,11 +15,18 @@ import 'package:intl/intl.dart';
 /// The places a new event starts with.
 const createDefaultPlaces = 30;
 
+/// Who can come when tickets sell elsewhere, by the copy's admission name.
+const _elsewhereAdmissions = {
+  EventAdmissionPreset.openCapacity: 'open',
+  EventAdmissionPreset.inviteOnly: 'invite',
+};
+
 /// Step three in board order: where tickets are sold, the price beside the
 /// places, who can come and on what terms (the admission format with its
 /// invite code, cohort caps or demand pricing, the age range and a paid
 /// event's cancellation policy), the waitlist, and how payouts work.
-/// Selling elsewhere keeps the price, places and terms off the event. A
+/// Selling elsewhere keeps the price, places and terms off the event and
+/// asks only whether anyone can book or it is invite only. A
 /// request-to-join format always asks the host, so its approval toggle
 /// gives way to the format's note.
 ///
@@ -148,6 +155,8 @@ class CreateTicketsBody extends StatelessWidget {
     final elsewhere = draft.externalBookingMode;
     // A request-to-join format always asks; its note says so.
     final reviewed = editAdmissionPreset(draft).requiresReview;
+    final invited =
+        editAdmissionPreset(draft) == EventAdmissionPreset.inviteOnly;
     final places = int.tryParse(draft.capacity ?? '') ?? createDefaultPlaces;
     return CatchStack(
       gap: CatchStackGap.g24,
@@ -233,6 +242,36 @@ class CreateTicketsBody extends StatelessWidget {
             ],
           ),
         if (!elsewhere) EditEventPolicySection(state: state, handlers: policy),
+        // Selling elsewhere keeps the two simple choices, saved as the
+        // event's admission preference.
+        if (elsewhere)
+          CatchStack(
+            gap: CatchStackGap.g8,
+            children: [
+              CatchText(
+                context.l10n.hostCreateWhoCanCome,
+                variant: CatchTextVariant.labelAction,
+              ),
+              for (final MapEntry(key: preset, value: admission)
+                  in _elsewhereAdmissions.entries)
+                CatchChoiceTile(
+                  key: ValueKey<String>('create-admission-$admission'),
+                  variant: CatchChoiceTileVariant.row,
+                  title: context.l10n.hostCreateAdmissionTitle(
+                    admission: admission,
+                  ),
+                  subtitle: context.l10n.hostCreateAdmissionNote(
+                    admission: admission,
+                  ),
+                  contract: CatchContractConstraints
+                      .updatePrivateEventPreferencesCallablePayloadIntentsAdmissionPresetValue,
+                  contractValue: preset.name,
+                  selected:
+                      invited == (preset == EventAdmissionPreset.inviteOnly),
+                  onTap: () => policy.onAdmission(preset),
+                ),
+            ],
+          ),
         if (!elsewhere)
           CatchStack(
             gap: CatchStackGap.none,

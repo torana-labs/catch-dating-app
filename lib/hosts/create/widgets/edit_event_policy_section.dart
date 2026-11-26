@@ -12,6 +12,7 @@ import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -191,16 +192,36 @@ class _EditEventPolicySectionState extends State<EditEventPolicySection> {
                 : null,
           ),
         if (preset == EventAdmissionPreset.openCapacity) ...[
-          CatchField.toggle(
-            copy: copy,
-            key: CreateEventFormKeys.cohortCapsToggle,
-            title: l10n.hostsEditHostedEventScreenTitleCohortCaps,
-            contract:
-                CatchContractConstraints.mobileFormStateEventCohortCapsEnabled,
-            body: l10n.hostsEditHostedEventScreenBodyOptionallyCapStraightMen,
-            bodyMaxLines: 5,
-            value: cohortCaps,
-            onChanged: frozen ? null : handlers.onCohortCaps,
+          // The explanation is several lines: the text comes first and the
+          // switch sits on its own row under it, on the same left edge.
+          Padding(
+            key: const ValueKey<String>('policy-cohort-caps'),
+            padding: const EdgeInsets.symmetric(
+              vertical: CatchFieldTokens.rowVerticalPadding,
+            ),
+            child: CatchStack(
+              gap: CatchStackGap.g8,
+              align: CatchStackAlign.start,
+              children: [
+                CatchText(
+                  l10n.hostsEditHostedEventScreenTitleCohortCaps,
+                  variant: CatchTextVariant.labelAction,
+                ),
+                CatchText(
+                  l10n.hostsEditHostedEventScreenBodyOptionallyCapStraightMen,
+                  variant: CatchTextVariant.bodySmall,
+                  tone: CatchTextTone.secondary,
+                ),
+                CatchToggleInput(
+                  key: CreateEventFormKeys.cohortCapsToggle,
+                  value: cohortCaps,
+                  contract: CatchContractConstraints
+                      .mobileFormStateEventCohortCapsEnabled,
+                  semanticLabel: l10n.hostsEditHostedEventScreenTitleCohortCaps,
+                  onChanged: frozen ? null : handlers.onCohortCaps,
+                ),
+              ],
+            ),
           ),
           if (cohortCaps)
             CatchSection.containedFieldRows(

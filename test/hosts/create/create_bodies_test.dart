@@ -9,6 +9,7 @@ import 'package:catch_dating_app/hosts/create/create_tickets_body.dart';
 import 'package:catch_dating_app/hosts/create/create_when_body.dart';
 import 'package:catch_dating_app/hosts/create/edit_event_values.dart';
 import 'package:catch_dating_app/hosts/create/widgets/create_editor_rail.dart';
+import 'package:catch_dating_app/hosts/create/widgets/edit_event_policy_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
@@ -75,7 +76,12 @@ final _trivia = EventDraft(
   capacity: '30',
 );
 
-Future<void> _pump(WidgetTester tester, Widget body, {Size? size}) async {
+Future<void> _pump(
+  WidgetTester tester,
+  Widget body, {
+  Size? size,
+  double textScale = 1,
+}) async {
   tester.view.physicalSize = size ?? const Size(390, 2400);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
@@ -83,6 +89,12 @@ Future<void> _pump(WidgetTester tester, Widget body, {Size? size}) async {
     MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(
+          context,
+        ).copyWith(textScaler: TextScaler.linear(textScale)),
+        child: child!,
+      ),
       home: CatchRoot(
         child: CatchScreen(body: CatchPageBody(child: body)),
       ),
@@ -416,6 +428,56 @@ void main() {
         find.text(l10n.hostsEditHostedEventScreenLabelAdmissionFormat),
         findsNothing,
       );
+    });
+
+    testWidgets('selling elsewhere still asks anyone or invite only', (
+      tester,
+    ) async {
+      final calls = <Object>[];
+      await _pump(
+        tester,
+        body(
+          _state(draft: _trivia.copyWith(externalBookingMode: true)),
+          calls: calls,
+        ),
+      );
+      expect(find.text(l10n.hostCreateWhoCanCome), findsOneWidget);
+      for (final admission in ['open', 'invite']) {
+        expect(
+          find.text(l10n.hostCreateAdmissionTitle(admission: admission)),
+          findsOneWidget,
+        );
+      }
+      await tester.tap(find.byKey(const ValueKey('create-admission-invite')));
+      expect(calls, [EventAdmissionPreset.inviteOnly]);
+    });
+
+    testWidgets('the cohort caps text stacks over its switch at phone width '
+        'and double text', (tester) async {
+      await _pump(
+        tester,
+        // The section alone: this checks its own layout.
+        EditEventPolicySection(
+          state: _state(draft: _trivia),
+          handlers: _policy(),
+        ),
+        size: const Size(375, 4000),
+        textScale: 2,
+      );
+      final note = tester.getRect(
+        find.text(l10n.hostsEditHostedEventScreenBodyOptionallyCapStraightMen),
+      );
+      final title = tester.getRect(
+        find.text(l10n.hostsEditHostedEventScreenTitleCohortCaps),
+      );
+      final toggle = tester.getRect(
+        find.byKey(CreateEventFormKeys.cohortCapsToggle),
+      );
+      expect(title.bottom, lessThanOrEqualTo(note.top));
+      expect(toggle.top, greaterThanOrEqualTo(note.bottom));
+      expect(toggle.left, closeTo(title.left, 0.5));
+      expect(note.right, lessThanOrEqualTo(375));
+      expect(tester.takeException(), isNull);
     });
   });
 

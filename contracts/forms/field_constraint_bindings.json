@@ -447,6 +447,9 @@
       "requestId",
       "reviewedDefaultsHash"
     ],
+    "updatePrivateEventPreferencesCallablePayload": [
+      "intents.admissionPreset.value"
+    ],
     "updateUserProfilePatch": [
       "activityPreferences.running.paceMaxSecsPerKm",
       "activityPreferences.running.paceMinSecsPerKm",

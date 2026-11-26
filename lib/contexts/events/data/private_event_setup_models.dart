@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/private_event_setup_basics.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
@@ -252,6 +254,39 @@ bool _validConstraints(Map<String, Object?>? constraints) {
       cap(maxMen) &&
       cap(maxWomen) &&
       ((maxAge as int? ?? 99) >= (minAge as int? ?? 0));
+}
+
+/// The admission policy and limits a private event saved with its tickets:
+/// what its setup view leaves out, so resuming setup can keep them.
+class PrivateEventSavedPolicy {
+  const PrivateEventSavedPolicy({
+    required this.eventPolicy,
+    required this.constraints,
+    required this.currency,
+  });
+
+  final EventPolicyBundle eventPolicy;
+  final EventConstraints constraints;
+  final String currency;
+
+  /// Read from the event document; null until the tickets are saved.
+  static PrivateEventSavedPolicy? fromEventDocument(
+    Map<String, dynamic>? data,
+  ) {
+    final policy = data?['eventPolicy'];
+    if (data == null || policy is! Map) return null;
+    final constraints = data['constraints'];
+    final currency = data['currency'];
+    return PrivateEventSavedPolicy(
+      eventPolicy: EventPolicyBundle.fromJson(
+        Map<String, dynamic>.from(policy),
+      ),
+      constraints: constraints is Map
+          ? EventConstraints.fromJson(Map<String, dynamic>.from(constraints))
+          : const EventConstraints(),
+      currency: currency is String ? currency : 'INR',
+    );
+  }
 }
 
 /// The `createPrivateEventSeries` result: the series and its events in

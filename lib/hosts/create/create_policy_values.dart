@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/events/data/private_event_setup_models
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy_defaults.dart';
+import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/hosts/create/create_draft_values.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_body.dart';
 import 'package:catch_dating_app/hosts/create/edit_event_values.dart';
@@ -48,6 +49,65 @@ EventDraft createDraftWithPolicyDefaults(
     cancellationPolicy: defaults.cancellationPolicyId.isApplicable
         ? defaults.cancellationPolicyId.name
         : null,
+  );
+}
+
+/// The draft with a saved private event's admission fields: format, ages,
+/// cohort caps, demand pricing, cancellation and cross-paths places, read
+/// as an edit reads them. Resuming setup loads them first, so a policy
+/// rebuilt after the host changes one field keeps the others.
+EventDraft createDraftWithSavedPolicy(
+  EventDraft draft,
+  PrivateEventSavedPolicy saved,
+) {
+  final policy = saved.eventPolicy;
+  final limits = saved.constraints;
+  final demand = policy.pricingPolicy.demandPricingRules.firstOrNull;
+  final pairs = policy.admissionPolicy.crossPathsPairInventory;
+  String rupees(int? paise) => CreateEventPolicyState.minorUnitsText(
+    paise,
+    currencyCode: saved.currency,
+  );
+  final cancellation = policy.cancellationPolicy.id;
+  return draft.copyWith(
+    admissionPreset: policy.usesFixedCohortCaps
+        ? editFixedCohortCapsPreset
+        : editAdmissionPresetForPolicy(policy).name,
+    minAge: limits.minAge == 0 ? '' : '${limits.minAge}',
+    maxAge: limits.maxAge == 99 ? '' : '${limits.maxAge}',
+    maxMen: limits.maxMen?.toString(),
+    maxWomen: limits.maxWomen?.toString(),
+    dynamicPricingEnabled: policy.usesDemandPricing,
+    dynamicPricingStep: demand == null
+        ? draft.dynamicPricingStep
+        : rupees(demand.stepAdjustment.inPaise),
+    dynamicPricingMax: demand == null
+        ? draft.dynamicPricingMax
+        : rupees(demand.maxAdjustment.inPaise),
+    cancellationPolicy: cancellation.isApplicable
+        ? cancellation.name
+        : draft.cancellationPolicy,
+    crossPathsPairInventoryEnabled: pairs.isEnabled,
+    crossPathsPairCapacity: '${pairs.reservedPairCapacity}',
+  );
+}
+
+/// The draft with the organizer's setup defaults in its empty price and
+/// places, and their refund policy as the cancellation choice unless
+/// [keepCancellation].
+EventDraft createDraftWithSetupDefaults(
+  EventDraft draft,
+  ManagerEventSetupPreferences defaults, {
+  required bool keepCancellation,
+}) {
+  final price = defaults.startingPriceMinor;
+  final refund = defaults.refundPolicy;
+  return draft.copyWith(
+    price: draft.price ?? (price == null ? null : '${price ~/ 100}'),
+    capacity: draft.capacity ?? defaults.places?.toString(),
+    cancellationPolicy: refund == null || keepCancellation
+        ? draft.cancellationPolicy
+        : refund,
   );
 }
 
@@ -121,10 +181,18 @@ PrivateEventAdmissionTerms createAdmissionTerms(
 
 /// The admission preset the preferences command stores for [draft]: one of
 /// open capacity, invite only, balanced singles and fixed cohort caps. A
-/// request-to-join format is open capacity that asks the host first.
+/// request-to-join format is open capacity that asks the host first; an
+/// event sold elsewhere is open capacity or invite only.
 String createPreferencePreset(EventDraft draft) {
+  final preset = editAdmissionPreset(draft);
+  // Selling elsewhere offers only anyone or invite only.
+  if (draft.externalBookingMode) {
+    return preset == EventAdmissionPreset.inviteOnly
+        ? EventAdmissionPreset.inviteOnly.name
+        : EventAdmissionPreset.openCapacity.name;
+  }
   if (editCohortCapsEnabled(draft)) return editFixedCohortCapsPreset;
-  return switch (editAdmissionPreset(draft)) {
+  return switch (preset) {
     EventAdmissionPreset.inviteOnly => EventAdmissionPreset.inviteOnly.name,
     EventAdmissionPreset.balancedSingles =>
       EventAdmissionPreset.balancedSingles.name,

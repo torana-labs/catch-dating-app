@@ -6,6 +6,7 @@ import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.d
 import 'package:catch_dating_app/contexts/events/domain/event_public_details.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/city_catalog.dart';
 
 // The create flow's pure draft values: how a saved event refills the draft,
 // the details patch the draft becomes, and the date, time, price and plan
@@ -97,6 +98,32 @@ PrivateEventDetailsPatch createBasicsPatch(
                 : draft.locationDetails!.trim(),
           )
         : null,
+  );
+}
+
+/// The create command's basics for [draft] in the given city; the
+/// timezone falls back to the city's own.
+PrivateEventBasics createBasicsFor(
+  EventDraft draft, {
+  required String cityId,
+  required String marketId,
+  required String? timezone,
+}) {
+  final city = defaultCityOptions
+      .where(
+        (option) =>
+            option.effectiveCityId == cityId &&
+            option.effectiveMarketId == marketId,
+      )
+      .firstOrNull;
+  return PrivateEventBasics(
+    name: (draft.name ?? '').trim(),
+    city: EventSetupValue.set(
+      EventSetupCity(cityId: cityId, marketId: marketId),
+    ),
+    localDate: draft.eventLocalDate!,
+    localStartTime: draft.eventLocalStartTime!,
+    timezone: EventSetupValue.set(timezone ?? city?.timeZone ?? ''),
   );
 }
 
