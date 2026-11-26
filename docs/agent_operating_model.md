@@ -334,9 +334,12 @@ base still must be an ancestor of the task head; unavailable main history keeps
 the original scope window. Dirty paths are always checked independently.
 When authorized work reveals additional files, use `scope` before editing them.
 It adds paths under the same transition lock, preserves the original task
-identity and Git state, and refuses overlap with another task or any existing
-inspection blocker. In-scope uncommitted work is preserved; already out-of-scope
-edits cannot be legitimized through scope expansion. Repeated additions are
+identity and Git state, and refuses overlap with another task or any other
+inspection blocker. Changed paths already outside the claim, committed or
+dirty, are adopted only when `--paths` names them and no other live claim
+overlaps them; otherwise `scope` refuses and lists them as `blockingPaths`.
+Its output leads with `"result": "extended" | "unchanged" | "refused"`, so
+read that, not the claim's `claimStatus`. Repeated additions are
 idempotent. The command cannot narrow a claim or change its branch or base.
 Plain `finish` refuses claim-only closeout. `finish --retain --reason <why>`
 checks that the branch is clean and unique work is pushed, reports handoff
