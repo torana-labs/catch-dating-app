@@ -2,6 +2,8 @@ import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/organizer/audience_body.dart';
 import 'package:catch_dating_app/hosts/organizer/audience_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/audience_state.dart';
+import 'package:catch_dating_app/hosts/organizer/event_policy_body.dart';
+import 'package:catch_dating_app/hosts/organizer/event_policy_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/live_guide_body.dart';
 import 'package:catch_dating_app/hosts/organizer/live_guide_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/profile_preview_sheet.dart';
@@ -91,3 +93,25 @@ Widget organizerAudienceBodyUseCase(BuildContext context) =>
 )
 Widget organizerAudienceScreenUseCase(BuildContext context) =>
     ProviderScope(child: OrganizerAudienceScreen(organizerId: _organizer.id));
+
+@widgetbook.UseCase(
+  name: 'Owner edits the policy',
+  type: OrganizerEventPolicyBody,
+  path: _path,
+)
+Widget organizerEventPolicyBodyUseCase(BuildContext context) =>
+    OrganizerEventPolicyBody(
+      city: _organizer.location,
+      defaults: _organizer.hostDefaults,
+      editable: true,
+      onChanged: (_) {},
+    );
+
+@widgetbook.UseCase(
+  name: 'Before the organizer loads',
+  type: OrganizerEventPolicyScreen,
+  path: _path,
+)
+Widget organizerEventPolicyScreenUseCase(BuildContext context) => ProviderScope(
+  child: OrganizerEventPolicyScreen(organizerId: _organizer.id),
+);

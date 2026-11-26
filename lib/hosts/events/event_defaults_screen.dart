@@ -5,8 +5,7 @@ import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_pref
 import 'package:catch_dating_app/hosts/events/event_commands_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_defaults_body.dart';
 import 'package:catch_dating_app/hosts/events/event_defaults_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart'
-    show HostOrganizerEventDefaultsScreen;
+import 'package:catch_dating_app/hosts/organizer/event_policy_screen.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
@@ -17,7 +16,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// The organizer's event defaults: what every new event starts with. It
 /// watches [hostEventDefaultsControllerProvider], saves how guests pay on
 /// change through the progressive setup defaults command, and opens the
-/// existing editor for the text and number defaults.
+/// event policy (activity, admission, ages and cancellation) for the rest.
 class HostEventDefaultsScreen extends ConsumerWidget {
   const HostEventDefaultsScreen({super.key, required this.organizerId});
 
@@ -78,7 +77,7 @@ class HostEventDefaultsScreen extends ConsumerWidget {
             Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) =>
-                    HostOrganizerEventDefaultsScreen(organizerId: organizerId),
+                    OrganizerEventPolicyScreen(organizerId: organizerId),
               ),
             ),
           ),
