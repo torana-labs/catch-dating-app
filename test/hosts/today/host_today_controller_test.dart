@@ -5,7 +5,9 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_reposi
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_insights.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/host_attendance_outbox.dart';
+import 'package:catch_dating_app/contexts/bookings/data/host_requests_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/host_request.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
@@ -71,6 +73,7 @@ ProviderContainer _container({
   required Stream<List<Event>> events,
   Stream<HostAttentionProjection>? attention,
   Future<HostAttendanceOutboxSummary>? outbox,
+  Stream<HostRequests>? requests,
 }) {
   final container = ProviderContainer.test(
     overrides: [
@@ -81,6 +84,11 @@ ProviderContainer _container({
       hostAttentionProjectionProvider(
         'org-1',
       ).overrideWith((ref) => attention ?? Stream.value(_projection(const []))),
+      hostOrganizerRequestsProvider('org-1').overrideWith(
+        (ref) =>
+            requests ??
+            Stream.value(const HostRequests(rows: [], complete: true)),
+      ),
       hostTodayAttendanceOutboxProvider(_uid).overrideWith(
         (ref) => outbox ?? Future.value(const HostAttendanceOutboxSummary([])),
       ),
@@ -262,6 +270,74 @@ void main() {
     final state = await _settle(container);
     expect(state.status, HostTodayStatus.empty);
     expect(state.needsYou.failed, isTrue);
+  });
+
+  test('everyone waiting joins Needs you; events no item covers become '
+      'groups', () async {
+    final container = _container(
+      events: Stream.value(const <Event>[]),
+      attention: Stream.value(
+        _projection([todayAttention('join', dueAt: todayNow)]),
+      ),
+      requests: Stream.value(
+        HostRequests(
+          rows: [
+            todayRequest('zoya', HostRequestKind.request),
+            todayRequest('nikhil', HostRequestKind.waitlist),
+            todayRequest(
+              'meher',
+              HostRequestKind.request,
+              eventId: 'run',
+              eventName: 'Salt Air Social Run',
+            ),
+            todayRequest(
+              'kabir',
+              HostRequestKind.request,
+              eventId: 'run',
+              eventName: 'Salt Air Social Run',
+            ),
+          ],
+          complete: false,
+        ),
+      ),
+    );
+
+    final needsYou = (await _settle(container)).needsYou;
+    expect(needsYou.requests, hasLength(4));
+    expect(needsYou.requestsComplete, isFalse);
+    expect(
+      needsYou.requestGroups.map(
+        (group) => (group.focus.eventId, group.focus.kind, group.count),
+      ),
+      [
+        ('tonight', HostRequestKind.waitlist, 1),
+        ('run', HostRequestKind.request, 2),
+      ],
+    );
+    expect(
+      needsYou.requestFocusOf(needsYou.items.single),
+      const HostTodayRequestFocus(
+        eventId: 'tonight',
+        kind: HostRequestKind.request,
+      ),
+    );
+  });
+
+  test('the requests read still loading is not an all-clear, and its '
+      'failure offers the retry', () async {
+    final loading = _container(
+      events: Stream.value(const <Event>[]),
+      requests: const Stream.empty(),
+    );
+    expect((await _settle(loading)).needsYou.checking, isTrue);
+
+    final failed = _container(
+      events: Stream.value(const <Event>[]),
+      requests: Stream.error(StateError('requests failed')),
+    );
+    final state = await _settle(failed);
+    expect(state.needsYou.failed, isTrue);
+    expect(state.needsYou.checking, isFalse);
   });
 
   test('device-local attendance writes join the work', () async {

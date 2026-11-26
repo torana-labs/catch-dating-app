@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/bookings/domain/host_request.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
@@ -62,4 +63,30 @@ HostAttentionItem todayAttention(
   openedAt: todayNow.subtract(const Duration(hours: 1)),
   dueAt: dueAt,
   expiresAt: null,
+);
+
+/// One person waiting on one of the organizer's coming events.
+HostRequest todayRequest(
+  String uid,
+  HostRequestKind kind, {
+  String eventId = 'tonight',
+  String eventName = 'Tuesday Trivia Night',
+  DateTime? eventStart,
+  String? name,
+  int? attended,
+  int? position,
+  DateTime? offerExpiresAt,
+}) => HostRequest(
+  uid: uid,
+  kind: kind,
+  eventId: eventId,
+  eventName: eventName,
+  eventStart: eventStart ?? DateTime(2026, 10, 27, 19, 30),
+  placesLeft: 2,
+  capacityLimit: 32,
+  name: name,
+  askedAt: DateTime(2026, 10, 26, 19, 28),
+  waitlistPosition: position,
+  attendedEventCount: attended,
+  offerExpiresAt: offerExpiresAt,
 );
