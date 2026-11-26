@@ -45,7 +45,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  build_runner: ^2.15.1
+  build_runner: ^2.16.1
   catch_ui_lints:
     path: ../packages/catch_ui_lints
   widgetbook_generator: ^3.24.0
