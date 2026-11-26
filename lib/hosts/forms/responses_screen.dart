@@ -7,6 +7,7 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configura
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/parts/host_form_labels.dart';
 import 'package:catch_dating_app/hosts/forms/responses_body.dart';
+import 'package:catch_dating_app/hosts/forms/responses_filter_sheet.dart';
 import 'package:catch_dating_app/hosts/forms/responses_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
@@ -24,9 +25,11 @@ import 'package:go_router/go_router.dart';
 /// The answers to one form, or to every form when [formId] is null.
 ///
 /// Reads the answers page by page (with each application's review status),
-/// filtered by review status or Offered on an application form, with each
-/// filter's count from the response summaries; the form itself for
-/// its title and count; and, on Results, the published version's
+/// filtered by status (All, a review status, Offered or Withdrawn), sorted
+/// newest or oldest first, and narrowed to one published version (the
+/// live one by default) and to chosen answers; each status count on an
+/// application form comes from the response summaries. Also reads the form
+/// itself for its title and count and, on Results, the published version's
 /// per-question counts. Opening an answer carries the filtered queue so the
 /// answer page can step through it.
 class HostResponsesScreen extends ConsumerStatefulWidget {
@@ -53,8 +56,31 @@ class HostResponsesScreen extends ConsumerStatefulWidget {
 }
 
 class _HostResponsesScreenState extends ConsumerState<HostResponsesScreen> {
-  HostResponsesFilter _filter = HostResponsesFilter.submitted;
+  HostResponsesFilter? _filterChoice;
   late HostResponsesView _view = widget.initialView;
+  bool _oldestFirst = false;
+
+  /// The version listed: unset until the form's live version is known, then
+  /// that version, or null for every version.
+  String? _versionId;
+  bool _versionResolved = false;
+  HostFormResponseVersionScope? _scope;
+  List<HostFormResponseFilterOption> _options = const [];
+  final Map<String, Set<String>> _answers = {};
+
+  /// Bumped on every filter change so an open filter sheet redraws.
+  final _revision = ValueNotifier<int>(0);
+
+  @override
+  void dispose() {
+    _revision.dispose();
+    super.dispose();
+  }
+
+  void _change(VoidCallback update) {
+    setState(update);
+    _revision.value++;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,10 +99,15 @@ class _HostResponsesScreenState extends ConsumerState<HostResponsesScreen> {
     final reviewed =
         formId != null && form?.purpose == HostFormPurpose.application;
     final waitingForForm = formId != null && form == null;
+    // An application form opens on what waits for review; any other on all.
+    final filter =
+        _filterChoice ??
+        (reviewed ? HostResponsesFilter.submitted : HostResponsesFilter.all);
     final request = uid == null || waitingForForm
         ? null
-        : _request(uid, reviewed ? _filter : null);
+        : _request(uid, filter);
     final value = _responses(request);
+    _remember(value?.value, request);
     final counts = reviewed
         ? ref
               .watch(
@@ -98,14 +129,22 @@ class _HostResponsesScreenState extends ConsumerState<HostResponsesScreen> {
           : HostResponsesStatus.content,
       view: _view,
       forForm: formId != null,
-      filter: reviewed ? _filter : null,
+      filter: filter,
+      oldestFirst: _oldestFirst,
+      canFilter:
+          formId != null &&
+          ((_scope?.activeVersionId != null) || _options.isNotEmpty),
+      filterCount: _filterCount,
+      filterSummary: _summary(l10n),
+      version: _version,
       counts: {
+        // All and Withdrawn are not counted by the response summaries.
         if (counts != null)
           for (final option in HostResponsesFilter.values)
-            option: switch (option.reviewStatus) {
-              final status? => counts.review[status] ?? 0,
-              null => counts.offered,
-            },
+            if (option == HostResponsesFilter.offered)
+              option: counts.offered
+            else if (counts.review[option.reviewStatus] != null)
+              option: counts.review[option.reviewStatus]!,
       },
       entries: page?.inboxEntries ?? const [],
       canLoadMore: page?.canLoadMore ?? false,
@@ -153,8 +192,15 @@ class _HostResponsesScreenState extends ConsumerState<HostResponsesScreen> {
           }
           setState(() => _view = view);
         },
-        onFilter: (status) => setState(() => _filter = status),
-        onOpen: _open,
+        onFilter: (status) => _change(() => _filterChoice = status),
+        onSort: _chooseSort,
+        onFilters: formId == null ? null : _openFilters,
+        onClearFilters: _filterCount == 0 ? null : _clearFilters,
+        onOpen: (entry) => _open(
+          entry,
+          request,
+          state.entries.indexWhere((item) => item.entryId == entry.entryId),
+        ),
         onLoadMore: () {
           if (request == null) return;
           unawaited(
@@ -217,28 +263,154 @@ class _HostResponsesScreenState extends ConsumerState<HostResponsesScreen> {
 
   HostFormResponseListRequest _request(
     String uid,
-    HostResponsesFilter? filter,
+    HostResponsesFilter filter,
   ) => HostFormResponseListRequest(
     organizerId: widget.organizerId,
     accountUid: uid,
     formId: widget.formId,
     includeApplications: true,
-    reviewStatus: filter?.reviewStatus,
+    reviewStatus: filter.reviewStatus,
     offeredOnly: filter == HostResponsesFilter.offered,
+    versionId: widget.formId == null ? null : _versionId,
+    answerFilters: Map.unmodifiable(_answers),
+    oldestFirst: _oldestFirst,
   );
 
-  void _open(HostFormInboxEntry entry) {
+  /// Keeps the version scope and answer filter options the last page
+  /// reported, and lists the live version once it is first known.
+  void _remember(
+    HostFormResponsesState? page,
+    HostFormResponseListRequest? request,
+  ) {
+    if (page == null || request == null || widget.formId == null) return;
+    if (page.versionScope case final scope?) _scope = scope;
+    _options = page.answerFilterOptions;
+    final live = _scope?.activeVersionId;
+    if (!_versionResolved && live != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || _versionResolved) return;
+        _change(() {
+          _versionId = live;
+          _versionResolved = true;
+        });
+      });
+    }
+  }
+
+  /// A version id's number, as in form_v3 for version 3.
+  static int _versionNumber(String id) =>
+      int.tryParse(id.split('_v').last) ?? 0;
+
+  HostResponsesVersion? get _version {
+    final scope = _scope;
+    if (widget.formId == null || scope?.activeVersionId == null) return null;
+    return HostResponsesVersion(
+      published: scope!.publishedVersion,
+      selected: _versionId == null ? null : _versionNumber(_versionId!),
+    );
+  }
+
+  /// A version other than the live one counts as a filter, as do answers.
+  int get _filterCount =>
+      _answers.length +
+      (_versionResolved && _versionId != _scope?.activeVersionId ? 1 : 0);
+
+  String? _summary(AppLocalizations l10n) {
+    final parts = [
+      if (_versionResolved && _versionId != _scope?.activeVersionId)
+        _versionId == null
+            ? l10n.hostFormsResponsesAllVersions
+            : l10n.hostFormsResponsesVersion(
+                version: _versionNumber(_versionId!),
+              ),
+      for (final entry
+          in _answers.entries.toList()..sort((a, b) => a.key.compareTo(b.key)))
+        for (final option in _options.where(
+          (option) => option.questionId == entry.key,
+        ))
+          '${option.label}: ${(entry.value.toList()..sort()).map((value) => option.options[value] ?? value).join(', ')}',
+    ];
+    return parts.isEmpty ? null : parts.join(' · ');
+  }
+
+  void _clearFilters() => _change(() {
+    _answers.clear();
+    _versionId = _scope?.activeVersionId;
+    _versionResolved = true;
+  });
+
+  Future<void> _chooseSort() async {
+    final l10n = context.l10n;
+    final oldest = await showCatchSelectionSheet<bool>(
+      context: context,
+      title: l10n.hostCustomersSort,
+      value: _oldestFirst,
+      items: [
+        CatchSelectionMenuItem(
+          value: false,
+          label: l10n.hostApplicationsSortNewest,
+        ),
+        CatchSelectionMenuItem(
+          value: true,
+          label: l10n.hostApplicationsSortOldest,
+        ),
+      ],
+    );
+    if (oldest != null && mounted) _change(() => _oldestFirst = oldest);
+  }
+
+  Future<void> _openFilters() => showCatchBottomSheet<void>(
+    context: context,
+    builder: (sheetContext) => ValueListenableBuilder<int>(
+      valueListenable: _revision,
+      builder: (context, _, _) => HostResponsesFilterSheet(
+        version: _version,
+        options: _options,
+        answers: Map.unmodifiable(_answers),
+        onVersion: (number) => _change(() {
+          _versionId = number == null ? null : '${widget.formId}_v$number';
+          _versionResolved = true;
+          // Another version asks other questions; its options load anew.
+          _answers.clear();
+          _options = const [];
+        }),
+        onAnswers: (questionId, values) => _change(() {
+          if (values.isEmpty) {
+            _answers.remove(questionId);
+          } else {
+            _answers[questionId] = Set.unmodifiable(values);
+          }
+        }),
+        onReset: _filterCount == 0 ? null : _clearFilters,
+      ),
+    ),
+  );
+
+  void _open(
+    HostFormInboxEntry entry,
+    HostFormResponseListRequest? request,
+    int index,
+  ) {
+    final queue = request == null
+        ? null
+        : HostResponsesQueue(
+            request: request,
+            entryId: entry.entryId,
+            index: index,
+          );
     if (entry.application case final application?) {
       context.pushNamed(
         Routes.hostApplicationDetailScreen.name,
         pathParameters: {'applicationId': application.applicationId},
         queryParameters: {'organizerId': widget.organizerId},
+        extra: queue,
       );
     } else if (entry.response case final response?) {
       context.pushNamed(
         Routes.hostFormResponseDetailScreen.name,
         pathParameters: {'responseId': response.responseId},
         queryParameters: {'organizerId': widget.organizerId},
+        extra: queue,
       );
     }
   }

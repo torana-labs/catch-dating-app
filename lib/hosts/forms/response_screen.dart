@@ -5,6 +5,7 @@ import 'package:catch_dating_app/contexts/forms/parts/host_form_response_row.dar
 import 'package:catch_dating_app/hosts/forms/forms_controller.dart';
 import 'package:catch_dating_app/hosts/forms/response_body.dart';
 import 'package:catch_dating_app/hosts/forms/response_state.dart';
+import 'package:catch_dating_app/hosts/forms/responses_state.dart';
 import 'package:catch_dating_app/hosts/people/widgets/people_text_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
@@ -18,6 +19,7 @@ import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/routing/route_contract.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,6 +38,7 @@ class HostResponseScreen extends ConsumerStatefulWidget {
     required this.organizerId,
     required String this.responseId,
     this.returnToOffer = false,
+    this.queue,
   }) : applicationId = null;
 
   const HostResponseScreen.application({
@@ -43,6 +46,7 @@ class HostResponseScreen extends ConsumerStatefulWidget {
     required this.organizerId,
     required String this.applicationId,
     this.returnToOffer = false,
+    this.queue,
   }) : responseId = null;
 
   final String organizerId;
@@ -53,6 +57,10 @@ class HostResponseScreen extends ConsumerStatefulWidget {
   /// goes back to that offer.
   final bool returnToOffer;
 
+  /// The filtered list this answer was opened from; Previous answer and
+  /// Next answer step through it. Null hides them.
+  final HostResponsesQueue? queue;
+
   @override
   ConsumerState<HostResponseScreen> createState() => _HostResponseScreenState();
 }
@@ -60,6 +68,7 @@ class HostResponseScreen extends ConsumerStatefulWidget {
 class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
   final _note = TextEditingController();
   int? _noteRevision;
+  bool _stepping = false;
 
   HostResponseReviewKey get _key => (
     organizerId: widget.organizerId,
@@ -115,6 +124,10 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
           );
     final response = detail?.response?.response;
     final primary = state.primary;
+    final queue = widget.queue;
+    final neighbours = queue == null
+        ? (previous: false, next: false)
+        : _neighbours(queue);
     return CatchRoot(
       child: CatchScreen(
         topBar: CatchTopBar(
@@ -127,6 +140,28 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
                   ago: hostFormAgo(response.submittedAt, DateTime.now()),
                 ),
           back: CatchTopBarBack(label: l10n.hostFormsBack),
+          actions: [
+            if (queue != null) ...[
+              CatchIconAction(
+                key: const ValueKey<String>('host-response-previous'),
+                tooltip: l10n.hostFormsResponsePrevious,
+                size: GeneratedCatchSizeTokens.controlMd,
+                onPressed: !busy && !_stepping && neighbours.previous
+                    ? () => _step(queue, -1)
+                    : null,
+                child: CatchIcon(CatchIcons.back),
+              ),
+              CatchIconAction(
+                key: const ValueKey<String>('host-response-next'),
+                tooltip: l10n.hostFormsResponseNext,
+                size: GeneratedCatchSizeTokens.controlMd,
+                onPressed: !busy && !_stepping && neighbours.next
+                    ? () => _step(queue, 1)
+                    : null,
+                child: CatchIcon(CatchIcons.forward),
+              ),
+            ],
+          ],
           action: CatchTopBarAction(
             label: l10n.hostFormsResponseMessage,
             onPressed: state.canMessage && detail != null
@@ -163,6 +198,87 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
               ),
       ),
     );
+  }
+
+  /// Whether the list has an answer before and after this one (or more to
+  /// load after the last loaded one).
+  ({bool previous, bool next}) _neighbours(HostResponsesQueue queue) {
+    final page = catchAsyncStateFromAsyncValue(
+      ref.watch(hostFormResponsesControllerProvider(queue.request)),
+    ).value;
+    final entries = page?.inboxEntries;
+    if (entries == null) return (previous: false, next: false);
+    final more = page!.canLoadMore;
+    final next = queue.targetIndex(entries, 1);
+    return (
+      previous: queue.targetIndex(entries, -1, hasMore: more) >= 0,
+      next: next >= 0 && (next < entries.length || more),
+    );
+  }
+
+  /// Opens the answer [direction] steps away in place of this one, loading
+  /// further pages (at most ten) when it is past the last loaded answer.
+  Future<void> _step(HostResponsesQueue queue, int direction) async {
+    setState(() => _stepping = true);
+    try {
+      final provider = hostFormResponsesControllerProvider(queue.request);
+      var page = await ref.read(provider.future);
+      var target = queue.targetIndex(
+        page.inboxEntries,
+        direction,
+        hasMore: page.canLoadMore,
+      );
+      for (
+        var pages = 0;
+        target >= page.inboxEntries.length && page.canLoadMore && pages < 10;
+        pages++
+      ) {
+        await ref.read(provider.notifier).loadMore();
+        final loaded = ref.read(provider).asData?.value;
+        if (loaded == null) break;
+        page = loaded;
+        if (page.loadMoreError != null) break;
+        target = queue.targetIndex(
+          page.inboxEntries,
+          direction,
+          hasMore: page.canLoadMore,
+        );
+      }
+      if (!mounted || target < 0 || target >= page.inboxEntries.length) {
+        return;
+      }
+      final entry = page.inboxEntries[target];
+      final next = HostResponsesQueue(
+        request: queue.request,
+        entryId: entry.entryId,
+        index: target,
+      );
+      if (entry.application case final application?) {
+        context.pushReplacementNamed(
+          Routes.hostApplicationDetailScreen.name,
+          pathParameters: {'applicationId': application.applicationId},
+          queryParameters: {'organizerId': widget.organizerId},
+          extra: next,
+        );
+      } else if (entry.response case final response?) {
+        context.pushReplacementNamed(
+          Routes.hostFormResponseDetailScreen.name,
+          pathParameters: {'responseId': response.responseId},
+          queryParameters: {'organizerId': widget.organizerId},
+          extra: next,
+        );
+      }
+    } on Object catch (error) {
+      if (mounted) {
+        showCatchNoticeError(
+          context,
+          error,
+          errorContext: AppErrorContext.formResponses,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _stepping = false);
+    }
   }
 
   HostResponseState _state(
