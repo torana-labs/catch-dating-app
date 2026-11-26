@@ -19599,7 +19599,7 @@
           },
           {
             "file": "lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart",
-            "symbol": "OrganizerHostDefaultsStep"
+            "symbol": "OrganizerPolicyDefaultsCard"
           }
         ],
         "mutationOwners": [
@@ -19746,7 +19746,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart",
-              "symbol": "OrganizerHostDefaultsStep"
+              "symbol": "OrganizerPolicyDefaultsCard"
             },
             "currentOwner": "CreateOrganizerScreen",
             "targetOwner": "provider-free host defaults sections",

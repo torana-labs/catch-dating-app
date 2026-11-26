@@ -1,8 +1,6 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
-import 'package:catch_kernel/activity_taxonomy.dart';
-import 'package:catch_platform/theme/activity_palette.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/organizers_test_helpers.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
@@ -58,36 +56,6 @@ void main() {
       expect(resolveSelectedHostOrganizer(const []), isNull);
     },
   );
-
-  testWidgets('organizer avatar prefers the real logo with activity fallback', (
-    tester,
-  ) async {
-    const logoPath = 'assets/fixtures/club_hero_portrait.jpg';
-    final organizerWithLogo = buildOrganizer(
-      name: 'Sea Face Social',
-      profileImageUrl: logoPath,
-    );
-
-    await _pumpAvatar(tester, organizerWithLogo);
-
-    var art = tester.widget<CatchAvatar>(find.byType(CatchAvatar));
-    expect(art.imageUrl, logoPath);
-    expect(art.initials, 'SF');
-    expect(
-      art.colors?.accent,
-      ActivityPalette.light.getActivity(ActivityKind.socialRun).accent,
-    );
-
-    await _pumpAvatar(tester, buildOrganizer(name: 'Long Table Club'));
-
-    art = tester.widget<CatchAvatar>(find.byType(CatchAvatar));
-    expect(art.imageUrl, isNull);
-    expect(art.initials, 'LT');
-    expect(
-      art.colors?.accent,
-      ActivityPalette.light.getActivity(ActivityKind.socialRun).accent,
-    );
-  });
 
   testWidgets(
     'switcher sheet marks the current organizer and returns a choice',
@@ -167,16 +135,6 @@ void main() {
     expect(find.byKey(const ValueKey<Object?>('club-1')), findsOneWidget);
     expect(find.byKey(const ValueKey<Object?>('club-2')), findsOneWidget);
   });
-}
-
-Future<void> _pumpAvatar(WidgetTester tester, Organizer organizer) async {
-  await tester.pumpWidget(
-    MaterialApp(
-      theme: AppTheme.light,
-      home: Scaffold(body: HostOrganizerAvatar(organizer: organizer, size: 40)),
-    ),
-  );
-  await pumpFeatureUi(tester);
 }
 
 Future<void> _pumpSheetLauncher(

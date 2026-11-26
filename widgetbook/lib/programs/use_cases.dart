@@ -8,14 +8,12 @@ import 'package:catch_dating_app/contexts/programmes/domain/travel_leg_revision.
 import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_notice.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
-import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-import '../support/widgetbook_harness.dart';
 import '../utility/preview.dart';
 
 part 'use_cases_overrides.dart';
@@ -281,27 +279,6 @@ final _stakeholderCounts = ProgramStakeholderCounts(
     ),
   ],
 );
-@widgetbook.UseCase(
-  name: 'Banner states',
-  type: ProgramArrivalsOutboxBanner,
-  path: '[P1 product surfaces]/Program arrivals',
-)
-Widget programArrivalsOutboxBannerStates(BuildContext context) {
-  return const WidgetbookCatalogFrame(
-    title: 'ProgramArrivalsOutboxBanner',
-    catalogId: 'screen.programs.arrivals',
-    children: [
-      ProgramArrivalsOutboxBanner(
-        outbox: ProgramOperationOutboxSummary([]),
-        busy: false,
-        onFlush: _noop,
-        onClearReview: _noop,
-      ),
-    ],
-  );
-}
-
-void _noop() {}
 
 ProgramOperationsState _reviewOperationsState() => ProgramOperationsState(
   outbox: ProgramOperationOutboxSummary([
@@ -314,58 +291,6 @@ ProgramOperationsState _reviewOperationsState() => ProgramOperationsState(
       expectedRevision: 1,
     ).copyWith(status: ProgramOperationOutboxStatus.needsReview),
   ]),
-);
-
-@widgetbook.UseCase(
-  name: 'Notice states',
-  type: ProgramOperationsNotice,
-  path: '[P1 product surfaces]/Program arrivals',
-)
-Widget programOperationsNoticeStates(BuildContext context) => ProviderScope(
-  overrides: [
-    ..._programOverrides(),
-    programOperationsStateProvider(
-      _programId,
-    ).overrideWithValue(AsyncData(_reviewOperationsState())),
-  ],
-  child: WidgetbookCatalogFrame(
-    title: 'ProgramOperationsNotice',
-    catalogId: 'screen.programs.arrivals',
-    children: [
-      const ProgramOperationsNotice(
-        programId: _programId,
-        pickupPointId: _pickupPointId,
-      ),
-      ProviderScope(
-        overrides: [
-          programOperationsStateProvider(_programId).overrideWithValue(
-            const AsyncData(
-              ProgramOperationsState(
-                error: ValidationException(
-                  'Damaged demo journal',
-                  code: 'local-journal-quarantined',
-                ),
-              ),
-            ),
-          ),
-          programOperationsOutboxProvider.overrideWithValue(
-            ProgramOperationsOutbox(
-              createProgramOperationJournal(
-                storage: () async => MemoryCommandJournalStorage(),
-                currentAccountId: () => 'uid_greeter',
-                loadLegacy: (_) async => 'damaged synthetic demo record',
-              ),
-              _PreviewMutator(),
-            ),
-          ),
-        ],
-        child: const ProgramOperationsNotice(
-          programId: _programId,
-          pickupPointId: _pickupPointId,
-        ),
-      ),
-    ],
-  ),
 );
 
 @widgetbook.UseCase(
