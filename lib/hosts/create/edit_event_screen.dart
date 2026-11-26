@@ -20,6 +20,7 @@ import 'package:catch_dating_app/hosts/create/edit_event_state.dart';
 import 'package:catch_dating_app/hosts/create/widgets/create_calendar_sheet.dart';
 import 'package:catch_dating_app/hosts/create/widgets/create_plan_step_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
+import 'package:catch_kernel/business_rules.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -182,6 +183,8 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
         today: today,
         value: _calendarPick,
         marked: _marked(today),
+        // An edit picks a date at most a year out, as it always has.
+        last: today.add(BusinessRules.eventEditDatePickerWindow),
         onChanged: (day) => setState(() => _calendarPick = day),
         onUse: () {
           final pick = _calendarPick;

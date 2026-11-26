@@ -15,6 +15,7 @@ import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' show DateUtils;
 
 // Editing a saved event with the create editor: the draft an event fills
 // in, the rules that lock its schedule and policy, and the update the edited
@@ -353,7 +354,14 @@ Set<CreateProblem> editEventProblems({
     if (event.eventFormat.activityKind.isDistanceBased &&
         (distance == null || distance <= 0))
       CreateProblem.distance,
-    if (!scheduleLocked && (start == null || !start.isAfter(now)))
+    if (!scheduleLocked &&
+        (start == null ||
+            !start.isAfter(now) ||
+            start.isAfter(
+              DateUtils.dateOnly(
+                now,
+              ).add(BusinessRules.eventEditDatePickerWindow + _oneDay),
+            )))
       CreateProblem.schedule,
     if ((draft.meetingPoint ?? '').trim().isEmpty) CreateProblem.placeName,
     if (draft.startingPointLat == null || draft.startingPointLng == null)
@@ -382,6 +390,8 @@ Set<CreateProblem> editEventProblems({
     },
   };
 }
+
+const _oneDay = Duration(days: 1);
 
 bool _positive(String? value) => (int.tryParse((value ?? '').trim()) ?? 0) > 0;
 
