@@ -65,6 +65,18 @@ class OrganizerScreen extends ConsumerWidget {
           kicker: organizer == null ? null : _kicker(l10n, organizer),
           title: organizer?.name ?? l10n.hostNavigationOrganizer,
           actions: [
+            // With no organizer yet, Settings still holds the account: help,
+            // terms, privacy, deleting the account and signing out.
+            if (scope != null && organizer == null)
+              CatchIconAction.icon(
+                key: const ValueKey<String>('organizer-settings'),
+                icon: CatchIcons.settings,
+                tooltip: l10n.hostOrganizerRowSettings,
+                onPressed: () => context.goNamed(
+                  Routes.hostOrganizerScreen.name,
+                  queryParameters: const {'tab': 'settings'},
+                ),
+              ),
             if (scope != null && organizer != null && scope.canSwitch)
               CatchIconAction.icon(
                 key: const ValueKey<String>('organizer-switch'),
