@@ -4,7 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import {fileURLToPath} from "node:url";
+import {fileURLToPath, pathToFileURL} from "node:url";
 import {invokedSetupRequirements, missingSetupRequirements} from "./tool_ci_requirements.mjs";
 import {loadToolsManifest} from "./tools_manifest.mjs";
 
@@ -33,14 +33,15 @@ test("a declaration that leaves out a toolchain its commands run is reported", (
 });
 
 /** A PATH holding everything on this one except the named executables. */
-function pathWithout(hidden) {
-  const bin = fs.mkdtempSync(path.join(os.tmpdir(), "tool-ci-requirements-"));
-  for (const dir of (process.env.PATH ?? "").split(path.delimiter)) {
-    if (!dir || !fs.existsSync(dir)) continue;
-    for (const name of fs.readdirSync(dir)) {
+function pathWithout(hidden, dir) {
+  const bin = path.join(dir, "bin");
+  fs.mkdirSync(bin);
+  for (const entry of (process.env.PATH ?? "").split(path.delimiter)) {
+    if (!entry || !fs.existsSync(entry)) continue;
+    for (const name of fs.readdirSync(entry)) {
       if (hidden.includes(name) || fs.existsSync(path.join(bin, name))) continue;
       try {
-        fs.symlinkSync(path.join(dir, name), path.join(bin, name));
+        fs.symlinkSync(path.join(entry, name), path.join(bin, name));
       } catch {
         // An unreadable entry is not one the checks below run.
       }
@@ -49,30 +50,70 @@ function pathWithout(hidden) {
   return bin;
 }
 
-// A wrong declaration means CI runs the tool without that toolchain. The tool
-// must then fail, never pass by skipping: run real declared tools with the
-// toolchain missing and require the runner to report each as failed.
-test("a tool whose toolchain is missing fails loudly instead of skipping", {timeout: 300_000}, () => {
-  const bin = pathWithout(["dart", "flutter", "rg", "npm", "npx"]);
+// Every Tools job has Node and npm, the Functions dependencies and the
+// generated contracts. Without the root-npm setup the repository's own
+// node_modules is absent: this hook makes every module that resolves there
+// fail as not found, in the runner and every Node process it starts.
+const hideRootModulesHook = `import {registerHooks} from "node:module";
+const hidden = process.env.TOOL_CI_HIDDEN_MODULES;
+registerHooks({
+  resolve(specifier, context, nextResolve) {
+    const result = nextResolve(specifier, context);
+    if (hidden && result.url.startsWith(hidden)) {
+      const error = new Error(\`Cannot find package '\${specifier}': root node_modules is not installed\`);
+      error.code = "ERR_MODULE_NOT_FOUND";
+      throw error;
+    }
+    return result;
+  },
+});
+`;
+
+/** Runs tools as a Tools job with only the node setup would: no Flutter, Dart, ripgrep or root node_modules. */
+function runInNodeOnlySetup(toolId, dir) {
+  // Under node --test, an inherited NODE_TEST_CONTEXT makes every nested
+  // `node --test` skip its files and pass; a CI job has no such variable.
+  const {NODE_TEST_CONTEXT: _testContext, ...inherited} = process.env;
+  const result = spawnSync(process.execPath, ["tool/run.mjs", "check", toolId], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: {
+      ...inherited,
+      PATH: path.join(dir, "bin"),
+      NODE_OPTIONS: `--import ${pathToFileURL(path.join(dir, "hide_root_modules.mjs")).href}`,
+      TOOL_CI_HIDDEN_MODULES: pathToFileURL(path.join(repoRoot, "node_modules")).href + "/",
+    },
+  });
+  return {status: result.status, output: `${result.stdout}\n${result.stderr}`};
+}
+
+// A wrong declaration means CI runs the tool without that setup. The tool must
+// then fail, never pass by skipping: run real tools that declare each setup in
+// a node-only environment and require the runner to report each as failed.
+test("a tool whose declared setup is missing fails loudly instead of skipping", {timeout: 300_000}, () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tool-ci-requirements-"));
   try {
+    pathWithout(["dart", "flutter", "rg"], dir);
+    fs.writeFileSync(path.join(dir, "hide_root_modules.mjs"), hideRootModulesHook);
+    const tools = loadToolsManifest().tools;
     for (const [toolId, requirement] of [
       ["copy:mobile-ownership", "flutter"],
       ["audit:widget-cleanup", "ripgrep"],
-      ["marketing:website-storybook", "root-npm"],
+      ["ci:golden-policy", "root-npm"],
     ]) {
-      const tool = loadToolsManifest().tools.find((entry) => entry.id === toolId);
+      const tool = tools.find((entry) => entry.id === toolId);
       assert.ok(tool?.ciRequirements?.setup.includes(requirement), `${toolId} declares ${requirement}`);
-      const result = spawnSync(process.execPath, ["tool/run.mjs", "check", toolId], {
-        cwd: repoRoot,
-        encoding: "utf8",
-        env: {...process.env, PATH: bin},
-      });
-      const output = `${result.stdout}\n${result.stderr}`;
-      assert.notEqual(result.status, 0, `${toolId} without ${requirement} must fail:\n${output}`);
+      const {status, output} = runInNodeOnlySetup(toolId, dir);
+      assert.notEqual(status, 0, `${toolId} without ${requirement} must fail:\n${output}`);
       assert.match(output, new RegExp(`^- ${toolId} \\(`, "mu"), `${toolId} is listed as failed`);
       assert.doesNotMatch(output, /Tool checks passed/u);
     }
+    // The environment itself is sound: a node-only tool still passes in it.
+    const control = tools.find((entry) => entry.id === "remote-ops:manifest");
+    assert.deepEqual(control?.ciRequirements?.setup, ["node"]);
+    const {status, output} = runInNodeOnlySetup(control.id, dir);
+    assert.equal(status, 0, output);
   } finally {
-    fs.rmSync(bin, {recursive: true, force: true});
+    fs.rmSync(dir, {recursive: true, force: true});
   }
 });
