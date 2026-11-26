@@ -86,8 +86,8 @@ describe("organizerPublishingHelpers", () => {
   );
 
   it("sends only the correction and audit note, leaving provenance and publication untouched", () => {
-    const organizer = {...sampleOrganizerDetails.afterfly!, description: "", area: "",
-      provenance: {...sampleOrganizerDetails.afterfly!.provenance,
+    const organizer = {...sampleOrganizerDetails.moonmoth!, description: "", area: "",
+      provenance: {...sampleOrganizerDetails.moonmoth!.provenance,
         sourceConfidence: null, verificationStatus: null}};
     const original = formFromOrganizerProfile(organizer);
     expect(buildOrganizerSavePayload(organizer, original).fields).toEqual({});
