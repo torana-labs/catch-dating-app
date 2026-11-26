@@ -7215,8 +7215,7 @@
             ],
             "migration": "HostInboxScreenState now owns search affordance, host filter projection, and unread count. ChatsListScreen passes the query value and callback into ChatsSliverHeader, and ChatsSearchHeaderController owns search-open close policy. Add header previews only if future design references require separate header variants.",
             "previewIds": [
-              "ChatsListScreen/Consumer route states",
-              "HostInboxScreen/Event-scoped states"
+              "ChatsListScreen/Consumer route states"
             ]
           },
           {
@@ -7275,8 +7274,7 @@
             ],
             "migration": "Decide whether newMatches should become a separate rail/section or remain row-level emphasis in one list.",
             "previewIds": [
-              "ChatsListScreen/Consumer route states",
-              "HostInboxScreen/Event-scoped states"
+              "ChatsListScreen/Consumer route states"
             ]
           },
           {
@@ -7309,8 +7307,7 @@
             ],
             "migration": "Promote after host inbox contract proves shared row needs; add Widgetbook states for unread/new/host variants.",
             "previewIds": [
-              "ChatsListScreen/Consumer route states",
-              "HostInboxScreen/Event-scoped states"
+              "ChatsListScreen/Consumer route states"
             ]
           },
           {
@@ -7340,8 +7337,7 @@
             ],
             "migration": "Add previews and captures for each empty-state branch before visual parity edits.",
             "previewIds": [
-              "ChatsListScreen/Consumer route states",
-              "HostInboxScreen/Event-scoped states"
+              "ChatsListScreen/Consumer route states"
             ]
           },
           {
@@ -10955,7 +10951,6 @@
           "status": "captured",
           "source": "tab=insights opens HostInsightsScreen; hostInsightsController reads hostAnalyticsProvider for the chosen period and HostInsightsBody keeps the period live over a skeleton drawn from the real components while the report loads.",
           "nextAction": "Keep the loading capture and the body render test synced.",
-          "previewIds": [],
           "captureIds": [
             "host_clubs_insights_loading"
           ]
@@ -10966,7 +10961,6 @@
           "status": "captured",
           "source": "HostInsightsBody renders the RbHostInsights board: the 7/30/90-day segmented control, the Bookings and Ticket sales stats with their change, bookings each week (each day over seven days) as the bar chart, where visitors came from as the stack meter with the page visits row, and the fullest nights as list rows that open the event report.",
           "nextAction": "Came back and Followers wait for the report to carry them (issue #1569).",
-          "previewIds": [],
           "captureIds": [
             "host_clubs_insights_report"
           ]
@@ -10977,7 +10971,6 @@
           "status": "captured",
           "source": "hostAnalyticsProvider errors render CatchLocalizedErrorState with retry invalidating the period's report read.",
           "nextAction": "Captures cover the generic and offline analytics errors.",
-          "previewIds": [],
           "captureIds": [
             "host_clubs_insights_error",
             "host_clubs_insights_offline"
@@ -13639,7 +13632,6 @@
           "kind": "empty",
           "status": "tested",
           "source": "HostSavedAudiencesWorkspace CatchEmptyState",
-          "previewIds": [],
           "tests": [],
           "nextAction": "Capture the Audience-owned first-audience path when the authenticated gallery is refreshed."
         },
@@ -13648,7 +13640,6 @@
           "kind": "error",
           "status": "tested",
           "source": "HostSavedAudiencesWorkspace CatchErrorState",
-          "previewIds": [],
           "tests": [],
           "nextAction": "Capture retry treatment when the authenticated gallery is refreshed."
         },
@@ -13658,8 +13649,7 @@
           "status": "tested",
           "source": "HostSavedAudienceSection member and rule overview with explicit editing",
           "tests": [],
-          "nextAction": "Refresh the full-shell capture with the owner during the deferred visual pass.",
-          "previewIds": []
+          "nextAction": "Refresh the full-shell capture with the owner during the deferred visual pass."
         },
         {
           "id": "customer_saved_audience_mutation",
@@ -13687,7 +13677,6 @@
           "kind": "mutation",
           "status": "captured",
           "source": "HostAddCustomerScreen submit lifecycle",
-          "previewIds": [],
           "captureIds": [
             "host_customer_add"
           ],
@@ -13715,7 +13704,6 @@
           "kind": "populated",
           "status": "implemented",
           "source": "HostCustomerIdentityCard",
-          "previewIds": [],
           "tests": [
             "test/hosts/host_customers_screen_state_test.dart",
             "test/hosts/host_crm_repository_test.dart"
@@ -13813,7 +13801,6 @@
           "kind": "populated",
           "status": "implemented",
           "source": "HostCustomerRevenueCard exact coverage",
-          "previewIds": [],
           "tests": [
             "test/hosts/host_crm_repository_test.dart"
           ],
@@ -13838,7 +13825,6 @@
           "kind": "populated",
           "status": "tested",
           "source": "resolveOrganizerCommunicationPlan available Catch chat route",
-          "previewIds": [],
           "tests": [
             "functions/src/organizers/organizerCommunicationPlans.test.ts",
             "test/hosts/host_crm_repository_test.dart",
@@ -14000,7 +13986,7 @@
         "role": "shell",
         "expression": "shell-owned",
         "owner": "AdaptiveTabScaffold",
-        "reason": "The Inbox directory and conversation each own full-height pane chrome, using the same local-width viewport as other Host destinations."
+        "reason": "Messages, Sends and Compose each draw their own pane header inside the Host shell; on wide windows the open conversation sits beside the list."
       },
       "statePolicy": {
         "requiredStates": [
@@ -14030,87 +14016,15 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-        "symbol": "HostInboxScreen"
+        "file": "lib/hosts/people/messages_screen.dart",
+        "symbol": "HostMessagesScreen"
       },
       "stateController": {
-        "primary": "hostOrganizerSelectionProvider + resolveHostInboxScope + composeHostInboxPeople + HostInboxCatchPages + HostWhatsappThreadPages + HostConversationCommands + HostConversationHistory + HostReplyDrafts + hostSendsProvider + hostMessagingSetupProvider + chatSearchQueryProvider",
+        "primary": "hostPeopleOrganizerProvider + hostMessagesControllerProvider + composeHostInboxPeople + resolveHostInboxScope + hostSendsControllerProvider + hostComposeControllerProvider + HostComposeCommands",
         "files": [
           {
-            "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-            "symbol": "HostInboxScreen"
-          },
-          {
-            "file": "lib/hosts/presentation/host_organizer_selection_controller.dart",
-            "symbol": "HostOrganizerSelection"
-          },
-          {
-            "file": "lib/hosts/presentation/inbox/host_inbox_view_model.dart",
-            "symbol": "HostInboxViewModel"
-          },
-          {
-            "file": "lib/hosts/people/conversation/conversation_people.dart",
-            "symbol": "resolveHostInboxScope"
-          },
-          {
-            "file": "lib/pages/inbox/chats_list_view_model.dart",
-            "symbol": "ChatsListViewModel"
-          },
-          {
-            "file": "lib/pages/inbox/chats_list_view_model.dart",
-            "symbol": "chatsListViewModel"
-          },
-          {
-            "file": "lib/pages/inbox/chats_list_view_model.dart",
-            "symbol": "ChatSearchQuery"
-          },
-          {
-            "file": "lib/contexts/events/data/event_repository.dart",
-            "symbol": "watchEventsForOrganizer"
-          },
-          {
-            "file": "lib/contexts/bookings/data/event_participation_repository.dart",
-            "symbol": "watchEventParticipationsForEvent"
-          },
-          {
-            "file": "lib/pages/inbox/widgets/chats_sliver_header.dart",
-            "symbol": "ChatsBrowseHeader"
-          },
-          {
-            "file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart",
-            "symbol": "HostBroadcastComposerSheet"
-          },
-          {
-            "file": "lib/pages/inbox/widgets/chats_list_body.dart",
-            "symbol": "ChatsListBody"
-          },
-          {
-            "file": "lib/pages/inbox/widgets/chat_conversations_list.dart",
-            "symbol": "ChatConversationsList"
-          },
-          {
-            "file": "lib/pages/inbox/widgets/chats_empty_state.dart",
-            "symbol": "ChatsEmptyState"
-          },
-          {
-            "file": "lib/hosts/organizer/whatsapp_setup_section.dart",
-            "symbol": "HostWhatsappSetupSection"
-          },
-          {
-            "file": "lib/hosts/presentation/inbox/host_campaign_editor.dart",
-            "symbol": "HostCampaignEditor"
-          },
-          {
-            "file": "lib/hosts/presentation/inbox/host_sends_page_body.dart",
-            "symbol": "HostSendsPageBody"
-          },
-          {
-            "file": "lib/hosts/presentation/inbox/host_manual_send_list.dart",
-            "symbol": "HostManualSendList"
-          },
-          {
-            "file": "lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart",
-            "symbol": "showHostFollowerUpdateComposer"
+            "file": "lib/hosts/people/messages_screen.dart",
+            "symbol": "HostMessagesScreen"
           },
           {
             "file": "lib/hosts/organizer/messaging_screen.dart",
@@ -14121,34 +14035,42 @@
             "symbol": "hostMessagingSetup"
           },
           {
+            "file": "lib/hosts/people/messages_controller.dart",
+            "symbol": "hostMessagesController"
+          },
+          {
             "file": "lib/hosts/people/conversation/conversation_people.dart",
             "symbol": "composeHostInboxPeople"
           },
           {
-            "file": "lib/hosts/people/conversation/conversation_pages_controller.dart",
-            "symbol": "HostInboxCatchPages"
+            "file": "lib/hosts/people/conversation/conversation_people.dart",
+            "symbol": "resolveHostInboxScope"
           },
           {
-            "file": "lib/contexts/audience/data/crm/host_whatsapp_repository.dart",
-            "symbol": "HostWhatsappThreadPages"
+            "file": "lib/hosts/people/sends/sends_screen.dart",
+            "symbol": "HostSendsScreen"
           },
           {
-            "file": "lib/hosts/people/conversation/conversation_controller.dart",
-            "symbol": "HostConversationCommands"
+            "file": "lib/hosts/people/sends/sends_controller.dart",
+            "symbol": "hostSendsController"
           },
           {
-            "file": "lib/hosts/people/conversation/conversation_history_controller.dart",
-            "symbol": "HostConversationHistory"
+            "file": "lib/hosts/people/compose_screen.dart",
+            "symbol": "HostComposeScreen"
           },
           {
-            "file": "lib/hosts/people/conversation/conversation_drafts.dart",
-            "symbol": "HostReplyDrafts"
+            "file": "lib/hosts/people/compose_controller.dart",
+            "symbol": "hostComposeController"
+          },
+          {
+            "file": "lib/routing/host_inbox_route.dart",
+            "symbol": "hostMessagesScreenForUri"
           }
         ],
         "mutationOwners": [
           {
-            "file": "lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart",
-            "symbol": "sendMutation"
+            "file": "lib/hosts/people/compose_controller.dart",
+            "symbol": "HostComposeCommands"
           },
           {
             "file": "lib/hosts/presentation/host_audience_controller.dart",
@@ -14159,15 +14081,15 @@
             "symbol": "HostOrganizerPostController"
           }
         ],
-        "notes": "HostInboxScreen is the Host-owned Inbox destination and follows the shell-selected organizer. Inbox selects that organizer's live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by organizer and event, classifies Booked and Prospective rows, and derives broadcast counts from eventBookings rather than conversation count. The user-facing Sends workspace owns mixed Campaign/Announcement/Follower update history, groups every registered route under In Catch or WhatsApp, owns the route-specific follower composer and durable personal-WhatsApp handoff queue, and owns the complete campaign lifecycle; its compatibility wire value remains campaigns. Manual handoffs distinguish queued, device-opened and explicit host-asserted states, revalidate a stored endpoint immediately before every queue launch, and never claim provider delivery or read evidence. WhatsApp sender setup lives on the dedicated organizer messaging route. Event broadcasts and follower updates create durable Activity plus preference-gated push and never create chat fan-out. Person rows combine only server-verified organizer-scoped identity. Every reply chooses one authorized route; paging, read receipts and drafts retain source identity and account generation. New message selects a person before resolving available routes."
+        "notes": "The /host/inbox route resolves through hostMessagesScreenForUri to HostMessagesScreen (conversations, opened on a thread, a programme or every conversation), HostSendsScreen (workspace=campaigns) or HostComposeScreen (an eventId without a thread). Messages follows the organizer hostPeopleOrganizerProvider resolves; hostMessagesControllerProvider composes its list, scope, Booked and Prospective counts from the event's bookings, search and partial pages through composeHostInboxPeople. HostComposeCommands sends one announcement under one request id per draft. Sends composes history, the manual handoff queue, sender setup and the follower update quota; HostAudienceController owns campaign mutations and HostOrganizerPostController follower updates."
       },
       "designRefs": [
         {
           "id": "repo.host-inbox-tests",
           "kind": "repo",
           "status": "available",
-          "path": "test/hosts/host_inbox_screen_test.dart",
-          "notes": "Host-specific screen and view-model tests cover default and explicit event scope, General, Booked/Prospective classification, roster-versus-thread counts, no-thread/nonzero-roster broadcasts, search, and inquiry-only rows."
+          "path": "test/hosts/people/conversation/messages_scope_test.dart",
+          "notes": "Messages tests cover the event scope split into Booked and Prospective, General inquiries holding only conversations about no event, the name search in every scope and partial WhatsApp pages; conversation_people_test covers scope resolution and programme withholding."
         },
         {
           "id": "repo.chat-list-tile-tests",
@@ -14180,7 +14102,7 @@
           "id": "claude.host-inbox",
           "kind": "claude",
           "status": "available",
-          "notes": "Host Inbox populated reference is repo-pinned. The fresh event-scoped HostInboxScreen comparison is 17.62% mismatch / 31.90 meanDelta: mismatch is within the 18% ceiling, but meanDelta remains above 18. The retired All/Unread 10.67% / 16.76 result remains invalid.",
+          "notes": "Host Inbox reference board for the redesigned Messages list; the old HostInboxScreen comparison numbers no longer apply and the redesigned screen needs a fresh comparison.",
           "path": "design/source_packs/host-v2/templates/hosts-inbox/Inbox.dc.html"
         }
       ],
@@ -14188,102 +14110,82 @@
         {
           "id": "host_inbox_uid_loading",
           "status": "captured",
-          "notes": "Host Inbox uid-loading/signed-out-current-behavior capture renders the host header and inbox-shaped loading skeleton while uid state is unresolved."
+          "notes": "Messages while the organizer is still resolving."
         },
         {
           "id": "host_inbox_loading",
           "status": "captured",
-          "notes": "Host Inbox data-loading capture renders the Host-owned shell and inquiry skeleton while event, roster, and thread waves resolve."
+          "notes": "Messages while the conversations are loading."
         },
         {
           "id": "host_inbox_error",
           "status": "captured",
-          "notes": "Host Inbox generic match-stream error capture renders the shared chat error state with retry inside host chrome."
+          "notes": "Messages when the conversations cannot be read, with Try again."
         },
         {
           "id": "host_inbox_offline",
           "status": "captured",
-          "notes": "Host Inbox offline capture renders the shared offline-mapped chat error state inside host chrome."
+          "notes": "Messages when the conversations cannot be read offline."
         },
         {
           "id": "host_inbox_empty",
           "status": "captured",
-          "notes": "Host Inbox empty capture renders the selected-event Booked state with zero threads and zero roster recipients."
+          "notes": "Messages with no conversations yet."
         },
         {
           "id": "host_inbox_queries",
           "status": "captured",
-          "notes": "Full-shell production capture renders selected-event Booked rows and the roster-backed broadcast card. It replaces the retired All/Unread fixture; a fresh reference comparison is pending."
-        },
-        {
-          "id": "host_inbox_thread_selected",
-          "status": "captured",
-          "notes": "Tablet full-shell capture proves route-body-aware list/thread adjacency, visible selected-row state, event context, message history, and the embedded reply composer."
+          "notes": "Messages narrowed to an event on the Booked view, inside the Host shell."
         },
         {
           "id": "host_messaging_campaigns",
           "status": "captured",
-          "notes": "Historical full-shell capture of the former Campaigns workspace with embedded WhatsApp sender setup. Retained as prior-state evidence; it is not the active Sends baseline."
+          "notes": "Sends: history and the manual WhatsApp handoff waiting to be marked as sent."
         },
         {
           "id": "host_inbox_prospective",
           "status": "captured",
-          "notes": "Prospective segment capture renders Requested, Waitlist, and inquiry-only personal threads with a waitlisted-roster broadcast count."
+          "notes": "Messages narrowed to an event on the Prospective view."
         },
         {
           "id": "host_inbox_general",
           "status": "captured",
-          "notes": "General capture proves eventless inquiries remain explicit and are never attached to an arbitrary event."
+          "notes": "Messages narrowed to General inquiries."
         },
         {
           "id": "host_inbox_roster_no_threads",
           "status": "captured",
-          "notes": "Selected event has no personal inquiry threads but retains the roster-backed broadcast audience card."
-        },
-        {
-          "id": "host_inbox_search_active",
-          "status": "captured",
-          "notes": "Host Inbox search-active capture renders the expanded search field and filtered attendee query row."
-        },
-        {
-          "id": "host_inbox_search_empty",
-          "status": "captured",
-          "notes": "Host Inbox search-empty capture renders attendee-query-specific no-search-results copy under host chrome."
-        },
-        {
-          "id": "host_inbox_new_query",
-          "status": "captured",
-          "notes": "Prospective segment capture renders a personal event inquiry with no participation and no prior message."
+          "notes": "An event scope whose bookings are known but nobody has written yet."
         },
         {
           "id": "host_inbox_broadcast_composer",
           "status": "captured",
-          "notes": "Composer capture covers audience counts, selected template, editable bounded message, and enabled submit copy."
+          "notes": "The event announcement compose screen, ready to send."
         },
         {
           "id": "host_inbox_broadcast_pending",
           "status": "captured",
-          "notes": "Composer capture covers the mutation-pending disabled state."
+          "notes": "The event announcement compose screen while the send is in flight."
         },
         {
           "id": "host_inbox_broadcast_error",
           "status": "captured",
-          "notes": "Composer capture covers callable failure feedback and retry affordance."
+          "notes": "The event announcement compose screen after a failed send."
         },
         {
           "id": "host_inbox_text_scale_2",
           "status": "captured",
-          "notes": "Host Inbox text-scale capture covers pinned header, filter row, search affordance, and dense attendee-query rows at 2.0 text scale."
+          "notes": "Messages at text scale 2."
         },
         {
           "id": "host_inbox_reduced_motion",
           "status": "captured",
-          "notes": "Host Inbox reduced-motion capture renders the route with animations disabled for header/search review."
+          "notes": "Messages with animations off."
         },
         {
           "id": "host_inbox_light_dark",
           "status": "captured",
-          "notes": "Host Inbox paired light/dark capture renders the populated attendee-query fixture in both themes."
+          "notes": "Messages in paired light and dark themes."
         }
       ],
       "states": [
@@ -14291,831 +14193,371 @@
           "id": "uid_loading_or_missing",
           "kind": "loading",
           "status": "captured",
-          "source": "HostInboxScreenState maps unresolved uid plus loading view-model state to ChatsListLoading while retaining host header and filter shell.",
-          "nextAction": "Decide whether null uid should remain skeleton loading or become an explicit host access state.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
-          "tests": [
-            "test/chats/chat_inbox_screen_test.dart"
-          ],
+          "source": "HostMessagesScreen shows HostPeopleScopeBody while hostPeopleOrganizerProvider resolves, and sign in or retry when it cannot.",
+          "nextAction": "None.",
           "captureIds": [
             "host_inbox_uid_loading"
+          ],
+          "tests": [
+            "test/hosts/people/people_captures_test.dart"
           ]
         },
         {
           "id": "matches_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "HostInboxScreenState and ChatsListDisplayState map loading matches to the attendee-query skeleton body.",
-          "nextAction": "Use this capture for skeleton parity against host inbox references.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
-          "tests": [
-            "test/chats/chat_inbox_screen_test.dart"
-          ],
+          "source": "HostMessagesBody shows the loading indicator while hostMessagesControllerProvider reads its sources.",
+          "nextAction": "None.",
           "captureIds": [
             "host_inbox_loading"
+          ],
+          "tests": [
+            "test/hosts/people/people_captures_test.dart"
           ]
         },
         {
           "id": "matches_error",
           "kind": "error",
           "status": "captured",
-          "source": "ChatsListDisplayState maps match stream failures to CatchLocalizedSliverErrorState with AppErrorContext.chat and retry invalidation.",
-          "nextAction": "Keep retry intent provider-backed until route callbacks are promoted into typed controller seams.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
-          "tests": [
-            "test/chats/chat_inbox_screen_test.dart"
-          ],
+          "source": "HostMessagesBody shows CatchErrorState with Try again when a source fails.",
+          "nextAction": "None.",
           "captureIds": [
             "host_inbox_error"
-          ]
-        },
-        {
-          "id": "empty_host_queries",
-          "kind": "empty",
-          "status": "captured",
-          "source": "ChatsListDisplayState maps a successful empty host inbox to the host-specific No attendee queries yet empty state.",
-          "nextAction": "Keep empty copy aligned with the host inbox reference variants.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
-          "captureIds": [
-            "host_inbox_empty"
-          ]
-        },
-        {
-          "id": "host_query_filtering",
-          "kind": "populated",
-          "status": "tested",
-          "source": "ChatsListViewModel filters host app data to matches where match.isOrganizerHostInquiry is true; mixed host-inquiry and consumer-dating matches are covered by a host-specific test.",
-          "nextAction": "Event-scoped grouping and the compact selected-event plus surface-segmented Booked/Prospective presentation are implemented. Keep their Widgetbook and capture contracts current while the remaining pixel delta is closed.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
           ],
           "tests": [
-            "test/chats/chat_inbox_screen_test.dart"
-          ]
-        },
-        {
-          "id": "populated_queries",
-          "kind": "populated",
-          "status": "captured",
-          "source": "Host Inbox renders attendee-query rows plus a host broadcast card for host-mode conversations. At capable route-body widths, CatchAdaptiveMasterDetailLayout keeps a semantic selected row beside a thread keyed by match id.",
-          "tests": [
-            "test/chats/chat_inbox_screen_test.dart",
-            "test/pages/inbox/widgets/chat_conversations_list_test.dart",
-            "test/pages/chat/chat_screen_test.dart",
-            "test/core/catch_master_detail_layout_test.dart",
-            "test/hosts/host_inbox_screen_test.dart"
-          ],
-          "nextAction": "The fresh 2026-07-10 production full-shell Inbox comparison is 17.62% mismatch / 31.90 meanDelta. Mismatch is within its 18% ceiling, but meanDelta remains above 18; keep HOST-V2-INBOX-PARITY-001 open alongside live production delivery proof.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
-          "captureIds": [
-            "host_inbox_queries",
-            "host_inbox_thread_selected",
-            "host_inbox_text_scale_2",
-            "host_inbox_light_dark"
-          ]
-        },
-        {
-          "id": "host_header",
-          "kind": "populated",
-          "status": "captured",
-          "source": "ChatsBrowseHeader renders the compact Inbox title/search band without the retired Attendee queries subtitle; HostInboxScopeMenu owns event identity immediately below it.",
-          "tests": [
-            "test/chats/chat_inbox_screen_test.dart"
-          ],
-          "nextAction": "Add more header-only captures only if no-search-action or long-copy behavior diverges visually from the route states.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
-          "captureIds": [
-            "host_inbox_queries",
-            "host_inbox_search_active",
-            "host_inbox_text_scale_2"
-          ]
-        },
-        {
-          "id": "prospective_queries",
-          "kind": "populated",
-          "status": "captured",
-          "source": "HostInboxViewModel classifies non-booked event inquiries as Prospective and labels participation state as Requested, Offered, Accepted, Waitlist, or Inquiry.",
-          "tests": [
-            "test/hosts/host_inbox_view_model_test.dart",
-            "test/hosts/host_inbox_screen_test.dart"
-          ],
-          "nextAction": "Run the fresh Host Inbox reference comparison; product semantics and deterministic state coverage are implemented.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
-          "captureIds": [
-            "host_inbox_prospective"
-          ]
-        },
-        {
-          "id": "general_queries",
-          "kind": "populated",
-          "status": "captured",
-          "source": "HostInboxScope.general selects only eventless personal inquiries and never treats the General sentinel as an event id.",
-          "nextAction": "Keep General explicit if future team-inbox or event-routing work changes thread ownership.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
-          "captureIds": [
-            "host_inbox_general"
-          ],
-          "tests": [
-            "test/hosts/host_inbox_view_model_test.dart",
-            "test/hosts/host_inbox_screen_test.dart"
-          ]
-        },
-        {
-          "id": "program_queries",
-          "kind": "populated",
-          "status": "implemented",
-          "source": "HostInboxScope.program selects WhatsApp threads whose contactId belongs to the program guest list plus Catch threads whose otherUid is a verified linked uid from those threads.",
-          "nextAction": "Add a program-scoped inbox capture when the program workspace gains golden coverage.",
-          "tests": [
-            "test/hosts/host_inbox_view_model_test.dart"
-          ]
-        },
-        {
-          "id": "roster_without_threads",
-          "kind": "empty",
-          "status": "captured",
-          "source": "HostInboxViewModel derives broadcast counts from eventBookings, independently of personal inquiry thread count.",
-          "nextAction": "Keep roster and thread count assertions separate when audience policy evolves.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
-          "captureIds": [
-            "host_inbox_roster_no_threads"
-          ],
-          "tests": [
-            "test/hosts/host_inbox_view_model_test.dart",
-            "test/hosts/host_inbox_screen_test.dart"
-          ]
-        },
-        {
-          "id": "whatsapp_inbound_thread",
-          "kind": "populated",
-          "status": "tested",
-          "source": "HostWhatsappThreadRow + HostWhatsappThreadSheet",
-          "tests": [
-            "test/hosts/host_crm_repository_test.dart"
-          ],
-          "nextAction": "Add a deterministic Inbox row and retained-thread sheet capture after baseline approval."
-        },
-        {
-          "id": "whatsapp_service_window_open",
-          "kind": "populated",
-          "status": "tested",
-          "source": "HostWhatsappThreadSheet serviceWindowOpen composer",
-          "tests": [
-            "test/hosts/host_crm_repository_test.dart"
-          ],
-          "nextAction": "Keep the optimistic latest-inbound guard and server window check aligned."
-        },
-        {
-          "id": "whatsapp_service_window_closed",
-          "kind": "permission",
-          "status": "tested",
-          "source": "HostWhatsappThreadSheet closed-window notice and disabled composer",
-          "tests": [
-            "test/hosts/host_crm_repository_test.dart"
-          ],
-          "nextAction": "Add focused rendered coverage for closed-window copy and disabled input."
-        },
-        {
-          "id": "whatsapp_reply_sending",
-          "kind": "mutation",
-          "status": "implemented",
-          "source": "HostWhatsappThreadSheet _send",
-          "nextAction": "Add focused rendered pending and retry coverage."
-        },
-        {
-          "id": "broadcast_composer_lifecycle",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "HostBroadcastComposerSheet and HostInboxBroadcastController own request-id rotation, bounded message input, pending/error state, retry, and sanitized response handling.",
-          "nextAction": "Keep production disabled until the live callable dependency preflight passes, then record dev and prod delivery evidence.",
-          "previewIds": [
-            "HostBroadcastComposerSheet/Lifecycle states"
-          ],
-          "captureIds": [
-            "host_inbox_broadcast_composer",
-            "host_inbox_broadcast_pending",
-            "host_inbox_broadcast_error"
-          ],
-          "tests": [
-            "test/events/event_repository_test.dart",
-            "functions/src/events/sendEventBroadcast.test.ts"
-          ]
-        },
-        {
-          "id": "communication_intent_picker",
-          "kind": "populated",
-          "status": "tested",
-          "source": "HostSendsPageBody + _HostSendsIntentPicker resolve conversation, saved-audience, event-announcement, and follower-update intents while provider policy remains in setup.",
-          "tests": [
-            "test/hosts/host_inbox_screen_test.dart"
-          ],
-          "nextAction": "Add a deterministic Sends intent-picker preview and capture after its baseline is approved."
-        },
-        {
-          "id": "manual_handoff_queue",
-          "kind": "populated",
-          "status": "tested",
-          "source": "HostManualSendList + hostManualSendTaskPagesProvider render durable organizer-scoped queued and handoffOpened tasks independently of managed Sends history.",
-          "tests": [
-            "functions/src/organizers/organizerManualSendTasks.test.ts",
-            "test/hosts/host_crm_repository_test.dart",
-            "test/hosts/host_inbox_screen_test.dart"
-          ],
-          "nextAction": "Add deterministic captures for queued, opened, pagination, and compact failure after the Sends baseline is approved."
-        },
-        {
-          "id": "manual_handoff_opened_unconfirmed",
-          "kind": "mutation",
-          "status": "tested",
-          "source": "HostManualSendList records device acceptance as handoffOpened, labels it Not confirmed sent, and enables the separate I sent this host assertion only after that state.",
-          "tests": [
-            "functions/src/organizers/organizerManualSendTasks.test.ts",
-            "test/hosts/host_inbox_screen_test.dart"
-          ],
-          "nextAction": "Keep external launch, explicit assertion, and provider receipt concepts separate if more handoff transports are added."
-        },
-        {
-          "id": "manual_handoff_replan_advisory",
-          "kind": "permission",
-          "status": "tested",
-          "source": "replanOrganizerManualSendTasks + HostManualSendList Check options surface current route advice without mutating, dispatching, completing, removing, or superseding tasks.",
-          "tests": [
-            "functions/src/organizers/organizerManualSendTasks.test.ts",
-            "test/hosts/host_crm_repository_test.dart"
-          ],
-          "nextAction": "Add a deterministic re-plan result capture; preserve the explicit follow-up action boundary."
-        },
-        {
-          "id": "follower_update_composer",
-          "kind": "mutation",
-          "status": "tested",
-          "source": "HostSendsPageBody + showHostFollowerUpdateComposer + HostOrganizerPostController",
-          "tests": [
-            "test/hosts/people/sends/follower_update_sheet_test.dart",
-            "test/hosts/host_inbox_screen_test.dart",
-            "test/hosts/host_crm_repository_test.dart"
-          ],
-          "nextAction": "Add a deterministic follower composer capture after its baseline is approved; keep quota and Sends-history refresh aligned with createOrganizerPost."
-        },
-        {
-          "id": "campaign_compose_deep_link",
-          "kind": "mutation",
-          "status": "tested",
-          "source": "hostInboxScreenForUri + HostInboxScreen initialCampaignSegments",
-          "tests": [
-            "test/routing/router_widgets_test.dart",
-            "test/hosts/host_inbox_screen_test.dart"
-          ],
-          "nextAction": "Keep workspace, compose, organizer, and segment query parsing aligned with the retained campaigns compatibility wire value while the visible workspace remains Sends."
-        },
-        {
-          "id": "customer_messaging_provider_unavailable",
-          "kind": "permission",
-          "status": "implemented",
-          "source": "HostWhatsappSetupSection is omitted, and Sends hides the saved-audience intent and WhatsApp Business settings entries, while the provider is unavailable.",
-          "nextAction": "Keep the sender-management gate aligned with backend provider capability.",
-          "previewIds": [
-            "HostCampaignEditor/Campaign and sender states"
-          ]
-        },
-        {
-          "id": "customer_messaging_disconnected",
-          "kind": "empty",
-          "status": "tested",
-          "source": "HostWhatsappSetupSection offers sender connection only where Meta Embedded Signup runs; other clients omit the section until a sender is connected.",
-          "nextAction": "Add a deterministic Embedded Signup connection capture.",
-          "previewIds": [
-            "HostCampaignEditor/Campaign and sender states"
-          ],
-          "tests": [
-            "test/hosts/host_whatsapp_setup_pane_test.dart"
-          ]
-        },
-        {
-          "id": "customer_messaging_connecting",
-          "kind": "mutation",
-          "status": "implemented",
-          "source": "HostWhatsappSetupSection pending sender mutation freezes workspace switching and request-defining controls.",
-          "nextAction": "Add a deterministic pending capture."
-        },
-        {
-          "id": "customer_messaging_ready",
-          "kind": "populated",
-          "status": "captured",
-          "source": "HostWhatsappSetupSection renders the selected organizer's connected WhatsApp sender and approved templates on the dedicated organizer messaging route.",
-          "nextAction": "Keep sender mutation coverage aligned with the HostCrmRepository contract and add a dedicated-route capture only after baseline approval.",
-          "previewIds": [
-            "HostCampaignEditor/Campaign and sender states"
-          ],
-          "captureIds": [
-            "host_messaging_campaigns"
-          ],
-          "tests": [
-            "test/hosts/host_inbox_screen_test.dart",
-            "test/hosts/host_crm_repository_test.dart"
-          ]
-        },
-        {
-          "id": "customer_campaign_draft",
-          "kind": "mutation",
-          "status": "tested",
-          "source": "HostCampaignEditor in the Messaging Sends workspace.",
-          "nextAction": "Add rendered draft variable validation coverage.",
-          "previewIds": [
-            "HostCampaignEditor/Campaign and sender states"
-          ],
-          "tests": [
-            "test/hosts/people/sends/campaign_body_test.dart",
-            "test/hosts/host_inbox_screen_test.dart"
-          ]
-        },
-        {
-          "id": "customer_campaign_previewed",
-          "kind": "mutation",
-          "status": "implemented",
-          "source": "HostCampaignEditor campaign preview in the Messaging Sends workspace.",
-          "nextAction": "Add a deterministic preview capture."
-        },
-        {
-          "id": "customer_campaign_active",
-          "kind": "mutation",
-          "status": "tested",
-          "source": "HostCampaignEditor and HostAudienceController own revision-checked campaign lifecycle controls in Messaging.",
-          "nextAction": "Add focused dispatch and cancel rendered coverage when the campaign lifecycle fixture is expanded.",
-          "previewIds": [
-            "HostCampaignEditor/Campaign and sender states"
-          ],
-          "tests": [
-            "test/hosts/host_crm_repository_test.dart"
-          ]
-        },
-        {
-          "id": "search_collapsed",
-          "kind": "populated",
-          "status": "captured",
-          "source": "CatchBrowseHeader starts with no text field when there are no threads and shows search action only when count or query makes search useful.",
-          "tests": [
-            "test/chats/chat_inbox_screen_test.dart"
-          ],
-          "nextAction": "Add no-search-action capture only if empty header behavior changes from the current empty route capture.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
-          "captureIds": [
-            "host_inbox_queries",
-            "host_inbox_empty"
-          ]
-        },
-        {
-          "id": "search_active",
-          "kind": "populated",
-          "status": "captured",
-          "source": "Pinned chats header expands CatchExpandingSearch, binds chatSearchQueryProvider, clears query, and closes empty search on done/focus loss.",
-          "tests": [
-            "test/chats/chat_inbox_screen_test.dart"
-          ],
-          "nextAction": "Keyboard-safe host search layout remains a future simulator/manual pass if needed.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
-          "captureIds": [
-            "host_inbox_search_active"
-          ]
-        },
-        {
-          "id": "search_empty",
-          "kind": "empty",
-          "status": "captured",
-          "source": "Host search with no matching names renders No attendee queries match your search copy instead of the generic consumer chat empty state.",
-          "tests": [
-            "test/chats/chat_inbox_screen_test.dart"
-          ],
-          "nextAction": "Keep host-specific search-empty copy covered by HostInboxScreenState and route tests; add new reference variants only if design exports them.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
-          "captureIds": [
-            "host_inbox_search_empty"
-          ]
-        },
-        {
-          "id": "new_inquiry_without_messages",
-          "kind": "populated",
-          "status": "captured",
-          "source": "Host inquiry previews with no lastMessagePreview use Ask the host copy and are folded into the same conversation section.",
-          "nextAction": "Decide whether Host Inbox needs a distinct new-query treatment beyond the shared row new-state affordance.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
-          "captureIds": [
-            "host_inbox_new_query"
-          ]
-        },
-        {
-          "id": "conversation_rows",
-          "kind": "populated",
-          "status": "captured",
-          "source": "ChatsListBody folds newMatches and conversations into one inbox body, while ChatConversationsList renders contiguous rows. Host outbound event announcements are composed only from the Sends workspace.",
-          "tests": [
-            "test/chats/chat_inbox_screen_test.dart"
-          ],
-          "nextAction": "Add row-count/divider-only captures only if the contiguous list diverges from populated and unread-filter states.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
-          "captureIds": [
-            "host_inbox_queries",
-            "host_inbox_prospective"
-          ]
-        },
-        {
-          "id": "unread_rows",
-          "kind": "populated",
-          "status": "captured",
-          "source": "CatchPersonRow emphasizes unread/new rows through avatar ring, primary timestamp, preview color, unread badge, or new-match dot.",
-          "tests": [
-            "test/core/catch_person_row_test.dart"
-          ],
-          "nextAction": "Add 99+ unread capture only if product data can produce high host-inbox unread counts.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
-          "captureIds": [
-            "host_inbox_queries",
-            "host_inbox_prospective"
-          ]
-        },
-        {
-          "id": "host_inquiry_avatar_shape",
-          "kind": "populated",
-          "status": "captured",
-          "source": "CatchPersonRow uses square CatchPersonAvatar shape for club host inquiries and circular avatars for dating matches.",
-          "nextAction": "Add fallback-avatar capture only if missing profile/club data becomes a visual parity concern.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
-          "captureIds": [
-            "host_inbox_queries",
-            "host_inbox_new_query"
-          ]
-        },
-        {
-          "id": "profile_loading_fallback",
-          "kind": "loading",
-          "status": "implemented",
-          "source": "ChatsListViewModel reads public profile and club host profile AsyncValues opportunistically; while data loads, rows fall back to Host conversation or Unknown copy instead of blocking the inbox.",
-          "nextAction": "Decide whether profile/club loading should remain fallback-only or expose row skeletons for host inbox parity.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ]
-        },
-        {
-          "id": "duplicate_match_collapse",
-          "kind": "populated",
-          "status": "tested",
-          "source": "collapseMatchesByOtherUser keeps one row per person for consumer chats and one row per club, optional event, and attendee for Host inquiries. Same-event duplicates collapse while different events, separate clubs, and General remain distinct.",
-          "tests": [
-            "test/chats/chat_inbox_screen_test.dart"
-          ],
-          "nextAction": "Grouping tests now cover same-event duplicate collapse plus different-event, General, sentinel-like, and delimiter-containing ids. Continue with the selected-event Inbox UI after the owner confirms audience and thread-ownership semantics.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ]
-        },
-        {
-          "id": "route_to_host_chat",
-          "kind": "populated",
-          "status": "tested",
-          "source": "ChatsListScreen owns the typed chat-thread route callback, chooses Routes.hostChatScreen in host app role, and passes the callback through ChatsList/ChatsListBody into provider/router-free ChatConversationsList rows.",
-          "tests": [
-            "test/chats/chat_inbox_screen_test.dart"
-          ],
-          "nextAction": "Keep this callback contract aligned with screen.host.chat as the chat adapter is expanded.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
+            "test/hosts/people/conversation/messages_scope_test.dart"
           ]
         },
         {
           "id": "offline",
           "kind": "offline",
           "status": "captured",
-          "source": "ChatsListDisplayState maps offline-like match stream failures through the shared chat error branch while retaining host inbox chrome.",
-          "nextAction": "Define whether offline copy needs a host-specific variant or should stay on shared CatchErrorState mapping.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
+          "source": "An offline failure is described by the shared error copy, with Try again.",
+          "nextAction": "None.",
           "captureIds": [
             "host_inbox_offline"
           ]
         },
         {
-          "id": "text_scale_2",
-          "kind": "accessibility",
+          "id": "empty_host_queries",
+          "kind": "empty",
           "status": "captured",
-          "source": "Host Inbox capture applies MediaQuery textScaler 2.0 across pinned header, filter row, search affordance, and attendee-query rows.",
-          "nextAction": "Use this capture to fix any visual parity issues found during pixel comparison.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
+          "source": "HostMessagesBody draws the empty copy hostMessagesEmpty picks for the filter and scope.",
+          "nextAction": "None.",
           "captureIds": [
-            "host_inbox_text_scale_2"
+            "host_inbox_empty"
+          ]
+        },
+        {
+          "id": "populated_queries",
+          "kind": "populated",
+          "status": "captured",
+          "source": "An event scope lists its conversations with the Booked and Prospective views and their counts; a phone pushes the open conversation full screen and wider windows keep it beside the list.",
+          "nextAction": "None.",
+          "captureIds": [
+            "host_inbox_queries",
+            "host_inbox_text_scale_2",
+            "host_inbox_light_dark"
+          ],
+          "tests": [
+            "test/hosts/people/conversation/messages_scope_test.dart",
+            "test/hosts/people/conversation/conversation_screen_test.dart"
+          ]
+        },
+        {
+          "id": "prospective_queries",
+          "kind": "populated",
+          "status": "captured",
+          "source": "The Prospective view lists people known not booked for the event; a person whose booking cannot be told is marked unknown.",
+          "nextAction": "None.",
+          "captureIds": [
+            "host_inbox_prospective"
+          ],
+          "tests": [
+            "test/hosts/people/conversation/messages_scope_test.dart",
+            "test/hosts/people/conversation/conversation_people_test.dart"
+          ]
+        },
+        {
+          "id": "general_queries",
+          "kind": "populated",
+          "status": "captured",
+          "source": "General inquiries holds only conversations about no event.",
+          "nextAction": "None.",
+          "captureIds": [
+            "host_inbox_general"
+          ],
+          "tests": [
+            "test/hosts/people/conversation/messages_scope_test.dart",
+            "test/hosts/people/conversation/conversation_people_test.dart"
+          ]
+        },
+        {
+          "id": "program_queries",
+          "kind": "populated",
+          "status": "tested",
+          "source": "A programme scope reads only that programme's verified identity and withholds conversations it cannot attribute.",
+          "nextAction": "None.",
+          "tests": [
+            "test/hosts/people/conversation/conversation_people_test.dart"
+          ]
+        },
+        {
+          "id": "roster_without_threads",
+          "kind": "empty",
+          "status": "captured",
+          "source": "An event whose bookings are known but nobody has written about shows its counts and the empty copy.",
+          "nextAction": "None.",
+          "captureIds": [
+            "host_inbox_roster_no_threads"
+          ],
+          "tests": [
+            "test/hosts/people/conversation/messages_scope_test.dart"
+          ]
+        },
+        {
+          "id": "search_active",
+          "kind": "populated",
+          "status": "tested",
+          "source": "The name search narrows every scope.",
+          "nextAction": "None.",
+          "tests": [
+            "test/hosts/people/conversation/messages_scope_test.dart"
+          ]
+        },
+        {
+          "id": "broadcast_composer_lifecycle",
+          "kind": "mutation",
+          "status": "captured",
+          "source": "HostComposeScreen sends one announcement through HostComposeCommands under one request id per draft: a failed send retries the same id, and a changed draft gets a new one.",
+          "nextAction": "None.",
+          "captureIds": [
+            "host_inbox_broadcast_composer",
+            "host_inbox_broadcast_pending",
+            "host_inbox_broadcast_error"
+          ],
+          "tests": [
+            "test/hosts/people/compose_request_id_test.dart",
+            "test/events/event_repository_test.dart"
+          ]
+        },
+        {
+          "id": "communication_intent_picker",
+          "kind": "populated",
+          "status": "tested",
+          "source": "Sends offers what to send: continue a conversation, a saved-audience campaign, an event announcement or a follower update, each with its own readiness.",
+          "nextAction": "None.",
+          "tests": [
+            "test/hosts/people/sends/sends_body_test.dart"
+          ],
+          "previewIds": [
+            "HostSendsChooseBody/What to send"
+          ]
+        },
+        {
+          "id": "manual_handoff_queue",
+          "kind": "populated",
+          "status": "captured",
+          "source": "Sends lists the personal WhatsApp handoffs still to send by hand, with Check options and Load more.",
+          "nextAction": "None.",
+          "captureIds": [
+            "host_messaging_campaigns"
+          ],
+          "tests": [
+            "test/hosts/people/sends/sends_body_test.dart",
+            "test/hosts/host_crm_repository_test.dart"
+          ],
+          "previewIds": [
+            "HostSendsQueueSection/Needs your send"
+          ]
+        },
+        {
+          "id": "manual_handoff_opened_unconfirmed",
+          "kind": "mutation",
+          "status": "tested",
+          "source": "HostManualSendSheet records the opened handoff and enables Mark as sent only after WhatsApp opened.",
+          "nextAction": "None.",
+          "tests": [
+            "test/hosts/people/sends/sends_body_test.dart"
+          ],
+          "previewIds": [
+            "HostManualSendSheet/Opened in WhatsApp"
+          ]
+        },
+        {
+          "id": "follower_update_composer",
+          "kind": "mutation",
+          "status": "tested",
+          "source": "HostFollowerUpdateSheet shows the weekly quota, the 500-character counter and the WhatsApp switch, and keeps one request id until the copy changes.",
+          "nextAction": "None.",
+          "tests": [
+            "test/hosts/people/sends/follower_update_sheet_test.dart"
+          ],
+          "previewIds": [
+            "HostFollowerUpdateSheet/WhatsApp unavailable"
+          ]
+        },
+        {
+          "id": "campaign_compose_deep_link",
+          "kind": "populated",
+          "status": "tested",
+          "source": "workspace=campaigns with compose=1 and audienceId opens a campaign to that saved audience.",
+          "nextAction": "None.",
+          "tests": [
+            "test/routing/router_widgets_test.dart"
+          ]
+        },
+        {
+          "id": "customer_campaign_draft",
+          "kind": "mutation",
+          "status": "tested",
+          "source": "HostCampaignScreen edits a campaign: name, message type, schedule, saved audience, template and its values, linked event, with validation and preview.",
+          "nextAction": "None.",
+          "tests": [
+            "test/hosts/people/sends/campaign_body_test.dart"
+          ],
+          "previewIds": [
+            "HostCampaignScreen/Setup loading"
           ]
         },
         {
           "id": "reduced_motion",
           "kind": "accessibility",
           "status": "captured",
-          "source": "Host Inbox capture applies MediaQuery.disableAnimations for reduced-motion review.",
-          "nextAction": "Use this capture to verify search/header behavior during future animation changes.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
+          "source": "Messages with animations off.",
+          "nextAction": "None.",
           "captureIds": [
             "host_inbox_reduced_motion"
+          ]
+        },
+        {
+          "id": "text_scale_2",
+          "kind": "accessibility",
+          "status": "captured",
+          "source": "Messages at text scale 2.",
+          "nextAction": "None.",
+          "captureIds": [
+            "host_inbox_text_scale_2"
           ]
         },
         {
           "id": "light_dark",
           "kind": "theme",
           "status": "captured",
-          "source": "Host Inbox paired theme capture renders light and dark variants from the same populated fixture state.",
-          "nextAction": "Use this capture for token parity once matching Claude references are exported.",
-          "previewIds": [
-            "HostInboxScreen/Event-scoped states"
-          ],
+          "source": "Messages in paired light and dark themes.",
+          "nextAction": "None.",
           "captureIds": [
             "host_inbox_light_dark"
           ]
         }
       ],
       "composition": {
-        "currentLayout": "HostInboxScreen presents the local product title Messaging beneath the shell destination Inbox and follows the shell-selected organizer. Its header names the selected responsibility: Inbox owns one-to-one conversations and replies, while Sends owns outbound intent, manual handoff work, delivery history, and route-specific reports. Inbox watches the organizer's events, personal inquiry previews, selected Event or General scope, and search. CatchAdaptiveMasterDetailLayout measures the route body after shell chrome, keeps compact navigation pushed, and presents a 360 px index beside a keyed selected thread at 720 px or wider; the route retains per-thread drafts across resize. Sends consumes Audience-owned saved audiences or Events-owned audience references without redefining either authority and keeps its operational content in an 840 px lane. HostInboxViewModel keeps organizer, Event/General, Booked/Prospective, and thread-count boundaries explicit.",
-        "targetLayout": "Keep Inbox as the Host-owned communication destination, with the local Messaging title and first-class Inbox and Sends workspaces. Preserve organizer and event provenance, reuse shared header and row primitives, and keep event announcements as Activity plus push rather than chat fan-out. The campaigns query value remains a compatibility wire detail, never the visible workspace label.",
+        "currentLayout": "The /host/inbox route resolves to the People tab's Messages: a search field, All, Unread and Tonight chips, the scope menu (events, programmes, General inquiries), Booked and Prospective in an event scope, the Automatic messages and Sends rows, then the conversations. A phone pushes the open conversation full screen; wider windows keep it beside the list. Sends and the announcement compose screen are their own screens on the same route.",
+        "targetLayout": "Same as the current layout.",
         "sections": [
           {
             "id": "section.host.inbox_screen_adapter",
-            "name": "Host Messaging route state adapter",
+            "name": "Messages screen",
             "status": "implemented_local",
             "layer": "screen-adapter",
-            "claudeComponents": [
-              "HostInboxScreenState"
-            ],
+            "claudeComponents": [],
             "flutter": {
-              "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-              "symbol": "HostInboxScreen"
+              "file": "lib/hosts/people/messages_screen.dart",
+              "symbol": "HostMessagesScreen"
             },
-            "currentOwner": "HostInboxScreen + HostInboxViewModel + HostAudienceController",
-            "targetOwner": "HostInboxScreen selected-organizer workspace adapter",
-            "dependencies": [
-              "catch.surface"
-            ],
+            "currentOwner": "HostMessagesScreen",
+            "targetOwner": "HostMessagesScreen",
+            "dependencies": [],
             "states": [
-              "uid_loading",
-              "matches_loading",
-              "matches_error",
-              "empty",
-              "populated",
-              "search",
-              "unread_filter"
+              "uid_loading_or_missing",
+              "populated_queries"
             ],
-            "migration": "HostInboxScreen owns selected-organizer resolution, route-synchronized Inbox/Sends switching, workspace-specific explanatory copy, search-action visibility, actual-body-width list/thread selection, keyed embedded-thread and per-thread draft state, typed Host chat routing, and workspace-specific retry behavior. HostInboxViewModel owns organizer-scoped inquiry projection and HostAudienceController retains campaign mutations.",
-            "previewIds": [
-              "HostInboxScreen/Event-scoped states"
-            ]
-          },
-          {
-            "id": "section.host.inbox_browse_header",
-            "name": "Host Messaging browse header",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostInboxHeader",
-              "CatchBrowseHeader"
-            ],
-            "flutter": {
-              "file": "lib/pages/inbox/widgets/chats_sliver_header.dart",
-              "symbol": "ChatsBrowseHeader"
-            },
-            "currentOwner": "ChatsSliverHeader",
-            "targetOwner": "provider-free Host Messaging header section",
-            "dependencies": [
-              "catch.top_bar",
-              "catch.field"
-            ],
-            "states": [
-              "collapsed_search",
-              "expanded_search",
-              "query",
-              "no_search_action",
-              "host_copy",
-              "text_scale"
-            ],
-            "migration": "Keep shared CatchBrowseHeader chrome but drive the Messaging title and Inbox-only search state from HostInboxScreen.",
-            "previewIds": [
-              "HostInboxScreen/Event-scoped states"
-            ]
-          },
-          {
-            "id": "section.host.inbox_filter_row",
-            "name": "Host inbox event scope and audience controls",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostInboxScopeMenu",
-              "HostInboxAudienceInput"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-              "symbol": "HostInboxScreen"
-            },
-            "currentOwner": "HostInboxScreen + HostInboxViewModel",
-            "targetOwner": "Host-owned typed Event/General scope selector plus Booked/Prospective rail",
-            "dependencies": [
-              "catch.chip.field"
-            ],
-            "states": [
-              "selected_event",
-              "general",
-              "booked",
-              "prospective",
-              "roster_without_threads"
-            ],
-            "migration": "Implemented. Typed scope never uses General as an event-id sentinel, and audience counts come from eventBookings rather than conversation totals.",
-            "previewIds": [
-              "HostInboxScreen/Event-scoped states"
-            ]
-          },
-          {
-            "id": "section.host.inbox_async_body",
-            "name": "Host inbox loading error empty shell",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostInboxAsyncBody"
-            ],
-            "flutter": {
-              "file": "lib/pages/inbox/widgets/chats_list.dart",
-              "symbol": "ChatsList"
-            },
-            "currentOwner": "ChatsListDisplayState + ChatsList",
-            "targetOwner": "provider-free host inbox async body section",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "loading",
-              "error",
-              "empty",
-              "search_empty",
-              "no_unread",
-              "populated"
-            ],
-            "migration": "ChatsListDisplayState now centralizes AsyncValue handling, retry-render branch, and empty-state selection so loading, error, empty, search-empty, no-unread, and populated states are previewable and captured.",
-            "previewIds": [
-              "HostInboxScreen/Event-scoped states"
-            ]
-          },
-          {
-            "id": "section.host.inbox_conversation_section",
-            "name": "Host attendee queries section",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostAttendeeQueriesSection"
-            ],
-            "flutter": {
-              "file": "lib/pages/inbox/widgets/chats_list_body.dart",
-              "symbol": "ChatsListBody"
-            },
-            "currentOwner": "ChatsListBody",
-            "targetOwner": "provider-free host attendee queries section",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "one_row",
-              "many_rows",
-              "read_unread_mix",
-              "long_copy",
-              "theme"
-            ],
-            "migration": "Keep contiguous row layout while the host broadcast lead-in, merged row order, and spacing stay fixture-driven for Host Inbox previews/captures.",
-            "previewIds": [
-              "HostInboxScreen/Event-scoped states"
-            ]
+            "migration": "Done: HostInboxScreen retired."
           },
           {
             "id": "section.host.inbox_row_list",
-            "name": "Host inbox row list",
+            "name": "Messages list",
             "status": "implemented_local",
             "layer": "section",
-            "claudeComponents": [
-              "HostInboxRowList"
-            ],
+            "claudeComponents": [],
             "flutter": {
-              "file": "lib/hosts/presentation/inbox/host_inbox_workspace_section.dart",
-              "symbol": "HostInboxPeopleSection"
+              "file": "lib/hosts/people/messages_body.dart",
+              "symbol": "HostMessagesBody"
             },
-            "currentOwner": "HostInboxPeopleSection",
-            "targetOwner": "Organizer-scoped person collection rendered through lazy Section rows.",
-            "dependencies": [
-              "catch.field",
-              "catch.section"
-            ],
+            "currentOwner": "HostMessagesBody",
+            "targetOwner": "HostMessagesBody",
+            "dependencies": [],
             "states": [
-              "route_to_host_chat",
-              "dividers",
-              "one_row",
-              "many_rows"
+              "matches_loading",
+              "matches_error",
+              "empty_host_queries",
+              "populated_queries",
+              "prospective_queries",
+              "general_queries",
+              "roster_without_threads",
+              "search_active"
             ],
-            "migration": "Route selection and path parameter construction now live in the typed callback supplied by ChatsListScreen. Keep ChatConversationsList provider/router-free and align the callback contract with screen.host.chat.",
-            "previewIds": [
-              "HostInboxScreen/Event-scoped states"
-            ]
+            "migration": "Done."
           },
           {
             "id": "section.host.inbox_row",
-            "name": "Host inbox row",
+            "name": "Conversation row",
             "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostInboxRow",
-              "ChatThreadPreview"
-            ],
+            "layer": "compound",
+            "claudeComponents": [],
             "flutter": {
-              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
-              "symbol": "CatchField"
+              "file": "lib/contexts/messaging/parts/messaging_thread_row.dart",
+              "symbol": "MessagingThreadRow"
             },
-            "currentOwner": "CatchField + CatchConversationLayout",
-            "targetOwner": "Section owns the pane perimeter; Field owns row interaction; ConversationLayout owns passive values.",
-            "dependencies": [
-              "catch.field",
-              "catch.section"
-            ],
+            "currentOwner": "MessagingThreadRow",
+            "targetOwner": "MessagingThreadRow",
+            "dependencies": [],
             "states": [
-              "read",
-              "unread",
-              "new_query",
-              "square_avatar",
-              "fallback_avatar",
-              "long_name",
-              "long_preview",
-              "timestamp"
+              "populated_queries"
             ],
-            "migration": "Keep shared row rendering and register host inquiry variants in Widgetbook as CatchPersonRow states.",
-            "previewIds": [
-              "HostInboxScreen/Event-scoped states"
-            ]
+            "migration": "Done."
           },
           {
             "id": "section.host.inbox_broadcast_composer",
-            "name": "Host event broadcast composer",
+            "name": "Event announcement",
             "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostBroadcastComposer"
-            ],
+            "layer": "screen-adapter",
+            "claudeComponents": [],
             "flutter": {
-              "file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart",
-              "symbol": "HostBroadcastComposerSheet"
+              "file": "lib/hosts/people/compose_screen.dart",
+              "symbol": "HostComposeScreen"
             },
-            "currentOwner": "HostBroadcastComposerSheet + HostInboxBroadcastController",
-            "targetOwner": "Host-owned callable mutation sheet",
-            "dependencies": [
-              "catch.button",
-              "catch.field",
-              "catch.chip.field",
-              "catch.surface"
-            ],
+            "currentOwner": "HostComposeScreen + HostComposeCommands",
+            "targetOwner": "HostComposeScreen + HostComposeCommands",
+            "dependencies": [],
             "states": [
-              "ready",
-              "template_selected",
-              "zero_audience",
-              "production_preflight_disabled",
-              "pending",
-              "error"
+              "broadcast_composer_lifecycle"
             ],
-            "migration": "Implemented with stable request id across retry, request-id rotation on payload changes, bounded body input, audience counts, pending/error feedback, and a backend-first production flag.",
+            "migration": "Done: HostBroadcastComposerSheet retired."
+          },
+          {
+            "id": "section.host.messaging_sends",
+            "name": "Sends",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [],
+            "flutter": {
+              "file": "lib/hosts/people/sends/sends_screen.dart",
+              "symbol": "HostSendsScreen"
+            },
+            "currentOwner": "HostSendsScreen",
+            "targetOwner": "HostSendsScreen",
+            "dependencies": [],
+            "states": [
+              "communication_intent_picker",
+              "manual_handoff_queue",
+              "manual_handoff_opened_unconfirmed",
+              "follower_update_composer",
+              "campaign_compose_deep_link"
+            ],
+            "migration": "Done: the Sends workspace retired.",
             "previewIds": [
-              "HostBroadcastComposerSheet/Lifecycle states"
+              "HostSendsBody/History and handoffs"
             ]
           },
           {
@@ -15128,81 +14570,36 @@
               "file": "lib/hosts/organizer/whatsapp_setup_section.dart",
               "symbol": "HostWhatsappSetupSection"
             },
-            "currentOwner": "hosts.presentation.inbox",
-            "targetOwner": "hosts.presentation.inbox",
-            "dependencies": [
-              "catch.button",
-              "catch.field",
-              "catch.notice",
-              "catch.section"
-            ],
+            "currentOwner": "HostWhatsappSetupSection",
+            "targetOwner": "HostWhatsappSetupSection",
+            "dependencies": [],
             "states": [
-              "customer_messaging_provider_unavailable",
-              "customer_messaging_disconnected",
-              "customer_messaging_connecting",
-              "customer_messaging_ready"
+              "communication_intent_picker"
             ],
-            "migration": "Remains in the host-operations audience library and is composed by the selected-organizer Messaging Sends workspace.",
+            "migration": "On the organizer messaging route.",
             "previewIds": [
-              "HostCampaignEditor/Campaign and sender states"
+              "HostWhatsappSetupSection/Sender setup states"
             ]
           },
           {
             "id": "section.host.messaging_campaign_composer",
-            "name": "Campaign composer and lifecycle",
+            "name": "Campaign",
             "status": "implemented_local",
-            "layer": "section",
+            "layer": "screen-adapter",
             "claudeComponents": [],
             "flutter": {
-              "file": "lib/hosts/presentation/inbox/host_campaign_editor.dart",
-              "symbol": "HostCampaignEditor"
+              "file": "lib/hosts/people/sends/campaign_screen.dart",
+              "symbol": "HostCampaignScreen"
             },
-            "currentOwner": "hosts.presentation.inbox",
-            "targetOwner": "hosts.presentation.inbox",
-            "dependencies": [
-              "catch.button",
-              "catch.chip",
-              "catch.field",
-              "catch.notice",
-              "catch.section"
-            ],
+            "currentOwner": "HostCampaignScreen",
+            "targetOwner": "HostCampaignScreen",
+            "dependencies": [],
             "states": [
-              "customer_campaign_draft",
-              "customer_campaign_previewed",
-              "customer_campaign_active"
+              "customer_campaign_draft"
             ],
-            "migration": "Extracted into a standalone composer with initialSegments support; HostAudienceController and revision gates remain authoritative.",
+            "migration": "Done: HostCampaignEditor retired.",
             "previewIds": [
-              "HostCampaignEditor/Campaign and sender states"
-            ]
-          },
-          {
-            "id": "section.host.inbox_empty_states",
-            "name": "Host inbox empty states",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostInboxEmptyState"
-            ],
-            "flutter": {
-              "file": "lib/pages/inbox/widgets/chats_empty_state.dart",
-              "symbol": "ChatsEmptyState"
-            },
-            "currentOwner": "ChatsEmptyState",
-            "targetOwner": "provider-free host inbox empty/error state section",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "no_queries",
-              "search_empty",
-              "no_unread",
-              "signed_out",
-              "offline"
-            ],
-            "migration": "Catalog host-specific empty copy and move empty-state selection into HostInboxScreenState before visual parity edits.",
-            "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+              "HostCampaignScreen/Setup loading"
             ]
           }
         ]
@@ -15211,27 +14608,27 @@
         {
           "id": "DS-HOST-INBOX-001",
           "status": "open",
-          "nextAction": "Close the remaining Host-v2 visual delta without loosening thresholds. Fresh evidence is 17.62% mismatch / 31.90 meanDelta; the mismatch ceiling passes, but meanDelta must reach 18 or below."
+          "nextAction": "Compare the redesigned Messages list with the Host-v2 Inbox board; the old HostInboxScreen numbers no longer apply."
         },
         {
           "id": "DS-HOST-INBOX-002",
           "status": "closed",
-          "nextAction": "HostInboxViewModel owns Event/General scope, Booked/Prospective classification, roster/thread count separation, search, lifecycle availability, and row status labels; HostInboxScreen owns typed routing and composition."
+          "nextAction": "hostMessagesControllerProvider owns scope, Booked and Prospective classification, roster and conversation counts, search and partial pages; hostMessagesScreenForUri owns typed routing."
         },
         {
           "id": "DS-HOST-INBOX-003",
           "status": "closed",
-          "nextAction": "Widgetbook renders the production Messaging Inbox and Sends responsibilities; full-shell captures should use the visible Sends label while preserving the campaigns compatibility wire value."
+          "nextAction": "Widgetbook renders Sends and its sheets; Messages renders from the People capture fixtures."
         },
         {
           "id": "DS-HOST-INBOX-004",
-          "status": "in_progress",
-          "nextAction": "Functional semantics and the authorized callable are implemented locally. Keep production sending disabled until the live callable preflight passes, then record delivery evidence; visual closure separately requires meanDelta 18 or below from the current 31.90."
+          "status": "closed",
+          "nextAction": "Announcements send through HostComposeCommands with one request id per draft; the never-set production sending switch was retired with HostInboxScreen."
         },
         {
           "id": "DS-HOST-INBOX-005",
           "status": "open",
-          "nextAction": "Keep feature.host_inbox generated from the renamed Messaging contract. Add remaining sender and campaign lifecycle captures while preserving focused Inbox interaction evidence."
+          "nextAction": "Keep feature.host_inbox generated from the Messaging contract and add Messages search and selected-conversation captures."
         }
       ]
     },
@@ -23079,32 +22476,28 @@
           "kind": "loading",
           "status": "implemented",
           "source": "MyMembershipsScreen renders the shared async loading state while uid or memberships load.",
-          "nextAction": "Capture the routed loading state once memberships leave test mode.",
-          "previewIds": []
+          "nextAction": "Capture the routed loading state once memberships leave test mode."
         },
         {
           "id": "error",
           "kind": "error",
           "status": "implemented",
           "source": "MyMembershipsScreen renders the shared localized error state with retry.",
-          "nextAction": "Capture the routed error state once memberships leave test mode.",
-          "previewIds": []
+          "nextAction": "Capture the routed error state once memberships leave test mode."
         },
         {
           "id": "populated",
           "kind": "populated",
           "status": "implemented",
           "source": "MyMembershipsList renders each membership with status, renewal, savings and self-serve actions.",
-          "nextAction": "Capture active, paused and host-paused rows once memberships leave test mode.",
-          "previewIds": []
+          "nextAction": "Capture active, paused and host-paused rows once memberships leave test mode."
         },
         {
           "id": "empty",
           "kind": "empty",
           "status": "implemented",
           "source": "MyMembershipsList renders the no-memberships empty state.",
-          "nextAction": "Capture the routed empty state once memberships leave test mode.",
-          "previewIds": []
+          "nextAction": "Capture the routed empty state once memberships leave test mode."
         },
         {
           "id": "signed_out",
@@ -23156,8 +22549,7 @@
               "empty",
               "mutation"
             ],
-            "migration": "Keep billing status server-owned; self-serve actions stay behind manageMyHostMembership.",
-            "previewIds": []
+            "migration": "Keep billing status server-owned; self-serve actions stay behind manageMyHostMembership."
           }
         ]
       },
@@ -24351,32 +23743,28 @@
           "kind": "loading",
           "status": "implemented",
           "source": "ProgramImportScreen renders the canonical loading viewport while providers resolve.",
-          "nextAction": "Review against program design references when they land.",
-          "previewIds": []
+          "nextAction": "Review against program design references when they land."
         },
         {
           "id": "error",
           "kind": "error",
           "status": "implemented",
           "source": "ProgramImportScreen renders CatchLocalizedErrorState with scoped retry.",
-          "nextAction": "Review against program design references when they land.",
-          "previewIds": []
+          "nextAction": "Review against program design references when they land."
         },
         {
           "id": "populated",
           "kind": "populated",
           "status": "implemented",
           "source": "Parsed tables render per-row field mapping and preview results render created, updated and skipped counts with row errors.",
-          "nextAction": "Review against program design references when they land.",
-          "previewIds": []
+          "nextAction": "Review against program design references when they land."
         },
         {
           "id": "empty",
           "kind": "empty",
           "status": "implemented",
           "source": "Before a file is chosen the screen renders the file picker call to action only.",
-          "nextAction": "Review against program design references when they land.",
-          "previewIds": []
+          "nextAction": "Review against program design references when they land."
         }
       ],
       "composition": {

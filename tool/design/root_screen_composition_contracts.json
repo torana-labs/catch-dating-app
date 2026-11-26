@@ -176,17 +176,6 @@
       ]
     },
     {
-      "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-      "requires": [
-        {
-          "text": "HostDirectoryWorkspace<String>("
-        },
-        {
-          "text": "HostSendsPageBody("
-        }
-      ]
-    },
-    {
       "path": "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart",
       "requires": [
         {

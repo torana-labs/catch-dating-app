@@ -162,7 +162,7 @@ test("new-message presentation consumes the resolved conversation outcome", () =
 
 test("flags saved-audience mutation outside Customers", () => {
   const findings = scanPresentationFile({
-    relativePath: "lib/hosts/presentation/inbox/broadcast.dart",
+    relativePath: "lib/hosts/people/sends/broadcast.dart",
     source: "await controller.saveAudience(definition);",
   });
   assert.match(findings[0].reason, /belong to Customers/u);
@@ -170,7 +170,7 @@ test("flags saved-audience mutation outside Customers", () => {
 
 test("flags host-visible communication route pickers", () => {
   const findings = scanPresentationFile({
-    relativePath: "lib/hosts/presentation/inbox/channel_picker.dart",
+    relativePath: "lib/hosts/people/sends/channel_picker.dart",
     source: "CatchField<HostCommunicationRouteId>.select(items: routes)",
   });
   assert.ok(findings.some((item) => /server-resolved/u.test(item.reason)));
@@ -179,8 +179,8 @@ test("flags host-visible communication route pickers", () => {
 
 test("flags manual-send queues outside Sends", () => {
   const findings = scanPresentationFile({
-    relativePath: "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-    source: "const HostManualSendList()",
+    relativePath: "lib/hosts/people/messages_body.dart",
+    source: "HostManualSendSheet(task: task)",
   });
   assert.match(findings[0].reason, /Sends workspace/u);
 });

@@ -2,7 +2,6 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_reposi
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_editor.dart';
 import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -47,11 +46,6 @@ Widget hostAudienceHeaderStates(BuildContext context) =>
 Widget hostWhatsappSetupSectionStates(BuildContext context) =>
     hostCustomerMessagingStates(context);
 
-@widgetbook.UseCase(
-  name: 'Campaign and sender states',
-  type: HostCampaignEditor,
-  path: '[P1 product surfaces]/Host operations/Messaging',
-)
 Widget hostCustomerMessagingStates(BuildContext context) {
   final organizerId = HostOperationsFixtures.primaryOrganizer.id;
   final messagingSetup = HostMessagingSetup(
@@ -92,7 +86,7 @@ Widget hostCustomerMessagingStates(BuildContext context) {
     contractId: 'screen.host.inbox',
     children: [
       WidgetbookPageStateCard(
-        label: 'campaign and sender workspace',
+        label: 'sender workspace',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
             child: WidgetbookFixtureScope(
@@ -108,9 +102,6 @@ Widget hostCustomerMessagingStates(BuildContext context) {
                     emptyStateOmitted: true,
                     children: [
                       HostWhatsappSetupSection(
-                        organizer: HostOperationsFixtures.primaryOrganizer,
-                      ),
-                      HostCampaignEditor(
                         organizer: HostOperationsFixtures.primaryOrganizer,
                       ),
                     ],
