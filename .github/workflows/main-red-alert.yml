@@ -29,14 +29,26 @@ name: Main CI alert
 # docs/release_operations.md, "Main CI alert" and "Test selection miss report".
 
 # The nightly is the CI run dispatched by ci-nightly.yml and titled "CI
-# nightly" (scheduled before 26 Nov 2026); each job below that acts on it asks
-# for that title, as tool/ci/ci_nightly.mjs (isNightlyRun) does.
+# nightly" (scheduled before 26 Nov 2026). GITHUB_TOKEN dispatched it, so its
+# completion fires no workflow_run: the Scheduled run watchdog dispatches this
+# workflow with that run's run_id instead (owner decision, 26 Nov 2026). The
+# resolve job reads the run either way, refuses a dispatched run_id that is not
+# a completed CI nightly of main, and skips a run an earlier alert run already
+# handled; the run-name records which CI run each alert run handled.
+
+run-name: Main CI alert for run ${{ inputs.run_id || github.event.workflow_run.id }}
 
 on:
   workflow_run:
     workflows: [CI]
     types: [completed]
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: A completed CI nightly's run id (the Scheduled run watchdog's follow-up).
+        required: true
+        type: string
 
 permissions: {}
 
@@ -45,9 +57,48 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  resolve:
+    name: Resolve the CI run to handle
+    if: >-
+      github.event_name == 'workflow_dispatch' || (
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      proceed: ${{ steps.resolve.outputs.proceed }}
+      run_id: ${{ steps.resolve.outputs.run_id }}
+      event: ${{ steps.resolve.outputs.event }}
+      nightly: ${{ steps.resolve.outputs.nightly }}
+      conclusion: ${{ steps.resolve.outputs.conclusion }}
+      head_sha: ${{ steps.resolve.outputs.head_sha }}
+      head_branch: ${{ steps.resolve.outputs.head_branch }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            tool/ci
+            .github/actions/load-toolchain
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - id: resolve
+        name: Read the CI run and check it is one to handle
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_RUN_ID: ${{ inputs.run_id }}
+        run: node tool/ci/main_red_alert.mjs --resolve
+
   alert:
     name: Update the main CI alert issue
-    if: ${{ github.event.workflow_run.head_branch == 'main' && (github.event.workflow_run.event == 'push' || (github.event.workflow_run.event == 'schedule' || (github.event.workflow_run.event == 'workflow_dispatch' && github.event.workflow_run.display_title == 'CI nightly'))) && contains(fromJSON('["success", "failure", "timed_out", "startup_failure"]'), github.event.workflow_run.conclusion) }}
+    needs: resolve
+    if: ${{ needs.resolve.outputs.proceed == 'true' && needs.resolve.outputs.head_branch == 'main' && (needs.resolve.outputs.event == 'push' || needs.resolve.outputs.nightly == 'true') && contains(fromJSON('["success", "failure", "timed_out", "startup_failure"]'), needs.resolve.outputs.conclusion) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
@@ -69,12 +120,13 @@ jobs:
       - name: Open, update or close the alert issue
         env:
           GH_TOKEN: ${{ github.token }}
-          RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_ID: ${{ needs.resolve.outputs.run_id }}
         run: node tool/ci/main_red_alert.mjs
 
   golden-policy:
     name: Update the golden and capture issues
-    if: ${{ github.event.workflow_run.head_branch == 'main' && (github.event.workflow_run.event == 'push' || (github.event.workflow_run.event == 'schedule' || (github.event.workflow_run.event == 'workflow_dispatch' && github.event.workflow_run.display_title == 'CI nightly'))) && contains(fromJSON('["success", "failure", "timed_out", "startup_failure"]'), github.event.workflow_run.conclusion) }}
+    needs: resolve
+    if: ${{ needs.resolve.outputs.proceed == 'true' && needs.resolve.outputs.head_branch == 'main' && (needs.resolve.outputs.event == 'push' || needs.resolve.outputs.nightly == 'true') && contains(fromJSON('["success", "failure", "timed_out", "startup_failure"]'), needs.resolve.outputs.conclusion) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     # actions: write only dispatches the dispatch-only baseline workflows.
@@ -97,12 +149,13 @@ jobs:
       - name: Open, update or close the golden and capture issues
         env:
           GH_TOKEN: ${{ github.token }}
-          RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_ID: ${{ needs.resolve.outputs.run_id }}
         run: node tool/ci/golden_policy.mjs
 
   selection-miss:
     name: Check nightly failures against the test selection
-    if: ${{ github.event.workflow_run.head_branch == 'main' && (github.event.workflow_run.event == 'schedule' || (github.event.workflow_run.event == 'workflow_dispatch' && github.event.workflow_run.display_title == 'CI nightly')) && github.event.workflow_run.conclusion == 'failure' }}
+    needs: resolve
+    if: ${{ needs.resolve.outputs.proceed == 'true' && needs.resolve.outputs.head_branch == 'main' && needs.resolve.outputs.nightly == 'true' && needs.resolve.outputs.conclusion == 'failure' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
@@ -114,7 +167,7 @@ jobs:
       # selection needs paths and trees, not old file contents.
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ needs.resolve.outputs.head_sha }}
           fetch-depth: 0
           filter: blob:none
           persist-credentials: false
@@ -127,7 +180,7 @@ jobs:
       - name: Open or update the selection miss issue
         env:
           GH_TOKEN: ${{ github.token }}
-          RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_ID: ${{ needs.resolve.outputs.run_id }}
         run: node tool/ci/selection_miss_report.mjs
 
   semantic-budget:
@@ -135,7 +188,8 @@ jobs:
     # After every nightly, whatever its result: the gates' p95 over the last 7
     # nightlies, report-only (release engineer, 23 Nov 2026). A slow gate is not
     # a broken main, so this never touches the "Main CI is red" issue.
-    if: ${{ github.event.workflow_run.head_branch == 'main' && (github.event.workflow_run.event == 'schedule' || (github.event.workflow_run.event == 'workflow_dispatch' && github.event.workflow_run.display_title == 'CI nightly')) && contains(fromJSON('["success", "failure", "timed_out"]'), github.event.workflow_run.conclusion) }}
+    needs: resolve
+    if: ${{ needs.resolve.outputs.proceed == 'true' && needs.resolve.outputs.head_branch == 'main' && needs.resolve.outputs.nightly == 'true' && contains(fromJSON('["success", "failure", "timed_out"]'), needs.resolve.outputs.conclusion) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:

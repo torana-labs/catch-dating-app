@@ -2,13 +2,16 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
 import {
+  ALERT_WORKFLOW,
   DEFAULT_GRACE_HOURS,
+  FOLLOW_UP_HOURS,
   MAIN_RED_TITLE,
   MISSED_TITLE,
   TARGETS,
   decide,
   expectedRun,
   latestOccurrence,
+  nightlyFollowUps,
   recordsFrom,
 } from "./cron_watchdog.mjs";
 
@@ -266,4 +269,41 @@ test("the nightly counts only the dispatched or scheduled nightly, from 02:00, a
   assert.equal(check([{created_at: "2026-11-27T03:00:00Z", event: "push", display_title: "CI"},
     {created_at: "2026-11-27T03:10:00Z", event: "workflow_dispatch", display_title: "CI"},
     {created_at: "2026-11-26T02:30:00Z", event: "workflow_dispatch", display_title: "CI nightly"}]), "unknown");
+});
+
+
+test("each completed CI nightly gets one Main CI alert follow-up; recorded ones skip, running ones wait, others never", () => {
+  const now = at("2026-11-26T13:00:00Z");
+  const nightly = (id, extra = {}) => ({id, event: "workflow_dispatch", display_title: "CI nightly", head_branch: "main",
+    head_repository: {full_name: repository}, status: "completed", conclusion: "success", created_at: "2026-11-26T11:18:39Z", ...extra});
+  const nightlies = [
+    nightly(1),
+    nightly(2),
+    nightly(3, {status: "in_progress", conclusion: null}),
+    // Not the nightly, or not ours: never followed up.
+    nightly(4, {display_title: "CI"}),
+    nightly(5, {event: "push", display_title: "CI"}),
+    nightly(6, {event: "schedule", display_title: "CI"}),
+    nightly(7, {head_branch: "feature"}),
+    nightly(8, {head_repository: {full_name: "someone/fork"}}),
+    // Older than the follow-up window.
+    nightly(9, {created_at: new Date(now - (FOLLOW_UP_HOURS + 1) * 60 * 60 * 1000).toISOString()}),
+  ];
+  // Run 2's alert ran already: a failed alert run is a record too, so it is never retried hourly.
+  const alertRuns = [{id: 50, display_title: "Main CI alert for run 2", conclusion: "failure"},
+    {id: 51, display_title: "Main CI alert for run 70", conclusion: "success"}];
+  assert.deepEqual(nightlyFollowUps({nightlies, alertRuns, now, repository}), [
+    {runId: 1, status: "dispatch"}, {runId: 2, status: "recorded"}, {runId: 3, status: "waiting"}]);
+  // Once the dispatched alert run exists, the next wake finds it and skips.
+  assert.deepEqual(nightlyFollowUps({nightlies: [nightly(1)], now, repository,
+    alertRuns: [{id: 52, display_title: "Main CI alert for run 1", status: "queued", conclusion: null}]}), [{runId: 1, status: "recorded"}]);
+  assert.equal(ALERT_WORKFLOW, "main-red-alert.yml");
+});
+
+test("the watchdog dispatches main-red-alert.yml only with a followed-up nightly's run_id", () => {
+  const source = fs.readFileSync(new URL("./cron_watchdog.mjs", import.meta.url), "utf8");
+  const dispatches = [...source.matchAll(/actions\/workflows\/\$\{([^}]+)\}\/dispatches/gu)].map((match) => match[1]);
+  assert.deepEqual(dispatches.sort(), ["ALERT_WORKFLOW", "dispatch.workflow"]);
+  assert.match(source, /`inputs\[run_id\]=\$\{followUp\.runId\}`/u);
+  assert.match(source, /const alertDispatches = followUps\.filter\(\(followUp\) => followUp\.status === "dispatch"\);/u);
 });

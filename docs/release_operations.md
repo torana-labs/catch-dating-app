@@ -2538,7 +2538,13 @@ redeploys everything since the last successful deploy.
 A red main is noticed within one run (owner decision, 12 Nov 2026: alert,
 no auto-revert). `Main CI alert` (`.github/workflows/main-red-alert.yml`,
 driven by `tool/ci/main_red_alert.mjs`) runs when main's push or nightly CI
-completes. It keeps one open issue titled "Main CI is red": opened on the
+completes. The nightly is dispatched with `GITHUB_TOKEN`, so its completion
+wakes no workflow: the Scheduled run watchdog dispatches `Main CI alert` with
+that run's `run_id` instead (owner decision, 26 Nov 2026). Its `resolve` job
+reads the CI run either way, refuses a dispatched `run_id` that is not a
+completed CI nightly of main, and skips a run an earlier successful alert run
+already handled. Each alert run is titled `Main CI alert for run <id>`, which
+records the CI run it handled. It keeps one open issue titled "Main CI is red": opened on the
 first failure, naming the failed gating jobs (Required CI) and reporting
 jobs separately; commented on each further failure; closed with a comment on
 the next green run that ran every job main still owes. Each alert post records
@@ -2641,7 +2647,15 @@ either writes.
 A nightly that never started counts as **unknown**, never green, and is
 reported on "Main CI is red" because it is about CI health. The recovery run
 the watchdog dispatches is a `workflow_dispatch` run, so the Main CI alert and
-the sprint floor's seven-day count still treat that night as missing. Missed
+the sprint floor's seven-day count still treat that night as missing.
+
+The watchdog also follows up each CI nightly dispatched in the last 48 hours.
+Once one has completed, and no `Main CI alert` run titled for it exists, it
+dispatches `main-red-alert.yml` with `run_id` set to that nightly. That run's
+title is the record, so every later wake skips the nightly, even when that
+alert run failed. A nightly still running is left for a later wake.
+`main-red-alert.yml` is the only workflow besides the dev-only targets that the
+watchdog may dispatch. Missed
 deploy and validation runs go to their own issue so they never keep "Main CI is
 red" open. The watchdog has `contents: read`, `actions: write` and
 `issues: write`.
@@ -2784,6 +2798,9 @@ nightly runs at most once per UTC day even if a marker upload fails.
   native probe, and, through `isNightlyRun` (a dispatch titled "CI nightly", or
   a scheduled run from before 26 Nov 2026), the Main CI alert, the golden
   policy, the selection miss report, the semantic budget and CI metrics.
+- The nightly's completion wakes no workflow, because `GITHUB_TOKEN`
+  dispatched it. The Scheduled run watchdog dispatches the Main CI alert for it
+  once it completes (see "Scheduled run watchdog").
 - The Scheduled run watchdog counts only a "CI nightly" run from 02:00. A
   missed night is still backfilled with one `full` dispatch, which is not
   titled "CI nightly".

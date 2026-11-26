@@ -146,14 +146,15 @@ test("the selection-miss job reads only main's failed nightlies and can only wri
   assert.match(workflow, /^permissions: \{\}$/mu);
   const job = workflow.slice(workflow.indexOf("\n  selection-miss:\n"));
   assert.ok(job.length > 1, "main-red-alert.yml has a selection-miss job");
-  // The nightly: dispatched by ci-nightly.yml and titled "CI nightly" since 26 Nov 2026, scheduled before.
-  assert.ok(job.includes("if: ${{ github.event.workflow_run.head_branch == 'main' && (github.event.workflow_run.event == 'schedule' || " +
-    "(github.event.workflow_run.event == 'workflow_dispatch' && github.event.workflow_run.display_title == 'CI nightly')) && " +
-    "github.event.workflow_run.conclusion == 'failure' }}"), "selection-miss runs on a failed nightly only");
+  // A failed nightly only, as the resolve job reports it: through workflow_run, or the
+  // Scheduled run watchdog's dispatch for a GITHUB_TOKEN-dispatched nightly (26 Nov 2026).
+  assert.ok(job.includes("needs: resolve\n    if: ${{ needs.resolve.outputs.proceed == 'true' && " +
+    "needs.resolve.outputs.head_branch == 'main' && needs.resolve.outputs.nightly == 'true' && " +
+    "needs.resolve.outputs.conclusion == 'failure' }}"), "selection-miss runs on a failed nightly only");
   assert.match(job, /permissions:\n\s+actions: read\n\s+contents: read\n\s+issues: write\n/u);
   assert.doesNotMatch(job, /contents: write|pull-requests: write|actions: write/u);
-  assert.match(job, /ref: \$\{\{ github\.event\.workflow_run\.head_sha \}\}/u);
-  assert.match(job, /RUN_ID: \$\{\{ github\.event\.workflow_run\.id \}\}/u);
+  assert.match(job, /ref: \$\{\{ needs\.resolve\.outputs\.head_sha \}\}/u);
+  assert.match(job, /RUN_ID: \$\{\{ needs\.resolve\.outputs\.run_id \}\}/u);
   assert.match(job, /node tool\/ci\/selection_miss_report\.mjs/u);
   // The nightly keeps the unit report this reads; the emulator lane already keeps its evidence.
   const functions = fs.readFileSync(new URL("../../.github/workflows/functions-ci.yml", import.meta.url), "utf8");
