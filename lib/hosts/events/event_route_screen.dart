@@ -36,6 +36,13 @@ typedef _HostEventManageRouteData = ({
   Event? event,
 });
 
+/// The event route: every event link resolves here to the redesigned screen
+/// for its section. Setup opens the event workspace and guests the guest
+/// lists, which read and check access themselves. For the live and report
+/// sections it reads the signed-in host, the organizer and the event, and
+/// opens the report, the one-room live console, the run console or the
+/// crawl board. It shows loading, a read error with retry, an event that is
+/// gone, and an event this host does not run.
 class HostEventManageRouteScreen extends ConsumerWidget {
   const HostEventManageRouteScreen({
     super.key,
@@ -86,32 +93,31 @@ class HostEventManageRouteScreen extends ConsumerWidget {
         ref.invalidate(watchOrganizerProvider(organizerId));
         ref.invalidate(watchEventProvider(eventId));
       },
-      loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
-          title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-        ),
-        body: const CatchRouteBody.standardViewport(
-          child: CatchStateViewport.loading(accountForBottomOverlay: false),
+      loadingBuilder: (_) => CatchRoot(
+        child: CatchScreen(
+          topBar: CatchTopBar(
+            variant: CatchTopBarVariant.tool,
+            title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
+            back: CatchTopBarBack(label: context.l10n.hostEventsBack),
+          ),
+          bodyScrolls: false,
+          body: const CatchPageBody.screen(child: CatchLoadingIndicator()),
         ),
       ),
-      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
-          title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRoot(
+        child: CatchScreen(
+          topBar: CatchTopBar(
+            variant: CatchTopBarVariant.tool,
+            title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
+            back: CatchTopBarBack(label: context.l10n.hostEventsBack),
           ),
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-        ),
-        body: CatchRouteBody.standardViewport(
-          child: CatchLocalizedErrorState(
-            error,
-            context: AppErrorContext.event,
-            onRetry: onBoundaryRetry,
+          bodyScrolls: false,
+          body: CatchPageBody.screen(
+            child: CatchLocalizedErrorState(
+              error,
+              context: AppErrorContext.event,
+              onRetry: onBoundaryRetry,
+            ),
           ),
         ),
       ),
@@ -120,53 +126,53 @@ class HostEventManageRouteScreen extends ConsumerWidget {
         final organizer = routeData.organizer;
         final event = routeData.event;
         if (organizer == null || event == null) {
-          return CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
-              title:
-                  context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
-              navigation: const CatchTopBarNavigation(
-                mode: CatchTopBarNavigationMode.back,
-              ),
-              emphasis: scrolledUnder
-                  ? CatchTopBarEmphasis.divided
-                  : CatchTopBarEmphasis.plain,
-            ),
-            body: CatchRouteBody.standardViewport(
-              child: CatchErrorState(
+          return CatchRoot(
+            child: CatchScreen(
+              topBar: CatchTopBar(
+                variant: CatchTopBarVariant.tool,
                 title: context
                     .l10n
-                    .hostsHostEventManageRouteScreenTitleEventNotFound,
-                message: context
-                    .l10n
-                    .hostsHostEventManageRouteScreenMessageThisHostedEventIs,
-                actions: const [CatchErrorBackButton()],
+                    .hostsHostEventManageRouteScreenTitleManageEvent,
+                back: CatchTopBarBack(label: context.l10n.hostEventsBack),
+              ),
+              bodyScrolls: false,
+              body: CatchPageBody.screen(
+                child: CatchErrorState(
+                  title: context
+                      .l10n
+                      .hostsHostEventManageRouteScreenTitleEventNotFound,
+                  message: context
+                      .l10n
+                      .hostsHostEventManageRouteScreenMessageThisHostedEventIs,
+                  actions: const [CatchErrorBackButton()],
+                ),
               ),
             ),
           );
         }
 
         if (uid == null || !organizer.isHostedBy(uid)) {
-          return CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
-              title:
-                  context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
-              navigation: const CatchTopBarNavigation(
-                mode: CatchTopBarNavigationMode.back,
-              ),
-              emphasis: scrolledUnder
-                  ? CatchTopBarEmphasis.divided
-                  : CatchTopBarEmphasis.plain,
-            ),
-            body: CatchRouteBody.standardViewport(
-              child: CatchErrorState(
+          return CatchRoot(
+            child: CatchScreen(
+              topBar: CatchTopBar(
+                variant: CatchTopBarVariant.tool,
                 title: context
                     .l10n
-                    .hostsHostEventManageRouteScreenTitleActionUnavailable,
-                message: context
-                    .l10n
-                    .hostsHostEventManageRouteScreenMessageYouCanManageOnly,
-                icon: CatchIcons.block,
-                actions: const [CatchErrorBackButton()],
+                    .hostsHostEventManageRouteScreenTitleManageEvent,
+                back: CatchTopBarBack(label: context.l10n.hostEventsBack),
+              ),
+              bodyScrolls: false,
+              body: CatchPageBody.screen(
+                child: CatchErrorState(
+                  title: context
+                      .l10n
+                      .hostsHostEventManageRouteScreenTitleActionUnavailable,
+                  message: context
+                      .l10n
+                      .hostsHostEventManageRouteScreenMessageYouCanManageOnly,
+                  icon: CatchIcons.block,
+                  actions: const [CatchErrorBackButton()],
+                ),
               ),
             ),
           );
