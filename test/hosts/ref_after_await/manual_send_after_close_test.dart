@@ -38,7 +38,7 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(probe.commands.recorded, 1);
-    await tester.pump(const Duration(minutes: 1));
+    await pumpFeatureUiFor(tester, const Duration(minutes: 1));
   });
 
   testWidgets('nothing opens when the sheet closes while the number is '
@@ -58,7 +58,7 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(probe.launches, isEmpty);
     expect(probe.commands.recorded, 0);
-    await tester.pump(const Duration(minutes: 1));
+    await pumpFeatureUiFor(tester, const Duration(minutes: 1));
   });
 }
 

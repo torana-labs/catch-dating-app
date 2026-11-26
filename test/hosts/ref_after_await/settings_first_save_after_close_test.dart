@@ -12,6 +12,7 @@ import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -76,7 +77,16 @@ void main() {
 
     await tester.tap(find.byKey(const ValueKey<String>('settings-row-name')));
     await pumpFeatureUi(tester);
-    await tester.enterText(find.byType(TextField).first, 'Asha Example');
+    await tester.enterText(
+      find.descendant(
+        of: find.ancestor(
+          of: find.text('Your name'),
+          matching: find.byType(CatchField),
+        ),
+        matching: find.byType(TextField),
+      ),
+      'Asha Example',
+    );
     await tester.pump();
     await tester.tap(
       find.byKey(const ValueKey<String>('settings-profile-save')),
@@ -93,7 +103,7 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(profiles.saved, ['Asha Example']);
-    await tester.pump(const Duration(minutes: 1));
+    await pumpFeatureUiFor(tester, const Duration(minutes: 1));
   });
 }
 
