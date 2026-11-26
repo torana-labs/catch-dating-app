@@ -170,16 +170,17 @@ class HostGuestIntakeSettingsField extends StatelessWidget {
             ],
             if (showsProviderSource) ...[
               gapH20,
-              CatchLegacyText(
+              CatchText(
                 context.l10n.hostsOperationalRosterProviderTitle,
-                variant: CatchLegacyTextVariant.sectionTitle,
+                variant: CatchTextVariant.sectionTitle,
               ),
               gapH4,
-              CatchLegacyText(
+              CatchText(
                 context.l10n.hostsOperationalRosterProviderBody(
                   provider: _providerDisplayName(context, bookingProvider!),
                 ),
-                variant: CatchLegacyTextVariant.supporting,
+                variant: CatchTextVariant.bodySmall,
+                tone: CatchTextTone.secondary,
               ),
               gapH12,
               HostBookingProviderSection(
@@ -573,18 +574,20 @@ class HostRosterInsightRail extends StatelessWidget {
           ),
         final insights => insights,
       }.when(
-        loading: () => CatchLegacyText(
+        loading: () => CatchText(
           context.l10n.hostsOperationalRosterInsightsLoading,
-          variant: CatchLegacyTextVariant.supporting,
+          variant: CatchTextVariant.bodySmall,
+          tone: CatchTextTone.secondary,
         ),
         error: (_, _) => Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
           spacing: CatchSpacing.s2,
           runSpacing: CatchSpacing.s2,
           children: [
-            CatchLegacyText(
+            CatchText(
               context.l10n.hostsOperationalRosterInsightsUnavailable,
-              variant: CatchLegacyTextVariant.supporting,
+              variant: CatchTextVariant.bodySmall,
+              tone: CatchTextTone.secondary,
             ),
             CatchButton(
               label: context.l10n.hostsOperationalRosterInsightsRetry,
@@ -605,9 +608,10 @@ class HostRosterInsightRail extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CatchLegacyText(
+              CatchText(
                 context.l10n.hostsOperationalRosterInsightsCaption,
-                variant: CatchLegacyTextVariant.supporting,
+                variant: CatchTextVariant.bodySmall,
+                tone: CatchTextTone.secondary,
               ),
               gapH8,
               Wrap(
