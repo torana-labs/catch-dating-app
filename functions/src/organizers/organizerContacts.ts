@@ -437,7 +437,6 @@ export interface OrganizerContactRecordInput {
   now?: FirebaseFirestore.Timestamp;
 }
 
-
 export async function createOrganizerContactRecord(
   params: OrganizerContactRecordInput
 ): Promise<CreateOrganizerContactCallableResponse> {
@@ -3367,12 +3366,3 @@ function normalizeNullableString(value: unknown): unknown {
   return normalized.length === 0 ? null : normalized;
 }
 
-export const listOrganizerContacts = onCall(
-  appCheckCallableOptionsWithLimits(organizerContactReadCallableLimits),
-  (request) => listOrganizerContactsHandler(request)
-);
-
-export const getOrganizerContactDetail = onCall(
-  appCheckCallableOptionsWithLimits(organizerContactReadCallableLimits),
-  (request) => getOrganizerContactDetailHandler(request)
-);

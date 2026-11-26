@@ -219,8 +219,8 @@ test("callable steps fail when undeployed, denied, or outside main's contract", 
     .callables;
   const validators = {
     [step.responseValidator]: Object.assign(
-      (value) => Array.isArray(value.templates),
-      {errors: [{instancePath: "/templates", message: "must be array"}]},
+      (value) => Array.isArray(value.items),
+      {errors: [{instancePath: "/items", message: "must be array"}]},
     ),
   };
   const call = (response) => probeCallableStep({
@@ -232,7 +232,7 @@ test("callable steps fail when undeployed, denied, or outside main's contract", 
     fetchImpl: async (url, options) => {
       assert.equal(
         url,
-        "https://asia-south1-demo.cloudfunctions.net/listOrganizerFormTemplates",
+        "https://asia-south1-demo.cloudfunctions.net/listOrganizerGuestBlocks",
       );
       assert.equal(options.redirect, "manual");
       assert.deepEqual(JSON.parse(options.body), {data: step.payload});
@@ -250,15 +250,15 @@ test("callable steps fail when undeployed, denied, or outside main's contract", 
   ));
   assert.match(denied.detail, /PERMISSION_DENIED: Organizer managers only/u);
 
-  const drifted = await call(jsonResponse({result: {templates: "none"}}));
+  const drifted = await call(jsonResponse({result: {items: "none"}}));
   assert.equal(drifted.ok, false);
-  assert.match(drifted.detail, /outside main's contract: \/templates must be array/u);
+  assert.match(drifted.detail, /outside main's contract: \/items must be array/u);
 
-  const served = await call(jsonResponse({result: {templates: []}}));
+  const served = await call(jsonResponse({result: {items: []}}));
   assert.deepEqual(served, {
-    id: "organizer-form-templates",
+    id: "organizer-guest-blocks",
     ok: true,
-    detail: "listOrganizerFormTemplates answered within contract",
+    detail: "listOrganizerGuestBlocks answered within contract",
   });
 });
 

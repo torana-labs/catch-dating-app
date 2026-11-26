@@ -13,8 +13,6 @@
     "onEventAttendeeAudienceProjected",
     "onContactPermissionAudienceProjected",
     "onOrganizerContactEventEdgeInviteAttributed",
-    "listOrganizerContacts",
-    "getOrganizerContactDetail",
     "mergeOrganizerContacts",
     "unmergeOrganizerContacts",
     "onHostRequestViewParticipationWritten",
