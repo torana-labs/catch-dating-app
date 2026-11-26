@@ -804,6 +804,9 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     builder: (context, state) => HostResponseScreen.application(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
       applicationId: state.pathParameters['applicationId']!,
+      queue: state.extra is HostResponsesQueue
+          ? state.extra! as HostResponsesQueue
+          : null,
     ),
   ),
   HostWorkspaceDestination(
@@ -855,6 +858,9 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     builder: (context, state) => HostResponseScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
       responseId: state.pathParameters['responseId']!,
+      queue: state.extra is HostResponsesQueue
+          ? state.extra! as HostResponsesQueue
+          : null,
     ),
   ),
   HostWorkspaceDestination(
