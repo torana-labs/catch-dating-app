@@ -234,8 +234,9 @@ export function seedHarness(t, runOverrides = {}, artifactOverrides = {}, {omit 
     if (endpoint.endsWith(`/artifacts/${artifact.id}/zip`)) { assert.equal(options.binary, true); return zip; }
     throw new Error(`Unexpected endpoint ${endpoint}`);
   };
-  const plan = (eventName = "pull_request", nativeProbe = null) => planHostedCaptures({sourceDir: f.root,
-    sourceSha: f.options.sourceSha, repository: "owner/repo", eventName, request, nativeProbe});
+  // `nightly` left undefined keeps the planner's default (a scheduled run is the nightly).
+  const plan = (eventName = "pull_request", nativeProbe = null, nightly = undefined) => planHostedCaptures({sourceDir: f.root,
+    sourceSha: f.options.sourceSha, repository: "owner/repo", eventName, request, nativeProbe, nightly});
   return {...f, plan, endpoints};
 }
 

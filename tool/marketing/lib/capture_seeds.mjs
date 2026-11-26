@@ -66,7 +66,7 @@ export function seedArtifact({artifacts, run}) {
  * image (or either is unknown); otherwise it plans like any other run.
  */
 export async function planHostedCaptures({sourceDir, sourceSha, repository, eventName, request = githubRequest,
-  nativeProbe = null}) {
+  nativeProbe = null, nightly = eventName === "schedule"}) {
   assert.match(sourceSha ?? "", /^[0-9a-f]{40}$/u, "Full source SHA required.");
   const root = fs.realpathSync(sourceDir);
   const run = (command, args) => spawnSync(command, args, {cwd: root, encoding: "utf8", maxBuffer: 64 * 1024 * 1024});
@@ -159,7 +159,7 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
     if (bundleFont && committedFont !== bundleFont) renderIds.push(id);
   }
   let nativeChanged = false;
-  if (eventName === "schedule") {
+  if (nightly) {
     // Linux cannot see the macOS font or image, so the nightly asks the probe.
     // Unknown counts as changed: fail closed and render everything.
     const reused = captures.filter(capture => !renderIds.includes(capture.id)).map(capture => {
@@ -230,7 +230,10 @@ export async function planHostedCapturesForJob({request, env = process.env}) {
   const nativeProbe = env.CAPTURE_NATIVE_FONT_SHA256 || env.CAPTURE_NATIVE_RUNNER_IMAGE
     ? {fontSha256: env.CAPTURE_NATIVE_FONT_SHA256 || null, runnerImage: env.CAPTURE_NATIVE_RUNNER_IMAGE || null} : null;
   const plan = await planHostedCaptures({sourceDir: env.CAPTURE_SOURCE_DIR, sourceSha: request.sourceSha,
-    repository: env.GITHUB_REPOSITORY, eventName: env.GITHUB_EVENT_NAME, nativeProbe});
+    repository: env.GITHUB_REPOSITORY, eventName: env.GITHUB_EVENT_NAME, nativeProbe,
+    // The CI nightly is a dispatch with `nightly` set (ci-nightly.yml); before
+    // 26 Nov 2026 it was a scheduled run.
+    nightly: env.CAPTURE_NIGHTLY === "true" || env.GITHUB_EVENT_NAME === "schedule"});
   const manifest = JSON.parse(fs.readFileSync(path.join(env.CAPTURE_SOURCE_DIR, manifestPath), "utf8"));
   for (const [id, png] of plan.seeds) {
     const capture = manifest.captures.find(entry => entry.id === id);

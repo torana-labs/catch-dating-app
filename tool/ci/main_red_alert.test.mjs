@@ -138,11 +138,42 @@ test("a failed nightly names the commits since the last green nightly", () => {
   assert.doesNotMatch(decideAlert({run: run("failure"), openIssue: null, jobs: [], nightlies}).body, /last green nightly/u);
 });
 
+test("the dispatched nightly is the nightly: it settles owed jobs, names its window and counts for the floor exit", () => {
+  const dispatched = (extra = {}) => ({event: "workflow_dispatch", display_title: "CI nightly", ...extra});
+  const opened = decideAlert({run: run("failure"), openIssue: null, jobs: [job(lint, "failure")]});
+  // A green dispatched nightly closes the issue like a scheduled one did; a full dispatch by hand does not.
+  assert.equal(decideAlert({run: run("success", dispatched()), openIssue: {number: 12}, owed: owedAfter(opened),
+    jobs: [job("Required CI", "success")]}).action, "close");
+  assert.notEqual(decideAlert({run: run("success", {event: "workflow_dispatch", display_title: "CI"}), openIssue: {number: 12},
+    owed: owedAfter(opened), jobs: [job("Required CI", "success")]}).action, "close");
+  // A failed dispatched nightly's window starts at the last green nightly, scheduled or dispatched.
+  const failed = run("failure", dispatched({id: 9, head_sha: "c".repeat(40), created_at: "2026-11-27T02:40:00Z",
+    html_url: "https://github.com/owner/repo/actions/runs/9"}));
+  const decision = decideAlert({run: failed, openIssue: null, jobs: [job(lint, "failure")], nightlies: [
+    {id: 7, event: "workflow_dispatch", display_title: "CI", conclusion: "success", head_sha: "b".repeat(40), created_at: "2026-11-26T12:00:00Z"},
+    {id: 6, ...dispatched(), conclusion: "success", head_sha: "a".repeat(40), created_at: "2026-11-26T02:40:00Z"},
+    {id: 5, event: "schedule", conclusion: "success", head_sha: "9".repeat(40), created_at: "2026-11-25T09:00:00Z"}]});
+  assert.match(decision.body, /^Main CI \(nightly\) failed at cccccccc/u);
+  assert.match(decision.body, /Commits since the last green nightly: aaaaaaaa\.\.cccccccc/u);
+  // Seven green days where the nightlies switch from scheduled to dispatched still count as seven nightlies.
+  const mixed = greenWeek().map((entry, index) => index < 6 && entry.event === "schedule" ?
+    {...entry, event: "workflow_dispatch", display_title: "CI nightly"} : entry);
+  assert.equal(decideFloorExit({runs: mixed, now: NOW, openIssue: null}).action, "open");
+  const notNightly = greenWeek().map((entry) => entry.event === "schedule" ? {...entry, event: "workflow_dispatch", display_title: "CI"} : entry);
+  assert.equal(decideFloorExit({runs: notNightly, now: NOW, openIssue: null}).reason, "too_few_nightlies");
+});
+
 test("the workflow listens only to main's push and nightly CI and can only write issues", () => {
   const workflow = fs.readFileSync(new URL("../../.github/workflows/main-red-alert.yml", import.meta.url), "utf8");
   assert.match(workflow, /workflow_run:\n\s+workflows: \[CI\]\n\s+types: \[completed\]\n\s+branches: \[main\]/u);
   assert.match(workflow, /^permissions: \{\}$/mu);
-  assert.match(workflow, /contains\(fromJSON\('\["push", "schedule"\]'\), github\.event\.workflow_run\.event\)/u);
+  // Main's push runs and the nightly: dispatched by ci-nightly.yml and titled
+  // "CI nightly" since 26 Nov 2026, scheduled before.
+  const nightly = "(github.event.workflow_run.event == 'schedule' || (github.event.workflow_run.event == 'workflow_dispatch' && " +
+    "github.event.workflow_run.display_title == 'CI nightly'))";
+  assert.equal(workflow.split(`(github.event.workflow_run.event == 'push' || ${nightly})`).length - 1, 2);
+  assert.equal(workflow.split(`&& ${nightly} &&`).length - 1, 2);
+  assert.doesNotMatch(workflow, /"schedule"\]|event == 'schedule' &&/u);
   assert.match(workflow, /github\.event\.workflow_run\.head_branch == 'main'/u);
   assert.match(workflow, /issues: write/u);
   assert.doesNotMatch(workflow, /contents: write|pull-requests: write/u);

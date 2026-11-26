@@ -1150,10 +1150,10 @@ test("Tools reuses only marketing builds and browser checks owned by the require
     assert.doesNotMatch(step, /merge_group|!=/u, name);
   }
   assert.match(react, /visual_report:\n\s+description:[^\n]+\n\s+required: false\n\s+type: boolean\n\s+default: false/u);
-  // CI asks for the reports on its nightly only: scheduled, or re-run by the
-  // Scheduled run watchdog as a full dispatch when the schedule is missed.
-  // The website deploy workflows never pass it.
-  const nightly = "github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.full)";
+  // CI asks for the reports on its nightly, which ci-nightly.yml dispatches
+  // with `nightly` (26 Nov 2026), and on a full dispatch, as the Scheduled run
+  // watchdog's backfill of a missed night. The website deploy workflows never pass it.
+  const nightly = "github.event_name == 'workflow_dispatch' && (inputs.nightly || inputs.full)";
   for (const surface of ["admin", "marketing", "tools"]) {
     const call = ci.slice(ci.indexOf(`\n  ${surface}:\n`) + 1).split(/\n  [a-z-]+:\n/u)[0];
     assert.ok(call.includes(`      visual_report: \${{ ${nightly} }}\n`), surface);
@@ -1161,13 +1161,13 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   for (const file of ["marketing-website.yml", "admin-website.yml"]) {
     assert.doesNotMatch(workflow(file), /visual_report/u, file);
   }
-  const runsReport = (event, full) => vm.runInNewContext(nightly.replaceAll("==", "===")
-    .replaceAll("github.event_name", "event").replaceAll("inputs.full", "full"), {event, full});
-  assert.equal(runsReport("schedule", null), true);
-  assert.equal(runsReport("workflow_dispatch", true), true, "the watchdog's full dispatch");
-  for (const [event, full] of [["workflow_dispatch", false], ["merge_group", null], ["pull_request", null], ["push", null]]) {
-    assert.equal(runsReport(event, full), false, event);
-  }
+  const runsReport = (event, inputs) => vm.runInNewContext(nightly.replaceAll("==", "===")
+    .replaceAll("github.event_name", "event").replaceAll("inputs.", "inputs?."), {event, inputs});
+  assert.equal(runsReport("workflow_dispatch", {nightly: true}), true);
+  assert.equal(runsReport("workflow_dispatch", {full: true}), true);
+  assert.equal(Boolean(runsReport("workflow_dispatch", {base_sha: "a".repeat(40)})), false);
+  for (const event of ["push", "merge_group", "pull_request"]) assert.equal(runsReport(event, {}), false, event);
+  assert.equal(Boolean(runsReport("workflow_dispatch", {nightly: false, full: false})), false, "a plain dispatch");
   // Tools defers the same report outside the nightly (#2426): every check shell
   // passes --defer-visual-report unless the caller set visual_report. On the
   // nightly the report then runs exactly once: in the React lane when the plan
@@ -1179,19 +1179,19 @@ test("Tools reuses only marketing builds and browser checks owned by the require
     assert.match(step, /VISUAL_REPORT: \$\{\{ inputs\.visual_report \}\}/u, name);
     assert.match(step, /if \[\[ "\$\{VISUAL_REPORT:-\}" != "true" \]\]; then\n\s+shared_flags\+=\(--defer-visual-report\)/u, name);
   }
-  const reportRuns = ({event, full, marketing}) => {
-    const visualReport = runsReport(event, full);
+  const reportRuns = ({event, inputs, marketing}) => {
+    const visualReport = Boolean(runsReport(event, inputs));
     return {react: visualReport && marketing, tools: visualReport && !marketing};
   };
-  for (const event of ["schedule", "workflow_dispatch", "merge_group", "pull_request", "push"]) {
+  for (const [event, inputs] of [["workflow_dispatch", {nightly: true}], ["workflow_dispatch", {full: true}],
+    ["merge_group", {}], ["pull_request", {}], ["push", {}]]) {
     for (const marketing of [true, false]) {
-      const full = event === "workflow_dispatch" ? true : null;
-      const runs = reportRuns({event, full, marketing});
+      const runs = reportRuns({event, inputs, marketing});
       const count = Number(runs.react) + Number(runs.tools);
-      assert.equal(count, runsReport(event, full) ? 1 : 0, `${event}, marketing ${marketing}`);
+      assert.equal(count, runsReport(event, inputs) ? 1 : 0, `${event} ${JSON.stringify(inputs)}, marketing ${marketing}`);
     }
   }
-  assert.deepEqual(reportRuns({event: "workflow_dispatch", full: false, marketing: false}), {react: false, tools: false});
+  assert.deepEqual(reportRuns({event: "workflow_dispatch", inputs: {full: false}, marketing: false}), {react: false, tools: false});
   // The accessibility gates render every story, so they keep a broken story out
   // of the queue: they run for their surface on every event, merge_group included.
   for (const [name, surface] of [["Run marketing Storybook accessibility gate", "marketing"],
@@ -1568,19 +1568,23 @@ test("every ready PR validates in parallel and main runs are never cancelled onc
 });
 
 test("CI run names preserve main delivery identity and name every PR run", () => {
-  const expression = workflow("ci.yml").match(/^run-name: >-\n  \$\{\{ (.+) \}\}$/mu)?.[1];
+  const expression = workflow("ci.yml").match(/^run-name: >-\n  \$\{\{ ([\s\S]+?) \}\}$/mu)?.[1].replaceAll("\n  ", " ");
   assert.ok(expression, "missing run-name expression");
   // GitHub exposes an explicit run-name as REST run.name as well as
   // display_title. Main delivery consumers require the stable name CI.
-  const runName = (eventName, action = "", label = "") => vm.runInNewContext(expression, {
-    github: {event_name: eventName, event: {action, label: {name: label}, pull_request: {number: 42}}},
+  const runName = (eventName, action = "", label = "", inputs = {}) => vm.runInNewContext(expression, {
+    github: {event_name: eventName, event: {action, label: {name: label}, pull_request: {number: 42}}}, inputs,
     fromJSON: JSON.parse,
     contains: (values, item) => values.includes(item),
     format: (template, value) => template.replace("{0}", String(value)),
   });
-  for (const event of ["push", "merge_group", "schedule", "workflow_dispatch"]) {
+  for (const event of ["push", "merge_group", "workflow_dispatch"]) {
     assert.equal(runName(event), "CI", event);
   }
+  // Only the nightly (ci-nightly.yml's dispatch) is titled otherwise; main
+  // delivery consumers accept that one name for it (tool/ci/ci_nightly.mjs).
+  assert.equal(runName("workflow_dispatch", "", "", {nightly: true}), "CI nightly");
+  assert.equal(runName("workflow_dispatch", "", "", {full: true}), "CI");
   for (const action of ["opened", "synchronize", "reopened", "ready_for_review", "converted_to_draft"]) {
     assert.equal(runName("pull_request", action), "CI PR #42", action);
   }
@@ -1735,8 +1739,9 @@ test("native app-shell smoke runs only on the nightly schedule and manual dispat
   const jobIf = (name) => source.split(`  ${name}:\n`)[1].split(/\n  [a-z-]+:\n/u)[0].match(/^    if: (.*)$/gmu);
   assert.deepEqual(jobIf("headless-journeys"), ["    if: ${{ !inputs.macos_only }}"]);
   assert.deepEqual(jobIf("goldens"), ["    if: ${{ github.event_name != 'merge_group' }}"]);
-  // Both schedule and dispatch still reach the called workflow.
-  assert.match(workflow("ci.yml"), /^  schedule:\n/mu);
+  // The nightly reaches the called workflow as a dispatch of ci.yml (ci-nightly.yml, 26 Nov 2026).
+  assert.doesNotMatch(workflow("ci.yml"), /^  schedule:\n/mu);
+  assert.match(workflow("ci.yml"), /^  workflow_dispatch:\n    inputs:\n      nightly:\n/mu);
   assert.match(source, /^  workflow_dispatch:\n/mu);
 });
 
