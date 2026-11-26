@@ -96,6 +96,7 @@ export async function requestAccountDeletionHandler(
   const afterCommit = new BatchQueue(db);
   writer.delete(db.collection("hostProfiles").doc(uid));
   writer.delete(db.collection("publicProfiles").doc(uid));
+  writer.delete(db.collection("guestProfiles").doc(uid));
   writer.delete(db.collection("crossPathsShowcaseEligibility").doc(uid));
   writer.delete(db.collection("onboarding_drafts").doc(uid));
 
@@ -416,7 +417,7 @@ async function queueParticipantPrivateStateCleanup(
     "eventChatDirectoryEntries",
     "guestBookingFacts", "guestEventStatuses", "participantFormProfileViews",
     "participantIntakeProfileViews", "adConversionContexts",
-    "adConversionDeliveries"]) {
+    "adConversionDeliveries", "eventGuestProfiles"]) {
     const records = await db.collection(collection)
       .where("uid", "==", uid).get();
     records.forEach((doc) => writer.delete(doc.ref));
@@ -433,12 +434,11 @@ async function queueParticipantPrivateStateCleanup(
 
 /**
  * Erases the account's derived event and dating data (#2444). Its own signal
- * facts, metric counters, event feedback, compatibility answers, conversation
- * graphs and runtime identities are deleted. Other people's records lose the
- * account: their signal facts naming it as peer are deleted too (the fact id
- * carries the peer's uid), while their running counters keep the anonymous
- * total, and their conversation graphs drop it from selectedUids. Scorecard
- * triggers recompute the host aggregates from what remains.
+ * facts, event feedback, compatibility answers, conversation graphs and
+ * runtime identities are deleted. Other people's records lose the account:
+ * their signal facts naming it as peer are deleted too (the fact id carries
+ * the peer's uid), and their conversation graphs drop it from selectedUids.
+ * Scorecard triggers recompute the host aggregates from what remains.
  */
 async function queueEventSuccessCleanup(
   db: FirebaseFirestore.Firestore,
@@ -475,7 +475,6 @@ async function queueEventSuccessCleanup(
         selectedUids.filter((selected: unknown) => selected !== uid) : [],
     });
   });
-  writer.delete(db.collection("participantMetricCounters").doc(uid));
 }
 
 /**

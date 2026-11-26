@@ -2,7 +2,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 
-import '../../events/events_test_helpers.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 
 /// A Tuesday evening before doors.
 final todayNow = DateTime(2026, 10, 27, 17, 40);

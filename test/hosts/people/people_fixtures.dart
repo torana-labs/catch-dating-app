@@ -16,7 +16,7 @@ import 'package:catch_dating_app/hosts/people/saved_group_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 
-import '../../events/events_test_helpers.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 
 /// The People boards' night: Tuesday 27 October 2026, early evening.
 final peopleNow = DateTime(2026, 10, 27, 18, 30);

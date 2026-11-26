@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "group": "test-support-events",
+  "sequence": 1795512103773,
+  "entries": [
+    {
+      "path": "test/hosts/support/host_events_timeline_test_support.dart",
+      "moveTo": "packages/catch_test_support/lib/hosts/host_events_timeline_test_support.dart"
+    },
+    {
+      "path": "test/hosts/support/host_crm_response_fixtures.dart",
+      "moveTo": "packages/catch_test_support/lib/hosts/host_crm_response_fixtures.dart"
+    },
+    {
+      "path": "test/events/event_viewer_state_fixtures.dart",
+      "moveTo": "packages/catch_test_support/lib/event_viewer_state_fixtures.dart"
+    },
+    {
+      "path": "test/support/profile_readiness_fixtures.dart",
+      "moveTo": "packages/catch_test_support/lib/profile_readiness_fixtures.dart"
+    },
+    {
+      "path": "test/onboarding/onboarding_test_helpers.dart",
+      "moveTo": "packages/catch_test_support/lib/onboarding_test_helpers.dart"
+    },
+    {
+      "path": "test/hosts/support/read_model_feeds.dart",
+      "moveTo": "packages/catch_test_support/lib/hosts/read_model_feeds.dart"
+    },
+    {
+      "path": "test/events/events_test_helpers.dart",
+      "moveTo": "packages/catch_test_support/lib/events_test_helpers.dart"
+    }
+  ],
+  "moves": {
+    "test/events/event_viewer_state_fixtures.dart": "packages/catch_test_support/lib/event_viewer_state_fixtures.dart",
+    "test/events/events_test_helpers.dart": "packages/catch_test_support/lib/events_test_helpers.dart",
+    "test/hosts/support/host_crm_response_fixtures.dart": "packages/catch_test_support/lib/hosts/host_crm_response_fixtures.dart",
+    "test/hosts/support/host_events_timeline_test_support.dart": "packages/catch_test_support/lib/hosts/host_events_timeline_test_support.dart",
+    "test/hosts/support/read_model_feeds.dart": "packages/catch_test_support/lib/hosts/read_model_feeds.dart",
+    "test/onboarding/onboarding_test_helpers.dart": "packages/catch_test_support/lib/onboarding_test_helpers.dart",
+    "test/support/profile_readiness_fixtures.dart": "packages/catch_test_support/lib/profile_readiness_fixtures.dart"
+  },
+  "folders": {}
+}

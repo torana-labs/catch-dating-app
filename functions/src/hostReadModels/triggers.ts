@@ -7,10 +7,6 @@ import {reconcileContactSummary} from "./contactStore";
 import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true, memory: "512MiB" as const};
-export const onHostContactSummaryChanged = onDocumentWritten({
-  ...options, document: "organizerContacts/{contactId}",
-}, (event) => reconcileContactSummary(
-  admin.firestore(), event.params.contactId));
 export const onHostContactTraitsSummaryChanged = onDocumentWritten({
   ...options, document: "organizerContactTraits/{contactId}",
 }, (event) => reconcileContactSummary(
@@ -60,18 +56,6 @@ export const onHostContactVocabularySummaryChanged = onDocumentWritten({
   });
 });
 
-export const onHostFormSummaryChanged = onDocumentWritten({
-  ...options, document: "organizerForms/{formId}",
-}, async (event) => {
-  const db = admin.firestore();
-  await reconcileSimpleSummary(db, "forms", event.params.formId);
-  if (event.data?.before.get("title") !== event.data?.after.get("title") ||
-      event.data?.before.get("organizerId") !==
-        event.data?.after.get("organizerId")) {
-    await refreshFormResponseSummaries(db, "formId", event.params.formId);
-  }
-});
-
 /**
  * An event write outside an already published event: its summary row.
  * Served by the events dispatcher (issue #2451); it re-reads its
@@ -112,23 +96,6 @@ export const onHostGroupSummaryChanged = onDocumentWritten({
   ...options, document: "organizerSavedAudiences/{audienceId}",
 }, (event) => reconcileSimpleSummary(
   admin.firestore(), "groups", event.params.audienceId));
-
-export const onHostResponseSummaryChanged = onDocumentWritten({
-  ...options, document: "organizerFormResponses/{responseId}",
-}, (event) => reconcileResponseSummary(
-  admin.firestore(), "response", event.params.responseId));
-
-export const onHostApplicationSummaryChanged = onDocumentWritten({
-  ...options, document: "organizerApplications/{applicationId}",
-}, async (event) => {
-  const db = admin.firestore();
-  await reconcileApplicationSummary(db, event.params.applicationId);
-  const oldId = event.data?.before.get("latestResponseId");
-  // Old data is only a routing hint. Every projection rereads current sources.
-  if (typeof oldId === "string") {
-    await reconcileResponseSummary(db, "response", oldId);
-  }
-});
 
 export const onHostApplicationEvidenceSummaryChanged = onDocumentWritten({
   ...options, document: "organizerApplicationResponses/{responseId}",
@@ -194,10 +161,8 @@ export const onHostResponseContactOriginChanged = onDocumentWritten({
 });
 
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const organizerApplicationsProjections = defineProjections(
   "organizerApplications", [

@@ -118,6 +118,8 @@ function queryRef(
   return {
     doc: (docId: string) =>
       new FakeDocRef(firestore, `${collectionPath}/${docId}`),
+    // The fixtures stay far below any limit a query sets.
+    limit: () => queryRef(firestore, collectionPath, filters),
     where: (field: string, operator: string, value: unknown) => {
       assert.ok(["==", "array-contains"].includes(operator));
       return queryRef(
@@ -240,6 +242,10 @@ test("syncUserProfileProjectionsHandler syncs public profile and reviews only",
         reviewerName: "Older Reviewer",
         rating: 3,
       },
+      "eventBookings/event-live_host-1": {eventId: "event-live",
+        uid: "host-1", status: "signedUp"},
+      "eventBookings/event-gone_host-1": {eventId: "event-gone",
+        uid: "host-1", status: "cancelled"},
       "reviews/event-1~other-host": {
         reviewerUserId: "other-host",
         reviewerName: "Other Reviewer",
@@ -257,6 +263,15 @@ test("syncUserProfileProjectionsHandler syncs public profile and reviews only",
       firestore.get("publicProfiles/host-1")?.name,
       "Asha Updated"
     );
+    // The server-only full profile the feeds read is written beside it.
+    assert.deepEqual(firestore.get("guestProfiles/host-1"),
+      firestore.get("publicProfiles/host-1"));
+    // The co-guest copy of a live booking is refreshed; a cancelled one is
+    // left alone (#2493).
+    assert.equal(firestore.get("eventGuestProfiles/event-live__host-1")?.name,
+      "Asha Updated");
+    assert.equal(firestore.get("eventGuestProfiles/event-gone__host-1"),
+      undefined);
     assert.equal(
       firestore.get("reviews/event-1~host-1")?.reviewerName,
       "Asha Updated"
@@ -417,6 +432,7 @@ test("syncUserProfileProjectionsHandler deletes public profile on user delete",
   async () => {
     const firestore = new FakeFirestore({
       "publicProfiles/host-1": {name: "Asha"},
+      "guestProfiles/host-1": {name: "Asha"},
     });
 
     assert.equal(await syncUserProfileProjectionsHandler(
@@ -426,6 +442,7 @@ test("syncUserProfileProjectionsHandler deletes public profile on user delete",
     ), "deleted");
 
     assert.equal(firestore.get("publicProfiles/host-1"), undefined);
+    assert.equal(firestore.get("guestProfiles/host-1"), undefined);
   }
 );
 

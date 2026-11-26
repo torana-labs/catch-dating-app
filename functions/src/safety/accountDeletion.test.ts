@@ -870,8 +870,12 @@ function readySeatSeed(options: {host?: boolean; catchMirror?: boolean;
 }
 
 test("ready account deletion releases the last seat exactly once", async () => {
-  const h = createAccountDeletionHarness({seed: readySeatSeed({
-    catchMirror: true, status: "attended"}), now: {kind: "serverTimestamp"}});
+  const seed = readySeatSeed({catchMirror: true, status: "attended"});
+  // The booking cohort (sexual orientation) goes with the account (#2493).
+  seed["eventBookingPrivateFacts/event1_runner1"] = {eventId: "event1",
+    uid: "runner1", cohortAtSignup: "queerOrOpen"};
+  const h = createAccountDeletionHarness({seed,
+    now: {kind: "serverTimestamp"}});
   const command = {db: h.deps.firestore(), uid: "runner1",
     now: admin.firestore.FieldValue.serverTimestamp(),
     nowMillis: 1000};
@@ -889,6 +893,7 @@ test("ready account deletion releases the last seat exactly once", async () => {
     "event1", "runner1")}`].state, "revoked");
   assert.equal(h.rows["eventBookings/event1_runner1"].status,
     "deleted");
+  assert.equal(h.rows["eventBookingPrivateFacts/event1_runner1"], undefined);
   assert.equal(Object.keys(h.rows).filter((path) =>
     path.startsWith("eventSeatRequestReceipts/")).length, 1);
   await deleteAccountEventParticipations(command);
@@ -1217,23 +1222,6 @@ test("deletion erases the account's signal facts as uid and as peerUid (#2444)",
       "participantSignalFacts/event_attended__runner-2__event1"));
     assert.ok(!harness.updateWrites.some((write) =>
       write.path.startsWith("participantSignalFacts/")));
-  });
-
-test("deletion removes the account's own metric counters only (#2444)",
-  async () => {
-    const harness = await deleteRunnerOne({
-      "participantMetricCounters/runner-1": {uid: "runner-1",
-        counters: {outgoing_like: 1}},
-      "participantMetricCounters/runner-2": {uid: "runner-2",
-        counters: {incoming_like: 1}},
-    });
-    assert.ok(harness.deletedPublicDocs.includes(
-      "participantMetricCounters/runner-1"));
-    // The peer keeps its anonymous running total.
-    assert.ok(!harness.deletedPublicDocs.includes(
-      "participantMetricCounters/runner-2"));
-    assert.ok(!harness.updateWrites.some((write) =>
-      write.path === "participantMetricCounters/runner-2"));
   });
 
 test("deletion erases the account's event feedback (#2444)", async () => {

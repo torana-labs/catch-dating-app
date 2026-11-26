@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/claimable_organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
 import 'package:catch_dating_app/contexts/organizers/organizers.dart';
 import 'package:catch_dating_app/hosts/onboarding/onboarding_controller.dart';
@@ -40,6 +41,10 @@ Widget hostOnboardingSetupCapture() =>
     const HostSetupScreen(restoreSavedDraft: false);
 
 List<Override> hostOnboardingSetupOverrides(HostSetupStep step) => [
+  // No page found for the number: setup starts a new page.
+  hostClaimableOrganizersProvider.overrideWith(
+    (ref) async => ClaimableOrganizers.none,
+  ),
   hostSetupControllerProvider.overrideWith(
     () => _SeededSetupController(
       onboardingState(

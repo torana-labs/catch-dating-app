@@ -1,6 +1,4 @@
-// Fixture world for the deck-era purge. Each pair covers one rule; the
-// counters are built from the facts exactly as recordParticipantSignalFacts
-// would have incremented them.
+// Fixture world for the deck-era purge. Each pair covers one rule.
 import {fakeTimestamp as ts} from "./fake_firestore.mjs";
 
 export const BEFORE_CUTOFF = "2026-10-20T10:00:00.000Z";
@@ -129,16 +127,5 @@ export function deckEraPurgeWorld() {
     messages: {"m1": {senderId: "ana", text: "Meet at the gate"}}});
 
   for (const fact of facts) docs[`participantSignalFacts/${fact.id}`] = fact.data;
-  const counters = {};
-  for (const {data} of facts) {
-    const entry = counters[data.uid] ??= {uid: data.uid, counters: {}, lastSeenByType: {}};
-    entry.counters[data.type] = (entry.counters[data.type] ?? 0) + data.value;
-    entry.lastSeenByType[data.type] = data.occurredAt;
-  }
-  for (const [uid, entry] of Object.entries(counters)) {
-    docs[`participantMetricCounters/${uid}`] = entry;
-  }
-  // An unrelated counter that must stay exactly as it is.
-  docs["participantMetricCounters/ana"].counters.event_attended = 3;
   return docs;
 }

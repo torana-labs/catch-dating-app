@@ -13,10 +13,9 @@ import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_test_support/dashboard_test_helpers.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart';
 
 final _l10n = AppLocalizationsEn();
 

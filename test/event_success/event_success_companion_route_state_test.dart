@@ -12,10 +12,9 @@ import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen_state.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/catch_async_state.dart';
-import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart'
+import 'package:catch_test_support/events_test_helpers.dart'
     show buildEvent, buildEventParticipation, buildUser;
+import 'package:flutter_test/flutter_test.dart';
 
 final _l10n = AppLocalizationsEn();
 

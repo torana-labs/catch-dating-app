@@ -17,6 +17,8 @@ const {
   setDoc,
   where,
 } = require("firebase/firestore");
+const {writeOrganizerWithAccess} =
+  require("./organizerAccessGrantFixture.cjs");
 const {accessGrantFromView, accessGrantPath} =
   require("./programAccessGrantFixture.cjs");
 
@@ -41,6 +43,8 @@ after(() => testEnv.cleanup());
 
 const authed = (uid) => testEnv.authenticatedContext(uid, {
   phone_number: "+919999999999"}).firestore();
+const seedOrganizer = (organizerId, data) => testEnv.withSecurityRulesDisabled(
+  (ctx) => writeOrganizerWithAccess(ctx.firestore(), organizerId, data));
 const seedRaw = (segments, data) => testEnv.withSecurityRulesDisabled(
   (ctx) => setDoc(doc(ctx.firestore(), ...segments), data));
 
@@ -160,9 +164,9 @@ describe("organizer programme setup view rules", () => {
     version: 1, ...overrides});
 
   async function seedOrganizers() {
-    await seedRaw(["organizers", "org-1"], {hostUserId: "host-1",
+    await seedOrganizer("org-1", {hostUserId: "host-1",
       ownerUserId: "host-1", hostUserIds: ["host-1", "host-2"]});
-    await seedRaw(["organizers", "org-2"], {hostUserId: "other-1",
+    await seedOrganizer("org-2", {hostUserId: "other-1",
       ownerUserId: "other-1", hostUserIds: ["other-1"]});
   }
   const list = (uid, ...filters) => getDocs(query(collection(authed(uid),

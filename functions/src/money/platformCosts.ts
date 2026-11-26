@@ -1,11 +1,8 @@
 import * as admin from "firebase-admin";
-import {onCall, HttpsError, type CallableRequest} from
+import {HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../platform/adminAuth";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
-import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import type {PlatformCostDocument} from
   "../shared/generated/firestoreAdminTypes";
 import type {AdminManagePlatformCostsCallablePayload as Payload} from
@@ -20,6 +17,14 @@ import {validatePlatformCostDocument} from
   "../shared/generated/validators/platformCostDocument";
 import {monthWindow} from "./billComputation";
 import {moneyRoles} from "./moneySettings";
+import {
+  callableWithLimits,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 export const platformCostsCollection = "platformCosts";
 type Db = FirebaseFirestore.Firestore;
@@ -91,12 +96,32 @@ const defaults: Dependencies = {db: () => admin.firestore(),
  * @param {Dependencies} deps Injectable dependencies.
  * @return {Promise<Result>} The month after the action.
  */
-export async function adminManagePlatformCostsHandler(
+/**
+ * adminManagePlatformCosts: moneyRoles only (STR-10 policy).
+ * @param {Dependencies} deps Dependencies.
+ * @return {CallableSpec} The callable.
+ */
+export function adminManagePlatformCostsSpec(deps: Dependencies = defaults):
+  CallableSpec<Payload, AdminContext, Result> {
+  return {
+    name: "adminManagePlatformCosts",
+    policy: adminRoles(moneyRoles),
+    input: validateAdminManagePlatformCostsCallablePayload,
+    handle: (context) => adminManagePlatformCostsWork(context, deps),
+  };
+}
+
+/** The deployed path of adminManagePlatformCosts, for tests. */
+export function adminManagePlatformCostsHandler(
   request: CallableRequest<unknown>, deps: Dependencies = defaults):
   Promise<Result> {
-  const actor = requireAdminRole(request, moneyRoles);
-  const data = validateCallableWithAjv<Payload>(request,
-    validateAdminManagePlatformCostsCallablePayload);
+  return runCallable(adminManagePlatformCostsSpec(deps), request);
+}
+
+async function adminManagePlatformCostsWork(
+  {request, data, actor}: CallableContext<Payload, AdminContext>,
+  deps: Dependencies):
+  Promise<Result> {
   if (data.action === "list" ? data.category !== null ||
       data.amountMinor !== null : data.category === null ||
       (data.action === "set") !== (data.amountMinor !== null)) {
@@ -144,6 +169,6 @@ export async function adminManagePlatformCostsHandler(
   return result;
 }
 
-export const adminManagePlatformCosts = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 5}),
-  (request) => adminManagePlatformCostsHandler(request));
+export const adminManagePlatformCosts = callableWithLimits(
+  {timeoutSeconds: 60, maxInstances: 5},
+  adminManagePlatformCostsSpec());

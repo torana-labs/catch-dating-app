@@ -17,7 +17,6 @@
     "onHostEventDeliveryViewGuestChanged",
     "dispatchEventAttendees",
     "dispatchEvents",
-    "onHostEventDeliveryViewWorkItemChanged",
     "dispatchOperationWorkItems",
     "onHostEventDeliveryViewRunChanged",
     "dispatchOrganizers",

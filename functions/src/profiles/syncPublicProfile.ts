@@ -11,6 +11,10 @@ import {isSocialReadyUserProfile} from "../shared/profileReadiness";
 import {organizerHostProfiles, organizerManagerUserIds} from
   "../shared/organizerHosts";
 import {HostProfileDocument} from "../shared/hostProfiles";
+import {EVENT_GUEST_PROFILES, bookingSharesEventProfile,
+  eventGuestProfileData, eventGuestProfileRef, maxEventGuestProfileCopies}
+  from
+  "../shared/eventGuestProfiles";
 
 interface SyncPublicProfileDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -119,8 +123,16 @@ export async function syncUserProfileProjectionsHandler(
   const db = deps.firestore();
   const userRef = db.collection("users").doc(userId);
   const publicProfileRef = db.collection("publicProfiles").doc(userId);
+  // The server-only full profile the matching feeds read (#2493, FIX-8).
+  const guestProfileRef = db.collection("guestProfiles").doc(userId);
   const authoredReviews = db.collection("reviews")
     .where("reviewerUserId", "==", userId);
+  // The copies co-guests read (#2493): one per live booking.
+  const guestBookings = db.collection("eventBookings")
+    .where("uid", "==", userId)
+    .limit(maxEventGuestProfileCopies);
+  const eventCopies = db.collection(EVENT_GUEST_PROFILES)
+    .where("uid", "==", userId);
 
   const result = await db.runTransaction(async (tx) => {
     const source = await tx.get(userRef);
@@ -128,17 +140,32 @@ export async function syncUserProfileProjectionsHandler(
     const user = source.data() as UserProfileDocument | undefined;
     const reason = hiddenReason(user);
     if (reason || !user) {
+      const copies = await tx.get(eventCopies);
       tx.delete(publicProfileRef);
+      tx.delete(guestProfileRef);
+      copies.docs.forEach((copy) => tx.delete(copy.ref));
       return reason ?? "user deleted";
     }
     const publicProfile = publicProfileFromUserProfileDoc(user);
     // Block underage users from appearing in any swipe queue.
     if (publicProfile.age < 18) {
+      const copies = await tx.get(eventCopies);
       tx.delete(publicProfileRef);
+      tx.delete(guestProfileRef);
+      copies.docs.forEach((copy) => tx.delete(copy.ref));
       return "underage";
     }
-    const reviews = await tx.get(authoredReviews);
+    const [reviews, bookings] = await Promise.all([
+      tx.get(authoredReviews), tx.get(guestBookings)]);
     tx.set(publicProfileRef, publicProfile);
+    tx.set(guestProfileRef, publicProfile);
+    for (const booking of bookings.docs) {
+      const {eventId, status} = booking.data();
+      if (typeof eventId !== "string" || !eventId ||
+          !bookingSharesEventProfile(status)) continue;
+      tx.set(eventGuestProfileRef(db, eventId, userId),
+        eventGuestProfileData(publicProfile, eventId, userId));
+    }
     for (const review of reviews.docs) {
       tx.set(review.ref, {reviewerName: publicProfile.name}, {merge: true});
     }

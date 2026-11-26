@@ -20,11 +20,10 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/firebase/scoped_read_models.dart';
+import 'package:catch_test_support/hosts/host_crm_response_fixtures.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'support/host_crm_response_fixtures.dart';
 
 class _TestFirebaseFunctions extends Fake implements FirebaseFunctions {
   final callables = <String, _TestHttpsCallable>{};

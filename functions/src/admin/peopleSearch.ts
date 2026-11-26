@@ -1,7 +1,6 @@
 /* eslint-disable max-len */
 import * as admin from "firebase-admin";
 import {CallableRequest, onCall} from "firebase-functions/v2/https";
-import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {AdminSearchPeopleCallablePayload} from "../shared/generated/adminSearchPeopleCallablePayload";
 import type {AdminSearchPeopleCallableResponse} from "../shared/generated/adminSearchPeopleCallableResponse";
@@ -106,15 +105,6 @@ export async function syncPeopleIndexFromSource(db: FirebaseFirestore.Firestore,
   });
 }
 
-/**
- * Retried on failure; the payload only names the person, and the entry comes
- * from the re-read profile. reconcileAdminInboxNightly still re-indexes everyone.
- */
-export const onUserWrittenIndexPeople = onDocumentWritten({document: "users/{uid}", retry: true},
-  async (event) => {
-    await syncPeopleIndexFromSource(admin.firestore(), event.params.uid, new Date());
-  });
-
 interface PeopleSearchDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
@@ -197,10 +187,8 @@ export const adminSearchPeople = onCall(appCheckCallableOptions,
   (request) => adminSearchPeopleHandler(request));
 
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const usersProjections = defineProjections("users", [
   {

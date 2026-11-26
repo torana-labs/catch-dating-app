@@ -272,6 +272,10 @@
         "functions/src/safety/accountDeletionSeats.ts"
       ]
     },
+    "eventBookingPrivateFacts": {
+      "handling": "deleted",
+      "how": "Deleted by accountDeletionSeats.ts in each booking's deletion transaction: the cohort is the guest's sexual orientation (#2493)."
+    },
     "eventBookings": {
       "handling": "kept",
       "reason": "The booking stays for the organiser's roster, the seat ledger and payments: accountDeletionSeats.ts marks it status deleted and cancels a Catch booking. The uid remains as the ledger's identity."
@@ -315,6 +319,10 @@
     "eventCrossPathsConsents": {
       "handling": "deleted",
       "how": "queueCrossPathsConsentCleanup deletes the account's consent edges."
+    },
+    "eventGuestProfiles": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account (#2493)."
     },
     "eventHostPhotos": {
       "handling": "kept",
@@ -402,8 +410,7 @@
     },
     "eventSafetyReports": {
       "handling": "kept",
-      "needsDecision": true,
-      "reason": "Safety review item materialised from a feedback concern, naming the reporter. It is not in the 180-day safety retention set. Proposed: give it the same retention as reports."
+      "reason": "Safety case record kept 180 days after the reporter's deletion: retainSafetyRecordsForDeletedAccount sets retainUntil and purgeRetainedSafetyRecords purges it (safetyRetention.ts); an earlier clock is never extended (#2468)."
     },
     "eventSeatVerifiedPhones": {
       "handling": "kept",
@@ -574,6 +581,10 @@
       "handling": "kept",
       "reason": "queuePaymentCleanup marks the account's payments userDeleted. Financial record kept for payments and fraud (deletedUsers.retainedFor); the uid ties the ledger entry to the account that paid, earned or was charged."
     },
+    "guestProfiles": {
+      "handling": "deleted",
+      "how": "Deleted at the start of account deletion, beside publicProfiles (#2493)."
+    },
     "hostAnalyticsSnapshots": {
       "handling": "deleted",
       "how": "queueHostAnalyticsSnapshotCleanup deletes the account's snapshots."
@@ -664,8 +675,7 @@
     },
     "moderationFlags": {
       "handling": "kept",
-      "needsDecision": true,
-      "reason": "Moderation ticket about the account (targetUserId). It is not in the 180-day safety retention set. Proposed: give it the same retention as reports."
+      "reason": "Safety case record kept 180 days after the deletion of the account it is about: retainSafetyRecordsForDeletedAccount sets retainUntil and purgeRetainedSafetyRecords purges it (safetyRetention.ts); an earlier clock is never extended (#2468)."
     },
     "moneyIssueResolutions": {
       "handling": "kept",
@@ -993,10 +1003,6 @@
       "handling": "deleted",
       "how": "queueParticipantPrivateStateCleanup deletes participantIntakeProfiles/{uid}."
     },
-    "participantMetricCounters": {
-      "handling": "deleted",
-      "how": "queueEventSuccessCleanup deletes participantMetricCounters/{uid}, the account's own running totals."
-    },
     "participantOrganizerCards": {
       "handling": "deleted",
       "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
@@ -1302,11 +1308,11 @@
     },
     "supportConversationMessages": {
       "handling": "kept",
-      "reason": "authorUid names only staff (inbound messages have authorUid null); the person's messages stay with their conversation, which deletion unlinks from the account (#2468)."
+      "reason": "authorUid names only staff (inbound messages have authorUid null). The person's messages stay with their conversation for the support retention and expire with it by Firestore TTL (expiresAt copied onto each message) (#2468)."
     },
     "supportConversations": {
       "handling": "anonymised",
-      "how": "queueSupportRecordCleanup clears uid; the conversation is keyed by the channel contact and stays as Catch's support record. Deleting it after a support retention period has no purge yet (#2468).",
+      "how": "queueSupportRecordCleanup clears uid; the conversation is keyed by the channel contact and stays as Catch's support record until its Firestore TTL (expiresAt): 180 days after it closes, or after the deletion if later, which the deletion stamps on a closed conversation and its messages (supportRetention.ts; default period, owner to confirm) (#2468).",
       "handledBy": [
         "functions/src/safety/accountDeletionSupportRecords.ts"
       ]

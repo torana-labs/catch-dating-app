@@ -2,9 +2,8 @@ import 'package:catch_dating_app/contexts/bookings/domain/catch_attendance_activ
 import 'package:catch_dating_app/contexts/bookings/domain/runner_activity.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/weekly_activity_summary.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart';
 
 PhysicalActivity _platformActivity({
   required String id,

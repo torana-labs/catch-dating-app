@@ -33,6 +33,7 @@ import {
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {normalizeRosterPhone} from "./eventAttendees";
+import {stageEventAccessGrant} from "../domain/access/eventAccessGrants";
 
 interface EventStaffDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -152,6 +153,8 @@ export async function grantEventStaffHandler(
       revision: Math.max((current?.revision ?? 0) + 1, committedAt.toMillis()),
     };
     tx.set(ref, document);
+    // In force for rules the moment it commits (#2474).
+    stageEventAccessGrant(tx, db, document, committedAt);
   });
   return eventStaffList(db, data.eventId, deps.now());
 }
@@ -188,13 +191,16 @@ export async function revokeEventStaffHandler(
         "Staff access changed. Reload and retry."
       );
     }
-    tx.update(ref, {
-      status: "revoked",
+    const revoked = {
+      status: "revoked" as const,
       revokedBy: actorUid,
       revokedAt: now,
       updatedAt: now,
       revision: Math.max(grant.revision + 1, now.toMillis()),
-    });
+    };
+    tx.update(ref, revoked);
+    // The revocation is in force for rules the moment it commits (#2474).
+    stageEventAccessGrant(tx, db, {...grant, ...revoked}, now);
   });
   return eventStaffList(db, data.eventId, deps.now());
 }

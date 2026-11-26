@@ -47,21 +47,14 @@ export const onProgramPickupPointViewChanged = onDocumentWritten({
 }, (event) => reconcileResource("pickupPoint", event.params.pickupPointId,
   event.data?.before.data(), event.data?.after.data()));
 
-export const onProgramHotelViewChanged = onDocumentWritten({
-  ...options, document: "programHotels/{hotelId}",
-}, (event) => reconcileResource("hotel", event.params.hotelId,
-  event.data?.before.data(), event.data?.after.data()));
-
 export const onProgramFunctionViewChanged = onDocumentWritten({
   ...options, document: "programFunctions/{functionId}",
 }, (event) => reconcileResource("function", event.params.functionId,
   event.data?.before.data(), event.data?.after.data()));
 
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const programHotelsProjections = defineProjections("programHotels", [
   {

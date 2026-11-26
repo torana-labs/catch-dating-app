@@ -191,7 +191,10 @@ export const producerWorkflowIds = {"ci.yml": 7, "marketing-website.yml": 8, "ma
 
 
 // A fake GitHub holding one producer run whose bundle rendered this source.
-export function seedHarness(t, runOverrides = {}, artifactOverrides = {}, {omit = [], tamper = {}} = {}) {
+// `newerRuns` puts that many bundle-less runs ahead of the bundle's run, newest
+// first and spread across the producer workflows; a listing returns at most
+// its `per_page`.
+export function seedHarness(t, runOverrides = {}, artifactOverrides = {}, {omit = [], tamper = {}, newerRuns = 0} = {}) {
   const f = fixture(t);
   exportHostedCaptures(f.options);
   for (const id of omit) {
@@ -207,15 +210,27 @@ export function seedHarness(t, runOverrides = {}, artifactOverrides = {}, {omit 
     repository: {id: 1}, head_repository: {id: 1}, created_at: "2026-10-24T09:00:00Z", ...runOverrides};
   const artifact = {id: 80, name: `canonical-marketing-${run.head_sha}-${run.id}-${run.run_attempt}`, expired: false,
     workflow_run: {id: run.id}, digest: `sha256:${crypto.createHash("sha256").update(zip).digest("hex")}`, ...artifactOverrides};
+  const producers = Object.entries(producerWorkflowIds);
+  const newer = Array.from({length: newerRuns}, (_, index) => {
+    const [file, workflowId] = producers[index % producers.length];
+    return {...run, id: 1000 + index, workflow_id: workflowId, path: `.github/workflows/${file}`, head_sha: "d".repeat(40),
+      created_at: new Date(Date.parse(run.created_at) + (newerRuns - index) * 60_000).toISOString()};
+  });
+  const newerIds = new Set(newer.map(entry => entry.id));
   const endpoints = [];
   const request = async (endpoint, options = {}) => {
     endpoints.push(endpoint);
     if (endpoint === "repos/owner/repo") return {id: 1};
     for (const [file, id] of Object.entries(producerWorkflowIds)) {
       if (endpoint.endsWith(`/workflows/${file}`)) return {id};
-      if (endpoint.includes(`/workflows/${id}/runs?`)) return {workflow_runs: run.workflow_id === id ? [run] : []};
+      if (endpoint.includes(`/workflows/${id}/runs?`)) {
+        const perPage = Number(new URLSearchParams(endpoint.split("?")[1]).get("per_page"));
+        return {workflow_runs: [...newer, run].filter(entry => entry.workflow_id === id).slice(0, perPage)};
+      }
     }
     if (endpoint.endsWith(`/runs/${run.id}/artifacts?per_page=100`)) return {artifacts: [artifact]};
+    const newerRun = endpoint.match(/\/runs\/(\d+)\/artifacts\?per_page=100$/u);
+    if (newerRun && newerIds.has(Number(newerRun[1]))) return {artifacts: []};
     if (endpoint.endsWith(`/artifacts/${artifact.id}/zip`)) { assert.equal(options.binary, true); return zip; }
     throw new Error(`Unexpected endpoint ${endpoint}`);
   };

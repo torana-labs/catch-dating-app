@@ -2,9 +2,8 @@ import 'package:catch_dating_app/contexts/events/data/event_callable_adapters.da
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_public_details.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'events_test_helpers.dart';
 
 void main() {
   test('editing and clearing guest notes preserves sibling format data', () {

@@ -55,10 +55,8 @@ function adminPendingInputs() {
     "admin/src/shared/ui/AdminPrimitives/actions.tsx",
     "admin/src/shared/ui/AdminPrimitives/shell.tsx",
   ]);
-  // The scanner names the controllers it guards, so routing one needs no second list.
-  const scanner = fs.readFileSync(new URL("../../tool/web/check_admin_pending_operations.mjs", import.meta.url), "utf8");
-  for (const [, file] of scanner.matchAll(/"(admin\/src\/features\/[^"]+Controller\.ts)"/gu)) inputs.add(file);
-  assert.ok(inputs.size > 5, "guarded controllers must not be empty");
+  // The scanner finds every Admin writer by reading admin/src, and the Admin
+  // lane runs it on each Admin change; only the shared lease files route Tools.
   return [...inputs].sort();
 }
 

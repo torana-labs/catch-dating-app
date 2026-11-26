@@ -1,8 +1,7 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart';
 
 void main() {
   test('An event is in exactly one lifecycle phase', () {

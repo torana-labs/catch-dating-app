@@ -1,12 +1,9 @@
 import * as admin from "firebase-admin";
 import {Timestamp} from "firebase-admin/firestore";
-import {CallableRequest, HttpsError, onCall} from
+import {CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../../platform/adminAuth";
 import {setAdminAuditLogInTransaction} from "../../platform/adminAudit";
-import {appCheckCallableOptions} from "../../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../../shared/rateLimit";
-import {validateCallableWithAjv} from "../../shared/validation";
 import type {AdMatchingOptOutDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import type {AdminManageAdMatchingOptOutCallablePayload} from
@@ -22,6 +19,14 @@ import {
   adMatchingDigestsFromContact,
   adMatchingKeys,
 } from "./optOuts";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../../platform/callables/callable";
+import {adminRoles} from "../../platform/callables/policies";
+import type {AdminContext} from "../../platform/adminAuth";
 
 /** Support and safety staff take opt-out requests; the owner can too. */
 export const AD_MATCHING_OPT_OUT_ROLES = [
@@ -57,18 +62,36 @@ function looksLikeContact(note: string): boolean {
  * Checks, records or removes an ad-matching opt-out for a phone and/or
  * email. The values are hashed here; the response names only identifier
  * kinds, and the audit entry names only kinds and counts.
- * @param {CallableRequest<unknown>} request Callable request.
+ * Policy: AD_MATCHING_OPT_OUT_ROLES (STR-10).
  * @param {AdMatchingOptOutDeps} deps Dependencies.
- * @return {Promise<Response>} Kinds named, changed and now opted out.
+ * @return {CallableSpec} The callable.
  */
-export async function adminManageAdMatchingOptOutHandler(
-  request: CallableRequest<unknown>,
-  deps: AdMatchingOptOutDeps = defaultDeps
-): Promise<Response> {
-  const context = requireAdminRole(request, AD_MATCHING_OPT_OUT_ROLES);
-  const payload = validateCallableWithAjv<
-    AdminManageAdMatchingOptOutCallablePayload>(request,
-      validateAdminManageAdMatchingOptOutCallablePayload);
+export function adminManageAdMatchingOptOutSpec(
+  deps: AdMatchingOptOutDeps = defaultDeps):
+  CallableSpec<
+    AdminManageAdMatchingOptOutCallablePayload,
+    AdminContext,
+    Response> {
+  return {
+    name: "adminManageAdMatchingOptOut",
+    policy: adminRoles(AD_MATCHING_OPT_OUT_ROLES),
+    input: validateAdminManageAdMatchingOptOutCallablePayload,
+    handle: (context) => adminManageAdMatchingOptOutWork(context, deps),
+  };
+}
+
+/** The deployed path of adminManageAdMatchingOptOut, for tests. */
+export function adminManageAdMatchingOptOutHandler(
+  request: CallableRequest<unknown>, deps: AdMatchingOptOutDeps = defaultDeps):
+  Promise<Response> {
+  return runCallable(adminManageAdMatchingOptOutSpec(deps), request);
+}
+
+async function adminManageAdMatchingOptOutWork(
+  {request, data: payload, actor: context}:
+    CallableContext<AdminManageAdMatchingOptOutCallablePayload, AdminContext>,
+  deps: AdMatchingOptOutDeps):
+  Promise<Response> {
   const db = deps.firestore();
   await deps.checkRateLimit(db, context.uid, "adminManageAdMatchingOptOut",
     {maxRequests: 30, windowMs: 60_000});
@@ -156,5 +179,5 @@ export async function adminManageAdMatchingOptOutHandler(
   };
 }
 
-export const adminManageAdMatchingOptOut = onCall(appCheckCallableOptions,
-  (request) => adminManageAdMatchingOptOutHandler(request));
+export const adminManageAdMatchingOptOut = callable(
+  adminManageAdMatchingOptOutSpec());

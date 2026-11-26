@@ -95,6 +95,16 @@ test("removal and transfer fence stale sync and callable/rules access",
           {uid: owner, displayName: "Owner", avatarUrl: null, role: "owner"},
           {uid: manager, displayName: "Manager", avatarUrl: null, role: "host"},
         ]});
+      // The organiser's access documents, which every command writes with
+      // the manager fields and the rules read (#2474 step 3).
+      for (const [uid, role] of [[owner, "owner"], [manager, "manager"]]) {
+        await db.collection("accessGrants")
+          .doc(`organizer__${organizerId}__${uid}`)
+          .set({scopeType: "organizer", scopeId: organizerId, uid,
+            organizerId, role, status: "active", activeFromMillis: 0,
+            expiresAtMillis: null, reach: {}, assignments: [],
+            grantedBy: null, revision: 0, updatedAt: new Date(), version: 1});
+      }
       await teamRef(manager).set({organizerId, uid: manager,
         status: "active", role: "manager"});
       await teamRef(owner).set({organizerId, uid: owner,

@@ -2,10 +2,10 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dar
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_event_facts.dart';
 import 'package:catch_dating_app/pages/event/event_detail_screen_state.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
+import 'package:catch_test_support/event_viewer_state_fixtures.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../events/event_viewer_state_fixtures.dart';
-import '../events/events_test_helpers.dart';
 import 'host_membership_fixtures.dart';
 
 Map<String, Object?> _facts({

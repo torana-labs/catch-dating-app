@@ -7,6 +7,11 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import {catchSupportInboundText} from
   "../catchMessaging/whatsappInboundContent";
+import {
+  pageRemainingMessageExpiry,
+  readFirstMessagePage,
+  writeMessagePageExpiry,
+} from "./retention";
 
 export const SUPPORT_CONVERSATIONS = "supportConversations";
 
@@ -200,7 +205,12 @@ export async function recordSupportMessage(
   const account = existing.exists ? null :
     await accountFor(deps, input.channel, address);
   const text = input.text.trim().slice(0, 4000);
+  const inbound = input.direction === "inbound";
+  const outbound = input.direction === "outbound" && !input.automatic;
+  // A reopened conversation's messages lose their expiry with it.
+  let reopenedPage: FirebaseFirestore.QueryDocumentSnapshot[] | null = null;
   const acknowledge = await db.runTransaction(async (tx) => {
+    reopenedPage = null;
     const [conversationSnap, messageSnap] = await Promise.all([
       tx.get(conversationRef),
       tx.get(messageRef),
@@ -210,8 +220,9 @@ export async function recordSupportMessage(
     }
     const now = deps.now();
     const current = conversationSnap.data() as Conversation | undefined;
-    const inbound = input.direction === "inbound";
-    const outbound = input.direction === "outbound" && !input.automatic;
+    const reopens = current?.status === "closed" && (inbound || outbound);
+    const page = reopens ?
+      await readFirstMessagePage(tx, db, conversationId) : null;
     const base: Conversation = current ?? {
       schemaVersion: 1,
       conversationId,
@@ -264,6 +275,13 @@ export async function recordSupportMessage(
       next.waitingSince = null;
       next.status = "waitingOnThem";
     }
+    if (page) {
+      next.expiresAt = null;
+      writeMessagePageExpiry(tx, page, null);
+      reopenedPage = page;
+    }
+    // A message added to a closed conversation expires with it.
+    const expiresAt = next.status === "closed" ? next.expiresAt ?? null : null;
     tx.set(conversationRef, next);
     tx.create(messageRef, {
       schemaVersion: 1,
@@ -279,9 +297,15 @@ export async function recordSupportMessage(
       ...(input.providerMessageId ?
         {providerMessageId: input.providerMessageId} : {}),
       ...(firstInWhile ? {acknowledge: true} : {}),
+      ...(expiresAt ? {expiresAt} : {}),
     } satisfies Message);
     return firstInWhile;
   });
+  const reopened = reopenedPage as
+    FirebaseFirestore.QueryDocumentSnapshot[] | null;
+  if (reopened) {
+    await pageRemainingMessageExpiry(db, conversationId, reopened, null);
+  }
   return {conversationId, messageId, acknowledge};
 }
 

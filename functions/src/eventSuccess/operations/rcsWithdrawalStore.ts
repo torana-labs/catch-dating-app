@@ -16,6 +16,9 @@ import {runAssistanceTransaction} from "../../platform/transactionCallback";
 import {WithdrawalGrant, parseRcsWithdrawalGrant, RCS_WITHDRAWAL_GRANTS,
   rcsWithdrawalMatchesPermission} from "./rcsWithdrawalRecords";
 import {withdrawalGrantId} from "./messageConsentCollections";
+import {EventContactPermissionWriter} from
+  "../../messaging/eventContactPermissions";
+import {writeEventChannelDecision} from "./eventContactGrants";
 
 interface Facts {authority: WithdrawalGrant; permission: Permission}
 
@@ -78,9 +81,12 @@ export class RcsWithdrawalStore {
         reviewHash: null, reviewedStopHash: null,
         appliedRevision: next.revision, createdAt: now,
         permissionHash: operationContentHash(next)});
+      const contact = await EventContactPermissionWriter.read(this.db, tx,
+        authority.subjectUid, permission.context.eventId);
       tx.create(receiptRef, receipt);
       tx.set(this.db.collection(rcsConsentCollections.permissions)
         .doc(permission.permissionId), next);
+      writeEventChannelDecision(tx, contact, next, receipt, now);
       return {outcome: "applied", view: this.view({...facts,
         permission: next}, now)};
     });

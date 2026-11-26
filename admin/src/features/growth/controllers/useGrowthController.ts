@@ -1,5 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useMemo, useState} from "react";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {
   actOnNominatorCredit,
   loadGrowth,
@@ -55,6 +56,7 @@ export function useGrowthController({initialView = "cohorts", view:
   onSelectNominatorUid?: (uid: string) => void;
 } = {}): GrowthController {
   const client = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const [localView, setView] = useState<GrowthView>(initialView);
   const view = routedView ?? localView;
   const [range, setRange] = useState<GrowthRange>("12m");
@@ -95,12 +97,16 @@ export function useGrowthController({initialView = "cohorts", view:
   });
   const run = async (kind: "approve" | "markPaid", note: string | null) => {
     if (!selectedNominator) return false;
+    const operation = beginOperation();
+    if (!operation) return false;
     try {
       await action.mutateAsync({uid: selectedNominator.uid, action: kind,
         note});
       return true;
     } catch {
       return false;
+    } finally {
+      endOperation(operation);
     }
   };
   return {

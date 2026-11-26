@@ -3,9 +3,8 @@ import 'package:catch_dating_app/contexts/events/domain/event_policy_defaults.da
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_state.dart';
 import 'package:catch_platform/catch_async_state.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart';
 
 void main() {
   test('HostCreateEventRouteState prefers route extra club', () {

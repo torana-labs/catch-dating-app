@@ -170,6 +170,10 @@
     },
     "updatedAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "description": "Firestore TTL deletes the conversation at this time: 180 days after it closed, or after its account was deleted, whichever is later (supportRetention.ts). Null or absent while it is open."
     }
   }
 }

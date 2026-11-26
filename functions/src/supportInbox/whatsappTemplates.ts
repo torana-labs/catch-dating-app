@@ -159,6 +159,9 @@ export async function claimSupportWhatsappTemplate(
       providerMessageId: null,
       bodyHash: claim.bodyHash,
       deliveryErrorCode: null,
+      // A template sent on a closed conversation expires with it.
+      ...(current?.status === "closed" && current.expiresAt ?
+        {expiresAt: current.expiresAt} : {}),
     } satisfies Message);
     context.onClaim?.(tx, {conversationId, now});
     return {kind: "claimed" as const, conversationId};

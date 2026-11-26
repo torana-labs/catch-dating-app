@@ -4,6 +4,7 @@ import {sampleOrganizerDetails} from "../../../shared/api/sampleData";
 import {
   emptyPublishChecklist,
   formFromOrganizerProfile,
+  validateOrganizerPublishingForm,
 } from "../controllers/organizerPublishingHelpers";
 import type {OrganizerPageEditorController} from "../controllers/useOrganizerPageEditorController";
 import {organizerPageEditorPanels} from "./OrganizerPageEditor";
@@ -32,6 +33,42 @@ function editor(overrides: Partial<OrganizerPageEditorController> = {}): Organiz
 
 describe("OrganizerPageEditor", () => {
   afterEach(cleanup);
+
+  it("shows ordinary save readiness separately from publication requirements", () => {
+    const original = {...formFromOrganizerProfile(organizer), publishStatus: "published" as const,
+      description: "", area: "", headline: "", summary: "", sourceConfidence: "seedOnly" as const,
+      verificationStatus: "unverified" as const};
+    const form = {...original, email: "new@example.com", reviewNote: "Corrected contact"};
+    const state = editor({form, issues: validateOrganizerPublishingForm(form, {original, requireReviewNote: true}),
+      publishIssues: validateOrganizerPublishingForm(form, {publishing: true, requireReviewNote: true})});
+    render(<><organizerPageEditorPanels.OrganizerPageEditorForm editor={state} />
+      <organizerPageEditorPanels.OrganizerPageEditorSide editor={state} /></>);
+    expect(screen.getByText("Ready to save")).toBeTruthy();
+    expect(screen.queryByText("Ready to publish")).toBeNull();
+    expect(screen.getByText(/Before publishing: Description is required/)).toBeTruthy();
+    expect(screen.getByText(/Before publishing: Select Source backed/)).toBeTruthy();
+    expect(screen.queryByText("Description is required for a canonical organizer listing.")).toBeNull();
+  });
+
+  it("does not claim publication readiness while a shared save blocker remains", () => {
+    const form = {...formFromOrganizerProfile(organizer), sourceConfidence: "high" as const,
+      verificationStatus: "sourceBacked" as const, reviewNote: ""};
+    const issues = validateOrganizerPublishingForm(form, {requireReviewNote: true});
+    render(<organizerPageEditorPanels.OrganizerPageEditorSide editor={editor({form, issues,
+      publishIssues: validateOrganizerPublishingForm(form, {publishing: true, requireReviewNote: true})})} />);
+    expect(screen.queryByText("Ready to publish")).toBeNull();
+    expect(screen.queryByText("Ready to save")).toBeNull();
+    expect(screen.getByText("Review note")).toBeTruthy();
+  });
+
+  it("shows changed-field and audit-note errors inline from save validation", () => {
+    const form = {...formFromOrganizerProfile(organizer), email: "invalid", reviewNote: ""};
+    const state = editor({form, issues: validateOrganizerPublishingForm(form, {requireReviewNote: true}),
+      publishIssues: []});
+    render(<organizerPageEditorPanels.OrganizerPageEditorForm editor={state} />);
+    expect(screen.getByText("Enter a complete email address or leave the field empty.")).toBeTruthy();
+    expect(screen.getByText("Explain what you verified or changed; this becomes the audited operator context.")).toBeTruthy();
+  });
 
   it("keeps every field the old editor had", () => {
     render(<organizerPageEditorPanels.OrganizerPageEditorForm editor={editor()} />);

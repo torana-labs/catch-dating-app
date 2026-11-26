@@ -2,12 +2,11 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_activity_badge.dart';
 import 'package:catch_dating_app/pages/event/tiles/event_date_rail_card.dart';
 import 'package:catch_platform/theme/activity_palette.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../../events/events_test_helpers.dart';
 
 void main() {
   testWidgets('DateTicket uses activity art and a trailing price decision', (

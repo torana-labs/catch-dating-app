@@ -57,6 +57,16 @@ export function projectPublicOrganizer(
   if (!projected) return null;
   // This field describes the projection input. Ownership remains in authority.
   projected.dataOrigin = "organizerIntake";
+  if (!ownerEstablished.has(projected.authority.ownershipState)) {
+    // Imported listings stay out of search, and intake prose is written for
+    // operators, so visitors get a structured summary until an owner claims.
+    // It replaces the stored copy before validation, so a listing approved
+    // without a description (an unread nomination) still reaches the site.
+    projected.indexing = "noindex, follow";
+    projected.description =
+      sourcedSummary(projected.name, projected.category, projected.city);
+    projected.sourceSummary = projected.description;
+  }
   if (!validateWebsiteHostListingProjection(projected)) return null;
   const listing = JSON.parse(JSON.stringify(projected)) as HostListing;
   listing.legacyPaths = listing.legacyPaths?.filter(organizerPath);
@@ -68,14 +78,6 @@ export function projectPublicOrganizer(
   listing.facts = listing.facts.filter((fact) =>
     !authorityFactLabel.test(fact.label.trim()));
   listing.fitNotes = [];
-  if (!ownerEstablished.has(listing.authority.ownershipState)) {
-    // Imported listings stay out of search, and intake prose is written for
-    // operators, so visitors get a structured summary until an owner claims.
-    listing.indexing = "noindex, follow";
-    listing.description =
-      sourcedSummary(listing.name, listing.category, listing.city);
-    listing.sourceSummary = listing.description;
-  }
   listing.eventEvidence = listing.eventEvidence.filter((event) =>
     publicHttpsUrl(event.sourceHref));
   const raw = data as Raw;

@@ -2,13 +2,14 @@ import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/routing/route_contract.dart';
+import 'package:catch_test_support/events_test_helpers.dart' as event_helpers;
+import 'package:catch_test_support/onboarding_test_helpers.dart'
+    as onboarding_helpers;
 import 'package:catch_test_support/organizers_test_helpers.dart'
     as organizer_helpers;
+import 'package:catch_test_support/profile_readiness_fixtures.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test/events/events_test_helpers.dart' as event_helpers;
-import '../test/onboarding/onboarding_test_helpers.dart' as onboarding_helpers;
-import '../test/support/profile_readiness_fixtures.dart';
 import 'support/app_shell_test_binding.dart';
 import 'support/app_shell_test_harness.dart';
 import 'support/app_shell_workflow_steps.dart';

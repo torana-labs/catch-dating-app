@@ -3,17 +3,14 @@ import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {Timestamp} from "firebase-admin/firestore";
-import {onCall, HttpsError, type CallableRequest} from
+import {HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../platform/adminAuth";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {publicPaymentExecutionFor} from
   "../events/publicRegistration/runtime";
 import {offerPaymentExecutionFor} from
   "../payments/offerPayments/offerPaymentRuntime";
-import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import type {
   MoneyIssueResolutionDocument,
   OrganizerBillDocument,
@@ -30,6 +27,14 @@ import {validateMoneyIssueResolutionDocument} from
   "../shared/generated/validators/moneyIssueResolutionDocument";
 import {moneyRoles} from "./moneySettings";
 import {organizerBillsCollection} from "./organizerBills";
+import {
+  callableWithLimits,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 /**
  * Money's issues: a guest paid and has no booking, a refund was asked and
@@ -243,16 +248,31 @@ const defaults: Dependencies = {db: () => admin.firestore(), now: Date.now,
 
 /**
  * The owner reads Money's issues or acts on one.
- * @param {CallableRequest<unknown>} request Callable request.
+ * Policy: moneyRoles (STR-10).
  * @param {Dependencies} deps Dependencies.
- * @return {Promise<Result>} The view after the action.
+ * @return {CallableSpec} The callable.
  */
-export async function adminManagePaymentIssuesHandler(
+export function adminManagePaymentIssuesSpec(deps: Dependencies = defaults):
+  CallableSpec<Payload, AdminContext, Result> {
+  return {
+    name: "adminManagePaymentIssues",
+    policy: adminRoles(moneyRoles),
+    input: validateAdminManagePaymentIssuesCallablePayload,
+    handle: (context) => adminManagePaymentIssuesWork(context, deps),
+  };
+}
+
+/** The deployed path of adminManagePaymentIssues, for tests. */
+export function adminManagePaymentIssuesHandler(
   request: CallableRequest<unknown>, deps: Dependencies = defaults):
   Promise<Result> {
-  const actor = requireAdminRole(request, moneyRoles);
-  const data = validateCallableWithAjv<Payload>(request,
-    validateAdminManagePaymentIssuesCallablePayload);
+  return runCallable(adminManagePaymentIssuesSpec(deps), request);
+}
+
+async function adminManagePaymentIssuesWork(
+  {request, data, actor}: CallableContext<Payload, AdminContext>,
+  deps: Dependencies):
+  Promise<Result> {
   if ((data.action === "list") !== (data.issueId === null)) {
     throw new HttpsError("invalid-argument", "Invalid issue action.");
   }
@@ -345,6 +365,6 @@ export async function adminManagePaymentIssuesHandler(
   return result;
 }
 
-export const adminManagePaymentIssues = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 120, maxInstances: 5}),
-  (request) => adminManagePaymentIssuesHandler(request));
+export const adminManagePaymentIssues = callableWithLimits(
+  {timeoutSeconds: 120, maxInstances: 5},
+  adminManagePaymentIssuesSpec());

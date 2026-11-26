@@ -2,9 +2,9 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thre
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../events/events_test_helpers.dart';
 import 'host_inbox_test_fixtures.dart';
 
 void main() {

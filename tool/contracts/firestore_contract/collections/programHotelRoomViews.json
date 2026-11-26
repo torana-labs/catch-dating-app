@@ -15,11 +15,8 @@
   "exportedFunctions": [
     "onProgramHotelRoomStayChanged",
     "onProgramHotelRoomBlockChanged",
-    "onProgramHotelRoomHotelChanged",
     "dispatchProgramHotels",
-    "onProgramHotelRoomLegChanged",
     "dispatchProgramTravelLegs",
-    "onProgramHotelRoomGuestChanged",
     "dispatchProgramGuests",
     "dispatchOrganizerPrograms"
   ],

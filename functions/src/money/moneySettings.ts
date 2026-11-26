@@ -1,11 +1,8 @@
 import * as admin from "firebase-admin";
-import {onCall, HttpsError, type CallableRequest} from
+import {HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../platform/adminAuth";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
-import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import type {MoneySettingsDocument} from
   "../shared/generated/firestoreAdminTypes";
 import type {AdminManageMoneySettingsCallablePayload as Payload} from
@@ -24,6 +21,14 @@ import {
   invoiceNumber,
   type MoneySettings,
 } from "./billComputation";
+import {
+  callableWithLimits,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 export const moneySettingsCollection = "moneySettings";
 export const moneySettingsId = "platform";
@@ -83,16 +88,31 @@ const defaults: Dependencies = {db: () => admin.firestore(),
 /**
  * The owner reads or replaces the money settings against the revision they
  * reviewed. Turning on GST changes only bills made afterwards.
- * @param {CallableRequest<unknown>} request Callable request.
- * @param {Dependencies} deps Injectable dependencies.
- * @return {Promise<Result>} Settings in force.
+ * Policy: moneyRoles (STR-10).
+ * @param {Dependencies} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminManageMoneySettingsHandler(
+export function adminManageMoneySettingsSpec(deps: Dependencies = defaults):
+  CallableSpec<Payload, AdminContext, Result> {
+  return {
+    name: "adminManageMoneySettings",
+    policy: adminRoles(moneyRoles),
+    input: validateAdminManageMoneySettingsCallablePayload,
+    handle: (context) => adminManageMoneySettingsWork(context, deps),
+  };
+}
+
+/** The deployed path of adminManageMoneySettings, for tests. */
+export function adminManageMoneySettingsHandler(
   request: CallableRequest<unknown>, deps: Dependencies = defaults):
   Promise<Result> {
-  const actor = requireAdminRole(request, moneyRoles);
-  const data = validateCallableWithAjv<Payload>(request,
-    validateAdminManageMoneySettingsCallablePayload);
+  return runCallable(adminManageMoneySettingsSpec(deps), request);
+}
+
+async function adminManageMoneySettingsWork(
+  {request, data, actor}: CallableContext<Payload, AdminContext>,
+  deps: Dependencies):
+  Promise<Result> {
   if (data.action === "read" ?
     data.expectedRevision !== null || data.settings !== null :
     data.expectedRevision === null || data.settings === null) {
@@ -141,6 +161,6 @@ function project(stored: MoneySettingsDocument | null,
   return result;
 }
 
-export const adminManageMoneySettings = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 30, maxInstances: 10}),
-  (request) => adminManageMoneySettingsHandler(request));
+export const adminManageMoneySettings = callableWithLimits(
+  {timeoutSeconds: 30, maxInstances: 10},
+  adminManageMoneySettingsSpec());

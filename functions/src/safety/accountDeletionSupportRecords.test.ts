@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {Timestamp} from "firebase-admin/firestore";
 import {DELETED_ACCOUNT_UID} from "./accountDeletionSupportRecords";
+import {supportExpiresAtMillis} from "../shared/supportRetention";
 import {deleteRunnerOne} from "./accountDeletionTestHarness";
 
 // One test per collection of #2468 group 2 that Catch holds about the
@@ -18,18 +20,38 @@ const touched = (harness: Harness, prefix: string) =>
     ...harness.setWrites.map((w) => w.path)]
     .some((path) => path.startsWith(prefix));
 
-test("deletion unlinks the account's support conversations", async () => {
+test("deletion unlinks the account's support conversations and starts " +
+  "the retention clock of a closed one", async () => {
+  const later = Timestamp.fromMillis(Date.now() + 400 * 24 * 3600_000);
   const harness = await deleteRunnerOne({
     "supportConversations/whatsapp-1": {uid: "runner-1",
       ownerUid: "staff-1", status: "open"},
     "supportConversations/whatsapp-2": {uid: "runner-2",
       ownerUid: "staff-1", status: "open"},
+    "supportConversations/whatsapp-3": {uid: "runner-1", status: "closed",
+      expiresAt: Timestamp.fromMillis(Date.now())},
+    "supportConversations/whatsapp-3/messages/m1": {direction: "inbound",
+      authorUid: null},
+    "supportConversations/whatsapp-4": {uid: "runner-1", status: "closed",
+      expiresAt: later},
   });
   assert.deepEqual(updatesOf(harness, "supportConversations/whatsapp-1"),
     [{uid: null}]);
   assert.ok(!deletes(harness, "supportConversations/whatsapp-1"));
   assert.deepEqual(updatesOf(harness, "supportConversations/whatsapp-2"),
     []);
+  // A closed conversation is kept at least 180 days after the deletion,
+  // with its messages.
+  const [closed] = updatesOf(harness, "supportConversations/whatsapp-3");
+  assert.equal(closed.uid, null);
+  const expiry = (closed.expiresAt as Timestamp).toMillis();
+  assert.ok(Math.abs(expiry - supportExpiresAtMillis(Date.now())) < 60_000);
+  assert.deepEqual(updatesOf(harness,
+    "supportConversations/whatsapp-3/messages/m1"),
+  [{expiresAt: closed.expiresAt}]);
+  // A later expiry is kept.
+  const [kept] = updatesOf(harness, "supportConversations/whatsapp-4");
+  assert.ok((kept.expiresAt as Timestamp).isEqual(later));
 });
 
 test("deletion keeps support messages, whose author is staff", async () => {

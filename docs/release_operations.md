@@ -139,7 +139,6 @@ Function deployment plans:
 - `expireCrossPathsPairHolds`
 - `expireEventRehearsals`
 - `expireEventWaitlistOffers`
-- `sendEventReminders`
 
 They were undeployed from dev and production on 2026-09-02 after live
 queries found no pending campaigns, delivery operations, rehearsal sessions,
@@ -650,6 +649,12 @@ decision, 22 Nov 2026; evidence in
 - `"candidate"` marks a check still gathering history: it runs and reports, and never blocks.
 - Three checks joined the gate with a short but clean replay (21 to 27 commits, no failures) at the architecture sign-off (#2445): `audit:functions-contexts`, `contracts:client-write-contracts` and `contracts:bigquery-export-paths`. They also block in the functions and contracts lanes, which run them only when Nx selects the lane; the gate blocks every merge-queue entry, so a change to a file only the check reads (the context map, an export env file) cannot skip them.
 - `contracts:account-deletion-erasure` joined the gate with sign-off condition 3 (#2444): every registered collection whose schema holds a uid needs an entry in `functions/src/safety/accountDeletionErasure.json`. It also blocks in the contracts lane.
+- Three checks joined the gate on 24 Nov 2026 after #2496 merged with `tool/contracts/schema_modules.test.mjs` failing. That test ran only in the Tools lane, which reports and does not block, so main went red. The three are:
+  - `contracts:schema-modules`: the checks of `contracts:generate-schemas` (the schema module and schema spec tests) as their own whole-repo tool, about 2-4 s. The generator itself cannot gate, because the gate runs a tool's manifest command and `validateQueueGates` refuses generators.
+  - `docs:function-catalog`: promoted from candidate, 0.1 s.
+  - `data:run-record-adoption`: 0.1 s.
+
+  Two other Tools-lane consistency checks stay out because they are too slow for the 10 s budget: `firebase:function-binding-intent` (about 60 s) and `contracts:organizer-nomenclature` (9-15 s). Affected-tools selection still runs them.
 - `node tool/ci/semantic_gates.mjs list --candidates` prints both.
 - `validateQueueGates` (`tool/lib/semantic_gates.mjs`, run by `meta:tool-manifest`) admits the field only on an active whole-repo check: local, non-generator, a repository script, no Flutter or browser setup.
 - `tool/lib/semantic_gates.test.mjs` pins the approved list. A gated check leaving the manifest, losing its field, or a new gate fails that test until the list changes on purpose.
@@ -931,7 +936,13 @@ each major upgrade needs its own impact review and full selected CI evidence.
 Dependabot pull requests merge without a click.
 `.github/workflows/dependabot-auto-merge.yml` turns on auto-merge for every
 Dependabot pull request that is not a major version, so it joins the merge
-queue once Required CI passes. It acts as the repository's auto-merge GitHub
+queue once Required CI passes. It first waits for the pull request's whole CI
+run, and turns auto-merge on only when every job passed or was skipped,
+including the reporting lanes (tools, operations, docs-policy, app-builds)
+that Required CI leaves out under the sprint floor. A person reads those lanes
+before merging their own pull request; nobody reads them for a Dependabot
+update, and #2553 merged with the icon-catalog check red in the tools lane. A
+red or unfinished run leaves the update for a manual merge. It acts as the repository's auto-merge GitHub
 App, not the built-in Actions token: GitHub starts no workflows for events
 that token causes, and a dependency merge must start `main`'s workflows like
 any other. The App has read-and-write Contents, Pull requests and Workflows
@@ -3676,8 +3687,7 @@ it runs again:
    untouched for safety review. It never deletes Cross Paths plans or Host
    inquiries.
 2. **Deck-era like facts.** These are `outgoing_like`, `incoming_like` and
-   `private_interest_*` facts in `participantSignalFacts`. Each batch reduces
-   `participantMetricCounters` by exactly the facts it deletes.
+   `private_interest_*` facts in `participantSignalFacts`.
 3. **`profileReaction_*` messages** left in chats it kept.
 4. **The deck-era `profileDecisions` documents**, which takes every like
    comment with them.
@@ -3840,7 +3850,8 @@ Firestore `eventSuccessScorecards` for past events keep aggregate counts until
 they are next refreshed.
 
 The `matches` and `participantMetricCounters` exports were removed because
-nothing reads them (FIX-5, #2447). Once the owner uninstalls `bq-host-matches`
+nothing reads them (FIX-5, #2447); the `participantMetricCounters` collection
+itself was removed later (FIX-14, #2450). Once the owner uninstalls `bq-host-matches`
 and drops `catch_analytics.matches_raw_changelog`, every exported chat row is
 gone, deck-era ones included, and the `matches` statements above no longer
 apply. The `Deck-era purge` workflow's `bigquery` mode cleans only the signal

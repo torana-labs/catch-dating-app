@@ -1,10 +1,9 @@
 import 'package:catch_dating_app/pages/event/cross_paths_event_consent_section.dart';
 import 'package:catch_dating_app/pages/event/cross_paths_event_consent_state.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../events/events_test_helpers.dart';
 
 void main() {
   test('eligibility requires both consent gates and a future booking', () {

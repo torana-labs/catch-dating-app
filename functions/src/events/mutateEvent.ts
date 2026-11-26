@@ -856,6 +856,7 @@ export async function deleteEventHandler(
       admissionSnap,
       ledgerSnap,
       reservationSnap,
+      inviteLinkSnap,
     ] = await Promise.all([
       tx.get(organizerRef),
       tx.get(deletedUserRef),
@@ -877,6 +878,8 @@ export async function deleteEventHandler(
       tx.get(db.collection("eventSeatLedgers").doc(data.eventId)),
       tx.get(db.collection("eventSeatReservations")
         .where("eventId", "==", data.eventId).limit(1)),
+      tx.get(db.collection("eventInviteLinks")
+        .where("eventId", "==", data.eventId)),
     ]);
     assertCanMutateOrganizerEntity(
       organizerSnap,
@@ -903,6 +906,18 @@ export async function deleteEventHandler(
     // are keyed by request, not event, and replay protection must survive.
     tx.delete(db.collection("eventSetupPreferences").doc(data.eventId));
     tx.delete(db.collection("eventPrivateAccess").doc(data.eventId));
+    // The event-success plan is the event's own setup too; the host
+    // read-model triggers treat a removed plan as a removed source.
+    tx.delete(db.collection("eventSuccessPlans").doc(data.eventId));
+    // Invite links to a deleted event must stop resolving, and their bearer
+    // secrets share the link id. Touches survive: they are short-lived
+    // dedupe evidence that expires by TTL. Attributions survive: they are
+    // immutable credit facts from verified attendee facts, which an event
+    // that passed the history check above cannot have.
+    for (const link of inviteLinkSnap.docs) {
+      tx.delete(link.ref);
+      tx.delete(db.collection("eventInviteLinkSecrets").doc(link.id));
+    }
     removedStoragePaths = removedMediaStoragePaths({
       before: event,
       after: {},

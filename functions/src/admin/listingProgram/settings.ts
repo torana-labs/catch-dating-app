@@ -1,15 +1,13 @@
 /* eslint-disable max-len */
 import * as admin from "firebase-admin";
-import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
-import {appCheckCallableOptionsWithLimits} from "../../shared/callableOptions";
+import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {checkRateLimit as defaultCheckRateLimit} from "../../shared/rateLimit";
-import {validateCallableWithAjv} from "../../shared/validation";
 import type {AdminManageListingProgramCallablePayload as Payload} from "../../shared/generated/adminManageListingProgramCallablePayload";
 import type {AdminManageListingProgramCallableResponse as Result} from "../../shared/generated/adminManageListingProgramCallableResponse";
 import {validateAdminManageListingProgramCallablePayload} from "../../shared/generated/validators/adminManageListingProgramInput";
 import {validateAdminManageListingProgramCallableResponse} from "../../shared/generated/validators/adminManageListingProgramOutput";
 import {discoveryFormatsForText} from "../../domain/discovery/discoveryFormats";
-import {requireAdminRole, type AdminContext} from "../../platform/adminAuth";
+import {type AdminContext} from "../../platform/adminAuth";
 import type {ListingProgramSettingsDocument} from "../../shared/generated/firestoreAdminTypes";
 import {validateListingProgramSettingsDocument} from "../../shared/generated/validators/listingProgramSettingsDocument";
 import {setAdminAuditLogInTransaction} from "../../platform/adminAudit";
@@ -20,6 +18,13 @@ import {
   readListingProgramState,
   type ListingProgramState,
 } from "../../domain/supply/listingProgramState";
+import {
+  callableWithLimits,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../../platform/callables/callable";
+import {adminRoles} from "../../platform/callables/policies";
 
 // Anyone who approves listings may pause; only the owner roles may resume.
 const readRoles = ["admin", "adminOwner", "support"] as const;
@@ -44,12 +49,31 @@ const defaultDeps: Deps = {
 /**
  * Staff read or flip the programmatic listings pause switch against the
  * revision they reviewed, or count the live organizers that list no format.
+ * Policy: readRoles (STR-10).
+ * @param {Deps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminManageListingProgramHandler(request: CallableRequest<unknown>,
-  deps: Deps = defaultDeps): Promise<Result> {
-  const actor = requireAdminRole(request, readRoles);
-  const data = validateCallableWithAjv<Payload>(request, validateAdminManageListingProgramCallablePayload,
-    normalizePayload);
+export function adminManageListingProgramSpec(deps: Deps = defaultDeps):
+  CallableSpec<Payload, AdminContext, Result> {
+  return {
+    name: "adminManageListingProgram",
+    policy: adminRoles(readRoles),
+    input: validateAdminManageListingProgramCallablePayload,
+    normalize: normalizePayload,
+    handle: (context) => adminManageListingProgramWork(context, deps),
+  };
+}
+
+/** The deployed path of adminManageListingProgram, for tests. */
+export function adminManageListingProgramHandler(
+  request: CallableRequest<unknown>, deps: Deps = defaultDeps):
+  Promise<Result> {
+  return runCallable(adminManageListingProgramSpec(deps), request);
+}
+
+async function adminManageListingProgramWork(
+  {request, data, actor}: CallableContext<Payload, AdminContext>, deps: Deps):
+  Promise<Result> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, actor.uid, "adminManageListingProgram", {maxRequests: 30, windowMs: 60 * 1000});
   if (data.action === "read") return project(await readListingProgramState(db), null);
@@ -60,9 +84,9 @@ export async function adminManageListingProgramHandler(request: CallableRequest<
     expectedRevision: Number(data.expectedRevision)});
 }
 
-export const adminManageListingProgram = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 10}),
-  (request) => adminManageListingProgramHandler(request));
+export const adminManageListingProgram = callableWithLimits(
+  {timeoutSeconds: 60, maxInstances: 10},
+  adminManageListingProgramSpec());
 
 async function setPause(db: Db, actor: AdminContext, request: CallableRequest<unknown>, deps: Deps,
   input: {paused: boolean; reason: string; expectedRevision: number}): Promise<Result> {

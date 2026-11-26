@@ -212,9 +212,6 @@ export const hostEventDeliveryViewEventProjections = defineProjections(
     run: (change) => reconcileForChange("events", change.documentId,
       change.before, change.after),
   }]);
-export const onHostEventDeliveryViewWorkItemChanged = onDocumentWritten({
-  ...options, document: "operationWorkItems/{documentId}",
-}, (event) => reconcileForWrite("operationWorkItems", event));
 export const onHostEventDeliveryViewRunChanged = onDocumentWritten({
   ...options, document: "operationRuns/{documentId}",
 }, (event) => reconcileForWrite("operationRuns", event));
@@ -232,10 +229,8 @@ export const hostEventDeliveryViewProjections = defineProjections(
   }]);
 
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const operationWorkItemsProjections = defineProjections(
   "operationWorkItems", [

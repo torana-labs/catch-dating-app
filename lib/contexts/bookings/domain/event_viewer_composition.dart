@@ -141,9 +141,10 @@ EventViewerState composeEventViewerState(EventViewerSources sources) {
   final userCohort = policy.cohortResolver
       .resolve(EventAttendeeProfile.fromUserProfile(profile))
       .id;
-  final cohortId = offerActive
-      ? participation!.cohortAtSignup ?? userCohort
-      : userCohort;
+  // The cohort a booking was counted under stays on the server (#2493): it
+  // encodes the guest's orientation and organisers read the booking. The
+  // quote shown here uses the guest's current cohort; the server re-prices.
+  final cohortId = userCohort;
   final listPrice = eventSignupQuoteInPaise(
     policy: policy,
     cohortId: cohortId,

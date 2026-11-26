@@ -1,18 +1,23 @@
 /* eslint-disable max-len */
 import * as admin from "firebase-admin";
-import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import type {AdminGetOrganizerListingReviewCallablePayload} from "../shared/generated/adminGetOrganizerListingReviewCallablePayload";
 import type {AdminGetOrganizerListingReviewCallableResponse} from "../shared/generated/adminGetOrganizerListingReviewCallableResponse";
 import {validateAdminGetOrganizerListingReviewCallablePayload} from "../shared/generated/validators/adminGetOrganizerListingReviewInput";
-import {validateCallableWithAjv} from "../shared/validation";
 import {validateOperationWorkItem} from "../operations/validation";
 import {supplyIntakeCollections} from "../operations/supplyIntake/worker";
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {requireAdminRole} from "../platform/adminAuth";
 import {listingApprovalRoles} from "./organizerListingApproval";
 import {publicSlugFor} from "../organizers/organizerIdentity";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 // Anyone who reviews organizer intake can read the queue; approving it is
 // narrower (see adminApproveOrganizerListing).
@@ -33,14 +38,38 @@ const defaultDeps: ListingReviewDeps = {
 /**
  * One listing awaiting approval, for the inbox item that names its request. A
  * request already approved, not finished or unreadable has nothing to review.
+ * Policy: reviewRoles (STR-10).
+ * @param {ListingReviewDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminGetOrganizerListingReviewHandler(
-  request: CallableRequest<unknown>,
-  deps: ListingReviewDeps = defaultDeps
-): Promise<AdminGetOrganizerListingReviewCallableResponse> {
-  const adminContext = requireAdminRole(request, reviewRoles);
-  const data = validateCallableWithAjv<AdminGetOrganizerListingReviewCallablePayload>(request,
-    validateAdminGetOrganizerListingReviewCallablePayload);
+export function adminGetOrganizerListingReviewSpec(
+  deps: ListingReviewDeps = defaultDeps):
+  CallableSpec<
+    AdminGetOrganizerListingReviewCallablePayload,
+    AdminContext,
+    AdminGetOrganizerListingReviewCallableResponse> {
+  return {
+    name: "adminGetOrganizerListingReview",
+    policy: adminRoles(reviewRoles),
+    input: validateAdminGetOrganizerListingReviewCallablePayload,
+    handle: (context) => adminGetOrganizerListingReviewWork(context, deps),
+  };
+}
+
+/** The deployed path of adminGetOrganizerListingReview, for tests. */
+export function adminGetOrganizerListingReviewHandler(
+  request: CallableRequest<unknown>, deps: ListingReviewDeps = defaultDeps):
+  Promise<AdminGetOrganizerListingReviewCallableResponse> {
+  return runCallable(adminGetOrganizerListingReviewSpec(deps), request);
+}
+
+async function adminGetOrganizerListingReviewWork(
+  {data, actor: adminContext}:
+    CallableContext<
+      AdminGetOrganizerListingReviewCallablePayload,
+      AdminContext>,
+  deps: ListingReviewDeps):
+  Promise<AdminGetOrganizerListingReviewCallableResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminGetOrganizerListingReview",
     {maxRequests: 120, windowMs: 60 * 1000});
@@ -54,8 +83,8 @@ export async function adminGetOrganizerListingReviewHandler(
   return {review, canApprove: adminContext.roles.some((role) => (listingApprovalRoles as readonly string[]).includes(role))};
 }
 
-export const adminGetOrganizerListingReview = onCall(appCheckCallableOptions,
-  (request) => adminGetOrganizerListingReviewHandler(request));
+export const adminGetOrganizerListingReview = callable(
+  adminGetOrganizerListingReviewSpec());
 
 async function reviewRow(db: FirebaseFirestore.Firestore, requestId: string,
   stored: FirebaseFirestore.DocumentData): Promise<Row | null> {

@@ -17,10 +17,9 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/even
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_setup_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_defaults_controller.dart';
+import 'package:catch_test_support/hosts/read_model_feeds.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'support/read_model_feeds.dart';
 
 /// The event as a step reads it; a feed delivers it as a complete setup view.
 typedef ReadPrivateEventForPreferences =

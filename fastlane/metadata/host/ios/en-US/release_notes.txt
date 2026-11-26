@@ -1,9 +1,7 @@
-Faster lists and a steadier night.
+More screens update live, and guests' privacy is better protected.
 
-• Requests, offers, the inbox, sends, forms and responses update live and open straight away, even offline.
-• The live console runs seated nights, runs and crawls, with the seat map in Room and guests moved between groups by hand.
-• The plan screen sets up the room, the head count and what is still missing.
-• The door reviews web guests asking to be matched to a name, and prints a join-only QR poster for the entrance.
-• Forwarded guest lists arrive as drafts for you to review.
-• Programme screens (transport, team, inbox, photos and setup) work from live data.
-• If a save can't be confirmed, Catch Host says so instead of offering to try again.
+• The guest list, programme setup, people directory, duplicate review, billing, forms editor and form analytics all open from live data, even offline.
+• Event staff and programme team access updates the moment you add or remove someone.
+• Insights hides connection and chat numbers for events with fewer than 10 guests.
+• Archived programmes can be reopened for 60 days before guest details are anonymised.
+• Fixes and steadier saves throughout.

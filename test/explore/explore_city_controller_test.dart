@@ -11,11 +11,10 @@ import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_platform/device/device_location.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/firebase/config_documents.dart';
+import 'package:catch_test_support/events_test_helpers.dart' as event_test;
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart' as event_test;
 
 const _mumbai = CityData(
   name: 'mumbai',

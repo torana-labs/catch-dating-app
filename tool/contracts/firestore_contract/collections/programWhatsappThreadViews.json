@@ -14,7 +14,6 @@
   "write": "server only; written from programWhatsappThreads, programHouseholds and organizerPrograms",
   "exportedFunctions": [
     "onProgramWhatsappThreadViewThreadChanged",
-    "onProgramWhatsappThreadViewHouseholdChanged",
     "dispatchProgramHouseholds",
     "dispatchOrganizerPrograms"
   ],

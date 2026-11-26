@@ -3722,7 +3722,7 @@ rather than embedded in event-type logic.
 | `eventSuccessUnitOutcomes/{eventId}` | Server-owned complete round facts for completion, score, or rank outcomes. Hosts may get the event document; attendee reads, list access, and every direct write are denied. |
 | `eventSuccessStandings/{eventId}` | Server-owned score/rank snapshots through each recorded round. Authorized Hosts, active participants, and ready external runtime identities may get the event document; list and direct writes are denied. |
 | `organizerEventSuccessLayouts/{organizerId_layoutId}` | Reusable organizer-owned parametric room-layout assets. Organizer managers may read their assets; all writes use the validated callable. Participants receive only the selected layout's timestamp-free projection through an authorized callable/runtime bootstrap. |
-| `eventSuccessScorecards/{eventId}` | Server-owned aggregate coaching scorecard. Host-readable through event-success policy. |
+| `eventSuccessScorecards/{eventId}` | Server-owned aggregate coaching scorecard, server-only: it holds event-level catch, match and chat counts, so hosts get no direct read (FIX-12) until an event-level stats screen applies the group-size floor (`config/guestDataVisibility`). |
 
 Schemas live under `contracts/firestore/` and generated outputs under
 `functions/src/shared/generated/`, `packages/platform/lib/schema_contracts/generated/`, and
@@ -4343,7 +4343,6 @@ scorecards locally.
 Current implemented foundation:
 
 - raw facts: `participantSignalFacts/{factId}`;
-- counters: `participantMetricCounters/{uid}`;
 - event scorecards: `eventSuccessScorecards/{eventId}`;
 - client access to raw/admin metrics denied by rules;
 - dev Firestore-to-BigQuery extension manifests and datasets exist for

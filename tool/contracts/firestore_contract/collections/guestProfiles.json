@@ -1,0 +1,30 @@
+{
+  "id": "guestProfiles",
+  "path": "guestProfiles/{uid}",
+  "rulesMatch": "/guestProfiles/{uid}",
+  "typescriptInterface": "GuestProfileDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/guest_profiles.rules.test.cjs",
+  "owner": "syncPublicProfile trigger, in the same transaction as publicProfiles",
+  "writerContext": "shared",
+  "sharedWriterReason": "The profile projector (profiles) writes it in the same transaction as publicProfiles, and account deletion (safety) deletes it at the start of deletion, as it does publicProfiles.",
+  "read": "server only; the matching-feed callables read it with the admin SDK and return it to the guests they chose",
+  "write": "server only",
+  "exportedFunctions": [
+    "syncPublicProfile",
+    "fetchSwipeCandidates",
+    "fetchEventSuccessWingmanCandidates",
+    "requestAccountDeletion"
+  ],
+  "newCollectionRationale": {
+    "whyNotAnExistingCollection": "The sensitive dating answers must be readable only by guests the server has chosen (co-guests and matching-feed members), never by organisers or any signed-in account. publicProfiles is readable by every signed-in account and rules cannot hide its fields, and users holds private account data the feeds must not return.",
+    "readers": [
+      "fetchSwipeCandidates",
+      "fetchEventSuccessWingmanCandidates",
+      "functions/src/shared/candidateVisibility.ts"
+    ]
+  },
+  "migrationNotes": [
+    "Issue #2493 (FIX-8). Added 24 Nov 2026 as the server-only home of the full dating profile; publicProfiles narrows to a card in a later step. The guest-profiles migration in tool/data/migrate_firestore_consolidation.mjs copies existing publicProfiles here."
+  ]
+}

@@ -11,8 +11,10 @@ import * as canonical from "./generated/schema_contract_registry.mjs";
 import {
   assertCustomDomainBlocklist,
   boundFieldConstraints,
+  FUNCTIONS_GENERATED_MANIFEST,
   functionsRuntimeModules,
   publishSchemaOutputs,
+  renderFunctionsGeneratedManifest,
 } from "./generate_schema_contracts.mjs";
 
 const requireFromFunctions = createRequire(
@@ -250,6 +252,20 @@ test("publication removes only owned stale outputs and restores expected content
     [...fixture.files.map((file) => file.path), foreign].sort());
   assert.equal(fixture.hashes()[foreign], foreignHash);
   assert.deepEqual(fixture.check(), []);
+});
+
+test("the Functions prebuild manifest lists only this generator's Functions modules", () => {
+  const manifest = JSON.parse(renderFunctionsGeneratedManifest([
+    {path: "functions/src/shared/generated/validators/b.ts"},
+    {path: "functions/src/shared/generated/schemaPaths.ts"},
+    {path: FUNCTIONS_GENERATED_MANIFEST},
+    {path: "admin/src/generated/contracts/a.ts"},
+  ]));
+  assert.deepEqual(manifest.modules, [
+    "src/shared/generated/schemaPaths.ts",
+    "src/shared/generated/validators/b.ts",
+  ]);
+  assert.ok(FUNCTIONS_GENERATED_MANIFEST.startsWith("functions/src/shared/generated/"));
 });
 
 test("field constraints keep only declared bindings and lookup prefixes", () => {

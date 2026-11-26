@@ -25,6 +25,7 @@ import {newLiveWorkRecords} from "./liveWorkRecords";
 import {LiveAssistanceWorkRunner} from "./liveWorkRunner";
 import {setupRuntimePublication} from "./runtimeConfigTestHarness";
 import {RUNTIME_CONFIGS} from "./runtimeConfigRecords";
+import {editEventGrant} from "./eventContactTestSupport";
 
 type Harness = Awaited<ReturnType<typeof rcsHarness>>;
 async function contact(h: Harness, purpose: MessagePurpose = "joiningUpdate") {
@@ -95,11 +96,19 @@ test("RCS planning reuses current consent and sender checks", async () => {
         ...(change === "phone" ? {phoneE164: "+918888888888"} :
           {status: "waitlisted"})});
     }
+    // The gate reads the guest's event document and its receipt copy
+    // (issue #2494).
+    const uid = String((await h.read(h.attendeePath))?.linkedUid);
     if (change === "receipt") {
-      h.fake.remove(rcsConsentCollections.receipts +
-      "/" + (await h.permission()).currentReceiptId);
+      const receiptId = (await h.permission()).currentReceiptId;
+      h.fake.remove(rcsConsentCollections.receipts + "/" + receiptId);
+      h.fake.remove("contactPermissionReceipts/" + receiptId);
     }
-    if (change === "permission") h.fake.remove(h.rcsPermissionPath);
+    if (change === "permission") {
+      h.fake.remove(h.rcsPermissionPath);
+      await editEventGrant(h, uid, h.context.eventId, "rcs:eventService",
+        () => null);
+    }
     if (change === "revoked") await h.revoke();
     if (change === "closed") h.clock.now += 2 * 86_400_000;
     assert.equal((await contact(h)).kind, "blocked", change);

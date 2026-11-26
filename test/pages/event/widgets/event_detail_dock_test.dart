@@ -11,15 +11,14 @@ import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/pages/event/widgets/event_detail_dock.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/event_viewer_state_fixtures.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:catch_test_support/organizers_test_helpers.dart'
     show FakeOrganizersRepository;
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../../events/event_viewer_state_fixtures.dart';
-import '../../../events/events_test_helpers.dart';
 
 void main() {
   group('EventDetailDock', () {

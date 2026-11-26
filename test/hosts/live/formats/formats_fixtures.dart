@@ -8,7 +8,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_pods_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 
-import '../../../events/events_test_helpers.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 
 /// Pickleball at 7:00 AM on a Saturday at Rally Club.
 final formatsMorning = DateTime(2026, 11, 7, 7);

@@ -23,6 +23,7 @@ const endpointWrappers = new Map([
   ["admin/salesIntelligence/callables.ts", new Set(["read", "write"])],
   ["admin/salesPrivacy/callables.ts", new Set(["privacyCallable"])],
   ["partners/callables.ts", new Set(["callable"])],
+  ["platform/callables/callable.ts", new Set(["callable", "callableWithLimits"])],
   ["platform/dispatch/runtime.ts", new Set(["dispatchTrigger"])],
 ]);
 const factories = new Map([

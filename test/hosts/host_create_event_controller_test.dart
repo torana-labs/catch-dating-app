@@ -22,11 +22,10 @@ import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:catch_platform/persistence/command_journal_provider.dart';
 import 'package:catch_platform/persistence/command_journal_storage.dart';
 import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
-
-import '../events/events_test_helpers.dart';
 
 part 'host_create_event_photo_recovery_tests.dart';
 

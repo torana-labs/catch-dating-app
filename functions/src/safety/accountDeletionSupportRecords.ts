@@ -1,4 +1,6 @@
+import {Timestamp} from "firebase-admin/firestore";
 import type {DeletionWriter} from "./accountDeletion";
+import {supportExpiresAtMillis} from "../shared/supportRetention";
 
 type Db = FirebaseFirestore.Firestore;
 
@@ -19,13 +21,15 @@ export const DELETED_ACCOUNT_UID = "deleted-account";
  * @param {Db} params.db Firestore.
  * @param {string} params.uid The account being deleted.
  * @param {DeletionWriter} params.writer Deletion writes.
+ * @param {number} [params.nowMillis] Clock.
  */
 export async function queueSupportRecordCleanup(params: {
   db: Db;
   uid: string;
   writer: DeletionWriter;
+  nowMillis?: number;
 }): Promise<void> {
-  const {db, uid, writer} = params;
+  const {db, uid, writer, nowMillis = Date.now()} = params;
   const byField = (collection: string, field: string) =>
     db.collection(collection).where(field, "==", uid).get();
   const [conversations, deliveries, dispatches, nominators, workItems,
@@ -45,7 +49,26 @@ export async function queueSupportRecordCleanup(params: {
   // Each review decision is already in adminAuditLogs, which keeps the
   // staff outcome without the applicant's answers.
   writer.delete(db.collection("accessApplications").doc(uid));
-  conversations.forEach((doc) => writer.update(doc.ref, {uid: null}));
+  // A closed conversation expires 180 days after the deletion at the
+  // earliest (supportRetention.ts), with its messages; an open one is
+  // stamped when it closes.
+  const deletionExpiry = Timestamp.fromMillis(
+    supportExpiresAtMillis(nowMillis));
+  await Promise.all(conversations.docs.map(async (doc) => {
+    const data = doc.data();
+    if (data.status !== "closed") {
+      writer.update(doc.ref, {uid: null});
+      return;
+    }
+    const current = data.expiresAt instanceof Timestamp ?
+      data.expiresAt : null;
+    const expiresAt = current && current.toMillis() >=
+      deletionExpiry.toMillis() ? current : deletionExpiry;
+    writer.update(doc.ref, {uid: null, expiresAt});
+    const messages = await db.collection("supportConversations")
+      .doc(doc.id).collection("messages").get();
+    messages.forEach((message) => writer.update(message.ref, {expiresAt}));
+  }));
   deliveries.forEach((doc) => writer.delete(doc.ref));
   dispatches.forEach((doc) => writer.delete(doc.ref));
   nominators.forEach((doc) => writer.delete(doc.ref));

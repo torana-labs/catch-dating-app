@@ -2,6 +2,7 @@
 // capture's inputs to its own imports; see docs/marketing_app_media_pipeline.md.
 
 import 'dart:async';
+
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
@@ -21,9 +22,10 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
+import 'package:catch_test_support/profile_readiness_fixtures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' show AsyncData;
-import '../../../events/events_test_helpers.dart';
-import '../../../support/profile_readiness_fixtures.dart';
+
 import '../../fixtures/sales_demo_synthetic_fixtures.dart';
 import '../../support/capture_device.dart';
 import '../screen_capture_entry.dart';

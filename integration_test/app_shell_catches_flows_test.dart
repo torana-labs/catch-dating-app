@@ -1,12 +1,12 @@
 import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
+import 'package:catch_test_support/events_test_helpers.dart' as event_helpers;
 import 'package:catch_test_support/organizers_test_helpers.dart'
     as organizer_helpers;
+import 'package:catch_test_support/profile_readiness_fixtures.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test/events/events_test_helpers.dart' as event_helpers;
-import '../test/support/profile_readiness_fixtures.dart';
 import 'support/app_shell_test_binding.dart';
 import 'support/app_shell_test_harness.dart';
 

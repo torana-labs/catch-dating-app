@@ -155,9 +155,9 @@ export const onAssistanceMembershipChanged = sourceTrigger(
   "eventAssistanceMemberships");
 export const onAssistanceMessageChanged = sourceTrigger(
   "eventAssistanceMessages");
-// Every channel's permissions and budgets: one trigger per collection.
-export const onAssistancePermissionChanged = sourceTrigger(
-  "eventAssistancePermissions");
+// Every channel's budgets. Event-day consent changes wake live work from
+// onContactPermissionAudienceProjected (eventContactPermissionWork.ts),
+// which took over from onAssistancePermissionChanged (issue #2494).
 export const onAssistanceBudgetChanged = sourceTrigger(
   "eventAssistanceBudgets");
 

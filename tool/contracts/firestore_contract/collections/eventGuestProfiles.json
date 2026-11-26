@@ -1,0 +1,32 @@
+{
+  "id": "eventGuestProfiles",
+  "path": "eventGuestProfiles/{copyId}",
+  "rulesMatch": "/eventGuestProfiles/{copyId}",
+  "typescriptInterface": "EventGuestProfileDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/event_guest_profiles.rules.test.cjs",
+  "owner": "writeCatchBookingRoster (the booking writers) and syncPublicProfile, in their transactions",
+  "writerContext": "shared",
+  "sharedWriterReason": "The booking writers (bookings) write a guest's copy when their booking becomes signedUp or attended, the profile projector (profiles) refreshes or deletes the copies when the profile changes, and account deletion (safety) deletes them by uid.",
+  "read": "a signed-in guest gets one copy while both their booking and the subject's for that event are signedUp or attended, unless either blocked the other or the subject is deleted; no list, no organiser path",
+  "write": "server only",
+  "exportedFunctions": [
+    "syncPublicProfile",
+    "signUpForFreeEvent",
+    "cancelEventSignUp",
+    "markEventAttendance",
+    "selfCheckInAttendance",
+    "registerPublicEvent",
+    "requestAccountDeletion"
+  ],
+  "newCollectionRationale": {
+    "whyNotAnExistingCollection": "Security rules cannot ask whether two guests share any event without an event id in the path, so the co-guest audience (owner decision OQ-1) needs one copy per event and guest. guestProfiles must stay server-only, and publicProfiles is readable by every signed-in account, organisers included.",
+    "readers": [
+      "functions/test/rules/event_guest_profiles.rules.test.cjs",
+      "functions/src/shared/eventGuestProfiles.ts"
+    ]
+  },
+  "migrationNotes": [
+    "Issue #2493 (FIX-8). Added 24 Nov 2026. The event-guest-profiles migration in tool/data/migrate_firestore_consolidation.mjs writes a copy for every live booking; the guest app reads copies in a later #2493 step."
+  ]
+}

@@ -1,3 +1,4 @@
+// size-exemption: shared event builders and the repository fakes tests compose.
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
@@ -162,7 +163,6 @@ EventParticipation buildEventParticipation({
   EventParticipationStatus status = EventParticipationStatus.signedUp,
   DateTime? createdAt,
   Gender? genderAtSignup,
-  String? cohortAtSignup,
   EventJoinRequestStatus? hostApprovalStatus,
   EventWaitlistOfferStatus? waitlistOfferStatus,
   DateTime? waitlistOfferedAt,
@@ -197,7 +197,6 @@ EventParticipation buildEventParticipation({
         : null,
     deletedAt: status == EventParticipationStatus.deleted ? timestamp : null,
     genderAtSignup: genderAtSignup,
-    cohortAtSignup: cohortAtSignup,
     paymentId: paymentId,
     hostApprovalStatus: hostApprovalStatus,
     waitlistOfferStatus: waitlistOfferStatus,

@@ -15,7 +15,6 @@
   "write": "server only; written from organizerMomentSends, programTravelLegs and programAlerts",
   "exportedFunctions": [
     "onProgramAlertSendChanged",
-    "onProgramAlertLegChanged",
     "dispatchProgramTravelLegs",
     "onProgramAlertResolutionChanged"
   ],

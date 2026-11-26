@@ -107,7 +107,7 @@ test("hosted workflow keeps manual dispatch and limits PR events to explicit cap
   assert.doesNotMatch(events, /push:|schedule:|workflow_run|pull_request_target|synchronize|opened/u);
   assert.match(source, /^permissions:\n  contents: read\n\n/mu);
   assert.match(source, /runs-on: macos-26\n/u);
-  assert.match(source, /timeout-minutes: 45\n/u);
+  assert.match(source, /timeout-minutes: 75\n/u);
   const steps = extractSteps(source);
   // Plan, Storybook, render and reuse each check out the controller and then the source.
   assert.equal(steps.filter(s => s.uses?.startsWith("actions/checkout@")).length, 8);

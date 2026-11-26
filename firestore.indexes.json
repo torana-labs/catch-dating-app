@@ -8619,6 +8619,28 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "accessGrants",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "scopeType",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "role",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "mode": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [
@@ -8661,7 +8683,45 @@
       ]
     },
     {
+      "collectionGroup": "contactPermissions",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "DESCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "arrayConfig": "CONTAINS",
+          "queryScope": "COLLECTION"
+        }
+      ]
+    },
+    {
       "collectionGroup": "dataToolRuns",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "DESCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "arrayConfig": "CONTAINS",
+          "queryScope": "COLLECTION"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventGuestProfiles",
       "fieldPath": "expiresAt",
       "ttl": true,
       "indexes": [
@@ -9430,6 +9490,18 @@
           "queryScope": "COLLECTION"
         }
       ]
+    },
+    {
+      "collectionGroup": "supportConversations",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": []
+    },
+    {
+      "collectionGroup": "messages",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": []
     }
   ]
 }

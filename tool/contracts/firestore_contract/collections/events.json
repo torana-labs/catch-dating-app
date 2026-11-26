@@ -24,7 +24,6 @@
     "dispatchEvents",
     "onHostRequestViewProfileWritten",
     "onHostRequestViewContactSummaryWritten",
-    "onHostRequestViewContactWritten",
     "dispatchOrganizerContacts"
   ],
   "operations": [

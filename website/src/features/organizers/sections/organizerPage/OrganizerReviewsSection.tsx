@@ -81,11 +81,12 @@ export function OrganizerReviewsSection({controller}: {controller: OrganizerPage
 
 type ReviewForm = NonNullable<OrganizerPageController["review"]>;
 
-/** Anyone's review, posted unverified (CAT-169). Hidden until its backend lands. */
+/** Anyone's review, posted unverified (CAT-169), on an unclaimed page once an event has passed. */
 function OrganizerReviewForm({review}: {review: ReviewForm}) {
   const form = copy.reviewForm;
   if (review.done) {
-    return <CatchGroundCard role="status"><CatchText as="p" variant="body">{form.done(review.name.trim())}</CatchText></CatchGroundCard>;
+    const thanks = review.done === "published" ? form.done : form.pending;
+    return <CatchGroundCard role="status"><CatchText as="p" variant="body">{thanks(review.name.trim())}</CatchText></CatchGroundCard>;
   }
   return (
     <CatchGroundCard>

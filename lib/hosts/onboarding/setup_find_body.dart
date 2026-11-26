@@ -7,9 +7,10 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-/// Setup step one. The board's "Is this you?" claims a page Catch found for
-/// the number; the Host app has no read that finds one, so this step starts
-/// a page instead: its name and where it runs.
+/// Setup step one, "Start your page": the page's name and where it runs.
+/// When Catch found a page for the number, `HostSetupFoundBody` asks "Is
+/// this you?" first; this shows when nothing was found or after "None of
+/// these".
 class HostSetupFindBody extends StatelessWidget {
   const HostSetupFindBody({
     super.key,

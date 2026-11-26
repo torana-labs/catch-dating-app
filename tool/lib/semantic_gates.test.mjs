@@ -10,12 +10,16 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../
 // The merge-queue gate the owner approved after the clean replay
 // (docs/plans/semantic_check_replay_report.md): 65 checks under 10 s at p95,
 // plus the Functions context, client-write and BigQuery export path checks
-// the architecture sign-off added (#2445) and the account deletion erasure
-// check (#2444). A check leaving the manifest,
+// the architecture sign-off added (#2445), the account deletion erasure
+// check (#2444), and the schema module, Functions catalog and data run-record
+// checks that would have stopped #2496 turning main red. A check leaving the
+// manifest,
 // losing its queueGate, or a new gate added fails here until this list
 // changes on purpose.
 const approvedAlways = [
   "audit:app-architecture-exhibits",
+  // STR-10 (#2532): no new raw onCall; 0.3 s.
+  "audit:callable-policy",
   "audit:context-map",
   "audit:flutter-source-size",
   "audit:fn-rate-limits",
@@ -39,11 +43,13 @@ const approvedAlways = [
   "contracts:path-literals",
   "contracts:rules-semantics",
   "contracts:schema-fixtures",
+  "contracts:schema-modules",
   "contracts:storage-contract",
   "contracts:type-boundaries",
   "contracts:validate-schemas",
   "copy:l10n-key-usage",
   "copy:mobile-catalog",
+  "data:run-record-adoption",
   "design:component-enforcement-coverage",
   "design:field-facade-inventory",
   "design:host-event-field-contracts",
@@ -59,6 +65,7 @@ const approvedAlways = [
   "design:widget-classification-check",
   "design:widget-pattern-families",
   "design:widgetbook-coverage",
+  "docs:function-catalog",
   "firebase:functions-source-closure",
   "firebase:params-coverage",
   "marketing:website-a11y-debt",
@@ -85,9 +92,7 @@ const approvedAlways = [
   "web:react-query-state",
   "web:website-copy-ownership",
 ];
-const approvedCandidates = [
-  "docs:function-catalog",
-];
+const approvedCandidates = [];
 
 test("the manifest's queue gates are exactly the approved list", () => {
   const manifest = loadToolsManifest({root: repoRoot});

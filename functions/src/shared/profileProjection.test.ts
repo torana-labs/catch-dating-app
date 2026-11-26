@@ -169,3 +169,32 @@ test("publicProfileFromUserProfileDoc does not read a legacy bio",
     assert.deepEqual(profile.profilePrompts, []);
   }
 );
+
+// Each sensitive answer has a hide switch (#2493, FIX-8); religion is hidden
+// until the guest turns it on (OQ-C4).
+test("hide switches leave answers out; religion is hidden by default", () => {
+  const answers = {religion: "hindu", relationshipGoal: "relationship",
+    drinking: "socially", smoking: "never", children: "wantSomeday",
+  } as Partial<UserProfileDocument>;
+  const byDefault = publicProfileFromUserProfileDoc(completeUser(answers));
+  assert.equal(byDefault.religion, undefined);
+  assert.equal(byDefault.relationshipGoal, "relationship");
+  assert.equal(byDefault.drinking, "socially");
+  assert.equal(byDefault.smoking, "never");
+  assert.equal(byDefault.children, "wantSomeday");
+
+  const shown = publicProfileFromUserProfileDoc(completeUser({...answers,
+    prefsHideReligion: false}));
+  assert.equal(shown.religion, "hindu");
+
+  const hidden = publicProfileFromUserProfileDoc(completeUser({...answers,
+    prefsHideReligion: false, prefsHideRelationshipGoal: true,
+    prefsHideDrinking: true, prefsHideSmoking: true,
+    prefsHideChildren: true}));
+  assert.equal(hidden.religion, "hindu");
+  for (const field of ["relationshipGoal", "drinking", "smoking",
+    "children"] as const) {
+    assert.equal(hidden[field], undefined, field);
+  }
+});
+

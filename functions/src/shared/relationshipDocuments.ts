@@ -11,7 +11,6 @@ export interface EventParticipationSnapshot {
     uid: string;
     status: EventParticipationStatus;
     genderAtSignup?: string;
-    cohortAtSignup?: string;
   };
 }
 
@@ -184,7 +183,6 @@ export function participantUids(
  * @param {string} params.uid User id.
  * @param {EventParticipationStatus} params.status New participation status.
  * @param {string=} params.genderAtSignup Optional signup-time gender snapshot.
- * @param {string=} params.cohortAtSignup Optional signup-time policy cohort.
  * @param {string=} params.paymentId Optional linked payment document id.
  * @return {Record<string, unknown>} Firestore patch.
  */
@@ -195,7 +193,6 @@ export function eventParticipationPatch(params: {
   uid: string;
   status: EventParticipationStatus;
   genderAtSignup?: string;
-  cohortAtSignup?: string;
   paymentId?: string;
 }) {
   const now = admin.firestore.FieldValue.serverTimestamp();
@@ -223,8 +220,11 @@ export function eventParticipationPatch(params: {
   if (params.genderAtSignup !== undefined) {
     patch.genderAtSignup = params.genderAtSignup;
   }
-  if (params.cohortAtSignup !== undefined) {
-    patch.cohortAtSignup = params.cohortAtSignup;
+  if (params.exists) {
+    // The cohort encodes the guest's sexual orientation and organisers read
+    // this booking. It lives only in eventBookingPrivateFacts (#2493); any
+    // copy an older write left here is removed by the next write.
+    patch.cohortAtSignup = admin.firestore.FieldValue.delete();
   }
   if (params.paymentId !== undefined) {
     patch.paymentId = params.paymentId;
