@@ -102,7 +102,7 @@ and candidate discussions; this document has no parallel status ledger.
 
 1337 public production Widgets. Source discovery determines membership; the component registry supplies reviewed identity and ladder metadata.
 
-Purpose comes from the first class documentation paragraph, then the registry summary. 607 declarations have neither and remain visible as undocumented. Unreviewed feature Widgets use the existing screen-name boundary for L5/L6; that source classification is not a semantic conformance verdict.
+Purpose comes from the first class documentation paragraph, then the registry summary. 606 declarations have neither and remain visible as undocumented. Unreviewed feature Widgets use the existing screen-name boundary for L5/L6; that source classification is not a semantic conformance verdict.
 
 ### L1 (2)
 
@@ -1392,7 +1392,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostResponseOfferPreferencesRouteScreen</code> | <code>lib/hosts/presentation/forms/host_response_offer_preferences_route_screen.dart</code> | — | — | Public route boundary for the shared offer settings editor. |
 | <code>HostResponseOfferScreen</code> | <code>lib/hosts/presentation/forms/host_response_offer_screen.dart</code> | — | — | Shared continuation for one response or a reviewed query selection. The originating page stays mounted; save/cancel returns to the same context. |
 | <code>HostEventManageRouteScreen</code> | <code>lib/hosts/presentation/host_event_manage_route_screen.dart</code> | — | — | No class documentation or registry summary. |
-| <code>HostEventOperatorScreen</code> | <code>lib/hosts/presentation/host_event_operator_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>HostLoadingScreen</code> | <code>lib/hosts/presentation/host_operations/host_loading_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>HostOrganizerEventDefaultsScreen</code> | <code>lib/hosts/presentation/host_operations/host_organizer_event_defaults_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>HostOrganizerLiveGuideScreen</code> | <code>lib/hosts/presentation/host_operations/host_organizer_live_guide_screen.dart</code> | — | — | No class documentation or registry summary. |
@@ -1432,6 +1431,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>StaffDeparturesScreen</code> | <code>lib/hosts/programmes/staff/staff_departures_screen.dart</code> | — | — | The hotel desk's departures (RbProgDepartures), always night, from `getProgramDeparturesRoster`. Read only. |
 | <code>StaffDispatchScreen</code> | <code>lib/hosts/programmes/staff/staff_dispatch_screen.dart</code> | — | — | The dispatcher's desk for one pickup point, always night: the cars the plan suggests by curb time and hotel, and the contained sheet that sends one. |
 | <code>StaffDoorScreen</code> | <code>lib/hosts/programmes/staff/staff_door_screen.dart</code> | — | — | The door for one function of a programme, always night: how many are in, the guests by Expected, In and Walk-ins, and Add a walk-in in the dock under the offline badge. |
+| <code>StaffEventScreen</code> | <code>lib/hosts/programmes/staff/staff_event_screen.dart</code> | — | — | One event a staff member works at, from the staff work list: the door for that event, limited to what their grant allows. |
 | <code>StaffHotelDeskScreen</code> | <code>lib/hosts/programmes/staff/staff_hotel_desk_screen.dart</code> | — | — | The hotel welcome desk for one hotel, always night: the cars on their way with each guest's room, guests at the desk waiting for keys, and the parties still at the airport. Deliberately narrow: no contact fields and no other hotels. |
 | <code>StaffJobsScreen</code> | <code>lib/hosts/programmes/staff/staff_jobs_screen.dart</code> | — | — | A staff member's jobs at one programme, day: the job on now, the next function, the rest and the other pages their duties open. |
 | <code>StaffLeadScreen</code> | <code>lib/hosts/programmes/staff/staff_lead_screen.dart</code> | — | — | The function lead's board, always night: the next function and how long until it starts, the counts for the one on now, and the day's run of show. A pure projection over the programme's work access; no command. |
