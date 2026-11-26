@@ -215,6 +215,8 @@ import 'package:widgetbook_workspace/hosts/host_form_editor_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_editor_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_payment_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_payment_use_cases;
+import 'package:widgetbook_workspace/hosts/host_form_responses_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_form_responses_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_settings_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_settings_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
@@ -11337,6 +11339,72 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_workspace_use_cases
                             .hostFormWorkspaceHeaderPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponsesFilterSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Version and answer filters',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_responses_use_cases
+                            .hostResponsesFilterSheetPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponsesQueryBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Filter by answers results',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_responses_use_cases
+                            .hostResponsesQueryBodyPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponsesQueryConditionCard',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Answer filter condition',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_responses_use_cases
+                            .hostResponsesQueryConditionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponsesQueryEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Answer filter editor',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_responses_use_cases
+                            .hostResponsesQueryEditorPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponsesQueryGroupSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Answer filter group',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_responses_use_cases
+                            .hostResponsesQueryGroupPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponsesQueryWorkspace',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Filter by answers',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_responses_use_cases
+                            .hostResponsesQueryWorkspacePreview,
                   ),
                 ],
               ),
