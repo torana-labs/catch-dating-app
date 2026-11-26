@@ -280,12 +280,6 @@ function listingFromDemoWorld(world, moment) {
     catchEvents: events,
     eventEvidence: [],
     reviews,
-    fitNotes: [
-      "App-created clubs should lead with host identity, upcoming events, ratings, and member activity rather than a source ledger.",
-      "Verified review aggregates matter more here than scrape confidence because the club and events already exist inside Catch.",
-      "The page should help members decide whether to follow, book, or review, while unclaimed scraped pages should focus on owner claim.",
-    ],
-    missingEvidence: [],
     sources: [{
       type: "catch_demo",
       label: "Catch demo world",

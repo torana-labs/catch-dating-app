@@ -248,7 +248,6 @@ export function listingProfileStrength(listing: HostListing) {
   value += Math.min(listing.sources.length * 3, 9);
   value += Math.min((listing.eventEvidence?.length ?? 0) * 4, 8);
   value += Math.min((listing.externalEvents?.length ?? 0) * 4, 8);
-  value -= Math.min(listing.missingEvidence.length * 2, 12);
   return Math.max(24, Math.min(value, 55));
 }
 
