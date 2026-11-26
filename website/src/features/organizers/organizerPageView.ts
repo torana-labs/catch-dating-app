@@ -125,6 +125,12 @@ export interface OrganizerPageView {
   moments: {title: string; tiles: OrganizerMomentView[]};
   reviews: {
     readable: boolean;
+    /**
+     * Anyone may post a review, marked unverified: an unclaimed page whose
+     * reviews are readable, once one of its events has passed (supply rule
+     * R7). A claimed page takes reviews only from people who attended.
+     */
+    writable: boolean;
     /** The average of verified reviews only; null until one is verified. */
     average: string | null;
     /** The verified count the average is paired with. */
@@ -191,6 +197,8 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
   const verifiedCount = record.reviewSummary.verifiedCount;
   const coverEvent = allEvents.find((item) => item.source === "catch" && item.event.photoUrl?.trim());
   const pastCount = record.pastMoments.length;
+  const writable = record.reviewSummary.readState === "enabled" &&
+    record.capabilities.supply.reviewPolicy === "after_event_end" && pastCount > 0;
   const titles = new Map(allEvents.map((item) => [item.eventId, item.event.title]));
   const reportHref = listingRequestHref({kind: "organizer", id: record.organizerId});
   const claimHref = record.claim.claimable && record.claim.state === "unclaimed" ? claimHrefOf(record) : null;
@@ -244,6 +252,7 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
     moments: {title: generated ? copy.momentsTitle.generated : copy.momentsTitle.claimed, tiles: momentsOf(record, kind)},
     reviews: {
       readable: record.reviewSummary.readState === "enabled",
+      writable,
       average: verifiedCount > 0 ? average : null,
       countLabel: copy.verifiedCount(verifiedCount),
       unrated: verifiedCount > 0 ? null : reviewCount > 0 ? copy.unrated(reviewCount) : copy.noRating,
@@ -251,7 +260,8 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
         const count = record.reviewSummary.distribution[String(stars) as "1"];
         return {stars, count, label: copy.starsRow(stars, count)};
       }),
-      policy: generated ? copy.reviewPolicy.generated : copy.reviewPolicy.claimed,
+      policy: !generated ? copy.reviewPolicy.claimed :
+        writable ? copy.reviewPolicy.generated : copy.reviewPolicy.generatedBeforeEvent,
       items: record.latestReviews.slice(0, reviewLimit).map((review, index) =>
         reviewView(review, index, titles, generated ? record.identity.name : null, readAt)),
     },

@@ -1,5 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useCallback} from "react";
+import {useAdminPendingOperationGuard} from "../../../../shared/pendingOperation";
 import {
   countOrganizersWithoutFormat,
   readListingProgram,
@@ -14,12 +15,16 @@ export function useListingProgramController({onError, onNotice}: {
   onNotice: (message: string) => void;
 }) {
   const queryClient = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const page = useQuery({queryKey: programKey, queryFn: readListingProgram});
   const flipping = useMutation({mutationFn: setListingProgramPause});
+  // lease-exempt: counts organisers without a format and writes nothing.
   const reporting = useMutation({mutationFn: countOrganizersWithoutFormat});
 
   const setPaused = useCallback(async (paused: boolean, reason: string): Promise<boolean> => {
     if (!page.data) return false;
+    const operation = beginOperation();
+    if (!operation) return false;
     onError(null);
     try {
       const next = await flipping.mutateAsync({paused, reason, expectedRevision: page.data.revision});
@@ -31,8 +36,10 @@ export function useListingProgramController({onError, onNotice}: {
       onError(error instanceof Error ? error.message : String(error));
       await queryClient.invalidateQueries({queryKey: programKey});
       return false;
+    } finally {
+      endOperation(operation);
     }
-  }, [flipping, onError, onNotice, page.data, queryClient]);
+  }, [beginOperation, endOperation, flipping, onError, onNotice, page.data, queryClient]);
 
   const countWithoutFormat = useCallback(async (): Promise<void> => {
     onError(null);

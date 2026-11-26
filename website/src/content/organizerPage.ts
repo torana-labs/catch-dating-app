@@ -31,11 +31,13 @@ export const unclaimedListingCopy = {
   /** The line at the foot of an unclaimed page; it opens the listing request form. */
   footerLink: "Something wrong? Tell us",
   /**
-   * An unclaimed page takes no new reviews: the read model disables writing
-   * them until the organiser claims it (functions/src/publicPages/publicOrganizer.ts,
-   * reviewPolicy after_event_end).
+   * Anyone can review an unclaimed page once one of its events has passed
+   * (reviewPolicy after_event_end); those reviews are marked Unverified.
    */
-  reviewPolicy: `This page doesn’t take new reviews until the organiser claims it. Reviews marked Unverified weren’t booked on ${brand.name}.`,
+  reviewPolicy: {
+    open: `Anyone who went can review this page. Reviews marked Unverified weren’t booked on ${brand.name}.`,
+    beforeEvent: `Reviews open once one of these events has passed. Reviews marked Unverified weren’t booked on ${brand.name}.`,
+  },
 } as const;
 
 /**
@@ -140,7 +142,8 @@ export const organizerPageCopy = {
   reviewPolicy: {
     /** The explanation line under the verified and Unverified review labels (playbook event page). */
     claimed: `Booked on ${brand.name} means the reviewer booked through ${brand.name}. Unverified reviews are shown, and labelled.`,
-    generated: unclaimedListingCopy.reviewPolicy,
+    generated: unclaimedListingCopy.reviewPolicy.open,
+    generatedBeforeEvent: unclaimedListingCopy.reviewPolicy.beforeEvent,
   },
   verifiedReview: `Booked on ${brand.name}`,
   unverifiedReview: "Unverified",
@@ -157,9 +160,11 @@ export const organizerPageCopy = {
     submit: "Post review",
     noStars: "Choose a star rating",
     tooShort: "Write at least 20 characters",
+    tooLong: "Keep it under 1,000 characters",
     noName: "Add your first name",
     failed: "Your review didn’t post. Try again in a moment.",
     done: (name: string) => `Thanks, ${name}. Your review is up, marked unverified because you didn’t book this event on ${brand.name}.`,
+    pending: (name: string) => `Thanks, ${name}. Your review will show here, marked unverified, once it passes a quick check.`,
   },
   aboutTitle: "About",
   hostTitle: "Who runs it",
