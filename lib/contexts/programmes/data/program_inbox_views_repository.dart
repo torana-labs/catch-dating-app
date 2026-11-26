@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_access_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_inbox_views.dart';
-import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_whatsapp_models.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
@@ -24,9 +23,10 @@ typedef _Rows = List<Map<Object?, Object?>>;
 /// `listProgramWhatsappCannedReplies`: thread rows from
 /// `programWhatsappThreadViews`, a conversation's messages from
 /// `programWhatsappMessages` and the saved replies from
-/// `programWhatsappCannedReplies`. Every read is gated on the communications
-/// duty (the owner holds it), so cached rows stop at the instant it ends.
-/// Replies, take-over and mark-read stay commands.
+/// `programWhatsappCannedReplies`. Every read is gated on the duties that
+/// talk to guests, communications or guest relations (the owner holds both),
+/// so cached rows stop at the instant the last one ends. Replies, take-over
+/// and mark-read stay commands.
 class ProgramInboxViewsRepository {
   const ProgramInboxViewsRepository(this._firestore, this._access, this._clock);
 
@@ -64,10 +64,7 @@ class ProgramInboxViewsRepository {
     programId,
     uid,
     needs: const {},
-    allows: (state) => state.view!.holdsDuty(
-      ProgramStaffDuty.communications,
-      state.evaluatedAt,
-    ),
+    allows: (state) => state.view!.holdsInbox(state.evaluatedAt),
     scopeOf: (state) => 'inbox',
     data: (state) => data(),
   );

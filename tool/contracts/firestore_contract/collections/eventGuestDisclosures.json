@@ -24,7 +24,7 @@
   "newCollectionRationale": {
     "whyNotAnExistingCollection": "The organiser may read a guest's gender only on a gender-balanced event and only until shortly after it ends, and later only the profile answers the guest chose to share. eventBookings is readable by the organiser for every format and has no expiry, guestProfiles and eventGuestProfiles are for co-guests, and rules cannot hide one field of a document or expire one, so the disclosure needs its own document with its own expiry.",
     "readers": [
-      "the event's organiser managers, by get, once the Host app reads disclosures"
+      "functions/test/rules/admission_visibility.rules.test.cjs"
     ]
   }
 }

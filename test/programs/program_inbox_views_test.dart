@@ -172,15 +172,22 @@ void main() {
     );
   }
 
-  test('the communications duty reads every thread row', () async {
-    final firestore = await seeded(access(duties: {'communications': hour}));
-    final rows = await repository(firestore).watchThreadRows('p1', 'u1').first;
-    expect(rows.map((row) => row['threadId']).toSet(), {
-      'p1_h1',
-      'p1_h2',
-      'p1_h3',
-    });
-  });
+  test(
+    'the communications and guest relations duties read every thread row',
+    () async {
+      for (final duty in ['communications', 'guestRelations']) {
+        final firestore = await seeded(access(duties: {duty: hour}));
+        final rows = await repository(
+          firestore,
+        ).watchThreadRows('p1', 'u1').first;
+        expect(rows.map((row) => row['threadId']).toSet(), {
+          'p1_h1',
+          'p1_h2',
+          'p1_h3',
+        }, reason: duty);
+      }
+    },
+  );
 
   test(
     'another duty is denied, and so is an expired communications duty',
@@ -188,6 +195,7 @@ void main() {
       final gone = ms(const Duration(seconds: -1));
       for (final view in [
         access(duties: {'hotelDesk': hour}),
+        access(duties: {'functionCheckIn': hour}),
         access(duties: {'communications': gone}, expiresAt: gone),
       ]) {
         final firestore = await seeded(view);
