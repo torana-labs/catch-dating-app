@@ -6,6 +6,8 @@ import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
+import 'package:catch_dating_app/hosts/create/create_route_screen.dart';
+import 'package:catch_dating_app/hosts/create/edit_event_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_defaults_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_publish_screen.dart';
@@ -40,8 +42,6 @@ import 'package:catch_dating_app/hosts/people/saved_group_screen.dart';
 import 'package:catch_dating_app/hosts/people/sends/sends_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
-import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_preview_screen.dart';
@@ -685,37 +685,15 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     name: Routes.hostCreateEventScreen.name,
     builder: (context, state) {
       final extra = state.extra;
-      return HostCreateEventRouteScreen(
+      return CreateRouteScreen(
         organizerId: state.pathParameters['organizerId']!,
-        initialOrganizer: switch (extra) {
-          final HostCreateEventRouteArguments arguments =>
-            arguments.initialOrganizer,
-          final Organizer organizer => organizer,
-          _ => null,
+        arguments: switch (extra) {
+          final HostCreateEventRouteArguments arguments => arguments,
+          final Organizer organizer => HostCreateEventRouteArguments(
+            initialOrganizer: organizer,
+          ),
+          _ => const HostCreateEventRouteArguments(),
         },
-        initialPrefill: switch (extra) {
-          final HostCreateEventRouteArguments arguments =>
-            arguments.initialPrefill,
-          _ => null,
-        },
-        initialDraft: extra is HostCreateEventRouteArguments
-            ? extra.initialDraft
-            : null,
-
-        initialSavedEventId: extra is HostCreateEventRouteArguments
-            ? extra.initialSavedEventId
-            : null,
-        externalBookingMode: switch (extra) {
-          final HostCreateEventRouteArguments arguments =>
-            arguments.externalBookingMode,
-          _ => false,
-        },
-        promptForDrafts: extra is HostCreateEventRouteArguments
-            ? extra.promptForDrafts
-            : true,
-        returnToResponsesOnSave: extra is HostCreateEventRouteArguments
-            ? extra.returnToResponsesOnSave
-            : false,
       );
     },
   ),
@@ -765,7 +743,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     parent: Routes.hostAppEventManageScreen,
     path: Routes.hostAppEditEventScreen.path,
     name: Routes.hostAppEditEventScreen.name,
-    builder: (context, state) => EditHostedEventRouteScreen(
+    builder: (context, state) => EditEventRouteScreen(
       organizerId: state.pathParameters['organizerId']!,
       eventId: state.pathParameters['eventId']!,
       initialEvent: routeEventExtra(state),

@@ -38,12 +38,7 @@ void main() {
         'hosts/presentation/organizer_management/host_create_organizer_screen.dart',
       ),
     );
-    expect(
-      router,
-      contains(
-        'hosts/presentation/event_management/host_create_event_screen.dart',
-      ),
-    );
+    expect(router, contains('hosts/create/create_route_screen.dart'));
   });
 
   test('host management implementation files live outside consumer folders', () {
