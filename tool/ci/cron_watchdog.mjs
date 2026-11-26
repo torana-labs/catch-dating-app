@@ -27,13 +27,16 @@
 // never wakes for it. Once a nightly completes with no Main CI alert run titled
 // for it, this dispatches main-red-alert.yml with its run_id, the only other
 // workflow it may dispatch (nightlyFollowUps); a failed attempt is dispatched
-// once more, and a second failure is reported on "Scheduled run missed".
+// once more, and a second failure is reported on "Scheduled run missed". Each
+// dispatch leaves a marker artifact, so a wake before the runs listing shows
+// the alert run does not dispatch it again.
 //
 // Usage (Scheduled run watchdog workflow): GH_TOKEN and GITHUB_REPOSITORY set.
 // --dry-run prints what it would do and writes nothing. --now <ISO time>
 // evaluates as of that time; --assume-missing <target> treats that target's
 // runs as absent (both only to prove the workflow; dry runs only).
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {NIGHTLY_FROM_HOUR, isNightlyRun} from "./ci_nightly.mjs";
@@ -289,26 +292,54 @@ export const FOLLOW_UP_ATTEMPTS = 2;
  *   queued or running (the title is the durable record);
  * - `failed` once FOLLOW_UP_ATTEMPTS such runs failed: it is reported, never
  *   dispatched again, so a red nightly is never left silently unalerted;
+ * - `recorded` too while a dispatch marker younger than DISPATCH_MARKER_HOURS
+ *   stands for an attempt not yet listed: the runs listing lags a dispatch, so
+ *   a wake right after one would otherwise dispatch it again;
  * - `waiting` while the nightly itself runs;
  * - otherwise `dispatch`: the watchdog dispatches main-red-alert.yml with its
  *   run_id (no attempt yet, or fewer failed attempts than the limit).
  * Scheduled nightlies from before 26 Nov 2026 woke the alert through
  * workflow_run, and no other run is followed up.
+ *
+ * @param {object} input
+ * @param {Record<string, Array<{created_at:string}>>} [input.markers] Each
+ *   nightly's dispatch marker artifacts (dispatchMarker), by run id: one per
+ *   dispatch the watchdog made.
  */
-export function nightlyFollowUps({nightlies, alertRuns, now, repository}) {
-  return nightlies
-    .filter((run) => run.event === "workflow_dispatch" && isNightlyRun(run) && run.head_branch === "main" &&
-      run.head_repository?.full_name === repository && now - Date.parse(run.created_at) <= FOLLOW_UP_HOURS * HOUR)
-    .map((run) => {
-      const attempts = alertRuns.filter((alert) => alert.display_title === alertRunTitle(run.id));
-      const failed = attempts.filter((alert) => alert.status === "completed" && alert.conclusion !== "success");
-      if (attempts.length > failed.length) return {runId: run.id, status: "recorded"};
-      if (failed.length >= FOLLOW_UP_ATTEMPTS) {
-        return {runId: run.id, status: "failed", failedRuns: failed.map((alert) => alert.html_url ?? String(alert.id))};
-      }
-      return {runId: run.id, status: run.status === "completed" ? "dispatch" : "waiting", failedAttempts: failed.length};
-    });
+export function nightlyFollowUps({nightlies, alertRuns, markers = {}, now, repository}) {
+  return followedNightlies(nightlies, now, repository).map((run) => {
+    const attempts = alertRuns.filter((alert) => alert.display_title === alertRunTitle(run.id));
+    const failed = attempts.filter((alert) => alert.status === "completed" && alert.conclusion !== "success");
+    if (attempts.length > failed.length) return {runId: run.id, status: "recorded"};
+    if (failed.length >= FOLLOW_UP_ATTEMPTS) {
+      return {runId: run.id, status: "failed", failedRuns: failed.map((alert) => alert.html_url ?? String(alert.id))};
+    }
+    // More dispatches than listed attempts means the newest one is not listed
+    // yet. Within DISPATCH_MARKER_HOURS it counts as recorded; after that it
+    // never started, and the usual retry applies.
+    const made = (markers[run.id] ?? []).map((artifact) => Date.parse(artifact.created_at)).filter(Number.isFinite);
+    if (made.length > attempts.length && now - Math.max(...made) < DISPATCH_MARKER_HOURS * HOUR) {
+      return {runId: run.id, status: "recorded", pendingSince: new Date(Math.max(...made)).toISOString()};
+    }
+    return {runId: run.id, status: run.status === "completed" ? "dispatch" : "waiting", failedAttempts: failed.length};
+  });
 }
+
+/** The dispatched CI nightlies of main from the last FOLLOW_UP_HOURS: the runs followed up. */
+export function followedNightlies(nightlies, now, repository) {
+  return nightlies.filter((run) => run.event === "workflow_dispatch" && isNightlyRun(run) && run.head_branch === "main" &&
+    run.head_repository?.full_name === repository && now - Date.parse(run.created_at) <= FOLLOW_UP_HOURS * HOUR);
+}
+
+/** How long a dispatch marker with no listed alert run counts as that run (owner decision, 26 Nov 2026). */
+export const DISPATCH_MARKER_HOURS = 2;
+
+/**
+ * The artifact the Scheduled run watchdog workflow uploads after it dispatches
+ * main-red-alert.yml for a nightly. A wake dispatches at most one follow-up,
+ * so each dispatch leaves exactly one marker under this name.
+ */
+export const dispatchMarker = (runId) => `nightly-alert-dispatched-${runId}`;
 
 /**
  * The "Scheduled run missed" comment for nightlies whose follow-up failed
@@ -367,9 +398,20 @@ function main() {
   }
   const alertRuns = JSON.parse(gh(["api",
     `repos/${repository}/actions/workflows/${ALERT_WORKFLOW}/runs?created=%3E%3D${from}&per_page=100`])).workflow_runs ?? [];
-  const followUps = nightlyFollowUps({nightlies: runs["nightly-ci"] ?? [], alertRuns, now: args.now, repository});
-  for (const followUp of followUps) console.log(`nightly-ci alert follow-up: run ${followUp.runId}, ${followUp.status}`);
-  const alertDispatches = followUps.filter((followUp) => followUp.status === "dispatch");
+  const nightlies = runs["nightly-ci"] ?? [];
+  const markers = {};
+  for (const run of followedNightlies(nightlies, args.now, repository)) {
+    markers[run.id] = JSON.parse(gh(["api",
+      `repos/${repository}/actions/artifacts?name=${dispatchMarker(run.id)}&per_page=100`])).artifacts ?? [];
+  }
+  const followUps = nightlyFollowUps({nightlies, alertRuns, markers, now: args.now, repository});
+  for (const followUp of followUps) {
+    console.log(`nightly-ci alert follow-up: run ${followUp.runId}, ${followUp.status}` +
+      (followUp.pendingSince ? ` (dispatched ${followUp.pendingSince}, not listed yet)` : ""));
+  }
+  // One follow-up per wake, so the workflow's single marker upload covers it;
+  // any other waits for the next wake.
+  const alertDispatches = followUps.filter((followUp) => followUp.status === "dispatch").slice(0, 1);
   const failedReport = followUpReport({followUps, records: recordsFrom(texts), repository});
   if (failedReport) {
     const missed = decision.reports[MISSED_TITLE];
@@ -401,11 +443,14 @@ function main() {
     gh(["api", "-X", "POST", `repos/${repository}/actions/workflows/${dispatch.workflow}/dispatches`, "-f", "ref=main", ...fields]);
     console.log(`Dispatched ${dispatch.workflow}`);
   }
-  // Its run, titled for the nightly, is the record: a later wake finds it and skips.
+  // Its run, titled for the nightly, is the record: a later wake finds it and
+  // skips. Until the runs listing shows it, the marker the workflow uploads
+  // next (alert_marker) stands in for it.
   for (const followUp of alertDispatches) {
     gh(["api", "-X", "POST", `repos/${repository}/actions/workflows/${ALERT_WORKFLOW}/dispatches`, "-f", "ref=main",
       "-f", `inputs[run_id]=${followUp.runId}`]);
     console.log(`Dispatched ${ALERT_WORKFLOW} for run ${followUp.runId}`);
+    if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `alert_marker=${dispatchMarker(followUp.runId)}\n`);
   }
 }
 

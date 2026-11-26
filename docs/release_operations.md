@@ -2653,8 +2653,12 @@ The watchdog also follows up each CI nightly dispatched in the last 48 hours.
 Once one has completed, and no `Main CI alert` run titled for it exists, it
 dispatches `main-red-alert.yml` with `run_id` set to that nightly. That run's
 title is the record: a later wake skips the nightly while that alert run is
-queued, running or has succeeded. If it fails, the next wake dispatches it once
-more. After a second failure the watchdog stops and posts "nightly <id>
+queued, running or has succeeded. The runs listing can lag a dispatch, so each
+dispatch also uploads a `nightly-alert-dispatched-<run id>` artifact; a wake
+that finds more of these markers than listed alert runs, the newest under 2
+hours old, counts the nightly as handled, and after 2 hours the usual retry
+applies. A wake dispatches at most one follow-up. If it fails, the next wake
+dispatches it once more. After a second failure the watchdog stops and posts "nightly <id>
 follow-up failed twice: <link>" to "Scheduled run missed", once (a marker
 records it), so a red nightly is never left silently unalerted. A nightly still
 running is left for a later wake.
