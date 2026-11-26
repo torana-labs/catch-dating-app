@@ -29,7 +29,9 @@ class StaffHotelRoomListState {
   }) => StaffHotelRoomListState(
     status: StaffHotelRoomListStatus.content,
     hotelName: board.hotelLabel,
-    rooms: List.unmodifiable([...board.rooms]..sort(_compareRooms)),
+    rooms: List<ProgramLodgingHotelRoom>.unmodifiable(
+      <ProgramLodgingHotelRoom>[...board.rooms]..sort(_compareRooms),
+    ),
     query: query,
   );
 

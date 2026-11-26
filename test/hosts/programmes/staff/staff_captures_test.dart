@@ -25,6 +25,11 @@ void main() {
       false,
     ),
     ('host_staff_hotel_desk_phone', (_) => hostStaffHotelDeskCapture(), false),
+    (
+      'host_staff_hotel_rooms_phone',
+      (_) => hostStaffHotelRoomsCapture(),
+      false,
+    ),
     ('host_staff_door_phone', (_) => hostStaffDoorCapture(), true),
     ('host_staff_lead_phone', (_) => hostStaffLeadCapture(), false),
     ('host_staff_alerts_phone', (_) => hostStaffAlertsCapture(), false),

@@ -8,7 +8,7 @@ import 'package:flutter/widgets.dart';
 
 /// The hotel desk in board order: how many cars are on the way, the three
 /// counts, each car with its guests and rooms, guests at the desk with Give
-/// keys, and parties still to leave the airport.
+/// keys, parties still to leave the airport, and the link to the room list.
 class StaffHotelDeskBody extends StatelessWidget {
   const StaffHotelDeskBody({
     super.key,
@@ -22,6 +22,7 @@ class StaffHotelDeskBody extends StatelessWidget {
     required this.onMoreExpected,
     required this.onFirstPage,
     required this.onRetry,
+    this.onRoomList,
     this.error,
   });
 
@@ -37,6 +38,9 @@ class StaffHotelDeskBody extends StatelessWidget {
   final VoidCallback onMoreExpected;
   final VoidCallback onFirstPage;
   final VoidCallback onRetry;
+
+  /// Opens the hotel's read-only room list; null leaves the link out.
+  final VoidCallback? onRoomList;
 
   /// The last command's failure.
   final String? error;
@@ -178,6 +182,18 @@ class StaffHotelDeskBody extends StatelessWidget {
               ),
           ],
         ),
+        if (onRoomList case final open?)
+          CatchSection(
+            children: [
+              CatchIndexRow(
+                key: const ValueKey<String>('staff-hotel-room-list'),
+                title: l10n.hostStaffHotelRoomList,
+                icon: CatchIcons.hotel,
+                chevron: true,
+                onTap: open,
+              ),
+            ],
+          ),
       ],
     );
   }

@@ -11,5 +11,6 @@ export 'staff_dispatch_screen.dart' show StaffDispatchScreen;
 export 'staff_door_screen.dart' show StaffDoorScreen;
 export 'staff_event_screen.dart' show StaffEventScreen;
 export 'staff_hotel_desk_screen.dart' show StaffHotelDeskScreen;
+export 'staff_hotel_room_list_screen.dart' show StaffHotelRoomListScreen;
 export 'staff_jobs_screen.dart' show StaffJobsScreen;
 export 'staff_lead_screen.dart' show StaffLeadScreen;

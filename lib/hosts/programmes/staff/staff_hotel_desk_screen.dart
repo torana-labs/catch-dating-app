@@ -26,9 +26,9 @@ import 'package:go_router/go_router.dart';
 /// no other hotels.
 ///
 /// It reads the hotel's inbound board live (long lists open 25 rows at a
-/// time) and its room board. Departures and Room list open the hotel's
-/// read-only departures and allocated rooms (`view=departures`,
-/// `view=rooms`).
+/// time) and its room board. Departures, in the top bar, and Room list, at
+/// the foot of the desk, open the hotel's read-only departures and its
+/// allocated rooms (`view=departures`, `view=rooms`).
 /// Arrived records a car reaching the hotel (`markProgramTripArrived`);
 /// Give keys checks the guest in (`upsertProgramStay`).
 class StaffHotelDeskScreen extends ConsumerStatefulWidget {
@@ -129,20 +129,6 @@ class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
                 queryParameters: {'view': 'departures'},
               ),
             ),
-            CatchButton(
-              key: const ValueKey<String>('staff-hotel-room-list'),
-              label: l10n.hostStaffHotelRoomList,
-              size: CatchButtonSize.sm,
-              variant: CatchButtonVariant.secondary,
-              onPressed: () => context.pushNamed(
-                Routes.hostWorkHotelScreen.name,
-                pathParameters: {
-                  'programId': widget.programId,
-                  'hotelId': widget.hotelId,
-                },
-                queryParameters: {'view': 'rooms'},
-              ),
-            ),
           ],
         ),
         body: StaffHotelDeskBody(
@@ -161,6 +147,14 @@ class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
               'programId': widget.programId,
               'hotelId': widget.hotelId,
             },
+          ),
+          onRoomList: () => context.pushNamed(
+            Routes.hostWorkHotelScreen.name,
+            pathParameters: {
+              'programId': widget.programId,
+              'hotelId': widget.hotelId,
+            },
+            queryParameters: {'view': 'rooms'},
           ),
           onMoreCars: () => setState(() => _carsShown += _step),
           onMoreExpected: () => setState(() => _expectedShown += _step),

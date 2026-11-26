@@ -1,8 +1,10 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/host_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_lodging_providers.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_room_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_transport_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_hotel_board.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_operations.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff.dart';
@@ -70,6 +72,10 @@ List<Override> hostStaffCaptureOverrides({
     staffProgramId,
     staffHotelId,
   ).overrideWithValue(AsyncData(_live(staffDepartures()))),
+  programLodgingHotelBoardProvider(
+    staffProgramId,
+    staffHotelId,
+  ).overrideWithValue(AsyncData(staffHotelBoard())),
 ];
 
 Widget hostStaffWorkCapture() => const StaffAssignmentsScreen();
@@ -133,3 +139,43 @@ Widget hostStaffDeparturesCapture() => StaffDeparturesScreen(
   hotelId: staffHotelId,
   now: () => DateTime(2026, 12, 15, 9, 40),
 );
+
+Widget hostStaffHotelRoomsCapture() => const StaffHotelRoomListScreen(
+  programId: staffProgramId,
+  hotelId: staffHotelId,
+);
+
+/// The approved allocation at the hotel: three numbered rooms, one shared,
+/// and a twin whose exact room is still to come.
+ProgramLodgingHotelBoard staffHotelBoard() {
+  ProgramLodgingHotelGuest guest(String id, String name) =>
+      ProgramLodgingHotelGuest(
+        guestId: id,
+        displayName: name,
+        arrival: DateTime(2026, 12, 11),
+        departure: DateTime(2026, 12, 14),
+      );
+  ProgramLodgingHotelRoom room(
+    String id,
+    String? label,
+    List<ProgramLodgingHotelGuest> guests,
+  ) => ProgramLodgingHotelRoom(
+    partyId: 'party-$id',
+    inventoryId: id,
+    roomType: 'Deluxe twin',
+    roomLabel: label,
+    guests: guests,
+  );
+  return ProgramLodgingHotelBoard(
+    hotelLabel: 'Lakeview Haveli',
+    rooms: [
+      room('u214', '214', [
+        guest('mehra-a', 'Anil Mehra'),
+        guest('mehra-s', 'Sunita Mehra'),
+      ]),
+      room('u118', '118', [guest('kapoor', 'Ritu Kapoor')]),
+      room('u302', '302', [guest('sethi', 'Vikram Sethi')]),
+      room('ux', null, [guest('pillai', 'Meera Pillai')]),
+    ],
+  );
+}

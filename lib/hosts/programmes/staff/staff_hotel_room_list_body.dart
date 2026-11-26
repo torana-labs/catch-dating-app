@@ -80,8 +80,8 @@ class StaffHotelRoomListBody extends StatelessWidget {
   static String _dates(
     AppLocalizations l10n,
     ({DateTime arrival, DateTime departure}) stay,
-  ) => l10n.programsRoomsBlockWindow(
-    checkIn: AppTimeFormatters.monthDay(stay.arrival),
-    checkOut: AppTimeFormatters.monthDay(stay.departure),
+  ) => l10n.hostStaffTimeRange(
+    start: AppTimeFormatters.monthDay(stay.arrival),
+    end: AppTimeFormatters.monthDay(stay.departure),
   );
 }
