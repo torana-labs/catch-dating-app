@@ -204,10 +204,6 @@ export function listingFromOrganizerDocument(wrapper) {
     facts: publicProfile.facts ?? [],
     eventEvidence: publicProfile.eventEvidence ?? [],
     reviews: publicReviewsForListing(wrapper.reviews ?? [], id),
-    // Organizers no longer store operator fit notes or evidence checklists;
-    // the listing DTO keeps the empty lists until its own contract drops them.
-    fitNotes: [],
-    missingEvidence: [],
     sources: publicSourcesForListing(organizer.publicSources ?? []),
     claim: {
       href: claimHref,
