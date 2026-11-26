@@ -29,8 +29,6 @@ import 'package:catch_dating_app/contexts/payments/data/host_payment_account_rep
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/hosts/create/create_route_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_defaults_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
@@ -73,7 +71,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 part 'host_operations_analytics_team_tests.dart';
-part 'host_operations_customer_add_tests.dart';
 part 'host_operations_organizer_workspace_tests.dart';
 part 'host_operations_presence_tests.dart';
 part 'host_operations_state_events_tests.dart';
@@ -97,7 +94,6 @@ void main() {
 
   _registerHostOperationsStateEventsTests();
   _registerHostOperationsOrganizerWorkspaceTests();
-  _registerHostOperationsCustomerAddTests();
   _registerHostOperationsAnalyticsTeamTests();
   _registerHostOperationsPresenceTests();
   _registerHostOperationsTeamFailuresTests();
