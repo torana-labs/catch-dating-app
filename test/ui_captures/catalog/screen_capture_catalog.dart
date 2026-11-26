@@ -49,7 +49,6 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definitio
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
-import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/contexts/insights/data/user_analytics_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
 import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
@@ -78,7 +77,6 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defau
 import 'package:catch_dating_app/contexts/payments/data/host_membership_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
-import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/onboarding_draft_repository.dart';
@@ -142,8 +140,12 @@ import 'package:catch_dating_app/hosts/forms/form_settings_screen.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_photos_controller.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_photos_state.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
+import 'package:catch_dating_app/hosts/insights/host_insights_controller.dart';
+import 'package:catch_dating_app/hosts/insights/host_insights_screen.dart';
+import 'package:catch_dating_app/hosts/insights/host_insights_state.dart';
 import 'package:catch_dating_app/hosts/live/live_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
+import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_people.dart';
 import 'package:catch_dating_app/hosts/people/messages_state.dart';
 import 'package:catch_dating_app/hosts/people/people_state.dart';
@@ -152,19 +154,16 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_route_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_team_management_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
@@ -216,7 +215,6 @@ import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/brand.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
-import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_platform/device/device_location.dart';
@@ -273,6 +271,7 @@ import '../../hosts/live/formats/formats_captures.dart';
 import '../../hosts/live/live_captures.dart';
 import '../../hosts/onboarding/onboarding_captures.dart';
 import '../../hosts/organizer/organizer_captures.dart';
+import '../../hosts/organizer/organizer_fixtures.dart';
 import '../../hosts/people/people_captures.dart';
 import '../../hosts/people/people_fixtures.dart';
 import '../../hosts/programmes/planner/planner_captures.dart';
@@ -2678,55 +2677,10 @@ Widget _hostReportCapture() => AppRoleCapture(
   ),
 );
 
-Widget _hostPayoutCardCapture() {
-  return AppRoleCapture(
-    role: AppRole.host,
-    child: Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: HostPaymentAccountControllerCard(
-            organizer: HostOperationsFixtures.primaryOrganizer,
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-class _HostTeamSectionCapture extends StatelessWidget {
-  const _HostTeamSectionCapture();
-
-  @override
-  Widget build(BuildContext context) {
-    return AppRoleCapture(
-      role: AppRole.host,
-      child: Scaffold(
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: HostTeamManagementSection(
-              organizer: HostOperationsFixtures.primaryOrganizer,
-              currentUid: HostOperationsFixtures.hostUid,
-              canManage: true,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 enum _HostOrganizersMutationCaptureMode {
   inlinePending,
   inlineError,
   inlineOffline,
-  payoutSetupPending,
-  payoutSetupError,
-  payoutSetupOffline,
-  payoutRefreshPending,
-  payoutRefreshError,
-  payoutRefreshOffline,
   teamPending,
   teamError,
   teamOffline,
@@ -2763,8 +2717,6 @@ class _HostOrganizersMutationCaptureState
 
   void _resetMutations() {
     HostOrganizerEditController.updateOrganizerMutation.reset(ref);
-    HostPaymentAccountController.startOnboardingMutation.reset(ref);
-    HostPaymentAccountController.refreshStatusMutation.reset(ref);
     HostTeamManagementController.addHostMutation.reset(ref);
     HostTeamManagementController.removeHostMutation.reset(ref);
     HostTeamManagementController.transferOwnershipMutation.reset(ref);
@@ -2784,36 +2736,6 @@ class _HostOrganizersMutationCaptureState
       case _HostOrganizersMutationCaptureMode.inlineOffline:
         _runError(
           HostOrganizerEditController.updateOrganizerMutation,
-          obviousOfflineException(),
-        );
-        break;
-      case _HostOrganizersMutationCaptureMode.payoutSetupPending:
-        _runPending(HostPaymentAccountController.startOnboardingMutation);
-        break;
-      case _HostOrganizersMutationCaptureMode.payoutSetupError:
-        _runError(
-          HostPaymentAccountController.startOnboardingMutation,
-          StateError('Capture payout setup failed'),
-        );
-        break;
-      case _HostOrganizersMutationCaptureMode.payoutSetupOffline:
-        _runError(
-          HostPaymentAccountController.startOnboardingMutation,
-          obviousOfflineException(),
-        );
-        break;
-      case _HostOrganizersMutationCaptureMode.payoutRefreshPending:
-        _runPending(HostPaymentAccountController.refreshStatusMutation);
-        break;
-      case _HostOrganizersMutationCaptureMode.payoutRefreshError:
-        _runError(
-          HostPaymentAccountController.refreshStatusMutation,
-          StateError('Capture payout refresh failed'),
-        );
-        break;
-      case _HostOrganizersMutationCaptureMode.payoutRefreshOffline:
-        _runError(
-          HostPaymentAccountController.refreshStatusMutation,
           obviousOfflineException(),
         );
         break;
@@ -3075,16 +2997,6 @@ List<Object> _hostCreateEventProviderOverrides({
       return () async => storage;
     }),
   ];
-}
-
-final class _CaptureLoadingAnalyticsRepository
-    implements HostAnalyticsRepository {
-  const _CaptureLoadingAnalyticsRepository();
-
-  @override
-  Future<HostAnalyticsReport> getHostAnalytics(HostAnalyticsQuery query) {
-    return Completer<HostAnalyticsReport>().future;
-  }
 }
 
 List<Object> _hostEditEventProviderOverrides({
@@ -4996,42 +4908,6 @@ UploadedPhoto _hostOrganizerDetailPhoto(String id, int position) {
     position: position,
     createdAt: DateTime(2025, 1, 12),
     updatedAt: DateTime(2025, 1, 12),
-  );
-}
-
-final _hostMediaReviewOrganizer = HostOperationsFixtures.dinnerOrganizer
-    .copyWith(
-      imageUrl: _organizerHeroPortraitAssetPath,
-      profileImageUrl: _profilePortraitAssetPath,
-      organizerPhotos: [
-        _hostMediaReviewPhoto(
-          'host-media-cover',
-          0,
-          _organizerHeroPortraitAssetPath,
-        ),
-        _hostMediaReviewPhoto(
-          'host-media-gallery-one',
-          1,
-          _profilePortraitAssetPath,
-        ),
-        _hostMediaReviewPhoto(
-          'host-media-gallery-two',
-          2,
-          _organizerHeroPortraitAssetPath,
-        ),
-      ],
-    );
-
-UploadedPhoto _hostMediaReviewPhoto(String id, int position, String assetPath) {
-  return UploadedPhoto(
-    id: id,
-    url: assetPath,
-    storagePath: 'fixtures/$id.jpg',
-    thumbnailUrl: assetPath,
-    thumbnailStoragePath: 'fixtures/$id-thumb.jpg',
-    position: position,
-    createdAt: DateTime(2025, 11, 3),
-    updatedAt: DateTime(2025, 11, 3),
   );
 }
 
@@ -8483,68 +8359,20 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_management',
     routeIds: const <String>['hostOrganizerScreen'],
     device: CaptureDevice.claudePhone390,
-    precache: _hostMediaCaptureImages,
-    providerOverrides: [
-      ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ...hostOperationsProviderOverrides(
-        hostedOrganizers: [_hostMediaReviewOrganizer],
-        ownedOrganizers: [_hostMediaReviewOrganizer],
-      ),
-    ],
-    builder: (context) => const HostRoutedShellCapture(
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => HostRoutedShellCapture(
       initialLocation: '/host/organizer',
       activeIndex: 4,
-      child: HostOrganizersScreen(initialOrganizerId: 'design-host-table-club'),
+      child: organizerTabCapture(),
     ),
   ),
   ScreenCaptureEntry(
     id: 'host_organizer_media_summary',
     routeIds: const <String>['hostOrganizerScreen'],
     device: CaptureDevice.claudePhone390,
-    precache: _hostMediaCaptureImages,
-    builder: (context) => Scaffold(
-      body: SafeArea(
-        child: CatchPageBody(
-          child: CatchSection.fieldRows(
-            title: context.l10n.hostsHostOrganizerProfileTitleMedia,
-            count: context.l10n.coreOrderedPhotoPickerSubtitlePhotoCount(
-              count: 4,
-            ),
-            trailing: CatchButton.text(
-              label: context.l10n.hostsHostOrganizerEditTabActionManageImages,
-              onPressed: () {},
-              padding: EdgeInsets.zero,
-            ),
-            child: Padding(
-              padding: CatchInsets.fieldSectionChildTop,
-              child: HostOrganizerMediaRail(
-                logoImageBytes: _profilePortraitBytes,
-                logoImageUrl: null,
-                photos: [
-                  OrderedPhotoPreview(
-                    id: 'summary-cover',
-                    bytes: _organizerHeroPortraitBytes,
-                  ),
-                  OrderedPhotoPreview(
-                    id: 'summary-gallery-one',
-                    bytes: _profilePortraitBytes,
-                  ),
-                  OrderedPhotoPreview(
-                    id: 'summary-gallery-two',
-                    bytes: _organizerHeroPortraitBytes,
-                  ),
-                ],
-                logoBadgeLabel: context.l10n.hostsHostOrganizerEditTabBadgeLogo,
-                addPhotosLabel: context
-                    .l10n
-                    .hostsCreateOrganizerPhotosPickerVisiblecopyAddPhotos,
-                onManageMedia: () {},
-              ),
-            ),
-          ),
-        ),
-      ),
-    ),
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerPageEditCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_signed_out',
@@ -8552,83 +8380,97 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewTall,
     providerOverrides: [
       uidProvider.overrideWithValue(const AsyncData<String?>(null)),
+      ...organizerCaptureOverrides(),
     ],
     builder: (context) =>
-        const AppRoleCapture(role: AppRole.host, child: HostOrganizersScreen()),
+        const AppRoleCapture(role: AppRole.host, child: OrganizerScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_loading',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(
-      hostedOrganizersAsync: const AsyncLoading<List<Organizer>>(),
-      ownedOrganizersAsync: const AsyncLoading<List<Organizer>>(),
-    ),
+    providerOverrides: [
+      ...hostOperationsProviderOverrides(
+        hostedOrganizersAsync: const AsyncLoading<List<Organizer>>(),
+        ownedOrganizersAsync: const AsyncLoading<List<Organizer>>(),
+      ),
+      ...organizerCaptureOverrides(),
+    ],
     builder: (context) =>
-        const AppRoleCapture(role: AppRole.host, child: HostOrganizersScreen()),
+        const AppRoleCapture(role: AppRole.host, child: OrganizerScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_error',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(
-      ownedOrganizersAsync: AsyncError<List<Organizer>>(
-        StateError('Capture host clubs failed'),
-        StackTrace.empty,
+    providerOverrides: [
+      ...hostOperationsProviderOverrides(
+        ownedOrganizersAsync: AsyncError<List<Organizer>>(
+          StateError('Capture host clubs failed'),
+          StackTrace.empty,
+        ),
       ),
-    ),
+      ...organizerCaptureOverrides(),
+    ],
     builder: (context) =>
-        const AppRoleCapture(role: AppRole.host, child: HostOrganizersScreen()),
+        const AppRoleCapture(role: AppRole.host, child: OrganizerScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_offline',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(
-      ownedOrganizersAsync: AsyncError<List<Organizer>>(
-        obviousOfflineException(),
-        StackTrace.empty,
+    providerOverrides: [
+      ...hostOperationsProviderOverrides(
+        ownedOrganizersAsync: AsyncError<List<Organizer>>(
+          obviousOfflineException(),
+          StackTrace.empty,
+        ),
       ),
-    ),
+      ...organizerCaptureOverrides(),
+    ],
     builder: (context) =>
-        const AppRoleCapture(role: AppRole.host, child: HostOrganizersScreen()),
+        const AppRoleCapture(role: AppRole.host, child: OrganizerScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_empty',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(
-      hostedOrganizers: const <Organizer>[],
-      ownedOrganizers: const <Organizer>[],
-    ),
+    providerOverrides: [
+      ...hostOperationsProviderOverrides(
+        hostedOrganizers: const <Organizer>[],
+        ownedOrganizers: const <Organizer>[],
+      ),
+      ...organizerCaptureOverrides(),
+    ],
     builder: (context) =>
-        const AppRoleCapture(role: AppRole.host, child: HostOrganizersScreen()),
+        const AppRoleCapture(role: AppRole.host, child: OrganizerScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_cohost_edit',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(
-      hostedOrganizers: [HostOperationsFixtures.coHostedOrganizer],
-      ownedOrganizers: const <Organizer>[],
-    ),
-    builder: (context) => const AppRoleCapture(
-      role: AppRole.host,
-      child: HostOrganizersScreen(
-        initialOrganizerId: 'design-host-cohost-club',
+    providerOverrides: [
+      ...hostOperationsProviderOverrides(
+        hostedOrganizers: [HostOperationsFixtures.coHostedOrganizer],
+        ownedOrganizers: const <Organizer>[],
       ),
+      ...organizerCaptureOverrides(),
+    ],
+    builder: (context) => AppRoleCapture(
+      role: AppRole.host,
+      child: organizerManagerPageEditCapture(),
     ),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_inline_edit_pending',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => const _HostOrganizersMutationCapture(
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => _HostOrganizersMutationCapture(
       mode: _HostOrganizersMutationCaptureMode.inlinePending,
       child: AppRoleCapture(
         role: AppRole.host,
-        child: HostOrganizersScreen(initialExpandedEditField: 'name'),
+        child: organizerPageEditCapture(),
       ),
     ),
   ),
@@ -8636,12 +8478,12 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_inline_edit_error',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => const _HostOrganizersMutationCapture(
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => _HostOrganizersMutationCapture(
       mode: _HostOrganizersMutationCaptureMode.inlineError,
       child: AppRoleCapture(
         role: AppRole.host,
-        child: HostOrganizersScreen(initialExpandedEditField: 'name'),
+        child: organizerPageEditCapture(),
       ),
     ),
   ),
@@ -8649,12 +8491,12 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_inline_edit_offline',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => const _HostOrganizersMutationCapture(
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => _HostOrganizersMutationCapture(
       mode: _HostOrganizersMutationCaptureMode.inlineOffline,
       child: AppRoleCapture(
         role: AppRole.host,
-        child: HostOrganizersScreen(initialExpandedEditField: 'name'),
+        child: organizerPageEditCapture(),
       ),
     ),
   ),
@@ -8662,229 +8504,341 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_insights_report',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(),
+    providerOverrides: [
+      ...hostOperationsProviderOverrides(),
+      ...organizerCaptureOverrides(),
+    ],
     builder: (context) => const AppRoleCapture(
       role: AppRole.host,
-      child: HostOrganizersScreen(
-        initialOrganizerId: 'design-host-sea-face',
-        initialTab: HostOrganizerTab.insights,
-      ),
+      child: HostInsightsScreen(initialOrganizerId: 'design-host-sea-face'),
     ),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_insights_loading',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(
-      analyticsRepository: const _CaptureLoadingAnalyticsRepository(),
-    ),
+    providerOverrides: [
+      ...hostOperationsProviderOverrides(),
+      ...organizerCaptureOverrides(),
+      // The report never answers; the controller is held loading directly.
+      hostInsightsControllerProvider.overrideWith(
+        (ref, request) => HostInsightsState.loading(request.range),
+      ),
+    ],
     builder: (context) => const AppRoleCapture(
       role: AppRole.host,
-      child: HostOrganizersScreen(
-        initialOrganizerId: 'design-host-sea-face',
-        initialTab: HostOrganizerTab.insights,
-      ),
+      child: HostInsightsScreen(initialOrganizerId: 'design-host-sea-face'),
     ),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_insights_error',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(
-      analyticsRepository: HostFixtureAnalyticsRepository(
-        error: StateError('Capture host analytics failed'),
+    providerOverrides: [
+      ...hostOperationsProviderOverrides(
+        analyticsRepository: HostFixtureAnalyticsRepository(
+          error: StateError('Capture host analytics failed'),
+        ),
       ),
-    ),
+      ...organizerCaptureOverrides(),
+    ],
     builder: (context) => const AppRoleCapture(
       role: AppRole.host,
-      child: HostOrganizersScreen(
-        initialOrganizerId: 'design-host-sea-face',
-        initialTab: HostOrganizerTab.insights,
-      ),
+      child: HostInsightsScreen(initialOrganizerId: 'design-host-sea-face'),
     ),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_insights_offline',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(
-      analyticsRepository: HostFixtureAnalyticsRepository(
-        error: obviousOfflineException(),
+    providerOverrides: [
+      ...hostOperationsProviderOverrides(
+        analyticsRepository: HostFixtureAnalyticsRepository(
+          error: obviousOfflineException(),
+        ),
       ),
-    ),
+      ...organizerCaptureOverrides(),
+    ],
     builder: (context) => const AppRoleCapture(
       role: AppRole.host,
-      child: HostOrganizersScreen(
-        initialOrganizerId: 'design-host-sea-face',
-        initialTab: HostOrganizerTab.insights,
-      ),
+      child: HostInsightsScreen(initialOrganizerId: 'design-host-sea-face'),
     ),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_preview_tab',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => const AppRoleCapture(
+    providerOverrides: _organizerDetailProviderOverrides(
+      uid: _organizerDetailOrganizer.ownerOrPrimaryHostUserId,
+      membership: _captureMembership(
+        organizerId: _organizerDetailOrganizer.id,
+        uid: _organizerDetailOrganizer.ownerOrPrimaryHostUserId ?? 'host-mira',
+      ),
+      viewModel: AsyncData(
+        _organizerDetailViewModel(
+          uid: _organizerDetailOrganizer.ownerOrPrimaryHostUserId,
+          isHost: true,
+        ),
+      ),
+    ),
+    builder: (context) => AppRoleCapture(
       role: AppRole.host,
-      child: HostOrganizersScreen(initialTab: HostOrganizerTab.preview),
+      child: _organizerDetailScreenCapture(),
     ),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_payout_loading',
-    routeIds: const <String>['hostOrganizersScreen'],
+    routeIds: const <String>['hostOrganizerPaymentsScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: hostOperationsProviderOverrides(
-      paymentAccountValue: const AsyncLoading<HostPaymentAccount?>(),
-    ),
-    builder: (context) => _hostPayoutCardCapture(),
+    providerOverrides: [
+      ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostOperationsProviderOverrides(
+        hostedOrganizers: [organizerCaptureOrganizer],
+        ownedOrganizers: [organizerCaptureOrganizer],
+      ),
+      ...organizerCaptureOverrides(
+        payment: const AsyncLoading<HostFormPaymentSetupState>(),
+      ),
+    ],
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerPaymentsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_payout_ready',
-    routeIds: const <String>['hostOrganizersScreen'],
+    routeIds: const <String>['hostOrganizerPaymentsScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: hostOperationsProviderOverrides(
-      paymentAccountValue: const AsyncData<HostPaymentAccount?>(
-        HostOperationsFixtures.readyPaymentAccount,
+    providerOverrides: [
+      ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostOperationsProviderOverrides(
+        hostedOrganizers: [organizerCaptureOrganizer],
+        ownedOrganizers: [organizerCaptureOrganizer],
       ),
-    ),
-    builder: (context) => _hostPayoutCardCapture(),
+      ...organizerCaptureOverrides(payment: organizerCapturePaymentReady),
+    ],
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerPaymentsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_payout_restricted',
-    routeIds: const <String>['hostOrganizersScreen'],
+    routeIds: const <String>['hostOrganizerPaymentsScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: hostOperationsProviderOverrides(
-      paymentAccountValue: const AsyncData<HostPaymentAccount?>(
-        HostOperationsFixtures.restrictedPaymentAccount,
+    providerOverrides: [
+      ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostOperationsProviderOverrides(
+        hostedOrganizers: [organizerCaptureOrganizer],
+        ownedOrganizers: [organizerCaptureOrganizer],
       ),
-    ),
-    builder: (context) => _hostPayoutCardCapture(),
+      ...organizerCaptureOverrides(
+        payment: AsyncData(
+          HostFormPaymentSetupState(
+            setup: razorpaySetup(
+              ready: false,
+              lastErrorCode: 'account_restricted',
+            ),
+          ),
+        ),
+      ),
+    ],
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerPaymentsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_payout_error',
-    routeIds: const <String>['hostOrganizersScreen'],
+    routeIds: const <String>['hostOrganizerPaymentsScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: hostOperationsProviderOverrides(
-      paymentAccountValue: AsyncError<HostPaymentAccount?>(
-        StateError('Capture payout status failed'),
-        StackTrace.empty,
+    providerOverrides: [
+      ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostOperationsProviderOverrides(
+        hostedOrganizers: [organizerCaptureOrganizer],
+        ownedOrganizers: [organizerCaptureOrganizer],
       ),
-    ),
-    builder: (context) => _hostPayoutCardCapture(),
+      ...organizerCaptureOverrides(
+        payment: AsyncError<HostFormPaymentSetupState>(
+          StateError('Capture payout status failed'),
+          StackTrace.empty,
+        ),
+      ),
+    ],
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerPaymentsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_payout_offline',
-    routeIds: const <String>['hostOrganizersScreen'],
+    routeIds: const <String>['hostOrganizerPaymentsScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: hostOperationsProviderOverrides(
-      paymentAccountValue: AsyncError<HostPaymentAccount?>(
-        obviousOfflineException(),
-        StackTrace.empty,
+    providerOverrides: [
+      ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostOperationsProviderOverrides(
+        hostedOrganizers: [organizerCaptureOrganizer],
+        ownedOrganizers: [organizerCaptureOrganizer],
       ),
-    ),
-    builder: (context) => _hostPayoutCardCapture(),
+      ...organizerCaptureOverrides(
+        payment: AsyncError<HostFormPaymentSetupState>(
+          obviousOfflineException(),
+          StackTrace.empty,
+        ),
+      ),
+    ],
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerPaymentsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_payout_setup_pending',
-    routeIds: const <String>['hostOrganizersScreen'],
+    routeIds: const <String>['hostOrganizerPaymentsScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => _HostOrganizersMutationCapture(
-      mode: _HostOrganizersMutationCaptureMode.payoutSetupPending,
-      child: _hostPayoutCardCapture(),
-    ),
+    providerOverrides: [
+      ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostOperationsProviderOverrides(
+        hostedOrganizers: [organizerCaptureOrganizer],
+        ownedOrganizers: [organizerCaptureOrganizer],
+      ),
+      ...organizerCaptureOverrides(
+        payment: AsyncData(
+          HostFormPaymentSetupState(
+            setup: razorpaySetup(connected: false),
+            pending: true,
+          ),
+        ),
+      ),
+    ],
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerPaymentsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_payout_setup_error',
-    routeIds: const <String>['hostOrganizersScreen'],
+    routeIds: const <String>['hostOrganizerPaymentsScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => _HostOrganizersMutationCapture(
-      mode: _HostOrganizersMutationCaptureMode.payoutSetupError,
-      child: _hostPayoutCardCapture(),
-    ),
+    providerOverrides: [
+      ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostOperationsProviderOverrides(
+        hostedOrganizers: [organizerCaptureOrganizer],
+        ownedOrganizers: [organizerCaptureOrganizer],
+      ),
+      ...organizerCaptureOverrides(
+        payment: AsyncData(
+          HostFormPaymentSetupState(
+            setup: razorpaySetup(connected: false),
+            error: StateError('Capture payout setup failed'),
+          ),
+        ),
+      ),
+    ],
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerPaymentsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_payout_setup_offline',
-    routeIds: const <String>['hostOrganizersScreen'],
+    routeIds: const <String>['hostOrganizerPaymentsScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => _HostOrganizersMutationCapture(
-      mode: _HostOrganizersMutationCaptureMode.payoutSetupOffline,
-      child: _hostPayoutCardCapture(),
-    ),
+    providerOverrides: [
+      ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostOperationsProviderOverrides(
+        hostedOrganizers: [organizerCaptureOrganizer],
+        ownedOrganizers: [organizerCaptureOrganizer],
+      ),
+      ...organizerCaptureOverrides(
+        payment: AsyncData(
+          HostFormPaymentSetupState(
+            setup: razorpaySetup(connected: false),
+            error: obviousOfflineException(),
+          ),
+        ),
+      ),
+    ],
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerPaymentsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_payout_refresh_pending',
-    routeIds: const <String>['hostOrganizersScreen'],
+    routeIds: const <String>['hostOrganizerPaymentsScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: hostOperationsProviderOverrides(
-      paymentAccountValue: const AsyncData<HostPaymentAccount?>(
-        HostOperationsFixtures.readyPaymentAccount,
+    providerOverrides: [
+      ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostOperationsProviderOverrides(
+        hostedOrganizers: [organizerCaptureOrganizer],
+        ownedOrganizers: [organizerCaptureOrganizer],
       ),
-    ),
-    builder: (context) => _HostOrganizersMutationCapture(
-      mode: _HostOrganizersMutationCaptureMode.payoutRefreshPending,
-      child: _hostPayoutCardCapture(),
-    ),
+      ...organizerCaptureOverrides(
+        payment: AsyncData(
+          HostFormPaymentSetupState(setup: razorpaySetup(), pending: true),
+        ),
+      ),
+    ],
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerPaymentsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_payout_refresh_error',
-    routeIds: const <String>['hostOrganizersScreen'],
+    routeIds: const <String>['hostOrganizerPaymentsScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: hostOperationsProviderOverrides(
-      paymentAccountValue: const AsyncData<HostPaymentAccount?>(
-        HostOperationsFixtures.readyPaymentAccount,
+    providerOverrides: [
+      ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostOperationsProviderOverrides(
+        hostedOrganizers: [organizerCaptureOrganizer],
+        ownedOrganizers: [organizerCaptureOrganizer],
       ),
-    ),
-    builder: (context) => _HostOrganizersMutationCapture(
-      mode: _HostOrganizersMutationCaptureMode.payoutRefreshError,
-      child: _hostPayoutCardCapture(),
-    ),
+      ...organizerCaptureOverrides(
+        payment: AsyncData(
+          HostFormPaymentSetupState(
+            setup: razorpaySetup(),
+            error: StateError('Capture payout refresh failed'),
+          ),
+        ),
+      ),
+    ],
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerPaymentsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_payout_refresh_offline',
-    routeIds: const <String>['hostOrganizersScreen'],
+    routeIds: const <String>['hostOrganizerPaymentsScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: hostOperationsProviderOverrides(
-      paymentAccountValue: const AsyncData<HostPaymentAccount?>(
-        HostOperationsFixtures.readyPaymentAccount,
+    providerOverrides: [
+      ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostOperationsProviderOverrides(
+        hostedOrganizers: [organizerCaptureOrganizer],
+        ownedOrganizers: [organizerCaptureOrganizer],
       ),
-    ),
-    builder: (context) => _HostOrganizersMutationCapture(
-      mode: _HostOrganizersMutationCaptureMode.payoutRefreshOffline,
-      child: _hostPayoutCardCapture(),
-    ),
+      ...organizerCaptureOverrides(
+        payment: AsyncData(
+          HostFormPaymentSetupState(
+            setup: razorpaySetup(),
+            error: obviousOfflineException(),
+          ),
+        ),
+      ),
+    ],
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerPaymentsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_team_pending',
-    routeIds: const <String>['hostOrganizersScreen'],
+    routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => const _HostOrganizersMutationCapture(
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => _HostOrganizersMutationCapture(
       mode: _HostOrganizersMutationCaptureMode.teamPending,
-      child: _HostTeamSectionCapture(),
+      child: AppRoleCapture(role: AppRole.host, child: organizerTeamCapture()),
     ),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_team_error',
-    routeIds: const <String>['hostOrganizersScreen'],
+    routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => const _HostOrganizersMutationCapture(
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => _HostOrganizersMutationCapture(
       mode: _HostOrganizersMutationCaptureMode.teamError,
-      child: _HostTeamSectionCapture(),
+      child: AppRoleCapture(role: AppRole.host, child: organizerTeamCapture()),
     ),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_team_offline',
-    routeIds: const <String>['hostOrganizersScreen'],
+    routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => const _HostOrganizersMutationCapture(
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => _HostOrganizersMutationCapture(
       mode: _HostOrganizersMutationCaptureMode.teamOffline,
-      child: _HostTeamSectionCapture(),
+      child: AppRoleCapture(role: AppRole.host, child: organizerTeamCapture()),
     ),
   ),
   ScreenCaptureEntry(
@@ -8892,134 +8846,132 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
     textScale: 2,
-    providerOverrides: hostOperationsProviderOverrides(),
+    providerOverrides: _organizerCaptureOverrides(),
     builder: (context) =>
-        const AppRoleCapture(role: AppRole.host, child: HostOrganizersScreen()),
+        AppRoleCapture(role: AppRole.host, child: organizerTabCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_reduced_motion',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
     disableAnimations: true,
-    providerOverrides: hostOperationsProviderOverrides(),
+    providerOverrides: _organizerCaptureOverrides(),
     builder: (context) =>
-        const AppRoleCapture(role: AppRole.host, child: HostOrganizersScreen()),
+        AppRoleCapture(role: AppRole.host, child: organizerTabCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_light_dark',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(),
+    providerOverrides: _organizerCaptureOverrides(),
     builder: (context) =>
-        const AppRoleCapture(role: AppRole.host, child: HostOrganizersScreen()),
+        AppRoleCapture(role: AppRole.host, child: organizerTabCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_team_active_profile',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => const AppRoleCapture(
-      role: AppRole.host,
-      child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
-    ),
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerSettingsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_team_text_scale_2',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
     textScale: 2,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => const AppRoleCapture(
-      role: AppRole.host,
-      child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
-    ),
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerSettingsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_team_reduced_motion',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
     disableAnimations: true,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => const AppRoleCapture(
-      role: AppRole.host,
-      child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
-    ),
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerSettingsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_team_fallback_profile',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(
-      hostProfile: const AsyncData<HostProfile?>(null),
-    ),
-    builder: (context) => const AppRoleCapture(
-      role: AppRole.host,
-      child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
-    ),
+    providerOverrides: [
+      ...hostOperationsProviderOverrides(
+        hostedOrganizers: [organizerCaptureOrganizer],
+        ownedOrganizers: [organizerCaptureOrganizer],
+        hostProfile: const AsyncData<HostProfile?>(null),
+      ),
+      ...organizerCaptureOverrides(),
+    ],
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerSettingsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_team_clubs_loading',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(
-      hostedOrganizersAsync: const AsyncLoading<List<Organizer>>(),
-      ownedOrganizersAsync: const AsyncLoading<List<Organizer>>(),
-    ),
-    builder: (context) => const AppRoleCapture(
-      role: AppRole.host,
-      child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
-    ),
+    providerOverrides: [
+      ...hostOperationsProviderOverrides(
+        hostedOrganizersAsync: const AsyncLoading<List<Organizer>>(),
+        ownedOrganizersAsync: const AsyncLoading<List<Organizer>>(),
+      ),
+      ...organizerCaptureOverrides(),
+    ],
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerSettingsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_team_clubs_error',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(
-      hostedOrganizersAsync: AsyncError<List<Organizer>>(
-        StateError('Capture hosted clubs failed'),
-        StackTrace.empty,
+    providerOverrides: [
+      ...hostOperationsProviderOverrides(
+        hostedOrganizersAsync: AsyncError<List<Organizer>>(
+          StateError('Capture hosted clubs failed'),
+          StackTrace.empty,
+        ),
       ),
-    ),
-    builder: (context) => const AppRoleCapture(
-      role: AppRole.host,
-      child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
-    ),
+      ...organizerCaptureOverrides(),
+    ],
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerSettingsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_team_clubs_offline',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(
-      hostedOrganizersAsync: AsyncError<List<Organizer>>(
-        obviousOfflineException(),
-        StackTrace.empty,
+    providerOverrides: [
+      ...hostOperationsProviderOverrides(
+        hostedOrganizersAsync: AsyncError<List<Organizer>>(
+          obviousOfflineException(),
+          StackTrace.empty,
+        ),
       ),
-    ),
-    builder: (context) => const AppRoleCapture(
-      role: AppRole.host,
-      child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
-    ),
+      ...organizerCaptureOverrides(),
+    ],
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerSettingsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_team_inline_profile_edit',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => const AppRoleCapture(
-      role: AppRole.host,
-      child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
-    ),
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) =>
+        AppRoleCapture(role: AppRole.host, child: organizerSettingsCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_team_save_profile_pending',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => const AppRoleCapture(
-      role: AppRole.host,
-      child: _HostProfileMutationCapture(
-        mode: _HostProfileMutationCaptureMode.savePending,
-        child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => _HostProfileMutationCapture(
+      mode: _HostProfileMutationCaptureMode.savePending,
+      child: AppRoleCapture(
+        role: AppRole.host,
+        child: organizerSettingsCapture(),
       ),
     ),
   ),
@@ -9027,12 +8979,12 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_team_save_profile_error',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => const AppRoleCapture(
-      role: AppRole.host,
-      child: _HostProfileMutationCapture(
-        mode: _HostProfileMutationCaptureMode.saveError,
-        child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => _HostProfileMutationCapture(
+      mode: _HostProfileMutationCaptureMode.saveError,
+      child: AppRoleCapture(
+        role: AppRole.host,
+        child: organizerSettingsCapture(),
       ),
     ),
   ),
@@ -9040,12 +8992,12 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_team_save_profile_offline',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => const AppRoleCapture(
-      role: AppRole.host,
-      child: _HostProfileMutationCapture(
-        mode: _HostProfileMutationCaptureMode.saveOffline,
-        child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => _HostProfileMutationCapture(
+      mode: _HostProfileMutationCaptureMode.saveOffline,
+      child: AppRoleCapture(
+        role: AppRole.host,
+        child: organizerSettingsCapture(),
       ),
     ),
   ),
@@ -9053,12 +9005,12 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_team_sign_out_error',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => const AppRoleCapture(
-      role: AppRole.host,
-      child: _HostProfileMutationCapture(
-        mode: _HostProfileMutationCaptureMode.signOutError,
-        child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => _HostProfileMutationCapture(
+      mode: _HostProfileMutationCaptureMode.signOutError,
+      child: AppRoleCapture(
+        role: AppRole.host,
+        child: organizerSettingsCapture(),
       ),
     ),
   ),
@@ -9066,12 +9018,12 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_team_sign_out_offline',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: hostOperationsProviderOverrides(),
-    builder: (context) => const AppRoleCapture(
-      role: AppRole.host,
-      child: _HostProfileMutationCapture(
-        mode: _HostProfileMutationCaptureMode.signOutOffline,
-        child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => _HostProfileMutationCapture(
+      mode: _HostProfileMutationCaptureMode.signOutOffline,
+      child: AppRoleCapture(
+        role: AppRole.host,
+        child: organizerSettingsCapture(),
       ),
     ),
   ),

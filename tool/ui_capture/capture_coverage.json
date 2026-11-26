@@ -1194,23 +1194,9 @@
         "host_clubs_reduced_motion",
         "host_clubs_light_dark",
         "host_clubs_signed_out",
-        "host_clubs_payout_loading",
-        "host_clubs_payout_ready",
-        "host_clubs_payout_restricted",
-        "host_clubs_payout_error",
-        "host_clubs_payout_offline",
         "host_clubs_inline_edit_pending",
         "host_clubs_inline_edit_error",
-        "host_clubs_inline_edit_offline",
-        "host_clubs_payout_setup_pending",
-        "host_clubs_payout_setup_error",
-        "host_clubs_payout_setup_offline",
-        "host_clubs_payout_refresh_pending",
-        "host_clubs_payout_refresh_error",
-        "host_clubs_payout_refresh_offline",
-        "host_clubs_team_pending",
-        "host_clubs_team_error",
-        "host_clubs_team_offline"
+        "host_clubs_inline_edit_offline"
       ],
       "reason": "The legacy Host Clubs utility surface remains captured for signed-out, loading, generic/offline load errors, empty, co-host edit, inline editor pending/error/offline, preview, payout provider and mutation states, host-team mutation states, text scale 2.0, reduced motion, and paired light/dark output. Primary Organizer and Insights ownership now lives on their dedicated routes."
     },
@@ -1245,7 +1231,10 @@
         "host_team_save_profile_offline",
         "host_team_sign_out_error",
         "host_team_sign_out_offline",
-        "host_organizer_team_phone"
+        "host_organizer_team_phone",
+        "host_clubs_team_pending",
+        "host_clubs_team_error",
+        "host_clubs_team_offline"
       ]
     },
     {
@@ -1254,7 +1243,18 @@
       "priority": "P2",
       "reason": "The rebuilt Payments and billing screen is captured at phone with Razorpay connected, the current bill against its cap, the plan and the bill rows.",
       "captureIds": [
-        "host_organizer_payments_phone"
+        "host_organizer_payments_phone",
+        "host_clubs_payout_loading",
+        "host_clubs_payout_ready",
+        "host_clubs_payout_restricted",
+        "host_clubs_payout_error",
+        "host_clubs_payout_offline",
+        "host_clubs_payout_setup_pending",
+        "host_clubs_payout_setup_error",
+        "host_clubs_payout_setup_offline",
+        "host_clubs_payout_refresh_pending",
+        "host_clubs_payout_refresh_error",
+        "host_clubs_payout_refresh_offline"
       ]
     },
     {

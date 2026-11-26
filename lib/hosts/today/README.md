@@ -80,7 +80,6 @@ Typed handoffs:
 - `test/hosts/today/host_today_controller_test.dart`
 - `test/hosts/today/host_today_body_test.dart`
 - `test/hosts/today/host_today_parts_test.dart`
-- `test/hosts/host_operations_screen_test.dart`
 
 ## Maintenance
 
