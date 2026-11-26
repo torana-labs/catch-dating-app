@@ -4113,12 +4113,6 @@ abstract class AppLocalizations {
   /// **'Pinned location'**
   String get eventsMapPinTileTitlePinnedLocation;
 
-  /// Product copy used by lib/events/shared/map_pin_tile.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Choose on map'**
-  String get eventsMapPinTileTitleChooseOnMap;
-
   /// Product copy used by lib/explore/presentation/explore_map_screen.dart (tooltip).
   ///
   /// In en, this message translates to:
@@ -4492,18 +4486,6 @@ abstract class AppLocalizations {
   /// **'Remove'**
   String get hostsCreateOrganizerPhotosPickerActionRemoveLogo;
 
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Decrease duration'**
-  String get hostsEditHostedEventScreenBodyDecreaseDuration;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Increase duration'**
-  String get hostsEditHostedEventScreenBodyIncreaseDuration;
-
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
   ///
   /// In en, this message translates to:
@@ -4528,24 +4510,6 @@ abstract class AppLocalizations {
   /// **'Required'**
   String get hostsEditHostedEventScreenBodyRequired;
 
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Extra directions'**
-  String get hostsEditHostedEventScreenTitleExtraDirections;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (placeholder).
-  ///
-  /// In en, this message translates to:
-  /// **'e.g. Meet outside the blue gate, third entrance'**
-  String get hostsEditHostedEventScreenPlaceholderEGMeetOutside;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Distance (km)'**
-  String get hostsEditHostedEventScreenTitleDistanceKm;
-
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (body).
   ///
   /// In en, this message translates to:
@@ -4563,30 +4527,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Must be > 0'**
   String get hostsEditHostedEventScreenBodyMustBe0;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Description'**
-  String get hostsEditHostedEventScreenTitleDescription;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (placeholder).
-  ///
-  /// In en, this message translates to:
-  /// **'What should attendees expect? Any tips for the route or venue?'**
-  String get hostsEditHostedEventScreenPlaceholderWhatShouldAttendeesExpect;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Event date'**
-  String get hostsEditHostedEventScreenTitleEventDate;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Start time'**
-  String get hostsEditHostedEventScreenTitleStartTime;
 
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
   ///
@@ -4635,12 +4575,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Editable until the first booking or waitlist join.'**
   String get hostsEditHostedEventScreenTextEditableUntilTheFirst;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Max attendees'**
-  String get hostsEditHostedEventScreenTitleMaxAttendees;
 
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (Text).
   ///
@@ -4743,30 +4677,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Schedule changes are blocked here to avoid changing attendee commitments.'**
   String get hostsEditHostedEventScreenTextScheduleChangesAreBlocked;
-
-  /// Product copy used by lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Event basics'**
-  String get hostsHostCreateEventRouteLoadingScreenTitleEventBasics;
-
-  /// Product copy used by lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Loading organizer'**
-  String get hostsHostCreateEventRouteLoadingScreenBodyLoadingOrganizer;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Event name'**
-  String get hostsEventDetailsStepTitleEventName;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (placeholder).
-  ///
-  /// In en, this message translates to:
-  /// **'Friday night social'**
-  String get hostsEventDetailsStepPlaceholderEventName;
 
   /// Product copy used by lib/hosts/create/create_screen.dart (title).
   ///
@@ -6754,38 +6664,8 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Schedule'**
-  String get hostsEditHostedEventScreenLabelSchedule;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Duration'**
-  String get hostsEditHostedEventScreenLabelDuration;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Where'**
-  String get hostsEditHostedEventScreenLabelWhere;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Event details'**
-  String get hostsEditHostedEventScreenLabelEventDetails;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).
-  ///
-  /// In en, this message translates to:
   /// **'Event policy'**
   String get hostsEditHostedEventScreenLabelEventPolicy;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Locked'**
-  String get hostsEditHostedEventScreenLabelLocked;
 
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).
   ///
@@ -7063,18 +6943,6 @@ abstract class AppLocalizations {
   /// **'Photographer'**
   String get hostsRouteEventPlanRolePhotographer;
 
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Pace level'**
-  String get hostsEventDetailsStepLabelPaceLevel;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Meeting location'**
-  String get hostsWhereStepLabelMeetingLocation;
-
   /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (title).
   ///
   /// In en, this message translates to:
@@ -7309,14 +7177,6 @@ abstract class AppLocalizations {
   /// **'Show {remainingCount} more activity types'**
   String exploreExploreEventTypeBrowseGridLabelShowRemainingcountMoreActivity({
     required Object remainingCount,
-  });
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Base price ({currencyCode})'**
-  String hostsEditHostedEventScreenTitleBasePriceCurrencycode({
-    required Object currencyCode,
   });
 
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
@@ -9112,12 +8972,6 @@ abstract class AppLocalizations {
   String eventsEventJoinedCelebrationScreenMessageWithOrganizername({
     required Object organizerName,
   });
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_route_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Edit event'**
-  String get hostsEditHostedEventRouteScreenTitleEditEvent;
 
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_route_screen.dart (title).
   ///
@@ -15461,12 +15315,6 @@ abstract class AppLocalizations {
   /// **'Required'**
   String get sharedValidationRequired;
 
-  /// Shared validation message for an invalid field value.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid'**
-  String get sharedValidationInvalid;
-
   /// Shared validation message for positive integer inputs.
   ///
   /// In en, this message translates to:
@@ -15862,12 +15710,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Event updated.'**
   String get hostsEventEditUpdated;
-
-  /// Validation message for a missing event starting point.
-  ///
-  /// In en, this message translates to:
-  /// **'Pin a starting point before saving.'**
-  String get hostsEventEditMissingStartingPoint;
 
   /// Validation message for an invalid Host event schedule.
   ///
@@ -23497,107 +23339,17 @@ abstract class AppLocalizations {
   /// **'Host and authorized operators'**
   String get hostsRouteEventPlanTrackingOperators;
 
-  /// Event itinerary editor section title.
-  ///
-  /// In en, this message translates to:
-  /// **'Run of show'**
-  String get hostsEventItineraryTitle;
-
-  /// Itinerary relative start time.
-  ///
-  /// In en, this message translates to:
-  /// **'Starts {minutes} minutes after the event begins'**
-  String hostsEventItineraryOffset({required int minutes});
-
-  /// Edit itinerary entry action.
-  ///
-  /// In en, this message translates to:
-  /// **'Edit'**
-  String get hostsEventItineraryEdit;
-
-  /// Add itinerary entry title.
-  ///
-  /// In en, this message translates to:
-  /// **'Add itinerary step'**
-  String get hostsEventItineraryAdd;
-
-  /// Add itinerary entry guidance.
-  ///
-  /// In en, this message translates to:
-  /// **'Publish real timing, stops, transitions, and locations for attendees.'**
-  String get hostsEventItineraryAddBody;
-
-  /// Add itinerary entry action.
-  ///
-  /// In en, this message translates to:
-  /// **'Add step'**
-  String get hostsEventItineraryAddAction;
-
-  /// New itinerary entry dialog title.
-  ///
-  /// In en, this message translates to:
-  /// **'Add run-of-show step'**
-  String get hostsEventItineraryDialogAdd;
-
-  /// Existing itinerary entry dialog title.
-  ///
-  /// In en, this message translates to:
-  /// **'Edit run-of-show step'**
-  String get hostsEventItineraryDialogEdit;
-
-  /// Delete itinerary entry action.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete'**
-  String get hostsEventItineraryDelete;
-
-  /// Save itinerary entry action.
-  ///
-  /// In en, this message translates to:
-  /// **'Save step'**
-  String get hostsEventItinerarySave;
-
-  /// Itinerary entry title field.
-  ///
-  /// In en, this message translates to:
-  /// **'Step title'**
-  String get hostsEventItineraryFieldTitle;
-
-  /// Itinerary entry title hint.
-  ///
-  /// In en, this message translates to:
-  /// **'Gather, activity, stop, or finish'**
-  String get hostsEventItineraryFieldTitleHint;
-
   /// Itinerary offset field.
   ///
   /// In en, this message translates to:
   /// **'Minutes after start'**
   String get hostsEventItineraryFieldOffset;
 
-  /// Itinerary duration field.
-  ///
-  /// In en, this message translates to:
-  /// **'Duration in minutes'**
-  String get hostsEventItineraryFieldDuration;
-
-  /// Itinerary guidance field.
-  ///
-  /// In en, this message translates to:
-  /// **'Attendee guidance'**
-  String get hostsEventItineraryFieldDescription;
-
   /// Itinerary entry kind field.
   ///
   /// In en, this message translates to:
   /// **'Step type'**
   String get hostsEventItineraryFieldKind;
-
-  /// Copies meeting location into itinerary entry.
-  ///
-  /// In en, this message translates to:
-  /// **'Use the event meeting point'**
-  String get hostsEventItineraryUseMeetingPoint;
 
   /// Optional exact location field for an itinerary entry.
   ///
@@ -33523,12 +33275,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Describe step-free access, seating, accessible toilets or activity demands.'**
   String get hostsEventAccessibilityHint;
-
-  /// Saves both public guest notes on private event setup.
-  ///
-  /// In en, this message translates to:
-  /// **'Save guest information'**
-  String get hostsEventGuestDetailsSave;
 
   /// Confirmation before a Host deletes their Catch account; explains shared business records and ownership.
   ///
