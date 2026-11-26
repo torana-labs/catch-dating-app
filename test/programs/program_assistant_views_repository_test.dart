@@ -122,12 +122,21 @@ void main() {
     expect(programMessageSenderFromView(null), isNull);
   });
 
-  test('a duty without communications is denied the sender', () async {
-    final firestore = await seeded(access(duties: {'airportGreeter': hour}));
-    await expectLater(
-      repository(firestore).watchSenderView('p1', 'u1'),
-      emitsError(isA<PermissionException>()),
-    );
+  test('guest relations reads the sender for the inbox header', () async {
+    final firestore = await seeded(access(duties: {'guestRelations': hour}));
+    final view = await repository(firestore).watchSenderView('p1', 'u1').first;
+    expect(programWhatsappSenderFromView(view)!.connectionId, 'conn-bound');
+  });
+
+  test('a duty that does not talk to guests is denied the sender', () async {
+    for (final duty in ['airportGreeter', 'functionCheckIn']) {
+      final firestore = await seeded(access(duties: {duty: hour}));
+      await expectLater(
+        repository(firestore).watchSenderView('p1', 'u1'),
+        emitsError(isA<PermissionException>()),
+        reason: duty,
+      );
+    }
   });
 
   test('the coordinator reads the settings with only live staff', () async {

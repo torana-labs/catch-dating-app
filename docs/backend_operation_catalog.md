@@ -586,7 +586,7 @@ retention sweep. A planner reply names its author by `authorUid` and, since
 the author-label change, by `authorLabel`: the author's display name copied
 from their staff grant when the reply is written (null for the assistant and
 for the owner, who holds no grant; filled onto earlier replies by the
-`program-whatsapp-author-labels` migration), so communications staff, who
+`program-whatsapp-author-labels` migration), so inbox staff, who
 cannot read `programStaffViews`, still see who answered. Opening a thread used to mark it read; that write is
 now `markProgramWhatsappThreadRead` (same payload, same access, a no-op on an
 archived programme or an already read thread), which answers the thread's
@@ -597,7 +597,8 @@ thread by a trigger. `listProgramWhatsappCannedReplies` becomes a direct read of
 unless asked and orders by `sortOrder`, then label); saving stays
 `upsertProgramWhatsappCannedReply`. `getProgramWhatsappThread` and
 `listProgramWhatsappCannedReplies` were retired in Nov 2026. Current Host builds read all of this through listeners
-gated on the communications duty (`ProgramInboxViewsRepository`): the thread
+gated on the inbox duties, communications or guest relations
+(`ProgramInboxViewsRepository`; staff open it from their jobs page): the thread
 rows a page of 50 at a time up to 500, a conversation's newest 200 messages
 (`truncated` when more exist), the saved replies up to 100. Opening a thread
 marks it read once per revision, and the next handling command is fenced by
@@ -747,7 +748,8 @@ household's `programWhatsappThreads` thread; a STOP revokes the household's
 messaging consent and keeps the organiser suppression path.
 `listProgramWhatsappThreads` (the sender header), `markProgramWhatsappThreadRead`
 and `setProgramWhatsappThreadHandling` are the planner inbox commands and reads
-(managers and the communications duty). `sendProgramWhatsappReply` sends free text only inside
+(managers and the inbox duties, communications and guest relations; saving a
+saved reply stays communications). `sendProgramWhatsappReply` sends free text only inside
 the 24-hour window: a `programWhatsappReplyOperations` reservation precedes
 the Meta call, an uncertain outcome stays unknown, and a
 `whatsappDispatches` record (`source: program`, `kind: service`) routes delivery

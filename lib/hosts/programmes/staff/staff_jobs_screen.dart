@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/programmes/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_routes.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_jobs_body.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_jobs_state.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -19,7 +20,8 @@ import 'package:go_router/go_router.dart';
 /// It reads the programme's work access (offline it reopens from the
 /// phone's saved copy, shown with its time). A join link's invite is
 /// claimed first, then the route is replaced with the programme's own, so
-/// the invite is never reopened. Every destination checks its own access.
+/// the invite is never reopened. Every destination checks its own access;
+/// Inbox opens the programme guest inbox.
 class StaffJobsScreen extends ConsumerStatefulWidget {
   const StaffJobsScreen({
     super.key,
@@ -181,13 +183,7 @@ class _StaffJobsScreenState extends ConsumerState<StaffJobsScreen> {
           queryParameters: {'title': ?access?.title},
         );
       case StaffJobLink.inbox:
-        context.pushNamed(
-          Routes.hostInboxScreen.name,
-          queryParameters: {
-            'programId': programId,
-            'organizerId': ?access?.organizerId,
-          },
-        );
+        openHostProgrammePage(context, programId, HostProgrammePage.inbox);
       case StaffJobLink.guests:
         context.pushNamed(
           Routes.hostWorkGuestsScreen.name,

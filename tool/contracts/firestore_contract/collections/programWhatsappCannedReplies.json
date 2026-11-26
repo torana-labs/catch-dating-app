@@ -6,13 +6,13 @@
   "rulesTestFile": "functions/test/rules/program_batch5_reads.rules.test.cjs",
   "owner": "upsertProgramWhatsappCannedReply callable",
   "writerContext": "programmes",
-  "read": "get and list (query naming programId) for the programme owner and the communications duty (programAccessViews), while not deleted",
+  "read": "get and list (query naming programId) for the programme owner and the inbox duties, communications and guest relations (programAccessViews), while not deleted",
   "write": "server only",
   "migrationNotes": [
     "A saved inbox reply with one text per language.",
     "Deleted by the archive retention sweep."
   ],
   "rulesTestNames": [
-    "reads saved replies and photo records by the same duty"
+    "reads saved replies by the inbox duties, photos by communications"
   ]
 }
