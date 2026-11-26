@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
@@ -73,8 +74,80 @@ enum CreateAdmission {
       preset == invite.preset ? invite : open;
 }
 
-/// What the create command has not been sent yet, or why a step cannot move.
-enum CreateProblem { name, format, date, start, end, place, price }
+/// What the create command has not been sent yet, why a step cannot move,
+/// or what an edit cannot be saved without.
+enum CreateProblem {
+  name,
+  format,
+  date,
+  start,
+  end,
+  place,
+  price,
+
+  /// Editing: the distance of a moving event is missing or not above zero.
+  distance,
+
+  /// Editing: the new start is not in the future.
+  schedule,
+
+  /// Editing: the place has no name guests will see.
+  placeName,
+
+  /// Editing: the places are not at least one.
+  capacity,
+
+  /// Editing: an invite-only event's code is missing or the wrong length.
+  inviteCode,
+
+  /// Editing: a cohort cap is not a whole number above zero.
+  cohortCaps,
+
+  /// Editing: demand pricing's step or maximum is missing.
+  demandPricing,
+}
+
+/// What editing a saved event adds to the editor: the event as saved, what
+/// its bookings lock, and the invite code read from its private access.
+@immutable
+class CreateEditFacts {
+  const CreateEditFacts({
+    required this.event,
+    required this.scheduleLocked,
+    required this.policyLocked,
+    this.inviteCodeLoading = false,
+    this.inviteCodeSeed = 0,
+  });
+
+  /// The event as it was when editing started.
+  final Event event;
+
+  /// The date and times can no longer change.
+  final bool scheduleLocked;
+
+  /// Capacity, price, admission and invite setup can no longer change.
+  final bool policyLocked;
+
+  /// The current invite code is still being read.
+  final bool inviteCodeLoading;
+
+  /// Bumped when the invite code read fills the field, so it redraws.
+  final int inviteCodeSeed;
+
+  /// A cancelled event is shown but nothing on it can change.
+  bool get cancelled => event.isCancelled;
+
+  String get currencyCode => event.currency;
+
+  CreateEditFacts copyWith({bool? inviteCodeLoading, int? inviteCodeSeed}) =>
+      CreateEditFacts(
+        event: event,
+        scheduleLocked: scheduleLocked,
+        policyLocked: policyLocked,
+        inviteCodeLoading: inviteCodeLoading ?? this.inviteCodeLoading,
+        inviteCodeSeed: inviteCodeSeed ?? this.inviteCodeSeed,
+      );
+}
 
 /// Everything the four steps and the share screen show, as plain values.
 ///
@@ -102,6 +175,7 @@ class CreateFlowState {
     this.planVisible = true,
     this.repeatWeekly = false,
     this.seriesEventIds = const <String>[],
+    this.edit,
     this.error,
   });
 
@@ -143,7 +217,13 @@ class CreateFlowState {
 
   /// The series' events after Publish, the first one included.
   final List<String> seriesEventIds;
+
+  /// Set when the editor changes a saved event instead of creating one.
+  final CreateEditFacts? edit;
   final Object? error;
+
+  /// Fields can change: false while saving and on a cancelled event.
+  bool get canChange => !working && !(edit?.cancelled ?? false);
 
   CreateFormat? get format => CreateFormat.fromActivityKind(draft.activityKind);
   CreateAdmission get admission =>
@@ -180,6 +260,7 @@ class CreateFlowState {
     bool? planVisible,
     bool? repeatWeekly,
     List<String>? seriesEventIds,
+    CreateEditFacts? edit,
     Object? error,
     bool clearError = false,
   }) => CreateFlowState(
@@ -201,6 +282,7 @@ class CreateFlowState {
     planVisible: planVisible ?? this.planVisible,
     repeatWeekly: repeatWeekly ?? this.repeatWeekly,
     seriesEventIds: seriesEventIds ?? this.seriesEventIds,
+    edit: edit ?? this.edit,
     error: clearError ? null : error ?? this.error,
   );
 }
