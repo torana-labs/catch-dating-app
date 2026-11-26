@@ -2,7 +2,7 @@ import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {ReactNode} from "react";
 import {ReferenceComparison} from "../stories/referenceScreens";
 import {StoryPage} from "../stories/websiteV2Story";
-import {CatchAvatar, type CatchAvatarColors} from "./CatchAvatar";
+import {CatchAvatar, catchAvatarColors, catchAvatarSizes, type CatchAvatarColors, type CatchAvatarSize} from "./CatchAvatar";
 import {CatchAvatarRow} from "./CatchAvatarRow";
 import {CatchBand} from "./CatchBand";
 import {CatchGap} from "./CatchGap";
@@ -28,6 +28,7 @@ const dinner: CatchAvatarColors = {
   soft: "color-mix(in srgb, var(--catch-format-dinner-accent) 18%, var(--catch-palette-white))",
 };
 const countLabel = (count: number) => `+${count}`;
+const systemSizes = Object.keys(catchAvatarSizes) as CatchAvatarSize[];
 
 function State({children, label}: {children: ReactNode; label: string}) {
   return (
@@ -48,6 +49,7 @@ function States() {
         <State label="activity-dim"><CatchAvatar colors={dinner} dim initials="DN" name="Dinner" size={56} /></State>
         <State label="ring"><CatchAvatar borderColor="var(--catch-theme-primary)" borderWidth={2} name="Mira Shah" size={64} /></State>
         <State label="status-dot"><CatchAvatar name="Noor Khan" size={56} status="online" /></State>
+        <State label="status-checked-in"><CatchAvatar name="Tara Iyer" size={48} status="checkedIn" /></State>
         <State label="obscured"><CatchAvatar name="Private guest" obscured size={56} /></State>
         <State label="square"><CatchAvatar name="Host team" size={56} variant="square" /></State>
         <State label="count"><CatchAvatar count={19} countLabelBuilder={countLabel} recipe="count" size={48} /></State>
@@ -56,6 +58,19 @@ function States() {
         <State label="monogram"><CatchAvatar ground="pink" name="Riya S." recipe="monogram" size={36} /></State>
         <State label="monogram-display">
           <CatchAvatar borderColor="var(--catch-palette-white)" borderWidth={4} ground="coral" initials="CR" recipe="monogram" size={88} />
+        </State>
+      </CatchGap>
+      <CatchGap direction="horizontal" size="section" wrap>
+        <State label="system-sizes">
+          <CatchGap crossAxisAlignment="center" direction="horizontal" size="inline" wrap>
+            {systemSizes.map((size) => <CatchAvatar key={size} name="Rhea Kapoor" recipe="system" size={size} />)}
+          </CatchGap>
+        </State>
+        <State label="system-colors">
+          <CatchGap crossAxisAlignment="center" direction="horizontal" size="inline" wrap>
+            {catchAvatarColors.map((color) => <CatchAvatar color={color} initials="LL" key={color} name="Lantern Lane" recipe="system" size="lg" />)}
+            <CatchAvatar color="games" name="Lantern Lane" recipe="system" size="lg" variant="square" />
+          </CatchGap>
         </State>
       </CatchGap>
       <CatchGap direction="horizontal" size="section" wrap>
