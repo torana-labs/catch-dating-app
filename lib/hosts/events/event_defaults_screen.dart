@@ -7,6 +7,7 @@ import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_pref
 import 'package:catch_dating_app/hosts/events/event_commands_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_defaults_body.dart';
 import 'package:catch_dating_app/hosts/events/event_defaults_controller.dart';
+import 'package:catch_dating_app/hosts/events/event_defaults_details_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/event_policy_screen.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
@@ -17,8 +18,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The organizer's event defaults: what every new event starts with. It
 /// watches [hostEventDefaultsControllerProvider] and saves on change
-/// through the manager defaults command, and opens the event policy
-/// (activity, admission, ages and cancellation) for the rest.
+/// through the manager defaults command. It opens the text and number
+/// defaults in [HostEventDefaultsDetailsScreen], saved through the same
+/// command, and the event policy (activity, admission, ages and
+/// cancellation) in [OrganizerEventPolicyScreen].
 ///
 /// Each save is kept on the phone before it is sent, with its exact
 /// revision. One that is not confirmed (offline, or a lost answer) stays,
@@ -140,6 +143,16 @@ class _HostEventDefaultsScreenState
               ? null
               : () => unawaited(_send(unresolved)),
           onEdit: () => unawaited(
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => HostEventDefaultsDetailsScreen(
+                  organizerId: organizerId,
+                  onChange: (next) => saveDefaults((_) => next),
+                ),
+              ),
+            ),
+          ),
+          onEditPolicy: () => unawaited(
             Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) =>

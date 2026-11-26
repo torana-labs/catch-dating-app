@@ -486,6 +486,7 @@ void main() {
           ),
           onCollection: (_) {},
           onEdit: () {},
+          onEditPolicy: () {},
           onRetry: () {},
         ),
       );
@@ -498,6 +499,7 @@ void main() {
           ),
           onCollection: (_) {},
           onEdit: () {},
+          onEditPolicy: () {},
           onRetry: () {},
         ),
       );
@@ -521,6 +523,7 @@ void main() {
           onCollection: (_) {},
           onChange: saved.add,
           onEdit: () {},
+          onEditPolicy: () {},
           onRetry: () {},
         ),
       );

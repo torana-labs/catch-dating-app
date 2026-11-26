@@ -9927,20 +9927,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_route_screen"
   },
-  "hostsHostOrganizerTeamScreenTitleSignOut": "Sign out",
-  "@hostsHostOrganizerTeamScreenTitleSignOut": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
-  },
-  "hostsHostOrganizerTeamScreenLabelEdit": "Edit",
-  "@hostsHostOrganizerTeamScreenLabelEdit": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
-  },
   "hostsHostOrganizerTeamScreenLabelPreview": "Preview",
   "@hostsHostOrganizerTeamScreenLabelPreview": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (label).",
@@ -9948,51 +9934,9 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
   },
-  "hostsHostOrganizerTeamScreenTitleProfile": "Profile",
-  "@hostsHostOrganizerTeamScreenTitleProfile": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
-  },
-  "hostsHostOrganizerTeamScreenTitleDisplayName": "Display name",
-  "@hostsHostOrganizerTeamScreenTitleDisplayName": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
-  },
-  "hostsHostOrganizerTeamScreenTitleRoleTitle": "Role title",
-  "@hostsHostOrganizerTeamScreenTitleRoleTitle": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
-  },
-  "hostsHostOrganizerTeamScreenTitleStatus": "Status",
-  "@hostsHostOrganizerTeamScreenTitleStatus": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
-  },
-  "hostsHostOrganizerTeamScreenTitleAboutYouAsA": "About you as a host",
-  "@hostsHostOrganizerTeamScreenTitleAboutYouAsA": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
-  },
   "hostsHostOrganizerTeamScreenTitleOrganizersYouHost": "Organizers you host",
   "@hostsHostOrganizerTeamScreenTitleOrganizersYouHost": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
-  },
-  "hostsHostOrganizerTeamScreenTextNoHostOrganizersYet": "No hosted organizers yet.",
-  "@hostsHostOrganizerTeamScreenTextNoHostOrganizersYet": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
@@ -10018,124 +9962,12 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_auth_required_screen"
   },
-  "hostsHostOrganizerProfileTitleIdentity": "Identity",
-  "@hostsHostOrganizerProfileTitleIdentity": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
-  },
-  "hostsHostOrganizerProfileTitleMedia": "Media",
-  "@hostsHostOrganizerProfileTitleMedia": {
-    "description": "Section title for club logo and photo editing in the organizer workspace.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
-  },
-  "hostsHostOrganizerEditTabActionManageImages": "Manage images",
-  "@hostsHostOrganizerEditTabActionManageImages": {
-    "description": "Opens the full-screen organizer logo and gallery manager.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
-  },
-  "hostsHostOrganizerEditTabBadgeLogo": "LOGO",
-  "@hostsHostOrganizerEditTabBadgeLogo": {
-    "description": "Role badge shown on the organizer logo in the compact media summary.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
-  },
-  "hostsHostOrganizerProfileLabelOrganizerName": "Organizer name",
-  "@hostsHostOrganizerProfileLabelOrganizerName": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
-  },
   "hostsHostOrganizerProfileLabelCity": "City",
   "@hostsHostOrganizerProfileLabelCity": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
-  },
-  "hostsHostOrganizerProfileLabelAreaNeighbourhood": "Area / neighbourhood",
-  "@hostsHostOrganizerProfileLabelAreaNeighbourhood": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
-  },
-  "hostsHostOrganizerProfileLabelDescription": "Description",
-  "@hostsHostOrganizerProfileLabelDescription": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
-  },
-  "hostsHostOrganizerProfileTitleContact": "Contact",
-  "@hostsHostOrganizerProfileTitleContact": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
-  },
-  "hostsHostOrganizerProfileLabelInstagram": "Instagram",
-  "@hostsHostOrganizerProfileLabelInstagram": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
-  },
-  "hostsHostOrganizerProfilePlaceholderYourorganizer": "@yourclub",
-  "@hostsHostOrganizerProfilePlaceholderYourorganizer": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (placeholder).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
-  },
-  "hostsHostOrganizerProfileLabelPhone": "Phone",
-  "@hostsHostOrganizerProfileLabelPhone": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
-  },
-  "hostsHostOrganizerProfileLabelEmail": "Email",
-  "@hostsHostOrganizerProfileLabelEmail": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
-  },
-  "hostsHostOrganizerProfilePlaceholderHelloYourorganizerCom": "hello@yourclub.com",
-  "@hostsHostOrganizerProfilePlaceholderHelloYourorganizerCom": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (placeholder).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
-  },
-  "hostsHostOrganizerEditTabTitleOrganizerSettings": "Organizer settings",
-  "@hostsHostOrganizerEditTabTitleOrganizerSettings": {
-    "description": "Section heading for organizer configuration destinations.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
-  },
-  "hostsHostOrganizerEditTabActionSaveMedia": "Save media",
-  "@hostsHostOrganizerEditTabActionSaveMedia": {
-    "description": "Commits staged organizer gallery and logo changes.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
-  },
-  "hostsHostOrganizerEditTabActionDiscardMedia": "Discard",
-  "@hostsHostOrganizerEditTabActionDiscardMedia": {
-    "description": "Discards staged organizer gallery and logo changes.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
   },
   "hostsHostOrganizerEditTabLabelEventDefaults": "Event defaults",
   "@hostsHostOrganizerEditTabLabelEventDefaults": {
@@ -10151,20 +9983,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
   },
-  "hostsHostOrganizerEditTabLabelPayments": "Payments",
-  "@hostsHostOrganizerEditTabLabelPayments": {
-    "description": "Navigation row to club payment setup.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
-  },
-  "hostsHostOrganizerEditTabLabelHostTeam": "Host team",
-  "@hostsHostOrganizerEditTabLabelHostTeam": {
-    "description": "Navigation row to club host team management.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
-  },
   "hostsHostOrganizerEditTabValueOn": "On",
   "@hostsHostOrganizerEditTabValueOn": {
     "description": "Enabled value for organizer configuration rows.",
@@ -10175,14 +9993,6 @@
   "hostsHostOrganizerEditTabValueOff": "Off",
   "@hostsHostOrganizerEditTabValueOff": {
     "description": "Disabled value for organizer configuration rows.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
-  },
-  "hostsHostOrganizerEditTabValueHostCount": "{count, plural, =1{1 host} other{{count} hosts}}",
-  "@hostsHostOrganizerEditTabValueHostCount": {
-    "description": "Host count shown on the host team navigation row.",
-    "placeholders": {"count": {"type": "int"}},
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
@@ -10214,41 +10024,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
-  },
-  "hostsHostOrganizersScaffoldLabelOrganizerWorkspaceTabs": "Organizer workspace tabs",
-  "@hostsHostOrganizersScaffoldLabelOrganizerWorkspaceTabs": {
-    "description": "Accessibility label for the Host Clubs tabbed workspace.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
-  },
-  "hostsHostOrganizersScaffoldBodyDragLeftOrRight": "Drag left or right to switch between Edit and Preview.",
-  "@hostsHostOrganizersScaffoldBodyDragLeftOrRight": {
-    "description": "Accessibility hint for switching Host Clubs workspace pages.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
-  },
-  "hostsHostOrganizersScaffoldLabelEdit": "Edit",
-  "@hostsHostOrganizersScaffoldLabelEdit": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizers_scaffold.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
-  },
-  "hostsHostOrganizersScaffoldLabelInsights": "Insights",
-  "@hostsHostOrganizersScaffoldLabelInsights": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizers_scaffold.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
-  },
-  "hostsHostOrganizersScaffoldLabelPreview": "Preview",
-  "@hostsHostOrganizersScaffoldLabelPreview": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizers_scaffold.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
   },
   "hostsHostOrganizersScaffoldTitleNoHostOrganizersYet": "No hosted organizers yet",
   "@hostsHostOrganizersScaffoldTitleNoHostOrganizersYet": {
@@ -12794,13 +12569,6 @@
     "x-owner": "product",
     "x-surface": "swipes.shared.profile_surface.profile_view_mapper"
   },
-  "hostsHostOrganizersScaffoldVisiblecopyOwner": "Owner",
-  "@hostsHostOrganizersScaffoldVisiblecopyOwner": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizers_scaffold.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
-  },
   "eventSuccessEventSuccessQuestionnaireConfigEditorPromptCustomQuestionQuestionnumber": "Custom question {questionNumber}",
   "@eventSuccessEventSuccessQuestionnaireConfigEditorPromptCustomQuestionQuestionnumber": {
     "description": "Product copy used by lib/event_success/presentation/event_success_questionnaire_config_editor.dart (prompt).",
@@ -15025,48 +14793,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.edit_hosted_event_screen"
   },
-  "hostsHostOrganizerTeamScreenVisiblecopyHostProfileSaved": "Host profile saved.",
-  "@hostsHostOrganizerTeamScreenVisiblecopyHostProfileSaved": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
-  },
-  "hostsHostOrganizerTeamScreenVisiblecopyHostProfileCreated": "Host profile created.",
-  "@hostsHostOrganizerTeamScreenVisiblecopyHostProfileCreated": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
-  },
-  "hostsHostOrganizerTeamScreenVisiblecopyCreatingProfile": "Creating profile...",
-  "@hostsHostOrganizerTeamScreenVisiblecopyCreatingProfile": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
-  },
-  "hostsHostOrganizerTeamScreenVisiblecopyCreateHostProfile": "Create host profile",
-  "@hostsHostOrganizerTeamScreenVisiblecopyCreateHostProfile": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
-  },
-  "hostsHostOrganizerTeamScreenVisiblecopyAddRoleTitle": "Add role title",
-  "@hostsHostOrganizerTeamScreenVisiblecopyAddRoleTitle": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
-  },
-  "hostsHostOrganizerTeamScreenVisiblecopyAddAHostBio": "Add a host bio",
-  "@hostsHostOrganizerTeamScreenVisiblecopyAddAHostBio": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
-  },
   "hostsHostAuthRequiredScreenVisiblecopySignIn": "Sign in",
   "@hostsHostAuthRequiredScreenVisiblecopySignIn": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_auth_required_screen.dart (visibleCopy).",
@@ -16470,13 +16196,6 @@
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
-  "hostsHostOperationsScreenStateTitleOrganizers": "Organizers",
-  "@hostsHostOperationsScreenStateTitleOrganizers": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations_screen_state.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations_screen_state"
-  },
   "imageUploadsProfilePhotoEditorScreenLabelNoPrompt": "No prompt",
   "@imageUploadsProfilePhotoEditorScreenLabelNoPrompt": {
     "description": "Product copy used by lib/image_uploads/shared/profile_photo_editor_screen.dart (label).",
@@ -17262,8 +16981,6 @@
   "@hostsAdmissionFixedCohortCapsDescription": {"description": "Host admission-default explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_helpers"},
   "hostsValidationEnterValidEmail": "Enter a valid email.",
   "@hostsValidationEnterValidEmail": {"description": "Host form validation for an invalid optional email.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_helpers"},
-  "hostsValidationEnterDisplayName": "Enter a display name.",
-  "@hostsValidationEnterDisplayName": {"description": "Host professional-profile display-name validation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"},
   "hostsProfileStatusActive": "Active professional profile",
   "@hostsProfileStatusActive": {"description": "Active Host professional-profile status.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"},
   "hostsProfileStatusPending": "Profile pending review",
@@ -17880,36 +17597,10 @@
   "@hostsOperationalRosterManualSave": {"description": "Manual guest save CTA.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_manual_attendee_sheet"},
   "hostsOperationalRosterManualNameRequired": "Enter the guest''s name.",
   "@hostsOperationalRosterManualNameRequired": {"description": "Manual guest name validation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_manual_attendee_sheet"},
-  "hostsHostOrganizerPublicationTitle": "Public visibility",
-  "@hostsHostOrganizerPublicationTitle": {"description": "Organizer publication control title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
-  "hostsHostOrganizerPublicationChannelCatch": "Catch app",
-  "@hostsHostOrganizerPublicationChannelCatch": {"description": "Native Catch discovery channel label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
-  "hostsHostOrganizerPublicationChannelWebsite": "Public website",
-  "@hostsHostOrganizerPublicationChannelWebsite": {"description": "Public website channel label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
-  "hostsHostOrganizerPublicationStatusVisible": "Visible",
-  "@hostsHostOrganizerPublicationStatusVisible": {"description": "Visible Catch app status badge.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
-  "hostsHostOrganizerPublicationStatusHidden": "Hidden",
-  "@hostsHostOrganizerPublicationStatusHidden": {"description": "Hidden Catch app status badge.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
-  "hostsHostOrganizerPublicationStatusEnabled": "Enabled",
-  "@hostsHostOrganizerPublicationStatusEnabled": {"description": "Enabled website status badge.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
-  "hostsHostOrganizerPublicationStatusNotEnabled": "Not enabled",
-  "@hostsHostOrganizerPublicationStatusNotEnabled": {"description": "Disabled website status badge.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
-  "hostsHostOrganizerPublicationBodyPrivate": "Only your Host team can access this organizer. You can still run events, import guests, and check people in.",
-  "@hostsHostOrganizerPublicationBodyPrivate": {"description": "Explains a fully private organizer.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostOrganizerPublicationBodyCatchOnly": "People can find this organizer in Catch. Enable its website page to share it outside the app and support web registration. It will appear after the next website release.",
   "@hostsHostOrganizerPublicationBodyCatchOnly": {"description": "Explains Catch-only organizer visibility.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostOrganizerPublicationBodyWebsiteOnly": "The website page is enabled, but this organizer is hidden in Catch. Restore Catch visibility to keep both public settings in sync.",
   "@hostsHostOrganizerPublicationBodyWebsiteOnly": {"description": "Explains website-only organizer visibility.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
-  "hostsHostOrganizerPublicationBodyEverywhere": "This organizer is enabled for Catch and the public website. Website changes appear after the next website release.",
-  "@hostsHostOrganizerPublicationBodyEverywhere": {"description": "Explains fully public organizer settings.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
-  "hostsHostOrganizerPublicationActionMakePublic": "Make organizer public",
-  "@hostsHostOrganizerPublicationActionMakePublic": {"description": "Enable both public channels CTA.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
-  "hostsHostOrganizerPublicationActionEnableWebsite": "Enable website page",
-  "@hostsHostOrganizerPublicationActionEnableWebsite": {"description": "Enable the organizer website page CTA.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
-  "hostsHostOrganizerPublicationActionRestoreCatch": "Restore Catch visibility",
-  "@hostsHostOrganizerPublicationActionRestoreCatch": {"description": "Restore native Catch discovery CTA.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
-  "hostsHostOrganizerPublicationActionMakePrivate": "Make organizer private",
-  "@hostsHostOrganizerPublicationActionMakePrivate": {"description": "Disable both public channels CTA.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostPublicRegistrationTitle": "Catch registration",
   "@hostsHostPublicRegistrationTitle": {"description": "Host public event registration control title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_event_manage_screen"},
   "hostsHostPublicRegistrationSubtitleEnabled": "Guests can register on Catch",
@@ -22998,7 +22689,7 @@
   "@hostOrganizerPagePhotos": {"description": "Your page label over the photo tiles.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.organizer"},
   "hostOrganizerPagePhotoAdd": "Add",
   "@hostOrganizerPagePhotoAdd": {"description": "Your page tile that adds photos.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.organizer"},
-  "hostOrganizerPagePhotosNote": "Tap a photo to take it off your page.",
+  "hostOrganizerPagePhotosNote": "Tap a photo to make it the cover, move it or take it off your page.",
   "@hostOrganizerPagePhotosNote": {"description": "Your page note under the photo tiles.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.organizer"},
   "hostOrganizerPagePhotoRemove": "Remove photo",
   "@hostOrganizerPagePhotoRemove": {"description": "Your page action that removes a photo.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.organizer"},
@@ -25358,8 +25049,6 @@
   "@hostsEventDefaultsVenueSaved": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsClearVenue": "Clear preferred venue",
   "@hostsEventDefaultsClearVenue": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
-  "hostsEventDefaultsOffersHeading": "Offers",
-  "@hostsEventDefaultsOffersHeading": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsOfferValidity": "Usual offer validity",
   "@hostsEventDefaultsOfferValidity": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsClearValidity": "Choose offer validity on each event",
@@ -25368,14 +25057,10 @@
   "@hostsEventDefaultsMessageTemplate": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsMessageTemplateHint": "Suggested text for an individual handoff",
   "@hostsEventDefaultsMessageTemplateHint": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
-  "hostsEventDefaultsPaymentHeading": "Payment suggestions",
-  "@hostsEventDefaultsPaymentHeading": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsCollectionPreference": "Preferred collection method",
   "@hostsEventDefaultsCollectionPreference": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsManualInstructions": "Manual instructions",
   "@hostsEventDefaultsManualInstructions": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
-  "hostsEventDefaultsReusablePage": "Reusable payment page",
-  "@hostsEventDefaultsReusablePage": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsPersonalRequest": "Personal payment request",
   "@hostsEventDefaultsPersonalRequest": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsCatchCheckout": "Catch checkout",
@@ -25410,10 +25095,6 @@
   "@hostsEventDefaultsReusableConfirmCancel": {"description": "Cancel reusable payment page attestation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_manager_event_setup_preferences_section"},
   "hostsEventDefaultsReusableConfirmAccept": "Confirm reusable page",
   "@hostsEventDefaultsReusableConfirmAccept": {"description": "Explicitly attest that a payment page is reusable.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_manager_event_setup_preferences_section"},
-  "hostsEventDefaultsManagerUnavailable": "Private organizer preferences unavailable",
-  "@hostsEventDefaultsManagerUnavailable": {"description": "Explains why private organizer preferences are not shown without an authorized read.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
-  "hostsEventDefaultsManagerUnavailableBody": "A manager-authorized preferences read is required before these suggestions can be shown or edited.",
-  "@hostsEventDefaultsManagerUnavailableBody": {"description": "Explains why private organizer preferences are not shown without an authorized read.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsCitySource": "Future events use the organizer city. Change that city in the organizer profile.",
   "@hostsEventDefaultsCitySource": {"description": "Explains the source of inherited event city.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsTimezoneSource": "Future events can use this private timezone suggestion, or choose a timezone for each event.",
