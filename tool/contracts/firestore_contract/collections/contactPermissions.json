@@ -22,12 +22,8 @@
     "withdrawParticipantMessagingPermission",
     "onOrganizerMessagingWebhookEventCreated",
     "requestAccountDeletion",
-    "setEventAssistanceSmsPreference",
-    "setEventWhatsappPreference",
-    "setEventRcsPreference",
-    "withdrawEventAssistanceSms",
-    "withdrawEventWhatsapp",
-    "withdrawEventRcs",
+    "setEventMessagePreference",
+    "withdrawEventMessage",
     "manageEventApprovalNotifications"
   ],
   "migrationNotes": [
