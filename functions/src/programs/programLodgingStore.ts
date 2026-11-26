@@ -28,6 +28,11 @@ function requireStoredShape(valid: boolean): void {
   }
 }
 
+/** One hotel's read-only room list, as the hotel desk reads it. */
+export interface LodgingHotelBoard {
+  hotelLabel: string;
+  rows: ReturnType<typeof lodgingHotelProjection>;
+}
 export interface LodgingPresentation {
   guests: Record<string, string>;
   groups: Record<string, string>;
@@ -113,7 +118,8 @@ export class ProgramLodgingStore {
         // Any other native/configuration change produces a fresh candidate.
         // Workflow history remains visible, but never approves that new ID.
       }
-      const authority = this.authority(access, actorUid, source.snapshot);
+      const authority = this.authority(access, actorUid,
+        source.snapshot.scope);
       if (!source.configuration || !source.labels) {
         throw new HttpsError("failed-precondition",
           "Canonical lodging review context is unavailable.");
@@ -132,7 +138,7 @@ export class ProgramLodgingStore {
       requireProgramDuty(access, "programCoordinator");
       const source = await this.loadSource(tx, access, programId);
       this.assertScope(source.snapshot, access, programId);
-      this.authority(access, actorUid, source.snapshot);
+      this.authority(access, actorUid, source.snapshot.scope);
       source.persistSource?.();
       return source.snapshot;
     });
@@ -149,7 +155,7 @@ export class ProgramLodgingStore {
       const source = await this.loadSource(tx, access, programId);
       const {snapshot} = source;
       this.assertScope(snapshot, access, programId);
-      this.authority(access, actorUid, snapshot);
+      this.authority(access, actorUid, snapshot.scope);
       assertLodgingProposalCurrent(proposal, snapshot.revisions);
       if (proposal.scope.programId !== programId ||
           proposal.scope.organizerId !== access.program.organizerId ||
@@ -164,7 +170,7 @@ export class ProgramLodgingStore {
       const ref = this.proposalRef(canonical.id);
       const existing = await tx.get(ref);
       // Reads can cross a duty expiry, including an idempotent save replay.
-      this.authority(access, actorUid, snapshot);
+      this.authority(access, actorUid, snapshot.scope);
       if (existing.exists) {
         const stored = existing.data() as StoredProposal;
         this.assertStoredProposal(stored, access, programId, canonical.id);
@@ -219,7 +225,8 @@ export class ProgramLodgingStore {
         source.snapshot;
       const result = lodgingTransition(currentSnapshot, storedProposal.proposal,
         workflow,
-        this.authority(access, actorUid, source.snapshot, command.hotelId),
+        this.authority(access, actorUid, source.snapshot.scope,
+          command.hotelId),
         command, storedReceipt?.receipt ?? null, this.deps.now().toMillis());
       if (!result.replayed) {
         source.persistSource?.();
@@ -236,19 +243,45 @@ export class ProgramLodgingStore {
     });
   }
 
-  async hotelBoard(programId: string, actorUid: string, hotelId: string) {
+  /** The read-only room list for one hotel: its name and, once a
+   * coordinator has approved an allocation, every room placed there with
+   * its guests' names and dates. Authority is checked before any guest or
+   * allocation read: managers and coordinators see any hotel, a hotel-desk
+   * holder only a hotel their live duty covers, and every other duty is
+   * refused. No allocation yet reads as an empty list, not an error. */
+  async hotelBoard(programId: string, actorUid: string,
+    hotelId: string): Promise<LodgingHotelBoard> {
     return this.deps.firestore().runTransaction(async (tx) => {
       const access = await this.access(tx, programId, actorUid, false);
-      const {snapshot} = await this.loadSource(tx, access, programId);
-      this.assertScope(snapshot, access, programId);
-      const authority = this.authority(access, actorUid, snapshot, hotelId);
-      const state = await tx.get(this.deps.firestore()
-        .collection("programLodgingWorkflows").doc(programId));
-      if (!state.exists) return [];
+      const scope = {organizerId: access.program.organizerId, programId};
+      this.authority(access, actorUid, scope, hotelId);
+      const db = this.deps.firestore();
+      const [hotelSnap, state] = await tx.getAll(
+        db.collection("programHotels").doc(hotelId),
+        db.collection("programLodgingWorkflows").doc(programId));
+      const hotel = hotelSnap.data() as
+        {programId?: unknown; organizerId?: unknown; name?: unknown} |
+        undefined;
+      if (!hotel || hotel.programId !== programId ||
+          hotel.organizerId !== access.program.organizerId ||
+          typeof hotel.name !== "string" || !hotel.name) {
+        throw new HttpsError("not-found", "Hotel not found in this program.");
+      }
+      const hotelLabel = hotel.name.slice(0, 200);
+      if (!state.exists) return {hotelLabel, rows: []};
       const stored = state.data() as StoredWorkflow;
       requireStoredShape(validateProgramLodgingWorkflowDocument(stored));
       this.assertStoredScope(stored, access, programId);
-      if (!stored.workflow.approvedProposalId) return [];
+      if (!stored.workflow.approvedProposalId) return {hotelLabel, rows: []};
+      const source = await this.loadSource(tx, access, programId);
+      const {snapshot} = source;
+      this.assertScope(snapshot, access, programId);
+      const authority = this.authority(access, actorUid, snapshot.scope,
+        hotelId);
+      if (!source.labels || !source.configuration) {
+        throw new HttpsError("failed-precondition",
+          "Canonical lodging board context is unavailable.");
+      }
       const proposalSnap = await tx.get(this.proposalRef(
         stored.workflow.approvedProposalId));
       if (!proposalSnap.exists) {
@@ -264,8 +297,12 @@ export class ProgramLodgingStore {
         throw new HttpsError("failed-precondition",
           "Approved lodging proposal must be complete and feasible.");
       }
-      return lodgingHotelProjection(approved, proposal.proposal, authority,
-        hotelId, this.deps.now().toMillis());
+      return {hotelLabel, rows: lodgingHotelProjection(approved,
+        proposal.proposal, authority, hotelId, this.deps.now().toMillis(), {
+          guests: source.labels.guests,
+          rooms: Object.fromEntries(source.configuration.labels.map((r) =>
+            [r.inventoryId, r.roomLabel])),
+        })};
     });
   }
 
@@ -332,9 +369,9 @@ export class ProgramLodgingStore {
     }
   }
   private authority(access: ProgramAccess, actorUid: string,
-    snapshot: LodgingSnapshot,
+    scope: LodgingSnapshot["scope"],
     hotelId: string | null = null): LodgingAuthority {
-    const base = {uid: actorUid, ...snapshot.scope, hotelIds: [] as string[]};
+    const base = {uid: actorUid, ...scope, hotelIds: [] as string[]};
     if (access.role === "manager") {
       return {...base, role: "manager",
         expiresAtMillis: Number.MAX_SAFE_INTEGER};

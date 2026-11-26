@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/programmes/data/program_transport_view
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_departures_body.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_hotel_desk_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/staff/staff_hotel_room_list_screen.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/catch_async_state.dart';
@@ -75,9 +76,14 @@ class StaffDeparturesScreen extends ConsumerWidget {
   }
 }
 
-/// The hotel route's screen for [uri]: the desk, or its departures when
-/// `view=departures`.
-Widget staffHotelScreenForUri(String programId, String hotelId, Uri uri) =>
-    uri.queryParameters['view'] == 'departures'
-    ? StaffDeparturesScreen(programId: programId, hotelId: hotelId)
-    : StaffHotelDeskScreen(programId: programId, hotelId: hotelId);
+/// The hotel route's screen for [uri]: the desk, its departures when
+/// `view=departures`, or its read-only room list when `view=rooms`.
+Widget staffHotelScreenForUri(
+  String programId,
+  String hotelId,
+  Uri uri,
+) => switch (uri.queryParameters['view']) {
+  'departures' => StaffDeparturesScreen(programId: programId, hotelId: hotelId),
+  'rooms' => StaffHotelRoomListScreen(programId: programId, hotelId: hotelId),
+  _ => StaffHotelDeskScreen(programId: programId, hotelId: hotelId),
+};

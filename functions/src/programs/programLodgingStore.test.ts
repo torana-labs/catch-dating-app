@@ -8,6 +8,8 @@ import {immutableLodgingProposal} from "./programLodgingPlanner";
 import {ProgramLodgingStore} from "./programLodgingStore";
 import type {LodgingSnapshot} from "./programLodgingTypes";
 import type {LodgingCommand} from "./programLodgingTransitions";
+import type {ProgramLodgingConfigDocument} from
+  "../shared/generated/programLodgingConfigDocument";
 
 function setup() {
   const snapshot: LodgingSnapshot = {
@@ -38,18 +40,23 @@ function setup() {
       .collection("plannerTestSources").doc("program-1");
     const data = (await tx.get(ref)).data()!;
     const current = structuredClone(data.snapshot) as LodgingSnapshot;
-    return {snapshot: current, publish: (proposal) => {
-      tx.set(dependencies.firestore()
-        .collection("plannerTestPublished").doc("program-1"),
-      {placements: proposal.placements,
-        revision: current.revisions.published + 1});
-      tx.update(ref, {snapshot: {...current,
-        revisions: {...current.revisions,
-          published: current.revisions.published + 1},
-        published: proposal.placements.map((p) => ({...p,
-          locked: false, checkedIn: false}))}});
-      if (controls.failPublish) throw new Error("Synthetic bridge failure");
-    }};
+    return {snapshot: current,
+      labels: {guests: {"guest-1": "Rohan Sharma"}, groups: {},
+        hotels: {"hotel-1": "Harbourview Palace"}},
+      configuration: {labels: [{inventoryId: "unit", roomLabel: "101"}]} as
+        unknown as ProgramLodgingConfigDocument,
+      publish: (proposal) => {
+        tx.set(dependencies.firestore()
+          .collection("plannerTestPublished").doc("program-1"),
+        {placements: proposal.placements,
+          revision: current.revisions.published + 1});
+        tx.update(ref, {snapshot: {...current,
+          revisions: {...current.revisions,
+            published: current.revisions.published + 1},
+          published: proposal.placements.map((p) => ({...p,
+            locked: false, checkedIn: false}))}});
+        if (controls.failPublish) throw new Error("Synthetic bridge failure");
+      }};
   });
   const approve = (proposalId: string): LodgingCommand => ({proposalId,
     operationId: "approve-1", expectedWorkflowRevision: 0,
@@ -90,7 +97,7 @@ test("competing publications commit one bridge and receipt", async () => {
   const workflow = h.db.getDoc("programLodgingWorkflows/program-1")!.workflow;
   assert.equal((workflow as {revision: number}).revision, 2);
   assert.equal((await h.store.hotelBoard("program-1", "hotelier-1", "hotel-1"))
-    .length, 1);
+    .rows.length, 1);
 });
 
 test("bridge failure rolls back the complete operation", async () => {
@@ -129,10 +136,14 @@ test("source revisions fence approval; hotel data is allowlisted", async () => {
   const proposal = await h.store.preview("program-1", "manager-1");
   await h.store.save("program-1", "manager-1", proposal);
   assert.deepEqual(
-    await h.store.hotelBoard("program-1", "hotelier-1", "hotel-1"), []);
+    await h.store.hotelBoard("program-1", "hotelier-1", "hotel-1"),
+    {hotelLabel: "Harbourview Palace", rows: []});
   await h.store.transition("program-1", "manager-1", h.approve(proposal.id));
-  const rows = await h.store.hotelBoard("program-1", "hotelier-1", "hotel-1");
+  const {rows} = await h.store.hotelBoard("program-1", "hotelier-1",
+    "hotel-1");
   assert.equal(rows.length, 1);
+  assert.equal(rows[0].roomLabel, "101");
+  assert.equal(rows[0].guests[0].displayName, "Rohan Sharma");
   assert.equal(JSON.stringify(rows).includes("stepFree"), false);
   await assert.rejects(h.store.hotelBoard("program-1", "hotelier-1", "hotel-2"),
     /Hotel duty/);
