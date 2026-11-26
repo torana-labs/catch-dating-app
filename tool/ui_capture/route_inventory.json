@@ -7,7 +7,7 @@
       "lib/routing/consumer_router.dart",
       "lib/routing/host_router.dart"
     ],
-    "routeContractSha256": "d210e1abc5512e7b2935290755a4661d30babc3e92ce04e6dcf9d029cb64431d",
+    "routeContractSha256": "3fbb7bc90b1ee42d993c799e0956e2f2725456c6541b2798e0fb6db6e349c86d",
     "goRouteCount": 138,
     "shellBranchCount": 8,
     "enumRouteCount": 115,
@@ -1356,8 +1356,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostWorkGuestsScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>ProgramGuestDeskScreen(programId:state.pathParameters['programId']!)",
-      "presentationTarget": "ProgramGuestDeskScreen",
+      "presentationExpression": "(context,state)=>StaffGuestsScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "StaffGuestsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
