@@ -657,55 +657,44 @@
         "The shared Consumer/Host chat message implementation when a dedicated chat route owns it."
       ],
       "currentRoots": [
+        "lib/hosts/people",
         "lib/hosts/presentation/inbox"
       ],
       "additionalCodeOwners": [
         {
           "id": "inbox_screen",
-          "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-          "symbol": "HostInboxScreen",
-          "role": "Actions: select_workspace, retry_inbox, select_scope, select_audience_segment, open_conversation."
-        },
-        {
-          "id": "search_header",
-          "file": "lib/pages/inbox/chats_search_header_controller.dart",
-          "symbol": "ChatsSearchHeaderController",
-          "role": "Actions: toggle_search."
-        },
-        {
-          "id": "search_query",
-          "file": "lib/pages/inbox/chats_list_view_model.dart",
-          "symbol": "ChatSearchQuery",
-          "role": "Actions: search_inquiries."
+          "file": "lib/hosts/people/messages_screen.dart",
+          "symbol": "HostMessagesScreen",
+          "role": "Actions: retry_inbox, select_scope, select_audience_segment, search_inquiries, open_conversation, open_sends."
         },
         {
           "id": "broadcast_composer",
-          "file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart",
-          "symbol": "HostBroadcastComposerSheet",
+          "file": "lib/hosts/people/compose_screen.dart",
+          "symbol": "HostComposeScreen",
           "role": "Actions: select_broadcast_audience, select_broadcast_template."
         },
         {
           "id": "broadcast_controller",
-          "file": "lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart",
-          "symbol": "HostInboxBroadcastController",
+          "file": "lib/hosts/people/compose_controller.dart",
+          "symbol": "HostComposeCommands",
           "role": "Actions: send_broadcast."
         },
         {
           "id": "sends_workspace",
-          "file": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
-          "symbol": "_HostSendsPageBodySliverState",
+          "file": "lib/hosts/people/sends/sends_screen.dart",
+          "symbol": "_HostSendsScreenState",
           "role": "Actions: open_event_announcement_composer."
         },
         {
           "id": "manual_send_queue",
-          "file": "lib/hosts/presentation/inbox/host_manual_send_list.dart",
-          "symbol": "HostManualSendList",
+          "file": "lib/hosts/people/sends/sends_sheets_body.dart",
+          "symbol": "HostManualSendSheet",
           "role": "Actions: open_manual_send_task, open_manual_handoff, mark_manual_send_task, replan_manual_send_tasks."
         },
         {
           "id": "follower_update_composer",
-          "file": "lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart",
-          "symbol": "showHostFollowerUpdateComposer",
+          "file": "lib/hosts/people/sends/sends_sheets_body.dart",
+          "symbol": "showHostFollowerUpdateSheet",
           "role": "Actions: send_follower_update."
         },
         {
@@ -722,8 +711,8 @@
         },
         {
           "id": "campaign_composer",
-          "file": "lib/hosts/presentation/inbox/host_campaign_editor.dart",
-          "symbol": "HostCampaignEditor",
+          "file": "lib/hosts/people/sends/campaign_screen.dart",
+          "symbol": "HostCampaignScreen",
           "role": "Structural owner."
         },
         {
@@ -781,8 +770,10 @@
         }
       ],
       "testFiles": [
-        "test/hosts/host_inbox_screen_test.dart",
-        "test/hosts/host_inbox_view_model_test.dart",
+        "test/hosts/people/conversation/messages_scope_test.dart",
+        "test/hosts/people/sends/sends_body_test.dart",
+        "test/hosts/people/compose_request_id_test.dart",
+        "test/hosts/people/conversation/conversation_people_test.dart",
         "test/hosts/host_operations_screen_test.dart"
       ]
     },

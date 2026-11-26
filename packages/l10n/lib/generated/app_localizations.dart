@@ -4834,53 +4834,17 @@ abstract class AppLocalizations {
   /// **'Airbnb Experiences'**
   String get hostsEventDetailsStepExternalProviderAirbnbExperiences;
 
-  /// Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'New broadcast'**
-  String get hostsHostBroadcastComposerSheetTitleNewBroadcast;
-
-  /// Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Audience'**
-  String get hostsHostBroadcastComposerSheetTextAudience;
-
   /// Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Template'**
   String get hostsHostBroadcastComposerSheetTextTemplate;
 
-  /// Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Message'**
-  String get hostsHostBroadcastComposerSheetTitleMessage;
-
-  /// Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (placeholder).
-  ///
-  /// In en, this message translates to:
-  /// **'Write a clear update for attendees'**
-  String get hostsHostBroadcastComposerSheetPlaceholderWriteAClearUpdate;
-
-  /// Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Sending stays off in this build until the production callable passes the release preflight.'**
-  String get hostsHostBroadcastComposerSheetTextSendingStaysOffIn;
-
   /// Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'This audience has no eligible recipients yet.'**
   String get hostsHostBroadcastComposerSheetTextThisAudienceHasNo;
-
-  /// Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Send to 1 person'**
-  String get hostsHostBroadcastComposerSheetLabelSendTo1Person;
 
   /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (label).
   ///
@@ -7081,12 +7045,6 @@ abstract class AppLocalizations {
   /// **'No general inquiries'**
   String get hostsHostInboxScreenTitleNoGeneralInquiries;
 
-  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'No guest conversations for this program yet'**
-  String get hostsHostInboxScreenTitleNoProgramConversations;
-
   /// Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).
   ///
   /// In en, this message translates to:
@@ -7333,38 +7291,6 @@ abstract class AppLocalizations {
   /// **'Max ({currencyCode})'**
   String hostsEditHostedEventScreenTitleMaxCurrencycode({
     required Object currencyCode,
-  });
-
-  /// Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Booked · {bookedCount}'**
-  String hostsHostBroadcastComposerSheetLabelBookedBookedcount({
-    required Object bookedCount,
-  });
-
-  /// Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Waitlist · {prospectiveCount}'**
-  String hostsHostBroadcastComposerSheetLabelWaitlistProspectivecount({
-    required Object prospectiveCount,
-  });
-
-  /// Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Everyone · {recipientCount}'**
-  String hostsHostBroadcastComposerSheetLabelEveryoneRecipientcount({
-    required Object recipientCount,
-  });
-
-  /// Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Send to {recipientCount} people'**
-  String hostsHostBroadcastComposerSheetLabelSendToRecipientcountPeople({
-    required Object recipientCount,
   });
 
   /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (label).
@@ -13670,21 +13596,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Broadcast sent to {recipientCount} people.{suffix}'**
-  String hostsHostInboxScreenVisiblecopyBroadcastSentToRecipientcount({
-    required Object recipientCount,
-    required Object suffix,
-  });
-
-  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Select an event or general inquiries'**
-  String get hostsHostInboxScreenVisiblecopySelectAnEventOr;
-
-  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
   /// **'General inquiries'**
   String get hostsHostInboxScreenVisiblecopyGeneralInquiries;
 
@@ -13699,39 +13610,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Program guests'**
   String get hostsHostInboxScreenVisiblecopyProgramGuests;
-
-  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{longWeekday} {eventTitleLabel}'**
-  String hostsHostInboxScreenVisiblecopyLongweekdayEventtitlelabel({
-    required Object longWeekday,
-    required Object eventTitleLabel,
-  });
-
-  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Tonight {time}'**
-  String hostsHostInboxScreenVisiblecopyTonightTime({required Object time});
-
-  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{shortDateLabel} · {time}'**
-  String hostsHostInboxScreenVisiblecopyShortdatelabelTime({
-    required Object shortDateLabel,
-    required Object time,
-  });
-
-  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{eventName} · {timing}'**
-  String hostsHostInboxScreenVisiblecopyEventnameTiming({
-    required Object eventName,
-    required Object timing,
-  });
 
   /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).
   ///
@@ -20230,12 +20108,6 @@ abstract class AppLocalizations {
   /// **'On larger screens, drag is also available. Tap controls always work.'**
   String get eventSuccessRoomMapDragHint;
 
-  /// Messaging workspace label for reply-capable direct inquiries and conversations.
-  ///
-  /// In en, this message translates to:
-  /// **'Inbox'**
-  String get hostMessagingWorkspaceInbox;
-
   /// Messaging workspace label for outbound history and composing.
   ///
   /// In en, this message translates to:
@@ -20335,12 +20207,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 selected} other{{count} selected}}'**
   String hostSendsEventAudienceSelected({required int count});
-
-  /// Compact unavailable state for an event announcement.
-  ///
-  /// In en, this message translates to:
-  /// **'Unavailable now'**
-  String get hostSendsEventAnnouncementUnavailableShort;
 
   /// Compact empty-roster state for an event announcement.
   ///
@@ -27927,12 +27793,6 @@ abstract class AppLocalizations {
   /// Person-based Host messaging interface copy.
   ///
   /// In en, this message translates to:
-  /// **'Choose someone from People or add a new person.'**
-  String get hostInboxChoosePerson;
-
-  /// Person-based Host messaging interface copy.
-  ///
-  /// In en, this message translates to:
   /// **'Reply via'**
   String get hostInboxReplyVia;
 
@@ -27954,18 +27814,6 @@ abstract class AppLocalizations {
   /// **'Load more conversations'**
   String get hostInboxMoreConversations;
 
-  /// Loads the next verified guest page for a program-scoped Inbox.
-  ///
-  /// In en, this message translates to:
-  /// **'Load more program guests'**
-  String get hostInboxMoreProgramGuests;
-
-  /// Explains why unlinked program guests cannot be shown or messaged from the Inbox.
-  ///
-  /// In en, this message translates to:
-  /// **'Some program guests have no verified messaging contact link. They cannot appear in this inbox; guest-to-contact linking is not available here yet.'**
-  String get hostInboxProgramContactsUnlinked;
-
   /// Person-based Host messaging interface copy.
   ///
   /// In en, this message translates to:
@@ -27977,12 +27825,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Booking status unavailable'**
   String get hostInboxUnknownBooking;
-
-  /// Person-based Host messaging interface copy.
-  ///
-  /// In en, this message translates to:
-  /// **'At least {count} unread messages. Some source read counts are unavailable.'**
-  String hostInboxPartialUnread({required int count});
 
   /// Person-based Host messaging interface copy.
   ///
