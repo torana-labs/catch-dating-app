@@ -64,7 +64,6 @@ export async function prepareMarkBookingAttended(params: {
         uid,
         status: "attended",
         genderAtSignup: booking?.genderAtSignup ?? undefined,
-        cohortAtSignup: booking?.cohortAtSignup ?? undefined,
         paymentId: booking?.paymentId ?? undefined,
       });
       tx.set(slot.bookingRef, attendance, {merge: true});
