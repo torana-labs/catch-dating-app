@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_guest_directory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_program_audience_controller.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_programme_controller.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;

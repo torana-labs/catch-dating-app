@@ -13999,7 +13999,7 @@
         "symbol": "HostInboxScreen"
       },
       "stateController": {
-        "primary": "hostOrganizerSelectionProvider + resolveHostInboxScope + composeHostInboxPeople + HostInboxCatchPages + HostWhatsappThreadPages + HostPersonConversationController + HostConversationHistory + HostReplyDrafts + hostSendsProvider + hostMessagingSetupProvider + chatSearchQueryProvider",
+        "primary": "hostOrganizerSelectionProvider + resolveHostInboxScope + composeHostInboxPeople + HostInboxCatchPages + HostWhatsappThreadPages + HostConversationCommands + HostConversationHistory + HostReplyDrafts + hostSendsProvider + hostMessagingSetupProvider + chatSearchQueryProvider",
         "files": [
           {
             "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
@@ -14014,7 +14014,7 @@
             "symbol": "HostInboxViewModel"
           },
           {
-            "file": "lib/hosts/presentation/inbox/host_inbox_view_model.dart",
+            "file": "lib/hosts/people/conversation/conversation_people.dart",
             "symbol": "resolveHostInboxScope"
           },
           {
@@ -14086,11 +14086,11 @@
             "symbol": "hostMessagingSetup"
           },
           {
-            "file": "lib/hosts/presentation/inbox/host_inbox_people.dart",
+            "file": "lib/hosts/people/conversation/conversation_people.dart",
             "symbol": "composeHostInboxPeople"
           },
           {
-            "file": "lib/hosts/presentation/inbox/host_inbox_catch_pages_controller.dart",
+            "file": "lib/hosts/people/conversation/conversation_pages_controller.dart",
             "symbol": "HostInboxCatchPages"
           },
           {
@@ -14098,15 +14098,15 @@
             "symbol": "HostWhatsappThreadPages"
           },
           {
-            "file": "lib/hosts/presentation/inbox/host_person_conversation_controller.dart",
-            "symbol": "HostPersonConversationController"
+            "file": "lib/hosts/people/conversation/conversation_controller.dart",
+            "symbol": "HostConversationCommands"
           },
           {
-            "file": "lib/hosts/presentation/inbox/host_conversation_history_controller.dart",
+            "file": "lib/hosts/people/conversation/conversation_history_controller.dart",
             "symbol": "HostConversationHistory"
           },
           {
-            "file": "lib/hosts/presentation/inbox/host_reply_drafts.dart",
+            "file": "lib/hosts/people/conversation/conversation_drafts.dart",
             "symbol": "HostReplyDrafts"
           }
         ],

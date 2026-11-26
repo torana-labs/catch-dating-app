@@ -1,8 +1,7 @@
 import * as admin from "firebase-admin";
-import {CallableRequest, HttpsError, onCall} from
+import {CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../../shared/auth";
-import {appCheckCallableOptions} from "../../shared/callableOptions";
 import {checkRateLimit} from "../../shared/rateLimit";
 import {validateCallableWithAjv} from "../../shared/validation";
 import {validateGetEventWhatsappPreferenceCallablePayload} from
@@ -67,12 +66,3 @@ export async function setEventWhatsappPreferenceHandler(
   }
   return result;
 }
-
-export const getEventWhatsappPreference = onCall(
-  appCheckCallableOptions,
-  (request) => getEventWhatsappPreferenceHandler(request)
-);
-export const setEventWhatsappPreference = onCall(
-  appCheckCallableOptions,
-  (request) => setEventWhatsappPreferenceHandler(request)
-);
