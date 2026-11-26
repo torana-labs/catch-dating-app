@@ -148,11 +148,11 @@ Widget sendsReport(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Previewed, ready to approve',
-  type: HostCampaignReportSection,
+  type: HostSendsCampaignSection,
   path: _path,
 )
 Widget sendsCampaignReport(BuildContext context) => _phone(
-  HostCampaignReportSection(
+  HostSendsCampaignSection(
     campaign: _campaign,
     onApprove: () {},
     onRefresh: () {},

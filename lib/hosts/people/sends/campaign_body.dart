@@ -337,7 +337,7 @@ class _HostCampaignBodyState extends ConsumerState<HostCampaignBody> {
               ),
             ),
         if (_campaign case final campaign?)
-          HostCampaignReportSection(
+          HostSendsCampaignSection(
             campaign: campaign,
             busy: _busy,
             onApprove: campaign.canApprove ? _approveCampaign : null,

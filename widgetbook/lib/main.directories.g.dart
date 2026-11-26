@@ -9806,17 +9806,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     ],
                   ),
                   _widgetbook.WidgetbookComponent(
-                    name: 'HostCampaignReportSection',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Previewed, ready to approve',
-                        builder:
-                            _widgetbook_workspace_hosts_host_sends_use_cases
-                                .sendsCampaignReport,
-                      ),
-                    ],
-                  ),
-                  _widgetbook.WidgetbookComponent(
                     name: 'HostFollowerUpdateSheet',
                     useCases: [
                       _widgetbook.WidgetbookUseCase(
@@ -9857,6 +9846,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                         builder:
                             _widgetbook_workspace_hosts_host_sends_use_cases
                                 .sendsHistory,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostSendsCampaignSection',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Previewed, ready to approve',
+                        builder:
+                            _widgetbook_workspace_hosts_host_sends_use_cases
+                                .sendsCampaignReport,
                       ),
                     ],
                   ),

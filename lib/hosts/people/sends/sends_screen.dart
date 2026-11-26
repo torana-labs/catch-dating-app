@@ -177,7 +177,7 @@ class _HostSendsScreenState extends ConsumerState<HostSendsScreen> {
                               onBusyChanged: _setBusy,
                             ),
                           HostSendsCampaignReport(:final campaign) =>
-                            HostCampaignReportSection(
+                            HostSendsCampaignSection(
                               campaign: campaign,
                               busy: _busy,
                               onApprove: campaign.canApprove

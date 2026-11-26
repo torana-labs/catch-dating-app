@@ -194,8 +194,8 @@ class HostSendsReportBody extends StatelessWidget {
 /// A campaign's report: its status and audience counts, what blocks it,
 /// how delivery went, and Approve, Send now, Refresh, Cancel and New
 /// campaign.
-class HostCampaignReportSection extends StatelessWidget {
-  const HostCampaignReportSection({
+class HostSendsCampaignSection extends StatelessWidget {
+  const HostSendsCampaignSection({
     super.key,
     required this.campaign,
     required this.onRefresh,
