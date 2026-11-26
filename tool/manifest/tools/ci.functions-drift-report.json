@@ -7,6 +7,12 @@
   "guard": "none",
   "guardReason": "Posts the weekly drift comment with gh; meant to run only from functions-drift.yml with its workflow token.",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "impactPaths": [
     ".github/workflows/functions-drift.yml",
     "tool/ci/functions_drift_report.mjs",

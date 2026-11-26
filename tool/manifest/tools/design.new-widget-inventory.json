@@ -40,7 +40,7 @@
   "rules": [
     {
       "id": "WIDGET-CATALOG-001",
-      "title": "Keep widget catalog current when widget architecture changes",
+      "title": "Keep widget catalog rules and usage decisions current when widget architecture changes",
       "appliesTo": [
         "lib/**/presentation/**",
         "lib/contexts/*/parts/**",
@@ -62,7 +62,7 @@
         "packages/catch_ui/lib/**",
         "packages/platform/lib/riverpod_ui/**"
       ],
-      "instruction": "Generate the inventory in docs/widget_catalog.md from production Widget declarations and design/components/catch.components.json; authored content is limited to Canonical Usage Decisions. Every new or moved public widget in shared, Consumer, or Host production source needs exact-name Widgetbook coverage. Shared Widgets require a canonical Catch* name and an exact source identity, reviewed ladder level and role in the registry; new or moved feature UI requires its feature-prefixed role name and canonical file suffix. The complete shared API must satisfy the naming grammar. Existing feature naming candidates remain source-derived review flags, not approved exceptions or a conformance claim. New or moved private widget classes and Widget-returning functions/getters are prohibited. Exact duplicate public widget class names and normalized public-name collisions fail unless every colliding symbol is an explicitly governed concept/member family. Regenerate affected inventory in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not append release notes or per-change changelog headings."
+      "instruction": "The widget inventory is derived from production Widget declarations and design/components/catch.components.json and never committed; node tool/design/generate_widget_catalog.mjs --write writes it to build/generated/widget_catalog.md. docs/widget_catalog.md holds only the authored Canonical Usage Decisions. Every new or moved public widget in shared, Consumer, or Host production source needs exact-name Widgetbook coverage. Shared Widgets require a canonical Catch* name and an exact source identity, reviewed ladder level and role in the registry; new or moved feature UI requires its feature-prefixed role name and canonical file suffix. The complete shared API must satisfy the naming grammar. Existing feature naming candidates remain source-derived review flags, not approved exceptions or a conformance claim. New or moved private widget classes and Widget-returning functions/getters are prohibited. Exact duplicate public widget class names and normalized public-name collisions fail unless every colliding symbol is an explicitly governed concept/member family. Update the usage decisions and registry in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not append release notes or per-change changelog headings."
     }
   ]
 }

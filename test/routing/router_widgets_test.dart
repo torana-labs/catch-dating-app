@@ -14,9 +14,9 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/hosts/create/create_screen.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_people.dart';
+import 'package:catch_dating_app/hosts/people/sends/sends_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/pages/chat/chat_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
@@ -303,53 +303,59 @@ void main() {
   );
 
   test('host inbox route restores the campaigns saved audience', () {
-    final screen = app_router.hostInboxScreenForUri(
-      Uri.parse(
-        '/host/inbox?workspace=campaigns&compose=1&audienceId=audience-1&threadId=match-2',
-      ),
-      initialOrganizerId: 'organizer-2',
-    );
+    final screen =
+        app_router.hostMessagesScreenForUri(
+              Uri.parse(
+                '/host/inbox?workspace=campaigns&compose=1&audienceId=audience-1&eventId=event-1',
+              ),
+              initialOrganizerId: 'organizer-2',
+            )
+            as HostSendsScreen;
 
-    expect(screen.initialWorkspace, HostMessagingWorkspace.campaigns);
     expect(screen.initialSavedAudienceId, 'audience-1');
     expect(screen.initialOrganizerId, 'organizer-2');
-    expect(screen.initialThreadId, 'match-2');
+    expect(screen.preferredEventId, 'event-1');
   });
 
   test('saved audience compose restores its organizer from the URI', () {
-    final screen = app_router.hostInboxScreenForUri(
-      Uri.parse(
-        '/host/inbox?workspace=campaigns&compose=1&audienceId=audience-1&organizerId=organizer-2',
-      ),
-    );
+    final screen =
+        app_router.hostMessagesScreenForUri(
+              Uri.parse(
+                '/host/inbox?workspace=campaigns&compose=1&audienceId=audience-1&organizerId=organizer-2',
+              ),
+            )
+            as HostSendsScreen;
     expect(screen.initialOrganizerId, 'organizer-2');
     expect(screen.initialSavedAudienceId, 'audience-1');
   });
 
   test('host inbox route ignores an audience outside compose mode', () {
-    final screen = app_router.hostInboxScreenForUri(
+    final screen = app_router.hostMessagesScreenForUri(
       Uri.parse('/host/inbox?workspace=campaigns&audienceId=audience-1'),
     );
 
-    expect(screen.initialWorkspace, HostMessagingWorkspace.campaigns);
-    expect(screen.initialSavedAudienceId, isNull);
+    expect(screen, isA<HostSendsScreen>());
+    expect((screen as HostSendsScreen).initialSavedAudienceId, isNull);
   });
 
   test('host inbox route parses program scope and organizer', () {
-    final screen = app_router.hostInboxScreenForUri(
-      Uri.parse('/host/inbox?programId=program-1&organizerId=organizer-2'),
+    expect(
+      app_router.hostInboxScopeForQuery({
+        'programId': 'program-1',
+        'organizerId': 'organizer-2',
+      }),
+      const HostInboxScope.program('program-1'),
     );
-
-    expect(screen.initialScope, const HostInboxScope.program('program-1'));
-    expect(screen.initialOrganizerId, 'organizer-2');
   });
 
   test('host inbox route prefers event scope over program scope', () {
-    final screen = app_router.hostInboxScreenForUri(
-      Uri.parse('/host/inbox?eventId=event-1&programId=program-1'),
+    expect(
+      app_router.hostInboxScopeForQuery({
+        'eventId': 'event-1',
+        'programId': 'program-1',
+      }),
+      const HostInboxScope.event('event-1'),
     );
-
-    expect(screen.initialScope, const HostInboxScope.event('event-1'));
   });
 
   testWidgets(

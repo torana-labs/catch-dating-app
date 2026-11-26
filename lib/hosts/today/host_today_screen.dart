@@ -13,6 +13,7 @@ import 'package:catch_dating_app/hosts/presentation/organizer_journey/host_organ
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
 import 'package:catch_dating_app/hosts/today/host_today_body.dart';
 import 'package:catch_dating_app/hosts/today/host_today_controller.dart';
+import 'package:catch_dating_app/hosts/today/host_today_requests_sheet.dart';
 import 'package:catch_dating_app/hosts/today/host_today_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/cache/app_clock.dart';
@@ -27,8 +28,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-/// The Host app's first screen: tonight, what needs the host, the week and
-/// the last thirty days for the selected organizer.
+/// The Host app's first screen: tonight, what needs the host (including
+/// everyone waiting to get into a coming event), the week and the last
+/// thirty days for the selected organizer.
 ///
 /// It resolves who is signed in and which organizer is selected, keeps a
 /// minute clock, watches [hostTodayControllerProvider] and turns the body's
@@ -167,6 +169,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
         now: now,
         onOpenEvent: (_) {},
         onOpenAttention: (_) {},
+        onOpenRequests: (_) {},
         onAction: (_) {},
         onViewEvents: () {},
         onOpenInsights: () {},
@@ -213,6 +216,13 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
               now: now,
               onOpenEvent: (event) => _openEvent(organizer, event),
               onOpenAttention: (item) => _openAttention(organizer, item),
+              onOpenRequests: (focus) => unawaited(
+                showHostTodayRequestsSheet(
+                  context,
+                  organizerId: organizer.id,
+                  focus: focus,
+                ),
+              ),
               onAction: (action) => _act(organizer, state, action),
               onViewEvents: () => context.goNamed(Routes.hostEventsScreen.name),
               onOpenInsights: () => context.goNamed(

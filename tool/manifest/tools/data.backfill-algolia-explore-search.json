@@ -6,6 +6,12 @@
   "surface": "remote-write",
   "guard": "apply-and-prod-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Backfills Algolia Explore search records from club and event projections.",
   "checks": [
     "node --check tool/data/backfill_algolia_explore_search.mjs"

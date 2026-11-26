@@ -6,6 +6,12 @@
   "surface": "remote-write",
   "guard": "apply-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "role": "operator",
   "description": "Creates or refreshes publicOrganizers/{id} for every organizer from the current organizer record. Dry run unless --apply; writes only publicOrganizers documents.",
   "checks": [

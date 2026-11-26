@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/bookings/domain/host_request.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_metric_tile.dart';
@@ -31,17 +32,69 @@ class HostTodayTonight {
   final List<String> people;
 }
 
-/// The open attention items, most urgent first.
+/// Where the requests queue opens: the first person of [kind] waiting on
+/// [eventId].
+@immutable
+class HostTodayRequestFocus {
+  const HostTodayRequestFocus({required this.eventId, required this.kind});
+
+  final String eventId;
+  final HostRequestKind kind;
+
+  @override
+  bool operator ==(Object other) =>
+      other is HostTodayRequestFocus &&
+      other.eventId == eventId &&
+      other.kind == kind;
+
+  @override
+  int get hashCode => Object.hash(eventId, kind);
+}
+
+/// The people of one kind waiting on one coming event that no attention
+/// item covers yet, so Needs you still lists them.
+@immutable
+class HostTodayRequestGroup {
+  const HostTodayRequestGroup({
+    required this.focus,
+    required this.eventName,
+    required this.eventStart,
+    required this.count,
+  });
+
+  final HostTodayRequestFocus focus;
+  final String eventName;
+  final DateTime eventStart;
+  final int count;
+}
+
+/// The open attention items, most urgent first, and everyone waiting across
+/// the organizer's coming events.
 @immutable
 class HostTodayNeedsYou {
   const HostTodayNeedsYou({
     this.items = const <HostAttentionItem>[],
+    this.requests = const <HostRequest>[],
+    this.requestGroups = const <HostTodayRequestGroup>[],
+    this.requestsComplete = true,
     this.dueBeforeDoors = 0,
     this.checking = false,
     this.failed = false,
   });
 
   final List<HostAttentionItem> items;
+
+  /// Everyone waiting across the coming events (join requests and
+  /// waitlists), soonest event first, leaving out anyone with a block either
+  /// way with the host.
+  final List<HostRequest> requests;
+
+  /// Waiting people at events no join request or waitlist attention item
+  /// covers, soonest event first, after [items].
+  final List<HostTodayRequestGroup> requestGroups;
+
+  /// False when the bounded requests read left people out.
+  final bool requestsComplete;
 
   /// Items due before the featured event starts.
   final int dueBeforeDoors;
@@ -50,9 +103,30 @@ class HostTodayNeedsYou {
   /// empty list is not an all-clear.
   final bool checking;
 
-  /// The attention queue could not be read.
+  /// The attention queue or the requests could not be read.
   final bool failed;
+
+  /// Where [item] opens the requests queue: a join request or waitlist item
+  /// whose event has someone of that kind waiting. Null for any other item,
+  /// which goes to its own destination.
+  HostTodayRequestFocus? requestFocusOf(HostAttentionItem item) {
+    final kind = hostTodayRequestKindOf(item.kind);
+    final eventId = item.eventId ?? item.destination.eventId;
+    if (kind == null || eventId == null) return null;
+    final waiting = requests.any(
+      (row) => row.eventId == eventId && row.kind == kind,
+    );
+    return waiting ? HostTodayRequestFocus(eventId: eventId, kind: kind) : null;
+  }
 }
+
+/// The requests kind an attention kind reviews, if any.
+HostRequestKind? hostTodayRequestKindOf(HostAttentionKind kind) =>
+    switch (kind) {
+      HostAttentionKind.eventJoinRequestReview => HostRequestKind.request,
+      HostAttentionKind.eventWaitlistReview => HostRequestKind.waitlist,
+      _ => null,
+    };
 
 /// The figures under Last 30 days.
 enum HostTodayStatKind { bookings, ticketSales, cameBack, followers }

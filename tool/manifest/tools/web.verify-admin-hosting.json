@@ -5,6 +5,12 @@
   "command": "node tool/web/verify_admin_hosting.mjs",
   "surface": "remote-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Asserts that a supplied Admin Hosting origin serves no-cache HTML, immutable chunks and a real 404 for a missing chunk, so tabs left open across a deploy can recover.",
   "checks": [
     "node --check tool/web/verify_admin_hosting.mjs",

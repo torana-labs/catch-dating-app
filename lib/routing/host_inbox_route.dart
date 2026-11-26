@@ -1,29 +1,5 @@
 part of 'host_router.dart';
 
-/// The Sends workspace (`workspace=campaigns`), which stays on the inbox
-/// screen until its redraw.
-@visibleForTesting
-HostInboxScreen hostInboxScreenForUri(Uri uri, {String? initialOrganizerId}) {
-  final requestedAudienceId = uri.queryParameters['audienceId']?.trim();
-  return HostInboxScreen(
-    initialScope: hostInboxScopeForQuery(uri.queryParameters),
-    initialSegment: _hostInboxSegmentForQuery(uri.queryParameters),
-    initialWorkspace: HostMessagingWorkspace.values.firstWhere(
-      (workspace) => workspace.name == uri.queryParameters['workspace'],
-      orElse: () => HostMessagingWorkspace.inbox,
-    ),
-    initialSavedAudienceId:
-        uri.queryParameters['compose'] == '1' &&
-            requestedAudienceId != null &&
-            requestedAudienceId.isNotEmpty
-        ? requestedAudienceId
-        : null,
-    initialOrganizerId:
-        initialOrganizerId ?? uri.queryParameters['organizerId'],
-    initialThreadId: uri.queryParameters['threadId'],
-  );
-}
-
 /// The scope a link names: `eventId`, else `programId`, else
 /// `scope=general`; null names none.
 @visibleForTesting
@@ -55,15 +31,26 @@ Widget hostPeopleScreenForUri(Uri uri) => HostPeopleScreen(
 
 /// The inbox route: Messages with a conversation open (`threadId`, read in
 /// the scope the link names), Messages on a programme (`programId`), the
-/// compose screen for an event (`eventId`), or Messages. Sends
-/// (`workspace=campaigns`) stays on the inbox screen until its redraw.
+/// compose screen for an event (`eventId`), Sends (`workspace=campaigns`),
+/// or Messages.
 @visibleForTesting
 Widget hostMessagesScreenForUri(Uri uri, {String? initialOrganizerId}) {
   final query = uri.queryParameters;
   final organizerId = initialOrganizerId ?? query['organizerId'];
   bool present(String key) => query[key]?.trim().isNotEmpty ?? false;
-  if (query['workspace'] == HostMessagingWorkspace.campaigns.name) {
-    return hostInboxScreenForUri(uri, initialOrganizerId: initialOrganizerId);
+  // Sends: a new campaign to a saved audience (`compose=1&audienceId=`)
+  // and an announcement that prefers the linked `eventId`.
+  if (query['workspace'] == 'campaigns') {
+    final audienceId = query['audienceId']?.trim();
+    final eventId = query['eventId']?.trim();
+    return HostSendsScreen(
+      initialOrganizerId: organizerId,
+      initialSavedAudienceId:
+          query['compose'] == '1' && audienceId != null && audienceId.isNotEmpty
+          ? audienceId
+          : null,
+      preferredEventId: eventId == null || eventId.isEmpty ? null : eventId,
+    );
   }
   final scope = hostInboxScopeForQuery(query);
   if (present('threadId')) {

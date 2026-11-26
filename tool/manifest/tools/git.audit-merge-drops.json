@@ -5,6 +5,12 @@
   "command": "node tool/git/audit_merge_drops.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Classifies exact four-tree merge outcomes and requires reasoned receipts for every discarded side in strict mode.",
   "checks": [
     "node --check tool/git/audit_merge_drops.mjs",

@@ -954,24 +954,21 @@ node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses planned 
 node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses planned --output tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json --update
 ```
 
-## Exact-Source CI Inventories
+## Route And Widget Inventories
 
-`node tool/ci/generated_inventories.mjs --source-sha <full-commit-sha>` derives
-route inventory and the widget catalog's generated region from a complete clean
-checkout of that exact commit. CI runs it before full source preflight, relevant
-Tools checks and Flutter resolved composition. Authored prose, classifications,
-coverage decisions and regression goldens remain inputs; generation cannot make
-missing semantic coverage pass. These first-phase outputs remain tracked for
-local consumers but need no routine CI refresh commit.
-
-In Actions, materialization also writes the ignored
-`build/ci/generated-inventories.json` receipt, binding both output hashes to the
-source tree, workflow and run attempt. Full-checkout Tools consumers pass
-`--generated-inventories-materialized`; the runner verifies the receipt and
-authored source before and after checks, and substitutes only the exact catalog
-and route inventory drift commands. Sparse index consumers and standalone
-commands keep their ordinary checks. Missing or changed proof fails; authored
-coverage decisions and semantic gates still execute.
+Neither inventory is committed. `tool/ui_capture/check_route_inventory.mjs`
+exports `buildInventory()`, and every reader (the screen, capture and Host
+shell coverage checks, and the Dart composition gate through `--json`) derives
+the routes from the route contract and the canonical routers on each run.
+`--check` fails when the routers break an inventory rule. `--update` writes a
+copy to `build/generated/route_inventory.json`.
+`tool/design/generate_widget_catalog.mjs --check` enforces what the widget
+inventory encodes (registry identity, ladder level and role for shared
+Widgets, and the naming ratchet) against live source; `--write` also writes the
+inventory to `build/generated/widget_catalog.md`. `docs/widget_catalog.md`
+holds only authored usage decisions, and the doc-metadata check fails if a
+generated inventory is committed there again. `tool/ci/generated_inventories.mjs`,
+which materialized both into tracked files in CI, is retired.
 
 ## Marketing App Screenshot Context
 
@@ -1690,6 +1687,8 @@ reporting savings.
 ## Generated Contract Outputs
 
 The schema contract outputs are generated, not tracked: `packages/platform/lib/schema_contracts/generated`, `lib/contexts/*/data/generated`, `functions/src/shared/generated` (except `brand.ts` and `notificationCopyEn.ts`), `admin/src/generated/contracts`, `tool/contracts/generated` and `website/src/shared/contracts/generated`. Bootstrapping a worktree generates them. Run `npm run generate:contracts` after a pull that touches `contracts/**` or the generator, and the IDE analyzer needs the Dart tree present. The pre-commit hook regenerates them when you stage an input.
+
+Three more outputs are generated on demand, not tracked. Every workspace `flutter pub get` writes the Flutter localizations (`packages/l10n/lib/generated/app_localizations*.dart`) from `app_en.arb`; `node packages/l10n/generate.mjs` does the same alone. Run `flutter pub get` after a pull that removes them. The checks that read the route inventory and the widget inventory derive both from live source; `node tool/ui_capture/check_route_inventory.mjs --update` and `node tool/design/generate_widget_catalog.mjs --write` write copies to `build/generated/` for reading.
 
 In CI, validation lanes use `.github/actions/generate-contracts-cached`, which
 restores these outputs from a cache instead of regenerating them (about 28

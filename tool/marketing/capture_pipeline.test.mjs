@@ -466,6 +466,38 @@ test('fail closed: an old format, another recipe, a bad list or a missing input 
   assert.match(plan.reasons.join('\n'), /missing: lib\/sample_widget\.dart/);
 });
 
+test('an untracked generated input is recorded as its generator inputs, so a checkout without it validates', t => {
+  const f = fixture(t);
+  const generated = 'packages/l10n/lib/generated/app_localizations.dart';
+  f.write('tool/harness/component_graph.json', JSON.stringify({compileCodegen: [{
+    id: 'flutter.l10n', tracked: false, outputs: [generated],
+    inputs: ['packages/l10n/lib/app_en.arb', 'packages/l10n/l10n.yaml'],
+  }]}));
+  f.write('packages/l10n/lib/app_en.arb', '{"title": "Today"}');
+  f.write('packages/l10n/l10n.yaml', 'template-arb-file: app_en.arb\n');
+  f.write(generated, 'class AppLocalizations {}\n');
+  f.write('record.mjs', `import {captureInputHash, recordedInputFiles} from './tool/marketing/lib/capture_provenance.mjs';
+const c = JSON.parse(process.argv[2]);
+const files = process.argv[3] ? JSON.parse(process.argv[3]) : recordedInputFiles(c, ['lib/sample_widget.dart', '${generated}']);
+process.stdout.write(JSON.stringify({files, hash: captureInputHash(c, files)}));`);
+  const record = files => {
+    const result = f.run('record.mjs', JSON.stringify(f.capture), ...(files ? [JSON.stringify(files)] : []));
+    assert.equal(result.status, 0, result.stderr);
+    return JSON.parse(result.stdout);
+  };
+  // The render's checkout has the generated file; the list names its inputs.
+  const rendered = record();
+  assert.ok(!rendered.files.includes(generated));
+  assert.ok(rendered.files.includes('packages/l10n/lib/app_en.arb') && rendered.files.includes('packages/l10n/l10n.yaml'));
+  // A Node-only checkout without it computes the same hash, even from a list naming it.
+  fs.unlinkSync(path.join(f.root, generated));
+  assert.equal(record(rendered.files).hash, rendered.hash);
+  assert.equal(record([...rendered.files, generated].sort()).hash, rendered.hash);
+  // A copy edit stales the capture as an edit to the generated file did.
+  f.write('packages/l10n/lib/app_en.arb', '{"title": "Tonight"}');
+  assert.notEqual(record(rendered.files).hash, rendered.hash);
+});
+
 test('lcov executed files ignore const constructor heads and files outside the repository', async t => {
   const f = fixture(t);
   f.write('lib/route_only.dart', "class RouteOnly {\n  const RouteOnly({this.id});\n  final String? id;\n}\n");

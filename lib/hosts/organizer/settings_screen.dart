@@ -6,6 +6,7 @@ import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_controller.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/profile_preview_sheet.dart';
 import 'package:catch_dating_app/hosts/organizer/settings_body.dart';
 import 'package:catch_dating_app/hosts/organizer/settings_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
@@ -104,6 +105,7 @@ class _SettingsScreenState extends ConsumerState<OrganizerSettingsScreen> {
         termsAvailable: AppConfig.termsUrl != null,
         privacyAvailable: AppConfig.privacyPolicyUrl != null,
         busy: busy,
+        hasProfile: hostProfile != null,
       );
       body = OrganizerSettingsBody(
         state: state,
@@ -160,6 +162,15 @@ class _SettingsScreenState extends ConsumerState<OrganizerSettingsScreen> {
     switch (action) {
       case OrganizerSettingsAction.editName:
         await _editName(hostProfile, state.name);
+      case OrganizerSettingsAction.previewProfile:
+        if (hostProfile == null) return;
+        await showCatchBottomSheet<void>(
+          context: context,
+          builder: (_) => HostProfilePreviewSheet(
+            profile: hostProfile,
+            organizers: scope.organizers,
+          ),
+        );
       case OrganizerSettingsAction.switchOrganizer:
         final selected = scope.organizer;
         if (selected == null) return;
@@ -360,7 +371,10 @@ class _HostProfileSheetState extends State<_HostProfileSheet> {
             title: l10n.hostOrganizerProfileBio,
             contract: CatchContractConstraints.hostProfileDocumentBio,
             initialValue: _draft.bio,
+            // maxLines defaults to 1, which is below minLines and fails
+            // TextField's assertion when the sheet opens.
             minLines: 3,
+            maxLines: 6,
             onChanged: (value) => _draft = _HostProfileDraft(
               name: _draft.name,
               role: _draft.role,

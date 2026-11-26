@@ -5,6 +5,12 @@
   "command": "node tool/copy/sync_event_success_questionnaires.mjs",
   "surface": "local-writes-repo",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Validates marketing-owned Event Success questionnaire copy and keeps the typed Dart domain catalog generated from locale JSON.",
   "checks": [
     "node --check tool/copy/sync_event_success_questionnaires.mjs",

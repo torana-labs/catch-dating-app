@@ -43,6 +43,7 @@ import {
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
 import {readConsumerPushToken} from "../shared/consumerPushToken";
+import {deleteEventGuestDisclosure} from "../shared/admissionVisibility";
 import {readBookingCohort, writeBookingCohort} from
   "../shared/bookingPrivateFacts";
 import {
@@ -550,6 +551,7 @@ export async function cancelEventSignUpHandler(
       genderAtSignup: cancellerGender,
     });
     tx.set(participationRef, cancellation, {merge: true});
+    deleteEventGuestDisclosure({db, tx, eventId, uid: userId});
     const rosterNow = admin.firestore.Timestamp.now();
     writeCatchBookingRoster({db, tx, slot: cancellerRoster,
       booking: participationAfterPatch(participationSnap.data(), cancellation),

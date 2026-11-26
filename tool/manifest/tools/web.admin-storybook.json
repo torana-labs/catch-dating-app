@@ -5,6 +5,13 @@
   "command": "npm --workspace catch-admin run build:storybook",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
   "description": "Builds the Storybook workbench for registry-linked admin shared primitives and future admin route/workspace review states.",
   "checks": [
     "npm --workspace catch-admin run build:storybook",

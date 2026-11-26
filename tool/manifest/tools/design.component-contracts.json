@@ -5,6 +5,13 @@
   "command": "node tool/design/check_component_contracts.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
   "description": "Validates the Catch component contract registry used by Figma, Claude Design, and Code Connect handoffs.",
   "checks": [
     "node --check tool/design/component_concepts.mjs",

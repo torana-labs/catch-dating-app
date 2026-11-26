@@ -5,6 +5,12 @@
   "command": "node tool/impact/emulator_test_selection.mjs --base origin/main",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Chooses the strict Firestore/Storage emulator tests a pull request can reach, from the dependency-cruiser graph of functions/ plus the data files tests name; shared inputs and rules changes keep the full list, and only pull requests narrow.",
   "impactPaths": [
     "tool/lib/functions_test_selection.mjs",

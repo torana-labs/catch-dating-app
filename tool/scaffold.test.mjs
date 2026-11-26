@@ -144,10 +144,10 @@ describe("dry runs", () => {
   test("a screen prints the ids its route and capture coverage need", () => {
     const host = scaffoldIn(repoRoot, "screen", "--app", "host", "--name", "today_probe", "--dry-run").stdout;
     assert.match(host, /the router that mounts it \(lib\/routing\/consumer_router\.dart or lib\/routing\/host_router\.dart\)/u);
-    assert.match(host, /"id": "hostTodayProbeScreen"/u);
+    assert.match(host, /--list then shows it, derived from the router:\n {2}hostTodayProbeScreen$/mu);
     assert.match(host, /"routeId": "hostTodayProbeScreen"/u);
     const consumer = scaffoldIn(repoRoot, "screen", "--page", "page_probe", "--dry-run").stdout;
-    assert.match(consumer, /"id": "pageProbeScreen"/u);
+    assert.match(consumer, /derived from the router:\n {2}pageProbeScreen$/mu);
   });
 
   test("a context prints its workspace line and the context map duty", () => {

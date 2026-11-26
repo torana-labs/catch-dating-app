@@ -3,7 +3,8 @@
 // that register or edit different collections never touch the same file:
 //
 //   tool/contracts/firestore_contract/contract.json        schemaVersion,
-//       description and collectionsWithoutRulesTests
+//       description, collectionsWithoutRulesTests and
+//       collectionsPredatingNewCollectionRule (STR-11)
 //   tool/contracts/firestore_contract/collections/<id>.json  one collection
 //
 // Every reader goes through this loader, which returns the combined view

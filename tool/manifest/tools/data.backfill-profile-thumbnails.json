@@ -6,6 +6,12 @@
   "surface": "remote-write",
   "guard": "apply-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "role": "operator",
   "description": "Repairs missing 160px profile photo thumbnails: scans users, generates a JPEG thumbnail for each profilePhotos entry that lacks one and writes it to Storage and back into the grouped profilePhotos. Dry run unless --apply; needs FIREBASE_STORAGE_BUCKET.",
   "checks": [

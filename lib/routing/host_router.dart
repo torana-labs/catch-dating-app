@@ -24,6 +24,7 @@ import 'package:catch_dating_app/hosts/forms/responses_screen.dart';
 import 'package:catch_dating_app/hosts/forms/responses_state.dart';
 import 'package:catch_dating_app/hosts/onboarding/sign_in_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/memberships_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/messaging_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/page_edit_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/payments_screen.dart';
@@ -31,11 +32,13 @@ import 'package:catch_dating_app/hosts/organizer/settings_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/team_screen.dart';
 import 'package:catch_dating_app/hosts/people/automations_screen.dart';
 import 'package:catch_dating_app/hosts/people/compose_screen.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_people.dart';
 import 'package:catch_dating_app/hosts/people/duplicates/duplicates_screen.dart';
 import 'package:catch_dating_app/hosts/people/messages_screen.dart';
 import 'package:catch_dating_app/hosts/people/people_screen.dart';
 import 'package:catch_dating_app/hosts/people/person_screen.dart';
 import 'package:catch_dating_app/hosts/people/saved_group_screen.dart';
+import 'package:catch_dating_app/hosts/people/sends/sends_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
@@ -51,9 +54,6 @@ import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_route_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_operator_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_messaging_setup_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_create_organizer_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/programmes.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
@@ -614,7 +614,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     root: HostWorkspaceRoot.organizer,
     path: Routes.hostOrganizerMessagingScreen.path,
     name: Routes.hostOrganizerMessagingScreen.name,
-    builder: (context, state) => HostMessagingSetupScreen(
+    builder: (context, state) => OrganizerMessagingScreen(
       organizerId: state.pathParameters['organizerId']!,
     ),
   ),

@@ -320,6 +320,10 @@
       "handling": "deleted",
       "how": "queueCrossPathsConsentCleanup deletes the account's consent edges."
     },
+    "eventGuestDisclosures": {
+      "handling": "deleted",
+      "how": "Deleted by accountDeletionSeats.ts in each booking's deletion transaction: it holds the guest's gender for the organiser of a gender-balanced event (#2493, FIX-19)."
+    },
     "eventGuestProfiles": {
       "handling": "deleted",
       "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account (#2493)."

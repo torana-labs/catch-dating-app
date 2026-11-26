@@ -1,5 +1,26 @@
-part of '../host_operations_screen.dart';
+import 'dart:async';
+import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
+import 'package:catch_dating_app/contexts/messaging/data/host_whatsapp_embedded_signup.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
+import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// The organizer own WhatsApp sender: connect it through Meta embedded
+/// signup, sync and read its templates, send a test and disconnect, through
+/// the existing messaging setup commands. The Inbox messaging setup shows it.
 class HostWhatsappSetupSection extends ConsumerStatefulWidget {
   const HostWhatsappSetupSection({
     super.key,
@@ -150,15 +171,20 @@ class _HostWhatsappSetupSectionState
     );
   }
 
-  Future<void> _connectWhatsapp(HostMessagingSetup setup) => _run(() async {
-    final result = await startHostWhatsappEmbeddedSignup(setup.embeddedSignup);
-    await ref
-        .read(hostAudienceControllerProvider)
-        .completeWhatsappConnection(
-          organizerId: widget.organizer.id,
-          result: result,
-        );
-  });
+  // The commands are read before the signup: a signup that finishes after the
+  // section closed still completes the connection.
+  Future<void> _connectWhatsapp(HostMessagingSetup setup) {
+    final commands = ref.read(hostAudienceControllerProvider);
+    return _run(() async {
+      final result = await startHostWhatsappEmbeddedSignup(
+        setup.embeddedSignup,
+      );
+      await commands.completeWhatsappConnection(
+        organizerId: widget.organizer.id,
+        result: result,
+      );
+    });
+  }
 
   Future<void> _syncTemplates(String connectionId) => _run(() async {
     await ref

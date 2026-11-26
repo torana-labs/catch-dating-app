@@ -3011,7 +3011,8 @@ edit different collections never touch the same file:
   collection's entry. The file name must be its `id`; to register a
   collection, add its file.
 - `tool/contracts/firestore_contract/contract.json` holds `schemaVersion`, the
-  description and `collectionsWithoutRulesTests`.
+  description, `collectionsWithoutRulesTests` and
+  `collectionsPredatingNewCollectionRule`.
 
 Every reader loads it through `tool/contracts/lib/firestore_contract.mjs`,
 which fails closed on a stray, misnamed or malformed file and returns the
@@ -3047,6 +3048,23 @@ The registry, the rules and the schemas must agree in every direction, and
 
 So a new collection needs its rules block, its schema and its registry entry in
 the same change.
+
+**The new-collection rule (STR-11).** A new collection is the last resort.
+Its registry entry carries `newCollectionRationale`, with two parts:
+
+- `whyNotAnExistingCollection` (at least 40 characters) says why a field, or a
+  document type, on an existing collection cannot hold the data.
+- `readers` names at least one reader: an exported Function, or a repository
+  file such as a screen, repository or tool.
+
+`check_firestore_contract.mjs` fails an entry that has neither part, or an
+unknown reader.
+
+The collections registered before the rule (24 Nov 2026) are listed in
+`collectionsPredatingNewCollectionRule`, and that list only shrinks. An id
+leaves when its entry gains a rationale or the collection is retired. An id
+missing from origin/main's list fails, so a new collection cannot join the
+list instead of explaining itself.
 
 Retiring or renaming a collection also moves its BigQuery export in the same
 change. `tool/contracts/check_bigquery_export_paths.mjs` fails while any
@@ -3310,6 +3328,24 @@ removes one left on the offer. `tool/data/move_booking_cohorts.mjs` and
 organiser's hosts in an event chat never receive a guest's sensitive
 mini-profile answers (gender, age, relationship goal, drinking, smoking,
 children), even when the guest shared them with the other guests.
+
+### Admission-policy disclosures
+
+What an organiser may read about a guest beyond the card (name, first photo,
+city) depends on the event's admission format, declared in
+`contracts/catalogs/admission_visibility.json` (#2493, FIX-19). Today only a
+gender-balanced format (`balancedSingles`, `fixedCohortCaps`) adds a field:
+the guest's gender. `functions/src/shared/admissionVisibility.ts` writes it to
+`eventGuestDisclosures/{eventId}__{uid}` in the transaction of the booking,
+waitlist or request, and deletes it when the guest cancels, leaves the
+waitlist or deletes their account. The event's organiser managers may get one
+guest's disclosure until `expiresAt` (the event's end plus the catalog's
+retention days); a TTL policy removes it after that. No screen reads it yet,
+and `eventBookings` keeps `genderAtSignup` until the Host app reads
+disclosures. `grantKey` stays null until profile-share grants exist. The
+owner approved the catalog's `disclosure` lines, the 7-day retention and
+that orientation is never shown; the booking sheet shows them once the
+Guest app reads the catalog.
 
 ### Standalone Host Operational Attendees
 

@@ -19,8 +19,11 @@ import test from "node:test";
 import {fileURLToPath} from "node:url";
 
 import {matchesGlobPath} from "../lib/path_glob.mjs";
-import {callerGraph, compare, targets} from "./shadow_plan.mjs";
+import {callerGraph, selectNxLanes, targets} from "./lanes.mjs";
 import {loadToolsManifest} from "../lib/tools_manifest.mjs";
+
+// The lanes Nx selects for one change, sorted.
+const nxSelection = (input) => [...selectNxLanes(input).lanes].sort();
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const readJson = (file) => JSON.parse(fs.readFileSync(path.join(workspaceRoot, file), "utf8"));
@@ -37,9 +40,6 @@ export const markdownReaders = {
   "tool/check_organizer_nomenclature.mjs": {"docs/migrations/clubs_to_organizers.md": ["flutter"]},
   // A mandatory check: the Tools lane runs it through affected-tools and it scans every tracked document.
   "tool/check_third_party_names.mjs": {"docs/agent_operating_model.md": ["tools"]},
-  // source-preflight runs the freshness check on every change; Tools runs the generator's own check.
-  "tool/ci/generated_inventories.mjs": {"docs/widget_catalog.md": []},
-  "tool/design/generate_widget_catalog.mjs": {"docs/widget_catalog.md": ["tools"]},
   // The kit token importer rewrites and checks the mapping table in the source pack README.
   "tool/design/playbook/import_kit_tokens.mjs": {"design/source_packs/website-playbook/README.md": ["tools"]},
   "tool/design/build_host_feature_responsibilities.mjs": {"lib/hosts/*/README.md": ["tools"]},
@@ -56,12 +56,13 @@ export const markdownReaders = {
 // path filter that skips documents, an output, or a local-only tool.
 export const markdownMentions = {
   "tool/architecture/lib/screen_move_apply.mjs": "the Phase 4 screen move run by hand; it rewrites moved paths in documents and CI runs only its fixture tests",
-  "tool/architecture/lib/screen_move_outputs.mjs": "names the host READMEs a generator writes during a hand-run screen move",
   "tool/architecture/rename_to_organizer.mjs": "a path filter that leaves documents out of the rename",
   "tool/ci/flutter_package_scope.mjs": "classifies Markdown as outside package code",
+  "tool/ci/main_red_alert.mjs": "names docs/release_operations.md in an issue body; the file it reads is the Actions event payload",
   "tool/contracts/generate_market_catalog.mjs": "a path filter that leaves documents out of the scan",
   "tool/contracts/generate_schema_contracts.mjs": "names the generated INDEX.md it writes",
   "tool/design/check_new_widget_inventory.mjs": "names docs/app_architecture.md in its advice",
+  "tool/design/generate_widget_catalog.mjs": "names docs/widget_catalog.md in the ignored inventory it writes; it reads no document",
   "tool/design/lib/design_system_manifest.mjs": "README paths inside the hosted design-system artifact, not the repository",
   "tool/design/widgetbook_compare_server.mjs": "a local review server; CI does not run it",
   "tool/git/worktree_guard.mjs": "the local task launcher; CI runs only its fixture tests",
@@ -70,7 +71,6 @@ export const markdownMentions = {
   "tool/lib/functions_test_reads.mjs": "an example path in its documentation",
   "tool/lib/functions_test_selection.mjs": "selection logic that classifies Markdown paths",
   "tool/marketing/audit_website_imagery.mjs": "names the summary.md report it writes; a local finder CI does not run",
-  "tool/marketing/import_hosted_captures.mjs": "checks the widget catalog its own import rewrote",
   "tool/nx/catch_projects.mjs": "Nx input patterns",
   "tool/nx/lanes.mjs": "lane rules that classify Markdown paths (queue capture inputs, native build inputs)",
   "tool/nx/shadow_plan.mjs": "selection logic that classifies Markdown paths",
@@ -132,8 +132,8 @@ function lanesFor(file) {
       `--graph=${graphFile}`], {cwd: workspaceRoot, stdio: "ignore", env: {...process.env, NX_DAEMON: "false"}});
     const graph = JSON.parse(fs.readFileSync(graphFile, "utf8"));
     const tagsByProject = Object.fromEntries(Object.entries(graph.graph.nodes).map(([name, node]) => [name, node.data.tags ?? []]));
-    return compare({plannerLanes: [], mode: "merge_group", nxTasks: Object.keys(graph.tasks.tasks), tagsByProject,
-      changedFiles: [file]}).nxLanes;
+    return nxSelection({mode: "merge_group", nxTasks: Object.keys(graph.tasks.tasks), tagsByProject,
+      changedFiles: [file]});
   } finally {
     fs.rmSync(dir, {recursive: true, force: true});
   }

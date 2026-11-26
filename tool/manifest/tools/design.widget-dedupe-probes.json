@@ -5,6 +5,14 @@
   "command": "node tool/design/check_widget_dedupe_probes.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "flutter",
+      "flutter-pub"
+    ]
+  },
   "role": "gate",
   "description": "Runs seeded structural, concept-primary, member-parent, composition-identity, and deterministic collision probes for widget consolidation.",
   "checks": [

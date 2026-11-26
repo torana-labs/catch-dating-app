@@ -25,15 +25,19 @@ export function planPreCommitActions({graph, stagedPaths}) {
   return {
     // Generator outputs have an exact canonical generator format. Formatting
     // them again would invalidate the freshness check that runs in this same
-    // hook. Localization outputs are written by this hook and stay formatted.
+    // hook. Tracked localization outputs are written by this hook and stay
+    // formatted; untracked ones are never staged, only deleted once.
     dartPaths: paths.filter((candidate) => candidate.endsWith(".dart") &&
       !generators.some((generator) =>
-        generator.id !== "flutter.l10n" &&
+        (generator.id !== "flutter.l10n" || generator.tracked === false) &&
         (generator.outputs ?? []).some((pattern) => matchesGlobPath(candidate, pattern)))),
     l10nInputChanged,
     functionsSourceChanged: paths.some((candidate) =>
       /^functions\/src\/.*\.(?:cts|mts|tsx?)$/u.test(candidate)),
     l10nOutputs: l10n?.outputs ?? [],
+    // Untracked localizations are generated, never staged: the generic
+    // tracked:false path below writes them and nothing about them is in the index.
+    l10nTracked: l10n?.tracked !== false,
     l10nWriteCommand: l10n?.writeCommand ?? null,
     triggeredGenerators,
     triggeredGeneratorIds: triggeredGenerators.map((generator) => generator.id),
@@ -69,7 +73,7 @@ export function runPreCommitGeneratedArtifacts({
   let plan = planPreCommitActions({graph: sourceGraph, stagedPaths});
   // Generation can select downstream freshness checks through its outputs.
   const preflightPlan = planPreCommitActions({graph: sourceGraph, stagedPaths:
-    plan.l10nInputChanged ? [...stagedPaths, ...plan.l10nOutputs] : stagedPaths});
+    plan.l10nInputChanged && plan.l10nTracked ? [...stagedPaths, ...plan.l10nOutputs] : stagedPaths});
   if (indexedGraph != null && (preflightPlan.dartPaths.length > 0 ||
     preflightPlan.triggeredGenerators.length > 0)) {
     const catalog = "tool/harness/component_graph.json";
@@ -81,7 +85,7 @@ export function runPreCommitGeneratedArtifacts({
   assertIndexIntegrity({plan: preflightPlan, repoRoot: resolvedRoot, runCommand,
     unstagedPaths: injectedUnstagedPaths});
   const generated = [];
-  if (plan.l10nInputChanged) {
+  if (plan.l10nInputChanged && plan.l10nTracked) {
     if (!plan.l10nWriteCommand || plan.l10nOutputs.length === 0) {
       throw new PreCommitGeneratedArtifactError(
         "The compile-codegen catalog is missing the Flutter localization command or outputs.",
@@ -212,7 +216,8 @@ function assertIndexIntegrity({
   const matchesSelected = candidate => stagedDart.has(candidate) ||
     candidate === "tool/harness/component_graph.json" ||
     plan.triggeredGenerators.some(generator => matchesGeneratorPath(candidate, generator)) ||
-    plan.l10nInputChanged && matchesGlobPath(candidate, "packages/l10n/lib/generated/**");
+    plan.l10nInputChanged && matchesGlobPath(candidate, "packages/l10n/lib/generated/**") &&
+      (plan.l10nTracked || !plan.l10nOutputs.includes(candidate));
   const patterns = [...stagedDart, "tool/harness/component_graph.json",
     ...plan.triggeredGenerators.flatMap(generator => [...generator.inputs, ...(generator.tracked === false ? [] : generator.outputs)]),
     ...(plan.triggeredGeneratorIds.includes("flutter.l10n") ?
@@ -234,7 +239,7 @@ function assertIndexIntegrity({
     args: ["ls-files", "-v", "-z", "--", ...roots.map(root => `:(literal)${root}`)]});
   assertRegularPaths(repoRoot, tracked.map(entry => entry.slice(2)).filter(matchesSelected));
   const hidden = tracked.filter(entry => /^[a-zS] /u.test(entry)).map(entry => entry.slice(2));
-  const deleted = plan.l10nInputChanged ? readGitPaths({repoRoot, runCommand,
+  const deleted = plan.l10nInputChanged && plan.l10nTracked ? readGitPaths({repoRoot, runCommand,
     args: ["diff", "--cached", "--name-only", "--no-renames", "--diff-filter=D", "-z", "--"]}) : [];
   const conflicts = [...new Set([
     ...unstaged.filter(matchesSelected),

@@ -123,6 +123,8 @@ class _HostFormatsCourtsScreenState
       final rotations = await ref.read(
         watchEventSuccessRotationAssignmentsProvider(event.id).future,
       );
+      // The editor opens on this screen: once it is gone, stop reading.
+      if (!mounted) return;
       final preferences = await ref.read(
         watchEventSuccessPreferencesProvider(event.id).future,
       );
@@ -137,6 +139,7 @@ class _HostFormatsCourtsScreenState
       final key = eventSuccessPeerUidsKey(
         eventSuccessAssignmentParticipantUids(assignments),
       );
+      if (!mounted) return;
       profiles = key.isEmpty
           ? const <PublicProfile>[]
           : await ref.read(

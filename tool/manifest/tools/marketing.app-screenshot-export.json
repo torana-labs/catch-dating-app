@@ -5,6 +5,14 @@
   "command": "node tool/marketing/export_app_screenshots.mjs",
   "surface": "local-writes-repo",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "flutter",
+      "flutter-pub"
+    ]
+  },
   "description": "Renders active app marketing captures and wraps them in the configured device frame. Tools checks recipes and the design context; the capture producer and the release import check image bytes and provenance.",
   "checks": [
     "node --check tool/marketing/export_app_screenshots.mjs",

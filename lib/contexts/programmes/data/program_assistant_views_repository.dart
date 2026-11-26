@@ -50,7 +50,8 @@ class ProgramAssistantViewsRepository {
     resource: settings,
   );
 
-  /// The programme's sender view, live; null while it has none.
+  /// The programme's sender view, live; null while it has none. The guest
+  /// inbox duties read it for the inbox header.
   Stream<Map<Object?, Object?>?> watchSenderView(
     String programId,
     String uid,
@@ -58,10 +59,7 @@ class ProgramAssistantViewsRepository {
     programId,
     uid,
     needs: const {},
-    allows: (state) => state.view!.holdsDuty(
-      ProgramStaffDuty.communications,
-      state.evaluatedAt,
-    ),
+    allows: (state) => state.view!.holdsInbox(state.evaluatedAt),
     scopeOf: (state) => 'sender',
     data: (state) => _document(senders, programId, _senderContext),
   );

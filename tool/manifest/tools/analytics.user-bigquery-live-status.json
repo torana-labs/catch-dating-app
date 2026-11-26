@@ -5,6 +5,12 @@
   "command": "node tool/analytics/user_analytics_live_status.mjs",
   "surface": "remote-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Checks live Firebase and BigQuery user analytics deployment status.",
   "checks": [
     "node --check tool/analytics/user_analytics_live_status.mjs"

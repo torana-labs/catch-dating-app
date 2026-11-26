@@ -5,6 +5,15 @@
   "command": "node tool/design/check_design_parity.mjs --check",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm",
+      "flutter",
+      "flutter-pub"
+    ]
+  },
   "description": "Runs explicit source design invariants; identical registered scanner commands execute once in the shared tool runner. Snapshot handoff checks and advisory reports are separate explicit CLI options.",
   "checks": [
     "node --check tool/design/check_design_parity.mjs",

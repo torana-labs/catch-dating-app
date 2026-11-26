@@ -6,6 +6,12 @@
   "surface": "remote-destructive",
   "guard": "apply-and-prod-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Audits and repairs hosted media paths against Firestore and Storage contracts.",
   "checks": [
     "node --check tool/data/hygiene_media_paths.mjs"

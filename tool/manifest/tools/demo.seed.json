@@ -6,6 +6,12 @@
   "surface": "remote-destructive",
   "guard": "apply-and-prod-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Builds and optionally writes demo seed worlds.",
   "impactPaths": [
     "tool/demo/seed_demo_data.mjs",

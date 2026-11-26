@@ -31,15 +31,26 @@ HostProgrammeRoomsState hostProgrammeRoomsController(
   );
 }
 
+/// The reads a room-board refresh invalidates: the hotel's rooms, or the
+/// programme while no hotel is chosen.
+List<ProviderOrFamily> hostProgrammeRoomsReads(
+  String programId,
+  String? hotelId,
+) => hotelId == null
+    ? hostProgrammeReads(programId)
+    : [programHotelRoomsProvider(programId, hotelId)];
+
 /// Reads the room board again.
 void refreshHostProgrammeRooms(
   WidgetRef ref,
   String programId,
   String? hotelId,
-) {
-  if (hotelId == null) {
-    refreshHostProgramme(ref, programId);
-    return;
-  }
-  ref.invalidate(programHotelRoomsProvider(programId, hotelId));
-}
+) => hostProgrammeRoomsReads(programId, hotelId).forEach(ref.invalidate);
+
+/// [refreshHostProgrammeRooms] through a container captured before an
+/// `await`.
+void refreshHostProgrammeRoomsIn(
+  ProviderContainer container,
+  String programId,
+  String? hotelId,
+) => hostProgrammeRoomsReads(programId, hotelId).forEach(container.invalidate);

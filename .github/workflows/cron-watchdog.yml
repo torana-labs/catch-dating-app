@@ -14,6 +14,12 @@ name: Scheduled run watchdog
 # watches (no slot started from 01:47 to 04:47 UTC on 23 Nov 2026); the records
 # and the concurrency group keep the extra runs from acting twice. An
 # occurrence from before a workflow reached main is not owed.
+# It also follows up each completed CI nightly that no Main CI alert run has
+# handled, by dispatching main-red-alert.yml with that run's run_id: GITHUB_TOKEN
+# dispatched the nightly, so its completion wakes no workflow (owner decision,
+# 26 Nov 2026). That is the only other workflow it may dispatch. Each such
+# dispatch uploads a marker artifact, so a wake before the runs listing shows
+# the alert run does not dispatch it twice.
 # Logic and tests: tool/ci/cron_watchdog.mjs. Operator guide:
 # docs/release_operations.md, "Scheduled run watchdog".
 
@@ -81,7 +87,8 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
-      - name: Dispatch or report missed scheduled runs
+      - id: watch
+        name: Dispatch or report missed scheduled runs
         env:
           GH_TOKEN: ${{ github.token }}
           WATCHDOG_GRACE_HOURS: ${{ github.event_name == 'workflow_dispatch' && inputs.grace_hours || '3' }}
@@ -95,3 +102,22 @@ jobs:
           if [[ -n "$EVALUATE_AT" ]]; then args+=(--now "$EVALUATE_AT"); fi
           if [[ "$ASSUME_MISSING" != "none" ]]; then args+=(--assume-missing "$ASSUME_MISSING"); fi
           node tool/ci/cron_watchdog.mjs "${args[@]}"
+
+      # The runs listing lags a dispatch, so the watchdog's next wake could miss
+      # the alert run it just started. This marker stands in for it for 2 hours.
+      - name: Record the Main CI alert dispatch
+        if: steps.watch.outputs.alert_marker != ''
+        env:
+          MARKER: ${{ steps.watch.outputs.alert_marker }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/alert-marker"
+          echo "Dispatched main-red-alert.yml at $(date -u +%FT%TZ) from run $GITHUB_RUN_ID." > "$RUNNER_TEMP/alert-marker/$MARKER.txt"
+
+      - name: Upload the Main CI alert dispatch marker
+        if: steps.watch.outputs.alert_marker != ''
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.watch.outputs.alert_marker }}
+          path: ${{ runner.temp }}/alert-marker/
+          if-no-files-found: error
+          retention-days: 3

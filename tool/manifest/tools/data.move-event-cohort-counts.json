@@ -6,6 +6,12 @@
   "surface": "remote-write",
   "guard": "apply-and-prod-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "One-off move of per-cohort booking totals (which can point to a guest's orientation) from events into the server-only eventCohortCounts (#2493); dry run by default.",
   "checks": [
     "node --check tool/data/move_event_cohort_counts.mjs",

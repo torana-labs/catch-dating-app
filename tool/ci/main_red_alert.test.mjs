@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
-import {FLOOR_EXIT_TITLE, ISSUE_TITLE, decideAlert, decideFloorExit, decideUncovered, failedJobNames, nightlyWindow,
+import {FLOOR_EXIT_TITLE, ISSUE_TITLE, alertCounts, alertRunTitle, applyDecision, decideAlert, settleDecision, decideFloorExit, decideUncovered, failedJobNames, nightlyWindow, resolveAlertRun,
   onlyMobileBlockFailures, owedFromIssue, reportedUncovered, uncoveredCommits, uncoveredReportCounts}
   from "./main_red_alert.mjs";
 import {CAPTURE_JOB, GOLDENS_JOB} from "./golden_policy.mjs";
+import {fakeIssueApi, oldestOpen, openIssueOnce, settleToHead} from "../lib/github_issues.mjs";
 
 const run = (conclusion, extra = {}) => ({id: 7, html_url: "https://example.test/run/7", head_sha: "a".repeat(40),
   conclusion, event: "push", display_title: "CI", ...extra});
@@ -163,21 +164,60 @@ test("the dispatched nightly is the nightly: it settles owed jobs, names its win
   assert.equal(decideFloorExit({runs: notNightly, now: NOW, openIssue: null}).reason, "too_few_nightlies");
 });
 
+test("resolveAlertRun: a workflow_run wake handles its run; a dispatch only a completed CI nightly of main, once", () => {
+  const repository = "owner/repo";
+  const ciRun = (extra = {}) => ({id: 45809418054, event: "workflow_dispatch", display_title: "CI nightly", status: "completed",
+    conclusion: "success", head_branch: "main", head_sha: "a".repeat(40), path: ".github/workflows/ci.yml@refs/heads/main",
+    repository: {full_name: repository}, head_repository: {full_name: repository}, ...extra});
+  const dispatched = (fetchedRun, extra = {}) => resolveAlertRun({event: "workflow_dispatch", inputRunId: String(fetchedRun.id),
+    fetchedRun, repository, alertRuns: [], selfRunId: 900, ...extra});
+  // The watchdog's follow-up of a completed CI nightly with no record: handled.
+  assert.deepEqual(dispatched(ciRun()), {proceed: true, reason: "", runId: "45809418054", event: "workflow_dispatch",
+    nightly: true, conclusion: "success", headSha: "a".repeat(40), headBranch: "main"});
+  // Already recorded by an earlier successful alert run (the workflow_run path, or a second dispatch): skipped.
+  const recorded = [{id: 800, display_title: "Main CI alert for run 45809418054", conclusion: "success"}];
+  assert.deepEqual([dispatched(ciRun(), {alertRuns: recorded}).proceed, dispatched(ciRun(), {alertRuns: recorded}).reason],
+    [false, "alert run 800 already handled run 45809418054"]);
+  // Its own run, or an earlier one that failed, does not count: a retry is handled.
+  assert.equal(dispatched(ciRun(), {alertRuns: [{...recorded[0], id: 900}, {...recorded[0], id: 801, conclusion: "failure"}]}).proceed, true);
+  // Refused: not a nightly, not ours, not main, still running, or a mismatched or malformed id.
+  for (const [label, run] of [["a push run", ciRun({event: "push", display_title: "CI"})], ["a full dispatch", ciRun({display_title: "CI"})],
+    ["another workflow", ciRun({path: ".github/workflows/deploy.yml@refs/heads/main"})],
+    ["a fork", ciRun({head_repository: {full_name: "someone/fork"}})], ["another branch", ciRun({head_branch: "feature"})]]) {
+    assert.throws(() => dispatched(run), /Refused: run 45809418054 is not a CI nightly of main/u, label);
+  }
+  assert.throws(() => dispatched(ciRun({status: "in_progress", conclusion: null})), /Refused: run 45809418054 has not completed/u);
+  assert.throws(() => dispatched(ciRun(), {inputRunId: "45809418055"}), /not the requested run/u);
+  assert.throws(() => dispatched(ciRun(), {inputRunId: "12; rm -rf"}), /run_id must be a CI run id/u);
+  // A workflow_run wake handles its payload's run, push or nightly, with the same record check.
+  const push = ciRun({id: 7, event: "push", display_title: "CI"});
+  assert.deepEqual(resolveAlertRun({event: "workflow_run", payloadRun: push, repository, alertRuns: [], selfRunId: 901}).event, "push");
+  assert.equal(resolveAlertRun({event: "workflow_run", payloadRun: ciRun(), repository, alertRuns: recorded, selfRunId: 901}).proceed, false);
+  assert.throws(() => resolveAlertRun({event: "schedule", repository, alertRuns: []}), /Unexpected event schedule/u);
+});
+
 test("the workflow listens only to main's push and nightly CI and can only write issues", () => {
   const workflow = fs.readFileSync(new URL("../../.github/workflows/main-red-alert.yml", import.meta.url), "utf8");
   assert.match(workflow, /workflow_run:\n\s+workflows: \[CI\]\n\s+types: \[completed\]\n\s+branches: \[main\]/u);
   assert.match(workflow, /^permissions: \{\}$/mu);
-  // Main's push runs and the nightly: dispatched by ci-nightly.yml and titled
-  // "CI nightly" since 26 Nov 2026, scheduled before.
-  const nightly = "(github.event.workflow_run.event == 'schedule' || (github.event.workflow_run.event == 'workflow_dispatch' && " +
-    "github.event.workflow_run.display_title == 'CI nightly'))";
-  assert.equal(workflow.split(`(github.event.workflow_run.event == 'push' || ${nightly})`).length - 1, 2);
-  assert.equal(workflow.split(`&& ${nightly} &&`).length - 1, 2);
-  assert.doesNotMatch(workflow, /"schedule"\]|event == 'schedule' &&/u);
-  assert.match(workflow, /github\.event\.workflow_run\.head_branch == 'main'/u);
+  // A dispatch names the CI nightly to handle (the Scheduled run watchdog's
+  // follow-up, 26 Nov 2026); the run-name records which CI run each alert run handled.
+  assert.match(workflow, /^run-name: Main CI alert for run \$\{\{ inputs\.run_id \|\| github\.event\.workflow_run\.id \}\}$/mu);
+  assert.match(workflow, /workflow_dispatch:\n\s+inputs:\n\s+run_id:\n(?:\s+.*\n){1,2}\s+required: true\n\s+type: string\n/u);
+  assert.equal(alertRunTitle(45809418054), "Main CI alert for run 45809418054");
+  // The resolve job reads the run (refusing a bad dispatch) and every job acts on its answer.
+  const resolve = workflow.slice(workflow.indexOf("\n  resolve:\n"), workflow.indexOf("\n  alert:\n"));
+  assert.match(resolve, /github\.event_name == 'workflow_dispatch' \|\| \(\n\s+github\.event\.workflow_run\.head_branch == 'main' &&\n\s+github\.event\.workflow_run\.head_repository\.full_name == github\.repository\)/u);
+  assert.match(resolve, /permissions:\n {6}actions: read\n {6}contents: read\n/u);
+  assert.match(resolve, /INPUT_RUN_ID: \$\{\{ inputs\.run_id \}\}\n\s+run: node tool\/ci\/main_red_alert\.mjs --resolve\n/u);
+  const handles = "needs.resolve.outputs.proceed == 'true' && needs.resolve.outputs.head_branch == 'main'";
+  assert.equal(workflow.split(`if: \${{ ${handles} && (needs.resolve.outputs.event == 'push' || needs.resolve.outputs.nightly == 'true')`).length - 1, 2);
+  assert.equal(workflow.split(`if: \${{ ${handles} && needs.resolve.outputs.nightly == 'true' &&`).length - 1, 2);
+  assert.equal(workflow.split("    needs: resolve\n").length - 1, 4);
+  assert.doesNotMatch(workflow.slice(workflow.indexOf("\n  alert:\n")), /github\.event\.workflow_run\./u);
   assert.match(workflow, /issues: write/u);
   assert.doesNotMatch(workflow, /contents: write|pull-requests: write/u);
-  assert.match(workflow, /RUN_ID: \$\{\{ github\.event\.workflow_run\.id \}\}/u);
+  assert.equal(workflow.split("RUN_ID: ${{ needs.resolve.outputs.run_id }}").length - 1, 3);
   assert.match(workflow, /node tool\/ci\/main_red_alert\.mjs/u);
   // Only the golden-policy job may dispatch, and only the dispatch-only baseline workflows.
   const jobs = workflow.split(/\n  (?=[a-z-]+:\n)/u).slice(1);
@@ -321,4 +361,102 @@ test("a commit reported before an early close is reported once more at most, nev
     {action: "none"});
   assert.deepEqual(decideUncovered({uncovered, openIssue: {number: 4},
     counts: uncoveredReportCounts([first.body, again.body])}), {action: "none"});
+});
+
+// One alert run as main() runs it: decide from the issue as it reads now,
+// write, then settle to a newer head run whose own alert finished.
+function alertRunFor(api, target0, {jobsOf, runs, alertRuns}) {
+  const decide = (target) => {
+    const openIssue = oldestOpen(api.listOpen(), ISSUE_TITLE);
+    return decideAlert({run: target, jobs: jobsOf(target.id), openIssue, owed: openIssue ? owedFromIssue(api.texts(openIssue)) : null});
+  };
+  return {
+    decide: () => decide(target0),
+    write: (decision) => applyDecision(api, decision),
+    settle: () => settleToHead({run: target0, counts: alertCounts, alertTitle: alertRunTitle, listRuns: () => runs,
+      listAlertRuns: () => alertRuns, sleep: () => {}, settle: (head) => applyDecision(api, settleDecision(decide(head), head))}),
+  };
+}
+
+const mainRun = (id, conclusion, created, sha) => ({id, conclusion, created_at: created, status: "completed", event: "push",
+  head_branch: "main", head_sha: sha.repeat(40), html_url: `https://example.test/run/${id}`, display_title: "CI"});
+const openAlerts = (fake) => fake.state.issues.filter((issue) => issue.state === "open" && issue.title === ISSUE_TITLE);
+
+test("a close racing an open settles to the state of the latest head run", () => {
+  const red = mainRun(100, "failure", "2026-11-26T10:00:00Z", "a");
+  const green = mainRun(101, "success", "2026-11-26T10:05:00Z", "b");
+  const jobs = {100: [job("Required CI", "failure"), job("tools / Tool checks (core-audit)", "failure")],
+    101: [job("Required CI", "success"), job("tools / Tool checks (core-audit)", "success")]};
+  const jobsOf = (id) => jobs[id];
+  // The newer green run's alert reads first (nothing to close) and finishes;
+  // only then does the older red run's alert open the issue.
+  const fake = fakeIssueApi();
+  const alertRuns = [{display_title: alertRunTitle(101), status: "completed"}];
+  const head = alertRunFor(fake.api, green, {jobsOf, runs: [red, green], alertRuns});
+  assert.equal(head.decide().action, "none");
+  const older = alertRunFor(fake.api, red, {jobsOf, runs: [red, green], alertRuns});
+  older.write(older.decide());
+  assert.equal(openAlerts(fake).length, 1, "the older red run opened the issue");
+  assert.deepEqual(older.settle(), {status: "settled", head: 101});
+  assert.equal(openAlerts(fake).length, 0, "settled to the green head: closed");
+  assert.match(fake.state.issues[0].comments.at(-1), /^Settled to the latest main run \(https:\/\/example\.test\/run\/101\)/u);
+
+  // The reverse: the newer red run comments, then the older green run closes
+  // on what it read before that comment. Settling reopens the alert for the head.
+  const reverse = fakeIssueApi();
+  const older2 = mainRun(200, "success", "2026-11-26T11:00:00Z", "c");
+  const head2 = mainRun(201, "failure", "2026-11-26T11:05:00Z", "d");
+  jobs[200] = jobs[101];
+  jobs[201] = jobs[100];
+  openIssueOnce(reverse.api, {title: ISSUE_TITLE, body: decideAlert({run: mainRun(199, "failure", "2026-11-26T10:55:00Z", "e"),
+    jobs: jobs[100], openIssue: null}).body});
+  const alertRuns2 = [{display_title: alertRunTitle(201), status: "completed"}];
+  const greenAlert = alertRunFor(reverse.api, older2, {jobsOf, runs: [older2, head2], alertRuns: alertRuns2});
+  const read = greenAlert.decide();
+  assert.equal(read.action, "close");
+  const redAlert = alertRunFor(reverse.api, head2, {jobsOf, runs: [older2, head2], alertRuns: alertRuns2});
+  redAlert.write(redAlert.decide());
+  greenAlert.write(read);
+  assert.equal(openAlerts(reverse).length, 0, "the stale close won the race");
+  assert.equal(greenAlert.settle().status, "settled");
+  assert.equal(openAlerts(reverse).length, 1, "settled to the red head: open again");
+  assert.match(openAlerts(reverse)[0].body, /^Settled to the latest main run[^\n]*\n\nMain CI \(push\) failed at dddddddd/u);
+  // The head run's own alert is never repeated: settling to a head whose state already holds posts nothing.
+  const posts = reverse.state.log.filter(([name]) => ["comment", "create", "close"].includes(name)).length;
+  assert.deepEqual(greenAlert.settle(), {status: "settled", head: 201});
+  assert.equal(reverse.state.log.filter(([name]) => ["comment", "create", "close"].includes(name)).length, posts);
+});
+
+test("two alert runs racing to open Main CI is red end with exactly one open issue", () => {
+  const a = mainRun(300, "failure", "2026-11-26T12:00:00Z", "a");
+  const b = mainRun(301, "failure", "2026-11-26T12:01:00Z", "b");
+  const jobsOf = () => [job("Required CI", "failure")];
+  // Both read "no open issue" before either opens, and run B opens while run A
+  // is between openIssueOnce's own check and its open.
+  let race = null;
+  const fake = fakeIssueApi({between: (name) => {
+    if (name === "create" && race) {
+      const write = race;
+      race = null;
+      write();
+    }
+  }});
+  const runA = alertRunFor(fake.api, a, {jobsOf, runs: [a, b], alertRuns: []});
+  const runB = alertRunFor(fake.api, b, {jobsOf, runs: [a, b], alertRuns: []});
+  const decisionA = runA.decide();
+  const decisionB = runB.decide();
+  assert.deepEqual([decisionA.action, decisionB.action], ["open", "open"]);
+  race = () => runB.write(decisionB);
+  runA.write(decisionA);
+  assert.equal(fake.state.issues.length, 2, "both runs opened an issue");
+  assert.deepEqual(openAlerts(fake).map((issue) => issue.number), [1]);
+  assert.match(fake.state.issues[0].comments[0], /^#2 was opened by a parallel run[\s\S]*failed at aaaaaaaa/u);
+  // The owed record survives the move, so a green run still has to pass both runs' jobs.
+  assert.deepEqual(owedFromIssue([fake.state.issues[0].body, ...fake.state.issues[0].comments]).jobs, ["Required CI"]);
+});
+
+test("the alert jobs are grouped per CI run, never replaced, and check out the issue guard", () => {
+  const source = fs.readFileSync(new URL("../../.github/workflows/main-red-alert.yml", import.meta.url), "utf8");
+  assert.match(source, /concurrency:\n  group: main-red-alert-\$\{\{ inputs\.run_id \|\| github\.event\.workflow_run\.id \}\}\n  cancel-in-progress: false\n/u);
+  assert.equal([...source.matchAll(/sparse-checkout: \|\n            tool\/ci\n            tool\/lib\n/gu)].length, 4);
 });

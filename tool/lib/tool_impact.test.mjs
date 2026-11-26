@@ -195,13 +195,12 @@ test("design authority ledgers select their exact consuming checks", () => {
       ["architecture:ui-composition-contracts", "design:screen-coverage"],
     ],
     [
+      // The route inventory is derived, not committed: its generator selects
+      // every check that reads the routes.
       "tool/ui_capture/check_route_inventory.mjs",
-      ["architecture:ui-composition-contracts", "ui-capture:route-inventory"],
-    ],
-    [
-      "tool/ui_capture/route_inventory.json",
       [
         "architecture:ui-composition-contracts",
+        "design:host-shell-coverage",
         "design:screen-contracts",
         "design:screen-coverage",
         "ui-capture:coverage",
@@ -388,7 +387,7 @@ test("combined layout inputs preserve all owner checks and mixed runtime require
   }
   assert.deepEqual(layoutPlan(layoutPaths, unannotated).toolIds, combined.toolIds);
   for (const [paths, setup] of [
-    [["tool/design/check_component_lexicon.mjs"], ["node", "flutter", "flutter-pub"]],
+    [["tool/design/check_component_lexicon.mjs"], ["node", "flutter", "flutter-pub", "root-npm"]],
     [["tool/design/check_public_surface_behavior.test.mjs"], ["node", "root-npm"]],
     [["tool/design/check_component_lexicon.mjs", "tool/design/check_public_surface_behavior.test.mjs"],
       ["node", "flutter", "flutter-pub", "root-npm"]],

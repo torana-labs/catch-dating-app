@@ -9,7 +9,7 @@ import {fileURLToPath} from "node:url";
 import {projectPlanOutputs} from "../harness.mjs";
 import {planAffected, queueOnlyCiTargets} from "../harness/lib/component_graph.mjs";
 import {planAffectedToolChecks, toolsOwnDesignChecks, toolsOwnUiLintSmoke} from "../lib/tool_impact.mjs";
-import {comparedLanes} from "./shadow_plan.mjs";
+import {comparedLanes} from "./lanes.mjs";
 import {appRolesOf, applyLanes, chooseLanes, everyLane, mainBuildLanes, nativeBuildInput, nativeBuildLanes, nxChooses,
   nxSelectsAlone, plannerShadow, selectAlone, unionLanes} from "./select_lanes.mjs";
 import {loadToolsManifest, toolsManifestPath} from "../lib/tools_manifest.mjs";
@@ -149,7 +149,7 @@ test("a Tools lane only Nx selects plans the checks that read the change", () =>
   // of Tools, with a check that reads each.
   const cases = {
     "docs/app_architecture.md": "audit:context-map",
-    "docs/widget_catalog.md": "design:widget-catalog",
+    "docs/widget_catalog.md": "docs:metadata",
     "firestore.indexes.json": "contracts:firestore-query-indexes",
     // The generated Functions templates' freshness.
     "copy/notifications_en.json": "git:pre-commit-generated-artifacts",

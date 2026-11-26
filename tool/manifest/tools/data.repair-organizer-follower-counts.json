@@ -6,6 +6,12 @@
   "surface": "remote-write",
   "guard": "apply-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Repairs organizer followerCount projections from active organizerFollows.",
   "checks": [
     "node --check tool/data/recompute_organizer_follower_counts.mjs",

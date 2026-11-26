@@ -5,6 +5,12 @@
   "command": "node --test tool/data/profile_projection_parity.test.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Checks seed and Functions public profile projection parity.",
   "checks": [
     "npm --prefix functions run build && node --test tool/data/profile_projection_parity.test.mjs"

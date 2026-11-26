@@ -5,6 +5,13 @@
   "command": "node tool/ci/release_block.mjs --check mobile",
   "surface": "remote-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
   "impactPaths": [
     ".github/workflows/release-readiness.yml",
     "tool/ci/release_block.mjs",

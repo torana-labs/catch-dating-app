@@ -496,15 +496,16 @@ class _HostEventGuestsScreenState extends ConsumerState<HostEventGuestsScreen> {
         .value;
     if (viewModel == null) return;
     final ids = [...viewModel.profileIds]..sort();
+    // Read before the await: a failure that lands after the screen closed is
+    // still logged.
+    final logger = ref.read(errorLoggerProvider);
     final Map<String, (String, String?)> profiles;
     try {
       profiles = await ref.read(
         hostEventGuestNamesProvider(ids.join(',')).future,
       );
     } on Object catch (error, stackTrace) {
-      ref
-          .read(errorLoggerProvider)
-          .logError(error, stackTrace, reason: 'share the guest list');
+      logger.logError(error, stackTrace, reason: 'share the guest list');
       if (mounted) {
         showCatchNotice(context, l10n.hostEventsGuestsDownloadFailed);
       }

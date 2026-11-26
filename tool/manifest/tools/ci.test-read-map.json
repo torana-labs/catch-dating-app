@@ -5,6 +5,12 @@
   "command": "node tool/ci/test_read_map.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "impactPaths": [
     ".github/workflows/test-read-map.yml",
     "tool/ci/test_read_map.mjs",
