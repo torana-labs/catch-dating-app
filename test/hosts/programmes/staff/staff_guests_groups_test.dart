@@ -5,6 +5,7 @@ import 'package:catch_dating_app/hosts/programmes/staff/staff_guests_screen.dart
 import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -130,13 +131,16 @@ Widget _app(
   List<ProgramGuestGroupRow> groups = const [],
 }) => ProviderScope(
   retry: (_, _) => null,
-  // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
   overrides: [
+    // Root test fixtures replace dependencies without creating app scopes.
+    // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
     programSetupRepositoryProvider.overrideWithValue(repository),
+    // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
     programWorkEntryProvider('program', null).overrideWith(
       (ref) async =>
           (value: _manager(), snapshotAt: null, snapshotExpiresAt: null),
     ),
+    // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
     programGuestListProvider('program').overrideWith(
       (ref) async => ProgramGuestListPage(
         programId: 'program',
@@ -146,6 +150,7 @@ Widget _app(
         groups: groups,
       ),
     ),
+    // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
     programHouseholdListProvider(
       'program',
     ).overrideWith((ref) async => const [_household]),
@@ -228,8 +233,7 @@ void main() {
     final save = find.byKey(const ValueKey('host-programme-guest-save'));
     // No name, no save.
     await tester.ensureVisible(save);
-    await tester.tap(save, warnIfMissed: false);
-    await pumpFeatureUi(tester);
+    expect(tester.widget<CatchButton>(save).onPressed, isNull);
     expect(repository.guests, isEmpty);
     await _enter(tester, 'host-programme-guest-name', '  Asha Mehra  ');
     await pumpFeatureUi(tester);
