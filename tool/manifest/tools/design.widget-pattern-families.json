@@ -13,7 +13,9 @@
     "node tool/design/check_widget_pattern_families.mjs --check"
   ],
   "impactPaths": [
-    "widgetbook/lib/main.directories.g.dart"
+    "tool/design/check_widget_pattern_families.test.mjs",
+    "widgetbook/lib/**",
+    "tool/design/lib/widgetbook_use_cases.mjs"
   ],
   "rules": [
     {

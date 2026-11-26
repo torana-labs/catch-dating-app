@@ -13,7 +13,7 @@ bash tool/test_app_shell_integration.sh
 flutter test --concurrency=1 test/goldens
 (cd packages/catch_ui && flutter test --concurrency=1)
 node tool/run.mjs check test:flutter-test-size
-(cd widgetbook && flutter analyze --no-fatal-warnings --no-fatal-infos && flutter build web --release)
+(cd widgetbook && dart run build_runner build && flutter analyze --no-fatal-warnings --no-fatal-infos && flutter build web --release)
 npm --prefix functions test
 npm --prefix functions run test:rules
 npm run web:typecheck
