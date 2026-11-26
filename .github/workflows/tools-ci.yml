@@ -316,25 +316,19 @@ jobs:
       needs.preflight.outputs.tool_mode == 'full' &&
       needs.fast-gates.result == 'success'
     runs-on: ubuntu-latest
-    # Serial analyzer probes and the complete marketing/design contract matrix
-    # need more time than the smaller scanner buckets.
-    timeout-minutes: ${{ (matrix.name == 'lint-scanners' || matrix.name == 'marketing-design') && 45 || 30 }}
+    # Buckets are balanced by measured time (tool/ci/tool_buckets.mjs over
+    # tool/ci/tool_bucket_timings.json), so each gets the same allowance.
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
         include:
-          - name: core-audit
-            categories: meta audit remote-ops branding agent architecture ci git
-          - name: lint-scanners
-            categories: lint test
-          - name: contracts-data
-            categories: contracts data demo firebase operations
-          - name: platform-env
-            categories: env platform generator cloudflare
-          - name: marketing-design
-            categories: marketing ui-capture design analytics
-          - name: organizer-intake
-            categories: organizer-intake
+          - {name: bucket-1, bucket: 1}
+          - {name: bucket-2, bucket: 2}
+          - {name: bucket-3, bucket: 3}
+          - {name: bucket-4, bucket: 4}
+          - {name: bucket-5, bucket: 5}
+          - {name: bucket-6, bucket: 6}
 
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
@@ -371,13 +365,22 @@ jobs:
       - run: npm --prefix functions ci
 
       - uses: ./.github/actions/generate-contracts-cached
+      - id: bucket
+        name: Resolve this bucket's tools
+        env:
+          BUCKET: ${{ matrix.bucket }}
+        run: |
+          set -euo pipefail
+          node tool/ci/tool_buckets.mjs ids --bucket "$BUCKET" > "$RUNNER_TEMP/bucket-tools.txt"
+          test -s "$RUNNER_TEMP/bucket-tools.txt"
+          echo "setup=$(node tool/ci/tool_buckets.mjs setup --bucket "$BUCKET")" >> "$GITHUB_OUTPUT"
+
       - name: Install marketing design browser
-        if: matrix.name == 'marketing-design'
+        if: ${{ contains(fromJSON(steps.bucket.outputs.setup), 'playwright') }}
         run: npx playwright install chromium
 
       - name: Check tool categories
         env:
-          CATEGORIES: ${{ matrix.categories }}
           MARKETING_CHECKS_IN_REACT: ${{ inputs.marketing_checks_in_react }}
           VISUAL_REPORT: ${{ inputs.visual_report }}
           INVENTORY_MATERIALIZED: "true"
@@ -394,12 +397,9 @@ jobs:
           if [[ "$INVENTORY_MATERIALIZED" == "true" ]]; then
             shared_flags+=(--generated-inventories-materialized)
           fi
-          category_flags=()
-          for category in $CATEGORIES; do
-            category_flags+=(--category "$category")
-          done
-          (( ${#category_flags[@]} > 0 ))
-          node tool/run.mjs check "${category_flags[@]}" "${shared_flags[@]}"
+          mapfile -t tool_ids < "$RUNNER_TEMP/bucket-tools.txt"
+          (( ${#tool_ids[@]} > 0 ))
+          node tool/run.mjs check "${tool_ids[@]}" "${shared_flags[@]}"
 
       - name: Upload visual diagnostics
         if: ${{ failure() }}
