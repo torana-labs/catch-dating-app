@@ -11,7 +11,9 @@ import 'package:catch_dating_app/hosts/people/person_controller.dart';
 import 'package:catch_dating_app/hosts/people/person_screen.dart';
 import 'package:catch_dating_app/hosts/people/widgets/people_scope_body.dart';
 import 'package:catch_dating_app/hosts/people/widgets/people_tab_bar.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/routing/route_contract.dart';
@@ -48,6 +50,9 @@ class HostPeopleScreen extends ConsumerStatefulWidget {
 class _HostPeopleScreenState extends ConsumerState<HostPeopleScreen> {
   HostPeopleFilter _filter = HostPeopleFilter.everyone;
   String _search = '';
+
+  /// An export is being prepared or shared.
+  bool _exporting = false;
   String? _selectedContactId;
 
   @override
@@ -89,6 +94,14 @@ class _HostPeopleScreenState extends ConsumerState<HostPeopleScreen> {
                   kicker: organizer?.name,
                   title: l10n.hostPeopleTitle,
                   actions: [
+                    CatchIconAction.icon(
+                      key: const ValueKey<String>('host-people-export'),
+                      icon: CatchIcons.download,
+                      tooltip: l10n.hostsHostAudienceExport,
+                      onPressed: organizer == null || _exporting
+                          ? null
+                          : () => unawaited(_export(organizer.id)),
+                    ),
                     CatchButton(
                       label: l10n.hostPeopleAdd,
                       leading: CatchIcon(
@@ -238,6 +251,48 @@ class _HostPeopleScreenState extends ConsumerState<HostPeopleScreen> {
         queryParameters: {'organizerId': organizerId},
         extra: contact.displayName,
       );
+
+  /// Exports the people this list shows (everyone, or the chosen filter) as
+  /// a CSV through the existing contact export, and shares the file. The
+  /// export runs only from the phone layout's top bar, which has no search.
+  /// The commands are read before anything is awaited.
+  Future<void> _export(String organizerId) async {
+    if (_exporting) return;
+    final l10n = context.l10n;
+    final customers = ref.read(hostCustomersControllerProvider);
+    final share = ref.read(externalShareControllerProvider);
+    final query = HostPeopleRequest(
+      organizerId: organizerId,
+      filter: _filter,
+    ).query;
+    setState(() => _exporting = true);
+    try {
+      // provider-graph: ownership-widget-async:_HostPeopleScreenState._export:await:hostCustomersControllerProvider.exportCustomers watch CAT156 -- Export runs the existing contact export and shares the file; the screen holds only its local exporting flag. Move the flag into a mutation in the CAT156 migration.
+      final export = await customers.exportCustomers(
+        organizerId: organizerId,
+        query: query,
+      );
+      // provider-graph: ownership-widget-async:_HostPeopleScreenState._export:await:externalShareControllerProvider.shareCsvFile watch CAT156 -- Sharing the exported file through the platform share sheet; mechanical.
+      await share.shareCsvFile(
+        csv: export.csv,
+        fileName: export.fileName,
+        subject: l10n.hostsHostAudienceExportSubject,
+        text: export.truncated
+            ? l10n.hostsHostAudienceExportTruncated
+            : l10n.hostsHostAudienceExportCount(count: export.rowCount),
+      );
+    } on Object catch (error) {
+      if (mounted) {
+        showCatchNoticeError(
+          context,
+          error,
+          errorContext: AppErrorContext.customer,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _exporting = false);
+    }
+  }
 
   Future<void> _add(String organizerId) async {
     final created = await context.pushNamed<Object?>(
