@@ -181,6 +181,13 @@ class _HostMessagesScreenState extends ConsumerState<HostMessagesScreen> {
                 }),
               },
             ),
+            onSends: () => context.goNamed(
+              Routes.hostInboxScreen.name,
+              queryParameters: {
+                'organizerId': organizer.id,
+                'workspace': 'campaigns',
+              },
+            ),
             onAutomations: () => context.pushNamed(
               Routes.hostAudienceAutomationsScreen.name,
               queryParameters: {'organizerId': organizer.id},

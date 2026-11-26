@@ -4,6 +4,10 @@ import 'package:flutter/foundation.dart';
 /// Who a message goes to: an event's booked guests, its waitlist, or both.
 enum HostComposeAudience { booked, waitlist, everyone }
 
+/// A starting point for the message: a reminder, the meeting point, or a
+/// change to the plan.
+enum HostComposeTemplate { reminder, meetingPoint, change }
+
 /// Where the compose screen is: still reading, ready to write, no event to
 /// write about, or unable to read the events.
 enum HostComposeStatus { loading, ready, noEvent, error }
