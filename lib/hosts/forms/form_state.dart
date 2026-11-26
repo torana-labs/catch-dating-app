@@ -21,6 +21,8 @@ class HostFormState {
     this.lettingIn = const <String>{},
     this.busy = false,
     this.letInFailed = false,
+    this.versionLine,
+    this.latest,
   });
 
   const HostFormState.loading() : this(status: HostFormStatus.loading);
@@ -49,6 +51,14 @@ class HostFormState {
 
   /// Letting someone in failed.
   final bool letInFailed;
+
+  /// The published version and what the form is for, as in "Application ·
+  /// Version 3"; null before it is published.
+  final String? versionLine;
+
+  /// The newest answer to a form nobody reviews; null on an application
+  /// form or before any answer.
+  final HostFormInboxEntry? latest;
 
   bool get isDraft => form?.status == HostFormLifecycleStatus.draft;
 
