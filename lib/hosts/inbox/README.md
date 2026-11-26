@@ -14,7 +14,6 @@ Own organizer communication work: inquiry conversations, WhatsApp threads, outbo
 Current implementation roots:
 
 - `lib/hosts/people`
-- `lib/hosts/presentation/inbox`
 
 ## This feature owns
 
@@ -52,8 +51,6 @@ Typed handoffs:
 | `_HostSendsScreenState` | `lib/hosts/people/sends/sends_screen.dart` | Actions: open_event_announcement_composer. |
 | `HostManualSendSheet` | `lib/hosts/people/sends/sends_sheets_body.dart` | Actions: open_manual_send_task, open_manual_handoff, mark_manual_send_task, replan_manual_send_tasks. |
 | `showHostFollowerUpdateSheet` | `lib/hosts/people/sends/sends_sheets_body.dart` | Actions: send_follower_update. |
-| `HostMessagingSetupScreen` | `lib/hosts/presentation/inbox/host_messaging_setup_screen.dart` | Structural owner. |
-| `HostWhatsappSetupSection` | `lib/hosts/organizer/whatsapp_setup_section.dart` | Actions: manage_whatsapp_sender. |
 | `HostCampaignScreen` | `lib/hosts/people/sends/campaign_screen.dart` | Structural owner. |
 | `HostAudienceController` | `lib/hosts/presentation/host_audience_controller.dart` | Actions: manage_campaign. |
 
@@ -103,7 +100,6 @@ Typed handoffs:
 - `test/hosts/people/sends/sends_body_test.dart`
 - `test/hosts/people/compose_request_id_test.dart`
 - `test/hosts/people/conversation/conversation_people_test.dart`
-- `test/hosts/host_operations_screen_test.dart`
 
 ## Maintenance
 

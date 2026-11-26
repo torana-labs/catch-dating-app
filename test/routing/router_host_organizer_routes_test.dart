@@ -1,3 +1,9 @@
+import 'package:catch_dating_app/hosts/insights/host_insights_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/event_policy_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/page_edit_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/settings_screen.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_detail_screen.dart';
 import 'package:catch_dating_app/routing/host_legacy_redirects.dart';
 import 'package:catch_dating_app/routing/host_router.dart';
 import 'package:catch_platform/routing/route_contract.dart';
@@ -180,17 +186,39 @@ void main() {
       }
     });
 
-    test('organizer route forwards stable edit field query keys', () {
-      final screen = hostOrganizerScreenForUri(
-        Uri.parse(
-          '/host/organizer?organizerId=club-1&tab=insights&editField=description',
-        ),
-      );
+    test('organizer deep links open the redesigned screen that owns them', () {
+      Widget screen(String query) =>
+          hostOrganizerScreenForUri(Uri.parse('/host/organizer?$query'));
 
-      expect(screen.initialOrganizerId, 'club-1');
-      expect(screen.initialExpandedEditField, 'description');
-      expect(screen.initialTab.name, 'insights');
-      expect(screen.effectiveInitialTab.name, 'edit');
+      for (final field in [
+        'primaryActivityKind',
+        'admissionPreset',
+        'ageRange',
+        'cancellationPolicyId',
+      ]) {
+        final policy = screen(
+          'organizerId=club-1&tab=insights&editField=$field',
+        );
+        expect(policy, isA<OrganizerEventPolicyScreen>(), reason: field);
+        expect((policy as OrganizerEventPolicyScreen).organizerId, 'club-1');
+      }
+      final page = screen(
+        'organizerId=club-1&tab=insights&editField=description',
+      );
+      expect(page, isA<OrganizerPageEditScreen>());
+      expect((page as OrganizerPageEditScreen).initialOrganizerId, 'club-1');
+      expect(screen('tab=edit'), isA<OrganizerPageEditScreen>());
+      expect(screen('tab=page'), isA<OrganizerPageEditScreen>());
+      expect(screen('tab=settings'), isA<OrganizerSettingsScreen>());
+      final insights = screen('organizerId=club-1&tab=insights');
+      expect(insights, isA<HostInsightsScreen>());
+      expect((insights as HostInsightsScreen).initialOrganizerId, 'club-1');
+      final preview = screen('organizerId=club-1&tab=preview');
+      expect(preview, isA<OrganizerDetailScreen>());
+      expect((preview as OrganizerDetailScreen).organizerId, 'club-1');
+      expect(screen('tab=preview'), isA<OrganizerScreen>());
+      expect(screen(''), isA<OrganizerScreen>());
+      expect(screen('tab=unknown'), isA<OrganizerScreen>());
     });
 
     test('redirects the retired Organizer Audience tab into Audience', () {

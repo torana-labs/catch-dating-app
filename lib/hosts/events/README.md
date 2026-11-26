@@ -81,7 +81,6 @@ Typed handoffs:
 - `test/hosts/events/events_bodies_test.dart`
 - `test/hosts/events/events_controllers_test.dart`
 - `test/hosts/host_events_timeline_controller_test.dart`
-- `test/hosts/host_operations_screen_test.dart`
 - `test/programs/program_create_controller_test.dart`
 - `test/programs/program_create_provider_test.dart`
 

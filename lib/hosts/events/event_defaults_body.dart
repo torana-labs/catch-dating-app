@@ -16,6 +16,7 @@ class HostEventDefaultsBody extends StatelessWidget {
     required this.state,
     required this.onCollection,
     required this.onEdit,
+    required this.onEditPolicy,
     required this.onRetry,
     this.onChange,
     this.onRetryUpdate,
@@ -30,6 +31,10 @@ class HostEventDefaultsBody extends StatelessWidget {
 
   /// Opens the editor for the text and number defaults.
   final VoidCallback onEdit;
+
+  /// Opens the organizer's event policy: main activity, admission, ages and
+  /// cancellation.
+  final VoidCallback onEditPolicy;
   final VoidCallback onRetry;
 
   /// Sends again the save this phone could not confirm; null while there
@@ -373,6 +378,28 @@ class HostEventDefaultsBody extends StatelessWidget {
                 title: l10n.hostEventsDefaultsPaymentPage,
                 subtitle: preferences.reusablePaymentPage?.url ?? notSet,
                 onTap: onEdit,
+              ),
+            ],
+          ),
+          CatchSection(
+            key: const ValueKey<String>('host-event-defaults-policy'),
+            title: l10n.hostsEventDefaultsBasics,
+            children: [
+              CatchIndexRow(
+                title: l10n.hostsHostOrganizerProfileTitleDefaultActivity,
+                onTap: onEditPolicy,
+              ),
+              CatchIndexRow(
+                title: l10n.hostsHostOrganizerProfileTitleAdmission,
+                onTap: onEditPolicy,
+              ),
+              CatchIndexRow(
+                title: l10n.hostsHostOrganizerProfileTitleAgeRange,
+                onTap: onEditPolicy,
+              ),
+              CatchIndexRow(
+                title: l10n.hostsHostOrganizerProfileTitleCancellationPolicy,
+                onTap: onEditPolicy,
               ),
             ],
           ),
