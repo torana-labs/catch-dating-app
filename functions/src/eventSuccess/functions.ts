@@ -12,26 +12,15 @@ export {requestEventRuntimeHostHelp} from
   "./eventRuntimeHostHelp";
 export {onEventRuntimeParticipantWritten} from
   "./operations/runtimeRequiredDataTrigger";
-export {
-  getEventAssistanceSmsWithdrawal, withdrawEventAssistanceSms,
-} from "./operations/smsWithdrawalHandlers";
-export {
-  getEventWhatsappWithdrawal, withdrawEventWhatsapp,
-} from "./operations/whatsappWithdrawalHandlers";
 export {getEventAssistanceParticipantContext} from
   "./operations/participantContext";
+// Event-day preferences and withdrawal links for SMS, RCS and WhatsApp: one
+// callable per action (issue #2494 step 2).
 export {
-  getEventAssistanceSmsPreference,
-  setEventAssistanceSmsPreference,
-} from "./operations/smsPreferenceHandlers";
-export {listEventSmsPreferences} from
-  "./operations/smsPreferenceOptionsHandlers";
-export {listEventWhatsappPreferences} from
-  "./operations/whatsappPreferenceOptionsHandlers";
-export {listEventRcsPreferences} from
-  "./operations/rcsPreferenceOptionsHandlers";
-export {getEventRcsPreference, setEventRcsPreference} from
-  "./operations/rcsPreferenceHandlers";
+  getEventMessagePreference, setEventMessagePreference,
+  listEventMessagePreferences, getEventMessageWithdrawal,
+  withdrawEventMessage,
+} from "./operations/eventMessagePreferenceHandlers";
 export {setEventAssistanceSetting} from
   "./operations/policySettingsHandlers";
 export {confirmEventAssistanceDeparture, changeEventAssistanceRoute} from
@@ -64,8 +53,6 @@ export {
 } from "./operations/liveWorkTriggers";
 export {getEventAssistanceRuntimeConfig, setEventAssistanceRuntimeConfig} from
   "./operations/runtimeConfigHandlers";
-export {getEventWhatsappPreference, setEventWhatsappPreference} from
-  "./operations/whatsappPreferenceHandlers";
 export {
   getEventAssistanceGuestView,
   submitEventAssistanceGuestChoice,
@@ -140,7 +127,5 @@ export {setEventAssistanceCheckpointCloseout} from
   "./operations/checkpointCloseoutHandlers";
 export {recordEventAssistanceCheckpoint} from
   "./operations/checkpointHandlers";
-export {getEventRcsWithdrawal, withdrawEventRcs} from
-  "./operations/rcsWithdrawalHandlers";
 export {saveEventSuccessPlanSetup} from
   "./saveEventSuccessPlanSetup";

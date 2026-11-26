@@ -1,6 +1,5 @@
 import * as admin from "firebase-admin";
-import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
-import {appCheckCallableOptions} from "../../shared/callableOptions";
+import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {checkRateLimit} from "../../shared/rateLimit";
 import {validateCallableWithAjv} from "../../shared/validation";
 import {operationContentHash} from "../../operations/durableActions";
@@ -66,7 +65,3 @@ function credentialIdentity(input: {linkId: string; secret: string}): string {
     input.linkId, input.secret,
   ]);
 }
-export const getEventAssistanceSmsWithdrawal = onCall(appCheckCallableOptions,
-  (request) => getEventAssistanceSmsWithdrawalHandler(request));
-export const withdrawEventAssistanceSms = onCall(appCheckCallableOptions,
-  (request) => withdrawEventAssistanceSmsHandler(request));

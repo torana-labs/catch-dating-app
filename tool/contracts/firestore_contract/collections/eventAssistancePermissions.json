@@ -8,10 +8,10 @@
   "read": "server only",
   "write": "server only",
   "exportedFunctions": [
-    "getEventRcsPreference",
-    "getEventRcsWithdrawal",
-    "setEventRcsPreference",
-    "withdrawEventRcs"
+    "getEventMessagePreference",
+    "getEventMessageWithdrawal",
+    "setEventMessagePreference",
+    "withdrawEventMessage"
   ],
   "migrationNotes": [
     "One collection for every channel since lane L1 (16 Nov 2026); each document carries channel and every query filters on it first.",

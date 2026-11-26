@@ -31,6 +31,8 @@ import {invokeWebsiteCallable} from "./runtime";
 
 /**
  * Event messaging: assistance guest views and SMS, WhatsApp and RCS preferences and withdrawals.
+ * Each preference and withdrawal action is one callable for every channel, taking
+ * {channel, request} with the channel's own request (issue #2494 step 2).
  */
 export async function getEventAssistanceGuestView(
   payload: GetEventAssistanceGuestViewCallablePayload
@@ -47,89 +49,89 @@ export async function submitEventAssistanceGuestChoice(
 }
 
 export async function listEventSmsPreferences(payload: ListEventSmsPreferencesCallablePayload): Promise<ListEventSmsPreferencesCallableResponse> {
-  return invokeWebsiteCallable("listEventSmsPreferences", payload,
+  return invokeWebsiteCallable("listEventMessagePreferences", {channel: "sms", request: payload},
     eventRuntimeFirebaseConfigured, "Event text preferences");
 }
 
 export async function getEventAssistanceSmsPreference(
   payload: GetEventAssistanceSmsPreferenceCallablePayload
 ): Promise<EventAssistanceSmsPreferenceCallableResponse> {
-  return invokeWebsiteCallable("getEventAssistanceSmsPreference", payload,
+  return invokeWebsiteCallable("getEventMessagePreference", {channel: "sms", request: payload},
     eventRuntimeFirebaseConfigured, "Event text preferences");
 }
 
 export async function setEventAssistanceSmsPreference(
   payload: SetEventAssistanceSmsPreferenceCallablePayload
 ): Promise<EventAssistanceSmsPreferenceCallableResponse> {
-  return invokeWebsiteCallable("setEventAssistanceSmsPreference", payload,
+  return invokeWebsiteCallable("setEventMessagePreference", {channel: "sms", request: payload},
     eventRuntimeFirebaseConfigured, "Event text preferences");
 }
 
 export async function getEventAssistanceSmsWithdrawal(
   payload: GetEventAssistanceSmsWithdrawalCallablePayload
 ): Promise<EventAssistanceSmsWithdrawalCallableResponse> {
-  return invokeWebsiteCallable("getEventAssistanceSmsWithdrawal", payload,
+  return invokeWebsiteCallable("getEventMessageWithdrawal", {channel: "sms", request: payload},
     eventRuntimeFirebaseConfigured, "Event text withdrawal");
 }
 export async function withdrawEventAssistanceSms(
   payload: WithdrawEventAssistanceSmsCallablePayload
 ): Promise<EventAssistanceSmsWithdrawalCallableResponse> {
-  return invokeWebsiteCallable("withdrawEventAssistanceSms", payload,
+  return invokeWebsiteCallable("withdrawEventMessage", {channel: "sms", request: payload},
     eventRuntimeFirebaseConfigured, "Event text withdrawal");
 }
 
 export async function getEventWhatsappWithdrawal(
   payload: GetEventWhatsappWithdrawalCallablePayload
 ): Promise<EventWhatsappWithdrawalCallableResponse> {
-  return invokeWebsiteCallable("getEventWhatsappWithdrawal", payload,
+  return invokeWebsiteCallable("getEventMessageWithdrawal", {channel: "whatsapp", request: payload},
     eventRuntimeFirebaseConfigured, "Event WhatsApp withdrawal");
 }
 export async function withdrawEventWhatsapp(
   payload: WithdrawEventWhatsappCallablePayload
 ): Promise<EventWhatsappWithdrawalCallableResponse> {
-  return invokeWebsiteCallable("withdrawEventWhatsapp", payload,
+  return invokeWebsiteCallable("withdrawEventMessage", {channel: "whatsapp", request: payload},
     eventRuntimeFirebaseConfigured, "Event WhatsApp withdrawal");
 }
 
 export async function getEventRcsWithdrawal(
   payload: GetEventRcsWithdrawalCallablePayload
 ): Promise<EventRcsWithdrawalCallableResponse> {
-  return invokeWebsiteCallable("getEventRcsWithdrawal", payload,
+  return invokeWebsiteCallable("getEventMessageWithdrawal", {channel: "rcs", request: payload},
     eventRuntimeFirebaseConfigured, "Event RCS withdrawal");
 }
 export async function withdrawEventRcs(
   payload: WithdrawEventRcsCallablePayload
 ): Promise<EventRcsWithdrawalCallableResponse> {
-  return invokeWebsiteCallable("withdrawEventRcs", payload,
+  return invokeWebsiteCallable("withdrawEventMessage", {channel: "rcs", request: payload},
     eventRuntimeFirebaseConfigured, "Event RCS withdrawal");
 }
 
 export async function listEventRcsPreferences(payload: ListEventRcsPreferencesCallablePayload): Promise<ListEventRcsPreferencesCallableResponse> {
-  return invokeWebsiteCallable("listEventRcsPreferences", payload,
+  return invokeWebsiteCallable("listEventMessagePreferences", {channel: "rcs", request: payload},
     eventRuntimeFirebaseConfigured, "Event RCS preferences");
 }
 
 export async function getEventRcsPreference(payload: GetEventRcsPreferenceCallablePayload): Promise<EventRcsPreferenceCallableResponse> {
-  return invokeWebsiteCallable("getEventRcsPreference", payload,
+  return invokeWebsiteCallable("getEventMessagePreference", {channel: "rcs", request: payload},
     eventRuntimeFirebaseConfigured, "Event RCS preferences");
 }
 
 export async function setEventRcsPreference(payload: SetEventRcsPreferenceCallablePayload): Promise<EventRcsPreferenceCallableResponse> {
-  return invokeWebsiteCallable("setEventRcsPreference", payload,
+  return invokeWebsiteCallable("setEventMessagePreference", {channel: "rcs", request: payload},
     eventRuntimeFirebaseConfigured, "Event RCS preferences");
 }
 
 export async function listEventWhatsappPreferences(payload: ListEventWhatsappPreferencesCallablePayload): Promise<ListEventWhatsappPreferencesCallableResponse> {
-  return invokeWebsiteCallable("listEventWhatsappPreferences", payload,
+  return invokeWebsiteCallable("listEventMessagePreferences", {channel: "whatsapp", request: payload},
     eventRuntimeFirebaseConfigured, "Event WhatsApp preferences");
 }
 
 export async function getEventWhatsappPreference(payload: GetEventWhatsappPreferenceCallablePayload): Promise<EventWhatsappPreferenceCallableResponse> {
-  return invokeWebsiteCallable("getEventWhatsappPreference", payload,
+  return invokeWebsiteCallable("getEventMessagePreference", {channel: "whatsapp", request: payload},
     eventRuntimeFirebaseConfigured, "Event WhatsApp preferences");
 }
 
 export async function setEventWhatsappPreference(payload: SetEventWhatsappPreferenceCallablePayload): Promise<EventWhatsappPreferenceCallableResponse> {
-  return invokeWebsiteCallable("setEventWhatsappPreference", payload,
+  return invokeWebsiteCallable("setEventMessagePreference", {channel: "whatsapp", request: payload},
     eventRuntimeFirebaseConfigured, "Event WhatsApp preferences");
 }

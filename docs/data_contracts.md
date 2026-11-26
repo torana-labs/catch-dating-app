@@ -622,7 +622,7 @@ It grants no recipient, spending or dispatch authority. See
 
 `event_assistance_rcs_consent.schema.json` owns independent RCS permission,
 exact consent receipts and preference views. The two App-Check-protected
-`getEventRcsPreference` / `setEventRcsPreference` callables require the roster's
+`getEventMessagePreference` / `setEventMessagePreference` (channel `rcs`) callables require the roster's
 linked UID; a grant additionally verifies its signed phone claim. The reviewed
 hash binds sender identity, event name and captured window, subject and phone,
 attendee and Firestore source generations, and latest STOP. Caller-selected
@@ -681,7 +681,7 @@ closed `messageLink` revoke-only receipt variant with a null actor. Private
 `eventAssistanceWithdrawalGrants` (channel `rcs`) binds the original source generations,
 subject, endpoint and agent. Transactional preparation verifies the persisted
 guest grant and exact permission/receipt before staging immutable issuance. The
-App-Check-protected bearer callables `getEventRcsWithdrawal` / `withdrawEventRcs`
+App-Check-protected bearer callables `getEventMessageWithdrawal` / `withdrawEventMessage` (channel `rcs`)
 expose only recorded preference and lifetime; revision checks and immutable
 receipts fence old requests. Withdrawal works after instructions expire without
 restoring read/reply access, and does not depend on current event/roster/sender
@@ -7390,8 +7390,8 @@ Event Assistance grant. The receipt union distinguishes verified-participant
 decisions from revocation-only message-link decisions with a null actor UID.
 Authenticated endpoint STOP evidence also suppresses the saved preference.
 
-The App-Check-protected `getEventWhatsappPreference` and
-`setEventWhatsappPreference` callables require the roster's linked UID. Scope
+The App-Check-protected `getEventMessagePreference` and
+`setEventMessagePreference` (channel `whatsapp`) callables require the roster's linked UID. Scope
 includes the exact sender ID; most-recently-updated connection selection cannot
 silently switch consent. Grants additionally require the matching signed phone
 claim, an admitted participant, eligible event, reviewed sender policy and
@@ -7444,7 +7444,7 @@ the immutable guest grant hash. A changed identity or longer consent lifetime
 requires a new link for dispatch; an existing link cannot silently acquire that
 authority. The grant exposes no secret or recipient phone number.
 
-`getEventWhatsappWithdrawal` and `withdrawEventWhatsapp` are App-Check-protected,
+`getEventMessageWithdrawal` and `withdrawEventMessage` (channel `whatsapp`) are App-Check-protected,
 network- and credential-rate-limited bearer callables. They return only the
 permission state, revision and validity. Withdrawal has the original consent
 lifetime and needs no current event, roster, sender or instruction availability.
@@ -7724,7 +7724,7 @@ keeps uncertain writes frozen and displays current replay/conflict state.
 The native Event messages sheet mounts the shared per-channel sender controller
 through verified attendee identity. Deployed enrollment remains unverified.
 
-`listEventSmsPreferences` selects the saved `catchEventSms` runtime route and
+`listEventMessagePreferences` (channel `sms`) selects the saved `catchEventSms` runtime route and
 returns participant-owned historical sender IDs from the private permission
 collection. The composite index binds live mode, organizer, event, attendee,
 consent subject UID and document-ID order. Each page scans at most 51 rows and
@@ -7809,7 +7809,7 @@ expire this narrowly scoped ability to withdraw; it grants no event read/reply
 access. A revoked guest grant invalidates both uses. Reusing a link for a new
 recipient or a longer consent lifetime requires a fresh grant before dispatch.
 
-`getEventAssistanceSmsWithdrawal` and `withdrawEventAssistanceSms` require that
+`getEventMessageWithdrawal` and `withdrawEventMessage` (channel `sms`) require that
 bearer capability, App Check and network/credential rate limits. They need no
 current event, roster or sender status, so cancellation cannot obstruct opt-out.
 They expose only text status, revision and validity, with no name, phone or event
