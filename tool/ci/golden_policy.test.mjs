@@ -6,8 +6,9 @@ import path from "node:path";
 import test from "node:test";
 import YAML from "yaml";
 import {BASELINE_WORKFLOWS, CAPTURE_JOB, DRIFT_REPORTS, DRIFT_TITLE, FAILURE_TITLE, GOLDENS_JOB, MOBILE_BLOCK_JOBS,
-  RELEASE_BLOCK_LABEL, decideDrift, decideFailure, owedFromFailureIssue, parseDrift, suitesFromDriftIssue}
+  RELEASE_BLOCK_LABEL, decideDrift, decideFailure, owedFromFailureIssue, parseDrift, post, settleDecisions, suitesFromDriftIssue}
   from "./golden_policy.mjs";
+import {fakeIssueApi, oldestOpen} from "../lib/github_issues.mjs";
 
 const sha = "a".repeat(40);
 const run = (extra = {}) => ({id: 7, html_url: "https://example.test/run/7", head_sha: sha, event: "push",
@@ -163,6 +164,8 @@ else if (method === "GET" && endpoint.startsWith("repos/owner/repo/issues?")) co
 else if (method === "GET" && endpoint.startsWith("repos/owner/repo/actions/runs/7/artifacts")) console.log(JSON.stringify([{artifacts: state.artifacts}]));
 else if (method === "GET" && endpoint === "repos/owner/repo/actions/artifacts/4/zip") process.stdout.write(fs.readFileSync(${JSON.stringify(zip)}));
 else if (method === "GET" && endpoint.startsWith("repos/owner/repo/labels/")) process.exit(1);
+// No newer head run: nothing to settle.
+else if (method === "GET" && endpoint.startsWith("repos/owner/repo/actions/workflows/")) console.log(JSON.stringify({workflow_runs: []}));
 else if (method === "POST" && endpoint.endsWith("/dispatches")) {
   if (args.includes("return_run_details=true")) process.exit(1); // An API that refuses the field.
 }
@@ -218,4 +221,36 @@ test("the dispatched nightly is treated exactly as the scheduled nightly was; a 
     assert.deepEqual(decide(nightly), before, label);
     assert.deepEqual(decide(full), {action: "none", reason: "not_main"}, label);
   }
+});
+
+test("two runs racing to open the golden failure issue leave one labelled issue, and a close racing it settles to the head", () => {
+  const failing = [job(GOLDENS_JOB, "failure"), job(CAPTURE_JOB, "success")];
+  let race = null;
+  const fake = fakeIssueApi({between: (name) => {
+    if (name === "create" && race) {
+      const write = race;
+      race = null;
+      write();
+    }
+  }});
+  const first = decideFailure({run: run({id: 1}), jobs: failing, openIssue: null});
+  const second = decideFailure({run: run({id: 2}), jobs: failing, openIssue: null});
+  race = () => post(fake.api, second);
+  post(fake.api, first);
+  const open = fake.state.issues.filter((issue) => issue.state === "open");
+  assert.deepEqual(open.map((issue) => [issue.number, issue.labels]), [[1, [RELEASE_BLOCK_LABEL]]]);
+  // A green head whose own alert read before the open: the older run settles to it and closes the issue.
+  const passing = [job(GOLDENS_JOB, "success"), job(CAPTURE_JOB, "success")];
+  const openIssue = oldestOpen(fake.api.listOpen(), FAILURE_TITLE);
+  const head = run({id: 3, html_url: "https://example.test/run/3"});
+  const settled = settleDecisions({
+    failure: decideFailure({run: head, jobs: passing, openIssue, owed: owedFromFailureIssue(fake.api.texts(openIssue))}),
+    drift: decideDrift({run: head, jobs: passing, drift: {}, openIssue: null})}, head);
+  assert.deepEqual([settled.failure.action, settled.drift.action], ["close", "none"]);
+  post(fake.api, settled.failure);
+  assert.equal(fake.state.issues.filter((issue) => issue.state === "open").length, 0);
+  assert.match(fake.state.issues[0].comments.at(-1), /^Settled to the latest main run \(https:\/\/example\.test\/run\/3\)/u);
+  // A failing head that only comments is the head's own post, never repeated; a drift open is never settled.
+  const comment = settleDecisions({failure: {action: "comment", issue: 1, body: "x"}, drift: {action: "open", body: "y"}}, head);
+  assert.deepEqual([comment.failure.action, comment.drift.action], ["none", "none"]);
 });

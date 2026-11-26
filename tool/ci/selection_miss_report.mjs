@@ -20,6 +20,7 @@ import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {isNightlyRun, nightlyRuns} from "./ci_nightly.mjs";
+import {githubIssueApi, oldestOpen, openIssueOnce} from "../lib/github_issues.mjs";
 
 export const ISSUE_TITLE = "Test selection missed a failing test";
 // Nightlies are daily, so a day of merges fits well within this; older or
@@ -154,14 +155,12 @@ async function main() {
 
   let range = {base: null, truncated: false, commits: []};
   if (unique.length > 0) range = await commitSelections(repository, nightly);
-  const issues = JSON.parse(gh(["api", `repos/${repository}/issues?state=open&creator=github-actions%5Bbot%5D&per_page=100`]));
-  const openIssue = issues.find((issue) => issue.title === ISSUE_TITLE && !issue.pull_request) ?? null;
+  const api = githubIssueApi(gh, repository);
+  const openIssue = oldestOpen(api.listOpen(), ISSUE_TITLE);
   const decision = decideSelectionMiss({run: nightly, failures: unique, range, openIssue});
-  if (decision.action === "open") {
-    gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${decision.title}`, "-F", "body=@-"], decision.body);
-  } else if (decision.action === "comment") {
-    gh(["api", "-X", "POST", `repos/${repository}/issues/${decision.issue}/comments`, "-F", "body=@-"], decision.body);
-  }
+  // Opening goes through openIssueOnce, so parallel alert runs leave one issue.
+  if (decision.action === "open") openIssueOnce(api, {title: decision.title, body: decision.body});
+  else if (decision.action === "comment") api.comment(decision.issue, decision.body);
   console.log(`Selection miss report: ${decision.action}${decision.reason ? ` (${decision.reason})` : ""}` +
     `${decision.missed ? `: ${decision.missed.map(({test}) => test).join(", ")}` : ""}`);
 }
