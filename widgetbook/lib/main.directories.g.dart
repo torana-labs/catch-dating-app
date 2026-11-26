@@ -297,6 +297,8 @@ import 'package:widgetbook_workspace/hosts/operations/wizard_chrome.dart'
     as _widgetbook_workspace_hosts_operations_wizard_chrome;
 import 'package:widgetbook_workspace/hosts/operations/workflow_components.dart'
     as _widgetbook_workspace_hosts_operations_workflow_components;
+import 'package:widgetbook_workspace/hosts/organizer_live_guide_use_cases.dart'
+    as _widgetbook_workspace_hosts_organizer_live_guide_use_cases;
 import 'package:widgetbook_workspace/hosts/organizer_moments_use_cases.dart'
     as _widgetbook_workspace_hosts_organizer_moments_use_cases;
 import 'package:widgetbook_workspace/hosts/people_duplicates_use_cases.dart'
@@ -9674,6 +9676,94 @@ final directories = <_widgetbook.WidgetbookNode>[
                                 .hostSetupFoundStates,
                       ),
                     ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Organizer',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'HostProfilePreviewSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Active host with a bio',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .hostProfilePreviewSheetUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerAudienceBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Audience unavailable',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerAudienceBodyUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerAudienceScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Before the organizer loads',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerAudienceScreenUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerEventPolicyBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Owner edits the policy',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerEventPolicyBodyUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerEventPolicyScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Before the organizer loads',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerEventPolicyScreenUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerLiveGuideBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Manager reads the guide',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerLiveGuideBodyManagerUseCase,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Owner tunes the guide',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerLiveGuideBodyOwnerUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerLiveGuideScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Before the organizer loads',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerLiveGuideScreenUseCase,
                   ),
                 ],
               ),
