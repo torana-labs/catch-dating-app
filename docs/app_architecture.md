@@ -5322,7 +5322,7 @@ Current Host adopters:
 - `lib/hosts/events/presentation/host_events_state.dart`
 - `lib/hosts/events/presentation/host_events_view_model.dart`
 - `lib/hosts/events/presentation/widgets/host_events_list.dart`
-- `test/hosts/host_operations_screen_test.dart`
+- `test/hosts/organizer/organizer_screen_test.dart`
 
 The host event route keeps its section and lifecycle phase helpers in
 `host_event_manage_screen_state.dart`; they receive plain data. The booking
@@ -5471,7 +5471,7 @@ Reference files:
 - `packages/catch_ui/lib/src/patterns/catch_form_list.dart` and the `CatchFormTextField`, `CatchFormChoiceField` and `CatchFormRangeField` members
 - `lib/user_profile/presentation/self_profile_edit_tab_state.dart`
 - `lib/user_profile/presentation/widgets/profile_tab_body.dart`
-- `lib/hosts/presentation/host_operations/host_organizer_edit_body.dart`
+- `lib/hosts/organizer/page_edit_body.dart`
 - `test/core/forms/catch_form_descriptors_test.dart`
 - `test/core/forms/contract_alignment_test.dart`
 - `test/profile/self_profile_edit_tab_state_test.dart`

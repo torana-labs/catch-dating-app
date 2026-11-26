@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/hosts/programmes/planner/assistant_settings/programme_assistant_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/inbox/programme_inbox_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/lodging/programme_lodging_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_branding_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_function_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_screen.dart';
@@ -38,6 +39,7 @@ enum HostProgrammePage {
   photos,
   inbox,
   assistant,
+  lodging,
 }
 
 /// The workspace route's screen for [uri]: the workspace itself, or the
@@ -100,6 +102,9 @@ Widget hostProgrammeScreenForUri(String programId, Uri uri) {
       initialThreadId: id,
     ),
     HostProgrammePage.assistant => HostProgrammeAssistantScreen(
+      programId: programId,
+    ),
+    HostProgrammePage.lodging => HostProgrammeLodgingScreen(
       programId: programId,
     ),
     _ => HostProgrammeScreen(programId: programId),

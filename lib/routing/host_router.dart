@@ -29,7 +29,10 @@ import 'package:catch_dating_app/hosts/forms/offer_settings_screen.dart';
 import 'package:catch_dating_app/hosts/forms/response_screen.dart';
 import 'package:catch_dating_app/hosts/forms/responses_screen.dart';
 import 'package:catch_dating_app/hosts/forms/responses_state.dart';
+import 'package:catch_dating_app/hosts/insights/host_insights_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/sign_in_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/event_policy_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/live_guide_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/memberships_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/messaging_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
@@ -51,7 +54,6 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_scre
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_create_organizer_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/programmes.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
@@ -62,7 +64,6 @@ import 'package:catch_dating_app/pages/chat/event_profile_screen.dart';
 import 'package:catch_dating_app/pages/event/event_detail_screen.dart';
 import 'package:catch_dating_app/pages/organizer/organizer_detail_screen.dart';
 import 'package:catch_dating_app/pages/start/start_welcome_route_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_rooms_screen.dart';
 import 'package:catch_dating_app/routing/host_legacy_redirects.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
@@ -98,15 +99,37 @@ String? hostProgrammesHomeOrganizer(Uri uri) {
 String hostProgramsLegacyRedirect(Uri uri) =>
     uri.replace(path: Routes.hostEventsScreen.path).toString();
 
+/// The Organiser tab's deep links. `editField` opens the editor that owns
+/// the field: the event policy for the main activity, admission, ages and
+/// cancellation, the page editor for the rest. Otherwise `tab` picks the
+/// page editor, Settings, Insights or the public page; anything else opens
+/// the tab itself.
 @visibleForTesting
-HostOrganizersScreen hostOrganizerScreenForUri(Uri uri) => HostOrganizersScreen(
-  initialOrganizerId: uri.queryParameters['organizerId'],
-  initialExpandedEditField: uri.queryParameters['editField'],
-  initialTab: HostOrganizerTab.values.firstWhere(
-    (tab) => tab.name == uri.queryParameters['tab'],
-    orElse: () => HostOrganizerTab.edit,
-  ),
-);
+Widget hostOrganizerScreenForUri(Uri uri) {
+  final organizerId = uri.queryParameters['organizerId'];
+  final editField = uri.queryParameters['editField'];
+  if (editField != null) {
+    return _hostOrganizerPolicyFields.contains(editField)
+        ? OrganizerEventPolicyScreen(organizerId: organizerId ?? '')
+        : OrganizerPageEditScreen(initialOrganizerId: organizerId);
+  }
+  return switch (uri.queryParameters['tab']) {
+    'page' ||
+    'edit' => OrganizerPageEditScreen(initialOrganizerId: organizerId),
+    'settings' => OrganizerSettingsScreen(initialOrganizerId: organizerId),
+    'insights' => HostInsightsScreen(initialOrganizerId: organizerId),
+    'preview' when organizerId != null && organizerId.isNotEmpty =>
+      OrganizerDetailScreen(organizerId: organizerId),
+    _ => OrganizerScreen(initialOrganizerId: organizerId),
+  };
+}
+
+const _hostOrganizerPolicyFields = {
+  'primaryActivityKind',
+  'admissionPreset',
+  'ageRange',
+  'cancellationPolicyId',
+};
 
 /// Legacy query links resolve to the same typed record route as user
 /// navigation. The old Requests tab (`view=requests`) opens Today's requests
@@ -506,7 +529,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostWorkGuestsScreen.path,
     name: Routes.hostWorkGuestsScreen.name,
     builder: (context, state) =>
-        ProgramGuestDeskScreen(programId: state.pathParameters['programId']!),
+        StaffGuestsScreen(programId: state.pathParameters['programId']!),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.today,
@@ -635,7 +658,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     root: HostWorkspaceRoot.organizer,
     path: Routes.hostOrganizerLiveGuideScreen.path,
     name: Routes.hostOrganizerLiveGuideScreen.name,
-    builder: (context, state) => HostOrganizerLiveGuideScreen(
+    builder: (context, state) => OrganizerLiveGuideScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),

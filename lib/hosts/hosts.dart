@@ -26,7 +26,6 @@ export 'presentation/event_management/create/create_event_policy_state.dart'; //
 export 'presentation/host_event_booking_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/host_event_manage_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/host_event_manage_screen_state.dart'; // public-api: provider-free display state reused by tests and routes
-export 'presentation/host_operations_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/host_organizer_selection_controller.dart'; // public-api: Host-shell organizer identity state seam
 export 'presentation/host_profile_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/host_team_workspace_state.dart'; // public-api: provider-free display state reused by tests and routes

@@ -187,11 +187,12 @@ class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
       title: context.l10n.hostsOrganizerHostDefaultsStepTextDefaultEventPolicy,
       footer: Padding(
         padding: CatchInsets.fieldSectionChildTop,
-        child: CatchLegacyText(
+        child: CatchText(
           context
               .l10n
               .hostsOrganizerHostDefaultsStepTextTheseDefaultsPrefillNew,
-          variant: CatchLegacyTextVariant.supporting,
+          variant: CatchTextVariant.bodySmall,
+          tone: CatchTextTone.secondary,
         ),
       ),
       children: [

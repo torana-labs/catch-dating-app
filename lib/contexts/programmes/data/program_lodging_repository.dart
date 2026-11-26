@@ -276,19 +276,6 @@ class ProgramLodgingRepository {
   }
 }
 
-class ProgramLodgingSetup {
-  const ProgramLodgingSetup({
-    required this.configuration,
-    required this.accessExpiresAt,
-    this.catalog,
-  });
-  final ProgramLodgingCatalog? catalog;
-  final Map<String, Object?>? configuration;
-  final DateTime? accessExpiresAt;
-}
-
-enum ProgramLodgingAction { approve, confirmHotel, publishGuests }
-
 void _scope(ProgramLodgingProposal proposal, String programId) {
   if (proposal.scope['programId'] != programId) {
     throw const FormatException('Lodging proposal belongs to another program.');
@@ -320,79 +307,4 @@ bool isDefinitiveLodgingRejection(Object error) {
     ('failed-precondition', 'Stale lodging workflow revision.') => true,
     _ => false,
   };
-}
-
-/// Private immutable source review. Unselected assertions are suggestions;
-/// canonical legacy groups without evidence are never labelled manual.
-class ProgramLodgingMembership {
-  ProgramLodgingMembership.fromMap(
-    Object? value, {
-    required String programId,
-    required String guestId,
-  }) : json = lodgingJsonMap(value) {
-    if (json['programId'] != programId ||
-        json['guestId'] != guestId ||
-        requiredInt(json, 'revision') < 1) {
-      throw const FormatException('Membership identity differs.');
-    }
-    requiredString(json, 'label');
-    final groups = mapList(json['groups'], 'membership groups');
-    final known = <String>{};
-    if (groups.length > 240 ||
-        groups.any((g) => !known.add(requiredString(g, 'id')))) {
-      throw const FormatException('Invalid membership groups.');
-    }
-    for (final group in groups) {
-      requiredString(group, 'label');
-    }
-    final ids = json['groupIds'];
-    if (ids is! List ||
-        ids.length > 20 ||
-        ids.any((id) => id is! String || !known.contains(id)) ||
-        ids.toSet().length != ids.length) {
-      throw const FormatException('Invalid canonical membership.');
-    }
-    final assertions = <String>{};
-    final selectedGroups = <String>{};
-    final evidence = mapList(json['evidence'], 'membership evidence');
-    if (evidence.length > 200) {
-      throw const FormatException('Too much evidence.');
-    }
-    for (final row in evidence) {
-      final id = requiredString(row, 'assertionId');
-      final groupId = requiredString(row, 'groupId');
-      final selected = row['selected'];
-      final included = row['included'];
-      if (!RegExp(r'^wma_[a-f0-9]{64}$').hasMatch(id) ||
-          !assertions.add(id) ||
-          !known.contains(groupId) ||
-          selected is! bool ||
-          included is! bool ||
-          ![
-            'manualEntry',
-            'manifestRow',
-            'contributorList',
-          ].contains(row['sourceKind']) ||
-          requiredInt(row, 'sourceVersion') < 1 ||
-          requiredInt(row, 'observedAtMillis') < 1 ||
-          (selected &&
-              (!selectedGroups.add(groupId) ||
-                  included != ids.contains(groupId)))) {
-        throw const FormatException('Invalid membership evidence.');
-      }
-      requiredString(row, 'sourceLabel');
-    }
-    requiredNullableDateTime(json, 'accessExpiresAtMillis');
-  }
-  final Map<String, Object?> json;
-  String get programId => requiredString(json, 'programId');
-  String get guestId => requiredString(json, 'guestId');
-  String get label => requiredString(json, 'label');
-  int get revision => requiredInt(json, 'revision');
-  List<String> get groupIds =>
-      List<String>.unmodifiable((json['groupIds']! as List).cast<String>());
-  List<Map<Object?, Object?>> get evidence =>
-      List.unmodifiable(mapList(json['evidence'], 'evidence'));
-  DateTime? get accessExpiresAt =>
-      requiredNullableDateTime(json, 'accessExpiresAtMillis');
 }

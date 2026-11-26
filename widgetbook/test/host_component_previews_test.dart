@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_body.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_section.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_live_location_field.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_section.dart';
 import 'package:catch_platform/theme/app_theme.dart';
@@ -10,28 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook_workspace/hosts/host_booking_provider_use_cases.dart';
 import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart';
-import 'package:widgetbook_workspace/hosts/operations/create_organizer_profile.dart';
 import 'package:widgetbook_workspace/hosts/operations/manage_components.dart';
-import 'package:widgetbook_workspace/hosts/operations/organizer_components.dart';
 
 // Each case renders offline: stateful owners read only their preview overrides.
 void main() {
   final cases = <(WidgetBuilder, Type, int)>[
-    (
-      hostStrictHostOrganizerMetricGridCatalogStates,
-      HostOrganizerMetricGrid,
-      1,
-    ),
-    (hostStrictHostOrganizerMetricRowCatalogStates, HostOrganizerMetricRow, 1),
-    (hostCrmAudienceCardStates, HostCrmAudienceCard, 3),
-    (hostCrmChannelRowStates, HostCrmChannelRow, 2),
-    (
-      hostOrganizerPublicationChannelRowStates,
-      HostOrganizerPublicationChannelRow,
-      2,
-    ),
-    (hostOrganizerLogoManagerHeaderStates, HostOrganizerLogoManagerHeader, 2),
-    (hostOrganizerMediaManagerDockStates, HostOrganizerMediaManagerDock, 1),
     (hostFormBodyPreview, HostFormBody, 1),
     (hostFormQuestionFieldPreview, HostFormQuestionField, 3),
     (hostFormResponsesSectionPreview, HostFormResponsesSection, 1),

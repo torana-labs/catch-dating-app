@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/parts/programme_guest_groups_section.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/parts/programme_household_row.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/parts/programme_reply_badge.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_body.dart';
@@ -10,7 +12,8 @@ import 'package:flutter/widgets.dart';
 
 /// The guest list on an expanded window: the views and filters over the
 /// household table (household, guests, one badge column per function,
-/// side and groups), the reply key and how many are shown.
+/// side and groups), the reply key and how many are shown, then the guests
+/// with no household and the guest groups.
 class HostProgrammeGuestsDesktopBody extends StatelessWidget {
   const HostProgrammeGuestsDesktopBody({
     super.key,
@@ -20,6 +23,9 @@ class HostProgrammeGuestsDesktopBody extends StatelessWidget {
     required this.onFilter,
     required this.onOpenHousehold,
     required this.onRetry,
+    this.groups = const <ProgramGuestGroupRow>[],
+    this.onEditGuest,
+    this.onEditGroup,
   });
 
   final HostProgrammeState state;
@@ -28,6 +34,15 @@ class HostProgrammeGuestsDesktopBody extends StatelessWidget {
   final ValueChanged<HostProgrammeGuestFilter> onFilter;
   final ValueChanged<HostProgrammeHousehold> onOpenHousehold;
   final VoidCallback onRetry;
+
+  /// Every guest group, empty ones included.
+  final List<ProgramGuestGroupRow> groups;
+
+  /// Opens a guest's answers (for a guest with no household).
+  final ValueChanged<ProgramGuestRow>? onEditGuest;
+
+  /// Opens a group to change or delete it, or a new group for null.
+  final ValueChanged<ProgramGuestGroupRow?>? onEditGroup;
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +132,18 @@ class HostProgrammeGuestsDesktopBody extends StatelessWidget {
           ),
           variant: CatchTextVariant.bodyMeta,
           tone: CatchTextTone.secondary,
+        ),
+        if (state.unaffiliated case final unaffiliated
+            when unaffiliated.isNotEmpty)
+          ProgrammeNoHouseholdSection(
+            state: state,
+            guests: unaffiliated,
+            onEditGuest: onEditGuest,
+          ),
+        ProgrammeGuestGroupsSection(
+          groups: groups,
+          hotels: state.detail?.hotels ?? const <ProgramHotel>[],
+          onEditGroup: onEditGroup,
         ),
       ],
     );

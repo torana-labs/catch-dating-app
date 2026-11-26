@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart';
 import 'package:catch_platform/media/ordered_photo_picker.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -98,89 +97,6 @@ Widget orderedPhotoManagerCatalogState(BuildContext context) {
     ),
   );
 }
-
-@widgetbook.UseCase(
-  name: 'Role-sized summary states',
-  type: HostOrganizerMediaRail,
-  path: '[P1 product surfaces]/Host organizer',
-)
-Widget hostOrganizerMediaRailCatalogStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'HostOrganizerMediaRail',
-    contractId: 'component.host.club.photos_picker',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'logo, cover, and gallery',
-        child: WidgetbookHostDeviceFrame(
-          child: HostOrganizerMediaRail(
-            logoImageBytes: widgetbookCreateOrganizerPngBytes(),
-            logoImageUrl: null,
-            photos: widgetbookOrderedPhotoPreviews('summary-photo', 3),
-            logoBadgeLabel: 'LOGO',
-            addPhotosLabel: 'Add photos',
-            onManageMedia: () {},
-          ),
-        ),
-      ),
-      WidgetbookPageStateCard(
-        label: 'compact empty',
-        child: WidgetbookHostDeviceFrame(
-          child: HostOrganizerMediaRail(
-            logoImageBytes: null,
-            logoImageUrl: null,
-            photos: const [],
-            logoBadgeLabel: 'LOGO',
-            addPhotosLabel: 'Add photos',
-            onManageMedia: () {},
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Logo states',
-  type: HostOrganizerLogoManagerHeader,
-  path: '[P1 product surfaces]/Host organizer',
-)
-Widget hostOrganizerLogoManagerHeaderStates(BuildContext context) =>
-    widgetbookHostComponentStates('HostOrganizerLogoManagerHeader', [
-      (
-        'logo picked',
-        HostOrganizerLogoManagerHeader(
-          imageBytes: widgetbookCreateOrganizerPngBytes(),
-          existingImageUrl: null,
-          onPickLogo: () async => null,
-          onRemoveLogo: () async {},
-        ),
-      ),
-      (
-        'no logo',
-        HostOrganizerLogoManagerHeader(
-          imageBytes: null,
-          existingImageUrl: null,
-          onPickLogo: () async => null,
-          onRemoveLogo: () async {},
-        ),
-      ),
-    ]);
-
-@widgetbook.UseCase(
-  name: 'Save dock',
-  type: HostOrganizerMediaManagerDock,
-  path: '[P1 product surfaces]/Host organizer',
-)
-Widget hostOrganizerMediaManagerDockStates(BuildContext context) =>
-    widgetbookHostComponentStates('HostOrganizerMediaManagerDock', [
-      (
-        'ready to save',
-        HostOrganizerMediaManagerDock(
-          onSave: () async => false,
-          errorText: (_) => null,
-        ),
-      ),
-    ]);
 
 @widgetbook.UseCase(
   name: 'Image states',

@@ -66,8 +66,8 @@
       "routeId": "hostOrganizerScreen",
       "path": "/host/organizer",
       "label": "Organizer",
-      "widget": "HostClubsScreen",
-      "source": "lib/hosts/presentation/host_operations/host_organizers_screen.dart",
+      "widget": "OrganizerScreen",
+      "source": "lib/hosts/organizer/organizer_screen.dart",
       "captureId": "host_clubs_management"
     }
   ],
