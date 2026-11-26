@@ -9,29 +9,29 @@ part of 'edit_event_controller.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 /// Editing a saved event with the create editor. The event fills the draft;
-/// what bookings lock is worked out once, when editing starts; Save sends
-/// the edited event with the update command the backend checks again.
+/// what bookings lock is worked out once, when editing starts; Save checks
+/// the draft and hands back the update the backend checks again.
 ///
-/// It reads the event's private access for an invite-only event's code and
-/// writes through [HostEventBookingController.updateHostedEvent].
+/// It reads the event's private access for an invite-only event's code;
+/// it writes nothing itself.
 
 @ProviderFor(EditEventController)
 final editEventControllerProvider = EditEventControllerFamily._();
 
 /// Editing a saved event with the create editor. The event fills the draft;
-/// what bookings lock is worked out once, when editing starts; Save sends
-/// the edited event with the update command the backend checks again.
+/// what bookings lock is worked out once, when editing starts; Save checks
+/// the draft and hands back the update the backend checks again.
 ///
-/// It reads the event's private access for an invite-only event's code and
-/// writes through [HostEventBookingController.updateHostedEvent].
+/// It reads the event's private access for an invite-only event's code;
+/// it writes nothing itself.
 final class EditEventControllerProvider
     extends $NotifierProvider<EditEventController, CreateFlowState> {
   /// Editing a saved event with the create editor. The event fills the draft;
-  /// what bookings lock is worked out once, when editing starts; Save sends
-  /// the edited event with the update command the backend checks again.
+  /// what bookings lock is worked out once, when editing starts; Save checks
+  /// the draft and hands back the update the backend checks again.
   ///
-  /// It reads the event's private access for an invite-only event's code and
-  /// writes through [HostEventBookingController.updateHostedEvent].
+  /// It reads the event's private access for an invite-only event's code;
+  /// it writes nothing itself.
   EditEventControllerProvider._({
     required EditEventControllerFamily super.from,
     required EditEventArgs super.argument,
@@ -77,14 +77,14 @@ final class EditEventControllerProvider
 }
 
 String _$editEventControllerHash() =>
-    r'68c737505d9acf58ced3fcb6725bb4ebf1b29842';
+    r'e9acc63162ec72cb7e826a457bfa5a1f6399eff0';
 
 /// Editing a saved event with the create editor. The event fills the draft;
-/// what bookings lock is worked out once, when editing starts; Save sends
-/// the edited event with the update command the backend checks again.
+/// what bookings lock is worked out once, when editing starts; Save checks
+/// the draft and hands back the update the backend checks again.
 ///
-/// It reads the event's private access for an invite-only event's code and
-/// writes through [HostEventBookingController.updateHostedEvent].
+/// It reads the event's private access for an invite-only event's code;
+/// it writes nothing itself.
 
 final class EditEventControllerFamily extends $Family
     with
@@ -105,11 +105,11 @@ final class EditEventControllerFamily extends $Family
       );
 
   /// Editing a saved event with the create editor. The event fills the draft;
-  /// what bookings lock is worked out once, when editing starts; Save sends
-  /// the edited event with the update command the backend checks again.
+  /// what bookings lock is worked out once, when editing starts; Save checks
+  /// the draft and hands back the update the backend checks again.
   ///
-  /// It reads the event's private access for an invite-only event's code and
-  /// writes through [HostEventBookingController.updateHostedEvent].
+  /// It reads the event's private access for an invite-only event's code;
+  /// it writes nothing itself.
 
   EditEventControllerProvider call(EditEventArgs args) =>
       EditEventControllerProvider._(argument: args, from: this);
@@ -119,11 +119,11 @@ final class EditEventControllerFamily extends $Family
 }
 
 /// Editing a saved event with the create editor. The event fills the draft;
-/// what bookings lock is worked out once, when editing starts; Save sends
-/// the edited event with the update command the backend checks again.
+/// what bookings lock is worked out once, when editing starts; Save checks
+/// the draft and hands back the update the backend checks again.
 ///
-/// It reads the event's private access for an invite-only event's code and
-/// writes through [HostEventBookingController.updateHostedEvent].
+/// It reads the event's private access for an invite-only event's code;
+/// it writes nothing itself.
 
 abstract class _$EditEventController extends $Notifier<CreateFlowState> {
   late final _$args = ref.$arg as EditEventArgs;
