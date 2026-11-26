@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
+import 'package:catch_dating_app/hosts/create/create_route_path_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/route_path_builder_screen.dart';
 import 'package:catch_dating_app/pages/event/event_route_labels.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/location_coordinate.dart';
@@ -9,35 +9,46 @@ import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_platform/theme/activity_palette.dart';
 import 'package:catch_ui/catch_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show MaterialPageRoute, Navigator;
+import 'package:flutter/widgets.dart';
 
 enum _PacePreset { social, steady, fast }
 
-/// Composes route operations independently from the event's broader format.
+/// A moving event's route plan, on its own switch: how people move, the
+/// route's shape, how the group stays together, the stops and their
+/// cadence, the crew roles, the drawn path, pace groups and live tracking.
 ///
-/// Runs, walks, crawls, rides, and custom moving events share these controls;
-/// the selected activity only supplies a useful starting preset.
-class RouteEventPlanEditor extends StatefulWidget {
-  const RouteEventPlanEditor({
+/// Runs, walks, crawls, rides and custom moving events share these
+/// controls; the activity only supplies a starting preset. It reads [plan]
+/// and reports every change through [onChanged]; Draw the route opens
+/// [CreateRoutePathScreen].
+class CreateRoutePlanSection extends StatefulWidget {
+  const CreateRoutePlanSection({
     super.key,
     required this.activityKind,
     required this.plan,
     required this.onChanged,
     required this.initialCenter,
-    this.loadMapTiles = true,
+    this.enableNetworkTiles = true,
   });
 
   final ActivityKind activityKind;
   final RouteEventPlan? plan;
-  final ValueChanged<RouteEventPlan?> onChanged;
+
+  /// Null leaves the plan as it is.
+  final ValueChanged<RouteEventPlan?>? onChanged;
+
+  /// Where the route map opens before a path is drawn.
   final LocationCoordinate initialCenter;
-  final bool loadMapTiles;
+
+  /// False draws the map's no-network fallback (previews and captures).
+  final bool enableNetworkTiles;
 
   @override
-  State<RouteEventPlanEditor> createState() => _RouteEventPlanEditorState();
+  State<CreateRoutePlanSection> createState() => _CreateRoutePlanSectionState();
 }
 
-class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
+class _CreateRoutePlanSectionState extends State<CreateRoutePlanSection> {
   static const _movementField = 'route-movement';
   static const _shapeField = 'route-shape';
   static const _groupField = 'route-group';
@@ -90,7 +101,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
           contractExemption:
               'Controls optional routePlan presence; nested fields use generated bindings.',
           value: plan != null,
-          onChanged: (enabled) => widget.onChanged(
+          onChanged: (enabled) => _changed(
             enabled
                 ? (RouteEventPlan.defaultForActivity(widget.activityKind) ??
                       RouteEventPlan.customWalk)
@@ -126,9 +137,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   itemLabelBuilder: (value) =>
                       routeMovementLabel(context.l10n, value),
                   selected: {plan.movementMode},
-                  onSelectionChanged: (selection) => widget.onChanged(
-                    plan.copyWith(movementMode: selection.single),
-                  ),
+                  onSelectionChanged: (selection) =>
+                      _changed(plan.copyWith(movementMode: selection.single)),
                   disclosureMode: _accordion.isExpanded(_movementField)
                       ? CatchFieldMode.controlledExpanded
                       : CatchFieldMode.controlledCollapsed,
@@ -147,9 +157,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   itemLabelBuilder: (value) =>
                       routeShapeLabel(context.l10n, value),
                   selected: {plan.routeShape},
-                  onSelectionChanged: (selection) => widget.onChanged(
-                    plan.copyWith(routeShape: selection.single),
-                  ),
+                  onSelectionChanged: (selection) =>
+                      _changed(plan.copyWith(routeShape: selection.single)),
                   disclosureMode: _accordion.isExpanded(_shapeField)
                       ? CatchFieldMode.controlledExpanded
                       : CatchFieldMode.controlledCollapsed,
@@ -168,9 +177,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   itemLabelBuilder: (value) =>
                       routeGroupLabel(context.l10n, value),
                   selected: {plan.groupStrategy},
-                  onSelectionChanged: (selection) => widget.onChanged(
-                    plan.copyWith(groupStrategy: selection.single),
-                  ),
+                  onSelectionChanged: (selection) =>
+                      _changed(plan.copyWith(groupStrategy: selection.single)),
                   disclosureMode: _accordion.isExpanded(_groupField)
                       ? CatchFieldMode.controlledExpanded
                       : CatchFieldMode.controlledCollapsed,
@@ -189,9 +197,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   itemLabelBuilder: (value) =>
                       routeCadenceLabel(context.l10n, value),
                   selected: {plan.stopCadence},
-                  onSelectionChanged: (selection) => widget.onChanged(
-                    plan.copyWith(stopCadence: selection.single),
-                  ),
+                  onSelectionChanged: (selection) =>
+                      _changed(plan.copyWith(stopCadence: selection.single)),
                   disclosureMode: _accordion.isExpanded(_cadenceField)
                       ? CatchFieldMode.controlledExpanded
                       : CatchFieldMode.controlledCollapsed,
@@ -211,7 +218,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                       routeStopLabel(context.l10n, value),
                   selected: plan.stopKinds.toSet(),
                   mode: CatchChipMode.multiple,
-                  onSelectionChanged: (selection) => widget.onChanged(
+                  onSelectionChanged: (selection) => _changed(
                     plan.copyWith(
                       stopKinds: RouteStopKind.values
                           .where(selection.contains)
@@ -236,7 +243,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   itemLabelBuilder: (value) => _roleLabel(context, value),
                   selected: plan.roleKinds.toSet(),
                   mode: CatchChipMode.multiple,
-                  onSelectionChanged: (selection) => widget.onChanged(
+                  onSelectionChanged: (selection) => _changed(
                     plan.copyWith(
                       roleKinds: RouteRoleKind.values
                           .where(selection.contains)
@@ -252,12 +259,11 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                 ),
                 CatchFieldLanes.single(
                   key: CreateEventFormKeys.routePath,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                  child: CatchStack(
+                    gap: CatchStackGap.g8,
                     children: [
                       CatchFieldContentRow(
                         labelCopy: catchFieldLabelTextCopy(context.l10n),
-
                         title: context.l10n.hostsRouteEventPlanPathTitle,
                         body: plan.path.length >= 2
                             ? context.l10n.hostsRouteEventPlanPathCount(
@@ -265,11 +271,13 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                               )
                             : context.l10n.hostsRouteEventPlanPathEmpty,
                       ),
-                      gapH8,
                       CatchButton(
+                        key: const ValueKey<String>('create-route-path-open'),
                         label: context.l10n.hostsRouteEventPlanPathAction,
                         variant: CatchButtonVariant.secondary,
-                        onPressed: () => _editPath(plan),
+                        onPressed: widget.onChanged == null
+                            ? null
+                            : () => _editPath(plan),
                       ),
                     ],
                   ),
@@ -287,7 +295,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   selected: _selectedPacePresets(plan),
                   allowEmptySelection: true,
                   mode: CatchChipMode.multiple,
-                  onSelectionChanged: (selection) => widget.onChanged(
+                  onSelectionChanged: (selection) => _changed(
                     plan.copyWith(paceGroups: _paceGroupsFor(selection)),
                   ),
                   disclosureMode: _accordion.isExpanded(_paceGroupsField)
@@ -308,7 +316,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   values: RouteLiveTrackingMode.values,
                   itemLabelBuilder: (value) => _trackingLabel(context, value),
                   selected: {plan.liveTrackingPolicy.mode},
-                  onSelectionChanged: (selection) => widget.onChanged(
+                  onSelectionChanged: (selection) => _changed(
                     plan.copyWith(
                       liveTrackingPolicy: RouteLiveTrackingPolicy(
                         mode: selection.single,
@@ -331,18 +339,21 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
     );
   }
 
+  void _changed(RouteEventPlan? plan) => widget.onChanged?.call(plan);
+
   Future<void> _editPath(RouteEventPlan plan) async {
+    if (widget.onChanged == null) return;
     final path = await Navigator.of(context).push<List<RoutePoint>>(
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (_) => RoutePathBuilderScreen(
+        builder: (_) => CreateRoutePathScreen(
           initialCenter: widget.initialCenter,
           initialPath: plan.path,
-          enableNetworkTiles: widget.loadMapTiles,
+          enableNetworkTiles: widget.enableNetworkTiles,
         ),
       ),
     );
-    if (path != null) widget.onChanged(plan.copyWith(path: path));
+    if (path != null) _changed(plan.copyWith(path: path));
   }
 
   Set<_PacePreset> _selectedPacePresets(RouteEventPlan plan) => plan.paceGroups

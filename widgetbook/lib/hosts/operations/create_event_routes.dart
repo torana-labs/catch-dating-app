@@ -5,8 +5,7 @@ import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dar
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_state.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
+import 'package:catch_dating_app/hosts/create/create_route_screen.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_platform/persistence/command_journal_provider.dart';
@@ -24,12 +23,12 @@ import 'role_theme.dart';
 
 @widgetbook.UseCase(
   name: 'Route and wizard states',
-  type: HostCreateEventRouteScreen,
+  type: CreateRouteScreen,
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'HostCreateEventRouteScreen',
+    title: 'CreateRouteScreen',
     contractId: 'screen.host.event.create',
     children: [
       WidgetbookPageStateCard(
@@ -37,9 +36,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
             organizerValue: const AsyncLoading<Organizer?>(),
-            child: HostCreateEventRouteScreen(
-              organizerId: widgetbookOrganizer.id,
-            ),
+            child: CreateRouteScreen(organizerId: widgetbookOrganizer.id),
           ),
         ),
       ),
@@ -51,9 +48,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
               StateError('Club fetch failed'),
               StackTrace.empty,
             ),
-            child: HostCreateEventRouteScreen(
-              organizerId: widgetbookOrganizer.id,
-            ),
+            child: CreateRouteScreen(organizerId: widgetbookOrganizer.id),
           ),
         ),
       ),
@@ -65,9 +60,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
               obviousOfflineException(),
               StackTrace.empty,
             ),
-            child: HostCreateEventRouteScreen(
-              organizerId: widgetbookOrganizer.id,
-            ),
+            child: CreateRouteScreen(organizerId: widgetbookOrganizer.id),
           ),
         ),
       ),
@@ -76,34 +69,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
             organizerValue: const AsyncData<Organizer?>(null),
-            child: HostCreateEventRouteScreen(
-              organizerId: widgetbookOrganizer.id,
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Route state renderer',
-  type: HostCreateEventRouteBody,
-  path: '[P1 product surfaces]/Host create event',
-)
-Widget hostCreateEventRouteStateViewCatalogStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'HostCreateEventRouteBody',
-    contractId: 'component.host.event.create_route_state_view',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'ready',
-        child: WidgetbookHostDeviceFrame(
-          child: _HostCreateEventScope(
-            child: HostCreateEventRouteBody(
-              organizerId: widgetbookOrganizer.id,
-              state: HostCreateEventRouteState.initial(widgetbookOrganizer),
-            ),
+            child: CreateRouteScreen(organizerId: widgetbookOrganizer.id),
           ),
         ),
       ),

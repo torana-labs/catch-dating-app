@@ -7,7 +7,7 @@
       "lib/routing/consumer_router.dart",
       "lib/routing/host_router.dart"
     ],
-    "routeContractSha256": "d210e1abc5512e7b2935290755a4661d30babc3e92ce04e6dcf9d029cb64431d",
+    "routeContractSha256": "2be218c5bcfd3ed9159d44efabaf8b7b1a930e3f84f272f5d93db4d2362fc4ee",
     "goRouteCount": 138,
     "shellBranchCount": 8,
     "enumRouteCount": 115,
@@ -22,7 +22,7 @@
       "workspaceRoute",
       "indexRoutes"
     ],
-    "imperativePageRouteCount": 35,
+    "imperativePageRouteCount": 34,
     "imperativePageTargetCount": 30
   },
   "routes": [
@@ -1729,8 +1729,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostCreateEventScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state){final extra=state.extra;return HostCreateEventRouteScreen(organizerId:state.pathParameters['organizerId']!,initialOrganizer:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialOrganizer,final Organizer organizer=>organizer,_=>null},initialPrefill:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialPrefill,_=>null},initialDraft:extra is HostCreateEventRouteArguments?extra.initialDraft:null,initialSavedEventId:extra is HostCreateEventRouteArguments?extra.initialSavedEventId:null,externalBookingMode:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.externalBookingMode,_=>false},promptForDrafts:extra is HostCreateEventRouteArguments?extra.promptForDrafts:true,returnToResponsesOnSave:extra is HostCreateEventRouteArguments?extra.returnToResponsesOnSave:false);}",
-      "presentationTarget": "HostCreateEventRouteScreen",
+      "presentationExpression": "(context,state){final extra=state.extra;return CreateRouteScreen(organizerId:state.pathParameters['organizerId']!,arguments:switch(extra){final HostCreateEventRouteArguments arguments=>arguments,final Organizer organizer=>HostCreateEventRouteArguments(initialOrganizer:organizer),_=>const HostCreateEventRouteArguments()});}",
+      "presentationTarget": "CreateRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1818,8 +1818,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostAppEditEventScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>EditHostedEventRouteScreen(organizerId:state.pathParameters['organizerId']!,eventId:state.pathParameters['eventId']!,initialEvent:routeEventExtra(state))",
-      "presentationTarget": "EditHostedEventRouteScreen",
+      "presentationExpression": "(context,state)=>EditEventRouteScreen(organizerId:state.pathParameters['organizerId']!,eventId:state.pathParameters['eventId']!,initialEvent:routeEventExtra(state))",
+      "presentationTarget": "EditEventRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1927,6 +1927,24 @@
       "ordinal": 1,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:lat==null||lng==null?null:LocationCoordinate(lat,lng),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:draft.meetingPoint)",
       "presentationTarget": "LocationPickerScreen",
+      "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/hosts/create/edit_event_screen.dart:01f23f731b3e90513b00955c29020150ce9b8abe8a86e6b530a290205cd357f6:1",
+      "routeExpression": "MaterialPageRoute(builder:(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:current,initialCenter:current??(lat==null||lng==null?null:LocationCoordinate(lat,lng))??(city==null?null:LocationCoordinate(city.latitude,city.longitude)),initialLabel:label,loadMapTiles:widget.enableNetworkTiles),fullscreenDialog:true)",
+      "sourcePath": "lib/hosts/create/edit_event_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:current,initialCenter:current??(lat==null||lng==null?null:LocationCoordinate(lat,lng))??(city==null?null:LocationCoordinate(city.latitude,city.longitude)),initialLabel:label,loadMapTiles:widget.enableNetworkTiles)",
+      "presentationTarget": "LocationPickerScreen",
+      "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/hosts/create/widgets/create_route_plan_section.dart:23d2994d7469df90d82644c5b010ff0a4f8609a7f7856439b70f9da1045be887:1",
+      "routeExpression": "MaterialPageRoute(fullscreenDialog:true,builder:(_)=>CreateRoutePathScreen(initialCenter:widget.initialCenter,initialPath:plan.path,enableNetworkTiles:widget.enableNetworkTiles))",
+      "sourcePath": "lib/hosts/create/widgets/create_route_plan_section.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>CreateRoutePathScreen(initialCenter:widget.initialCenter,initialPath:plan.path,enableNetworkTiles:widget.enableNetworkTiles)",
+      "presentationTarget": "CreateRoutePathScreen",
       "fullscreenDialogExpression": "true"
     },
     {
@@ -2144,33 +2162,6 @@
       "presentationExpression": "(_)=>HostLiveToolsScreen(event:event)",
       "presentationTarget": "HostLiveToolsScreen",
       "fullscreenDialogExpression": null
-    },
-    {
-      "siteId": "material-page:lib/hosts/presentation/edit_hosted_event_actions.dart:1460f8b1d07dbb461e0e2fa7e5c42836ff899a03d147b24d65b0770ca865c45a:1",
-      "routeExpression": "MaterialPageRoute(builder:(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.organizer.location),initialLocation:locationState.startingPoint,initialCenter:locationState.startingPoint??deviceLocation,initialLabel:locationState.pickerInitialLabel,loadMapTiles:widget.loadMapTiles),fullscreenDialog:true)",
-      "sourcePath": "lib/hosts/presentation/edit_hosted_event_actions.dart",
-      "ordinal": 1,
-      "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.organizer.location),initialLocation:locationState.startingPoint,initialCenter:locationState.startingPoint??deviceLocation,initialLabel:locationState.pickerInitialLabel,loadMapTiles:widget.loadMapTiles)",
-      "presentationTarget": "LocationPickerScreen",
-      "fullscreenDialogExpression": "true"
-    },
-    {
-      "siteId": "material-page:lib/hosts/presentation/edit_hosted_event_actions.dart:b8034556e7691f055bb10f6f838794865c3baf237db552c4970d0eb714c5ef40:1",
-      "routeExpression": "MaterialPageRoute(builder:(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.organizer.location),initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:(current==null?_startingPoint:LocationCoordinate(current.latitude,current.longitude))??deviceLocation,initialLabel:current?.name,loadMapTiles:widget.loadMapTiles),fullscreenDialog:true)",
-      "sourcePath": "lib/hosts/presentation/edit_hosted_event_actions.dart",
-      "ordinal": 1,
-      "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.organizer.location),initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:(current==null?_startingPoint:LocationCoordinate(current.latitude,current.longitude))??deviceLocation,initialLabel:current?.name,loadMapTiles:widget.loadMapTiles)",
-      "presentationTarget": "LocationPickerScreen",
-      "fullscreenDialogExpression": "true"
-    },
-    {
-      "siteId": "material-page:lib/hosts/presentation/event_management/widgets/route_event_plan_editor.dart:1696a6c08eafdac7875b5796bb21df600ae5340239586b467192f3485ff535c3:1",
-      "routeExpression": "MaterialPageRoute(fullscreenDialog:true,builder:(_)=>RoutePathBuilderScreen(initialCenter:widget.initialCenter,initialPath:plan.path,enableNetworkTiles:widget.loadMapTiles))",
-      "sourcePath": "lib/hosts/presentation/event_management/widgets/route_event_plan_editor.dart",
-      "ordinal": 1,
-      "presentationExpression": "(_)=>RoutePathBuilderScreen(initialCenter:widget.initialCenter,initialPath:plan.path,enableNetworkTiles:widget.loadMapTiles)",
-      "presentationTarget": "RoutePathBuilderScreen",
-      "fullscreenDialogExpression": "true"
     },
     {
       "siteId": "material-page:lib/hosts/presentation/host_operations/host_organizer_edit_body.dart:151b5d11dec1a576fe4a9fbbb0e46866f3d56dfdb308d307866e7644f241a104:1",

@@ -13,6 +13,7 @@ class CreateCalendarSheet extends StatelessWidget {
     required this.marked,
     required this.onChanged,
     required this.onUse,
+    this.last,
   });
 
   final DateTime today;
@@ -24,6 +25,10 @@ class CreateCalendarSheet extends StatelessWidget {
   final List<DateTime> marked;
   final ValueChanged<DateTime> onChanged;
   final VoidCallback? onUse;
+
+  /// The last day that can be picked; days after it do not select. Null
+  /// leaves the calendar open-ended.
+  final DateTime? last;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +54,10 @@ class CreateCalendarSheet extends StatelessWidget {
         min: today,
         marked: marked,
         markedLabel: marked.isEmpty ? null : context.l10n.hostCreateAlreadyOn,
-        onChanged: onChanged,
+        onChanged: (day) {
+          final last = this.last;
+          if (last == null || !day.isAfter(last)) onChanged(day);
+        },
       ),
     );
   }
