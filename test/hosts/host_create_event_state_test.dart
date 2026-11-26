@@ -1,77 +1,9 @@
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_state.dart';
-import 'package:catch_platform/catch_async_state.dart';
-import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('HostCreateEventRouteState prefers route extra club', () {
-    final organizer = buildOrganizer(id: 'club-extra');
-
-    final state = HostCreateEventRouteState.initial(organizer);
-
-    expect(state.status, HostCreateEventRouteStatus.ready);
-    expect(state.organizer, organizer);
-    expect(state.usedInitialOrganizer, isTrue);
-    expect(state.retryIntent, isNull);
-  });
-
-  test('HostCreateEventRouteState maps fetch states', () {
-    final organizer = buildOrganizer(id: 'club-fetched');
-
-    final loading = HostCreateEventRouteState.fromOrganizerState(
-      const CatchAsyncState.loading(),
-    );
-    expect(loading.status, HostCreateEventRouteStatus.loading);
-
-    final error = HostCreateEventRouteState.fromOrganizerState(
-      CatchAsyncState.error(StateError('fetch failed')),
-    );
-    expect(error.status, HostCreateEventRouteStatus.error);
-    expect(error.retryIntent, HostCreateEventRouteRetryIntent.reloadOrganizer);
-
-    final notFound = HostCreateEventRouteState.fromOrganizerState(
-      const CatchAsyncState.data(null),
-    );
-    expect(notFound.status, HostCreateEventRouteStatus.notFound);
-
-    final ready = HostCreateEventRouteState.fromOrganizerState(
-      CatchAsyncState.data(organizer),
-    );
-    expect(ready.status, HostCreateEventRouteStatus.ready);
-    expect(ready.organizer, organizer);
-    expect(ready.usedInitialOrganizer, isFalse);
-  });
-
-  test('HostCreateEventRouteState blocks non-host identities', () {
-    final organizer = buildOrganizer();
-
-    final loadingIdentity = HostCreateEventRouteState.resolve(
-      initialOrganizer: organizer,
-      fetchedOrganizer: null,
-      uid: const CatchAsyncState.loading(),
-    );
-    expect(loadingIdentity.status, HostCreateEventRouteStatus.loading);
-
-    final forbidden = HostCreateEventRouteState.resolve(
-      initialOrganizer: organizer,
-      fetchedOrganizer: null,
-      uid: const CatchAsyncState.data('runner-1'),
-    );
-    expect(forbidden.status, HostCreateEventRouteStatus.forbidden);
-    expect(forbidden.organizer, organizer);
-
-    final ready = HostCreateEventRouteState.resolve(
-      initialOrganizer: organizer,
-      fetchedOrganizer: null,
-      uid: const CatchAsyncState.data('host-1'),
-    );
-    expect(ready.status, HostCreateEventRouteStatus.ready);
-    expect(ready.organizer, organizer);
-  });
-
   test('CreateEventPolicyState maps defaults, transitions, and drafts', () {
     const defaults = EventPolicyDefaults(
       admissionPreset: EventAdmissionDefaultPreset.fixedCohortCaps,

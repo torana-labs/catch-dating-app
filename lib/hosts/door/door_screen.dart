@@ -35,6 +35,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// [doorSessionProvider], flushes the attendance outbox when the phone comes
 /// back online and opens the scanner in place. Every read behind it is a
 /// listener, so nothing here refreshes after a command.
+///
+/// Event staff reach it through the staff work list with their grant as
+/// [access]: it then hides what the grant does not allow and leaves out the
+/// reads only managers may make.
 class DoorScreen extends ConsumerStatefulWidget {
   const DoorScreen({
     super.key,
@@ -43,6 +47,7 @@ class DoorScreen extends ConsumerStatefulWidget {
     this.initialEvent,
     this.initialFilter,
     this.scanCamera,
+    this.access = const DoorAccess(),
   });
 
   final String organizerId;
@@ -56,6 +61,9 @@ class DoorScreen extends ConsumerStatefulWidget {
 
   /// Replaces the scanner's live camera in previews and tests.
   final Widget? scanCamera;
+
+  /// What this phone may do at the door; everything unless staff.
+  final DoorAccess access;
 
   @override
   ConsumerState<DoorScreen> createState() => _DoorScreenState();
@@ -134,7 +142,10 @@ class _DoorScreenState extends ConsumerState<DoorScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final state = ref.watch(doorControllerProvider(widget.eventId));
+    final access = widget.access;
+    final state = ref.watch(
+      doorControllerProvider(widget.eventId, manage: access.manage),
+    );
     if (_scanning) {
       return PopScope(
         canPop: false,
@@ -160,11 +171,12 @@ class _DoorScreenState extends ConsumerState<DoorScreen> {
     // Web guests waiting to be matched to a name on the list, with Approve
     // (choosing the guest) and Reject, through the existing runtime claim
     // review; none while nobody is waiting.
-    final pendingClaims =
-        ref
-            .watch(watchPendingEventRuntimeClaimsProvider(widget.eventId))
-            .value ??
-        const <EventRuntimeClaimRequest>[];
+    final pendingClaims = access.reviewClaims
+        ? ref
+                  .watch(watchPendingEventRuntimeClaimsProvider(widget.eventId))
+                  .value ??
+              const <EventRuntimeClaimRequest>[]
+        : const <EventRuntimeClaimRequest>[];
     final claims = pendingClaims.isEmpty
         ? null
         : HostRuntimeClaimList(
@@ -193,7 +205,8 @@ class _DoorScreenState extends ConsumerState<DoorScreen> {
         ? CatchLocalizedErrorState(
             state.error!,
             context: AppErrorContext.event,
-            onRetry: () => retryDoorReads(ref, widget.eventId),
+            onRetry: () =>
+                retryDoorReads(ref, widget.eventId, manage: access.manage),
           )
         : DoorBody(
             state: state,
@@ -205,7 +218,21 @@ class _DoorScreenState extends ConsumerState<DoorScreen> {
             onRetrySync: () => unawaited(_guard(_session.flushOutbox)),
             onDiscardRefused: () => unawaited(_guard(_session.discardRefused)),
             claims: claims,
+            access: access,
           );
+    final scan = access.checkIn
+        ? CatchDockAction(
+            label: l10n.doorScanTicket,
+            icon: CatchIcons.scanQr,
+            onPressed: _openScanner,
+          )
+        : null;
+    final walkIn = access.manage
+        ? CatchDockAction(
+            label: l10n.doorAddWalkIn,
+            onPressed: () => unawaited(_addWalkIn()),
+          )
+        : null;
     return CatchRoot(
       theme: CatchThemeMode.night,
       format: format,
@@ -222,24 +249,26 @@ class _DoorScreenState extends ConsumerState<DoorScreen> {
             label: l10n.doorBack,
             onPressed: () => hostWorkspaceBack(
               context,
-              fallback: Routes.hostTodayScreen.path,
+              fallback: access.role == null
+                  ? Routes.hostTodayScreen.path
+                  : Routes.hostWorkScreen.path,
             ),
           ),
           live: l10n.doorLiveTag,
         ),
         body: body,
-        dock: CatchDock(
-          placement: CatchDockPlacement.bar,
-          primary: CatchDockAction(
-            label: l10n.doorScanTicket,
-            icon: CatchIcons.scanQr,
-            onPressed: _openScanner,
+        dock: switch ((scan, walkIn)) {
+          (final scan?, _) => CatchDock(
+            placement: CatchDockPlacement.bar,
+            primary: scan,
+            secondary: walkIn,
           ),
-          secondary: CatchDockAction(
-            label: l10n.doorAddWalkIn,
-            onPressed: () => unawaited(_addWalkIn()),
+          (null, final walkIn?) => CatchDock(
+            placement: CatchDockPlacement.bar,
+            primary: walkIn,
           ),
-        ),
+          (null, null) => null,
+        },
       ),
     );
   }

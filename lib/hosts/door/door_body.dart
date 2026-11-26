@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dar
 import 'package:catch_dating_app/hosts/door/door_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -11,6 +12,10 @@ import 'package:flutter/widgets.dart';
 /// and the guests. On a window wide enough for the operations layout the
 /// guests take the main pane and the scanner tile, the last arrival, the
 /// counts and who else is on the door take the side.
+///
+/// Event staff see only what their [access] allows: no check-in or scanner
+/// without check-in, no let-in or offer, and a line saying who they are at
+/// the door and until when.
 class DoorBody extends StatelessWidget {
   const DoorBody({
     super.key,
@@ -23,6 +28,7 @@ class DoorBody extends StatelessWidget {
     required this.onDiscardRefused,
     this.claims,
     this.format,
+    this.access = const DoorAccess(),
   });
 
   final DoorState state;
@@ -43,6 +49,16 @@ class DoorBody extends StatelessWidget {
 
   /// The event's format, for the "New" badges.
   final CatchFormat? format;
+
+  /// What this phone may do at the door.
+  final DoorAccess access;
+
+  /// Whether this phone may take [guest]'s one action.
+  bool _mayAct(HostDoorGuest guest) => switch (guest.status) {
+    HostDoorGuestStatus.arriving ||
+    HostDoorGuestStatus.checkedIn => access.checkIn,
+    HostDoorGuestStatus.asked || HostDoorGuestStatus.waitlist => access.manage,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +93,27 @@ class DoorBody extends StatelessWidget {
             variant: CatchTextVariant.bodySmall,
             tone: CatchTextTone.secondary,
           );
+    final event = state.event;
+    final accessLine = switch (access.role) {
+      null => null,
+      final role => CatchNotice.inline(
+        key: const ValueKey<String>('door-access'),
+        tone: CatchNoticeTone.neutral,
+        title: role == DoorRole.manager
+            ? l10n.hostsEventOperatorRoleManager
+            : l10n.hostsEventOperatorRoleStaff,
+        body: [
+          if (role == DoorRole.staff) l10n.hostsEventOperatorAccessSubtitle,
+          [
+            if (event != null) AppTimeFormatters.dateTime(event.startTime),
+            if (access.until case final until?)
+              l10n.hostsEventOperatorExpires(
+                date: AppTimeFormatters.dateTime(until),
+              ),
+          ].join(' · '),
+        ].where((line) => line.isNotEmpty).join('\n'),
+      ),
+    };
     final search = CatchSearchField(
       key: const ValueKey<String>('door-search'),
       copy: catchSearchFieldCopy(l10n),
@@ -142,7 +179,7 @@ class DoorBody extends StatelessWidget {
             key: ValueKey<String>('door-guest-${guest.attendeeId}'),
             guest: guest,
             format: format,
-            onAction: () => onGuestAction(guest),
+            onAction: _mayAct(guest) ? () => onGuestAction(guest) : null,
           ),
       ],
     );
@@ -156,20 +193,24 @@ class DoorBody extends StatelessWidget {
               gap: CatchStackGap.g8,
               children: [headline, meter, sentence, ?team],
             ),
-            CatchStack(
-              direction: CatchStackDirection.row,
-              gap: CatchStackGap.g8,
-              align: CatchStackAlign.center,
-              children: [
-                Expanded(child: search),
-                CatchIconAction.icon(
-                  key: const ValueKey<String>('door-scan'),
-                  icon: CatchIcons.scanQr,
-                  tooltip: l10n.doorScanTicket,
-                  onPressed: onScan,
-                ),
-              ],
-            ),
+            ?accessLine,
+            if (access.checkIn)
+              CatchStack(
+                direction: CatchStackDirection.row,
+                gap: CatchStackGap.g8,
+                align: CatchStackAlign.center,
+                children: [
+                  Expanded(child: search),
+                  CatchIconAction.icon(
+                    key: const ValueKey<String>('door-scan'),
+                    icon: CatchIcons.scanQr,
+                    tooltip: l10n.doorScanTicket,
+                    onPressed: onScan,
+                  ),
+                ],
+              )
+            else
+              search,
             ?refused,
             ?claims,
             filters,
@@ -200,6 +241,7 @@ class DoorBody extends StatelessWidget {
                   children: [headline, sentence],
                 ),
                 meter,
+                ?accessLine,
                 search,
                 ?refused,
                 ?claims,
@@ -213,29 +255,30 @@ class DoorBody extends StatelessWidget {
             child: CatchStack(
               gap: CatchStackGap.g16,
               children: [
-                CatchSurface(
-                  key: const ValueKey<String>('door-scan'),
-                  onPress: onScan,
-                  semanticLabel: l10n.doorScanTicket,
-                  child: CatchStack(
-                    gap: CatchStackGap.g8,
-                    align: CatchStackAlign.center,
-                    children: [
-                      CatchIcon(CatchIcons.scanQr, size: CatchIconSize.lg),
-                      CatchText(
-                        l10n.doorScannerTileTitle,
-                        variant: CatchTextVariant.titleRow,
-                        align: TextAlign.center,
-                      ),
-                      CatchText(
-                        l10n.doorScannerTileBody,
-                        variant: CatchTextVariant.bodySmall,
-                        tone: CatchTextTone.secondary,
-                        align: TextAlign.center,
-                      ),
-                    ],
+                if (access.checkIn)
+                  CatchSurface(
+                    key: const ValueKey<String>('door-scan'),
+                    onPress: onScan,
+                    semanticLabel: l10n.doorScanTicket,
+                    child: CatchStack(
+                      gap: CatchStackGap.g8,
+                      align: CatchStackAlign.center,
+                      children: [
+                        CatchIcon(CatchIcons.scanQr, size: CatchIconSize.lg),
+                        CatchText(
+                          l10n.doorScannerTileTitle,
+                          variant: CatchTextVariant.titleRow,
+                          align: TextAlign.center,
+                        ),
+                        CatchText(
+                          l10n.doorScannerTileBody,
+                          variant: CatchTextVariant.bodySmall,
+                          tone: CatchTextTone.secondary,
+                          align: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
                 if (latest != null)
                   CatchNotice.inline(
                     tone: CatchNoticeTone.success,

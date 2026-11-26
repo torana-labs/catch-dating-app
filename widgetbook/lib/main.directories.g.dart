@@ -253,6 +253,8 @@ import 'package:widgetbook_workspace/hosts/host_sends_use_cases.dart'
     as _widgetbook_workspace_hosts_host_sends_use_cases;
 import 'package:widgetbook_workspace/hosts/host_setup_claim_use_cases.dart'
     as _widgetbook_workspace_hosts_host_setup_claim_use_cases;
+import 'package:widgetbook_workspace/hosts/host_staff_event_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_staff_event_use_cases;
 import 'package:widgetbook_workspace/hosts/host_system_parts_use_cases.dart'
     as _widgetbook_workspace_hosts_host_system_parts_use_cases;
 import 'package:widgetbook_workspace/hosts/host_today_requests_use_cases.dart'
@@ -261,8 +263,6 @@ import 'package:widgetbook_workspace/hosts/operations/analytics.dart'
     as _widgetbook_workspace_hosts_operations_analytics;
 import 'package:widgetbook_workspace/hosts/operations/audiences.dart'
     as _widgetbook_workspace_hosts_operations_audiences;
-import 'package:widgetbook_workspace/hosts/operations/create_event_details.dart'
-    as _widgetbook_workspace_hosts_operations_create_event_details;
 import 'package:widgetbook_workspace/hosts/operations/create_event_policy.dart'
     as _widgetbook_workspace_hosts_operations_create_event_policy;
 import 'package:widgetbook_workspace/hosts/operations/create_event_routes.dart'
@@ -10400,6 +10400,22 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookFolder(
+            name: 'Staff',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'StaffEventScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Cancelled event',
+                    builder:
+                        _widgetbook_workspace_hosts_host_staff_event_use_cases
+                            .staffEventScreenCancelledUseCase,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
             name: 'Today',
             children: [
               _widgetbook.WidgetbookFolder(
@@ -10542,28 +10558,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EventGuestDetailsSection',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Guest information',
-                builder:
-                    _widgetbook_workspace_hosts_operations_create_event_details
-                        .eventGuestDetailsSectionPreview,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostCreateEventRouteBody',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Route state renderer',
-                builder:
-                    _widgetbook_workspace_hosts_operations_create_event_routes
-                        .hostCreateEventRouteStateViewCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'HostWizardStepHeader',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -10579,47 +10573,72 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Host edit event',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'EditHostedEventScopeNotice',
+            name: 'CreateRoutePathScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Scope notice states',
+                name: 'Route path states',
                 builder: _widgetbook_workspace_hosts_operations_edit_event
-                    .editHostedEventScopeNoticeCatalogStates,
+                    .createRoutePathScreenCatalogStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EditHostedEventScreen',
+            name: 'CreateRoutePlanSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route plan states',
+                builder: _widgetbook_workspace_hosts_operations_edit_event
+                    .createRoutePlanSectionCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CreateStepForm',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Step form states',
+                builder: _widgetbook_workspace_hosts_operations_edit_event
+                    .createStepFormCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EditEventBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Edit page',
+                builder: _widgetbook_workspace_hosts_operations_edit_event
+                    .editEventBodyCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EditEventPolicySection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Policy states',
+                builder: _widgetbook_workspace_hosts_operations_edit_event
+                    .editEventPolicySectionCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EditEventScopeNotice',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Scope notice states',
+                builder: _widgetbook_workspace_hosts_operations_edit_event
+                    .editEventScopeNoticeCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EditEventScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Direct screen states',
                 builder: _widgetbook_workspace_hosts_operations_edit_event
                     .editHostedEventScreenCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostedEventPolicySection',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Editable policy states',
-                builder: _widgetbook_workspace_hosts_operations_edit_event
-                    .editableHostedEventPolicySectionCatalogStates,
-              ),
-              _widgetbook.WidgetbookUseCase(
-                name: 'Read-only policy states',
-                builder: _widgetbook_workspace_hosts_operations_edit_event
-                    .readOnlyHostedEventPolicySectionCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostedEventScheduleSection',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Schedule states',
-                builder: _widgetbook_workspace_hosts_operations_edit_event
-                    .hostedEventScheduleSectionCatalogStates,
               ),
             ],
           ),
@@ -10857,6 +10876,17 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CreateRouteScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route and wizard states',
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_routes
+                        .hostCreateEventRouteAndWizardStates,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookFolder(
             name: 'Customers',
             children: [
@@ -10907,7 +10937,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EditHostedEventRouteScreen',
+            name: 'EditEventRouteScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Route and section states',
@@ -11261,17 +11291,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                             .hostFormWorkspaceHeaderPreview,
                   ),
                 ],
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostCreateEventRouteScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Route and wizard states',
-                builder:
-                    _widgetbook_workspace_hosts_operations_create_event_routes
-                        .hostCreateEventRouteAndWizardStates,
               ),
             ],
           ),
@@ -12003,17 +12022,6 @@ final directories = <_widgetbook.WidgetbookNode>[
           _widgetbook.WidgetbookFolder(
             name: 'Workflow components',
             children: [
-              _widgetbook.WidgetbookComponent(
-                name: 'CreateEventDockSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Loading dock',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_workflow_components
-                            .createEventDockSkeletonStates,
-                  ),
-                ],
-              ),
               _widgetbook.WidgetbookComponent(
                 name: 'HostFollowerUpdateComposerSheet',
                 useCases: [

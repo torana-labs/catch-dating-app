@@ -3931,10 +3931,9 @@
       "members": [
         {
           "symbol": "HostEventOperatorScreen",
-          "disposition": "repair",
-          "target": "HostEventOperatorScreen",
-          "preview": "source-only",
-          "rationale": "Consolidate duplicate CatchRouteScaffold construction into one feature-owned function; preserve state selection and domain operations."
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "Retired: the staff work list event route opens the redesigned door through StaffEventScreen, which keeps the grant-limited roster, check-in, claim review, cancelled state and access line. No route shell remains to consolidate."
         }
       ]
     },
