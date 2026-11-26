@@ -3947,54 +3947,42 @@ and initialization complete.
   role-specific owner explicitly adopts a different boot composition.
 
 Host Inbox is the reference for sharing foundations without sharing product
-composition. Consumer `/chats` owns `ChatsListScreen`; the compatibility route
-`/host/inbox` owns `HostInboxScreen`; its shell label is Inbox while the local
-screen heading Messaging names the combined Inbox and Sends modes.
-They may reuse `ChatConversationsList`, Field-owned person layouts, search state, inquiry
-repositories, and routing contracts, but the consumer screen must not remain
-the Host route dispatcher.
+composition. Consumer `/chats` owns `ChatsListScreen`; the Host route
+`/host/inbox` resolves through `hostMessagesScreenForUri` to the People tab's
+`HostMessagesScreen` (conversations), `HostSendsScreen` (`workspace=campaigns`)
+or `HostComposeScreen` (an `eventId` without a thread). They may reuse inquiry
+repositories, the conversation people model and routing contracts, but the
+consumer screen is never the Host route dispatcher.
 
-The Host Inbox contract is:
+The Host Messages contract is:
 
-- every workspace follows `hostOrganizerSelectionProvider`; Inbox events,
-  inquiry previews, WhatsApp sender setup, and campaigns must all resolve from
-  the same selected organizer;
-- Inbox and Sends are first-class local workspaces. Inbox owns inbound personal
-  inquiries and reply-capable conversations. Sends owns outbound intent
-  selection, event-announcement composition, mixed outbound history,
-  follower-update composition and organizer campaign lifecycle; sender setup
-  stays on the dedicated organizer messaging route. Workspace changes update
-  the compatibility route query when route synchronization is enabled;
-- Inbox decides list/thread adjacency from the width available inside the route
-  body after shell navigation, not from the global window. At 720 px or wider
-  it uses the canonical 360 px index beside a selected thread; narrower bodies
-  keep the pushed-thread flow. The index owns visible and semantic selection,
-  while each embedded `ChatScreen` is keyed by thread id and reports its draft
-  to the route so switching or resizing cannot leak or discard thread state;
-- Sends keeps its operational slivers inside an 840 px content lane on wide
-  bodies so intent controls, manual work, history, and empty states retain one
-  shared reading axis;
-- an explicit selected Event or explicit General scope; General is never an
-  event-id sentinel;
-- personal two-party contacted-host inquiry threads, separated by event;
-- Booked and Prospective thread views, with broadcast counts derived from
-  `eventBookings` rather than conversation count;
-- inquiry-only users may appear as Prospective/Inquiry without becoming a
-  broadcast recipient;
-- event broadcasts use a dedicated callable and produce Activity plus
-  preference-gated push, never match/message fan-out;
-- production callable-backed affordances stay disabled until the target-specific
-  live dependency preflight succeeds.
+- every screen follows the organizer `hostPeopleOrganizerProvider` resolves;
+  conversations, WhatsApp threads, sender setup, sends and campaigns all read
+  that one organizer;
+- Messages owns inbound personal inquiries and reply-capable conversations.
+  Sends owns outbound intent selection, mixed outbound history, the manual
+  WhatsApp handoff queue, follower updates and the organizer campaign
+  lifecycle. Compose owns one event announcement. Sender setup stays on the
+  dedicated organizer messaging route;
+- Messages decides list/conversation adjacency from the root size class: a
+  compact window pushes the conversation full screen, wider windows keep it
+  beside the list. Reply drafts are kept per person, scope and source so
+  switching or resizing never leaks or discards a draft;
+- an explicit Event, programme or General scope (`resolveHostInboxScope`);
+  General is never an event-id sentinel;
+- Booked and Prospective conversation views in an event scope, with counts
+  from the event's bookings rather than the conversation count; a person
+  whose booking cannot be told is shown as unknown, never as a recipient;
+- event announcements use the dedicated broadcast callable under one request
+  id per draft, and produce Activity plus preference-gated push, never
+  match/message fan-out.
 
-`HostInboxViewModel.compose` is the provider-free Inbox adapter for organizer
-filtering, scope, classification, roster/thread separation, search, lifecycle,
-and row-status policy. `HostInboxScreen` owns selected-organizer provider reads,
-workspace composition, typed route effects, and sheets;
-`HostInboxBroadcastController` owns the event-broadcast mutation even when its
-composer is mounted by Sends, and
-`HostAudienceController` owns campaign mutations. `HostOrganizerPostController`
-owns follower-update submission while the shared route-specific composer owns
-only pending/error presentation and closes after callable acceptance.
+`hostMessagesControllerProvider` composes the Messages list (scope,
+classification, counts, search and partial pages) from plain sources through
+`composeHostInboxPeople`. `HostComposeCommands` owns the announcement send and
+its mutation; `hostSendsControllerProvider` composes Sends;
+`HostAudienceController` owns campaign mutations and
+`HostOrganizerPostController` owns follower-update submission.
 
 `communicationRouteCatalog` is the canonical provider-free capability model
 for communication routes. Transport alone is never sufficient routing or
@@ -4625,9 +4613,9 @@ Reference files:
 - `lib/contexts/audience/domain/crm/host_manual_send_task.dart`
 - `lib/contexts/audience/data/crm/host_communication_repository.dart`
 - `lib/hosts/people/person_screen.dart`
-- `lib/hosts/presentation/inbox/host_manual_send_list.dart`
+- `lib/hosts/people/sends/sends_sheets_body.dart`
 - `test/hosts/host_crm_repository_test.dart`
-- `test/hosts/host_inbox_screen_test.dart`
+- `test/hosts/people/sends/sends_body_test.dart`
 
 External handoff uses two durable phases. Before Flutter launches WhatsApp, the
 prepare callable reauthorizes the organizer manager, re-resolves the named
@@ -4690,7 +4678,7 @@ Reference files:
 - `lib/contexts/audience/data/crm/host_saved_audience_repository.dart`
 - `lib/hosts/people/people_screen.dart`
 - `lib/hosts/people/saved_group_screen.dart`
-- `lib/hosts/presentation/inbox/host_campaign_editor.dart`
+- `lib/hosts/people/sends/campaign_screen.dart`
 
 Customers owns reusable CRM audience definitions through its first-class
 Audiences peer workspace. The top-level directory is a flat divided list; one
