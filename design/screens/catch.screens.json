@@ -734,12 +734,12 @@
           "routes": [
             "hostOrganizerMessagingScreen"
           ],
-          "file": "lib/hosts/presentation/inbox/host_messaging_setup_screen.dart",
-          "symbol": "HostMessagingSetupScreen",
+          "file": "lib/hosts/organizer/messaging_screen.dart",
+          "symbol": "_OrganizerMessagingScreenState",
           "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
+          "expression": "CatchScreen",
           "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
+          "topEdge": "safe-area"
         }
       ],
       "reason": "Host Inbox is Messages (with the open conversation) and Sends, each a CatchScreen at the inbox root; setup remains a pushed route."
@@ -14113,8 +14113,8 @@
             "symbol": "showHostFollowerUpdateComposer"
           },
           {
-            "file": "lib/hosts/presentation/inbox/host_messaging_setup_screen.dart",
-            "symbol": "HostMessagingSetupScreen"
+            "file": "lib/hosts/organizer/messaging_screen.dart",
+            "symbol": "OrganizerMessagingScreen"
           },
           {
             "file": "lib/contexts/audience/data/crm/host_whatsapp_repository.dart",
