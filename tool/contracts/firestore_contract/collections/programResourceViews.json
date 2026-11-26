@@ -15,7 +15,6 @@
   "write": "server only; written from programPickupPoints, programHotels and programFunctions",
   "exportedFunctions": [
     "onProgramPickupPointViewChanged",
-    "onProgramHotelViewChanged",
     "dispatchProgramHotels",
     "onProgramFunctionViewChanged"
   ],

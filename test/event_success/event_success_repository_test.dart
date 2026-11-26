@@ -7,12 +7,11 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.d
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_standings.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+import 'package:catch_test_support/events_test_helpers.dart'
+    show buildEvent, buildPublicProfile, buildUser;
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart'
-    show buildEvent, buildPublicProfile, buildUser;
 
 void main() {
   group('EventSuccessRepository', () {

@@ -114,6 +114,10 @@
     "acknowledge": {
       "type": "boolean",
       "description": "On an inbound WhatsApp message: it was the person's first message, or their first after 24 hours of silence, so Catch acknowledges it once."
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "description": "The conversation's expiresAt, copied so Firestore TTL deletes the message with it. Null or absent while the conversation is open."
     }
   }
 }

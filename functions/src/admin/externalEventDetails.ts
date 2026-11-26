@@ -1,6 +1,5 @@
-import {onCall, CallableRequest} from "firebase-functions/v2/https";
+import {CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {ExternalEventDocument} from
   "../shared/generated/firestoreAdminTypes";
 import type {AdminListExternalEventDetailsCallablePayload} from
@@ -9,9 +8,16 @@ import {
   validateAdminListExternalEventDetailsCallablePayload,
 } from
   "../shared/generated/validators/adminListExternalEventDetailsInput";
-import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {requireAdminRole} from "../platform/adminAuth";
+import {requireDoc} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 const externalEventDetailsRoles = ["admin", "adminOwner", "support"] as const;
 type EventListTimeWindow = "upcoming" | "past" | "all";
@@ -72,21 +78,38 @@ export interface AdminListExternalEventDetailsResponse {
 
 /**
  * Lists read-only external event supply from externalEvents/{eventId}.
- * @param {CallableRequest<unknown>} request Callable request.
- * @param {ExternalEventDetailsDeps} deps Injectable dependencies.
- * @return {Promise<AdminListExternalEventDetailsResponse>} External rows.
+ * Policy: externalEventDetailsRoles (STR-10).
+ * @param {ExternalEventDetailsDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminListExternalEventDetailsHandler(
+export function adminListExternalEventDetailsSpec(
+  deps: ExternalEventDetailsDeps = defaultDeps):
+  CallableSpec<
+    AdminListExternalEventDetailsCallablePayload,
+    AdminContext,
+    AdminListExternalEventDetailsResponse> {
+  return {
+    name: "adminListExternalEventDetails",
+    policy: adminRoles(externalEventDetailsRoles),
+    input: validateAdminListExternalEventDetailsCallablePayload,
+    normalize: normalizeAdminListExternalEventDetailsPayload,
+    handle: (context) => adminListExternalEventDetailsWork(context, deps),
+  };
+}
+
+/** The deployed path of adminListExternalEventDetails, for tests. */
+export function adminListExternalEventDetailsHandler(
   request: CallableRequest<unknown>,
-  deps: ExternalEventDetailsDeps = defaultDeps
-): Promise<AdminListExternalEventDetailsResponse> {
-  const adminContext = requireAdminRole(request, externalEventDetailsRoles);
-  const data =
-    validateCallableWithAjv<AdminListExternalEventDetailsCallablePayload>(
-      request,
-      validateAdminListExternalEventDetailsCallablePayload,
-      normalizeAdminListExternalEventDetailsPayload
-    );
+  deps: ExternalEventDetailsDeps = defaultDeps):
+  Promise<AdminListExternalEventDetailsResponse> {
+  return runCallable(adminListExternalEventDetailsSpec(deps), request);
+}
+
+async function adminListExternalEventDetailsWork(
+  {data, actor: adminContext}:
+    CallableContext<AdminListExternalEventDetailsCallablePayload, AdminContext>,
+  deps: ExternalEventDetailsDeps):
+  Promise<AdminListExternalEventDetailsResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(
     db,
@@ -377,7 +400,5 @@ function timestampIso(value: unknown): string | null {
   return null;
 }
 
-export const adminListExternalEventDetails = onCall(
-  appCheckCallableOptions,
-  (request) => adminListExternalEventDetailsHandler(request)
-);
+export const adminListExternalEventDetails = callable(
+  adminListExternalEventDetailsSpec());

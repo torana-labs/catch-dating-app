@@ -239,12 +239,6 @@ export const guestEventStatusPaymentProjections = defineProjections(
       change.after, "eventId", "recipientUid", null)),
   }]);
 
-export const onGuestEventStatusApplicationWritten = onDocumentWritten({
-  ...options, document: "organizerApplications/{documentId}",
-}, (event) => refreshPairs(guestEventStatusPairs(...versions(event),
-  "targetId", "linkedUid", ["reviewStatus", "latestResponseId", "source",
-    "organizerId", "targetKind", "submittedAt"])));
-
 export const onGuestEventStatusOfferRecipientWritten = onDocumentWritten({
   ...options, document: "organizerEventOfferRecipients/{documentId}",
 }, (event) => refreshPairs(guestEventStatusPairs(...versions(event),
@@ -306,26 +300,9 @@ export const eventGuestEntryProjections = defineProjections("organizers", [{
   },
 }]);
 
-export const onEventGuestEntryFormWritten = onDocumentWritten({
-  ...options, document: "organizerForms/{documentId}",
-}, async (event) => {
-  const [before, after] = versions(event);
-  if (![before?.purpose, after?.purpose].includes("application")) return;
-  if (before && after && !changed(before, after, ["status",
-    "activeVersionId", "publicFormId", "defaultTargetId",
-    "defaultTargetKind", "purpose", "organizerId"])) return;
-  const db = admin.firestore();
-  const events = new Set([id(before, "defaultTargetId"),
-    id(after, "defaultTargetId")].filter((value): value is string =>
-    value !== null));
-  for (const eventId of events) await refreshEventGuestEntry(db, eventId);
-});
-
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const organizerApplicationsProjections = defineProjections(
   "organizerApplications", [

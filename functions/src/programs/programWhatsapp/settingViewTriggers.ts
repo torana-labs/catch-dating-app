@@ -47,28 +47,6 @@ export const onProgramSettingViewSettingsChanged = onDocumentWritten({
 });
 
 /**
- * A staff grant issued, renamed, renewed, revoked or removed: the staff
- * list of its programme's assistant settings view.
- */
-export const onProgramSettingViewGrantChanged = onDocumentWritten({
-  ...options, document: "programStaffGrants/{grantId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (same(before, after, ["programId", "organizerId", "uid", "status",
-    "revokedAt", "displayName", "expiresAt"])) return;
-  const programIds = new Set<string>();
-  for (const data of [before, after]) {
-    if (typeof data?.programId === "string" && data.programId) {
-      programIds.add(data.programId);
-    }
-  }
-  for (const programId of programIds) {
-    await reconcileProgramAssistantSettingView(admin.firestore(), programId);
-  }
-});
-
-/**
  * A WhatsApp sender connected, renamed, changing status or disconnected:
  * the sender view of every programme of its organizer, before and after.
  */
@@ -91,10 +69,8 @@ export const onProgramSenderViewConnectionChanged = onDocumentWritten({
 });
 
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const programStaffGrantsProjections = defineProjections(
   "programStaffGrants", [

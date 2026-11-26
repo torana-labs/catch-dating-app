@@ -1,7 +1,6 @@
 /* eslint-disable max-len */
 import * as admin from "firebase-admin";
-import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import type {AdminGetTakedownRequestCallablePayload} from "../shared/generated/adminGetTakedownRequestCallablePayload";
 import type {AdminGetTakedownRequestCallableResponse} from "../shared/generated/adminGetTakedownRequestCallableResponse";
 import type {AdminUpdateTakedownRequestCallablePayload} from "../shared/generated/adminUpdateTakedownRequestCallablePayload";
@@ -10,14 +9,20 @@ import type {TakedownRequestDocument} from "../shared/generated/firestoreAdminTy
 import {validateAdminGetTakedownRequestCallablePayload} from "../shared/generated/validators/adminGetTakedownRequestInput";
 import {validateAdminUpdateTakedownRequestCallablePayload} from "../shared/generated/validators/adminUpdateTakedownRequestInput";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
-import {requireAdminRole, type AdminContext} from "../platform/adminAuth";
+import {type AdminContext} from "../platform/adminAuth";
 import {iso} from "../admin/inbox/model";
 import {
   APPEAL_DECIDE_WITHIN_MS, APPEAL_WINDOW_MS, CASE_OUTCOMES, REQUEST_POLICIES, SUSPEND_REQUEST_TYPES,
   SUSPENDED_PUBLISH_STATUSES, TAKEDOWN_REQUESTS_COLLECTION, type RequestStatus, type RequestType,
 } from "./model";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
 
 /**
  * Admin's steps on a listing request. Ops and support acknowledge, ask for
@@ -100,11 +105,37 @@ function canSuspendOrganizer(context: AdminContext, data: Stored): boolean {
 }
 
 /** One request with what the caller may do. */
-export async function adminGetTakedownRequestHandler(request: CallableRequest<unknown>,
-  deps: TakedownAdminDeps = defaultDeps): Promise<AdminGetTakedownRequestCallableResponse> {
-  const context = requireAdminRole(request, takedownReadRoles);
-  const data = validateCallableWithAjv<AdminGetTakedownRequestCallablePayload>(request,
-    validateAdminGetTakedownRequestCallablePayload);
+/**
+ * adminGetTakedownRequest: takedownReadRoles only (STR-10 policy).
+ * @param {TakedownAdminDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
+ */
+export function adminGetTakedownRequestSpec(
+  deps: TakedownAdminDeps = defaultDeps):
+  CallableSpec<
+    AdminGetTakedownRequestCallablePayload,
+    AdminContext,
+    AdminGetTakedownRequestCallableResponse> {
+  return {
+    name: "adminGetTakedownRequest",
+    policy: adminRoles(takedownReadRoles),
+    input: validateAdminGetTakedownRequestCallablePayload,
+    handle: (context) => adminGetTakedownRequestWork(context, deps),
+  };
+}
+
+/** The deployed path of adminGetTakedownRequest, for tests. */
+export function adminGetTakedownRequestHandler(
+  request: CallableRequest<unknown>, deps: TakedownAdminDeps = defaultDeps):
+  Promise<AdminGetTakedownRequestCallableResponse> {
+  return runCallable(adminGetTakedownRequestSpec(deps), request);
+}
+
+async function adminGetTakedownRequestWork(
+  {data, actor: context}:
+    CallableContext<AdminGetTakedownRequestCallablePayload, AdminContext>,
+  deps: TakedownAdminDeps):
+  Promise<AdminGetTakedownRequestCallableResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, context.uid, "adminGetTakedownRequest", {maxRequests: 240, windowMs: 60 * 1000});
   const snap = await db.collection(TAKEDOWN_REQUESTS_COLLECTION).doc(data.requestId).get();
@@ -265,11 +296,37 @@ export const organizerSuspensionPatch = {
 } as const;
 
 /** Takes one step on one request. */
-export async function adminUpdateTakedownRequestHandler(request: CallableRequest<unknown>,
-  deps: TakedownAdminDeps = defaultDeps): Promise<AdminUpdateTakedownRequestCallableResponse> {
-  const context = requireAdminRole(request, takedownReadRoles);
-  const step = validateCallableWithAjv<AdminUpdateTakedownRequestCallablePayload>(request,
-    validateAdminUpdateTakedownRequestCallablePayload);
+/**
+ * adminUpdateTakedownRequest: takedownReadRoles only (STR-10 policy).
+ * @param {TakedownAdminDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
+ */
+export function adminUpdateTakedownRequestSpec(
+  deps: TakedownAdminDeps = defaultDeps):
+  CallableSpec<
+    AdminUpdateTakedownRequestCallablePayload,
+    AdminContext,
+    AdminUpdateTakedownRequestCallableResponse> {
+  return {
+    name: "adminUpdateTakedownRequest",
+    policy: adminRoles(takedownReadRoles),
+    input: validateAdminUpdateTakedownRequestCallablePayload,
+    handle: (context) => adminUpdateTakedownRequestWork(context, deps),
+  };
+}
+
+/** The deployed path of adminUpdateTakedownRequest, for tests. */
+export function adminUpdateTakedownRequestHandler(
+  request: CallableRequest<unknown>, deps: TakedownAdminDeps = defaultDeps):
+  Promise<AdminUpdateTakedownRequestCallableResponse> {
+  return runCallable(adminUpdateTakedownRequestSpec(deps), request);
+}
+
+async function adminUpdateTakedownRequestWork(
+  {request, data: step, actor: context}:
+    CallableContext<AdminUpdateTakedownRequestCallablePayload, AdminContext>,
+  deps: TakedownAdminDeps):
+  Promise<AdminUpdateTakedownRequestCallableResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, context.uid, "adminUpdateTakedownRequest", {maxRequests: 60, windowMs: 60 * 1000});
   const ref = db.collection(TAKEDOWN_REQUESTS_COLLECTION).doc(step.requestId);
@@ -314,7 +371,6 @@ export async function adminUpdateTakedownRequestHandler(request: CallableRequest
   return {request: takedownRow(after)};
 }
 
-export const adminGetTakedownRequest = onCall(appCheckCallableOptions,
-  (request) => adminGetTakedownRequestHandler(request));
-export const adminUpdateTakedownRequest = onCall(appCheckCallableOptions,
-  (request) => adminUpdateTakedownRequestHandler(request));
+export const adminGetTakedownRequest = callable(adminGetTakedownRequestSpec());
+export const adminUpdateTakedownRequest = callable(
+  adminUpdateTakedownRequestSpec());

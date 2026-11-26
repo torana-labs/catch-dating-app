@@ -1,11 +1,8 @@
 import * as admin from "firebase-admin";
-import {onCall, HttpsError, type CallableRequest} from
+import {HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../platform/adminAuth";
 import {canonicalMarkets} from "../locations/marketConfig";
-import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import type {CityInterestDocument} from
   "../shared/generated/firestoreAdminTypes";
 import type {AdminGetCityInterestCallablePayload as Payload} from
@@ -17,6 +14,14 @@ import {validateAdminGetCityInterestCallablePayload} from
 import {validateAdminGetCityInterestCallableResponse} from
   "../shared/generated/validators/adminGetCityInterestOutput";
 import {CITY_INTEREST_COLLECTION, utcDay} from "./cityInterest";
+import {
+  callableWithLimits,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 type Window = Result["totals"];
 const dayMillis = 24 * 60 * 60 * 1000;
@@ -83,14 +88,29 @@ export function buildCityInterest(documents: CityInterestDocument[],
 
 /**
  * An admin reads waitlist interest by city.
- * @param {CallableRequest<unknown>} request Callable request.
- * @return {Promise<Result>} Interest by city.
+ * Policy: ["admin", "adminOwner"] as const (STR-10).
+ * @return {CallableSpec} The callable.
  */
-export async function adminGetCityInterestHandler(
-  request: CallableRequest<unknown>): Promise<Result> {
-  const actor = requireAdminRole(request, ["admin", "adminOwner"] as const);
-  validateCallableWithAjv<Payload>(request,
-    validateAdminGetCityInterestCallablePayload);
+export function adminGetCityInterestSpec():
+  CallableSpec<Payload, AdminContext, Result> {
+  return {
+    name: "adminGetCityInterest",
+    policy: adminRoles(["admin", "adminOwner"] as const),
+    input: validateAdminGetCityInterestCallablePayload,
+    handle: (context) => adminGetCityInterestWork(context),
+  };
+}
+
+/** The deployed path of adminGetCityInterest, for tests. */
+export function adminGetCityInterestHandler(
+  request: CallableRequest<unknown>):
+  Promise<Result> {
+  return runCallable(adminGetCityInterestSpec(), request);
+}
+
+async function adminGetCityInterestWork(
+  {actor}: CallableContext<Payload, AdminContext>):
+  Promise<Result> {
   const db = admin.firestore();
   await checkRateLimit(db, actor.uid, "adminGetCityInterest",
     {maxRequests: 30, windowMs: 60 * 1000});
@@ -105,6 +125,6 @@ export async function adminGetCityInterestHandler(
   return result;
 }
 
-export const adminGetCityInterest = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 5}),
-  (request) => adminGetCityInterestHandler(request));
+export const adminGetCityInterest = callableWithLimits(
+  {timeoutSeconds: 60, maxInstances: 5},
+  adminGetCityInterestSpec());

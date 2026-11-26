@@ -1,0 +1,33 @@
+{
+  "id": "contracts:schema-modules",
+  "category": "contracts",
+  "path": "tool/contracts/schema_modules.test.mjs",
+  "command": "node --test tool/contracts/schema_modules.test.mjs tool/contracts/schema_specs.test.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "role": "gate",
+  "description": "Checks the generated Functions schema modules against the canonical registry and contracts/functions/runtime_modules.json (every declared runtime module generated and imported by runtime code), and the schema spec order and exceptions. The checks of contracts:generate-schemas, as a whole-repo gate: the generator itself cannot gate the merge queue.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "impactPaths": [
+    "contracts/**/*.json",
+    "functions/src/**",
+    "tool/contracts/generate_schema_contracts.mjs",
+    "tool/contracts/lib/schema_specs.mjs",
+    "tool/contracts/schema_spec_exceptions.json",
+    "tool/contracts/schema_spec_order.json",
+    "tool/contracts/schema_modules.test.mjs",
+    "tool/contracts/schema_specs.test.mjs",
+    "tool/contracts/profile_requirements.test.mjs"
+  ],
+  "checks": [
+    "node --test tool/contracts/schema_modules.test.mjs",
+    "node --test tool/contracts/schema_specs.test.mjs"
+  ],
+  "queueGate": "always"
+}

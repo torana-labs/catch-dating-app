@@ -15,9 +15,7 @@
   "exportedFunctions": [
     "onProgramDoorFunctionChanged",
     "onProgramDoorJoinChanged",
-    "onProgramDoorGuestChanged",
     "dispatchProgramGuests",
-    "onProgramDoorHouseholdChanged",
     "dispatchProgramHouseholds"
   ],
   "migrationNotes": [

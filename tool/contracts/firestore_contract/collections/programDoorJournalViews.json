@@ -14,9 +14,7 @@
   "write": "server only; written from programDoorJournal, programGuests and programStaffGrants",
   "exportedFunctions": [
     "onProgramDoorJournalChanged",
-    "onProgramDoorGuestChanged",
     "dispatchProgramGuests",
-    "onProgramDoorStaffLabelChanged",
     "dispatchProgramStaffGrants"
   ],
   "migrationNotes": [

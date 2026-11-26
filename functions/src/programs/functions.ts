@@ -20,55 +20,43 @@ export {
   grantProgramStaff,
   revokeProgramStaff,
 } from "./programStaff";
-export {onProgramAccessViewOrganizerChanged} from
-  "./programAccessViewTriggers";
 export {
   onProgramPickupPointViewChanged,
-  onProgramHotelViewChanged,
   onProgramFunctionViewChanged,
 } from "./programWorkViewTriggers";
-export {onProgramDoorFunctionChanged, onProgramDoorJoinChanged,
-  onProgramDoorGuestChanged, onProgramDoorHouseholdChanged,
-  onProgramDoorJournalChanged, onProgramDoorStaffLabelChanged} from
-  "./programDoorViewTriggers";
-export {onProgramAlertSendChanged, onProgramAlertLegChanged,
-  onProgramAlertResolutionChanged} from
-  "./programLiveBoardViewTriggers";
 export {
-  onProgramArrivalLegChanged,
+  onProgramDoorFunctionChanged,
+  onProgramDoorJoinChanged,
+  onProgramDoorJournalChanged,
+} from "./programDoorViewTriggers";
+export {
+  onProgramAlertSendChanged,
+  onProgramAlertResolutionChanged,
+} from "./programLiveBoardViewTriggers";
+export {
   onProgramArrivalPartyChanged,
-  onProgramArrivalGuestChanged,
-  onProgramArrivalHotelChanged,
-  onProgramArrivalStaffLabelChanged,
   onProgramDepartureStayChanged,
   onProgramVendorViewChanged,
 } from "./programArrivalViewTriggers";
 export {
   onProgramTripViewChanged,
-  onProgramHotelInboundLegChanged,
   onProgramHotelInboundPartyChanged,
-  onProgramTripGuestChanged,
 } from "./programTripViewTriggers";
 export {
   onOrganizerProgramFunctionChanged,
   onOrganizerProgramPickupPointChanged,
-  onOrganizerProgramHotelChanged,
 } from "./organizerProgramViewTriggers";
 export {onOrganizerProgramGuestCountChanged,
   onOrganizerProgramTravelLegCountChanged,
   reconcileOrganizerProgramCountsSweep} from
   "./organizerProgramCountTriggers";
-export {onProgramGuestDirectoryGuestChanged,
+export {
   onProgramGuestDirectoryFunctionGuestChanged,
-  onProgramGuestDirectoryHouseholdChanged,
-  onProgramGuestDirectoryGroupChanged} from
-  "./programGuestDirectoryViewTriggers";
+  onProgramGuestDirectoryGroupChanged,
+} from "./programGuestDirectoryViewTriggers";
 export {
   onProgramHotelRoomStayChanged,
   onProgramHotelRoomBlockChanged,
-  onProgramHotelRoomHotelChanged,
-  onProgramHotelRoomLegChanged,
-  onProgramHotelRoomGuestChanged,
 } from "./programHotelRoomViewTriggers";
 export {
   inviteProgramStaff,
@@ -126,11 +114,9 @@ export {
 } from "./programWhatsapp/callables";
 export {
   onProgramWhatsappThreadViewThreadChanged,
-  onProgramWhatsappThreadViewHouseholdChanged,
 } from "./programWhatsapp/threadViewTriggers";
 export {
   onProgramSettingViewSettingsChanged,
-  onProgramSettingViewGrantChanged,
   onProgramSenderViewConnectionChanged,
 } from "./programWhatsapp/settingViewTriggers";
 export {

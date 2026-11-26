@@ -217,12 +217,6 @@ export const onOrganizerAttentionParticipationChanged = onDocumentWritten({
 export const onOrganizerAttentionAssistanceCaseChanged = onDocumentWritten({
   ...options, document: "eventAssistanceCases/{documentId}",
 }, (event) => reconcileForWrite("eventAssistanceCases", event));
-export const onOrganizerAttentionDeliveryReviewChanged = onDocumentWritten({
-  ...options, document: "operationWorkItems/{documentId}",
-}, (event) => reconcileForWrite("operationWorkItems", event));
-export const onOrganizerAttentionApplicationChanged = onDocumentWritten({
-  ...options, document: "organizerApplications/{documentId}",
-}, (event) => reconcileForWrite("organizerApplications", event));
 export const onOrganizerAttentionProviderSyncChanged = onDocumentWritten({
   ...options, document: "providerSyncRuns/{documentId}",
 }, (event) => reconcileForWrite("providerSyncRuns", event));
@@ -253,10 +247,8 @@ export const sweepOrganizerAttention = onSchedule({
 });
 
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const organizerApplicationsProjections = defineProjections(
   "organizerApplications", [

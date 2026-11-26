@@ -985,6 +985,210 @@ abstract class AppLocalizations {
   /// **'Catch has no page of yours yet. Start one here: it is what guests find you on, and you can change all of it later.'**
   String get hostOnboardingStartLead;
 
+  /// Organiser setup step one title when Catch found a page for the phone number.
+  ///
+  /// In en, this message translates to:
+  /// **'Is this you?'**
+  String get hostOnboardingFoundTitle;
+
+  /// Organiser setup lead over the pages found for the number.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch found a page that may be yours from your phone number. Claim it to start from what it already has, or start a new page.'**
+  String get hostOnboardingFoundLead;
+
+  /// Action on a found page to claim it.
+  ///
+  /// In en, this message translates to:
+  /// **'This is me'**
+  String get hostOnboardingFoundClaim;
+
+  /// Action to dismiss the found pages and start a new page.
+  ///
+  /// In en, this message translates to:
+  /// **'None of these, start a new page'**
+  String get hostOnboardingFoundNotMe;
+
+  /// Badge on a found page the host already claimed.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim waiting for review'**
+  String get hostOnboardingFoundPending;
+
+  /// Why a page was found: the host verified the number when sending the page in.
+  ///
+  /// In en, this message translates to:
+  /// **'You sent this page in'**
+  String get hostOnboardingFoundSourceSelfVerified;
+
+  /// Why a page was found: Catch staff confirmed the number with the organiser.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch’s team confirmed your number'**
+  String get hostOnboardingFoundSourceCrm;
+
+  /// Why a page was found: the number is on the organiser's public page.
+  ///
+  /// In en, this message translates to:
+  /// **'Your number is on this page'**
+  String get hostOnboardingFoundSourcePublicPage;
+
+  /// Why a page was found: Catch staff entered the number.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch’s team added your number'**
+  String get hostOnboardingFoundSourceStaff;
+
+  /// Organiser setup claim form title.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim your page'**
+  String get hostOnboardingClaimTitle;
+
+  /// Organiser setup claim form lead.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell Catch who you are. The team checks each claim before handing a page over.'**
+  String get hostOnboardingClaimLead;
+
+  /// Claim form name field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get hostOnboardingClaimName;
+
+  /// Claim form name placeholder: a sample person's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Riya Kapoor'**
+  String get hostOnboardingClaimNamePlaceholder;
+
+  /// Claim form label over the role choices.
+  ///
+  /// In en, this message translates to:
+  /// **'Your role'**
+  String get hostOnboardingClaimRole;
+
+  /// Claim role: owner.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner'**
+  String get hostOnboardingClaimRoleOwner;
+
+  /// Claim role: founder.
+  ///
+  /// In en, this message translates to:
+  /// **'Founder'**
+  String get hostOnboardingClaimRoleFounder;
+
+  /// Claim role: manager.
+  ///
+  /// In en, this message translates to:
+  /// **'Manager'**
+  String get hostOnboardingClaimRoleManager;
+
+  /// Claim role: marketing.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketing'**
+  String get hostOnboardingClaimRoleMarketer;
+
+  /// Claim role: venue manager.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue manager'**
+  String get hostOnboardingClaimRoleVenueManager;
+
+  /// Claim role: other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get hostOnboardingClaimRoleOther;
+
+  /// Claim form dock action that sends the claim.
+  ///
+  /// In en, this message translates to:
+  /// **'Send claim'**
+  String get hostOnboardingClaimSend;
+
+  /// Organiser setup title once the claim is sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim sent'**
+  String get hostOnboardingClaimSentTitle;
+
+  /// Section title listing what the found page already has.
+  ///
+  /// In en, this message translates to:
+  /// **'Already on the page'**
+  String get hostOnboardingClaimHas;
+
+  /// Section title listing what the found page still needs after the claim is approved.
+  ///
+  /// In en, this message translates to:
+  /// **'You add once it is yours'**
+  String get hostOnboardingClaimNeeds;
+
+  /// Found page field: its name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hostOnboardingClaimFieldName;
+
+  /// Found page field: its description.
+  ///
+  /// In en, this message translates to:
+  /// **'A line about your nights'**
+  String get hostOnboardingClaimFieldDescription;
+
+  /// Found page field: its city.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get hostOnboardingClaimFieldCity;
+
+  /// Found page field: its organiser type.
+  ///
+  /// In en, this message translates to:
+  /// **'What you run'**
+  String get hostOnboardingClaimFieldOrganizerType;
+
+  /// Found page field: its logo.
+  ///
+  /// In en, this message translates to:
+  /// **'Logo'**
+  String get hostOnboardingClaimFieldPhoto;
+
+  /// Found page field: its Instagram handle.
+  ///
+  /// In en, this message translates to:
+  /// **'Instagram'**
+  String get hostOnboardingClaimFieldInstagram;
+
+  /// Action opening the website claim page to verify instantly.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify on the website now'**
+  String get hostOnboardingClaimVerify;
+
+  /// Note under the website verification action.
+  ///
+  /// In en, this message translates to:
+  /// **'Prove the page is yours with Instagram or Luma on the website and it is handed over straight away.'**
+  String get hostOnboardingClaimVerifyNote;
+
+  /// Dock action that leaves setup after a claim is sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get hostOnboardingClaimDone;
+
+  /// Organiser setup lead once the claim is sent, with the page name.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is waiting for review. Catch’s team checks claims and lets you know once the page is yours.'**
+  String hostOnboardingClaimSentLead({required String name});
+
   /// Organiser setup name field label.
   ///
   /// In en, this message translates to:

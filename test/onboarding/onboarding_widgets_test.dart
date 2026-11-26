@@ -35,6 +35,8 @@ import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/routing/route_contract.dart' as app_router;
 import 'package:catch_platform/theme/activity_palette.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
+import 'package:catch_test_support/onboarding_test_helpers.dart';
 import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -43,9 +45,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-
-import '../events/events_test_helpers.dart';
-import 'onboarding_test_helpers.dart';
 
 part 'onboarding_profile_prompts_tests.dart';
 part 'onboarding_welcome_page_tests.dart';

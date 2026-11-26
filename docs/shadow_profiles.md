@@ -50,6 +50,24 @@ owner has not yet chosen which to turn on.
      passes the existing Instagram or Luma verification (#2096 registry), that
      verification approves the pending request at once.
 
+5. **In Catch Host.** Organiser setup's step one reads the candidates
+   (`hostClaimableOrganizersProvider`, `OrganizerClaimsRepository`).
+   - With the read off, nothing found or a failed read, setup starts a new
+     page exactly as before.
+   - Otherwise it asks "Is this you?" (`HostSetupFoundBody`): each page's
+     name, city, logo and, in plain words, why it was found.
+   - "This is me" opens the claim form (`HostSetupClaimFormBody`): the
+     claimant's name and role, which `requestOrganizerClaim` requires. "None
+     of these" starts a new page.
+   - Once sent (`HostSetupClaimSentBody`), setup shows what the page already
+     has and what the host adds once it is theirs. The host does not retype
+     what the page has; the missing fields are edited after approval, because
+     nobody can edit a page before owning it. A page already waiting for this
+     person's review goes straight to this view.
+   - "Verify on the website now" opens `/claim/{organizerId}?requestId=…`,
+     where the existing Instagram or Luma check hands the page over at once.
+     The app builds no verification screen of its own.
+
 ## Privacy
 
 - The phone is hashed with the server-held key, and no document stores it.
@@ -64,7 +82,8 @@ owner has not yet chosen which to turn on.
 
 `functions/src/organizers/phoneLeads/policy.ts` holds the switches.
 1. Set `enabled`, the owner's `decisionId`, and the chosen sources.
-2. Bind `findClaimableOrganizers` in Catch Host's onboarding "find" step
-   (`lib/hosts/onboarding/setup_find_body.dart`).
+2. Catch Host already reads `findClaimableOrganizers` in setup step one
+   (`lib/hosts/onboarding/setup_find_screen.dart`); it needs an app release
+   carrying that step before hosts see it.
 3. Index records that already exist, because triggers only see new writes.
    This needs a one-off backfill over `salesContactRelationships`.

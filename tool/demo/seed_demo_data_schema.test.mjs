@@ -498,7 +498,7 @@ function validPublicProfileDoc() {
     occupation: "Designer",
     company: "Stride Labs",
     education: "bachelors",
-    religion: "nonReligious",
+    // Religion is hidden unless the guest turns it on (#2493).
     languages: ["english", "hindi"],
     relationshipGoal: "relationship",
     drinking: "socially",

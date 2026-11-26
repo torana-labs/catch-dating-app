@@ -20,6 +20,7 @@ import {ProgressContext, invalidSource} from "./groupProgressSource";
 import {parseStaff, readGroupDutySource} from "./groupStaffAuthority";
 import {assistanceReceiptRef, isDigest, isMillis, isRevision,
   replayAssistanceReceipt, writeAssistanceReceipt} from "./assistanceReceipts";
+import {stageEventAccessGrant} from "../../domain/access/eventAccessGrants";
 
 export const STAFF_RECEIPT_COMMAND = "eventAssistanceStaff";
 
@@ -129,6 +130,8 @@ export class EventGroupStaffStore {
       if (!validReceipt(savedReceipt)) throw invalidSource();
       const result = response("applied", {...state, staff}, staff.revision);
       tx.set(this.db.collection("eventStaffGrants").doc(state.staffId), staff);
+      // The duty is in force for rules the moment it commits (#2474).
+      stageEventAccessGrant(tx, this.db, staff, Timestamp.fromMillis(now));
       writeAssistanceReceipt(tx, receiptRef, {command: STAFF_RECEIPT_COMMAND,
         requestHash, nowMillis: now, result: savedReceipt});
       return result;

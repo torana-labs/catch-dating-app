@@ -206,7 +206,9 @@ jobs:
       group: marketing-captures-${{ inputs.automatic_source_sha || (github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha) }}
       cancel-in-progress: false
     runs-on: macos-26
-    timeout-minutes: 45
+    # A full re-render of every capture takes 41 to 50 minutes (it happens
+    # whenever the shared capture harness changes), so 45 cut renders off.
+    timeout-minutes: 75
     outputs:
       capture_binding: ${{ steps.identity.outputs.capture_binding }}
     env:

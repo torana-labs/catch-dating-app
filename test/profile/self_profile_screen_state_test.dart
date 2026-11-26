@@ -1,9 +1,8 @@
 import 'package:catch_dating_app/contexts/profiles/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';
 import 'package:catch_platform/catch_async_state.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart';
 
 const PhotoUploadState _idleUploadState = PhotoUploadState();
 final _today = DateTime(2026, 6, 24);

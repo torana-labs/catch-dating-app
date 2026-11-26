@@ -1,0 +1,173 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/guest_profiles.schema.json",
+  "title": "GuestProfileDocument",
+  "description": "Server-only full dating profile of one guest, at guestProfiles/{uid} (#2493, FIX-8). The uid is the document id and is not stored in document data. It holds everything a guest's matching-feed card shows, including the sensitive answers (religion, relationship goal, drinking, smoking, children, gender, age). No client reads it: the matching-feed callables, which decide who may see whom, read it with the admin SDK and return it to the guests they chose. publicProfiles is the card any signed-in account can read, and it is being narrowed to that card.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "guestProfiles",
+  "x-firestore-path": "guestProfiles/{uid}",
+  "x-document-id-field": "uid",
+  "x-owner": "syncPublicProfile trigger, in the same transaction as publicProfiles",
+  "x-source": "users/{uid}",
+  "required": [
+    "name",
+    "age",
+    "gender",
+    "profilePrompts",
+    "profilePhotos",
+    "activityPreferences"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "age": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/age",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "gender": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/gender",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "synthetic": {
+      "type": "boolean",
+      "description": "Internal demo seed marker used for cleanup and diagnostics."
+    },
+    "seedPrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed prefix used for cleanup and diagnostics."
+    },
+    "scenario": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed scenario name used for cleanup and diagnostics."
+    },
+    "demoOps": {
+      "type": "boolean",
+      "description": "Internal demo-operations marker used for cleanup and diagnostics."
+    },
+    "demoOpsId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Internal demo-operations id used for cleanup and diagnostics."
+    },
+    "demoOpsCommand": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    },
+    "profilePrompts": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "$ref": "../embedded/profile_prompt_answer.schema.json"
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "profilePhotos": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "$ref": "../embedded/profile_photo.schema.json"
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "city": {
+      "anyOf": [
+        {
+          "$ref": "../shared/profile_common.schema.json#/definitions/marketId"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "trigger-owned"
+    },
+    "height": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/heightCm",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "occupation": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/nullableShortText",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "company": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/nullableShortText",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "education": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/educationLevel",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "religion": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/religion",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "languages": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/profile_common.schema.json#/definitions/language"
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "relationshipGoal": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/relationshipGoal",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "drinking": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/drinkingHabit",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "smoking": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/smokingHabit",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "workout": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/workoutFrequency",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "diet": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/dietaryPreference",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "children": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/childrenStatus",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "activityPreferences": {
+      "$ref": "../embedded/activity_preferences.schema.json",
+      "x-catch-ownership": "trigger-owned"
+    }
+  },
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "x-legacy-tolerated-fields": [
+    "bio"
+  ],
+  "x-hidden-fields": [
+    "phoneNumber",
+    "email",
+    "instagramHandle",
+    "latitude",
+    "longitude",
+    "interestedInGenders",
+    "preferences"
+  ]
+}

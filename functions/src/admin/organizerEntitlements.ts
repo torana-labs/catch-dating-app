@@ -1,7 +1,6 @@
-import {CallableRequest, HttpsError, onCall} from
+import {CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {AdminGrantOrganizerEntitlementCallablePayload} from
   "../shared/generated/adminGrantOrganizerEntitlementCallablePayload";
 import type {AdminRevokeOrganizerEntitlementGrantCallablePayload} from
@@ -30,12 +29,18 @@ import {
   writeCommandReceipt,
 } from "../shared/commandReceipts";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import {operationContentHash} from "../operations/durableActions";
-import {requireAdminRole} from "../platform/adminAuth";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {organizerEntitlementSkuCatalog} from
   "../shared/generated/catalogs/organizerEntitlementSkuCatalog";
+import type {AdminContext} from "../platform/adminAuth";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
 
 const entitlementCollection = "organizerEntitlements";
 const receiptCommand = "adminOrganizerEntitlement";
@@ -64,22 +69,40 @@ type EntitlementGrant = OrganizerEntitlementsDocument["grants"][number];
 /**
  * Grants one entitlement SKU to an organizer. Idempotent on operationId;
  * grants no dispatch authority and changes no program state.
- * @param {CallableRequest<unknown>} request Callable request.
- * @param {OrganizerEntitlementDeps} deps Injectable dependencies.
- * @return {Promise<OrganizerEntitlementMutationCallableResponse>} Result.
+ * Policy: allowedRoles (STR-10).
+ * @param {OrganizerEntitlementDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminGrantOrganizerEntitlementHandler(
+export function adminGrantOrganizerEntitlementSpec(
+  deps: OrganizerEntitlementDeps = defaultDeps):
+  CallableSpec<
+    AdminGrantOrganizerEntitlementCallablePayload,
+    AdminContext,
+    OrganizerEntitlementMutationCallableResponse> {
+  return {
+    name: "adminGrantOrganizerEntitlement",
+    policy: adminRoles(allowedRoles),
+    input: validateAdminGrantOrganizerEntitlementCallablePayload,
+    normalize: normalizeGrantPayload,
+    handle: (context) => adminGrantOrganizerEntitlementWork(context, deps),
+  };
+}
+
+/** The deployed path of adminGrantOrganizerEntitlement, for tests. */
+export function adminGrantOrganizerEntitlementHandler(
   request: CallableRequest<unknown>,
-  deps: OrganizerEntitlementDeps = defaultDeps
-): Promise<OrganizerEntitlementMutationCallableResponse> {
-  const adminContext = requireAdminRole(request, allowedRoles);
-  const data = validateCallableWithAjv<
-    AdminGrantOrganizerEntitlementCallablePayload
-  >(
-    request,
-    validateAdminGrantOrganizerEntitlementCallablePayload,
-    normalizeGrantPayload
-  );
+  deps: OrganizerEntitlementDeps = defaultDeps):
+  Promise<OrganizerEntitlementMutationCallableResponse> {
+  return runCallable(adminGrantOrganizerEntitlementSpec(deps), request);
+}
+
+async function adminGrantOrganizerEntitlementWork(
+  {request, data, actor: adminContext}:
+    CallableContext<
+      AdminGrantOrganizerEntitlementCallablePayload,
+      AdminContext>,
+  deps: OrganizerEntitlementDeps):
+  Promise<OrganizerEntitlementMutationCallableResponse> {
   const sku = organizerEntitlementSkuCatalog.skus[data.sku];
   if (!sku || data.unit !== sku.unit) {
     throw new HttpsError("invalid-argument",
@@ -213,22 +236,41 @@ export async function adminGrantOrganizerEntitlementHandler(
 /**
  * Revokes one existing entitlement grant. Idempotent on operationId; unknown
  * or already-revoked grants fail closed.
- * @param {CallableRequest<unknown>} request Callable request.
- * @param {OrganizerEntitlementDeps} deps Injectable dependencies.
- * @return {Promise<OrganizerEntitlementMutationCallableResponse>} Result.
+ * Policy: allowedRoles (STR-10).
+ * @param {OrganizerEntitlementDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminRevokeOrganizerEntitlementGrantHandler(
+export function adminRevokeOrganizerEntitlementGrantSpec(
+  deps: OrganizerEntitlementDeps = defaultDeps):
+  CallableSpec<
+    AdminRevokeOrganizerEntitlementGrantCallablePayload,
+    AdminContext,
+    OrganizerEntitlementMutationCallableResponse> {
+  return {
+    name: "adminRevokeOrganizerEntitlementGrant",
+    policy: adminRoles(allowedRoles),
+    input: validateAdminRevokeOrganizerEntitlementGrantCallablePayload,
+    normalize: normalizeRevokePayload,
+    handle: (context) =>
+      adminRevokeOrganizerEntitlementGrantWork(context, deps),
+  };
+}
+
+/** The deployed path of adminRevokeOrganizerEntitlementGrant, for tests. */
+export function adminRevokeOrganizerEntitlementGrantHandler(
   request: CallableRequest<unknown>,
-  deps: OrganizerEntitlementDeps = defaultDeps
-): Promise<OrganizerEntitlementMutationCallableResponse> {
-  const adminContext = requireAdminRole(request, allowedRoles);
-  const data = validateCallableWithAjv<
-    AdminRevokeOrganizerEntitlementGrantCallablePayload
-  >(
-    request,
-    validateAdminRevokeOrganizerEntitlementGrantCallablePayload,
-    normalizeRevokePayload
-  );
+  deps: OrganizerEntitlementDeps = defaultDeps):
+  Promise<OrganizerEntitlementMutationCallableResponse> {
+  return runCallable(adminRevokeOrganizerEntitlementGrantSpec(deps), request);
+}
+
+async function adminRevokeOrganizerEntitlementGrantWork(
+  {request, data, actor: adminContext}:
+    CallableContext<
+      AdminRevokeOrganizerEntitlementGrantCallablePayload,
+      AdminContext>,
+  deps: OrganizerEntitlementDeps):
+  Promise<OrganizerEntitlementMutationCallableResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(
     db,
@@ -415,12 +457,8 @@ function trimmed(value: unknown): unknown {
   return typeof value === "string" ? value.trim() : value;
 }
 
-export const adminGrantOrganizerEntitlement = onCall(
-  appCheckCallableOptions,
-  (request) => adminGrantOrganizerEntitlementHandler(request)
-);
+export const adminGrantOrganizerEntitlement = callable(
+  adminGrantOrganizerEntitlementSpec());
 
-export const adminRevokeOrganizerEntitlementGrant = onCall(
-  appCheckCallableOptions,
-  (request) => adminRevokeOrganizerEntitlementGrantHandler(request)
-);
+export const adminRevokeOrganizerEntitlementGrant = callable(
+  adminRevokeOrganizerEntitlementGrantSpec());

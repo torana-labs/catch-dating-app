@@ -13,12 +13,12 @@ import 'package:catch_dating_app/hosts/live/live_scores_body.dart';
 import 'package:catch_dating_app/hosts/live/live_scores_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_test_support/catch_test_fonts.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../events/events_test_helpers.dart';
 import 'events_fixtures.dart';
 
 Future<void> _pump(

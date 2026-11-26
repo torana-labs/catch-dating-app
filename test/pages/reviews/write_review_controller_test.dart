@@ -3,10 +3,9 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/pages/reviews/write_review_controller.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../events/events_test_helpers.dart';
 
 void main() {
   test('submit creates a trimmed event review', () async {

@@ -17,11 +17,11 @@ import 'package:catch_dating_app/hosts/live/live_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../../event_success/event_assistance_cases_fixtures.dart';
-import '../../../events/events_test_helpers.dart';
 
 /// One step of a host's own run of show.
 typedef MarketingPlanStep = ({

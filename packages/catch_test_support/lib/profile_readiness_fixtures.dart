@@ -2,7 +2,7 @@ import 'package:catch_dating_app/contexts/profiles/domain/profile_photo_policy.d
 import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 
-import '../events/events_test_helpers.dart' as event_helpers;
+import 'package:catch_test_support/events_test_helpers.dart' as event_helpers;
 
 UserProfile buildSocialReadyUser({
   String uid = 'runner-1',

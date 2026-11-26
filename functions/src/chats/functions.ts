@@ -15,5 +15,4 @@ export {
   onEventChatDirectoryMembershipWritten,
   onEventChatDirectoryParticipationWritten,
   onEventChatDirectoryRoomWritten,
-  onEventChatDirectoryUserWritten,
 } from "./eventChatDirectory";

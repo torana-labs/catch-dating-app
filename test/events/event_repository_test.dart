@@ -7,13 +7,12 @@ import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'events_test_helpers.dart';
 
 part 'event_repository_fixtures.dart';
 

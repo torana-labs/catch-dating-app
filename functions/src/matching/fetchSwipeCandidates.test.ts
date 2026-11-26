@@ -242,6 +242,38 @@ test("returns only eligible candidates in attendance order", async () => {
   );
 });
 
+// The feed reads the server-only guestProfiles, which hold the sensitive
+// answers no organiser or stranger may read (#2493, FIX-8); a profile not
+// copied there yet still comes from publicProfiles.
+test("reads candidates from guestProfiles, falling back to publicProfiles",
+  async () => {
+    const {deps} = harness({
+      "eventBookings/event-1_runner-7": participation(
+        "runner-7",
+        "2026-05-02T02:35:00.000Z"
+      ),
+      "users/runner-7": profile({
+        gender: "woman",
+        interestedInGenders: ["man"],
+        dateOfBirth: ts("1998-01-01T00:00:00.000Z"),
+      }),
+      "publicProfiles/runner-7": publicProfile("Card only", 28),
+      "guestProfiles/runner-7": {...publicProfile("Asha", 28),
+        relationshipGoal: "longTerm"},
+    });
+
+    const result = await fetchSwipeCandidatesHandler(
+      request("runner-1", {eventId: "event-1"}),
+      deps
+    );
+
+    const byUid = new Map(result.profiles.map((candidate) =>
+      [candidate.uid, candidate]));
+    assert.equal(byUid.get("runner-7")?.name, "Asha");
+    assert.equal(byUid.get("runner-7")?.relationshipGoal, "longTerm");
+    assert.equal(byUid.get("runner-2")?.name, "Rhea");
+  });
+
 test("only current picks hide someone; deck-era decisions do not", async () => {
   const candidate = (uid: string, attendedAt: string) => ({
     [`eventBookings/event-1_${uid}`]: participation(uid, attendedAt),

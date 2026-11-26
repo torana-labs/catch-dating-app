@@ -17,7 +17,6 @@
     "dispatchEvents",
     "onHostRequestViewProfileWritten",
     "onHostRequestViewContactSummaryWritten",
-    "onHostRequestViewContactWritten",
     "dispatchOrganizerContacts"
   ],
   "migrationNotes": [

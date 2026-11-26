@@ -5,9 +5,8 @@ import 'package:catch_dating_app/swipes/presentation/event_recap_screen_state.da
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/catch_async_state.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart';
 
 final _l10n = AppLocalizationsEn();
 final _now = DateTime(2026, 11, 11, 12);

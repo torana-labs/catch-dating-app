@@ -31,6 +31,9 @@ import {
   validateMatchDocument,
 } from "../shared/generated/validators/matchDocument";
 import {
+  validateAccessGrantDocument,
+} from "../shared/generated/validators/accessGrantDocument";
+import {
   validateOrganizerDocument,
 } from "../shared/generated/validators/organizerDocument";
 import {
@@ -64,6 +67,10 @@ const contractedPaths: ReadonlyArray<{
     validate: validatePublicProfileDocument,
   },
   {pattern: /^organizers\/[^/]+$/u, validate: validateOrganizerDocument},
+  {
+    pattern: /^accessGrants\/organizer__[^/]+$/u,
+    validate: validateAccessGrantDocument,
+  },
   {pattern: /^events\/[^/]+$/u, validate: validateEventDocument},
   {
     pattern: /^eventBookings\/[^/]+$/u,

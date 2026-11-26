@@ -1,14 +1,19 @@
 /* eslint-disable max-len */
 import * as admin from "firebase-admin";
-import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
-import {appCheckCallableOptions} from "../../shared/callableOptions";
+import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import type {AdminListMyNominationsCallablePayload} from "../../shared/generated/adminListMyNominationsCallablePayload";
 import type {AdminListMyNominationsCallableResponse} from "../../shared/generated/adminListMyNominationsCallableResponse";
 import {validateAdminListMyNominationsCallablePayload} from "../../shared/generated/validators/adminListMyNominationsInput";
 import {checkRateLimit as defaultCheckRateLimit} from "../../shared/rateLimit";
-import {validateCallableWithAjv} from "../../shared/validation";
-import {requireAdminRole} from "../../platform/adminAuth";
 import {INBOX_ITEMS_COLLECTION, InboxItemDocument} from "./model";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../../platform/callables/callable";
+import {adminRoles} from "../../platform/callables/policies";
+import type {AdminContext} from "../../platform/adminAuth";
 
 /**
  * What happened to every organizer a sales associate nominated, newest
@@ -40,11 +45,34 @@ function filtered(base: FirebaseFirestore.Query, filter: Filter): FirebaseFirest
   }
 }
 
-export async function adminListMyNominationsHandler(request: CallableRequest<unknown>,
-  deps: MyNominationsDeps = defaultDeps): Promise<Response> {
-  const adminContext = requireAdminRole(request, nominationRoles);
-  const data = validateCallableWithAjv<AdminListMyNominationsCallablePayload>(request,
-    validateAdminListMyNominationsCallablePayload);
+/**
+ * adminListMyNominations: nominationRoles only (STR-10 policy).
+ * @param {MyNominationsDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
+ */
+export function adminListMyNominationsSpec(
+  deps: MyNominationsDeps = defaultDeps):
+  CallableSpec<AdminListMyNominationsCallablePayload, AdminContext, Response> {
+  return {
+    name: "adminListMyNominations",
+    policy: adminRoles(nominationRoles),
+    input: validateAdminListMyNominationsCallablePayload,
+    handle: (context) => adminListMyNominationsWork(context, deps),
+  };
+}
+
+/** The deployed path of adminListMyNominations, for tests. */
+export function adminListMyNominationsHandler(
+  request: CallableRequest<unknown>, deps: MyNominationsDeps = defaultDeps):
+  Promise<Response> {
+  return runCallable(adminListMyNominationsSpec(deps), request);
+}
+
+async function adminListMyNominationsWork(
+  {data, actor: adminContext}:
+    CallableContext<AdminListMyNominationsCallablePayload, AdminContext>,
+  deps: MyNominationsDeps):
+  Promise<Response> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminListMyNominations", {maxRequests: 60, windowMs: 60 * 1000});
   const base = db.collection(INBOX_ITEMS_COLLECTION).where("nominatorUid", "==", adminContext.uid);
@@ -85,5 +113,4 @@ function decodeCursor(value: string): {waitingSince: string; itemId: string} {
   throw new HttpsError("invalid-argument", "This page cursor is invalid; reload your nominations.");
 }
 
-export const adminListMyNominations = onCall(appCheckCallableOptions,
-  (request) => adminListMyNominationsHandler(request));
+export const adminListMyNominations = callable(adminListMyNominationsSpec());

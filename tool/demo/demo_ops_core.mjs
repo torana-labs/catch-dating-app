@@ -126,6 +126,34 @@ function demoOwnerSeat({admin, marker, organizerId, uid, now}) {
 }
 
 /**
+ * The owner's organiser access document beside the owner seat (#2474 step
+ * 3): rules and requireOrganizerManager decide from it. It carries the demo
+ * marker, so the launch cleanup removes it with the organiser.
+ */
+function demoOwnerAccess({admin, marker, organizerId, uid, now}) {
+  return {
+    path: `accessGrants/organizer__${organizerId}__${uid}`,
+    data: {
+      ...marker,
+      scopeType: "organizer",
+      scopeId: organizerId,
+      uid,
+      organizerId,
+      role: "owner",
+      status: "active",
+      activeFromMillis: 0,
+      expiresAtMillis: null,
+      reach: {},
+      assignments: [],
+      grantedBy: null,
+      revision: 0,
+      updatedAt: timestampFromDate(admin, now),
+      version: 1,
+    },
+  };
+}
+
+/**
  * The setup fields of a demo event created published: its name, the city's
  * market, the market's timezone and the local start, derived like createEvent.
  */
@@ -590,6 +618,7 @@ export async function buildHostAccountPlan({
   const eventStart = wholeMinute(offsetDate(now, {days: 2}));
   const docs = [
     demoOwnerSeat({admin, marker, organizerId, uid: user.uid, now}),
+    demoOwnerAccess({admin, marker, organizerId, uid: user.uid, now}),
     {
       path: `organizers/${organizerId}`,
       data: demoOrganizerDoc({
@@ -729,6 +758,7 @@ export async function buildCheckInEventPlan({
   };
   const docs = [
     demoOwnerSeat({admin, marker, organizerId, uid: user.uid, now}),
+    demoOwnerAccess({admin, marker, organizerId, uid: user.uid, now}),
     {
       path: `organizers/${organizerId}`,
       data: demoOrganizerDoc({
@@ -1026,6 +1056,7 @@ export async function buildLaunchCleanupPlan({
     "publicProfiles",
     "organizers",
     "organizerTeamMemberships",
+    "accessGrants",
     "events",
     "eventBookings",
     "eventCrossPathsConsents",

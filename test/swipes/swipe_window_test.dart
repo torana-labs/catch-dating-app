@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/contexts/connections/domain/swipe_window.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart';
 
 void main() {
   group('swipe window helpers', () {

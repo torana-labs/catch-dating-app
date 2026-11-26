@@ -33,6 +33,8 @@ const firestoreRules = fs.readFileSync(
   "utf8",
 );
 
+const {writeOrganizerWithAccess} = require("./organizerAccessGrantFixture.cjs");
+
 const projectId = "demo-catch-rules";
 
 let testEnv;
@@ -635,8 +637,56 @@ function eventReviewId(eventId, reviewerUserId) {
 
 async function seed(pathSegments, data) {
   await testEnv.withSecurityRulesDisabled(async (context) => {
+    // An organiser is never written without its access documents (#2474
+    // step 3): every command that changes its managers writes both.
+    if (pathSegments.length === 2 && pathSegments[0] === "organizers") {
+      await writeOrganizerWithAccess(context.firestore(), pathSegments[1],
+        data);
+      return;
+    }
     await setDoc(doc(context.firestore(), ...pathSegments), data);
   });
+}
+
+/**
+ * The event access document a staff grant's command writes beside it
+ * (#2474 step 2), mirroring functions/src/domain/access/eventAccessGrants.ts:
+ * event-wide permissions end at the operator window, group duties at their
+ * own instants. Rules decide from this document, never from the grant.
+ */
+function eventAccessGrantFromStaffGrant(grant) {
+  const ms = (value) => value && typeof value.toMillis === "function" ?
+    value.toMillis() : null;
+  const active = grant.status === "active" && grant.revokedAt == null &&
+    grant.revokedBy == null;
+  const expires = ms(grant.expiresAt);
+  let operator = Object.hasOwn(grant, "operatorExpiresAt") ?
+    ms(grant.operatorExpiresAt) :
+    (grant.role === "checkInOperator" ? expires : null);
+  if (operator !== null && expires !== null) operator = Math.min(operator, expires);
+  const permissions = {};
+  const groupDuties = {};
+  if (active && expires !== null) {
+    if (operator !== null && operator > 0) {
+      for (const permission of grant.permissions ?? []) permissions[permission] = operator;
+    }
+    for (const duty of grant.groupDuties ?? []) {
+      groupDuties[`${duty.groupId}__${duty.duty}`] = Math.min(duty.expiresAtMillis, expires);
+    }
+  }
+  return {scopeType: "event", scopeId: grant.eventId, uid: grant.uid,
+    organizerId: grant.organizerId, role: "staff",
+    status: active ? "active" : "inactive", activeFromMillis: 0,
+    expiresAtMillis: active ? expires : null, reach: {permissions, groupDuties},
+    assignments: [], grantedBy: grant.createdBy ?? null,
+    revision: grant.revision ?? 0, updatedAt: Timestamp.now(), version: 1};
+}
+
+/** Seeds an event staff grant and the access document written beside it. */
+async function seedEventStaffGrant(grantId, grant) {
+  await seed(["eventStaffGrants", grantId], grant);
+  await seed(["accessGrants", `event__${grant.eventId}__${grant.uid}`],
+    eventAccessGrantFromStaffGrant(grant));
 }
 
 function values(count, value) {
@@ -670,6 +720,8 @@ function useRulesEnvironment(onReady) {
 }
 
 module.exports = {
+  eventAccessGrantFromStaffGrant,
+  seedEventStaffGrant,
   Timestamp,
   activityNotification,
   activityPreferences,

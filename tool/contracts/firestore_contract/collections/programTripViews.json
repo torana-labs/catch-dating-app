@@ -15,7 +15,6 @@
   "write": "server only; written from transportTrips, programGuests and programTravelLegs",
   "exportedFunctions": [
     "onProgramTripViewChanged",
-    "onProgramTripGuestChanged",
     "dispatchProgramGuests"
   ],
   "migrationNotes": [

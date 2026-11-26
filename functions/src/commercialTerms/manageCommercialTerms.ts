@@ -1,12 +1,9 @@
 import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
-import {onCall, HttpsError, type CallableRequest} from
+import {HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../platform/adminAuth";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
-import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import type {CommercialTermsDocument} from
   "../shared/generated/commercialTermsDocument";
 import type {CommercialTermsRevisionDocument} from
@@ -36,6 +33,14 @@ import {
   type CommercialTerms,
   type CommercialTermsOverride,
 } from "./terms";
+import {
+  callableWithLimits,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 interface Dependencies {
   db: () => FirebaseFirestore.Firestore;
@@ -52,13 +57,31 @@ function invalid(message: string): never {
 /**
  * Finance and Admin Owner read or replace commercial terms. Terms change
  * only what new payments freeze; existing payments keep their snapshots.
+ * Policy: ["adminOwner"] (STR-10).
+ * @param {Dependencies} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function manageCommercialTermsHandler(
+export function manageCommercialTermsSpec(deps: Dependencies = defaults):
+  CallableSpec<Payload, AdminContext, Result> {
+  return {
+    name: "manageCommercialTerms",
+    policy: adminRoles(["adminOwner"]),
+    input: validateManageCommercialTermsCallablePayload,
+    handle: (context) => manageCommercialTermsWork(context, deps),
+  };
+}
+
+/** The deployed path of manageCommercialTerms, for tests. */
+export function manageCommercialTermsHandler(
   request: CallableRequest<unknown>, deps: Dependencies = defaults):
   Promise<Result> {
-  const actor = requireAdminRole(request, ["adminOwner"]);
-  const data = validateCallableWithAjv<Payload>(request,
-    validateManageCommercialTermsCallablePayload);
+  return runCallable(manageCommercialTermsSpec(deps), request);
+}
+
+async function manageCommercialTermsWork(
+  {request, data, actor}: CallableContext<Payload, AdminContext>,
+  deps: Dependencies):
+  Promise<Result> {
   if (data.action === "read" ? data.expectedRevision !== null ||
       data.terms !== null || data.reason !== null :
     data.expectedRevision === null || data.terms === null ||
@@ -164,6 +187,6 @@ function project(termsId: string, organizerId: string | null,
   return result;
 }
 
-export const manageCommercialTerms = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 30, maxInstances: 10}),
-  (request) => manageCommercialTermsHandler(request));
+export const manageCommercialTerms = callableWithLimits(
+  {timeoutSeconds: 30, maxInstances: 10},
+  manageCommercialTermsSpec());

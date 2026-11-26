@@ -7,6 +7,12 @@ import {CATCH_ENDPOINT_STOPS} from "../catchMessaging/whatsappEndpointStops";
 import {catchEndpointHash, catchStopId} from
   "../catchMessaging/whatsappReply";
 import {supportReplyState, type SupportReplyState} from "./whatsappReplies";
+import {
+  pageRemainingMessageExpiry,
+  readFirstMessagePage,
+  writeMessagePageExpiry,
+} from "./retention";
+import {supportExpiresAtMillis} from "../shared/supportRetention";
 import {requireAdminRole} from "../platform/adminAuth";
 import {
   setAdminAuditLogInTransaction,
@@ -270,7 +276,12 @@ export async function adminUpdateSupportConversationHandler(
     throw new HttpsError("invalid-argument", "Each link appears once.");
   }
   const ref = db.collection(SUPPORT_CONVERSATIONS).doc(payload.conversationId);
+  // Closing stamps the conversation and its messages with their TTL expiry;
+  // reopening clears it. The first page goes with the status change.
+  let expiry: {page: FirebaseFirestore.QueryDocumentSnapshot[];
+    expiresAt: FirebaseFirestore.Timestamp | null} | null = null;
   await db.runTransaction(async (tx) => {
+    expiry = null;
     const [snap, ...linked] = await Promise.all([
       tx.get(ref),
       ...paths.map((path) => tx.get(db.doc(path))),
@@ -284,13 +295,26 @@ export async function adminUpdateSupportConversationHandler(
         `Linked record not found: ${paths[missing]}.`);
     }
     const before = snap.data() as Conversation;
+    const closing = payload.status === "closed" && before.status !== "closed";
+    const reopening = payload.status !== "closed" &&
+      before.status === "closed";
+    const page = closing || reopening ?
+      await readFirstMessagePage(tx, db, payload.conversationId) : null;
+    const now = deps.now();
+    const expiresAt = closing ? admin.firestore.Timestamp.fromMillis(
+      supportExpiresAtMillis(now.toMillis())) : null;
     tx.update(ref, {
       ownerUid: payload.ownerUid,
       status: payload.status,
       links: payload.links,
       ...(payload.status === "closed" ? {waitingSince: null} : {}),
-      updatedAt: deps.now(),
+      ...(page ? {expiresAt} : {}),
+      updatedAt: now,
     });
+    if (page) {
+      writeMessagePageExpiry(tx, page, expiresAt);
+      expiry = {page, expiresAt};
+    }
     setAdminAuditLogInTransaction(tx, db, context, {
       action: "adminUpdateSupportConversation",
       targetPath: ref.path,
@@ -302,6 +326,12 @@ export async function adminUpdateSupportConversationHandler(
       serverTimestamp: deps.serverTimestamp,
     });
   });
+  const written = expiry as {page: FirebaseFirestore.QueryDocumentSnapshot[];
+    expiresAt: FirebaseFirestore.Timestamp | null} | null;
+  if (written) {
+    await pageRemainingMessageExpiry(db, payload.conversationId,
+      written.page, written.expiresAt);
+  }
   return {
     conversationId: payload.conversationId,
     status: payload.status,

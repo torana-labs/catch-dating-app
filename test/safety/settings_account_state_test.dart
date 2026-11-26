@@ -4,10 +4,9 @@ import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/pages/account/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_account_state.dart';
 import 'package:catch_dating_app/safety/presentation/settings_account_view_model.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart';
 
 void main() {
   test('maps loaded profile and blocked-account rows into display state', () {

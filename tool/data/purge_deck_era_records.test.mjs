@@ -13,11 +13,9 @@ import {
 import {
   createFakeFirestore,
   fakeAdmin,
-  fakeFieldValues,
   fakeTimestamp,
 } from "./fixtures/deck_era_purge/fake_firestore.mjs";
 import {
-  AFTER_CUTOFF,
   BEFORE_CUTOFF,
   deckEraPurgeWorld,
 } from "./fixtures/deck_era_purge/world.mjs";
@@ -25,8 +23,7 @@ import {
 // The real rule from the Functions build (npm --prefix functions run build).
 const classifier = loadClassifier();
 const plan = (db) => buildDeckEraPurgePlan(db, {classifier});
-const apply = async (db) =>
-  applyDeckEraPurgePlan(db, await plan(db), {fieldValues: fakeFieldValues});
+const apply = async (db) => applyDeckEraPurgePlan(db, await plan(db));
 
 test("the dry-run plan counts deck-era records by reason", async () => {
   const db = createFakeFirestore(deckEraPurgeWorld());
@@ -117,25 +114,6 @@ test("apply deletes only deck-era records and what came from them", async () => 
     assert.ok(facts.some((key) => key.includes(`swipe_${kept}_`)), kept);
   }
 
-  // Counters drop by exactly what was deleted; unrelated counters are kept.
-  const counter = (uid) => db.docs.get(`participantMetricCounters/${uid}`);
-  assert.deepEqual(counter("ana").counters, {
-    outgoing_like: 0, incoming_like: 0, match_created: 0,
-    chat_message_sent: 0, chat_message_received: 0, event_attended: 3,
-  });
-  assert.deepEqual(Object.keys(counter("ana").lastSeenByType), []);
-  // dee keeps her own current pick and loses the deck like she received.
-  assert.deepEqual(counter("dee").counters, {
-    outgoing_like: 1, incoming_like: 0, match_created: 0, chat_message_sent: 0,
-  });
-  assert.equal(counter("dee").lastSeenByType.outgoing_like.toMillis(), Date.parse(AFTER_CUTOFF));
-  assert.equal(counter("dee").lastSeenByType.incoming_like, undefined);
-  // The blocked chat's match fact is kept, its deck like facts are not.
-  assert.deepEqual(counter("ivy").counters, {
-    outgoing_like: 0, incoming_like: 0, match_created: 1, chat_message_sent: 1,
-  });
-  assert.equal(counter("ivy").lastSeenByType.match_created.toMillis(), Date.parse(BEFORE_CUTOFF));
-  assert.deepEqual(counter("eve"), world["participantMetricCounters/eve"]);
 });
 
 test("a second run finds nothing and writes nothing", async () => {
@@ -147,11 +125,11 @@ test("a second run finds nothing and writes nothing", async () => {
   assert.equal(again.summary.chats.deletedBothDeckEra +
     again.summary.chats.deletedDeckEraWithOneCurrentPick, 0);
   assert.equal(again.summary.chats.profileReactionMessagesInKeptChats, 0);
-  assert.deepEqual(await applyDeckEraPurgePlan(db, again, {fieldValues: fakeFieldValues}),
+  assert.deepEqual(await applyDeckEraPurgePlan(db, again),
     {batches: 0, writes: 0});
 });
 
-test("a run that fails midway finishes on rerun without double decrements", async () => {
+test("a run that fails midway finishes on rerun", async () => {
   const complete = createFakeFirestore(deckEraPurgeWorld());
   await apply(complete);
 
@@ -165,8 +143,6 @@ test("a run that fails midway finishes on rerun without double decrements", asyn
   const reference = createFakeFirestore(bulkWorld(deckEraPurgeWorld(), 450));
   await apply(reference);
   assert.deepEqual(snapshot(crashed), snapshot(reference));
-  assert.equal(crashed.docs.get("participantMetricCounters/bulk").counters.outgoing_like, 0);
-  assert.equal(crashed.docs.get("participantMetricCounters/bulk").counters.event_attended, 2);
   assert.ok(Math.max(...reference.log.batchSizes) <= 400);
   assert.ok(reference.log.batches > 3);
   for (const key of complete.docs.keys()) assert.ok(reference.docs.has(key), key);
@@ -221,10 +197,6 @@ function bulkWorld(docs, count) {
       eventId: "event-1", peerUid: target, occurredAt: at, createdAt: at,
     };
   }
-  docs["participantMetricCounters/bulk"] = {
-    uid: "bulk", counters: {outgoing_like: count, event_attended: 2},
-    lastSeenByType: {outgoing_like: at},
-  };
   return docs;
 }
 

@@ -95,14 +95,22 @@ export function publicProfileFromUserProfileDoc(
     ...(user.occupation && {occupation: user.occupation}),
     ...(user.company && {company: user.company}),
     ...(user.education && {education: user.education}),
-    ...(user.religion && {religion: user.religion}),
+    // Each sensitive answer has a hide switch that hides it from every
+    // other guest and every organiser (#2493, FIX-8); religion is hidden
+    // unless the guest turns it on (OQ-C4).
+    ...(user.religion && user.prefsHideReligion === false &&
+      {religion: user.religion}),
     ...(user.languages?.length && {languages: user.languages}),
-    ...(user.relationshipGoal && {relationshipGoal: user.relationshipGoal}),
-    ...(user.drinking && {drinking: user.drinking}),
-    ...(user.smoking && {smoking: user.smoking}),
+    ...(user.relationshipGoal && user.prefsHideRelationshipGoal !== true &&
+      {relationshipGoal: user.relationshipGoal}),
+    ...(user.drinking && user.prefsHideDrinking !== true &&
+      {drinking: user.drinking}),
+    ...(user.smoking && user.prefsHideSmoking !== true &&
+      {smoking: user.smoking}),
     ...(user.workout && {workout: user.workout}),
     ...(user.diet && {diet: user.diet}),
-    ...(user.children && {children: user.children}),
+    ...(user.children && user.prefsHideChildren !== true &&
+      {children: user.children}),
     activityPreferences: {running},
   };
 }

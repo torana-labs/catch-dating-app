@@ -1128,7 +1128,7 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   // Scheduled run watchdog as a full dispatch when the schedule is missed.
   // The website deploy workflows never pass it.
   const nightly = "github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.full)";
-  for (const surface of ["admin", "marketing"]) {
+  for (const surface of ["admin", "marketing", "tools"]) {
     const call = ci.slice(ci.indexOf(`\n  ${surface}:\n`) + 1).split(/\n  [a-z-]+:\n/u)[0];
     assert.ok(call.includes(`      visual_report: \${{ ${nightly} }}\n`), surface);
   }
@@ -1142,6 +1142,30 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   for (const [event, full] of [["workflow_dispatch", false], ["merge_group", null], ["pull_request", null], ["push", null]]) {
     assert.equal(runsReport(event, full), false, event);
   }
+  // Tools defers the same report outside the nightly (#2426): every check shell
+  // passes --defer-visual-report unless the caller set visual_report. On the
+  // nightly the report then runs exactly once: in the React lane when the plan
+  // selects marketing (Tools hands it over), otherwise in Tools itself.
+  const toolsWorkflow = workflow("tools-ci.yml");
+  assert.match(toolsWorkflow, /      visual_report:\n\s+description:[^\n]+\n\s+required: false\n\s+type: boolean\n\s+default: false/u);
+  for (const name of ["Check affected tools", "Check tool categories"]) {
+    const step = namedStep(toolsWorkflow, name);
+    assert.match(step, /VISUAL_REPORT: \$\{\{ inputs\.visual_report \}\}/u, name);
+    assert.match(step, /if \[\[ "\$\{VISUAL_REPORT:-\}" != "true" \]\]; then\n\s+shared_flags\+=\(--defer-visual-report\)/u, name);
+  }
+  const reportRuns = ({event, full, marketing}) => {
+    const visualReport = runsReport(event, full);
+    return {react: visualReport && marketing, tools: visualReport && !marketing};
+  };
+  for (const event of ["schedule", "workflow_dispatch", "merge_group", "pull_request", "push"]) {
+    for (const marketing of [true, false]) {
+      const full = event === "workflow_dispatch" ? true : null;
+      const runs = reportRuns({event, full, marketing});
+      const count = Number(runs.react) + Number(runs.tools);
+      assert.equal(count, runsReport(event, full) ? 1 : 0, `${event}, marketing ${marketing}`);
+    }
+  }
+  assert.deepEqual(reportRuns({event: "workflow_dispatch", full: false, marketing: false}), {react: false, tools: false});
   // The accessibility gates render every story, so they keep a broken story out
   // of the queue: they run for their surface on every event, merge_group included.
   for (const [name, surface] of [["Run marketing Storybook accessibility gate", "marketing"],
@@ -1966,6 +1990,17 @@ test("Tools check shells request inventory producer proofs and no capture proof"
       const actual = JSON.parse(result.stdout);
       assert.equal(actual.args.includes("--generated-inventories-materialized"), inventory === "true");
       assert.ok(actual.args.includes("--marketing-checks-in-react"));
+      // Outside the nightly (VISUAL_REPORT unset here) the visual report is deferred.
+      assert.ok(actual.args.includes("--defer-visual-report"));
+    }
+    for (const [visualReport, deferred] of [["true", false], ["false", true]]) {
+      const result = spawnSync("bash", ["-c", step.run], {encoding: "utf8", env: {
+        ...process.env, PATH: `${root}${path.delimiter}${process.env.PATH}`,
+        INVENTORY_MATERIALIZED: "true", MARKETING_CHECKS_IN_REACT: "false", VISUAL_REPORT: visualReport,
+        BASE_SHA: "base", SOURCE_SHA: "source", MODE: "pr", COMMIT_WINDOW: "false", CATEGORIES: "marketing ui-capture design",
+      }});
+      assert.equal(result.status, 0, result.stderr);
+      assert.equal(JSON.parse(result.stdout).args.includes("--defer-visual-report"), deferred, `${name}: VISUAL_REPORT=${visualReport}`);
     }
   }
   assert.doesNotMatch(extractSteps(source).find(step => step.name === "Resolve affected tool checks").run, /--generated-inventories-materialized/u);

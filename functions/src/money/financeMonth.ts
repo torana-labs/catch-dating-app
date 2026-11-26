@@ -1,10 +1,7 @@
 import * as admin from "firebase-admin";
-import {onCall, HttpsError, type CallableRequest} from
+import {HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../platform/adminAuth";
-import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import type {
   NominatorCreditDocument,
   OrganizerBillDocument,
@@ -24,6 +21,14 @@ import {moneyRoles, readMoneySettings} from "./moneySettings";
 import {nominatorCreditsCollection} from "./nominatorCredits";
 import {organizerBillsCollection} from "./organizerBills";
 import {listMonthCosts} from "./platformCosts";
+import {
+  callableWithLimits,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 /**
  * Finance for one month, line by line, from the month's bills, its costs
@@ -106,14 +111,29 @@ export function buildFinanceMonth(input: {
 
 /**
  * The owner reads one month of Finance.
- * @param {CallableRequest<unknown>} request Callable request.
- * @return {Promise<Result>} Finance month.
+ * Policy: moneyRoles (STR-10).
+ * @return {CallableSpec} The callable.
  */
-export async function adminGetFinanceMonthHandler(
-  request: CallableRequest<unknown>): Promise<Result> {
-  const actor = requireAdminRole(request, moneyRoles);
-  const data = validateCallableWithAjv<Payload>(request,
-    validateAdminGetFinanceMonthCallablePayload);
+export function adminGetFinanceMonthSpec():
+  CallableSpec<Payload, AdminContext, Result> {
+  return {
+    name: "adminGetFinanceMonth",
+    policy: adminRoles(moneyRoles),
+    input: validateAdminGetFinanceMonthCallablePayload,
+    handle: (context) => adminGetFinanceMonthWork(context),
+  };
+}
+
+/** The deployed path of adminGetFinanceMonth, for tests. */
+export function adminGetFinanceMonthHandler(
+  request: CallableRequest<unknown>):
+  Promise<Result> {
+  return runCallable(adminGetFinanceMonthSpec(), request);
+}
+
+async function adminGetFinanceMonthWork(
+  {data, actor}: CallableContext<Payload, AdminContext>):
+  Promise<Result> {
   const db = admin.firestore();
   await checkRateLimit(db, actor.uid, "adminGetFinanceMonth",
     {maxRequests: 30, windowMs: 60 * 1000});
@@ -147,6 +167,6 @@ export async function adminGetFinanceMonthHandler(
   return result;
 }
 
-export const adminGetFinanceMonth = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 5}),
-  (request) => adminGetFinanceMonthHandler(request));
+export const adminGetFinanceMonth = callableWithLimits(
+  {timeoutSeconds: 60, maxInstances: 5},
+  adminGetFinanceMonthSpec());

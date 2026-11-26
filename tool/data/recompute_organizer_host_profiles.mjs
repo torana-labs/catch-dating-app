@@ -121,13 +121,40 @@ export async function buildOrganizerHostProfileRepairPlan(firestore) {
 }
 
 export async function applyOrganizerHostProfileRepairPlan(firestore, plan) {
-  for (let i = 0; i < plan.repairs.length; i += 450) {
+  for (let i = 0; i < plan.repairs.length; i += 150) {
     const batch = firestore.batch();
-    for (const repair of plan.repairs.slice(i, i + 450)) {
+    for (const repair of plan.repairs.slice(i, i + 150)) {
       batch.update(firestore.doc(repair.path), repair.expected);
+      // The organiser's access documents are written with its manager
+      // fields, as every team command writes them (#2474 step 3): rules and
+      // callables decide from them, so a repair never changes the fields
+      // alone.
+      for (const [uid, role] of organizerAccessHolders(repair.expected)) {
+        batch.set(firestore.doc(
+          `accessGrants/organizer__${repair.organizerId}__${uid}`),
+        organizerAccessGrant(repair.organizerId, uid, role));
+      }
     }
     await batch.commit();
   }
+}
+
+/** uid to role from repaired manager fields (owner: ownerUserId). */
+export function organizerAccessHolders(fields) {
+  const holders = new Map();
+  for (const uid of [fields.ownerUserId, ...(fields.hostUserIds ?? [])]) {
+    if (typeof uid === "string" && uid.length > 0 && !holders.has(uid)) {
+      holders.set(uid, uid === fields.ownerUserId ? "owner" : "manager");
+    }
+  }
+  return holders;
+}
+
+function organizerAccessGrant(organizerId, uid, role) {
+  return {scopeType: "organizer", scopeId: organizerId, uid, organizerId,
+    role, status: "active", activeFromMillis: 0, expiresAtMillis: null,
+    reach: {}, assignments: [], grantedBy: null, revision: 0,
+    updatedAt: new Date(), version: 1};
 }
 
 function printHelp() {
@@ -136,7 +163,9 @@ function printHelp() {
 Recomputes club host projection fields from hostProfiles/{uid} documents.
 Backfills ownerUserId, hostUserIds, hostProfiles, and profileImageUrl for
 legacy clubs while preserving existing club host snapshots when a host profile
-document has not been created yet.
+document has not been created yet. Managers come from hostUserId, ownerUserId
+and hostUserIds only, and each repaired organiser's access documents
+(accessGrants/organizer__{id}__{uid}) are written in the same batch.
 
 Options:
   --apply                 Write repairs. Default is dry-run.
@@ -164,9 +193,8 @@ function resolveHostUserIds(organizer, ownerUserId) {
     ownerUserId,
     typeof organizer.hostUserId === "string" ? organizer.hostUserId : null,
     ...(Array.isArray(organizer.hostUserIds) ? organizer.hostUserIds : []),
-    ...(Array.isArray(organizer.hostProfiles)
-      ? organizer.hostProfiles.map((host) => host?.uid)
-      : []),
+    // hostProfiles are display snapshots and may lag a removal; they never
+    // name a manager (#2474 step 3).
   ]
     .filter((uid) => typeof uid === "string" && uid.length > 0)
     .filter((uid, index, all) => all.indexOf(uid) === index);

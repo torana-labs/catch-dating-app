@@ -1,8 +1,7 @@
-import {CallableRequest, HttpsError, onCall} from
+import {CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import type {Transaction} from "firebase-admin/firestore";
-import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {AdminApplyEventMessagingBudgetCallablePayload} from
   "../shared/generated/adminApplyEventMessagingBudgetCallablePayload";
 import type {AdminApplyEventMessagingBudgetCallableResponse} from
@@ -30,7 +29,6 @@ import {validateEventMessagingBudgetApplicationReceiptDocument} from "../shared/
 import {validateEventMessagingBudgetDecisionDocument} from
   "../shared/generated/validators/eventMessagingBudgetDecisionDocument";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import {operationContentHash} from "../operations/durableActions";
 import {
   MessageBudgetReview,
@@ -59,8 +57,15 @@ import {
   whatsappBudgetScopes,
   WHATSAPP_BUDGETS,
 } from "../eventSuccess/operations/whatsappSpend";
-import {requireAdminRole} from "../platform/adminAuth";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 const decisionCollection = "eventMessagingBudgetDecisions";
 const receiptCollection = "eventMessagingBudgetApplicationReceipts";
@@ -107,22 +112,40 @@ interface AppliedBudgets {
 /**
  * Applies a source-fenced approval to both channel budget scopes. It writes no
  * outbox, dispatch, work, provider or runtime record.
- * @param {CallableRequest<unknown>} request Callable request.
- * @param {EventMessagingBudgetApplicationDeps} deps Injectable dependencies.
- * @return {Promise<AdminApplyEventMessagingBudgetCallableResponse>} Result.
+ * Policy: allowedRoles (STR-10).
+ * @param {EventMessagingBudgetApplicationDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminApplyEventMessagingBudgetHandler(
+export function adminApplyEventMessagingBudgetSpec(
+  deps: EventMessagingBudgetApplicationDeps = defaultDeps):
+  CallableSpec<
+    AdminApplyEventMessagingBudgetCallablePayload,
+    AdminContext,
+    AdminApplyEventMessagingBudgetCallableResponse> {
+  return {
+    name: "adminApplyEventMessagingBudget",
+    policy: adminRoles(allowedRoles),
+    input: validateAdminApplyEventMessagingBudgetCallablePayload,
+    normalize: normalizePayload,
+    handle: (context) => adminApplyEventMessagingBudgetWork(context, deps),
+  };
+}
+
+/** The deployed path of adminApplyEventMessagingBudget, for tests. */
+export function adminApplyEventMessagingBudgetHandler(
   request: CallableRequest<unknown>,
-  deps: EventMessagingBudgetApplicationDeps = defaultDeps
-): Promise<AdminApplyEventMessagingBudgetCallableResponse> {
-  const adminContext = requireAdminRole(request, allowedRoles);
-  const data = validateCallableWithAjv<
-    AdminApplyEventMessagingBudgetCallablePayload
-  >(
-    request,
-    validateAdminApplyEventMessagingBudgetCallablePayload,
-    normalizePayload
-  );
+  deps: EventMessagingBudgetApplicationDeps = defaultDeps):
+  Promise<AdminApplyEventMessagingBudgetCallableResponse> {
+  return runCallable(adminApplyEventMessagingBudgetSpec(deps), request);
+}
+
+async function adminApplyEventMessagingBudgetWork(
+  {request, data, actor: adminContext}:
+    CallableContext<
+      AdminApplyEventMessagingBudgetCallablePayload,
+      AdminContext>,
+  deps: EventMessagingBudgetApplicationDeps):
+  Promise<AdminApplyEventMessagingBudgetCallableResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(
     db,
@@ -563,10 +586,8 @@ function unreachable(): never {
   throw new Error("Unreachable event messaging budget state");
 }
 
-export const adminApplyEventMessagingBudget = onCall(
-  appCheckCallableOptions,
-  (request) => adminApplyEventMessagingBudgetHandler(request)
-);
+export const adminApplyEventMessagingBudget = callable(
+  adminApplyEventMessagingBudgetSpec());
 
 function channelForRoute(routeId: string): "sms" | "rcs" | "whatsapp" {
   if (routeId === "catchEventSms") return "sms";

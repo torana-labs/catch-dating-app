@@ -3,10 +3,9 @@ import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_service.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:flutter_test/flutter_test.dart';
-
-import 'events_test_helpers.dart'
+import 'package:catch_test_support/events_test_helpers.dart'
     show cohortCountsFromGenderCounts, storedPolicyForTerms;
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final referenceNow = DateTime(2026, 1, 1, 8);

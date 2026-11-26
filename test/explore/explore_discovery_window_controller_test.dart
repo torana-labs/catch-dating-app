@@ -8,11 +8,10 @@ import 'package:catch_dating_app/explore/presentation/explore_discovery_window_c
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:catch_platform/firebase/firestore_converters.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart';
 
 void main() {
   test(

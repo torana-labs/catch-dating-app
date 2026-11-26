@@ -4343,7 +4343,6 @@ scorecards locally.
 Current implemented foundation:
 
 - raw facts: `participantSignalFacts/{factId}`;
-- counters: `participantMetricCounters/{uid}`;
 - event scorecards: `eventSuccessScorecards/{eventId}`;
 - client access to raw/admin metrics denied by rules;
 - dev Firestore-to-BigQuery extension manifests and datasets exist for

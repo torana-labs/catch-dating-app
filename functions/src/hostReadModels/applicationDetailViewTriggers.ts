@@ -61,13 +61,6 @@ export function applicationDetailApplicantsForMembership(before: Data,
   return [...applicants.values()];
 }
 
-/** A review, an assignment, a new response or the application's removal. */
-export const onHostApplicationDetailViewApplicationWritten =
-  onDocumentWritten({
-    ...options, document: "organizerApplications/{applicationId}",
-  }, (event) => reconcileHostApplicationDetailView(admin.firestore(),
-    event.params.applicationId));
-
 /** Generic-form response fields an application's view reads. */
 const viewedFormResponseFields = ["organizerId", "formId", "versionId",
   "status", "respondentUid", "answerSnapshots", "identity"] as const;
@@ -85,17 +78,6 @@ export function applicationDetailFormResponseChanged(before: Data,
     viewedFormResponseFields.map((field) => data[field] ?? null);
   return !isDeepStrictEqual(pick(before), pick(after));
 }
-
-/** A generic-form response submitted, withdrawn or erased. */
-export const onHostApplicationDetailViewFormResponseWritten =
-  onDocumentWritten({
-    ...options, document: "organizerFormResponses/{responseId}",
-  }, async (event) => {
-    if (!applicationDetailFormResponseChanged(event.data?.before.data(),
-      event.data?.after.data())) return;
-    await reconcileHostApplicationDetailView(admin.firestore(),
-      genericFormApplicationId(event.params.responseId));
-  });
 
 /** An imported answer snapshot written or removed. */
 export const onHostApplicationDetailViewImportedResponseWritten =
@@ -139,10 +121,8 @@ export const onHostApplicationDetailViewMembershipWritten =
   });
 
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const organizerApplicationsProjections = defineProjections(
   "organizerApplications", [

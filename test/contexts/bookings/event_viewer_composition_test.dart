@@ -11,10 +11,10 @@ import 'package:catch_dating_app/contexts/payments/domain/host_membership_benefi
 import 'package:catch_dating_app/contexts/payments/payments.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart';
 import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../events/events_test_helpers.dart';
 import '../../host_memberships/host_membership_fixtures.dart';
 
 const _catchOrigin = EventOrigin(

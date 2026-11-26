@@ -3,12 +3,11 @@ import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_live_location_field.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/device/device_location.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolocator/geolocator.dart';
-
-import '../events/events_test_helpers.dart';
 
 void main() {
   testWidgets('sharing is explicit and disposal clears the position', (

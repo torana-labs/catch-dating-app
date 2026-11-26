@@ -7,7 +7,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 
-import '../../../support/profile_readiness_fixtures.dart';
+import 'package:catch_test_support/profile_readiness_fixtures.dart';
 import '../../fixtures/sales_demo_synthetic_fixtures.dart';
 import 'capture_fixtures.dart';
 import 'marketing_host_organizer.dart';

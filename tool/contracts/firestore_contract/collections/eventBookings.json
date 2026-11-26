@@ -25,7 +25,7 @@
     "dispatchEvents",
     "onHostRequestViewProfileWritten",
     "onHostRequestViewContactSummaryWritten",
-    "onHostRequestViewContactWritten"
+    "dispatchOrganizerContacts"
   ],
   "migrationNotes": [
     "Owns signed-up, waitlisted, attended, cancelled, and deleted event roster state; events documents retain only callable-owned aggregate counts.",

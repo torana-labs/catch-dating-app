@@ -10,11 +10,10 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_presence.dar
 import 'package:catch_dating_app/contexts/live/domain/event_success_presence_derivation.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_presence_summary_provider.dart';
 import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart';
 
 void main() {
   test('the summary names its likely departures', () {

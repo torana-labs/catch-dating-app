@@ -21,22 +21,6 @@ const unchanged = (before: Data, after: Data, fields: string[]) =>
 const text = (value: unknown): value is string =>
   typeof value === "string" && value.length > 0;
 
-/** A programme grant, renewal or revocation: that account's row. */
-export const onHostAssignmentProgramGrantChanged = onDocumentWritten({
-  ...options, document: "programStaffGrants/{grantId}",
-}, async (event) => {
-  const db = admin.firestore();
-  const seen = new Set<string>();
-  for (const grant of [event.data?.before.data(),
-    event.data?.after.data()]) {
-    if (!text(grant?.uid) || !text(grant?.programId)) continue;
-    const key = `${grant.uid}__${grant.programId}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    await reconcileProgramAssignmentView(db, grant.uid, grant.programId);
-  }
-});
-
 /** Every staff row of a programme. */
 async function reconcileProgramStaffRows(db: FirebaseFirestore.Firestore,
   programId: string): Promise<void> {
@@ -148,10 +132,8 @@ export const hostAssignmentViewProjections = defineProjections(
   }]);
 
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const programStaffGrantsProjections = defineProjections(
   "programStaffGrants", [

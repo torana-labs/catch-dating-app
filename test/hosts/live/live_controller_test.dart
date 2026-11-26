@@ -21,13 +21,13 @@ import 'package:catch_dating_app/hosts/live/live_controller.dart';
 import 'package:catch_dating_app/hosts/live/live_scores_state.dart';
 import 'package:catch_dating_app/hosts/live/live_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../event_success/event_assistance_cases_fixtures.dart';
 import '../../event_success/event_assistance_deliveries_fixtures.dart';
-import '../../events/events_test_helpers.dart';
 import 'live_fixtures.dart';
 
 class _Cases extends Fake implements EventAssistanceCasesRepository {

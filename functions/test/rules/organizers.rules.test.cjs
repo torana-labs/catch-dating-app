@@ -117,7 +117,7 @@ describe("firestore.rules", () => {
       await assertSucceeds(getDoc(doc(authedDb("host-2"), "organizers", "mine")));
     });
 
-    it("lets active team members get their organizer, and nobody else", async () => {
+    it("lets only the organiser's access holders get it; a team edge alone does not", async () => {
       await seed(["organizers", "org-team"], organizer({ownerUserId: "owner-1",
         hostUserId: "owner-1", hostUserIds: ["owner-1"]}));
       await seed(["organizerTeamMemberships", "org-team_staff-1"],
@@ -127,7 +127,10 @@ describe("firestore.rules", () => {
       await seed(["organizerTeamMemberships", "org-team_spoof-1"],
         {organizerId: "other-org", uid: "spoof-1", role: "staff", status: "active"});
 
-      await assertSucceeds(getDoc(doc(authedDb("staff-1"), "organizers", "org-team")));
+      // Organiser management is the access document written with the manager
+      // fields (#2474 step 3); an active team edge alone opens nothing.
+      await assertSucceeds(getDoc(doc(authedDb("owner-1"), "organizers", "org-team")));
+      await assertFails(getDoc(doc(authedDb("staff-1"), "organizers", "org-team")));
       await assertFails(getDoc(doc(authedDb("former-1"), "organizers", "org-team")));
       await assertFails(getDoc(doc(authedDb("spoof-1"), "organizers", "org-team")));
       await seed(["deletedUsers", "owner-1"], {});

@@ -446,6 +446,7 @@ jobs:
       full: ${{ needs.plan.outputs.full == 'true' }}
       commit_window: ${{ needs.plan.outputs.commit_window == 'true' }}
       marketing_checks_in_react: ${{ needs.plan.outputs.marketing == 'true' }}
+      visual_report: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.full) }}
 
   contracts:
     needs: [plan]
@@ -795,11 +796,12 @@ jobs:
     # Every merge-queue entry, every non-draft pull request (reporting only),
     # the nightly (timings for the budget report) and a main push with no
     # merge-queue proof (a bypass or a stale proof). No plan selection: the
-    # 69 gates are whole-repo checks, run on every entry (owner decision after
+    # 72 gates are whole-repo checks, run on every entry (owner decision after
     # the clean replay, docs/plans/semantic_check_replay_report.md; the
     # Functions context, client-write and BigQuery export path checks joined
-    # with the architecture sign-off, #2445, and the account deletion erasure
-    # check with #2444).
+    # with the architecture sign-off, #2445, the account deletion erasure
+    # check with #2444, and the schema module, Functions catalog and data
+    # run-record checks after #2496 turned main red).
     if: >-
       ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) &&
         (github.event_name == 'merge_group' || github.event_name == 'schedule' ||

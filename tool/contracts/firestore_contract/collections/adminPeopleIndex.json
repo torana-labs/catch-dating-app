@@ -9,7 +9,6 @@
   "write": "server only",
   "exportedFunctions": [
     "adminSearchPeople",
-    "onUserWrittenIndexPeople",
     "dispatchUsers",
     "reconcileAdminInboxNightly"
   ],

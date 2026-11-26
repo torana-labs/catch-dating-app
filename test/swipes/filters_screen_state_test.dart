@@ -1,9 +1,8 @@
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen_state.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart';
 
 void main() {
   test('FiltersPreferencesState derives defaults and save request fields', () {

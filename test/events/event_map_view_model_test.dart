@@ -4,9 +4,8 @@ import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_kernel/city_data.dart';
 import 'package:catch_kernel/location_coordinate.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'events_test_helpers.dart';
 
 void main() {
   group('buildEventMapViewModel', () {

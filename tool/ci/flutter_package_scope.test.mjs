@@ -168,7 +168,7 @@ test("relative directives that leave a package join its closure transitively", (
   assert.deepEqual(relativeTargets("a/b.dart", "import '../../outside.dart';"), null);
 });
 
-test("Widgetbook and Consumer reach the shared test support and the root test helpers their tests import", () => {
+test("Widgetbook and Consumer reach the shared test support their tests import", () => {
   const files = execFileSync("git", ["ls-files"], {cwd: repoRoot, encoding: "utf8", maxBuffer: 64 * 1024 * 1024}).split("\n").filter(Boolean);
   const listFiles = (entry) => files.filter((name) => name.startsWith(entry));
   const widgetbook = packageClosure("widgetbook", readRepo, listFiles);
@@ -176,7 +176,9 @@ test("Widgetbook and Consumer reach the shared test support and the root test he
   // path dependency; the fixtures Widgetbook bundles stay under test/.
   assert.ok(widgetbook.owned.includes("packages/catch_test_support/"));
   assert.ok(widgetbook.owned.some((entry) => entry.startsWith("test/") && entry.endsWith(".json")));
-  assert.ok(packageClosure("apps/consumer", readRepo, listFiles).owned.some((entry) => entry.startsWith("test/") && entry.endsWith(".dart")));
+  // Every shared test helper moved into catch_test_support (#2537), so the
+  // Consumer's tests reach it rather than root test/ helpers.
+  assert.ok(packageClosure("apps/consumer", readRepo, listFiles).owned.includes("packages/catch_test_support/"));
   const decisions = decide({
     packages: ["widgetbook"],
     changed: ["packages/catch_test_support/lib/test_pump_helpers.dart"],

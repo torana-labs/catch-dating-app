@@ -7,14 +7,13 @@ import 'package:catch_dating_app/cross_paths/presentation/cross_paths_explore_ca
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/events_test_helpers.dart' as event_test;
 import 'package:catch_test_support/organizers_test_helpers.dart'
     as organizer_test;
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart' as event_test;
 
 void main() {
   testWidgets('person and event remain distinct accessible actions', (

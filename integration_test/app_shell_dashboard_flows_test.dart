@@ -1,12 +1,12 @@
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_list.dart';
 import 'package:catch_dating_app/pages/check_in/event_check_in_qr_scanner.dart';
+import 'package:catch_test_support/event_viewer_state_fixtures.dart';
+import 'package:catch_test_support/events_test_helpers.dart' as event_helpers;
 import 'package:catch_test_support/organizers_test_helpers.dart'
     as organizer_helpers;
+import 'package:catch_test_support/profile_readiness_fixtures.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test/events/event_viewer_state_fixtures.dart';
-import '../test/events/events_test_helpers.dart' as event_helpers;
-import '../test/support/profile_readiness_fixtures.dart';
 import 'support/app_shell_test_binding.dart';
 import 'support/app_shell_test_harness.dart';
 

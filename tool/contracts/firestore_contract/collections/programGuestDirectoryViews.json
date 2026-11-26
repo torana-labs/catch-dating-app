@@ -14,10 +14,8 @@
   "read": "get and list (a query naming programId, and the kind) for the programme owner and a live guest relations duty covering the whole programme, from the account's programAccessViews programAll map; never while deleted",
   "write": "server only; written from programGuests (with their workspace field assertions), programFunctionGuests, programHouseholds and programGuestGroups",
   "exportedFunctions": [
-    "onProgramGuestDirectoryGuestChanged",
     "dispatchProgramGuests",
     "onProgramGuestDirectoryFunctionGuestChanged",
-    "onProgramGuestDirectoryHouseholdChanged",
     "dispatchProgramHouseholds",
     "onProgramGuestDirectoryGroupChanged"
   ],

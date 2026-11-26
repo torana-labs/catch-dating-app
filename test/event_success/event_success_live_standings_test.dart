@@ -4,10 +4,9 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_standings.da
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/events_test_helpers.dart' show buildEvent;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart' show buildEvent;
 
 void main() {
   testWidgets('standings reuse the assignment reveal visibility gate', (

@@ -15,12 +15,11 @@ import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/device/clipboard.dart';
 import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
+import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:share_plus/share_plus.dart';
-
-import '../events/events_test_helpers.dart';
 
 void main() {
   late FakeEventRepository eventRepository;

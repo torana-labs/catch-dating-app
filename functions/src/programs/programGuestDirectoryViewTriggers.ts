@@ -8,14 +8,6 @@ const options = {retry: true};
 
 type Data = FirebaseFirestore.DocumentData | undefined;
 
-/** A guest's fields, name evidence or existence: that guest's row. */
-export const onProgramGuestDirectoryGuestChanged = onDocumentWritten({
-  ...options, document: "programGuests/{guestId}",
-}, async (event) => {
-  await reconcileProgramGuestDirectoryRow(admin.firestore(), "guest",
-    event.params.guestId);
-});
-
 const functionFacts = (data: Data) => data === undefined ? null :
   [data.programId, data.organizerId, data.functionId, data.guestId,
     data.invited, data.rsvpStatus, data.attendanceStatus,
@@ -45,14 +37,6 @@ export const onProgramGuestDirectoryFunctionGuestChanged = onDocumentWritten({
   }
 });
 
-/** A household's label, members or existence: its row. */
-export const onProgramGuestDirectoryHouseholdChanged = onDocumentWritten({
-  ...options, document: "programHouseholds/{householdId}",
-}, async (event) => {
-  await reconcileProgramGuestDirectoryRow(admin.firestore(), "household",
-    event.params.householdId);
-});
-
 /** A group's label, order, member count or existence: its row. */
 export const onProgramGuestDirectoryGroupChanged = onDocumentWritten({
   ...options, document: "programGuestGroups/{groupId}",
@@ -62,10 +46,8 @@ export const onProgramGuestDirectoryGroupChanged = onDocumentWritten({
 });
 
 /**
- * Dispatcher specs for the triggers above (issue #2451). Each runs its
- * trigger's body with the dispatch change in place of the event; the
- * bodies re-read their sources, so both running is safe until the old
- * triggers retire and these become the only copy.
+ * Dispatcher specs (issue #2451). Each body re-reads its sources, so a
+ * retry or a replay converges.
  */
 export const programGuestsProjections = defineProjections("programGuests", [
   {

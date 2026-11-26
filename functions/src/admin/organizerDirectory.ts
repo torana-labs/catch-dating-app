@@ -1,7 +1,6 @@
-import {onCall, CallableRequest} from "firebase-functions/v2/https";
+import {CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {Timestamp} from "firebase-admin/firestore";
-import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {
   ExternalEventDocument,
   EventDocument,
@@ -15,8 +14,6 @@ import type {AdminListOrganizerDirectoryCallableResponse} from
 import {
   validateAdminListOrganizerDirectoryCallablePayload,
 } from "../shared/generated/validators/adminListOrganizerDirectoryInput";
-import {validateCallableWithAjv} from "../shared/validation";
-import {requireAdminRole} from "../platform/adminAuth";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
   authStaffNames,
@@ -36,6 +33,14 @@ import {
   type StaffNames,
 } from "./recordsDirectory";
 import {timestampIso, timestampMillis} from "../shared/dates";
+import {
+  callable,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
+import type {AdminContext} from "../platform/adminAuth";
 
 /** The most organizers, sales accounts or upcoming events one read covers. */
 export const organizerDirectoryScanLimit = 5000;
@@ -68,21 +73,38 @@ interface Candidate {
 /**
  * Lists the Admin Organizers directory with real totals: every organizer
  * is read (up to the scan limit) so views, chip counts and paging agree.
- * @param {CallableRequest<unknown>} request Callable request.
- * @param {OrganizerDirectoryDeps} deps Injectable dependencies.
- * @return {Promise<AdminListOrganizerDirectoryCallableResponse>} One page.
+ * Policy: recordsReaderRoles (STR-10).
+ * @param {OrganizerDirectoryDeps} deps Dependencies.
+ * @return {CallableSpec} The callable.
  */
-export async function adminListOrganizerDirectoryHandler(
+export function adminListOrganizerDirectorySpec(
+  deps: OrganizerDirectoryDeps = defaultDeps):
+  CallableSpec<
+    AdminListOrganizerDirectoryCallablePayload,
+    AdminContext,
+    AdminListOrganizerDirectoryCallableResponse> {
+  return {
+    name: "adminListOrganizerDirectory",
+    policy: adminRoles(recordsReaderRoles),
+    input: validateAdminListOrganizerDirectoryCallablePayload,
+    normalize: normalizePayload,
+    handle: (context) => adminListOrganizerDirectoryWork(context, deps),
+  };
+}
+
+/** The deployed path of adminListOrganizerDirectory, for tests. */
+export function adminListOrganizerDirectoryHandler(
   request: CallableRequest<unknown>,
-  deps: OrganizerDirectoryDeps = defaultDeps
-): Promise<AdminListOrganizerDirectoryCallableResponse> {
-  const adminContext = requireAdminRole(request, recordsReaderRoles);
-  const data =
-    validateCallableWithAjv<AdminListOrganizerDirectoryCallablePayload>(
-      request,
-      validateAdminListOrganizerDirectoryCallablePayload,
-      normalizePayload
-    );
+  deps: OrganizerDirectoryDeps = defaultDeps):
+  Promise<AdminListOrganizerDirectoryCallableResponse> {
+  return runCallable(adminListOrganizerDirectorySpec(deps), request);
+}
+
+async function adminListOrganizerDirectoryWork(
+  {data, actor: adminContext}:
+    CallableContext<AdminListOrganizerDirectoryCallablePayload, AdminContext>,
+  deps: OrganizerDirectoryDeps):
+  Promise<AdminListOrganizerDirectoryCallableResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid,
     "adminListOrganizerDirectory", {maxRequests: 60, windowMs: 60 * 1000});
@@ -271,7 +293,5 @@ function normalizePayload(value: unknown): unknown {
   };
 }
 
-export const adminListOrganizerDirectory = onCall(
-  appCheckCallableOptions,
-  (request) => adminListOrganizerDirectoryHandler(request)
-);
+export const adminListOrganizerDirectory = callable(
+  adminListOrganizerDirectorySpec());

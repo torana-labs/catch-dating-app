@@ -1,16 +1,13 @@
 import {randomUUID} from "node:crypto";
 import * as admin from "firebase-admin";
 import {Timestamp} from "firebase-admin/firestore";
-import {CallableRequest, HttpsError, onCall} from
+import {CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import * as logger from "firebase-functions/logger";
-import {AdminContext, requireAdminRole} from "../platform/adminAuth";
+import {AdminContext} from "../platform/adminAuth";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
-import {appCheckCallableOptions, appCheckCallableOptionsWithLimits} from
-  "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {validateCallableWithAjv} from "../shared/validation";
 import type {
   AccountSafetyActionDocument,
   AccountSafetyStateDocument,
@@ -61,6 +58,14 @@ import {
   safetyActorRole,
   safetyReasonLabel,
 } from "./safetyPolicy";
+import {
+  callable,
+  callableWithLimits,
+  type CallableContext,
+  type CallableSpec,
+  runCallable,
+} from "../platform/callables/callable";
+import {adminRoles} from "../platform/callables/policies";
 
 type ActionDoc = AccountSafetyActionDocument;
 type Kind = ActionDoc["kind"];
@@ -465,18 +470,37 @@ function endedTitle(kind: Kind): string {
 
 /**
  * Admin callable: warn, restrict, suspend or ban one account.
- * @param {CallableRequest<unknown>} request Callable request.
+ * Policy: SAFETY_OPS_ROLES (STR-10).
  * @param {AccountActionDeps} deps Dependencies.
- * @return {Promise<AdminTakeAccountSafetyActionCallableResponse>} Result.
+ * @return {CallableSpec} The callable.
  */
-export async function adminTakeAccountSafetyActionHandler(
+export function adminTakeAccountSafetyActionSpec(
+  deps: AccountActionDeps = defaultAccountActionDeps):
+  CallableSpec<
+    AdminTakeAccountSafetyActionCallablePayload,
+    AdminContext,
+    AdminTakeAccountSafetyActionCallableResponse> {
+  return {
+    name: "adminTakeAccountSafetyAction",
+    policy: adminRoles(SAFETY_OPS_ROLES),
+    input: validateAdminTakeAccountSafetyActionCallablePayload,
+    handle: (context) => adminTakeAccountSafetyActionWork(context, deps),
+  };
+}
+
+/** The deployed path of adminTakeAccountSafetyAction, for tests. */
+export function adminTakeAccountSafetyActionHandler(
   request: CallableRequest<unknown>,
-  deps: AccountActionDeps = defaultAccountActionDeps
-): Promise<AdminTakeAccountSafetyActionCallableResponse> {
-  const context = requireAdminRole(request, SAFETY_OPS_ROLES);
-  const payload = validateCallableWithAjv<
-    AdminTakeAccountSafetyActionCallablePayload>(request,
-      validateAdminTakeAccountSafetyActionCallablePayload);
+  deps: AccountActionDeps = defaultAccountActionDeps):
+  Promise<AdminTakeAccountSafetyActionCallableResponse> {
+  return runCallable(adminTakeAccountSafetyActionSpec(deps), request);
+}
+
+async function adminTakeAccountSafetyActionWork(
+  {request, data: payload, actor: context}:
+    CallableContext<AdminTakeAccountSafetyActionCallablePayload, AdminContext>,
+  deps: AccountActionDeps):
+  Promise<AdminTakeAccountSafetyActionCallableResponse> {
   requireSafetyStepAuthority(context, payload.kind as SafetyStep);
   if (payload.uid === context.uid) {
     throw new HttpsError("invalid-argument",
@@ -502,18 +526,37 @@ export async function adminTakeAccountSafetyActionHandler(
 
 /**
  * Admin callable: lift one action early.
- * @param {CallableRequest<unknown>} request Callable request.
+ * Policy: SAFETY_OPS_ROLES (STR-10).
  * @param {AccountActionDeps} deps Dependencies.
- * @return {Promise<AdminLiftAccountSafetyActionCallableResponse>} Result.
+ * @return {CallableSpec} The callable.
  */
-export async function adminLiftAccountSafetyActionHandler(
+export function adminLiftAccountSafetyActionSpec(
+  deps: AccountActionDeps = defaultAccountActionDeps):
+  CallableSpec<
+    AdminLiftAccountSafetyActionCallablePayload,
+    AdminContext,
+    AdminLiftAccountSafetyActionCallableResponse> {
+  return {
+    name: "adminLiftAccountSafetyAction",
+    policy: adminRoles(SAFETY_OPS_ROLES),
+    input: validateAdminLiftAccountSafetyActionCallablePayload,
+    handle: (context) => adminLiftAccountSafetyActionWork(context, deps),
+  };
+}
+
+/** The deployed path of adminLiftAccountSafetyAction, for tests. */
+export function adminLiftAccountSafetyActionHandler(
   request: CallableRequest<unknown>,
-  deps: AccountActionDeps = defaultAccountActionDeps
-): Promise<AdminLiftAccountSafetyActionCallableResponse> {
-  const context = requireAdminRole(request, SAFETY_OPS_ROLES);
-  const payload = validateCallableWithAjv<
-    AdminLiftAccountSafetyActionCallablePayload>(request,
-      validateAdminLiftAccountSafetyActionCallablePayload);
+  deps: AccountActionDeps = defaultAccountActionDeps):
+  Promise<AdminLiftAccountSafetyActionCallableResponse> {
+  return runCallable(adminLiftAccountSafetyActionSpec(deps), request);
+}
+
+async function adminLiftAccountSafetyActionWork(
+  {request, data: payload, actor: context}:
+    CallableContext<AdminLiftAccountSafetyActionCallablePayload, AdminContext>,
+  deps: AccountActionDeps):
+  Promise<AdminLiftAccountSafetyActionCallableResponse> {
   await deps.checkRateLimit?.(deps.firestore(), context.uid,
     "adminLiftAccountSafetyAction", {maxRequests: 20, windowMs: 60_000});
   const ended = await endAccountSafetyAction(deps, {
@@ -533,18 +576,37 @@ export async function adminLiftAccountSafetyActionHandler(
 
 /**
  * Admin callable: account actions for the Safety queue.
- * @param {CallableRequest<unknown>} request Callable request.
+ * Policy: SAFETY_OPS_ROLES (STR-10).
  * @param {AccountActionDeps} deps Dependencies.
- * @return {Promise<AdminListAccountSafetyActionsCallableResponse>} Items.
+ * @return {CallableSpec} The callable.
  */
-export async function adminListAccountSafetyActionsHandler(
+export function adminListAccountSafetyActionsSpec(
+  deps: AccountActionDeps = defaultAccountActionDeps):
+  CallableSpec<
+    AdminListAccountSafetyActionsCallablePayload,
+    AdminContext,
+    AdminListAccountSafetyActionsCallableResponse> {
+  return {
+    name: "adminListAccountSafetyActions",
+    policy: adminRoles(SAFETY_OPS_ROLES),
+    input: validateAdminListAccountSafetyActionsCallablePayload,
+    handle: (context) => adminListAccountSafetyActionsWork(context, deps),
+  };
+}
+
+/** The deployed path of adminListAccountSafetyActions, for tests. */
+export function adminListAccountSafetyActionsHandler(
   request: CallableRequest<unknown>,
-  deps: AccountActionDeps = defaultAccountActionDeps
-): Promise<AdminListAccountSafetyActionsCallableResponse> {
-  const context = requireAdminRole(request, SAFETY_OPS_ROLES);
-  const payload = validateCallableWithAjv<
-    AdminListAccountSafetyActionsCallablePayload>(request,
-      validateAdminListAccountSafetyActionsCallablePayload);
+  deps: AccountActionDeps = defaultAccountActionDeps):
+  Promise<AdminListAccountSafetyActionsCallableResponse> {
+  return runCallable(adminListAccountSafetyActionsSpec(deps), request);
+}
+
+async function adminListAccountSafetyActionsWork(
+  {data: payload, actor: context}:
+    CallableContext<AdminListAccountSafetyActionsCallablePayload, AdminContext>,
+  deps: AccountActionDeps):
+  Promise<AdminListAccountSafetyActionsCallableResponse> {
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, context.uid,
     "adminListAccountSafetyActions", {maxRequests: 60, windowMs: 60_000});
@@ -647,16 +709,16 @@ export async function expireAccountSafetyActionsNow(
 }
 
 // Suspensions and bans cancel every future booking, so allow five minutes.
-export const adminTakeAccountSafetyAction = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 300}),
-  (request) => adminTakeAccountSafetyActionHandler(request));
+export const adminTakeAccountSafetyAction = callableWithLimits(
+  {timeoutSeconds: 300},
+  adminTakeAccountSafetyActionSpec());
 
-export const adminLiftAccountSafetyAction = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 120}),
-  (request) => adminLiftAccountSafetyActionHandler(request));
+export const adminLiftAccountSafetyAction = callableWithLimits(
+  {timeoutSeconds: 120},
+  adminLiftAccountSafetyActionSpec());
 
-export const adminListAccountSafetyActions = onCall(appCheckCallableOptions,
-  (request) => adminListAccountSafetyActionsHandler(request));
+export const adminListAccountSafetyActions = callable(
+  adminListAccountSafetyActionsSpec());
 
 export const expireAccountSafetyActions = onSchedule(
   {schedule: "every 15 minutes", timeZone: "UTC"},
