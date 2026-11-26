@@ -18,8 +18,8 @@ import 'package:intl/intl.dart';
 /// pay, sees only the fields that mode needs and reads how payment is
 /// confirmed before saving. Edits stage on the event's offer-settings
 /// editor; Save runs the server review and Apply commits what was reviewed.
-class HostOfferSettingsBody extends ConsumerStatefulWidget {
-  const HostOfferSettingsBody({
+class HostOfferSettingsEditor extends ConsumerStatefulWidget {
+  const HostOfferSettingsEditor({
     super.key,
     required this.scope,
     required this.onBack,
@@ -36,11 +36,12 @@ class HostOfferSettingsBody extends ConsumerStatefulWidget {
   final bool checkoutAvailable;
 
   @override
-  ConsumerState<HostOfferSettingsBody> createState() =>
-      _HostOfferSettingsBodyState();
+  ConsumerState<HostOfferSettingsEditor> createState() =>
+      _HostOfferSettingsEditorState();
 }
 
-class _HostOfferSettingsBodyState extends ConsumerState<HostOfferSettingsBody> {
+class _HostOfferSettingsEditorState
+    extends ConsumerState<HostOfferSettingsEditor> {
   EventPreferencesEditorState get _snapshot =>
       ref.read(eventOfferPreferencesControllerProvider(widget.scope));
   EventOfferPreferencesController get _controller =>
@@ -371,7 +372,90 @@ class _HostOfferSettingsBodyState extends ConsumerState<HostOfferSettingsBody> {
                       onChange: () => setState(() => _choosing = true),
                     ),
                     if (_mode case final mode?) ...[
-                      _details(l10n, mode, editable),
+                      HostOfferSettingsDetailsSection(
+                        mode: mode,
+                        editable: editable,
+                        amount: _amount,
+                        currency: _currency,
+                        customValidity: _customValidity,
+                        pageUrl: _pageUrl,
+                        instructions: _instructions,
+                        message: _message,
+                        validityCustom: _validityCustom,
+                        validityMinutes: _validityMinutes,
+                        reuseAttested: _reuseAttested,
+                        expiryMillis: _expiryMillis,
+                        openEditor: _openEditor,
+                        instructionsError: _instructionsError,
+                        onFieldChanged: _stage,
+                        onValidity: ({required custom, minutes}) {
+                          setState(() {
+                            _validityCustom = custom;
+                            _validityMinutes = custom
+                                ? int.tryParse(_customValidity.text.trim())
+                                : minutes;
+                          });
+                          _stage();
+                        },
+                        onValidityMinutes: (text) {
+                          _validityMinutes = int.tryParse(text.trim());
+                          _stage();
+                        },
+                        onReuseAttested: (value) {
+                          setState(() => _reuseAttested = value);
+                          _stage();
+                        },
+                        onInstructionsOpen: (open) {
+                          if (editable) {
+                            setState(
+                              () => _openEditor = open ? 'instructions' : null,
+                            );
+                          }
+                        },
+                        onInstructionsCancel: () => setState(() {
+                          _instructions.text = _committedInstructions;
+                          _instructionsError = null;
+                          _openEditor = null;
+                        }),
+                        onInstructionsSubmit: () {
+                          if (_instructions.text.trim().isEmpty) {
+                            setState(
+                              () => _instructionsError =
+                                  l10n.hostsEventPreferenceInvalidValue,
+                            );
+                            return;
+                          }
+                          setState(() {
+                            _committedInstructions = _instructions.text.trim();
+                            _instructionsError = null;
+                            _openEditor = null;
+                          });
+                          _stage();
+                        },
+                        onInstructionsChanged: (_) {
+                          if (_instructionsError != null) {
+                            setState(() => _instructionsError = null);
+                          }
+                        },
+                        onMessageOpen: (open) {
+                          if (editable) {
+                            setState(
+                              () => _openEditor = open ? 'message' : null,
+                            );
+                          }
+                        },
+                        onMessageCancel: () => setState(() {
+                          _message.text = _committedMessage;
+                          _openEditor = null;
+                        }),
+                        onMessageSubmit: () {
+                          setState(() {
+                            _committedMessage = _message.text.trim();
+                            _openEditor = null;
+                          });
+                          _stage();
+                        },
+                      ),
                       if (mode == HostOfferSettingsMode.personalRequest)
                         CatchNotice.inline(
                           title: l10n.hostsEventDefaultsPersonalRequest,
@@ -414,84 +498,4 @@ class _HostOfferSettingsBodyState extends ConsumerState<HostOfferSettingsBody> {
       ),
     );
   }
-
-  Widget _details(
-    AppLocalizations l10n,
-    HostOfferSettingsMode mode,
-    bool editable,
-  ) => HostOfferSettingsDetailsSection(
-    mode: mode,
-    editable: editable,
-    amount: _amount,
-    currency: _currency,
-    customValidity: _customValidity,
-    pageUrl: _pageUrl,
-    instructions: _instructions,
-    message: _message,
-    validityCustom: _validityCustom,
-    validityMinutes: _validityMinutes,
-    reuseAttested: _reuseAttested,
-    expiryMillis: _expiryMillis,
-    openEditor: _openEditor,
-    instructionsError: _instructionsError,
-    onFieldChanged: _stage,
-    onValidity: ({required custom, minutes}) {
-      setState(() {
-        _validityCustom = custom;
-        _validityMinutes = custom
-            ? int.tryParse(_customValidity.text.trim())
-            : minutes;
-      });
-      _stage();
-    },
-    onValidityMinutes: (text) {
-      _validityMinutes = int.tryParse(text.trim());
-      _stage();
-    },
-    onReuseAttested: (value) {
-      setState(() => _reuseAttested = value);
-      _stage();
-    },
-    onInstructionsOpen: (open) {
-      if (editable) setState(() => _openEditor = open ? 'instructions' : null);
-    },
-    onInstructionsCancel: () => setState(() {
-      _instructions.text = _committedInstructions;
-      _instructionsError = null;
-      _openEditor = null;
-    }),
-    onInstructionsSubmit: () {
-      if (_instructions.text.trim().isEmpty) {
-        setState(
-          () => _instructionsError = l10n.hostsEventPreferenceInvalidValue,
-        );
-        return;
-      }
-      setState(() {
-        _committedInstructions = _instructions.text.trim();
-        _instructionsError = null;
-        _openEditor = null;
-      });
-      _stage();
-    },
-    onInstructionsChanged: (_) {
-      if (_instructionsError != null) {
-        setState(() => _instructionsError = null);
-      }
-    },
-    onMessageOpen: (open) {
-      if (editable) setState(() => _openEditor = open ? 'message' : null);
-    },
-    onMessageCancel: () => setState(() {
-      _message.text = _committedMessage;
-      _openEditor = null;
-    }),
-    onMessageSubmit: () {
-      setState(() {
-        _committedMessage = _message.text.trim();
-        _openEditor = null;
-      });
-      _stage();
-    },
-  );
 }

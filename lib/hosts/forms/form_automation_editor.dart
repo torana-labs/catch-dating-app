@@ -130,27 +130,285 @@ class _HostFormAutomationEditorState
     final needsMessages = _actions.any(
       (action) => action.kind == HostFormAutomationActionKind.campaignHandoff,
     );
-    final messagesValue = needsMessages
-        ? catchAsyncStateFromAsyncValue(ref.watch(messagesProvider))
-        : null;
-    final messages =
-        messagesValue?.value ??
-        (messagesValue?.hasError ?? false
-            ? HostAutomationMessagesState(
-                messages: const [],
-                error: messagesValue!.error,
-              )
-            : null);
+    HostAutomationMessagesState? messages;
+    var messagesLoaded = false;
+    if (needsMessages) {
+      final read = catchAsyncStateFromAsyncValue(ref.watch(messagesProvider));
+      messagesLoaded = read.value != null;
+      messages =
+          read.value ??
+          (read.hasError
+              ? HostAutomationMessagesState(
+                  messages: const [],
+                  error: read.error,
+                )
+              : null);
+    }
     final loadingMessage = _actions.any((action) => action.loadingMessage);
     final Widget body;
     if (source != null) {
-      body = _body(context, source, messages, () {
-        if (messagesValue?.value == null) {
+      void onMoreMessages() {
+        if (!messagesLoaded) {
           ref.invalidate(messagesProvider);
         } else {
           ref.read(messagesProvider.notifier).loadMore();
         }
-      });
+      }
+
+      final copy = catchFieldCopy(l10n);
+      final disabled = <WidgetState>{if (_busy) WidgetState.disabled};
+      final questions = [
+        for (final question in source.questions)
+          if (question.formId == _formId && question.activeVersion) question,
+      ];
+      final question = questions
+          .where((q) => q.questionId == _condition?['questionId'])
+          .firstOrNull;
+      final expected = (_condition?['expectedValues'] as List?)?.firstOrNull;
+      final formRequired =
+          _trigger == HostFormAutomationTrigger.responseSubmitted ||
+          _trigger == HostFormAutomationTrigger.responseWithdrawn ||
+          _trigger == HostFormAutomationTrigger.answerMatches;
+      body = CatchPageBody.screen(
+        child: Form(
+          key: _form,
+          child: CatchStack(
+            gap: CatchStackGap.g24,
+            children: [
+              if (_error case final error?)
+                CatchLocalizedErrorState(
+                  error,
+                  context: AppErrorContext.forms,
+                  mode: CatchErrorStateMode.compact,
+                  onRetry: _busy
+                      ? null
+                      : (_retryError ?? () => unawaited(_save())),
+                ),
+              if (_validation case final message?)
+                CatchNotice.inline(
+                  key: const ValueKey<String>('automation-validation'),
+                  body: message,
+                  tone: CatchNoticeTone.danger,
+                ),
+              CatchSection(
+                title: l10n.hostAudienceAutomationWhen,
+                dividers: CatchSectionPlacement.none,
+                children: [
+                  CatchField.input(
+                    key: const ValueKey('automation-name'),
+                    copy: copy,
+                    title: l10n.hostAutomationName,
+                    contract: CatchContractConstraints
+                        .createOrganizerFormAutomationCallablePayloadName,
+                    controller: _name,
+                    states: disabled,
+                  ),
+                  CatchField<HostFormAutomationTrigger>.select(
+                    copy: copy,
+                    title: l10n.hostAutomationTrigger,
+                    contract: CatchContractConstraints
+                        .createOrganizerFormAutomationCallablePayloadTrigger,
+                    contractValueBuilder: (value) => value.name,
+                    values: [
+                      for (final value in HostFormAutomationTrigger.values)
+                        if (widget.scopeFormId == null ||
+                            value != HostFormAutomationTrigger.eventAttended)
+                          value,
+                    ],
+                    itemLabelBuilder: (value) =>
+                        hostFormAutomationTriggerText(l10n, value),
+                    value: _trigger,
+                    states: disabled,
+                    onChanged: (value) {
+                      if (value != null) setState(() => _setTrigger(value));
+                    },
+                  ),
+                  if (_trigger != HostFormAutomationTrigger.eventAttended)
+                    CatchField<String>.select(
+                      copy: copy,
+                      title: l10n.hostAutomationForm,
+                      contractExemption:
+                          'The empty selection represents the nullable formId '
+                          'for any application form; required response '
+                          'triggers are checked before saving.',
+                      values: [
+                        if (!formRequired) '',
+                        for (final form in source.forms) form.id,
+                        if (_formId != null &&
+                            !source.forms.any((form) => form.id == _formId))
+                          _formId!,
+                      ],
+                      itemLabelBuilder: (value) => value.isEmpty
+                          ? l10n.hostAutomationAnyForm
+                          : source.forms
+                                    .where((form) => form.id == value)
+                                    .firstOrNull
+                                    ?.title ??
+                                l10n.hostAutomationConfigured,
+                      value: _formId ?? (formRequired ? null : ''),
+                      states: {
+                        if (_busy || widget.scopeFormId != null)
+                          WidgetState.disabled,
+                      },
+                      onChanged: (value) => setState(() {
+                        _formId = value == '' ? null : value;
+                        _condition = null;
+                      }),
+                    ),
+                  if (formRequired && source.forms.isEmpty)
+                    CatchText(
+                      l10n.hostAutomationNoForm,
+                      variant: CatchTextVariant.bodySmall,
+                      tone: CatchTextTone.danger,
+                    ),
+                  if (_trigger == HostFormAutomationTrigger.eventAttended)
+                    CatchField<String>.select(
+                      copy: copy,
+                      title: l10n.hostAutomationEvent,
+                      contractExemption:
+                          'Empty selection maps to nullable triggerEventId; '
+                          'event IDs come from the authorized organizer source '
+                          'options.',
+                      values: [
+                        '',
+                        for (final event in source.events) event.id,
+                        if (_eventId != null &&
+                            !source.events.any((event) => event.id == _eventId))
+                          _eventId!,
+                      ],
+                      itemLabelBuilder: (value) => value.isEmpty
+                          ? l10n.hostAutomationAnyEvent
+                          : source.events
+                                    .where((event) => event.id == value)
+                                    .firstOrNull
+                                    ?.title ??
+                                l10n.hostAutomationConfigured,
+                      value: _eventId ?? '',
+                      states: disabled,
+                      onChanged: (value) =>
+                          setState(() => _eventId = value == '' ? null : value),
+                    ),
+                  CatchField.input(
+                    key: const ValueKey('automation-delay'),
+                    copy: copy,
+                    title: l10n.hostAutomationDelay,
+                    contractExemption:
+                        'Text entry is parsed as an integer delayMinutes and '
+                        'validated in the generated range 0 through 10080.',
+                    helperText: l10n.hostAutomationDelayHelp,
+                    controller: _delay,
+                    keyboardType: TextInputType.number,
+                    states: disabled,
+                    onValidate: (text) {
+                      final value = int.tryParse(text?.trim() ?? '');
+                      return value == null || value < 0 || value > 10080
+                          ? l10n.hostAutomationDelayInvalid
+                          : null;
+                    },
+                  ),
+                  if (_trigger == HostFormAutomationTrigger.answerMatches) ...[
+                    CatchText(
+                      l10n.hostAutomationQuestionHelp,
+                      variant: CatchTextVariant.bodySmall,
+                      tone: CatchTextTone.secondary,
+                    ),
+                    CatchField<HostAudienceQuestionOption>.select(
+                      copy: copy,
+                      title: l10n.hostAutomationQuestion,
+                      contractExemption:
+                          'Question IDs are selected from the current published '
+                          'version; server validation binds the condition to '
+                          'that version.',
+                      values: questions,
+                      itemLabelBuilder: (q) => q.label,
+                      value: question,
+                      states: disabled,
+                      onChanged: (q) => setState(
+                        () => _condition = q == null
+                            ? null
+                            : {
+                                'questionId': q.questionId,
+                                'operator': 'contains',
+                                'expectedValues': <Object?>[],
+                              },
+                      ),
+                    ),
+                    CatchField<HostAudienceAnswerOption>.select(
+                      copy: copy,
+                      title: l10n.hostAutomationAnswer,
+                      contractExemption:
+                          'Typed boolean or choice values come from the selected '
+                          'published question.',
+                      values: question?.options ?? const [],
+                      itemLabelBuilder: (answer) => answer.label,
+                      value: question?.options
+                          .where((answer) => answer.value == expected)
+                          .firstOrNull,
+                      states: {
+                        if (_busy || question == null) WidgetState.disabled,
+                      },
+                      onChanged: (answer) {
+                        if (answer == null) return;
+                        setState(
+                          () => _condition = {
+                            ...?_condition,
+                            'expectedValues': [answer.value],
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ],
+              ),
+              for (final action in _actions)
+                HostFormAutomationActionSection(
+                  key: ValueKey(action.id),
+                  action: action,
+                  trigger: _trigger,
+                  source: source,
+                  messages: messages,
+                  busy: _busy,
+                  canRemove: _actions.length > 1,
+                  onChanged: () => setState(() {}),
+                  onKind: (kind) => setState(() => action.changeKind(kind)),
+                  onMessage: (id) => unawaited(_selectMessage(action, id)),
+                  onRemove: () => setState(() {
+                    _actions.remove(action);
+                    action.dispose();
+                  }),
+                  onMoreMessages: onMoreMessages,
+                ),
+              if (_actions.length < 10)
+                CatchButton(
+                  key: const ValueKey<String>('automation-add-action'),
+                  label: l10n.hostAutomationAddAction,
+                  variant: CatchButtonVariant.secondary,
+                  leading: CatchIcon(CatchIcons.add),
+                  fullWidth: true,
+                  onPressed: _busy
+                      ? null
+                      : () => setState(() => _actions.add(_newAction())),
+                ),
+              CatchSection(
+                dividers: CatchSectionPlacement.none,
+                children: [
+                  CatchField.toggle(
+                    copy: copy,
+                    title: l10n.hostAutomationEnabled,
+                    contract: CatchContractConstraints
+                        .createOrganizerFormAutomationCallablePayloadEnabled,
+                    body: l10n.hostAutomationEnableHelp,
+                    value: _enabled,
+                    onChanged: _busy
+                        ? null
+                        : (value) => setState(() => _enabled = value),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
     } else if (options.hasError) {
       body = CatchPageBody.screen(
         child: CatchLocalizedErrorState(
@@ -190,269 +448,6 @@ class _HostFormAutomationEditorState
                   : () => unawaited(_save()),
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _body(
-    BuildContext context,
-    HostSavedAudienceFilterOptions source,
-    HostAutomationMessagesState? messages,
-    VoidCallback onMoreMessages,
-  ) {
-    final l10n = context.l10n;
-    final copy = catchFieldCopy(l10n);
-    final disabled = <WidgetState>{if (_busy) WidgetState.disabled};
-    final questions = [
-      for (final question in source.questions)
-        if (question.formId == _formId && question.activeVersion) question,
-    ];
-    final question = questions
-        .where((q) => q.questionId == _condition?['questionId'])
-        .firstOrNull;
-    final expected = (_condition?['expectedValues'] as List?)?.firstOrNull;
-    final formRequired =
-        _trigger == HostFormAutomationTrigger.responseSubmitted ||
-        _trigger == HostFormAutomationTrigger.responseWithdrawn ||
-        _trigger == HostFormAutomationTrigger.answerMatches;
-    return CatchPageBody.screen(
-      child: Form(
-        key: _form,
-        child: CatchStack(
-          gap: CatchStackGap.g24,
-          children: [
-            if (_error case final error?)
-              CatchLocalizedErrorState(
-                error,
-                context: AppErrorContext.forms,
-                mode: CatchErrorStateMode.compact,
-                onRetry: _busy
-                    ? null
-                    : (_retryError ?? () => unawaited(_save())),
-              ),
-            if (_validation case final message?)
-              CatchNotice.inline(
-                key: const ValueKey<String>('automation-validation'),
-                body: message,
-                tone: CatchNoticeTone.danger,
-              ),
-            CatchSection(
-              title: l10n.hostAudienceAutomationWhen,
-              dividers: CatchSectionPlacement.none,
-              children: [
-                CatchField.input(
-                  key: const ValueKey('automation-name'),
-                  copy: copy,
-                  title: l10n.hostAutomationName,
-                  contract: CatchContractConstraints
-                      .createOrganizerFormAutomationCallablePayloadName,
-                  controller: _name,
-                  states: disabled,
-                ),
-                CatchField<HostFormAutomationTrigger>.select(
-                  copy: copy,
-                  title: l10n.hostAutomationTrigger,
-                  contract: CatchContractConstraints
-                      .createOrganizerFormAutomationCallablePayloadTrigger,
-                  contractValueBuilder: (value) => value.name,
-                  values: [
-                    for (final value in HostFormAutomationTrigger.values)
-                      if (widget.scopeFormId == null ||
-                          value != HostFormAutomationTrigger.eventAttended)
-                        value,
-                  ],
-                  itemLabelBuilder: (value) =>
-                      hostFormAutomationTriggerText(l10n, value),
-                  value: _trigger,
-                  states: disabled,
-                  onChanged: (value) {
-                    if (value != null) setState(() => _setTrigger(value));
-                  },
-                ),
-                if (_trigger != HostFormAutomationTrigger.eventAttended)
-                  CatchField<String>.select(
-                    copy: copy,
-                    title: l10n.hostAutomationForm,
-                    contractExemption:
-                        'The empty selection represents the nullable formId '
-                        'for any application form; required response '
-                        'triggers are checked before saving.',
-                    values: [
-                      if (!formRequired) '',
-                      for (final form in source.forms) form.id,
-                      if (_formId != null &&
-                          !source.forms.any((form) => form.id == _formId))
-                        _formId!,
-                    ],
-                    itemLabelBuilder: (value) => value.isEmpty
-                        ? l10n.hostAutomationAnyForm
-                        : source.forms
-                                  .where((form) => form.id == value)
-                                  .firstOrNull
-                                  ?.title ??
-                              l10n.hostAutomationConfigured,
-                    value: _formId ?? (formRequired ? null : ''),
-                    states: {
-                      if (_busy || widget.scopeFormId != null)
-                        WidgetState.disabled,
-                    },
-                    onChanged: (value) => setState(() {
-                      _formId = value == '' ? null : value;
-                      _condition = null;
-                    }),
-                  ),
-                if (formRequired && source.forms.isEmpty)
-                  CatchText(
-                    l10n.hostAutomationNoForm,
-                    variant: CatchTextVariant.bodySmall,
-                    tone: CatchTextTone.danger,
-                  ),
-                if (_trigger == HostFormAutomationTrigger.eventAttended)
-                  CatchField<String>.select(
-                    copy: copy,
-                    title: l10n.hostAutomationEvent,
-                    contractExemption:
-                        'Empty selection maps to nullable triggerEventId; '
-                        'event IDs come from the authorized organizer source '
-                        'options.',
-                    values: [
-                      '',
-                      for (final event in source.events) event.id,
-                      if (_eventId != null &&
-                          !source.events.any((event) => event.id == _eventId))
-                        _eventId!,
-                    ],
-                    itemLabelBuilder: (value) => value.isEmpty
-                        ? l10n.hostAutomationAnyEvent
-                        : source.events
-                                  .where((event) => event.id == value)
-                                  .firstOrNull
-                                  ?.title ??
-                              l10n.hostAutomationConfigured,
-                    value: _eventId ?? '',
-                    states: disabled,
-                    onChanged: (value) =>
-                        setState(() => _eventId = value == '' ? null : value),
-                  ),
-                CatchField.input(
-                  key: const ValueKey('automation-delay'),
-                  copy: copy,
-                  title: l10n.hostAutomationDelay,
-                  contractExemption:
-                      'Text entry is parsed as an integer delayMinutes and '
-                      'validated in the generated range 0 through 10080.',
-                  helperText: l10n.hostAutomationDelayHelp,
-                  controller: _delay,
-                  keyboardType: TextInputType.number,
-                  states: disabled,
-                  onValidate: (text) {
-                    final value = int.tryParse(text?.trim() ?? '');
-                    return value == null || value < 0 || value > 10080
-                        ? l10n.hostAutomationDelayInvalid
-                        : null;
-                  },
-                ),
-                if (_trigger == HostFormAutomationTrigger.answerMatches) ...[
-                  CatchText(
-                    l10n.hostAutomationQuestionHelp,
-                    variant: CatchTextVariant.bodySmall,
-                    tone: CatchTextTone.secondary,
-                  ),
-                  CatchField<HostAudienceQuestionOption>.select(
-                    copy: copy,
-                    title: l10n.hostAutomationQuestion,
-                    contractExemption:
-                        'Question IDs are selected from the current published '
-                        'version; server validation binds the condition to '
-                        'that version.',
-                    values: questions,
-                    itemLabelBuilder: (q) => q.label,
-                    value: question,
-                    states: disabled,
-                    onChanged: (q) => setState(
-                      () => _condition = q == null
-                          ? null
-                          : {
-                              'questionId': q.questionId,
-                              'operator': 'contains',
-                              'expectedValues': <Object?>[],
-                            },
-                    ),
-                  ),
-                  CatchField<HostAudienceAnswerOption>.select(
-                    copy: copy,
-                    title: l10n.hostAutomationAnswer,
-                    contractExemption:
-                        'Typed boolean or choice values come from the selected '
-                        'published question.',
-                    values: question?.options ?? const [],
-                    itemLabelBuilder: (answer) => answer.label,
-                    value: question?.options
-                        .where((answer) => answer.value == expected)
-                        .firstOrNull,
-                    states: {
-                      if (_busy || question == null) WidgetState.disabled,
-                    },
-                    onChanged: (answer) {
-                      if (answer == null) return;
-                      setState(
-                        () => _condition = {
-                          ...?_condition,
-                          'expectedValues': [answer.value],
-                        },
-                      );
-                    },
-                  ),
-                ],
-              ],
-            ),
-            for (final action in _actions)
-              HostFormAutomationActionSection(
-                key: ValueKey(action.id),
-                action: action,
-                trigger: _trigger,
-                source: source,
-                messages: messages,
-                busy: _busy,
-                canRemove: _actions.length > 1,
-                onChanged: () => setState(() {}),
-                onKind: (kind) => setState(() => action.changeKind(kind)),
-                onMessage: (id) => unawaited(_selectMessage(action, id)),
-                onRemove: () => setState(() {
-                  _actions.remove(action);
-                  action.dispose();
-                }),
-                onMoreMessages: onMoreMessages,
-              ),
-            if (_actions.length < 10)
-              CatchButton(
-                key: const ValueKey<String>('automation-add-action'),
-                label: l10n.hostAutomationAddAction,
-                variant: CatchButtonVariant.secondary,
-                leading: CatchIcon(CatchIcons.add),
-                fullWidth: true,
-                onPressed: _busy
-                    ? null
-                    : () => setState(() => _actions.add(_newAction())),
-              ),
-            CatchSection(
-              dividers: CatchSectionPlacement.none,
-              children: [
-                CatchField.toggle(
-                  copy: copy,
-                  title: l10n.hostAutomationEnabled,
-                  contract: CatchContractConstraints
-                      .createOrganizerFormAutomationCallablePayloadEnabled,
-                  body: l10n.hostAutomationEnableHelp,
-                  value: _enabled,
-                  onChanged: _busy
-                      ? null
-                      : (value) => setState(() => _enabled = value),
-                ),
-              ],
-            ),
-          ],
         ),
       ),
     );

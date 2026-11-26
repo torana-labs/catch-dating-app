@@ -154,24 +154,24 @@ HostFormDefinition _definition({bool routeToLast = false}) =>
             'targetSectionId': 'last',
           },
       ],
-      'appearance': {
+      'appearance': const {
         'preset': 'minimal',
         'logoAssetId': null,
         'coverAssetId': null,
         'activityKind': null,
       },
-      'availability': {
+      'availability': const {
         'opensAt': null,
         'closesAt': null,
         'responseLimit': null,
         'closedMessage': null,
       },
-      'consent': {
+      'consent': const {
         'consentCopy': 'I consent.',
         'consentVersion': 'v1',
         'retentionCopy': 'Retained for this form purpose.',
       },
-      'completion': {
+      'completion': const {
         'title': 'Thanks',
         'message': null,
         'actionKind': 'none',
