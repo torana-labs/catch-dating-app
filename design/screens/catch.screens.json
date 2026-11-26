@@ -399,15 +399,15 @@
           "routes": [
             "hostCreateEventScreen"
           ],
-          "file": "lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart",
-          "symbol": "HostCreateEventRouteLoadingScreen",
-          "family": "step-flow",
-          "expression": "CatchScaffold.stepFlow",
-          "bodyGeometry": "intrinsic",
+          "file": "lib/hosts/create/create_route_screen.dart",
+          "symbol": "CreateRouteScreen",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
           "topEdge": "safe-area"
         }
       ],
-      "reason": "Event creation and its loading state share the explicit step-flow owner."
+      "reason": "The create route resolves the organizer and host on a system screen, then opens the redesigned create flow."
     },
     "screen.host.event.manage": {
       "owners": [
@@ -896,26 +896,26 @@
           "routes": [
             "hostAppEditEventScreen"
           ],
-          "file": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
-          "symbol": "EditHostedEventRouteScreen",
+          "file": "lib/hosts/create/edit_event_screen.dart",
+          "symbol": "EditEventRouteScreen",
           "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
+          "expression": "CatchScreen",
           "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
+          "topEdge": "safe-area"
         },
         {
           "routes": [
             "hostAppEditEventScreen"
           ],
-          "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "symbol": "_EditHostedEventScreenState",
+          "file": "lib/hosts/create/edit_event_screen.dart",
+          "symbol": "_EditEventScreenState",
           "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
+          "expression": "CatchScreen",
           "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
+          "topEdge": "safe-area"
         }
       ],
-      "reason": "Edit Event keeps route-state and loaded editing on canonical pushed-route owners."
+      "reason": "Edit Event resolves the route on a system screen, then edits with the shared create editor."
     },
     "screen.event.location_map": {
       "owners": [
@@ -1914,15 +1914,15 @@
     "RoutePathBuilderScreen": {
       "owners": [
         {
-          "file": "lib/hosts/presentation/event_management/widgets/route_path_builder_screen.dart",
-          "symbol": "_RoutePathBuilderScreenState",
+          "file": "lib/hosts/create/create_route_path_screen.dart",
+          "symbol": "_CreateRoutePathScreenState",
           "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
+          "expression": "CatchScreen",
           "bodyGeometry": "mixed",
-          "topEdge": "route-chrome"
+          "topEdge": "safe-area"
         }
       ],
-      "reason": "The route-path map editor is a pushed route with canonical compact chrome and a full-bleed map body."
+      "reason": "The route-path map editor is a system screen with a full-bleed map body and a bar dock."
     },
     "HostEventCloseOutScreen": {
       "owners": [
@@ -12711,23 +12711,23 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/event_management/host_create_event_screen.dart",
-        "symbol": "HostCreateEventRouteScreen"
+        "file": "lib/hosts/create/create_route_screen.dart",
+        "symbol": "CreateRouteScreen"
       },
       "stateController": {
-        "primary": "HostCreateEventRouteState + CreateEventWizardStep + CreateEventWizardState + CreateEventDraftSnapshot + CreateEventDraftActionState + CreateEventDraftRestoreState + CreateEventScheduleState + CreateEventPhotoDraftState + CreateEventPolicyState + CreateEventScreen + CreateEventController + CreateEventDraftController",
+        "primary": "createRouteStatus + CreateEventWizardStep + CreateEventWizardState + CreateEventDraftSnapshot + CreateEventDraftActionState + CreateEventDraftRestoreState + CreateEventScheduleState + CreateEventPhotoDraftState + CreateEventPolicyState + CreateEventScreen + CreateEventController + CreateEventDraftController",
         "files": [
           {
-            "file": "lib/hosts/presentation/event_management/host_create_event_screen.dart",
-            "symbol": "HostCreateEventRouteScreen"
+            "file": "lib/hosts/create/create_route_screen.dart",
+            "symbol": "CreateRouteScreen"
           },
           {
             "file": "lib/contexts/organizers/data/organizers_repository.dart",
             "symbol": "fetchOrganizer"
           },
           {
-            "file": "lib/hosts/presentation/event_management/host_create_event_route_state.dart",
-            "symbol": "HostCreateEventRouteState"
+            "file": "lib/hosts/create/create_route_screen.dart",
+            "symbol": "createRouteStatus"
           },
           {
             "file": "lib/hosts/presentation/event_management/create/create_event_policy_state.dart",
@@ -12764,14 +12764,14 @@
             "symbol": "EventDraftRepository"
           }
         ],
-        "notes": "HostCreateEventRouteState resolves route branches/retry before HostCreateEventRouteScreen renders CreateEventScreen. CreateEventWizardStep owns canonical step order, titles, form-key specs, and schedule-validation metadata. CreateEventWizardValidationPlan owns current form-key selection and schedule validation policy. CreateEventWizardState owns current step display, header/footer labels, submit/save pending state, mutation error copy, success event/invite display state, and typed back/primary/save-draft intents. CreateEventSuccessNavigationEffect owns success destination, manage-event route parameters, and route extra payload. CreateEventDraftSnapshot, CreateEventDraftActionState, CreateEventDraftRestoreState, and CreateEventDraftSideEffectState own draft serialization, dirty/save policy, restore mapping, and load/delete intent policy. CreateEventScreen keeps local form controllers, PageController step changes, platform picker execution, controller mutation triggers, and Navigator/context side effects."
+        "notes": "createRouteStatus resolves route branches/retry before CreateRouteScreen renders CreateEventScreen. CreateEventWizardStep owns canonical step order, titles, form-key specs, and schedule-validation metadata. CreateEventWizardValidationPlan owns current form-key selection and schedule validation policy. CreateEventWizardState owns current step display, header/footer labels, submit/save pending state, mutation error copy, success event/invite display state, and typed back/primary/save-draft intents. CreateEventSuccessNavigationEffect owns success destination, manage-event route parameters, and route extra payload. CreateEventDraftSnapshot, CreateEventDraftActionState, CreateEventDraftRestoreState, and CreateEventDraftSideEffectState own draft serialization, dirty/save policy, restore mapping, and load/delete intent policy. CreateEventScreen keeps local form controllers, PageController step changes, platform picker execution, controller mutation triggers, and Navigator/context side effects."
       },
       "designRefs": [
         {
           "id": "repo.host-create-event-tests",
           "kind": "repo",
           "status": "available",
-          "path": "test/hosts/host_create_event_screen_test.dart",
+          "path": "test/hosts/create/create_route_screen_test.dart",
           "notes": "Create event tests cover initial club-extra route hydration, missing-basics validation, full wizard submit, event policy validation, map picker, custom activity, Event Success guide, create failure banner, draft save/delete/restore, unsaved-changes Save draft feedback, and success navigation."
         },
         {
@@ -12779,7 +12779,7 @@
           "kind": "repo",
           "status": "available",
           "path": "test/hosts/host_create_event_state_test.dart",
-          "notes": "Plain state tests cover HostCreateEventRouteState initial/fetch branches and CreateEventWizardState step/footer/mutation/success display mapping."
+          "notes": "Plain state tests cover createRouteStatus initial/fetch branches and CreateEventWizardState step/footer/mutation/success display mapping."
         },
         {
           "id": "repo.host-create-event-controller-tests",
@@ -12887,13 +12887,13 @@
           "id": "initial_club_extra",
           "kind": "populated",
           "status": "captured",
-          "source": "HostCreateEventRouteScreen immediately renders CreateEventScreen when navigation supplies a Club extra.",
+          "source": "CreateRouteScreen immediately renders CreateEventScreen when navigation supplies a Club extra.",
           "tests": [
-            "test/hosts/host_create_event_screen_test.dart"
+            "test/hosts/create/create_route_screen_test.dart"
           ],
           "nextAction": "Captured by host_create_initial_club_extra with fetchOrganizerProvider held loading; remaining work is source-route-specific assertions only if Host Home or Host Clubs route construction changes.",
           "previewIds": [
-            "HostCreateEventRouteScreen/Route and wizard states"
+            "CreateRouteScreen/Route and wizard states"
           ],
           "captureIds": [
             "host_create_initial_club_extra"
@@ -12906,7 +12906,7 @@
           "source": "Without an initial club extra, fetchOrganizerProvider loading renders SplashScreen.",
           "nextAction": "Compare route loading capture against a canonical loading reference if design exports one.",
           "previewIds": [
-            "HostCreateEventRouteScreen/Route and wizard states"
+            "CreateRouteScreen/Route and wizard states"
           ],
           "captureIds": [
             "host_create_route_loading"
@@ -12919,7 +12919,7 @@
           "source": "fetchOrganizerProvider errors render CatchLocalizedErrorScaffold with AppErrorContext.club and retry invalidation.",
           "nextAction": "Generic route error and offline route error are captured separately; compare both against state references once exported.",
           "previewIds": [
-            "HostCreateEventRouteScreen/Route and wizard states"
+            "CreateRouteScreen/Route and wizard states"
           ],
           "captureIds": [
             "host_create_route_error"
@@ -12932,7 +12932,7 @@
           "source": "A null fetched club renders Club not found copy in CatchErrorScaffold.",
           "nextAction": "Compare missing-club capture against reference copy if design exports one.",
           "previewIds": [
-            "HostCreateEventRouteScreen/Route and wizard states"
+            "CreateRouteScreen/Route and wizard states"
           ],
           "captureIds": [
             "host_create_not_found"
@@ -12945,7 +12945,7 @@
           "source": "CreateEventScreen supports an ordered Host cover-and-gallery collection with no product-level photo cap through CreateEventController.pickEventPhotos and the scalable OrderedPhotoPicker manager; the organizer logo remains separate and inherited.",
           "nextAction": "Captures cover seeded picked-photo previews without platform picker calls and Widgetbook covers a 24-photo gallery. Remaining route variants are reorder/remove, picker cancel, and picker failure.",
           "previewIds": [
-            "HostCreateEventRouteScreen/Route and wizard states"
+            "CreateRouteScreen/Route and wizard states"
           ],
           "captureIds": [
             "host_media_gallery_manager"
@@ -12970,25 +12970,25 @@
           "status": "tested",
           "source": "Draft picker and submit cleanup delete drafts through CreateEventDraftController.deleteDraftMutation.",
           "tests": [
-            "test/hosts/host_create_event_screen_test.dart"
+            "test/hosts/create/create_route_screen_test.dart"
           ],
           "nextAction": "The draft picker's delete confirmation capture retired with the legacy Create screens (#1599); capture the system Create draft delete if design requires it.",
           "previewIds": [
-            "HostCreateEventRouteScreen/Route and wizard states"
+            "CreateRouteScreen/Route and wizard states"
           ]
         },
         {
           "id": "unauthorized_host",
           "kind": "permission",
           "status": "tested",
-          "source": "HostCreateEventRouteState watches uid state and returns forbidden when the signed-in user is missing or is not on the club host team, before CreateEventScreen is built.",
+          "source": "createRouteStatus watches uid state and returns forbidden when the signed-in user is missing or is not on the club host team, before CreateEventScreen is built.",
           "tests": [
             "test/hosts/host_create_event_state_test.dart",
-            "test/hosts/host_create_event_screen_test.dart"
+            "test/hosts/create/create_route_screen_test.dart"
           ],
           "nextAction": "Host-access route state is implemented, tested, and captured; add a dedicated design reference only if design exports an unauthorized-state variant.",
           "previewIds": [
-            "HostCreateEventRouteScreen/Route and wizard states"
+            "CreateRouteScreen/Route and wizard states"
           ],
           "captureIds": [
             "host_create_unauthorized"
@@ -13001,7 +13001,7 @@
           "source": "Club fetch, map/place selection, draft operations, event creation, and photo upload can all fail offline through existing mapped errors.",
           "nextAction": "Route club-fetch, draft-save, submit, and photo-upload offline failures now render through shared offline copy in deterministic captures. Map picker offline remains a deeper variant if design requires it.",
           "previewIds": [
-            "HostCreateEventRouteScreen/Route and wizard states"
+            "CreateRouteScreen/Route and wizard states"
           ],
           "captureIds": [
             "host_create_route_offline"
@@ -13009,7 +13009,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "One three-stage form serves new events, repeated templates, restored drafts, and imported events: Event basics; When & where; then Guests/Booking & live guide. Optional details are disclosed on demand. Review is explicit before creation. HostCreateEventRouteState resolves route club loading/error/not-found/ready branches before HostCreateEventRouteScreen renders CreateEventScreen. CreateEventWizardStep owns canonical step order, titles, form-key spec construction, and schedule-validation metadata. CreateEventWizardValidationPlan owns current form-key selection and schedule validation policy. CreateEventWizardState owns step header/footer/mutation/success display state plus typed back/primary/save-draft intents. CreateEventSuccessNavigationEffect owns success destination, manage-event route parameters, and route extra payload. CreateEventDraftSnapshot owns draft dirty-tracking signature and EventDraft serialization. CreateEventDraftActionState owns new-vs-existing draft dirty decisions, draft id selection, and save/update success copy. CreateEventDraftRestoreState owns EventDraft-to-form restore mapping, stale enum fallback, restored schedule text, location restore state, policy restore state, and restored Event Success defaults. CreateEventDraftSideEffectState owns draft-check, picker visibility, picker delete intent, and post-submit delete intent policy. CreateEventScreen keeps form-controller assignment, PageController movement, platform picker execution, controller mutation triggers, and Navigator/context side effects inline.",
+        "currentLayout": "One three-stage form serves new events, repeated templates, restored drafts, and imported events: Event basics; When & where; then Guests/Booking & live guide. Optional details are disclosed on demand. Review is explicit before creation. createRouteStatus resolves route club loading/error/not-found/ready branches before CreateRouteScreen renders CreateEventScreen. CreateEventWizardStep owns canonical step order, titles, form-key spec construction, and schedule-validation metadata. CreateEventWizardValidationPlan owns current form-key selection and schedule validation policy. CreateEventWizardState owns step header/footer/mutation/success display state plus typed back/primary/save-draft intents. CreateEventSuccessNavigationEffect owns success destination, manage-event route parameters, and route extra payload. CreateEventDraftSnapshot owns draft dirty-tracking signature and EventDraft serialization. CreateEventDraftActionState owns new-vs-existing draft dirty decisions, draft id selection, and save/update success copy. CreateEventDraftRestoreState owns EventDraft-to-form restore mapping, stale enum fallback, restored schedule text, location restore state, policy restore state, and restored Event Success defaults. CreateEventDraftSideEffectState owns draft-check, picker visibility, picker delete intent, and post-submit delete intent policy. CreateEventScreen keeps form-controller assignment, PageController movement, platform picker execution, controller mutation triggers, and Navigator/context side effects inline.",
         "targetLayout": "Host Create Event should keep expanding route-level and wizard/controller state boundaries until validation, draft persistence, submit state, picker callbacks, Event Success defaults, and navigation intents are outside visual step sections.",
         "sections": [
           {
@@ -13018,14 +13018,14 @@
             "status": "implemented_local",
             "layer": "screen-adapter",
             "claudeComponents": [
-              "HostCreateEventRouteState"
+              "createRouteStatus"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/event_management/host_create_event_route_state.dart",
-              "symbol": "HostCreateEventRouteState"
+              "file": "lib/hosts/create/create_route_screen.dart",
+              "symbol": "createRouteStatus"
             },
-            "currentOwner": "HostCreateEventRouteState + HostCreateEventRouteScreen",
-            "targetOwner": "HostCreateEventRouteState provider/controller adapter",
+            "currentOwner": "createRouteStatus + CreateRouteScreen",
+            "targetOwner": "createRouteStatus provider/controller adapter",
             "dependencies": [
               "catch.surface"
             ],
@@ -13036,9 +13036,9 @@
               "club_not_found",
               "unauthorized"
             ],
-            "migration": "Initial extra, club loading, club error retry, club not-found, signed-in uid loading/error, forbidden host-team access, and ready branches now flow through HostCreateEventRouteState.",
+            "migration": "Initial extra, club loading, club error retry, club not-found, signed-in uid loading/error, forbidden host-team access, and ready branches now flow through createRouteStatus.",
             "previewIds": [
-              "HostCreateEventRouteScreen/Route and wizard states"
+              "CreateRouteScreen/Route and wizard states"
             ]
           },
           {
@@ -13066,7 +13066,7 @@
             ],
             "migration": "Feed title, club name, step count, and back intent from wizard state; add text-scale previews.",
             "previewIds": [
-              "HostCreateEventRouteScreen/Route and wizard states"
+              "CreateRouteScreen/Route and wizard states"
             ]
           }
         ]
@@ -13080,7 +13080,7 @@
         {
           "id": "DS-HOST-EVENT-CREATE-002",
           "status": "closed",
-          "nextAction": "Closed. HostCreateEventRouteState owns route branches/retry; CreateEventWizardStep owns step order/titles/form-key specs/schedule-validation metadata; CreateEventWizardValidationPlan owns form-key selection and schedule validation policy; CreateEventWizardState owns wizard display/mutation/success state plus typed back/primary/save-draft intents; CreateEventSuccessNavigationEffect owns success destination and manage-event route payload; CreateEventDraftSnapshot, CreateEventDraftActionState, CreateEventDraftRestoreState, and CreateEventDraftSideEffectState own draft serialization, dirty/save policy, restore mapping, and load/delete intent policy. CreateEventScreen is left with allowed form-controller assignment, PageController movement, platform picker execution, controller mutation triggers, and Navigator/context side effects."
+          "nextAction": "Closed. createRouteStatus owns route branches/retry; CreateEventWizardStep owns step order/titles/form-key specs/schedule-validation metadata; CreateEventWizardValidationPlan owns form-key selection and schedule validation policy; CreateEventWizardState owns wizard display/mutation/success state plus typed back/primary/save-draft intents; CreateEventSuccessNavigationEffect owns success destination and manage-event route payload; CreateEventDraftSnapshot, CreateEventDraftActionState, CreateEventDraftRestoreState, and CreateEventDraftSideEffectState own draft serialization, dirty/save policy, restore mapping, and load/delete intent policy. CreateEventScreen is left with allowed form-controller assignment, PageController movement, platform picker execution, controller mutation triggers, and Navigator/context side effects."
         },
         {
           "id": "DS-HOST-EVENT-CREATE-003",
@@ -13095,7 +13095,7 @@
         {
           "id": "DS-HOST-EVENT-CREATE-005",
           "status": "closed",
-          "nextAction": "Closed. HostCreateEventRouteState now watches signed-in uid state and renders a host-access error before CreateEventScreen for signed-out or non-host-team users, with state and widget coverage."
+          "nextAction": "Closed. createRouteStatus now watches signed-in uid state and renders a host-access error before CreateEventScreen for signed-out or non-host-team users, with state and widget coverage."
         },
         {
           "id": "DS-HOST-EVENT-CREATE-006",
@@ -19824,27 +19824,27 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
-        "symbol": "EditHostedEventRouteScreen"
+        "file": "lib/hosts/create/edit_event_screen.dart",
+        "symbol": "EditEventRouteScreen"
       },
       "stateController": {
-        "primary": "EditHostedEventRouteScreen + uidProvider + fetchOrganizerProvider + watchEventProvider + EditHostedEventScreen + EventBookingController",
+        "primary": "EditEventRouteScreen + uidProvider + fetchOrganizerProvider + watchEventProvider + EditEventScreen + EventBookingController",
         "files": [
           {
-            "file": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
-            "symbol": "EditHostedEventRouteScreen"
+            "file": "lib/hosts/create/edit_event_screen.dart",
+            "symbol": "EditEventRouteScreen"
           },
           {
-            "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-            "symbol": "EditHostedEventScreen"
+            "file": "lib/hosts/create/edit_event_screen.dart",
+            "symbol": "EditEventScreen"
           },
           {
-            "file": "lib/hosts/presentation/host_event_edit_screen_state.dart",
-            "symbol": "HostEventEditScreenState"
+            "file": "lib/hosts/create/edit_event_controller.dart",
+            "symbol": "EditEventController"
           },
           {
-            "file": "lib/hosts/presentation/host_event_edit_screen_state.dart",
-            "symbol": "EditHostedEventFooterState"
+            "file": "lib/hosts/create/edit_event_values.dart",
+            "symbol": "EditEventSaveRequest"
           },
           {
             "file": "lib/contexts/organizers/data/organizers_repository.dart",
@@ -19873,14 +19873,14 @@
             "symbol": "EventRepository"
           }
         ],
-        "notes": "EditHostedEventRouteScreen resolves uid, club, and event, handles loading/error/not-found/unauthorized route states, and delegates loaded state to EditHostedEventScreen. HostEventEditScreenState now owns loaded editability, schedule/policy lock derivation, field display state, save footer enabled/loading state, save error exposure, success/missing-location feedback copy, and pop-on-success policy. HostEventEditSaveRequest owns validated save payload construction. HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy. HostEventEditFieldDisplayState owns schedule, location/details, and policy display values. EditHostedEventScreen still owns local form controllers, location picker navigation, validation, EventBookingController.updateHostedEventMutation execution, and Navigator/snackbar side effects."
+        "notes": "EditEventRouteScreen resolves uid, club, and event, handles loading/error/not-found/unauthorized route states, and delegates loaded state to EditEventScreen. EditEventController now owns loaded editability, schedule/policy lock derivation, field display state, save footer enabled/loading state, save error exposure, success/missing-location feedback copy, and pop-on-success policy. EditEventSaveRequest owns validated save payload construction. HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy. HostEventEditFieldDisplayState owns schedule, location/details, and policy display values. EditEventScreen still owns local form controllers, location picker navigation, validation, EventBookingController.updateHostedEventMutation execution, and Navigator/snackbar side effects."
       },
       "designRefs": [
         {
           "id": "repo.edit-hosted-event-tests",
           "kind": "repo",
           "status": "available",
-          "path": "test/hosts/edit_hosted_event_screen_test.dart",
+          "path": "test/hosts/create/edit_event_screen_test.dart",
           "notes": "Edit hosted event tests cover saving editable fields through updateHostedEvent and schedule locking when event activity exists."
         },
         {
@@ -19994,7 +19994,7 @@
           "status": "captured",
           "source": "Route loading is true while uidProvider is loading.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "nextAction": "Add route capture for uid loading and signed-out host-shell behavior.",
           "captureIds": [
@@ -20007,7 +20007,7 @@
           "status": "captured",
           "source": "Club/event provider loading renders a tokenized Scaffold with HostRouteLoadingBody(showTabRail: false).",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "nextAction": "Add deterministic route loading capture.",
           "captureIds": [
@@ -20020,7 +20020,7 @@
           "status": "captured",
           "source": "uid, club, or event provider errors render CatchLocalizedErrorScaffold with event context and retry invalidation.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "nextAction": "Add error/offline capture for failed club/event provider waves.",
           "captureIds": [
@@ -20033,7 +20033,7 @@
           "status": "captured",
           "source": "Missing club or event renders Event not found copy.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "nextAction": "Add missing/deleted event capture and recovery decision.",
           "captureIds": [
@@ -20046,7 +20046,7 @@
           "status": "captured",
           "source": "A uid that is not hosted by the club receives Action unavailable copy.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "nextAction": "Add unauthorized route capture and test for non-host viewer.",
           "captureIds": [
@@ -20059,13 +20059,13 @@
           "status": "captured",
           "source": "Loaded event pre-fills schedule, location, distance, description, policy, and invite fields.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "captureIds": [
             "edit_hosted_event"
           ],
           "tests": [
-            "test/hosts/edit_hosted_event_screen_test.dart"
+            "test/hosts/create/edit_event_screen_test.dart"
           ],
           "nextAction": "Host Edit Event prefilled state now has a manifest-registered design reference and deterministic capture that compares within threshold at 9.25% mismatch / 10.93 meanDelta. Private access, submit mutation, validation, selected-location, and offline states are captured; add state-specific pixel-reference variants before promoting beyond captured."
         },
@@ -20075,7 +20075,7 @@
           "status": "captured",
           "source": "Future events without booking/waitlist/attendance activity expose date, time, and duration controls.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "nextAction": "Add Widgetbook state for editable schedule controls.",
           "captureIds": [
@@ -20088,10 +20088,10 @@
           "status": "captured",
           "source": "Events with activity render a read-only schedule card and hide date picker controls.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "tests": [
-            "test/hosts/edit_hosted_event_screen_test.dart"
+            "test/hosts/create/edit_event_screen_test.dart"
           ],
           "nextAction": "Add locked schedule capture and compare copy against design.",
           "captureIds": [
@@ -20104,7 +20104,7 @@
           "status": "captured",
           "source": "Unlocked events expose capacity, price, admission format, cohort caps, demand pricing, age, invite, and cancellation policy controls.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "nextAction": "Add previews for each admission preset and dynamic pricing/cohort toggle branch.",
           "captureIds": [
@@ -20117,7 +20117,7 @@
           "status": "captured",
           "source": "Started or active events render a read-only policy summary instead of editable policy controls.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "nextAction": "Add policy-locked capture.",
           "captureIds": [
@@ -20130,7 +20130,7 @@
           "status": "captured",
           "source": "MapPinTile opens LocationPickerScreen with map tiles optionally disabled for deterministic captures.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "nextAction": "Selected-location capture is covered; add route callback proof for opening LocationPickerScreen if picker navigation becomes a product-risk area.",
           "captureIds": [
@@ -20143,14 +20143,14 @@
           "status": "captured",
           "source": "Required meeting point, distance, capacity, price, age, invite code, and pinned starting point requirements validate before save; missing pinned-location feedback uses the shared Catch snackbar helper.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
-          "nextAction": "Validation capture and save-blocking test are covered; keep moving validation state into a future HostEventEditScreenState adapter.",
+          "nextAction": "Validation capture and save-blocking test are covered; keep moving validation state into a future EditEventController adapter.",
           "captureIds": [
             "edit_hosted_event_validation_error"
           ],
           "tests": [
-            "test/hosts/edit_hosted_event_screen_test.dart"
+            "test/hosts/create/edit_event_screen_test.dart"
           ]
         },
         {
@@ -20159,7 +20159,7 @@
           "status": "captured",
           "source": "Invite-only policy watches watchEventPrivateAccessProvider and shows loading copy while current invite code loads.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "nextAction": "Compare invite-code loading treatment against private-access reference variants once exported.",
           "captureIds": [
@@ -20170,9 +20170,9 @@
           "id": "submit_pending",
           "kind": "mutation",
           "status": "captured",
-          "source": "HostEventEditScreenState maps updateHostedEventMutation pending into a frozen route and form plus loading/disabled Save state; HostEventBookingController returns the active Future for duplicate direct calls.",
+          "source": "EditEventController maps updateHostedEventMutation pending into a frozen route and form plus loading/disabled Save state; HostEventBookingController returns the active Future for duplicate direct calls.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "nextAction": "Pending footer display policy is adapter-owned; compare against mutation reference variants once exported.",
           "captureIds": [
@@ -20180,16 +20180,16 @@
           ],
           "tests": [
             "test/hosts/host_event_booking_controller_test.dart",
-            "test/hosts/edit_hosted_event_screen_test.dart"
+            "test/hosts/create/edit_event_screen_test.dart"
           ]
         },
         {
           "id": "submit_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "HostEventEditScreenState exposes updateHostedEventMutation errors before EditHostedEventScreen renders CatchLocalizedErrorBanner under the scope notice.",
+          "source": "EditEventController exposes updateHostedEventMutation errors before EditEventScreen renders CatchLocalizedErrorBanner under the scope notice.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "nextAction": "Submit error display policy is adapter-owned; compare against mutation reference variants once exported.",
           "captureIds": [
@@ -20200,12 +20200,12 @@
           "id": "success_pop",
           "kind": "mutation",
           "status": "tested",
-          "source": "HostEventEditScreenState owns success copy and pop-on-success policy; EditHostedEventScreen still executes the update mutation, provider invalidations, snackbar, and Navigator pop side effects.",
+          "source": "EditEventController owns success copy and pop-on-success policy; EditEventScreen still executes the update mutation, provider invalidations, snackbar, and Navigator pop side effects.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "tests": [
-            "test/hosts/edit_hosted_event_screen_test.dart"
+            "test/hosts/create/edit_event_screen_test.dart"
           ],
           "nextAction": "Add route test for return to Host Manage."
         },
@@ -20215,7 +20215,7 @@
           "status": "captured",
           "source": "Cancelled events show Cancelled event scope notice and disable save/edit controls.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "nextAction": "Add cancelled event capture.",
           "captureIds": [
@@ -20228,7 +20228,7 @@
           "status": "captured",
           "source": "Network-looking route or submit failures currently use error scaffold/banner copy.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "nextAction": "Offline route-load capture is covered; add state-specific references if the offline treatment diverges from the shared Catch error contract.",
           "captureIds": [
@@ -20241,7 +20241,7 @@
           "status": "captured",
           "source": "The dense long form needs text-scale coverage for scope notice, fields, policy cards, and footer.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "nextAction": "Add text-scale capture and Widgetbook section states.",
           "captureIds": [
@@ -20254,7 +20254,7 @@
           "status": "captured",
           "source": "Date/time picker, location picker, and route transition need reduced-motion review.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "nextAction": "Add reduced-motion review after fixtures are stable.",
           "captureIds": [
@@ -20267,7 +20267,7 @@
           "status": "captured",
           "source": "Edit event uses tokenized surfaces and controls.",
           "previewIds": [
-            "EditHostedEventRouteScreen/Route and section states"
+            "EditEventRouteScreen/Route and section states"
           ],
           "nextAction": "Add light/dark capture pair before pixel diff enforcement.",
           "captureIds": [
@@ -20276,8 +20276,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "EditHostedEventRouteScreen owns provider loading/access through HostEventEditState. EditHostedEventScreen owns form controllers, validation, location picker navigation, mutation execution, snackbar, and Navigator side effects while HostEventEditScreenState owns loaded editability, schedule/policy locks, field display state, save footer state, save error display input, feedback copy, and pop-on-success policy; HostEventEditSaveRequest owns validated save payload construction; HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy; HostEventEditFieldDisplayState owns schedule, location/details, and policy display values.",
-        "targetLayout": "Host Edit Event should keep route access in HostEventEditState and compose provider-free form sections from the existing field display adapters.",
+        "currentLayout": "EditEventRouteScreen owns provider loading/access through EditEventRouteState. EditEventScreen owns form controllers, validation, location picker navigation, mutation execution, snackbar, and Navigator side effects while EditEventController owns loaded editability, schedule/policy locks, field display state, save footer state, save error display input, feedback copy, and pop-on-success policy; EditEventSaveRequest owns validated save payload construction; HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy; HostEventEditFieldDisplayState owns schedule, location/details, and policy display values.",
+        "targetLayout": "Host Edit Event should keep route access in EditEventRouteState and compose provider-free form sections from the existing field display adapters.",
         "sections": [
           {
             "id": "section.host.event_edit.route_adapter",
@@ -20285,14 +20285,14 @@
             "status": "implemented_local",
             "layer": "screen-adapter",
             "claudeComponents": [
-              "HostEventEditState"
+              "EditEventRouteState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
-              "symbol": "EditHostedEventRouteScreen"
+              "file": "lib/hosts/create/edit_event_screen.dart",
+              "symbol": "EditEventRouteScreen"
             },
-            "currentOwner": "EditHostedEventRouteScreen + HostEventEditState",
-            "targetOwner": "HostEventEditState adapter",
+            "currentOwner": "EditEventRouteScreen + EditEventRouteState",
+            "targetOwner": "EditEventRouteState adapter",
             "dependencies": [
               "catch.surface"
             ],
@@ -20303,7 +20303,7 @@
               "event_not_found",
               "unauthorized_host"
             ],
-            "migration": "Route provider waves and host authorization now live in HostEventEditState; keep loaded edit-form policy in HostEventEditScreenState."
+            "migration": "Route provider waves and host authorization now live in EditEventRouteState; keep loaded edit-form policy in EditEventController."
           },
           {
             "id": "section.host.event_edit.scope_notice",
@@ -20314,10 +20314,10 @@
               "EditEventScopeNotice"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-              "symbol": "EditHostedEventScopeNotice"
+              "file": "lib/hosts/create/edit_event_body.dart",
+              "symbol": "EditEventScopeNotice"
             },
-            "currentOwner": "HostEventEditScreenState + EditHostedEventScopeNotice",
+            "currentOwner": "EditEventController + EditEventScopeNotice",
             "targetOwner": "provider-free scope notice section",
             "dependencies": [
               "catch.badge",
@@ -20329,7 +20329,7 @@
               "policy_locked",
               "cancelled_event_disabled"
             ],
-            "migration": "HostEventEditScreenState now owns the booleans that drive notice title/copy. Keep the notice renderer local until Host Manage and Create Event confirm a shared host action notice pattern."
+            "migration": "EditEventController now owns the booleans that drive notice title/copy. Keep the notice renderer local until Host Manage and Create Event confirm a shared host action notice pattern."
           },
           {
             "id": "section.host.event_edit.schedule",
@@ -20340,10 +20340,10 @@
               "EditEventScheduleSection"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/hosted_event_schedule_section.dart",
-              "symbol": "HostedEventScheduleSection"
+              "file": "lib/hosts/create/create_when_body.dart",
+              "symbol": "CreateWhenBody"
             },
-            "currentOwner": "HostedEventScheduleSection",
+            "currentOwner": "CreateLockedScheduleSection",
             "targetOwner": "provider-free schedule section",
             "dependencies": [
               "catch.field",
@@ -20355,7 +20355,7 @@
               "schedule_locked",
               "validation_error"
             ],
-            "migration": "HostEventEditScheduleFieldState owns date/time/duration display and validation copy; HostEventEditScreenState owns schedule lock state."
+            "migration": "HostEventEditScheduleFieldState owns date/time/duration display and validation copy; EditEventController owns schedule lock state."
           },
           {
             "id": "section.host.event_edit.location_details",
@@ -20366,10 +20366,10 @@
               "EditEventLocationDetails"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-              "symbol": "EditHostedEventScreen"
+              "file": "lib/hosts/create/edit_event_screen.dart",
+              "symbol": "EditEventScreen"
             },
-            "currentOwner": "EditHostedEventScreen",
+            "currentOwner": "EditEventScreen",
             "targetOwner": "provider-free location/details section",
             "dependencies": [
               "catch.field",
@@ -20391,10 +20391,10 @@
               "EditEventPolicySection"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/hosted_event_policy_section.dart",
-              "symbol": "HostedEventPolicySection"
+              "file": "lib/hosts/create/widgets/edit_event_policy_section.dart",
+              "symbol": "EditEventPolicySection"
             },
-            "currentOwner": "HostedEventPolicySection",
+            "currentOwner": "EditEventPolicySection",
             "targetOwner": "provider-free policy editor section",
             "dependencies": [
               "catch.chip",
@@ -20420,7 +20420,7 @@
               "file": "packages/catch_ui/lib/src/components/catch_legacy_dock.dart",
               "symbol": "CatchLegacyDock"
             },
-            "currentOwner": "EditHostedEventFooter over EditHostedEventFooterState",
+            "currentOwner": "EditHostedEventFooter over EditEventSaveRequest",
             "targetOwner": "provider-free mutation footer",
             "dependencies": [
               "catch.button"
@@ -20430,7 +20430,7 @@
               "submit_error",
               "success_pop"
             ],
-            "migration": "HostEventEditScreenState now owns save enabled/loading/error input, feedback copy, and pop-on-success policy while HostEventEditSaveRequest owns validated save payload construction and EditHostedEventFooter renders the CatchButton dock. HostEventEditIntent owns typed route callback payloads."
+            "migration": "EditEventController now owns save enabled/loading/error input, feedback copy, and pop-on-success policy while EditEventSaveRequest owns validated save payload construction and EditHostedEventFooter renders the CatchButton dock. HostEventEditIntent owns typed route callback payloads."
           }
         ]
       },
@@ -20448,7 +20448,7 @@
         {
           "id": "DS-HOST-EVENT-EDIT-003",
           "status": "closed",
-          "nextAction": "HostEventEditScreenState now owns loaded editability, schedule/policy locks, field display state, save footer state, save error input, feedback copy, and pop-on-success policy. HostEventEditFieldDisplayState owns schedule, location/details, and policy display values; HostEventEditSaveRequest owns validated save payload construction; HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy; HostEventEditScheduleValidationState owns invalid-start validation state; HostEventEditIntent owns typed route callback payloads."
+          "nextAction": "EditEventController now owns loaded editability, schedule/policy locks, field display state, save footer state, save error input, feedback copy, and pop-on-success policy. HostEventEditFieldDisplayState owns schedule, location/details, and policy display values; EditEventSaveRequest owns validated save payload construction; HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy; HostEventEditScheduleValidationState owns invalid-start validation state; HostEventEditIntent owns typed route callback payloads."
         },
         {
           "id": "DS-HOST-EVENT-EDIT-004",
