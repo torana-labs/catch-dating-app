@@ -7,6 +7,12 @@
   "guard": "none",
   "guardReason": "Opens or comments on the test-selection-miss issue with gh; meant to run only from main-red-alert.yml.",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "impactPaths": [
     ".github/workflows/functions-ci.yml",
     ".github/workflows/main-red-alert.yml",

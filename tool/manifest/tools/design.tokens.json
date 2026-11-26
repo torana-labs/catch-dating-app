@@ -8,6 +8,15 @@
   "command": "node tool/design_tokens.mjs",
   "surface": "local-writes-repo",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm",
+      "flutter",
+      "flutter-pub"
+    ]
+  },
   "description": "Generates shared web CSS, synced web fonts, and Flutter Dart constants from canonical design-token JSON with Style Dictionary.",
   "checks": [
     "node --check tool/design_tokens.mjs",

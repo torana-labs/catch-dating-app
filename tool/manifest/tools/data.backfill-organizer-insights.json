@@ -6,6 +6,12 @@
   "surface": "remote-write",
   "guard": "apply-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "role": "operator",
   "description": "Rolls up the last N complete UTC days of organizerInsights from the host analytics marts and organizerFollows. Dry run unless --apply; each day's documents are replaced, so reruns are safe.",
   "checks": [

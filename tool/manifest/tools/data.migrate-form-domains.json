@@ -6,6 +6,12 @@
   "surface": "remote-destructive",
   "guard": "apply-and-prod-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "One-time fold of the retired organizerFormDomains registry into customDomains (#1110): a read-only count and conversion plan by default, idempotent copies on --apply that never overwrite a differing record, and deletion of exactly copied legacy documents with --retire-legacy.",
   "checks": [
     "node --check tool/data/migrate_form_domains_to_custom_domains.mjs",

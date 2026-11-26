@@ -5,6 +5,13 @@
   "command": "npm run check:admin",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
   "description": "Runs CI's Admin lane locally, reading its steps from the React surface workflow. Its checks here cover only the step reader; the steps themselves run in the Admin lane.",
   "impactPaths": [
     "admin/scripts/checkAdminCi.test.mjs",

@@ -5,6 +5,12 @@
   "command": "node admin/scripts/generateCallableValidators.mjs --self-test",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Proves the admin callable validator generator covers every adminApi callable and keeps every schema rule through compaction. Its output is built on demand by the Admin npm lifecycle and never tracked.",
   "checks": [
     "node --test tool/admin/callable_inventory.test.mjs",

@@ -6,6 +6,12 @@
   "surface": "remote-write",
   "guard": "apply-and-prod-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Recounts the planner list counts on organizerProgramViews from programGuests and programTravelLegs with the nightly recount's compiled code; the backfill for the counts.",
   "checks": [
     "node --check tool/data/recompute_organizer_program_counts.mjs",

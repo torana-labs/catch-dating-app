@@ -5,6 +5,12 @@
   "command": "swift tool/branding/generate_catch_icon.swift",
   "surface": "local-writes-repo",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "platforms": [
     "darwin"
   ],

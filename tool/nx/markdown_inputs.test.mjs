@@ -58,6 +58,7 @@ export const markdownMentions = {
   "tool/architecture/lib/screen_move_apply.mjs": "the Phase 4 screen move run by hand; it rewrites moved paths in documents and CI runs only its fixture tests",
   "tool/architecture/rename_to_organizer.mjs": "a path filter that leaves documents out of the rename",
   "tool/ci/flutter_package_scope.mjs": "classifies Markdown as outside package code",
+  "tool/ci/main_red_alert.mjs": "names docs/release_operations.md in an issue body; the file it reads is the Actions event payload",
   "tool/contracts/generate_market_catalog.mjs": "a path filter that leaves documents out of the scan",
   "tool/contracts/generate_schema_contracts.mjs": "names the generated INDEX.md it writes",
   "tool/design/check_new_widget_inventory.mjs": "names docs/app_architecture.md in its advice",

@@ -22,16 +22,20 @@ Future<bool> runHostProgrammeCommand(
   required Future<Object?> Function(ProgramWorkspaceController controller) run,
   String? done,
 }) async {
+  // Captured before the write: the screen may be gone when it finishes, and
+  // its WidgetRef with it. The refresh still runs through the container.
+  final logger = ref.read(errorLoggerProvider);
+  final container = ProviderScope.containerOf(context, listen: false);
   try {
     await run(ref.read(programWorkspaceControllerProvider.notifier));
   } on Object catch (error, stackTrace) {
-    ref.read(errorLoggerProvider).logError(error, stackTrace, reason: reason);
+    logger.logError(error, stackTrace, reason: reason);
     if (context.mounted) {
       showCatchNoticeError(context, error, errorContext: AppErrorContext.event);
     }
     return false;
   }
-  refreshHostProgramme(ref, programId);
+  refreshHostProgrammeIn(container, programId);
   if (done != null && context.mounted) showCatchNotice(context, done);
   return true;
 }

@@ -5,6 +5,12 @@
   "command": "node tool/harness/verify_local.mjs",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "impactPaths": [
     "tool/harness/lib/workflow_steps.mjs",
     "tool/harness/workflow_steps.test.mjs",

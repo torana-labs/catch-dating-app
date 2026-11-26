@@ -63,6 +63,16 @@ class OrganizerSettingsBody extends StatelessWidget {
                   ? null
                   : () => onAction(OrganizerSettingsAction.editName),
             ),
+            if (state.hasProfile)
+              CatchIndexRow(
+                key: const ValueKey<String>('settings-row-profile-preview'),
+                title: l10n.hostsHostOrganizerTeamScreenLabelPreview,
+                density: CatchIndexRowSize.regular,
+                chevron: true,
+                onTap: busy
+                    ? null
+                    : () => onAction(OrganizerSettingsAction.previewProfile),
+              ),
             if (state.phone case final phone?)
               CatchIndexRow(
                 title: l10n.hostOrganizerSettingsPhone,

@@ -6,6 +6,12 @@
   "surface": "remote-write",
   "guard": "apply-and-prod-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Backfills event adminSearch projections for the admin Events canonical directory.",
   "checks": [
     "node --check tool/data/backfill_event_admin_search.mjs",

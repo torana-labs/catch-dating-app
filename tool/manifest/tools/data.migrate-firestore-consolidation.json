@@ -6,6 +6,12 @@
   "surface": "remote-write",
   "guard": "apply-and-prod-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Copies documents from retired collections into their November 2026 consolidation replacements; never deletes or overwrites; each applied run leaves a dataToolRuns record.",
   "checks": [
     "node --check tool/data/migrate_firestore_consolidation.mjs",

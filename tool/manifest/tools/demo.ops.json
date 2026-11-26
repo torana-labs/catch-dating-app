@@ -6,6 +6,12 @@
   "surface": "remote-destructive",
   "guard": "apply-and-prod-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Operational wrapper for demo seeding, Cross Paths fixtures, matching, Suvbot, and demo readiness.",
   "impactPaths": [
     "tool/demo/demo_ops.mjs",

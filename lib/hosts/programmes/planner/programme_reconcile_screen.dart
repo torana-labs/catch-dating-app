@@ -69,6 +69,7 @@ class _HostProgrammeReconcileScreenState
       );
       return false;
     }
+    final container = ProviderScope.containerOf(context, listen: false);
     setState(() => _busy = true);
     var ok = true;
     try {
@@ -93,7 +94,7 @@ class _HostProgrammeReconcileScreenState
     } on Object {
       ok = false;
     }
-    ref.invalidate(
+    container.invalidate(
       programVendorBillViewProvider(widget.programId, widget.vendorId),
     );
     if (!mounted) return ok;

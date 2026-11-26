@@ -308,7 +308,6 @@
         },
         {
           "routes": [
-            "hostOrganizerEventDefaultsScreen",
             "hostOrganizerLiveGuideScreen"
           ],
           "file": "lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart",
@@ -320,7 +319,6 @@
         },
         {
           "routes": [
-            "hostOrganizerEventDefaultsScreen",
             "hostOrganizerLiveGuideScreen"
           ],
           "file": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
@@ -339,6 +337,17 @@
           "family": "root",
           "expression": "CatchNavigationViewport",
           "bodyGeometry": "full-bleed",
+          "topEdge": "safe-area"
+        },
+        {
+          "routes": [
+            "hostOrganizerEventDefaultsScreen"
+          ],
+          "file": "lib/hosts/events/event_defaults_screen.dart",
+          "symbol": "_HostEventDefaultsScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
           "topEdge": "safe-area"
         },
         {
@@ -2184,19 +2193,6 @@
       ],
       "reason": "The practice console pushes practice tools as a system pushed screen."
     },
-    "HostOrganizerEventDefaultsScreen": {
-      "owners": [
-        {
-          "file": "lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart",
-          "symbol": "HostOrganizerSpokeScaffold",
-          "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
-          "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
-        }
-      ],
-      "reason": "Event defaults push the organizer defaults spoke, which owns its routed scaffold."
-    },
     "HostFormatsSweepScreen": {
       "owners": [
         {
@@ -2209,6 +2205,45 @@
         }
       ],
       "reason": "The run console and the crawl board push the return sweep as a system pushed screen."
+    },
+    "OrganizerAudienceScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/organizer/audience_screen.dart",
+          "symbol": "OrganizerAudienceScreen",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The Organiser tab pushes the organizer's all-time numbers and audience summary as a system pushed screen."
+    },
+    "OrganizerEventPolicyScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/organizer/event_policy_screen.dart",
+          "symbol": "OrganizerEventPolicyScreen",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "Event defaults push the organizer's event policy (activity, admission, ages and cancellation) as a system pushed screen."
+    },
+    "OrganizerLiveGuideScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/organizer/live_guide_screen.dart",
+          "symbol": "OrganizerLiveGuideScreen",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The Organiser tab pushes the live event guide defaults as a system pushed screen."
     }
   },
   "screens": [
@@ -14058,7 +14093,7 @@
             "symbol": "ChatsEmptyState"
           },
           {
-            "file": "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
+            "file": "lib/hosts/organizer/whatsapp_setup_section.dart",
             "symbol": "HostWhatsappSetupSection"
           },
           {
@@ -15090,7 +15125,7 @@
             "layer": "section",
             "claudeComponents": [],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
+              "file": "lib/hosts/organizer/whatsapp_setup_section.dart",
               "symbol": "HostWhatsappSetupSection"
             },
             "currentOwner": "hosts.presentation.inbox",

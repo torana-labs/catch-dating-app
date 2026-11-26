@@ -5,6 +5,12 @@
   "command": "node tool/contracts/generate_domain_classes.mjs",
   "surface": "local-writes-repo",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Generates schema-derived Dart domain classes from curated contract projection specs.",
   "checks": [
     "node --check tool/contracts/generate_domain_classes.mjs",

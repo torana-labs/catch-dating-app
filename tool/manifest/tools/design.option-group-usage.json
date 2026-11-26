@@ -5,6 +5,12 @@
   "command": "node tool/design/check_option_group_usage.mjs --summary",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Reports production direct CatchChoiceButton usage so underline tabs route through CatchChoiceInput.segmented or CatchPageTabBar rather than forking divider, indicator, ink, and trailing alignment behavior.",
   "checks": [
     "node --check tool/design/check_option_group_usage.mjs",

@@ -5,6 +5,12 @@
   "command": "node tool/platform/check_app_package_graph.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Verifies app-role native SDK declarations, one workspace lock, the Flutter-only catch_tokens boundary, and the provider/backend/app-free catch_ui dependency boundary with Skeletonizer pinned to 2.1.3.",
   "checks": [
     "node --check tool/platform/check_app_package_graph.mjs",

@@ -5,6 +5,12 @@
   "command": "node tool/impact/import_owners.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Derives which active tools reach each repository file through static imports, using the pinned dependency-cruiser in tool/impact, so affected-tool selection owns code inputs without hand-written globs.",
   "impactPaths": [
     "tool/lib/tool_import_graph.mjs",

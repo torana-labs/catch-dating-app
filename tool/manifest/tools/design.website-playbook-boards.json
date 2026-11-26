@@ -5,6 +5,12 @@
   "command": "node tool/design/playbook/build_boards.mjs",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Regenerates the website playbook canvas boards and their 390px phone wrappers from the source pack into build/design/playbook-boards, ready to publish to the design canvas.",
   "checks": [
     "node --check tool/design/playbook/build_boards.mjs",

@@ -58,10 +58,21 @@ void refreshHostProgrammeAttendance(WidgetRef ref, String programId) {
   ref.invalidate(programAttendanceReportProvider(programId));
 }
 
-void refreshHostProgrammeTrips(WidgetRef ref, String programId) {
-  refreshHostProgramme(ref, programId);
-  ref.invalidate(programTripsStreamProvider(programId));
-}
+/// The reads a trip-ledger refresh invalidates: the programme and its trips.
+List<ProviderOrFamily> hostProgrammeTripsReads(String programId) => [
+  ...hostProgrammeReads(programId),
+  programTripsStreamProvider(programId),
+];
+
+void refreshHostProgrammeTrips(WidgetRef ref, String programId) =>
+    hostProgrammeTripsReads(programId).forEach(ref.invalidate);
+
+/// [refreshHostProgrammeTrips] through a container captured before an
+/// `await`.
+void refreshHostProgrammeTripsIn(
+  ProviderContainer container,
+  String programId,
+) => hostProgrammeTripsReads(programId).forEach(container.invalidate);
 
 void refreshHostProgrammeShare(WidgetRef ref, String programId) {
   ref.invalidate(programWorkEntryProvider(programId, null));

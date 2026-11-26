@@ -5,6 +5,12 @@
   "command": "node tool/design/check_screen_contract_hygiene.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Reports advisory raw Material controls and hand-rolled visual values in contracted screen implementation files.",
   "checks": [
     "node --check tool/design/check_screen_contract_hygiene.mjs",

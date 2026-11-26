@@ -5,6 +5,12 @@
   "command": "node tool/impact/selection_replay.mjs --baseline <old functions_test_selection.mjs> --commits 100",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Replays the Functions test selection over recent main commits through two copies of the selector and lists every test the newer one drops, with the reads that show it cannot read the change, plus median and p90 selected counts for the unit and emulator lists.",
   "impactPaths": [
     "tool/impact/selection_replay.mjs",

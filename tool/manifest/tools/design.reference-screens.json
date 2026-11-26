@@ -5,6 +5,12 @@
   "command": "node tool/design/check_reference_screens.mjs --check",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Validates exported design reference PNG metadata and supports advisory pixel comparison against UI capture artifacts.",
   "checks": [
     "node --test tool/design/check_reference_screens.test.mjs",
