@@ -4,12 +4,14 @@ import test from "node:test";
 import {
   ALERT_WORKFLOW,
   DEFAULT_GRACE_HOURS,
+  FOLLOW_UP_ATTEMPTS,
   FOLLOW_UP_HOURS,
   MAIN_RED_TITLE,
   MISSED_TITLE,
   TARGETS,
   decide,
   expectedRun,
+  followUpReport,
   latestOccurrence,
   nightlyFollowUps,
   recordsFrom,
@@ -272,31 +274,42 @@ test("the nightly counts only the dispatched or scheduled nightly, from 02:00, a
 });
 
 
-test("each completed CI nightly gets one Main CI alert follow-up; recorded ones skip, running ones wait, others never", () => {
+test("each completed CI nightly gets one Main CI alert follow-up; a second failed attempt is reported, never retried", () => {
   const now = at("2026-11-26T13:00:00Z");
   const nightly = (id, extra = {}) => ({id, event: "workflow_dispatch", display_title: "CI nightly", head_branch: "main",
     head_repository: {full_name: repository}, status: "completed", conclusion: "success", created_at: "2026-11-26T11:18:39Z", ...extra});
+  const alert = (id, runId, extra = {}) => ({id, display_title: `Main CI alert for run ${runId}`, status: "completed",
+    conclusion: "success", html_url: `https://github.com/${repository}/actions/runs/${id}`, ...extra});
   const nightlies = [
-    nightly(1),
-    nightly(2),
-    nightly(3, {status: "in_progress", conclusion: null}),
+    nightly(1), nightly(2), nightly(3, {status: "in_progress", conclusion: null}), nightly(10), nightly(11), nightly(12),
     // Not the nightly, or not ours: never followed up.
-    nightly(4, {display_title: "CI"}),
-    nightly(5, {event: "push", display_title: "CI"}),
-    nightly(6, {event: "schedule", display_title: "CI"}),
-    nightly(7, {head_branch: "feature"}),
+    nightly(4, {display_title: "CI"}), nightly(5, {event: "push", display_title: "CI"}),
+    nightly(6, {event: "schedule", display_title: "CI"}), nightly(7, {head_branch: "feature"}),
     nightly(8, {head_repository: {full_name: "someone/fork"}}),
     // Older than the follow-up window.
     nightly(9, {created_at: new Date(now - (FOLLOW_UP_HOURS + 1) * 60 * 60 * 1000).toISOString()}),
   ];
-  // Run 2's alert ran already: a failed alert run is a record too, so it is never retried hourly.
-  const alertRuns = [{id: 50, display_title: "Main CI alert for run 2", conclusion: "failure"},
-    {id: 51, display_title: "Main CI alert for run 70", conclusion: "success"}];
-  assert.deepEqual(nightlyFollowUps({nightlies, alertRuns, now, repository}), [
-    {runId: 1, status: "dispatch"}, {runId: 2, status: "recorded"}, {runId: 3, status: "waiting"}]);
-  // Once the dispatched alert run exists, the next wake finds it and skips.
-  assert.deepEqual(nightlyFollowUps({nightlies: [nightly(1)], now, repository,
-    alertRuns: [{id: 52, display_title: "Main CI alert for run 1", status: "queued", conclusion: null}]}), [{runId: 1, status: "recorded"}]);
+  const alertRuns = [
+    alert(50, 2),                                              // handled
+    alert(51, 10, {conclusion: "failure"}),                     // one failed attempt: dispatch again
+    alert(52, 11, {conclusion: "failure"}), alert(53, 11, {conclusion: "cancelled"}), // two: reported, never again
+    alert(54, 12, {conclusion: "failure"}), alert(55, 12, {status: "queued", conclusion: null}), // retry under way
+    alert(56, 70),
+  ];
+  const followUps = nightlyFollowUps({nightlies, alertRuns, now, repository});
+  assert.deepEqual(followUps, [
+    {runId: 1, status: "dispatch", failedAttempts: 0}, {runId: 2, status: "recorded"},
+    {runId: 3, status: "waiting", failedAttempts: 0}, {runId: 10, status: "dispatch", failedAttempts: 1},
+    {runId: 11, status: "failed", failedRuns: [`https://github.com/${repository}/actions/runs/52`, `https://github.com/${repository}/actions/runs/53`]},
+    {runId: 12, status: "recorded"}]);
+  assert.equal(FOLLOW_UP_ATTEMPTS, 2);
+  // The failed follow-up goes to the watchdog's own issue once, with a link to the last attempt.
+  const report = followUpReport({followUps, records: new Set(), repository});
+  assert.match(report, new RegExp(`- nightly 11 follow-up failed twice: https://github\\.com/${repository}/actions/runs/53 `, "u"));
+  assert.doesNotMatch(report, /nightly 10 |nightly 1 /u);
+  assert.deepEqual([...recordsFrom([report])], ["nightly-alert@11"]);
+  assert.equal(followUpReport({followUps, records: recordsFrom([report]), repository}), null);
+  assert.equal(followUpReport({followUps: [{runId: 1, status: "dispatch"}], records: new Set(), repository}), null);
   assert.equal(ALERT_WORKFLOW, "main-red-alert.yml");
 });
 

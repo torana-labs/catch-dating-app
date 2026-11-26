@@ -2652,8 +2652,12 @@ the sprint floor's seven-day count still treat that night as missing.
 The watchdog also follows up each CI nightly dispatched in the last 48 hours.
 Once one has completed, and no `Main CI alert` run titled for it exists, it
 dispatches `main-red-alert.yml` with `run_id` set to that nightly. That run's
-title is the record, so every later wake skips the nightly, even when that
-alert run failed. A nightly still running is left for a later wake.
+title is the record: a later wake skips the nightly while that alert run is
+queued, running or has succeeded. If it fails, the next wake dispatches it once
+more. After a second failure the watchdog stops and posts "nightly <id>
+follow-up failed twice: <link>" to "Scheduled run missed", once (a marker
+records it), so a red nightly is never left silently unalerted. A nightly still
+running is left for a later wake.
 `main-red-alert.yml` is the only workflow besides the dev-only targets that the
 watchdog may dispatch. Missed
 deploy and validation runs go to their own issue so they never keep "Main CI is
