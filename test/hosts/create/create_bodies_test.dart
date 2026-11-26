@@ -3,14 +3,21 @@ import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/hosts/create/create_basics_body.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_plan_body.dart';
+import 'package:catch_dating_app/hosts/create/create_policy_handlers.dart';
 import 'package:catch_dating_app/hosts/create/create_share_body.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_body.dart';
 import 'package:catch_dating_app/hosts/create/create_when_body.dart';
+import 'package:catch_dating_app/hosts/create/edit_event_values.dart';
 import 'package:catch_dating_app/hosts/create/widgets/create_editor_rail.dart';
+import 'package:catch_dating_app/hosts/create/widgets/edit_event_policy_section.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
+import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:catch_kernel/brand.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_test_support/organizers_test_helpers.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,6 +44,20 @@ CreateFlowState _state({
   step: step,
 );
 
+/// Policy callbacks that note the format chosen and the code typed.
+CreatePolicyHandlers _policy([List<Object>? calls]) => CreatePolicyHandlers(
+  onAdmission: (value) => calls?.add(value),
+  onInviteCode: (value) => calls?.add('invite:$value'),
+  onCohortCaps: (_) {},
+  onMaxMen: (_) {},
+  onMaxWomen: (_) {},
+  onDemandPricing: (_) {},
+  onDemandStep: (_) {},
+  onDemandMax: (_) {},
+  onAgeRange: (_, _) {},
+  onCancellationPolicy: (_) {},
+);
+
 final _trivia = EventDraft(
   id: 'draft-1',
   organizerId: 'club-1',
@@ -55,7 +76,12 @@ final _trivia = EventDraft(
   capacity: '30',
 );
 
-Future<void> _pump(WidgetTester tester, Widget body, {Size? size}) async {
+Future<void> _pump(
+  WidgetTester tester,
+  Widget body, {
+  Size? size,
+  double textScale = 1,
+}) async {
   tester.view.physicalSize = size ?? const Size(390, 2400);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
@@ -63,6 +89,12 @@ Future<void> _pump(WidgetTester tester, Widget body, {Size? size}) async {
     MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(
+          context,
+        ).copyWith(textScaler: TextScaler.linear(textScale)),
+        child: child!,
+      ),
       home: CatchRoot(
         child: CatchScreen(body: CatchPageBody(child: body)),
       ),
@@ -105,6 +137,43 @@ void main() {
         find.text(l10n.hostCreateFormatLabel(format: CreateFormat.run.name)),
       );
       expect(calls, [CreateFormat.run]);
+    });
+
+    testWidgets('adds what is included and accessibility when asked', (
+      tester,
+    ) async {
+      final calls = <Object>[];
+      await _pump(
+        tester,
+        CreateBasicsBody(
+          state: _state(draft: _trivia.copyWith(included: 'One drink')),
+          onName: (_) {},
+          onFormat: (_) {},
+          onDescription: (_) {},
+          onDistance: (_) {},
+          onPace: (_) {},
+          onAddPhoto: () {},
+          onIncluded: (value) => calls.add('included:$value'),
+          onAccessibility: (value) => calls.add('access:$value'),
+        ),
+      );
+      expect(find.text(l10n.hostsEventGuestDetailsTitle), findsOneWidget);
+      expect(find.text('One drink'), findsOneWidget);
+      await tester.enterText(
+        find.descendant(
+          of: find.byKey(CreateEventFormKeys.accessibility),
+          matching: find.byType(EditableText),
+        ),
+        'Step-free entrance',
+      );
+      expect(calls, ['access:Step-free entrance']);
+    });
+
+    testWidgets('leaves the guest details off without their callbacks', (
+      tester,
+    ) async {
+      await _pump(tester, body(_state(draft: _trivia)));
+      expect(find.byKey(CreateEventFormKeys.included), findsNothing);
     });
 
     testWidgets('a social run adds distance and pace', (tester) async {
@@ -185,27 +254,116 @@ void main() {
   });
 
   group('tickets', () {
-    Widget body(CreateFlowState state) => CreateTicketsBody(
-      state: state,
-      onSellElsewhere: (_) {},
-      onPrice: (_) {},
-      onPlaces: (_) {},
-      onAdmission: (_) {},
-    );
+    Widget body(CreateFlowState state, {List<Object>? calls}) =>
+        CreateTicketsBody(
+          state: state,
+          onSellElsewhere: (_) {},
+          onPrice: (_) {},
+          onPlaces: (_) {},
+          policy: _policy(calls),
+        );
 
-    testWidgets('selling on Catch shows price, places and payouts', (
+    testWidgets('selling on Catch shows price, places, terms and payouts', (
       tester,
     ) async {
-      await _pump(tester, body(_state(draft: _trivia)));
+      final calls = <Object>[];
+      await _pump(tester, body(_state(draft: _trivia), calls: calls));
       expect(find.text(l10n.hostCreatePricePerPlace), findsOneWidget);
       expect(find.text(l10n.hostCreatePlaces), findsOneWidget);
       expect(find.text(l10n.hostCreatePayoutNotice), findsOneWidget);
-      for (final admission in CreateAdmission.values) {
-        expect(
-          find.text(l10n.hostCreateAdmissionTitle(admission: admission.name)),
-          findsOneWidget,
-        );
+      // A paid event chooses its cancellation policy.
+      expect(
+        find.text(l10n.hostsEditHostedEventScreenLabelCancellationPolicy),
+        findsOneWidget,
+      );
+      expect(find.byKey(CreateEventFormKeys.cohortCapsToggle), findsOneWidget);
+      expect(find.byKey(CreateEventFormKeys.minAge), findsOneWidget);
+      // Every admission format, not just open and invite only.
+      await tester.tap(
+        find.text(l10n.hostsEditHostedEventScreenLabelAdmissionFormat),
+      );
+      await pumpFeatureUi(tester);
+      for (final preset in EventAdmissionPreset.values) {
+        expect(find.text(preset.title(l10n)), findsWidgets);
       }
+      await tester.tap(
+        find.text(EventAdmissionPreset.balancedSingles.title(l10n)),
+      );
+      expect(calls, [EventAdmissionPreset.balancedSingles]);
+    });
+
+    testWidgets('a free event has no cancellation policy to choose', (
+      tester,
+    ) async {
+      await _pump(tester, body(_state(draft: _trivia.copyWith(price: '0'))));
+      expect(
+        find.text(l10n.hostsEditHostedEventScreenLabelCancellationPolicy),
+        findsNothing,
+      );
+    });
+
+    testWidgets('invite only asks for the code and names a bad one', (
+      tester,
+    ) async {
+      final calls = <Object>[];
+      await _pump(
+        tester,
+        body(
+          _state(
+            draft: _trivia.copyWith(
+              admissionPreset: EventAdmissionPreset.inviteOnly.name,
+              inviteCode: 'AB',
+            ),
+            problems: {CreateProblem.inviteCode},
+          ),
+          calls: calls,
+        ),
+      );
+      final field = find.byKey(const ValueKey<String>('create-invite-code'));
+      expect(field, findsOneWidget);
+      expect(find.text(inviteCodeValidator('AB', l10n)!), findsOneWidget);
+      await tester.enterText(
+        find.descendant(of: field, matching: find.byType(EditableText)),
+        'LANTERN',
+      );
+      expect(calls, ['invite:LANTERN']);
+    });
+
+    testWidgets('cohort caps and demand pricing open their fields', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        body(
+          _state(
+            draft: _trivia.copyWith(
+              admissionPreset: editFixedCohortCapsPreset,
+              maxMen: '12',
+            ),
+          ),
+        ),
+      );
+      expect(find.byKey(CreateEventFormKeys.maxMen), findsOneWidget);
+      expect(find.byKey(CreateEventFormKeys.maxWomen), findsOneWidget);
+
+      await _pump(
+        tester,
+        body(
+          _state(
+            draft: _trivia.copyWith(
+              admissionPreset: EventAdmissionPreset.balancedSingles.name,
+              dynamicPricingEnabled: true,
+              dynamicPricingStep: '250',
+              dynamicPricingMax: '1500',
+            ),
+          ),
+        ),
+      );
+      expect(
+        find.byKey(CreateEventFormKeys.dynamicPricingStep),
+        findsOneWidget,
+      );
+      expect(find.byKey(CreateEventFormKeys.dynamicPricingMax), findsOneWidget);
     });
 
     testWidgets('the waitlist and approval switches report their change', (
@@ -220,7 +378,7 @@ void main() {
           onSellElsewhere: (_) {},
           onPrice: (_) {},
           onPlaces: (_) {},
-          onAdmission: (_) {},
+          policy: _policy(),
           onWaitlist: waitlist.add,
           onApproveEach: approve.add,
         ),
@@ -234,14 +392,92 @@ void main() {
       expect(approve, [true]);
     });
 
-    testWidgets('selling elsewhere keeps price and places off', (tester) async {
+    testWidgets('request to join always asks, so its switch gives way', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        body(
+          _state(
+            draft: _trivia.copyWith(
+              admissionPreset: EventAdmissionPreset.requestToJoin.name,
+            ),
+          ),
+        ),
+      );
+      expect(
+        find.byKey(const ValueKey<String>('create-approve-each')),
+        findsNothing,
+      );
+      expect(
+        find.text(l10n.hostsEditHostedEventScreenTextRequestsAppearInHost),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('selling elsewhere keeps price, places and terms off', (
+      tester,
+    ) async {
       await _pump(
         tester,
         body(_state(draft: _trivia.copyWith(externalBookingMode: true))),
       );
       expect(find.text(l10n.hostCreatePricePerPlace), findsNothing);
       expect(find.text(l10n.hostCreatePayoutNotice), findsNothing);
+      expect(
+        find.text(l10n.hostsEditHostedEventScreenLabelAdmissionFormat),
+        findsNothing,
+      );
+    });
+
+    testWidgets('selling elsewhere still asks anyone or invite only', (
+      tester,
+    ) async {
+      final calls = <Object>[];
+      await _pump(
+        tester,
+        body(
+          _state(draft: _trivia.copyWith(externalBookingMode: true)),
+          calls: calls,
+        ),
+      );
       expect(find.text(l10n.hostCreateWhoCanCome), findsOneWidget);
+      for (final admission in ['open', 'invite']) {
+        expect(
+          find.text(l10n.hostCreateAdmissionTitle(admission: admission)),
+          findsOneWidget,
+        );
+      }
+      await tester.tap(find.byKey(const ValueKey('create-admission-invite')));
+      expect(calls, [EventAdmissionPreset.inviteOnly]);
+    });
+
+    testWidgets('the cohort caps text stacks over its switch at phone width '
+        'and double text', (tester) async {
+      await _pump(
+        tester,
+        // The section alone: this checks its own layout.
+        EditEventPolicySection(
+          state: _state(draft: _trivia),
+          handlers: _policy(),
+        ),
+        size: const Size(375, 4000),
+        textScale: 2,
+      );
+      final note = tester.getRect(
+        find.text(l10n.hostsEditHostedEventScreenBodyOptionallyCapStraightMen),
+      );
+      final title = tester.getRect(
+        find.text(l10n.hostsEditHostedEventScreenTitleCohortCaps),
+      );
+      final toggle = tester.getRect(
+        find.byKey(CreateEventFormKeys.cohortCapsToggle),
+      );
+      expect(title.bottom, lessThanOrEqualTo(note.top));
+      expect(toggle.top, greaterThanOrEqualTo(note.bottom));
+      expect(toggle.left, closeTo(title.left, 0.5));
+      expect(note.right, lessThanOrEqualTo(375));
+      expect(tester.takeException(), isNull);
     });
   });
 
