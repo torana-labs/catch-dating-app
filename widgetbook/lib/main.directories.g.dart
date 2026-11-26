@@ -9795,7 +9795,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Sends',
                 children: [
                   _widgetbook.WidgetbookComponent(
-                    name: 'HostCampaignBody',
+                    name: 'HostCampaignScreen',
                     useCases: [
                       _widgetbook.WidgetbookUseCase(
                         name: 'Setup loading',

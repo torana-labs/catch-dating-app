@@ -388,9 +388,7 @@ class _HostSendsScreenState extends ConsumerState<HostSendsScreen> {
   Future<HostManualSendTask> _openWhatsapp(HostManualSendTask task) async {
     final commands = ref.read(hostAudienceControllerProvider);
     final l10n = context.l10n;
-    // provider-graph: ownership-widget-async:_HostSendsScreenState._openWhatsapp:await:hostAudienceControllerProvider.validateManualSendTaskLaunch watch CAT156 -- Carried from the manual send sheet: the audience controller re-checks the number, the external link controller opens WhatsApp and the audience controller records the open; the sheet holds the busy flag and the returned task.
     final validated = await commands.validateManualSendTaskLaunch(task);
-    // provider-graph: ownership-widget-async:_HostSendsScreenState._openWhatsapp:await:externalLinkControllerProvider.openWhatsappHandoff watch CAT156 -- Carried from the manual send sheet; see above.
     final opened = await ref
         .read(externalLinkControllerProvider)
         .openWhatsappHandoff(
@@ -400,7 +398,6 @@ class _HostSendsScreenState extends ConsumerState<HostSendsScreen> {
     if (!opened) {
       throw ExternalActionException(l10n.hostCustomersWhatsappOpenFailed);
     }
-    // provider-graph: ownership-widget-async:_HostSendsScreenState._openWhatsapp:await:hostAudienceControllerProvider.recordManualHandoffOpened watch CAT156 -- Carried from the manual send sheet; see above.
     return commands.recordManualHandoffOpened(validated);
   }
 

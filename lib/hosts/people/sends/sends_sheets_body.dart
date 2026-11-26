@@ -99,6 +99,7 @@ class _HostManualSendSheetState extends State<HostManualSendSheet> {
     if (_busy) return;
     setState(() => _busy = true);
     try {
+      // provider-graph: ownership-widget-async-callback:_HostManualSendSheetState._openWhatsapp:await:widget.onOpenWhatsapp watch CAT156 -- Sends owns the commands (check the number, open WhatsApp, record it); the sheet holds only its busy flag and the task it shows.
       final updated = await widget.onOpenWhatsapp(_task);
       if (mounted) setState(() => _task = updated);
     } on Object catch (error) {
@@ -118,6 +119,7 @@ class _HostManualSendSheetState extends State<HostManualSendSheet> {
     if (_busy) return;
     setState(() => _busy = true);
     try {
+      // provider-graph: ownership-widget-async-callback:_HostManualSendSheetState._mark:await:widget.onMark watch CAT156 -- Sends owns the mark command; the sheet holds only its busy flag and closes once it succeeds.
       await widget.onMark(_task, action);
       if (mounted) Navigator.of(context).pop(true);
     } on Object catch (error) {
