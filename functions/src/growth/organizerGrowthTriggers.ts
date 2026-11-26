@@ -52,7 +52,7 @@ const booked = (data: Raw) =>
   data?.status === "signedUp" || data?.status === "attended";
 
 export const onOrganizerGrowthOrganizerWritten = onDocumentWritten({
-  document: "organizers/{organizerId}",
+  document: "organizers/{organizerId}", retry: true,
 }, async (event) => {
   const observed = organizerMilestones(event.data?.before.data(),
     event.data?.after.data(), Timestamp.fromDate(new Date(event.time)));
@@ -60,7 +60,7 @@ export const onOrganizerGrowthOrganizerWritten = onDocumentWritten({
 });
 
 export const onOrganizerGrowthClaimRequestCreated = onDocumentCreated({
-  document: "organizerClaimRequests/{requestId}",
+  document: "organizerClaimRequests/{requestId}", retry: true,
 }, async (event) => {
   const request = event.data?.data();
   if (typeof request?.organizerId !== "string") return;
@@ -75,7 +75,7 @@ export const onOrganizerGrowthClaimRequestCreated = onDocumentCreated({
  * free, lands on an event that is not cancelled.
  */
 export const onOrganizerGrowthParticipationWritten = onDocumentWritten({
-  document: "eventBookings/{participationId}",
+  document: "eventBookings/{participationId}", retry: true,
 }, async (event) => {
   const before = event.data?.before.data();
   const after = event.data?.after.data();
@@ -180,7 +180,7 @@ async function recordCheckoutPayments(source: PaymentFact["source"],
 // Website and offer checkouts count toward growth as they are written; paid
 // forms are counted by the daily replay.
 export const onOrganizerGrowthGuestPaymentWritten = onDocumentWritten({
-  document: `${GUEST_PAYMENTS}/{paymentId}`,
+  document: `${GUEST_PAYMENTS}/{paymentId}`, retry: true,
 }, (event) => {
   const before = event.data?.before.data();
   const after = event.data?.after.data();
@@ -193,7 +193,7 @@ export const onOrganizerGrowthGuestPaymentWritten = onDocumentWritten({
 // In-app Catch booking payments live in the guest-payment ledger with
 // purpose `booking`.
 export const onOrganizerGrowthBookingPaymentWritten = onDocumentWritten({
-  document: `${GUEST_PAYMENTS}/{paymentId}`,
+  document: `${GUEST_PAYMENTS}/{paymentId}`, retry: true,
 }, async (event) => {
   const before = event.data?.before.data();
   const after = event.data?.after.data();

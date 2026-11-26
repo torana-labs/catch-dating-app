@@ -1,4 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {
   actOnOrganizerBills,
   loadOrganizerBills,
@@ -89,6 +90,7 @@ export function organizerMonthBreakdown(bill: Bill): OrganizerMonthBreakdown {
 /** One organizer's bills for the Money tab of its page. */
 export function useOrganizerBillsController(organizerId: string): OrganizerBillsController {
   const client = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const key = ["admin", "money", "organizer-bills", organizerId] as const;
   const query = useQuery({
     queryKey: key,
@@ -113,11 +115,15 @@ export function useOrganizerBillsController(organizerId: string): OrganizerBills
     isActing: hold.isPending,
     actionError: hold.error instanceof Error ? hold.error.message : null,
     setHold: async (action, note) => {
+      const operation = beginOperation();
+      if (!operation) return false;
       try {
         await hold.mutateAsync({action, note});
         return true;
       } catch {
         return false;
+      } finally {
+        endOperation(operation);
       }
     },
   };

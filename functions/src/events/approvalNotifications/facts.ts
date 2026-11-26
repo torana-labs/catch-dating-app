@@ -1,10 +1,6 @@
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import type {DeliveryCoreFacts} from "../../delivery/deliveryCore";
 import {operationContentHash as hash} from "../../operations/durableActions";
-import {
-  validateEventApprovalPreferenceDocument as validPreference,
-} from
-  "../../shared/generated/validators/eventApprovalPreferenceDocument";
 import {validateEventApprovalNotificationSettingsDocument as validSettings} from
   "../../shared/generated/validators/eventApprovalNotificationSettingsDocument";
 import type {EventApprovalPreferenceDocument as Preference} from
@@ -30,10 +26,10 @@ import {
 import {contactPermissionRef, readContactPermission} from
   "../../shared/contactPermissions";
 import {hashEndpoint} from "../../platform/delivery/endpointHash";
-import {preferences, receipts, settings} from "./preferences";
+import {settings} from "./preferences";
+import {readBookingUpdatesPreference} from "./contactGrants";
 import {readApplication, type LoadIdentity} from "./source";
 import {
-  preferenceId,
   timestampMillis,
   type Binding,
   type Intent,
@@ -100,16 +96,17 @@ export async function readFacts(
     return stop("superseded");
   }
   const sender = {kind: "organizer" as const, organizerId: c.organizerId};
-  const [prefSnap, configSnap, user, permissionSnap] = await Promise.all([
-    tx.get(db.collection(preferences).doc(preferenceId(c.eventId, c.uid))),
+  // The choice is the two bookingUpdates grants in the guest's event
+  // document, each proven by its receipt (issue #2494).
+  const [preference, configSnap, user, permissionSnap] = await Promise.all([
+    readBookingUpdatesPreference(db, tx, c.uid, c.eventId),
     tx.get(db.collection(settings).doc(c.organizerId)),
     identity(c.uid),
     tx.get(contactPermissionRef(db, c.uid, sender)),
   ]);
-  const preference = prefSnap.data();
   const config = configSnap.data();
   if (
-    !validPreference(preference) ||
+    !preference ||
     preference.uid !== c.uid ||
     preference.eventId !== c.eventId ||
     preference.organizerId !== c.organizerId ||
@@ -118,12 +115,6 @@ export async function readFacts(
     user.disabled ||
     user.uid !== c.uid
   ) {
-    return stop("permissionUnavailable");
-  }
-  const receipt = (
-    await tx.get(db.collection(receipts).doc(preference.receiptId))
-  ).data();
-  if (!validPreference(receipt) || hash(receipt) !== hash(preference)) {
     return stop("permissionUnavailable");
   }
   if (!validSettings(config) || !config.enabled || config.revision < 1) {

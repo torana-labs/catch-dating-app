@@ -1,5 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useMemo, useState} from "react";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {
   actOnBill,
   loadBills,
@@ -63,6 +64,7 @@ export function useBillsController({month = null, selectedBillId = null,
   now?: () => number;
 } = {}): BillsController {
   const client = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const query = useQuery({queryKey: key(month),
     queryFn: () => loadBills(month)});
   const [filter, setFilter] = useState<BillFilter>("all");
@@ -106,19 +108,27 @@ export function useBillsController({month = null, selectedBillId = null,
     },
     act: async (kind, note) => {
       if (!selected) return false;
+      const operation = beginOperation();
+      if (!operation) return false;
       try {
         await action.mutateAsync({bill: selected, action: kind, note});
         return true;
       } catch {
         return false;
+      } finally {
+        endOperation(operation);
       }
     },
     generate: async () => {
+      const operation = beginOperation();
+      if (!operation) return false;
       try {
         await generation.mutateAsync();
         return true;
       } catch {
         return false;
+      } finally {
+        endOperation(operation);
       }
     },
   };

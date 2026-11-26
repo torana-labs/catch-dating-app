@@ -1,5 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useCallback} from "react";
+import {useAdminPendingOperationGuard} from "../../../../shared/pendingOperation";
 import {
   currentStaffUid,
   listSupplyNominators,
@@ -23,11 +24,14 @@ export function useSupplyNominatorController({onError, onNotice}: {
   onNotice: (message: string) => void;
 }) {
   const queryClient = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const page = useQuery({queryKey: nominatorsKey, queryFn: listSupplyNominators});
   const me = useQuery({queryKey: staffUidKey, queryFn: currentStaffUid});
   const saving = useMutation({mutationFn: setSupplyNominator});
 
   const save = useCallback(async (input: SupplyNominatorInput): Promise<boolean> => {
+    const operation = beginOperation();
+    if (!operation) return false;
     onError(null);
     try {
       const result = await saving.mutateAsync(input);
@@ -40,8 +44,10 @@ export function useSupplyNominatorController({onError, onNotice}: {
     } catch (error) {
       onError(error instanceof Error ? error.message : String(error));
       return false;
+    } finally {
+      endOperation(operation);
     }
-  }, [onError, onNotice, queryClient, saving]);
+  }, [beginOperation, endOperation, onError, onNotice, queryClient, saving]);
 
   return {page, nominators: page.data ?? [], myUid: me.data ?? null, save, isSaving: saving.isPending};
 }
