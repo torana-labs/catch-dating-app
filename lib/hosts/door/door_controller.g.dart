@@ -70,7 +70,7 @@ final class DoorSessionProvider
   }
 }
 
-String _$doorSessionHash() => r'e7c01c346987e7c62b1a286dcdcb4fb2835193f2';
+String _$doorSessionHash() => r'a23804219f1ba7c51991db0ee2ebfb50b3b49f20';
 
 /// The door's commands and local state. Check-in and undo go through the
 /// attendance outbox; let in and offer through the roster commands. After
@@ -137,6 +137,9 @@ abstract class _$DoorSession extends $Notifier<DoorSessionState> {
 /// (who is booked and who is in), the participations (who is waiting or
 /// asking), the roster labels (first-timers and history) and the event,
 /// with the door's own outbox, filter and search over them.
+///
+/// Without [manage] (event staff) it leaves out the participations and the
+/// roster labels: staff see the booked guests only, as the rules allow.
 
 @ProviderFor(doorController)
 final doorControllerProvider = DoorControllerFamily._();
@@ -145,6 +148,9 @@ final doorControllerProvider = DoorControllerFamily._();
 /// (who is booked and who is in), the participations (who is waiting or
 /// asking), the roster labels (first-timers and history) and the event,
 /// with the door's own outbox, filter and search over them.
+///
+/// Without [manage] (event staff) it leaves out the participations and the
+/// roster labels: staff see the booked guests only, as the rules allow.
 
 final class DoorControllerProvider
     extends $FunctionalProvider<DoorState, DoorState, DoorState>
@@ -153,9 +159,12 @@ final class DoorControllerProvider
   /// (who is booked and who is in), the participations (who is waiting or
   /// asking), the roster labels (first-timers and history) and the event,
   /// with the door's own outbox, filter and search over them.
+  ///
+  /// Without [manage] (event staff) it leaves out the participations and the
+  /// roster labels: staff see the booked guests only, as the rules allow.
   DoorControllerProvider._({
     required DoorControllerFamily super.from,
-    required String super.argument,
+    required (String, {bool manage}) super.argument,
   }) : super(
          retry: null,
          name: r'doorControllerProvider',
@@ -171,7 +180,7 @@ final class DoorControllerProvider
   String toString() {
     return r'doorControllerProvider'
         ''
-        '($argument)';
+        '$argument';
   }
 
   @$internal
@@ -181,8 +190,8 @@ final class DoorControllerProvider
 
   @override
   DoorState create(Ref ref) {
-    final argument = this.argument as String;
-    return doorController(ref, argument);
+    final argument = this.argument as (String, {bool manage});
+    return doorController(ref, argument.$1, manage: argument.manage);
   }
 
   /// {@macro riverpod.override_with_value}
@@ -204,15 +213,18 @@ final class DoorControllerProvider
   }
 }
 
-String _$doorControllerHash() => r'222524c24b9676057823c81d662097d5daa6358c';
+String _$doorControllerHash() => r'754c0d6f5114f5987c11ea290191b1da93580207';
 
 /// The door for one event, composed from its listeners: the attendees
 /// (who is booked and who is in), the participations (who is waiting or
 /// asking), the roster labels (first-timers and history) and the event,
 /// with the door's own outbox, filter and search over them.
+///
+/// Without [manage] (event staff) it leaves out the participations and the
+/// roster labels: staff see the booked guests only, as the rules allow.
 
 final class DoorControllerFamily extends $Family
-    with $FunctionalFamilyOverride<DoorState, String> {
+    with $FunctionalFamilyOverride<DoorState, (String, {bool manage})> {
   DoorControllerFamily._()
     : super(
         retry: null,
@@ -226,9 +238,12 @@ final class DoorControllerFamily extends $Family
   /// (who is booked and who is in), the participations (who is waiting or
   /// asking), the roster labels (first-timers and history) and the event,
   /// with the door's own outbox, filter and search over them.
+  ///
+  /// Without [manage] (event staff) it leaves out the participations and the
+  /// roster labels: staff see the booked guests only, as the rules allow.
 
-  DoorControllerProvider call(String eventId) =>
-      DoorControllerProvider._(argument: eventId, from: this);
+  DoorControllerProvider call(String eventId, {bool manage = true}) =>
+      DoorControllerProvider._(argument: (eventId, manage: manage), from: this);
 
   @override
   String toString() => r'doorControllerProvider';

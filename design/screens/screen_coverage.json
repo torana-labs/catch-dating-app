@@ -489,7 +489,7 @@
       "status": "contracted",
       "priority": "P1",
       "screenId": "screen.host.event.manage",
-      "reason": "Covered by screen.host.event.manage as the rendered least-privilege staff variant of the canonical per-event Host roster workspace; it intentionally removes manager-only sections and actions."
+      "reason": "Covered by screen.host.event.manage as the least-privilege staff variant of the per-event door: StaffEventScreen opens DoorScreen limited to the grant, removing manager-only reads and actions."
     },
     {
       "routeId": "hostWorkProgramScreen",

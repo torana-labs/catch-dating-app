@@ -120,36 +120,6 @@ test("composition renderer recognition stays bound to real owner methods", () =>
   }
 });
 
-test("approved route-shell factories require their exact real source identities", () => {
-  const entries = [
-    ["lib/hosts/presentation/host_event_operator_screen.dart", "HostEventOperatorScreen"],
-  ].map(([file, owner]) => ({
-    file, library: file, owner, name: "_routeScaffold", returnType: "CatchRouteScaffold",
-  }));
-  const routeDeclarations = collectClassDeclarations(fs.readFileSync(path.join(
-    repoRoot, "packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart"), "utf8"));
-  for (const entry of entries) {
-    const source = fs.readFileSync(path.join(repoRoot, entry.file), "utf8");
-    const starts = buildLineStarts(source);
-    const helpers = collectWidgetHelpers(source, starts,
-      collectClassRanges(source, starts),
-      resolveWidgetTypeNames([...collectClassDeclarations(source, starts), ...routeDeclarations]));
-    assert.equal(helpers.filter(({owner, name, returnType}) =>
-      owner === entry.owner && name === entry.name && returnType === entry.returnType).length,
-    1, `${entry.file}:${entry.owner ?? "library"}.${entry.name} must still exist`);
-    assert.equal(isOwnedCompositionRenderer(entry), true, entry.file);
-    for (const key of Object.keys(entry)) {
-      assert.equal(isOwnedCompositionRenderer({...entry, [key]: "unowned"}),
-        false, `${entry.file}: ${key} cannot inherit recognition`);
-    }
-    assert.equal(isOwnedCompositionRenderer({...entry, name: "_routeScaffoldSibling"}), false);
-    for (const returnType of ["Widget", "Widget?", "CatchRouteScaffold?"]) {
-      assert.equal(isOwnedCompositionRenderer({...entry, returnType}), false,
-        `${entry.file}: ${returnType} cannot widen the canonical return`);
-    }
-  }
-});
-
 test("new-widget gate uses exact registry and Widgetbook identities without reading markdown", (t) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-new-widget-policy-"));
   t.after(() => fs.rmSync(root, {recursive: true, force: true}));
