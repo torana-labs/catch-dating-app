@@ -16,6 +16,11 @@ on:
         description: The exact source SHA of the calling CI consumer, including its PR merge commit.
         required: true
         type: string
+      nightly:
+        description: The CI nightly calls with true; it probes the macOS font and runner image and re-renders on a change.
+        required: false
+        type: boolean
+        default: false
     outputs:
       capture_binding:
         description: Exact source, run, attempt, controller, and immutable artifact identity.
@@ -29,7 +34,7 @@ jobs:
     name: Probe the macOS native font and runner image
     # Only the nightly asks. It renders everything only when the native font
     # or runner image differs from what the reusable renders were made with.
-    if: ${{ github.event_name == 'schedule' && inputs.automatic_source_sha != '' }}
+    if: ${{ inputs.nightly && inputs.automatic_source_sha != '' }}
     runs-on: macos-26
     timeout-minutes: 5
     permissions: {}
@@ -123,6 +128,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           CAPTURE_NATIVE_FONT_SHA256: ${{ needs.native_probe.outputs.font_sha256 }}
           CAPTURE_NATIVE_RUNNER_IMAGE: ${{ needs.native_probe.outputs.runner_image }}
+          CAPTURE_NIGHTLY: ${{ inputs.nightly || false }}
         run: node tool/marketing/export_hosted_captures.mjs --plan
       - name: Hand the seeds to the producing job
         if: ${{ steps.plan.outputs.seeded == 'true' }}

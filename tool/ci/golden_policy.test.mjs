@@ -199,3 +199,23 @@ test("the baseline workflows stay dispatch-only and take the commit and pattern 
     assert.deepEqual(parsed.permissions, {contents: "read"}, file);
   }
 });
+
+test("the dispatched nightly is treated exactly as the scheduled nightly was; a plain full dispatch is not main's", () => {
+  const scheduled = run({event: "schedule", display_title: "CI"});
+  const nightly = run({event: "workflow_dispatch", display_title: "CI nightly"});
+  const full = run({event: "workflow_dispatch", display_title: "CI"});
+  const failing = [job(GOLDENS_JOB, "failure"), job(CAPTURE_JOB, "success")];
+  const passing = [job(GOLDENS_JOB, "success"), job(CAPTURE_JOB, "success")];
+  const drift = {package: [{file: "baseline/button_family.dark.png", diff: "0.5000%"}]};
+  for (const [label, decide] of [
+    ["failure opens", (subject) => decideFailure({run: subject, jobs: failing, openIssue: null})],
+    ["failure closes", (subject) => decideFailure({run: subject, jobs: passing, openIssue: {number: 3}, owed: [GOLDENS_JOB]})],
+    ["drift opens", (subject) => decideDrift({run: subject, jobs: passing, drift, openIssue: null})],
+    ["no drift closes", (subject) => decideDrift({run: subject, jobs: passing, drift: {}, openIssue: {number: 4}})],
+  ]) {
+    const before = decide(scheduled);
+    assert.notEqual(before.action, "none", label);
+    assert.deepEqual(decide(nightly), before, label);
+    assert.deepEqual(decide(full), {action: "none", reason: "not_main"}, label);
+  }
+});

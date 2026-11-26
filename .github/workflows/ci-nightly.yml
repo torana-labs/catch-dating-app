@@ -1,0 +1,98 @@
+name: CI nightly trigger
+
+# Starts the CI nightly once per UTC day (owner decision, 26 Nov 2026).
+# Scheduled runs start 7.5-10.6 hours late here, so this wakes after each push
+# CI run on main as well as on its fallback cron, and the first wake of the day
+# from 02:00 UTC dispatches ci.yml on main with `nightly: true`
+# (tool/ci/ci_nightly.mjs). The marker artifact ci-nightly-<day> stops every
+# later wake that day, whichever trigger fired it. This is the only workflow
+# allowed to dispatch the nightly: ci.yml on main, nightly only, at most once a
+# day. The Scheduled run watchdog reports a day with no nightly. Operator
+# guide: docs/release_operations.md, "Once-a-day reports".
+
+on:
+  schedule:
+    # Fallback: scheduled runs start hours late, so main's push CI wakes it too.
+    - cron: "23 2 * * *"
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  # One wake at a time, so a second wake sees the first one's marker.
+  group: ci-nightly
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    name: Once a day
+    # A workflow_run wake counts only for main's own push CI runs: never a
+    # pull-request run (a fork's branch can also be called main), the
+    # nightly's own run, or a dispatch, as in #2408.
+    if: >-
+      github.event_name != 'workflow_run' || (
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      # Read the checkout and list artifacts.
+      actions: read
+      contents: read
+    outputs:
+      dispatch: ${{ steps.gate.outputs.dispatch }}
+      marker: ${{ steps.gate.outputs.marker }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            tool/ci
+            .github/actions/load-toolchain
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - id: gate
+        name: Dispatch only if today's nightly has not been dispatched
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tool/ci/ci_nightly.mjs
+
+  dispatch:
+    name: Dispatch the CI nightly on main
+    needs: gate
+    if: needs.gate.outputs.dispatch == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      # The only permission this workflow needs beyond reads: starting ci.yml.
+      actions: write
+    steps:
+      # The workflow, ref and input are fixed: this can start nothing but the
+      # nightly CI on main.
+      - name: Dispatch ci.yml on main as the nightly
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: gh workflow run ci.yml --repo "$REPOSITORY" --ref main -f nightly=true
+
+      - name: Record today's dispatch
+        env:
+          MARKER: ${{ needs.gate.outputs.marker }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/ci-nightly"
+          echo "Dispatched the CI nightly at $(date -u +%FT%TZ) from run $GITHUB_RUN_ID." > "$RUNNER_TEMP/ci-nightly/$MARKER.txt"
+
+      - name: Upload today's marker
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ needs.gate.outputs.marker }}
+          path: ${{ runner.temp }}/ci-nightly/
+          if-no-files-found: error
+          retention-days: 3
