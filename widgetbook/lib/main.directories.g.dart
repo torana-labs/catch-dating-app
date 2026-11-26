@@ -199,6 +199,8 @@ import 'package:widgetbook_workspace/host_memberships/host_membership_use_cases.
     as _widgetbook_workspace_host_memberships_host_membership_use_cases;
 import 'package:widgetbook_workspace/hosts/host_booking_provider_use_cases.dart'
     as _widgetbook_workspace_hosts_host_booking_provider_use_cases;
+import 'package:widgetbook_workspace/hosts/host_conversation_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_conversation_use_cases;
 import 'package:widgetbook_workspace/hosts/host_door_poster_use_cases.dart'
     as _widgetbook_workspace_hosts_host_door_poster_use_cases;
 import 'package:widgetbook_workspace/hosts/host_event_gaps_use_cases.dart'
@@ -227,8 +229,6 @@ import 'package:widgetbook_workspace/hosts/host_organizer_journey_use_cases.dart
     as _widgetbook_workspace_hosts_host_organizer_journey_use_cases;
 import 'package:widgetbook_workspace/hosts/host_payout_connection_use_cases.dart'
     as _widgetbook_workspace_hosts_host_payout_connection_use_cases;
-import 'package:widgetbook_workspace/hosts/host_person_messaging_use_cases.dart'
-    as _widgetbook_workspace_hosts_host_person_messaging_use_cases;
 import 'package:widgetbook_workspace/hosts/host_phone_import_use_cases.dart'
     as _widgetbook_workspace_hosts_host_phone_import_use_cases;
 import 'package:widgetbook_workspace/hosts/host_programme_answers_use_cases.dart'
@@ -9460,44 +9460,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                   ),
                 ],
               ),
-              _widgetbook.WidgetbookFolder(
-                name: 'Person',
-                children: [
-                  _widgetbook.WidgetbookComponent(
-                    name: 'HostInboxPersonPageBody',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Selected person in workspace',
-                        builder:
-                            _widgetbook_workspace_hosts_host_person_messaging_use_cases
-                                .selectedPersonPreview,
-                      ),
-                    ],
-                  ),
-                  _widgetbook.WidgetbookComponent(
-                    name: 'HostPersonConversationMenu',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Authorized conversation actions',
-                        builder:
-                            _widgetbook_workspace_hosts_host_person_messaging_use_cases
-                                .personConversationMenuPreview,
-                      ),
-                    ],
-                  ),
-                  _widgetbook.WidgetbookComponent(
-                    name: 'HostPersonConversationPageBody',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Catch and WhatsApp in one history',
-                        builder:
-                            _widgetbook_workspace_hosts_host_person_messaging_use_cases
-                                .personConversationPreview,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
             ],
           ),
           _widgetbook.WidgetbookFolder(
@@ -9633,6 +9595,73 @@ final directories = <_widgetbook.WidgetbookNode>[
           _widgetbook.WidgetbookFolder(
             name: 'People',
             children: [
+              _widgetbook.WidgetbookFolder(
+                name: 'Conversation',
+                children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostConversationBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Beside Messages, route closed',
+                        builder:
+                            _widgetbook_workspace_hosts_host_conversation_use_cases
+                                .conversationPane,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Catch and WhatsApp in one history',
+                        builder:
+                            _widgetbook_workspace_hosts_host_conversation_use_cases
+                                .conversationReady,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'No longer available',
+                        builder:
+                            _widgetbook_workspace_hosts_host_conversation_use_cases
+                                .conversationUnavailable,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Programme conversations unavailable',
+                        builder:
+                            _widgetbook_workspace_hosts_host_conversation_use_cases
+                                .conversationProgramme,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostConversationMessageBubble',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Guest and host, sending',
+                        builder:
+                            _widgetbook_workspace_hosts_host_conversation_use_cases
+                                .conversationBubbles,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostConversationScreen',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Programme scope',
+                        builder:
+                            _widgetbook_workspace_hosts_host_conversation_use_cases
+                                .conversationScreen,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostConversationThreadSection',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Transcript, routes and composer',
+                        builder:
+                            _widgetbook_workspace_hosts_host_conversation_use_cases
+                                .conversationThread,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
               _widgetbook.WidgetbookFolder(
                 name: 'Possible duplicates',
                 children: [
@@ -10377,11 +10406,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                         _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostEmptyStateStates,
                   ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by host home route states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostHomeRouteStates,
-                  ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
@@ -10391,6 +10415,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Shared Audience header',
                     builder: _widgetbook_workspace_hosts_operations_audiences
                         .hostAudienceHeaderStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostLoadingScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Covered by host home route states',
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostHomeRouteStates,
                   ),
                 ],
               ),

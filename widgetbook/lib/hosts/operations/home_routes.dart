@@ -38,12 +38,12 @@ final _longNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
 
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: CatchEmptyState,
+  type: HostLoadingScreen,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostLoadingScreen,
+  type: CatchEmptyState,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 Widget hostHomeRouteStates(BuildContext context) {

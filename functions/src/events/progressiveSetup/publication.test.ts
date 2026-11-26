@@ -19,6 +19,10 @@ import {validateEventDocument} from
 import {contractValidator} from "../../shared/contractTestValidators";
 import {withEventSeatLedgers} from
   "../seatAuthority/eventSeatLedgerTestSupport";
+import {requireCatchBookingAuthority} from "../eventOrigin";
+import {catchNativeEventOrigin} from "../../shared/testUtils";
+import type {EventDocument} from
+  "../../shared/generated/firestoreAdminTypes";
 
 const validateEventSetupReceiptDocument =
   contractValidator("EventSetupReceiptDocument");
@@ -238,6 +242,10 @@ test("fresh progressive event publishes after details", async () => {
   assert.equal(event.publicRegistrationEnabled, false);
   assert.equal(event.distanceKm, 0);
   assert.equal(event.pace, "easy");
+  // Guests can book a Catch-sold event in the app once it is published.
+  assert.deepEqual(event.eventOrigin, catchNativeEventOrigin());
+  assert.doesNotThrow(() =>
+    requireCatchBookingAuthority(event as unknown as EventDocument));
   // The setup view reopens the published event without a publish action.
   const reopened = projectPrivateEventSetupSummary({eventId: created.eventId,
     event, organizer: validOrganizer(), preferences: undefined,
@@ -340,6 +348,10 @@ test("tickets sold elsewhere publish without Catch admission terms",
     assert.equal(published.publicRegistrationEnabled, false);
     assert.equal(validateEventDocument(published), true,
       JSON.stringify(validateEventDocument.errors));
+    // Booking stays on the event's own page, never in the Catch app.
+    assert.equal(published.eventOrigin, undefined);
+    assert.throws(() => requireCatchBookingAuthority(
+      published as unknown as EventDocument), errorCode("failed-precondition"));
   });
 
 test("publishing with followers first sets when everyone can book",

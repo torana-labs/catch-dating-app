@@ -1389,11 +1389,13 @@ transport fallback or fan-out is permitted. New message chooses a person and
 then an available route. Partial source coverage is shown as partial, including
 counts; unknown booking membership never becomes a prospective classification.
 `HostInboxCatchPages`, `HostInboxWhatsappPages` and `HostConversationHistory`
-controllers own pagination and generation fences. `HostPersonConversationController`
-owns WhatsApp reply/read IO; the widget owns only presentation and ephemeral
-selection. Reply drafts are scoped by account, organizer, person, scope and
-route; retries preserve the operation id and successful sends clear only the
-unchanged draft. Authentication changes clear session drafts.
+controllers own pagination and generation fences. `hostConversationController`
+composes the person's authorized sources and `HostConversationCommands` owns
+WhatsApp reply and read IO; the screen owns only presentation and ephemeral
+selection. Reply drafts (owned by Messages) are scoped by account,
+organizer, person, scope and route; retries preserve the operation id and
+successful sends clear only the unchanged draft. Authentication changes clear
+session drafts.
 
 
 The decision follows platform guidance that primary navigation represents a

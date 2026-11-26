@@ -8,16 +8,22 @@ part of 'messages_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Messages, composed from the Catch conversations listener, the WhatsApp
-/// threads listener, the organizer's events (for Tonight) and Automatic
-/// messages (for its row).
+/// Messages, composed from the Catch conversations listener and its older
+/// pages, the WhatsApp threads listener and its pages, the organizer's
+/// events (for Tonight and the scope menu), their programmes, the chosen
+/// event's bookings (for Booked and Prospective) and Automatic messages
+/// (for its row). A programme scope reads only that programme's verified
+/// identity: no source carries per-message programme provenance.
 
 @ProviderFor(hostMessagesController)
 final hostMessagesControllerProvider = HostMessagesControllerFamily._();
 
-/// Messages, composed from the Catch conversations listener, the WhatsApp
-/// threads listener, the organizer's events (for Tonight) and Automatic
-/// messages (for its row).
+/// Messages, composed from the Catch conversations listener and its older
+/// pages, the WhatsApp threads listener and its pages, the organizer's
+/// events (for Tonight and the scope menu), their programmes, the chosen
+/// event's bookings (for Booked and Prospective) and Automatic messages
+/// (for its row). A programme scope reads only that programme's verified
+/// identity: no source carries per-message programme provenance.
 
 final class HostMessagesControllerProvider
     extends
@@ -27,9 +33,12 @@ final class HostMessagesControllerProvider
           HostMessagesState
         >
     with $Provider<HostMessagesState> {
-  /// Messages, composed from the Catch conversations listener, the WhatsApp
-  /// threads listener, the organizer's events (for Tonight) and Automatic
-  /// messages (for its row).
+  /// Messages, composed from the Catch conversations listener and its older
+  /// pages, the WhatsApp threads listener and its pages, the organizer's
+  /// events (for Tonight and the scope menu), their programmes, the chosen
+  /// event's bookings (for Booked and Prospective) and Automatic messages
+  /// (for its row). A programme scope reads only that programme's verified
+  /// identity: no source carries per-message programme provenance.
   HostMessagesControllerProvider._({
     required HostMessagesControllerFamily super.from,
     required HostMessagesRequest super.argument,
@@ -84,11 +93,14 @@ final class HostMessagesControllerProvider
 }
 
 String _$hostMessagesControllerHash() =>
-    r'1347177ef40180d12c5db80dbddfd3b0ef5f706b';
+    r'37a4b7e628d238376483296e836dd5b88f45302a';
 
-/// Messages, composed from the Catch conversations listener, the WhatsApp
-/// threads listener, the organizer's events (for Tonight) and Automatic
-/// messages (for its row).
+/// Messages, composed from the Catch conversations listener and its older
+/// pages, the WhatsApp threads listener and its pages, the organizer's
+/// events (for Tonight and the scope menu), their programmes, the chosen
+/// event's bookings (for Booked and Prospective) and Automatic messages
+/// (for its row). A programme scope reads only that programme's verified
+/// identity: no source carries per-message programme provenance.
 
 final class HostMessagesControllerFamily extends $Family
     with $FunctionalFamilyOverride<HostMessagesState, HostMessagesRequest> {
@@ -101,9 +113,12 @@ final class HostMessagesControllerFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Messages, composed from the Catch conversations listener, the WhatsApp
-  /// threads listener, the organizer's events (for Tonight) and Automatic
-  /// messages (for its row).
+  /// Messages, composed from the Catch conversations listener and its older
+  /// pages, the WhatsApp threads listener and its pages, the organizer's
+  /// events (for Tonight and the scope menu), their programmes, the chosen
+  /// event's bookings (for Booked and Prospective) and Automatic messages
+  /// (for its row). A programme scope reads only that programme's verified
+  /// identity: no source carries per-message programme provenance.
 
   HostMessagesControllerProvider call(HostMessagesRequest request) =>
       HostMessagesControllerProvider._(argument: request, from: this);
