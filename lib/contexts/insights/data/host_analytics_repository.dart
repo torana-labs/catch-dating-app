@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/account/account.dart';
+import 'package:catch_dating_app/contexts/insights/data/host_event_coach.dart';
 import 'package:catch_dating_app/contexts/insights/domain/insights_tags.dart';
 import 'package:catch_platform/cache/cache_policy.dart';
 import 'package:catch_platform/cache/cache_tags.dart';
@@ -489,6 +490,7 @@ class HostAnalyticsReport {
     required this.dataQuality,
     this.linkSummary = const HostAnalyticsLinkSummary(),
     this.timezone = 'UTC',
+    this.eventCoach,
   });
 
   factory HostAnalyticsReport.fromCallableData(Object? data) {
@@ -513,6 +515,7 @@ class HostAnalyticsReport {
         ),
         linkSummary: HostAnalyticsLinkSummary.fromMap(_map(map['linkSummary'])),
         timezone: _string(map['timezone'], fallback: 'UTC'),
+        eventCoach: HostEventCoach.fromCallableData(map['eventCoach']),
       );
     }
     throw const FormatException('Invalid host analytics response.');
@@ -527,6 +530,10 @@ class HostAnalyticsReport {
   final List<HostAnalyticsDataQuality> dataQuality;
   final HostAnalyticsLinkSummary linkSummary;
   final String timezone;
+
+  /// An event report's coach figures; null on organizer reports and for an
+  /// event with no scorecard yet.
+  final HostEventCoach? eventCoach;
 }
 
 class HostAnalyticsRepository {

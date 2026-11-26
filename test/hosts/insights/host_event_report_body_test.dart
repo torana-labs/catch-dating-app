@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/contexts/formats/domain/event_success_feature_state.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_body.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_state.dart';
@@ -30,6 +32,8 @@ HostEventReportState _content({
   int? stayInTouch = 11,
   bool next = true,
   int reviewCount = 14,
+  EventSuccessBrief? coach,
+  String? coachWithheld,
 }) => HostEventReportState(
   status: HostEventReportStatus.content,
   event: _event,
@@ -43,6 +47,8 @@ HostEventReportState _content({
   rating: 4.8,
   ratingCount: 14,
   stayInTouch: stayInTouch,
+  coach: coach,
+  coachWithheld: coachWithheld,
   people: const ['Rhea Kapoor', 'Kabir Rao', 'Ana Dsouza'],
   reviews: [
     _review('r1', 'Rhea K.', 5, 'Came alone, left with a team.'),
@@ -150,6 +156,51 @@ void main() {
     );
     expect(find.text('All 2'), findsNothing);
     expect(find.text('Downloads'), findsOneWidget);
+  });
+
+  testWidgets('the post-event coach shows its figures and next steps', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      _content(coach: EventSuccessFeatureSamples.postEventBrief),
+    );
+
+    expect(
+      find.byKey(const ValueKey<String>('host-event-coach')),
+      findsOneWidget,
+    );
+    expect(find.text('Post-event host report'), findsOneWidget);
+    expect(find.text('Check-in'), findsOneWidget);
+    expect(find.text('Picked someone'), findsOneWidget);
+    final recommendation =
+        EventSuccessFeatureSamples.postEventBrief.recommendations.first;
+    await tester.ensureVisible(
+      find.byKey(ValueKey<String>('host-event-coach-${recommendation.id}')),
+    );
+    expect(find.text(recommendation.title), findsOneWidget);
+  });
+
+  testWidgets('below the group-size floor the coach shows only why', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      _content(
+        coachWithheld:
+            'The coach report shows once at least 10 guests checked in.',
+      ),
+    );
+
+    expect(
+      find.byKey(const ValueKey<String>('host-event-coach-withheld')),
+      findsOneWidget,
+    );
+    expect(find.text('Check-in'), findsNothing);
+    expect(
+      find.byKey(const ValueKey<String>('host-event-coach')),
+      findsNothing,
+    );
   });
 
   testWidgets('figures the report does not carry show a dash', (tester) async {
