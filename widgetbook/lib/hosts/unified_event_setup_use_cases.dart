@@ -6,8 +6,8 @@ import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_rep
 import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definition.dart';
+import 'package:catch_dating_app/hosts/forms/offer_settings_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_target_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
@@ -56,7 +56,7 @@ Widget hostManagerEventSetupPreferencesSectionPreview(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Published event offer preferences',
-  type: HostEventOfferPreferencesScreen,
+  type: HostOfferSettingsScreen,
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostEventOfferPreferencesScreenPreview(BuildContext context) {
@@ -111,7 +111,7 @@ Widget hostEventOfferPreferencesScreenPreview(BuildContext context) {
       );
 
   return WidgetbookPageCatalogFrame(
-    title: 'HostEventOfferPreferencesScreen',
+    title: 'HostOfferSettingsScreen',
     contractId: 'screen.host.event.published.preferences',
     children: [
       card(

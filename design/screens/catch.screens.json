@@ -577,12 +577,12 @@
           "routes": [
             "hostFormPreviewScreen"
           ],
-          "file": "lib/hosts/presentation/forms/host_form_preview_screen.dart",
+          "file": "lib/hosts/forms/form_preview_screen.dart",
           "symbol": "HostFormPreviewScreen",
           "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
+          "expression": "CatchScreen",
           "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
+          "topEdge": "safe-area"
         },
         {
           "routes": [
@@ -610,23 +610,23 @@
           "routes": [
             "hostFormAutomationsScreen"
           ],
-          "file": "lib/hosts/presentation/forms/host_automation_rule_editor.dart",
-          "symbol": "_HostAutomationRuleEditorState",
+          "file": "lib/hosts/forms/form_automation_editor.dart",
+          "symbol": "_HostFormAutomationEditorState",
           "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
+          "expression": "CatchScreen",
           "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
+          "topEdge": "safe-area"
         },
         {
           "routes": [
             "hostFormAutomationsScreen"
           ],
-          "file": "lib/hosts/presentation/forms/host_form_automations_screen.dart",
+          "file": "lib/hosts/forms/form_automations_screen.dart",
           "symbol": "_HostFormAutomationsScreenState",
           "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
+          "expression": "CatchScreen",
           "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
+          "topEdge": "safe-area"
         },
         {
           "routes": [
@@ -1453,11 +1453,11 @@
     "hostResponseOfferPreferencesScreen": {
       "owners": [
         {
-          "file": "lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart",
-          "symbol": "_HostEventOfferPreferencesScreenState",
-          "family": "step-flow",
-          "expression": "CatchScaffold.stepFlow",
-          "bodyGeometry": "intrinsic",
+          "file": "lib/hosts/forms/offer_settings_editor.dart",
+          "symbol": "_HostOfferSettingsEditorState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
           "topEdge": "safe-area",
           "routes": [
             "hostResponseOfferPreferencesScreen"
@@ -1469,11 +1469,11 @@
     "hostResponseQueryOfferPreferencesScreen": {
       "owners": [
         {
-          "file": "lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart",
-          "symbol": "_HostEventOfferPreferencesScreenState",
-          "family": "step-flow",
-          "expression": "CatchScaffold.stepFlow",
-          "bodyGeometry": "intrinsic",
+          "file": "lib/hosts/forms/offer_settings_editor.dart",
+          "symbol": "_HostOfferSettingsEditorState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
           "topEdge": "safe-area",
           "routes": [
             "hostResponseQueryOfferPreferencesScreen"
