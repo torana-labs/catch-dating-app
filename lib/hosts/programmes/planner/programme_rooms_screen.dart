@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/programmes/data/program_access_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_rooms_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_rooms_controller.dart';
@@ -22,6 +23,9 @@ import 'package:go_router/go_router.dart';
 /// Picking a waiting guest and then a free room runs `upsertProgramStay`
 /// with that block; Suggest for all places every waiting guest the board
 /// suggests a block for, one stay at a time.
+///
+/// A programme coordinator or the owner also gets the stay planner, which
+/// places room-sharing parties through `manageProgramLodging`.
 class HostProgrammeRoomsScreen extends ConsumerStatefulWidget {
   const HostProgrammeRoomsScreen({
     super.key,
@@ -48,6 +52,11 @@ class _HostProgrammeRoomsScreenState
     final state = ref.watch(
       hostProgrammeRoomsControllerProvider(widget.programId, _hotelId),
     );
+    final access = ref
+        .watch(programAccessStateProvider(widget.programId))
+        .value;
+    final canPlanStays =
+        access?.view?.hasFullReach(access.evaluatedAt) ?? false;
     return CatchRoot(
       format: CatchFormat.nightsOut,
       child: CatchScreen(
@@ -86,6 +95,13 @@ class _HostProgrammeRoomsScreenState
               ]),
             );
           },
+          onPlanStays: canPlanStays
+              ? () => openHostProgrammePage(
+                  context,
+                  widget.programId,
+                  HostProgrammePage.lodging,
+                )
+              : null,
           onHotelDetails: () => openHostProgrammePage(
             context,
             widget.programId,
