@@ -5,10 +5,11 @@ import 'package:catch_dating_app/contexts/programmes/data/program_setup_reposito
 import 'package:catch_dating_app/contexts/programmes/data/program_staff_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_guest_edit_dialog.dart';
-import 'package:catch_dating_app/programs/presentation/program_guest_group_edit_dialog.dart';
-import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/parts/programme_guest_groups_section.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_group_sheet.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_guest_sheet.dart';
+import 'package:catch_dating_app/hosts/programmes/staff/staff_guests_screen.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -353,12 +354,12 @@ class _DialogFrame extends StatelessWidget {
 
 @widgetbook.UseCase(
   name: 'Screen states',
-  type: ProgramGuestDeskScreen,
+  type: StaffGuestsScreen,
   path: '[P1 product surfaces]/Program guests',
 )
-Widget programGuestDeskScreenStates(BuildContext context) {
+Widget staffGuestsScreenStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'ProgramGuestDeskScreen',
+    title: 'StaffGuestsScreen',
     contractId: 'screen.programs.guests',
     children: [
       for (final scenario in [
@@ -397,7 +398,7 @@ Widget programGuestDeskScreenStates(BuildContext context) {
                   )),
                 ),
               ],
-              child: const ProgramGuestDeskScreen(programId: _programId),
+              child: StaffGuestsScreen(programId: _programId, now: () => _now),
             ),
           ),
         ),
@@ -406,94 +407,19 @@ Widget programGuestDeskScreenStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Body states',
-  type: ProgramGuestsPageBody,
+  name: 'Add a guest',
+  type: HostProgrammeGuestSheet,
   path: '[P1 product surfaces]/Program guests',
 )
-Widget programGuestsPageBodyStates(BuildContext context) {
+Widget hostProgrammeGuestSheetStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'ProgramGuestsPageBody',
+    title: 'HostProgrammeGuestSheet',
     contractId: 'screen.programs.guests',
     children: [
       WidgetbookPageStateCard(
-        label: 'grid populated',
-        child: WidgetbookUtilityDeviceFrame(
-          child: ProviderScope(
-            overrides: _workspaceOverrides(),
-            child: ProgramGuestsPageBody(
-              programId: _programId,
-              programTitle: _detail.program.title,
-              functions: _guestFunctions,
-              hotels: _detail.hotels,
-              guestPage: _guestPage,
-              canManageGuests: true,
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Function row',
-  type: ProgramGuestsFunctionRow,
-  path: '[P1 product surfaces]/Program guests',
-)
-Widget programGuestsFunctionRowStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'ProgramGuestsFunctionRow',
-    catalogId: 'screen.programs.guests',
-    children: [
-      for (final status in [
-        'attending',
-        'declined',
-        'maybe',
-        'pending',
-        'notInvited',
-      ])
-        ProgramGuestsFunctionRow(
-          guest: _guestPage.guests[0],
-          functions: _guestFunctions,
-          selectedFunction: _guestFunctions[0],
-          joinIndex: {
-            'g_rohan:fn_sangeet': ProgramFunctionGuestRow(
-              guestId: 'g_rohan',
-              functionId: 'fn_sangeet',
-              invited: status != 'notInvited',
-              rsvpStatus: status == 'notInvited' ? 'attending' : status,
-              attendanceStatus: 'expected',
-            ),
-          },
-          pending: false,
-          onRsvp: (_, _) {},
-        ),
-      ProgramGuestsFunctionRow(
-        guest: _guestPage.guests[1],
-        functions: _guestFunctions,
-        selectedFunction: _guestFunctions[0],
-        joinIndex: const {},
-        pending: true,
-        onRsvp: (_, _) {},
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Guest edit dialog',
-  type: ProgramGuestEditDialog,
-  path: '[P1 product surfaces]/Program guests',
-)
-Widget programGuestEditDialogStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProgramGuestEditDialog',
-    contractId: 'screen.programs.guests',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'with households + groups',
+        label: 'households and groups',
         child: _DialogFrame(
-          child: ProgramGuestEditDialog(
+          child: HostProgrammeGuestSheet(
             households: _guestPage.households,
             groups: _guestPage.groups,
           ),
@@ -504,26 +430,80 @@ Widget programGuestEditDialogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Group edit dialog',
-  type: ProgramGuestGroupEditDialog,
+  name: 'New and existing group',
+  type: HostProgrammeGroupSheet,
   path: '[P1 product surfaces]/Program guests',
 )
-Widget programGuestGroupEditDialogStates(BuildContext context) {
-  return const WidgetbookPageCatalogFrame(
-    title: 'ProgramGuestGroupEditDialog',
+Widget hostProgrammeGroupSheetStates(BuildContext context) {
+  return WidgetbookPageCatalogFrame(
+    title: 'HostProgrammeGroupSheet',
     contractId: 'screen.programs.guests',
     children: [
       WidgetbookPageStateCard(
         label: 'new group',
-        child: _DialogFrame(
-          child: ProgramGuestGroupEditDialog(
-            hotels: [
-              ProgramHotel(
-                hotelId: 'hotel_harbourview',
-                name: 'Harbourview Palace',
-              ),
-            ],
+        child: _DialogFrame(child: HostProgrammeGroupSheet(hotels: _hotels)),
+      ),
+      if (_guestPage.groups.isNotEmpty)
+        WidgetbookPageStateCard(
+          label: 'existing group',
+          child: _DialogFrame(
+            child: HostProgrammeGroupSheet(
+              hotels: _hotels,
+              group: _guestPage.groups.first,
+            ),
           ),
+        ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Groups with hotels',
+  type: ProgrammeGuestGroupsSection,
+  path: '[P1 product surfaces]/Program guests',
+)
+Widget programmeGuestGroupsSectionStates(BuildContext context) {
+  return WidgetbookPageCatalogFrame(
+    title: 'ProgrammeGuestGroupsSection',
+    contractId: 'screen.programs.guests',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'editable',
+        child: ProgrammeGuestGroupsSection(
+          groups: _guestPage.groups,
+          hotels: _hotels,
+          onEditGroup: (_) {},
+        ),
+      ),
+      const WidgetbookPageStateCard(
+        label: 'none yet, read-only',
+        child: ProgrammeGuestGroupsSection(groups: [], hotels: []),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Guests with no household',
+  type: ProgrammeNoHouseholdSection,
+  path: '[P1 product surfaces]/Program guests',
+)
+Widget programmeNoHouseholdSectionStates(BuildContext context) {
+  final state = HostProgrammeState(
+    status: HostProgrammeStatus.ready,
+    detail: _detail,
+    guests: _guestPage,
+  );
+  return WidgetbookPageCatalogFrame(
+    title: 'ProgrammeNoHouseholdSection',
+    contractId: 'screen.programs.guests',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'guests on their own',
+        child: ProgrammeNoHouseholdSection(
+          state: state,
+          guests: _guestPage.guests.take(2).toList(),
+          onEditGuest: (_) {},
         ),
       ),
     ],
