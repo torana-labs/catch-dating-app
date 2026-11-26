@@ -8,6 +8,7 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_event_staff_repository.dart';
 import 'package:catch_dating_app/hosts/door/door_screen.dart';
+import 'package:catch_dating_app/hosts/door/door_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_event_screen.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -107,7 +108,7 @@ void main() {
     expect(door.access.checkIn, isTrue);
     expect(door.access.reviewClaims, isFalse);
     expect(door.access.manage, isFalse);
-    expect(door.access.role, HostEventOperatorRole.operator);
+    expect(door.access.role, DoorRole.staff);
     expect(door.access.until, DateTime(2026, 11, 29, 1));
 
     // Lets the door go, with its heartbeat timer.

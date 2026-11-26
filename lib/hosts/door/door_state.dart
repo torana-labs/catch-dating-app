@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/host_event_staff_repository.dart';
 import 'package:flutter/foundation.dart';
 
 /// Which guests the door shows: still to come, in, waiting, or asking.
@@ -19,6 +18,9 @@ extension on DoorFilter {
   };
 }
 
+/// Who a phone from the staff work list is at the door.
+enum DoorRole { manager, staff }
+
 /// What this phone may do at the door. An organizer manager does
 /// everything; event staff do what their grant allows. The server checks
 /// every command again, so this only hides what would be refused.
@@ -31,17 +33,6 @@ class DoorAccess {
     this.role,
     this.until,
   });
-
-  /// The access an event staff grant or a manager reached through the
-  /// staff work list gives: check-in and claims from its permissions, the
-  /// guest list itself only for a manager.
-  factory DoorAccess.operator(HostEventOperatorAccess access) => DoorAccess(
-    checkIn: access.has(HostEventOperatorPermission.setAttendance),
-    reviewClaims: access.has(HostEventOperatorPermission.reviewRuntimeClaims),
-    manage: access.actorRole == HostEventOperatorRole.manager,
-    role: access.actorRole,
-    until: access.grantExpiresAt,
-  );
 
   /// Check in, undo and scan tickets.
   final bool checkIn;
@@ -56,7 +47,7 @@ class DoorAccess {
   /// Who this phone is at the door when it came through the staff work
   /// list; null on the door a host opens from the event, which shows no
   /// access line.
-  final HostEventOperatorRole? role;
+  final DoorRole? role;
 
   /// When an event staff grant ends; null for a manager.
   final DateTime? until;

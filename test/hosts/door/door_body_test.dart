@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dar
 import 'package:catch_dating_app/contexts/organizers/data/host_event_staff_repository.dart';
 import 'package:catch_dating_app/hosts/door/door_body.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
+import 'package:catch_dating_app/hosts/programmes/staff/staff_event_screen.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -188,7 +189,7 @@ void main() {
       final calls = await _pump(
         tester,
         doorBoardState(),
-        access: DoorAccess.operator(staff(const {})),
+        access: doorAccessFor(staff(const {})),
       );
 
       expect(find.text('Dev Patel'), findsOneWidget);
@@ -206,7 +207,7 @@ void main() {
 
     testWidgets('a check-in grant checks guests in and scans, but cannot let '
         'in or offer', (tester) async {
-      final access = DoorAccess.operator(
+      final access = doorAccessFor(
         staff(const {HostEventOperatorPermission.setAttendance}),
       );
       final calls = await _pump(tester, doorBoardState(), access: access);
@@ -228,7 +229,7 @@ void main() {
 
     testWidgets('a manager from the work list gets the whole door and the '
         'manager line', (tester) async {
-      final access = DoorAccess.operator(
+      final access = doorAccessFor(
         HostEventOperatorAccess(
           eventId: doorEventId,
           organizerId: 'org-1',

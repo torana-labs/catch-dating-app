@@ -1,6 +1,4 @@
 import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
-import 'package:catch_dating_app/contexts/organizers/data/host_event_staff_repository.dart'
-    show HostEventOperatorRole;
 import 'package:catch_dating_app/hosts/door/door_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
@@ -101,12 +99,11 @@ class DoorBody extends StatelessWidget {
       final role => CatchNotice.inline(
         key: const ValueKey<String>('door-access'),
         tone: CatchNoticeTone.neutral,
-        title: role == HostEventOperatorRole.manager
+        title: role == DoorRole.manager
             ? l10n.hostsEventOperatorRoleManager
             : l10n.hostsEventOperatorRoleStaff,
         body: [
-          if (role == HostEventOperatorRole.operator)
-            l10n.hostsEventOperatorAccessSubtitle,
+          if (role == DoorRole.staff) l10n.hostsEventOperatorAccessSubtitle,
           [
             if (event != null) AppTimeFormatters.dateTime(event.startTime),
             if (access.until case final until?)

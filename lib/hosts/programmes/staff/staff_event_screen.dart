@@ -32,7 +32,7 @@ class StaffEventScreen extends ConsumerWidget {
       return DoorScreen(
         organizerId: value.organizerId,
         eventId: eventId,
-        access: DoorAccess.operator(value),
+        access: doorAccessFor(value),
       );
     }
     final l10n = context.l10n;
@@ -41,6 +41,7 @@ class StaffEventScreen extends ConsumerWidget {
         title: l10n.hostsEventOperatorCancelledTitle,
         message: l10n.hostsEventOperatorCancelledMessage,
         icon: CatchIcons.eventUnavailable,
+        actions: const [CatchErrorBackButton()],
       ),
       AsyncValue(:final error?) => CatchLocalizedErrorState(
         error,
@@ -73,3 +74,15 @@ class StaffEventScreen extends ConsumerWidget {
     );
   }
 }
+
+/// The door an operator access opens: check-in and claims from its
+/// permissions, the guest list itself only for a manager.
+DoorAccess doorAccessFor(HostEventOperatorAccess access) => DoorAccess(
+  checkIn: access.has(HostEventOperatorPermission.setAttendance),
+  reviewClaims: access.has(HostEventOperatorPermission.reviewRuntimeClaims),
+  manage: access.actorRole == HostEventOperatorRole.manager,
+  role: access.actorRole == HostEventOperatorRole.manager
+      ? DoorRole.manager
+      : DoorRole.staff,
+  until: access.grantExpiresAt,
+);
