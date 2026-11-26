@@ -7,7 +7,7 @@
       "lib/routing/consumer_router.dart",
       "lib/routing/host_router.dart"
     ],
-    "routeContractSha256": "651eccf2a9e563c6820805f3c0bf1b679130b9a9ab83ef690c569a82dbd23c75",
+    "routeContractSha256": "fe8f3df0cedc8e5c78caad1394287716d37eaecd355c435b2f9ffaacda69a525",
     "goRouteCount": 138,
     "shellBranchCount": 8,
     "enumRouteCount": 115,
