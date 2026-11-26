@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 // Splits the full Tools matrix into evenly timed buckets. The assignment is
 // computed, never hand-kept: every active tool goes to exactly one bucket by
-// longest-first greedy balancing over the measured seconds in
+// longest-first greedy balancing, over groups of tools that share a check
+// command (so the runner still executes each shared command once), of the
+// measured seconds in
 // tool/ci/tool_bucket_timings.json. A tool the timing file does not know yet
 // (a new tool) counts as the file's defaultSeconds until the next regenerate.
 //
@@ -19,7 +21,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
-import {hasExecutableChecks, projectToolCiRequirements} from "../lib/tool_impact.mjs";
+import {hasExecutableChecks, projectToolCiRequirements, splitSharedPrerequisite} from "../lib/tool_impact.mjs";
 import {loadToolsManifest} from "../lib/tools_manifest.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -32,20 +34,58 @@ export function fullMatrixTools(manifest) {
 }
 
 /**
- * Longest-first greedy assignment: tools sorted by seconds (then id) go one by
- * one to the bucket with the least load so far (lowest index on a tie). Each
- * bucket lists its tools in manifest order. Deterministic for the same inputs.
+ * Tools that register an identical check command or shared prerequisite,
+ * directly or through a chain of such tools, form one group. The runner executes an identical command once
+ * per invocation, so a group stays in one bucket and every shared command
+ * still runs once in the full matrix.
+ */
+export function sharedCommandGroups(tools) {
+  const parent = new Map(tools.map((tool) => [tool.id, tool.id]));
+  const find = (id) => {
+    while (parent.get(id) !== id) {
+      parent.set(id, parent.get(parent.get(id)));
+      id = parent.get(id);
+    }
+    return id;
+  };
+  const ownerOf = new Map();
+  for (const tool of tools) {
+    for (const command of tool.checks ?? []) {
+      // A shared prerequisite (the Functions build) is shared work too.
+      const {prerequisite} = splitSharedPrerequisite(command);
+      for (const key of prerequisite ? [command, prerequisite.command] : [command]) {
+        if (!ownerOf.has(key)) ownerOf.set(key, tool.id);
+        else parent.set(find(tool.id), find(ownerOf.get(key)));
+      }
+    }
+  }
+  const groups = new Map();
+  for (const tool of tools) {
+    const root = find(tool.id);
+    if (!groups.has(root)) groups.set(root, []);
+    groups.get(root).push(tool);
+  }
+  return [...groups.values()];
+}
+
+/**
+ * Longest-first greedy assignment over shared-command groups: groups sorted by
+ * seconds (then first tool id) go one by one to the bucket with the least load
+ * so far (lowest index on a tie). Each bucket lists its tools in manifest
+ * order. Deterministic for the same inputs.
  */
 export function assignBuckets({tools, timings, count = BUCKET_COUNT}) {
   if (!Number.isInteger(count) || count < 1) throw new Error("Bucket count must be a positive integer.");
   const secondsOf = (tool) => timings.seconds[tool.id] ?? timings.defaultSeconds;
   const order = new Map(tools.map((tool, index) => [tool.id, index]));
   const buckets = Array.from({length: count}, () => ({seconds: 0, tools: []}));
-  const byCost = [...tools].sort((a, b) => secondsOf(b) - secondsOf(a) || a.id.localeCompare(b.id));
-  for (const tool of byCost) {
+  const groups = sharedCommandGroups(tools).map((members) => ({
+    members, seconds: members.reduce((sum, tool) => sum + secondsOf(tool), 0), key: members[0].id}));
+  groups.sort((a, b) => b.seconds - a.seconds || a.key.localeCompare(b.key));
+  for (const group of groups) {
     const target = buckets.reduce((best, bucket) => (bucket.seconds < best.seconds ? bucket : best), buckets[0]);
-    target.seconds += secondsOf(tool);
-    target.tools.push(tool);
+    target.seconds += group.seconds;
+    target.tools.push(...group.members);
   }
   for (const bucket of buckets) bucket.tools.sort((a, b) => order.get(a.id) - order.get(b.id));
   return buckets.map((bucket, index) => ({

@@ -85,7 +85,8 @@ revision, still runs the full matrix. Canonical Harness control-plane paths come
 `component_graph.json#repo.harness`; the tool manifest declares only additional
 full-matrix paths. Terminal graph classifications override broad Harness
 patterns. Shared control-plane changes, unowned lane inputs, and explicit full
-runs retain the complete six-bucket matrix.
+runs retain the complete six-bucket matrix (time-balanced buckets; see
+`docs/release_operations.md#tool-buckets`).
 Explicit mappings avoid full fanout when ordinary screen changes update
 generated manifests; unknown companion inputs
 still trigger the full fallback. Committed evidence follows the same rule:

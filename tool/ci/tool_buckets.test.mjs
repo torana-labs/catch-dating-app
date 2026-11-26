@@ -10,10 +10,12 @@ import {
   buildTimings,
   fullMatrixTools,
   readTimings,
+  sharedCommandGroups,
   toolSecondsFromLog,
   validateTimings,
 } from "./tool_buckets.mjs";
 import {loadToolsManifest} from "../lib/tools_manifest.mjs";
+import {splitSharedPrerequisite} from "../lib/tool_impact.mjs";
 
 const manifest = loadToolsManifest();
 const timings = readTimings();
@@ -55,20 +57,20 @@ test("the buckets run exactly the tools the legacy category buckets ran", () => 
 });
 
 test("assignment balances by measured seconds, deterministically", () => {
-  const tools = ["a", "b", "c", "d", "e", "f"].map((id) => ({id, checks: ["true"]}));
+  const tools = ["a", "b", "c", "d", "e", "f"].map((id) => ({id, checks: [`node ${id}.mjs`]}));
   const fixture = {defaultSeconds: 1, seconds: {a: 10, b: 9, c: 6, d: 5, e: 4, f: 1}};
   const plan = assignBuckets({tools, timings: fixture, count: 2});
   assert.deepEqual(plan.map((bucket) => [bucket.toolIds, bucket.seconds]), [[["a", "d", "e"], 19], [["b", "c", "f"], 16]]);
   assert.deepEqual(assignBuckets({tools, timings: fixture, count: 2}), plan);
   // Unknown tools count as defaultSeconds; each bucket keeps manifest order.
-  const withNew = assignBuckets({tools: [...tools, {id: "g", checks: ["true"]}], timings: fixture, count: 2});
+  const withNew = assignBuckets({tools: [...tools, {id: "g", checks: ["node g.mjs"]}], timings: fixture, count: 2});
   assert.deepEqual(withNew.map((bucket) => bucket.toolIds), [["a", "d", "e"], ["b", "c", "f", "g"]]);
 });
 
 test("a bucket's setup is the affected job's projection of its tools' CI requirements", () => {
-  const node = {id: "x:node", checks: ["true"], ciRequirements: {repositoryView: "index", setup: ["node"]}};
-  const browser = {id: "x:browser", checks: ["true"], ciRequirements: {repositoryView: "full", setup: ["node", "root-npm", "playwright"]}};
-  const undeclared = {id: "x:undeclared", checks: ["true"]};
+  const node = {id: "x:node", checks: ["node n.mjs"], ciRequirements: {repositoryView: "index", setup: ["node"]}};
+  const browser = {id: "x:browser", checks: ["node b.mjs"], ciRequirements: {repositoryView: "full", setup: ["node", "root-npm", "playwright"]}};
+  const undeclared = {id: "x:undeclared", checks: ["node u.mjs"]};
   const fixture = {defaultSeconds: 1, seconds: {"x:node": 5, "x:browser": 4, "x:undeclared": 3}};
   const [first, second, third] = assignBuckets({tools: [node, browser, undeclared], timings: fixture, count: 3});
   assert.deepEqual(first.setup, ["node"]);
@@ -134,4 +136,35 @@ test("ids, setup and regenerate work from the command line", () => {
   } finally {
     fs.rmSync(dir, {recursive: true, force: true});
   }
+});
+
+test("every shared command and shared prerequisite runs in exactly one bucket", () => {
+  const bucketOf = new Map(buckets.flatMap((bucket) => bucket.toolIds.map((id) => [id, bucket.bucket])));
+  const bucketsOfKey = new Map();
+  for (const tool of fullMatrixTools(manifest)) {
+    for (const command of tool.checks ?? []) {
+      const {prerequisite} = splitSharedPrerequisite(command);
+      for (const key of prerequisite ? [command, prerequisite.command] : [command]) {
+        if (!bucketsOfKey.has(key)) bucketsOfKey.set(key, new Set());
+        bucketsOfKey.get(key).add(bucketOf.get(tool.id));
+      }
+    }
+  }
+  const split = [...bucketsOfKey].filter(([, set]) => set.size > 1).map(([key]) => key);
+  assert.deepEqual(split, [], "a shared command would run in more than one bucket");
+});
+
+test("tools sharing a command or prerequisite form one group, deterministically", () => {
+  const tools = [
+    {id: "a:one", checks: ["node shared.mjs", "node a.mjs"]},
+    {id: "b:two", checks: ["node b.mjs", "node shared.mjs"]},
+    {id: "c:three", checks: ["npm --prefix functions run build && node --test c.test.mjs"]},
+    {id: "d:four", checks: ["npm --prefix functions run build && node --test d.test.mjs"]},
+    {id: "e:five", checks: ["node e.mjs"]},
+  ];
+  assert.deepEqual(sharedCommandGroups(tools).map((group) => group.map((tool) => tool.id)),
+    [["a:one", "b:two"], ["c:three", "d:four"], ["e:five"]]);
+  const timings = {defaultSeconds: 1, seconds: {"a:one": 5, "b:two": 5, "c:three": 4, "d:four": 4, "e:five": 9}};
+  const plan = assignBuckets({tools, timings, count: 2});
+  assert.deepEqual(plan.map((bucket) => bucket.toolIds), [["a:one", "b:two"], ["c:three", "d:four", "e:five"]]);
 });
