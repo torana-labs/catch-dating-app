@@ -9,7 +9,7 @@ import {fileURLToPath} from "node:url";
 import {projectPlanOutputs} from "../harness.mjs";
 import {planAffected, queueOnlyCiTargets} from "../harness/lib/component_graph.mjs";
 import {planAffectedToolChecks, toolsOwnDesignChecks, toolsOwnUiLintSmoke} from "../lib/tool_impact.mjs";
-import {comparedLanes} from "./shadow_plan.mjs";
+import {comparedLanes} from "./lanes.mjs";
 import {appRolesOf, applyLanes, chooseLanes, everyLane, mainBuildLanes, nativeBuildInput, nativeBuildLanes, nxChooses,
   nxSelectsAlone, plannerShadow, selectAlone, unionLanes} from "./select_lanes.mjs";
 import {loadToolsManifest, toolsManifestPath} from "../lib/tools_manifest.mjs";

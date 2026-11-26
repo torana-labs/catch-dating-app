@@ -19,8 +19,11 @@ import test from "node:test";
 import {fileURLToPath} from "node:url";
 
 import {matchesGlobPath} from "../lib/path_glob.mjs";
-import {callerGraph, compare, targets} from "./shadow_plan.mjs";
+import {callerGraph, selectNxLanes, targets} from "./lanes.mjs";
 import {loadToolsManifest} from "../lib/tools_manifest.mjs";
+
+// The lanes Nx selects for one change, sorted.
+const nxSelection = (input) => [...selectNxLanes(input).lanes].sort();
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const readJson = (file) => JSON.parse(fs.readFileSync(path.join(workspaceRoot, file), "utf8"));
@@ -128,8 +131,8 @@ function lanesFor(file) {
       `--graph=${graphFile}`], {cwd: workspaceRoot, stdio: "ignore", env: {...process.env, NX_DAEMON: "false"}});
     const graph = JSON.parse(fs.readFileSync(graphFile, "utf8"));
     const tagsByProject = Object.fromEntries(Object.entries(graph.graph.nodes).map(([name, node]) => [name, node.data.tags ?? []]));
-    return compare({plannerLanes: [], mode: "merge_group", nxTasks: Object.keys(graph.tasks.tasks), tagsByProject,
-      changedFiles: [file]}).nxLanes;
+    return nxSelection({mode: "merge_group", nxTasks: Object.keys(graph.tasks.tasks), tagsByProject,
+      changedFiles: [file]});
   } finally {
     fs.rmSync(dir, {recursive: true, force: true});
   }
