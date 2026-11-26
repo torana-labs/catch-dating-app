@@ -30,14 +30,14 @@ describe("CatchChoiceTile system card parity", () => {
   it("keeps each variant's minimum height, padding and gaps", () => {
     expect(tile).toMatch(/CatchChoiceTileVariant\.row => ConstrainedBox\(\s*constraints: const BoxConstraints\(minHeight: CatchSpacing\.s16\)/);
     expect(tile).toMatch(/horizontal: CatchSpacing\.s4,\s*vertical: CatchSpacing\.s3,/);
-    expect(css).toContain(".system[data-variant=\"row\"] { align-items: center; gap: var(--catch-space-s3); min-height: var(--catch-space-s16); padding: var(--catch-space-s3) var(--catch-space-s4); }");
+    expect(css).toContain(`.system[data-variant="row"] { align-items: center; gap: var(--catch-space-s3); min-height: ${spacing("s16")}px; padding: var(--catch-space-s3) var(--catch-space-s4); }`);
     expect(tile).toContain("_tileMinHeight = CatchSpacing.s16 + CatchSpacing.s3");
-    expect(css).toContain("--catch-option-card-tile-min-height: calc(var(--catch-space-s16) + var(--catch-space-s3));");
+    expect(css).toContain(`--catch-option-card-tile-min-height: ${spacing("s16") + spacing("s3")}px;`);
     expect(tile).toContain("padding: const EdgeInsets.all(CatchSpacing.micro14)");
     expect(tile).toMatch(/mainAxisAlignment: MainAxisAlignment\.spaceBetween,\s*spacing: CatchSpacing\.s2,/);
     expect(css).toContain("justify-content: space-between; gap: var(--catch-space-s2); min-height: var(--catch-option-card-tile-min-height); padding: var(--catch-space-micro14);");
     expect(tile).toContain("padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.micro6)");
-    expect(css).toContain("min-height: var(--catch-space-s16); padding: 0 var(--catch-space-micro6);");
+    expect(css).toContain(`min-height: ${spacing("s16")}px; padding: 0 var(--catch-space-micro6);`);
     expect(tile).toMatch(/mainAxisAlignment: MainAxisAlignment\.center,\s*spacing: CatchSpacing\.s1,/);
     expect(css).toContain("justify-content: center; gap: var(--catch-space-s1); min-height: var(--catch-option-card-tile-min-height); padding: var(--catch-space-micro14);");
     expect(tile).toContain("variant == CatchChoiceTileVariant.day ? CatchRadius.sm : CatchRadius.md");
