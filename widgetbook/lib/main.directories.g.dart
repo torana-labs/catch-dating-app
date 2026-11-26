@@ -209,6 +209,8 @@ import 'package:widgetbook_workspace/hosts/host_event_gaps_use_cases.dart'
     as _widgetbook_workspace_hosts_host_event_gaps_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_payments_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_payments_use_cases;
+import 'package:widgetbook_workspace/hosts/host_form_questions_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_form_questions_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_responses_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_responses_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_settings_use_cases.dart'
@@ -243,6 +245,8 @@ import 'package:widgetbook_workspace/hosts/host_setup_claim_use_cases.dart'
     as _widgetbook_workspace_hosts_host_setup_claim_use_cases;
 import 'package:widgetbook_workspace/hosts/host_staff_event_use_cases.dart'
     as _widgetbook_workspace_hosts_host_staff_event_use_cases;
+import 'package:widgetbook_workspace/hosts/host_staff_guests_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_staff_guests_use_cases;
 import 'package:widgetbook_workspace/hosts/host_system_parts_use_cases.dart'
     as _widgetbook_workspace_hosts_host_system_parts_use_cases;
 import 'package:widgetbook_workspace/hosts/host_today_requests_use_cases.dart'
@@ -9975,6 +9979,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                     ],
                   ),
                   _widgetbook.WidgetbookComponent(
+                    name: 'StaffGuestsBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Coordinator',
+                        builder:
+                            _widgetbook_workspace_hosts_host_staff_guests_use_cases
+                                .staffGuestsBodyUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'StaffGuestsScreen',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Guest relations',
+                        builder:
+                            _widgetbook_workspace_hosts_host_staff_guests_use_cases
+                                .staffGuestsScreenUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
                     name: 'StaffHotelTripCard',
                     useCases: [
                       _widgetbook.WidgetbookUseCase(
@@ -10929,6 +10955,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormKindPicker',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Choose an answer type',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_questions_use_cases
+                            .hostFormKindPickerPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormLifecycleMenu',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -11046,6 +11083,39 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_settings_use_cases
                             .hostFormPublishReviewSheetPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormQuestionSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Question settings',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_questions_use_cases
+                            .hostFormQuestionSheetPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormRuleField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Answer rule',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_questions_use_cases
+                            .hostFormRuleFieldPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormSectionSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Edit a section',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_questions_use_cases
+                            .hostFormSectionSheetPreview,
                   ),
                 ],
               ),
@@ -12658,52 +12728,42 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Program guests',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'ProgramGuestDeskScreen',
+            name: 'HostProgrammeGroupSheet',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Screen states',
+                name: 'New and existing group',
                 builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programGuestDeskScreenStates,
+                    .hostProgrammeGroupSheetStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ProgramGuestEditDialog',
+            name: 'HostProgrammeGuestSheet',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Guest edit dialog',
+                name: 'Add a guest',
                 builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programGuestEditDialogStates,
+                    .hostProgrammeGuestSheetStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ProgramGuestGroupEditDialog',
+            name: 'ProgrammeGuestGroupsSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Group edit dialog',
+                name: 'Groups with hotels',
                 builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programGuestGroupEditDialogStates,
+                    .programmeGuestGroupsSectionStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ProgramGuestsFunctionRow',
+            name: 'ProgrammeNoHouseholdSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Function row',
+                name: 'Guests with no household',
                 builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programGuestsFunctionRowStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ProgramGuestsPageBody',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Body states',
-                builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programGuestsPageBodyStates,
+                    .programmeNoHouseholdSectionStates,
               ),
             ],
           ),
