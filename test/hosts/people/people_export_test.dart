@@ -18,8 +18,12 @@ import 'people_fixtures.dart';
 /// Export on People: the old Customers screen's audience export, carried
 /// onto the redesigned People tab.
 void main() {
-  Future<_Probe> pump(WidgetTester tester, {Object? failure}) async {
-    tester.view.physicalSize = const Size(390, 1240);
+  Future<_Probe> pump(
+    WidgetTester tester, {
+    Object? failure,
+    Size size = const Size(390, 1240),
+  }) async {
+    tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     final probe = _Probe(failure: failure);
@@ -82,6 +86,14 @@ void main() {
       find.byKey(const ValueKey<String>('host-people-export')),
     );
     expect(action.onPressed, isNotNull);
+  });
+
+  testWidgets('wide windows export from the list header', (tester) async {
+    final probe = await pump(tester, size: hostPeopleDesktopSize);
+    await tester.tap(find.byKey(const ValueKey<String>('host-people-export')));
+    await pumpFeatureUi(tester);
+    expect(probe.customers.organizerIds, [peopleOrganizer.id]);
+    expect(probe.shared, hasLength(1));
   });
 }
 

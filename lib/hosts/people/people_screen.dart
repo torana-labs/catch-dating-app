@@ -163,6 +163,9 @@ class _HostPeopleScreenState extends ConsumerState<HostPeopleScreen> {
                     .isPending,
                 duplicates: duplicates,
                 onOpenDuplicates: openDuplicates,
+                onExport: _exporting
+                    ? null
+                    : () => unawaited(_export(organizer.id, search: _search)),
                 onView: openView,
                 onSearch: (value) => setState(() {
                   _search = value;
@@ -252,11 +255,10 @@ class _HostPeopleScreenState extends ConsumerState<HostPeopleScreen> {
         extra: contact.displayName,
       );
 
-  /// Exports the people this list shows (everyone, or the chosen filter) as
-  /// a CSV through the existing contact export, and shares the file. The
-  /// export runs only from the phone layout's top bar, which has no search.
-  /// The commands are read before anything is awaited.
-  Future<void> _export(String organizerId) async {
+  /// Exports the people this list shows (the chosen filter and, on wide
+  /// windows, the search) as a CSV through the existing contact export, and
+  /// shares the file. The commands are read before anything is awaited.
+  Future<void> _export(String organizerId, {String search = ''}) async {
     if (_exporting) return;
     final l10n = context.l10n;
     final customers = ref.read(hostCustomersControllerProvider);
@@ -264,6 +266,7 @@ class _HostPeopleScreenState extends ConsumerState<HostPeopleScreen> {
     final query = HostPeopleRequest(
       organizerId: organizerId,
       filter: _filter,
+      search: search,
     ).query;
     setState(() => _exporting = true);
     try {
