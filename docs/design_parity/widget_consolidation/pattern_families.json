@@ -580,10 +580,11 @@
       "priority": "P0",
       "status": "implemented",
       "targetContract": "one canonical host broadcast workflow or two explicitly qualified compositions",
-      "qualityReference": "HostBroadcastComposerSheet",
+      "qualityReference": "HostComposeScreen",
       "decisionSource": "owner-approved:2026-08-30",
       "acceptedVisualDelta": [
-        "The eventless Chats blast sheet is removed because Inbox is inbound-only; outbound audience work remains in Host Sends while the event-aware HostBroadcastComposerSheet stays canonical."
+        "The eventless Chats blast sheet is removed because Inbox is inbound-only; outbound audience work remains in Host Sends while the event-aware HostBroadcastComposerSheet stays canonical.",
+        "The Host app redesign retired HostBroadcastComposerSheet with the old inbox; the event announcement is now the People tab's HostComposeScreen."
       ],
       "reviewQuestions": [
         {
@@ -600,10 +601,16 @@
       ],
       "members": [
         {
-          "symbol": "HostBroadcastComposerSheet",
+          "symbol": "HostComposeScreen",
           "disposition": "canonical",
-          "preview": "required",
-          "rationale": "The event-aware Hosts workflow owns event identity, mutation behavior, and the canonical host-broadcast namespace."
+          "preview": "source-only",
+          "rationale": "The People tab's event announcement screen owns event identity, the audience, templates and the broadcast mutation under one request id per draft."
+        },
+        {
+          "symbol": "HostBroadcastComposerSheet",
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "Retired with the old Host inbox; HostComposeScreen carries the event-aware announcement, its audiences, templates and per-draft request id."
         },
         {
           "symbol": "ChatBlastComposerSheet",
