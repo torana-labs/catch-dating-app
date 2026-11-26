@@ -2611,6 +2611,9 @@ function renderTsSchemaModules({
       eventAssistanceCommandBindingCatalog],
     ["profilePromptCatalog", profileCatalog],
     ["personFieldCatalog", personFieldCatalog],
+    // #2493 (FIX-19): which guest fields each admission format shows.
+    ["admissionVisibilityCatalog",
+      readContractJson("catalogs/admission_visibility.json")],
     ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],
     ["hostAttentionPolicyCatalog", hostAttentionPolicyCatalog],
     ["organizerProviderCatalog", organizerProviderCatalog],

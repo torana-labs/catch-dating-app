@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "description": "What an organiser may read about each guest, per admission policy (#2493, FIX-19; owner decisions OQ-1 and OQ-2). Every organiser sees the guest's card (name, first photo, city) and the roster facts of their own event. organiserFields are the extra guest fields the policy itself needs; the server writes them to eventGuestDisclosures/{eventId}__{uid} when the guest books, joins the waitlist or asks to join. grantFields are profile answers the guest may later choose to share for admission, as a grant with an expiry (a later #2493 step; none is written yet). A guest's orientation (booking cohort) is never an organiser field. disclosure is the draft line the guest will see when they book or ask to join; no screen shows it until the owner approves it.",
+  "cardFields": ["name", "firstPhoto", "city"],
+  "formats": {
+    "openCapacity": {
+      "organiserFields": [],
+      "disclosure": "The organiser sees your name, first photo and city."
+    },
+    "inviteOnly": {
+      "organiserFields": [],
+      "disclosure": "The organiser sees your name, first photo and city."
+    },
+    "balancedSingles": {
+      "organiserFields": ["gender"],
+      "disclosure": "The organiser sees your name, first photo, city and gender, because this event balances numbers."
+    },
+    "fixedCohortCaps": {
+      "organiserFields": ["gender"],
+      "disclosure": "The organiser sees your name, first photo, city and gender, because this event balances numbers."
+    }
+  },
+  "manualApproval": {
+    "grantFields": ["relationshipGoal", "drinking", "smoking", "children", "religion"],
+    "disclosure": "You can also share your profile answers to help the organiser decide. They can see them until the event ends."
+  },
+  "disclosureRetentionDaysAfterEnd": 7
+}

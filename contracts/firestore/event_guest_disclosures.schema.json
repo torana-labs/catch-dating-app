@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_guest_disclosures.schema.json",
+  "title": "EventGuestDisclosuresDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "description": "What an event's admission policy lets its organiser read about one guest beyond the card, at eventGuestDisclosures/{eventId}__{uid} (#2493, FIX-19). contracts/catalogs/admission_visibility.json declares which fields each admission format needs: today only gender, on a gender-balanced event (owner decision OQ-2). The server writes it in the booking's transaction when the guest books, joins the waitlist or asks to join, deletes it when they cancel or leave the waitlist and at account deletion, and a TTL policy removes it after expiresAt. The event's organiser managers may get it until it expires; no client writes it.",
+  "x-firestore-collection": "eventGuestDisclosures",
+  "x-firestore-path": "eventGuestDisclosures/{disclosureId}",
+  "x-document-id-field": "disclosureId",
+  "x-owner": "functions/src/shared/admissionVisibility.ts, in the booking, waitlist and request transactions",
+  "required": [
+    "eventId",
+    "organizerId",
+    "uid",
+    "format",
+    "fields",
+    "grantKey",
+    "expiresAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "openCapacity",
+        "inviteOnly",
+        "balancedSingles",
+        "fixedCohortCaps"
+      ],
+      "description": "The event's admission format when the disclosure was written; it decides the fields.",
+      "x-catch-ownership": "server-only"
+    },
+    "fields": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Only the values the admission format allows the organiser to read.",
+      "properties": {
+        "gender": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/gender"
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "grantKey": {
+      "type": "null",
+      "description": "The profile-share grant that opens this disclosure. Always null until profile-share grants exist (a later #2493 step); a null grant needs no opt-in.",
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "The event's end plus the catalog's retention days. Rules refuse reads after it and a TTL policy deletes the document.",
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}
