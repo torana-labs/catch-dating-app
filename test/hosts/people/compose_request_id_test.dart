@@ -38,7 +38,7 @@ class _FakeComposeCommands implements HostComposeCommands {
     if (failAttempts.contains(sentIds.length)) {
       throw StateError('temporary failure');
     }
-    return SendEventBroadcastCallableResponse(
+    return const SendEventBroadcastCallableResponse(
       broadcastId: 'broadcast-1',
       status: EventBroadcastDeliveryStatus.completed,
       recipientCount: 79,

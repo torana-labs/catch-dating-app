@@ -2887,33 +2887,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Airbnb Experiences';
 
   @override
-  String get hostsHostBroadcastComposerSheetTitleNewBroadcast =>
-      'New broadcast';
-
-  @override
-  String get hostsHostBroadcastComposerSheetTextAudience => 'Audience';
-
-  @override
   String get hostsHostBroadcastComposerSheetTextTemplate => 'Template';
-
-  @override
-  String get hostsHostBroadcastComposerSheetTitleMessage => 'Message';
-
-  @override
-  String get hostsHostBroadcastComposerSheetPlaceholderWriteAClearUpdate =>
-      'Write a clear update for attendees';
-
-  @override
-  String get hostsHostBroadcastComposerSheetTextSendingStaysOffIn =>
-      'Sending stays off in this build until the production callable passes the release preflight.';
 
   @override
   String get hostsHostBroadcastComposerSheetTextThisAudienceHasNo =>
       'This audience has no eligible recipients yet.';
-
-  @override
-  String get hostsHostBroadcastComposerSheetLabelSendTo1Person =>
-      'Send to 1 person';
 
   @override
   String get hostsHostInboxScreenLabelInboxScope => 'Inbox scope';
@@ -4195,10 +4173,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'No general inquiries';
 
   @override
-  String get hostsHostInboxScreenTitleNoProgramConversations =>
-      'No guest conversations for this program yet';
-
-  @override
   String get hostsHostPaymentAccountCardTitlePayouts => 'Payouts';
 
   @override
@@ -4411,34 +4385,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object currencyCode,
   }) {
     return 'Max ($currencyCode)';
-  }
-
-  @override
-  String hostsHostBroadcastComposerSheetLabelBookedBookedcount({
-    required Object bookedCount,
-  }) {
-    return 'Booked · $bookedCount';
-  }
-
-  @override
-  String hostsHostBroadcastComposerSheetLabelWaitlistProspectivecount({
-    required Object prospectiveCount,
-  }) {
-    return 'Waitlist · $prospectiveCount';
-  }
-
-  @override
-  String hostsHostBroadcastComposerSheetLabelEveryoneRecipientcount({
-    required Object recipientCount,
-  }) {
-    return 'Everyone · $recipientCount';
-  }
-
-  @override
-  String hostsHostBroadcastComposerSheetLabelSendToRecipientcountPeople({
-    required Object recipientCount,
-  }) {
-    return 'Send to $recipientCount people';
   }
 
   @override
@@ -8699,18 +8645,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Some push attempts failed; Activity updates are still available.';
 
   @override
-  String hostsHostInboxScreenVisiblecopyBroadcastSentToRecipientcount({
-    required Object recipientCount,
-    required Object suffix,
-  }) {
-    return 'Broadcast sent to $recipientCount people.$suffix';
-  }
-
-  @override
-  String get hostsHostInboxScreenVisiblecopySelectAnEventOr =>
-      'Select an event or general inquiries';
-
-  @override
   String get hostsHostInboxScreenVisiblecopyGeneralInquiries =>
       'General inquiries';
 
@@ -8719,35 +8653,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostInboxScreenVisiblecopyProgramGuests => 'Program guests';
-
-  @override
-  String hostsHostInboxScreenVisiblecopyLongweekdayEventtitlelabel({
-    required Object longWeekday,
-    required Object eventTitleLabel,
-  }) {
-    return '$longWeekday $eventTitleLabel';
-  }
-
-  @override
-  String hostsHostInboxScreenVisiblecopyTonightTime({required Object time}) {
-    return 'Tonight $time';
-  }
-
-  @override
-  String hostsHostInboxScreenVisiblecopyShortdatelabelTime({
-    required Object shortDateLabel,
-    required Object time,
-  }) {
-    return '$shortDateLabel · $time';
-  }
-
-  @override
-  String hostsHostInboxScreenVisiblecopyEventnameTiming({
-    required Object eventName,
-    required Object timing,
-  }) {
-    return '$eventName · $timing';
-  }
 
   @override
   String
@@ -12845,9 +12750,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'On larger screens, drag is also available. Tap controls always work.';
 
   @override
-  String get hostMessagingWorkspaceInbox => 'Inbox';
-
-  @override
   String get hostMessagingWorkspaceSends => 'Sends';
 
   @override
@@ -12926,9 +12828,6 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
-
-  @override
-  String get hostSendsEventAnnouncementUnavailableShort => 'Unavailable now';
 
   @override
   String get hostSendsEventAnnouncementNoAudience => 'No audience yet';
@@ -17319,10 +17218,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostInboxNewMessage => 'New message';
 
   @override
-  String get hostInboxChoosePerson =>
-      'Choose someone from People or add a new person.';
-
-  @override
   String get hostInboxReplyVia => 'Reply via';
 
   @override
@@ -17336,23 +17231,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostInboxMoreConversations => 'Load more conversations';
 
   @override
-  String get hostInboxMoreProgramGuests => 'Load more program guests';
-
-  @override
-  String get hostInboxProgramContactsUnlinked =>
-      'Some program guests have no verified messaging contact link. They cannot appear in this inbox; guest-to-contact linking is not available here yet.';
-
-  @override
   String get hostInboxUnclassified =>
       'Booking status is unavailable for some people. Their conversations are included below.';
 
   @override
   String get hostInboxUnknownBooking => 'Booking status unavailable';
-
-  @override
-  String hostInboxPartialUnread({required int count}) {
-    return 'At least $count unread messages. Some source read counts are unavailable.';
-  }
 
   @override
   String get hostInboxHistoryCoverage =>
