@@ -5,14 +5,12 @@ import path from "node:path";
 import test from "node:test";
 import {
   buildCatalogRows,
-  catalogEnd,
-  catalogStart,
+  catalogOutputPath,
   classPurpose,
   namingFindings,
   namingRatchetProblems,
   prunedNamingBaseline,
   renderCatalogInventory,
-  replaceCatalogInventory,
   runCatalog,
 } from "./generate_widget_catalog.mjs";
 
@@ -118,16 +116,7 @@ test("ordering is stable and source text cannot break Markdown table structure",
   assert.match(rendered, /Contains &#124; pipes and &lt;tags&gt; across lines/u);
 });
 
-test("generation preserves authored decisions and rejects malformed regions", () => {
-  const original = `## Canonical Usage Decisions\nKeep this.\n${catalogStart}\nOld rows\n${catalogEnd}\nAfter.\n`;
-  const inventory = renderCatalogInventory([]);
-  assert.equal(replaceCatalogInventory(original, inventory), `## Canonical Usage Decisions\nKeep this.\n${inventory}\nAfter.\n`);
-  for (const source of ["", catalogStart, `${catalogEnd}\n${catalogStart}`, `${original}\n${catalogStart}`]) {
-    assert.throws(() => replaceCatalogInventory(source, inventory), /region|markers/u);
-  }
-});
-
-test("known-bad hand edits and source changes fail the real catalog drift check", (t) => {
+test("the inventory is derived from live source and written only to the ignored output", (t) => {
   const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-catalog-"));
   t.after(() => fs.rmSync(repoRoot, {recursive: true, force: true}));
   const write = (file, value) => {
@@ -135,20 +124,22 @@ test("known-bad hand edits and source changes fail the real catalog drift check"
     fs.mkdirSync(path.dirname(target), {recursive: true});
     fs.writeFileSync(target, value);
   };
+  const output = path.join(repoRoot, catalogOutputPath);
   const source = "/// One feature row.\nclass FeatureRow extends StatelessWidget {}\n";
   write("lib/example/feature_row.dart", source);
   write("design/components/catch.components.json", JSON.stringify({components: []}));
-  write("docs/widget_catalog.md", `# Catalog\n${catalogStart}\n${catalogEnd}\n`);
-  assert.equal(runCatalog({repoRoot, mode: "write"}).count, 1);
-  const baseline = fs.readFileSync(path.join(repoRoot, "docs/widget_catalog.md"), "utf8");
-  assert.deepEqual(runCatalog({repoRoot, mode: "write"}), {count: 1, changed: false});
-  assert.deepEqual(runCatalog({repoRoot}), {count: 1, changed: false});
-  write("docs/widget_catalog.md", baseline.replace("One feature row.", "A fabricated purpose."));
-  assert.throws(() => runCatalog({repoRoot}), /stale or hand-edited/u);
-  write("docs/widget_catalog.md", baseline);
+  assert.equal(catalogOutputPath.startsWith("build/"), true);
+  assert.deepEqual(runCatalog({repoRoot}), {count: 1, output: null});
+  assert.equal(fs.existsSync(output), false, "check never writes");
+  assert.deepEqual(runCatalog({repoRoot, mode: "write"}), {count: 1, output: catalogOutputPath});
+  assert.match(fs.readFileSync(output, "utf8"), /One feature row\./u);
   write("lib/example/feature_row.dart", source.replace("One feature row.", "The changed contract."));
-  assert.throws(() => runCatalog({repoRoot}), /stale or hand-edited/u);
-  assert.equal(runCatalog({repoRoot, mode: "json"}).rows[0].purpose, "The changed contract.");
+  runCatalog({repoRoot, mode: "write"});
+  assert.match(fs.readFileSync(output, "utf8"), /The changed contract\./u);
+  // The rules the inventory encodes still fail against live source.
+  write("packages/catch_ui/lib/src/components/catch_menu.dart",
+    "/// A menu.\nclass CatchMenu extends StatelessWidget {}\n");
+  assert.throws(() => runCatalog({repoRoot}), /no component-registry identity/u);
 });
 
 test("the naming ratchet rejects new debt with a redirect and fixed debt still listed", () => {

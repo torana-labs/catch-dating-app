@@ -127,11 +127,16 @@ class _ProfilePhotoEditorScreenState
     final hasExistingPhoto = widget.photo != null;
     if (!hasExistingPhoto && _imageBytes == null) return;
 
+    // Captured before the crop: a save the editor started still runs if the
+    // editor closes while the image is being cropped.
+    final container = ProviderScope.containerOf(context, listen: false);
     setState(() => _saving = true);
     try {
       final prompt = _selectedPromptAnswer;
       final croppedImageBytes = await _croppedImageBytes();
-      await PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
+      await PhotoUploadController.uploadPhotoMutation.run(container, (
+        tx,
+      ) async {
         await tx
             .get(photoUploadControllerProvider.notifier)
             .savePhoto(

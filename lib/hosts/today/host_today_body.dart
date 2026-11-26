@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/bookings/domain/host_request.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/parts/host_event_poster.dart';
 import 'package:catch_dating_app/contexts/events/parts/host_event_week_row.dart';
@@ -14,6 +15,10 @@ import 'package:flutter/widgets.dart';
 /// week and Last 30 days in one column; on expanded windows a feed with the
 /// poster, actions and week on the left and Needs you and the stats on the
 /// right.
+///
+/// Needs you is one list: the attention items, then the coming events
+/// whose join requests or waitlist no item covers yet. A join request or
+/// waitlist row with someone waiting opens the requests queue there.
 class HostTodayBody extends StatelessWidget {
   const HostTodayBody({
     super.key,
@@ -21,6 +26,7 @@ class HostTodayBody extends StatelessWidget {
     required this.now,
     required this.onOpenEvent,
     required this.onOpenAttention,
+    required this.onOpenRequests,
     required this.onAction,
     required this.onViewEvents,
     required this.onOpenInsights,
@@ -33,6 +39,9 @@ class HostTodayBody extends StatelessWidget {
   final DateTime now;
   final ValueChanged<Event> onOpenEvent;
   final ValueChanged<HostAttentionItem> onOpenAttention;
+
+  /// Opens the requests queue on the first person waiting there.
+  final ValueChanged<HostTodayRequestFocus> onOpenRequests;
   final ValueChanged<HostTodayAction> onAction;
   final VoidCallback onViewEvents;
   final VoidCallback onOpenInsights;
@@ -105,7 +114,47 @@ class HostTodayBody extends StatelessWidget {
           HostAttentionRow(
             key: ValueKey<String>('host-today-attention-${item.id}'),
             item: item,
-            onOpen: () => onOpenAttention(item),
+            onOpen: switch (needsYou.requestFocusOf(item)) {
+              final focus? => () => onOpenRequests(focus),
+              null => () => onOpenAttention(item),
+            },
+          ),
+        // Waiting people no item covers, in the attention row's shape and
+        // copy.
+        for (final group in needsYou.requestGroups)
+          CatchIndexRow(
+            key: ValueKey<String>(
+              'host-today-requests-${group.focus.eventId}-'
+              '${group.focus.kind.name}',
+            ),
+            title: group.focus.kind == HostRequestKind.request
+                ? l10n.hostTodayAttentionJoinTitle
+                : l10n.hostsHostHomeScreenStateTitleReviewWaitlist,
+            subtitle: group.focus.kind == HostRequestKind.request
+                ? l10n.hostTodayAttentionJoinBody(
+                    count: group.count,
+                    eventName: group.eventName,
+                  )
+                : l10n.hostTodayAttentionWaitlistBody(
+                    count: group.count,
+                    eventName: group.eventName,
+                  ),
+            onTap: () => onOpenRequests(group.focus),
+            marker: CatchIndexRowTone.info,
+            action: CatchIndexRowAction(
+              label: group.focus.kind == HostRequestKind.request
+                  ? l10n.hostTodayAttentionReview
+                  : l10n.hostsHostHomeScreenStateVisiblecopyReview,
+              onPressed: () => onOpenRequests(group.focus),
+            ),
+            density: CatchIndexRowSize.roomy,
+          ),
+        if (!needsYou.requestsComplete)
+          CatchNotice.inline(
+            key: const ValueKey<String>('host-today-requests-partial'),
+            tone: CatchNoticeTone.neutral,
+            icon: CatchIcons.info,
+            body: l10n.hostRequestsPartial,
           ),
       ],
     );

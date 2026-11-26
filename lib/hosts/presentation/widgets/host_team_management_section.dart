@@ -65,6 +65,8 @@ class HostTeamManagementSection extends ConsumerWidget {
                 : null,
           ),
           onAddHost: (phone) async {
+            // Read before the await: the section can be gone when it fails.
+            final logger = ref.read(errorLoggerProvider);
             try {
               await HostTeamManagementController.addHostMutation.run(
                 ref,
@@ -76,9 +78,7 @@ class HostTeamManagementSection extends ConsumerWidget {
                     ),
               );
             } catch (error, stackTrace) {
-              ref
-                  .read(errorLoggerProvider)
-                  .logError(error, stackTrace, reason: addHostFailureReason);
+              logger.logError(error, stackTrace, reason: addHostFailureReason);
               rethrow;
             }
           },

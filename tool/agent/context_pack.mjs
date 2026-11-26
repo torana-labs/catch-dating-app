@@ -157,7 +157,8 @@ function buildOwnerDocs({task, selectionPaths, matchedSkills}) {
     "docs/design_parity/**", "design/components/**", "design/screens/**", "design/tokens/**",
   ])) {
     addDoc(docs, "docs/design_parity/README.md", "Design parity workflow.");
-    addDoc(docs, "docs/widget_catalog.md", "Widget ownership and catalog policy.");
+    addDoc(docs, "docs/widget_catalog.md", "Widget usage decisions. The full widget inventory isn't committed: " +
+      "node tool/design/generate_widget_catalog.mjs --write writes it to build/generated/widget_catalog.md.");
     addDoc(docs, "docs/design_language.md", "Visual design source of truth.");
   }
   if (matchesScopePatterns(selectionPaths, [

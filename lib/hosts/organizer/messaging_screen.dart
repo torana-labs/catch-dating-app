@@ -100,16 +100,17 @@ class _OrganizerMessagingScreenState
         ref.invalidate(hostMessagingSetupProvider(organizerId));
       case OrganizerMessagingAction.connect:
         if (setup == null) return;
+        // Read before the signup: a signup that finishes after the screen
+        // closed still completes the connection.
+        final commands = ref.read(hostAudienceControllerProvider);
         await _run(() async {
           final result = await startHostWhatsappEmbeddedSignup(
             setup.embeddedSignup,
           );
-          await ref
-              .read(hostAudienceControllerProvider)
-              .completeWhatsappConnection(
-                organizerId: organizerId,
-                result: result,
-              );
+          await commands.completeWhatsappConnection(
+            organizerId: organizerId,
+            result: result,
+          );
         });
       case OrganizerMessagingAction.syncTemplates:
         if (connection == null) return;

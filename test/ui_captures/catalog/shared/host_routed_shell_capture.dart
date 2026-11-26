@@ -5,6 +5,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/host_attendance_outbox.dart';
+import 'package:catch_dating_app/contexts/bookings/data/host_requests_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/host_request.dart';
 import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
@@ -161,6 +163,10 @@ List<Object> hostOperationsProviderOverrides({
       (ref, query) => Stream.value(
         timelineEventsByOrganizer[query.organizerId] ?? const <Event>[],
       ),
+    ),
+    hostOrganizerRequestsProvider.overrideWith(
+      (ref, organizerId) =>
+          Stream.value(const HostRequests(rows: [], complete: true)),
     ),
     hostAttentionProjectionProvider.overrideWith(
       (ref, organizerId) => Stream.value(

@@ -224,6 +224,13 @@ class ProgramAccessView {
       (isManager ||
           _live(programAll[ProgramStaffDuty.guestRelations.name], now));
 
+  /// Whether the guest inbox is open at [now], as `requireInboxAccess` and
+  /// the rules admit it: the owner, or a duty that talks to guests,
+  /// communications or guest relations (a coordinator holds both).
+  bool holdsInbox(DateTime now) =>
+      holdsDuty(ProgramStaffDuty.communications, now) ||
+      holdsDuty(ProgramStaffDuty.guestRelations, now);
+
   /// Whether the work shell lists this pickup point, hotel or function.
   bool listsPickup(String id, DateTime now) =>
       isLiveAt(now) &&

@@ -151,3 +151,12 @@ apps/host/lib/catch_ui_lints_probe
 !/functions/src/shared/generated/brand.ts
 !/functions/src/shared/generated/notificationCopyEn.ts
 !/functions/src/shared/generated/marketCatalog.ts
+
+# Flutter localizations: generated from packages/l10n/lib/app_en.arb by every
+# workspace `flutter pub get` (or node packages/l10n/generate.mjs), not tracked.
+/packages/l10n/lib/generated/app_localizations.dart
+/packages/l10n/lib/generated/app_localizations_en.dart
+
+# Route and widget catalog inventories: derived from live source by the checks
+# that read them; --update/--write put a copy under build/generated/.
+/tool/ui_capture/route_inventory.json

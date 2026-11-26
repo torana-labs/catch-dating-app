@@ -192,7 +192,8 @@ test("Flutter route coverage accepts web stories but still rejects missing app f
   f.write("tool/ui_capture/check_capture_coverage.mjs",
     fs.readFileSync(fromRepo("tool/ui_capture/check_capture_coverage.mjs")));
   f.write("tool/lib/dart_call_blocks.mjs", fs.readFileSync(fromRepo("tool/lib/dart_call_blocks.mjs")));
-  f.write("tool/ui_capture/route_inventory.json", JSON.stringify({routes: []}));
+  // The checker derives routes from the routers; this fixture has none.
+  f.write("tool/ui_capture/check_route_inventory.mjs", "export const buildInventory = () => ({routes: []});\n");
   f.write("tool/ui_capture/capture_coverage.json", JSON.stringify({routes: []}));
   const check = () => f.run("tool/ui_capture/check_capture_coverage.mjs", "--check");
   f.ok(check());

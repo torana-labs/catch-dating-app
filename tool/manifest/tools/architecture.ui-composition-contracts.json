@@ -14,7 +14,7 @@
     "design/screens/catch.screens.schema.json",
     "design/screens/screen_coverage.json",
     "tool/ui_capture/check_route_inventory.mjs",
-    "tool/ui_capture/route_inventory.json",
+    "packages/platform/lib/routing/route_contract.dart",
     "tool/design/screen_top_bar_contracts.json",
     "lib/routing/consumer_router.dart",
     "lib/routing/host_router.dart",

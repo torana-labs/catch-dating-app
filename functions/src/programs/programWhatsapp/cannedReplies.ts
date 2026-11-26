@@ -23,7 +23,7 @@ import {validateProgramWhatsappCannedReplyDocument} from
   "../../shared/generated/validators/programWhatsappCannedReplyDocument";
 import {
   defaultProgramInboxDeps,
-  requireInboxAccess,
+  requireSavedReplyAccess,
   requireValid,
   type ProgramInboxDeps,
 } from "./access";
@@ -73,7 +73,7 @@ export async function upsertProgramWhatsappCannedReplyHandler(
   const stored = await db.runTransaction(async (tx): Promise<CannedReply> => {
     const access = await requireProgramAccess({db, programId: data.programId,
       actorUid, now: deps.now(), transaction: tx});
-    requireInboxAccess(access);
+    requireSavedReplyAccess(access);
     requireProgramMutable(access.program);
     const current = (await tx.get(ref)).data() as CannedReply | undefined;
     if (current && current.programId !== data.programId) {

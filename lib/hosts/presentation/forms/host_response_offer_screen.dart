@@ -85,6 +85,9 @@ class _HostResponseOfferScreenState
     if (_creating || account == null || !_current(account)) {
       return;
     }
+    // Read before the first await; the screen checks _current before it
+    // uses anything the reads return.
+    final setupViews = ref.read(hostEventSetupViewReadsProvider);
     setState(() => _creating = true);
     try {
       final eventId = await context.pushNamed<String>(
@@ -107,9 +110,7 @@ class _HostResponseOfferScreenState
       // The server writes the new event's setup view just after create; wait
       // for its first complete delivery rather than reading through a callable.
       final summary = await firstCompleteSetupView(
-        ref
-            .read(hostEventSetupViewReadsProvider)
-            .watch(organizerId: widget.organizerId, eventId: eventId),
+        setupViews.watch(organizerId: widget.organizerId, eventId: eventId),
       );
       if (!_current(account)) return;
       if (summary.organizerId != widget.organizerId ||

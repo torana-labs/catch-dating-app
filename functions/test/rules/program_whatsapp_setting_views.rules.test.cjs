@@ -69,6 +69,8 @@ async function seedViews() {
   await seedRaw(["programAssistantSettingViews", "program-1"], settingsRow());
   await seedView("owner-1", {role: "manager", expiresAtMillis: null});
   await seedView("comms-1", {duties: {communications: future(2)}});
+  await seedView("relations-1", {duties: {guestRelations: future(2)}});
+  await seedView("door-1", {duties: {functionCheckIn: future(2)}});
   // A coordinator holds every duty but programAdmin.
   await seedView("coord-1", {duties: {programCoordinator: future(2),
     communications: future(2)}});
@@ -86,16 +88,17 @@ async function seedViews() {
 }
 
 describe("programme sender and assistant settings view rules", () => {
-  it("admits the owner and the communications duty to the sender view, by id only",
+  it("admits the owner and the inbox duties to the sender view, by id only",
     async () => {
       await seedViews();
       const get = (uid) => getDoc(doc(authed(uid), "programSenderViews",
         "program-1"));
       await assertSucceeds(get("owner-1"));
       await assertSucceeds(get("comms-1"));
+      await assertSucceeds(get("relations-1"));
       await assertSucceeds(get("coord-1"));
-      for (const uid of ["greeter-1", "admin-1", "expired-1", "inactive-1",
-        "orgmgr-1", "gone-1", "stranger"]) {
+      for (const uid of ["greeter-1", "door-1", "admin-1", "expired-1",
+        "inactive-1", "orgmgr-1", "gone-1", "stranger"]) {
         await assertFails(get(uid));
       }
       await assertFails(getDocs(query(collection(authed("owner-1"),
@@ -111,8 +114,8 @@ describe("programme sender and assistant settings view rules", () => {
         "programAssistantSettingViews", "program-1"));
       await assertSucceeds(get("owner-1"));
       await assertSucceeds(get("coord-1"));
-      for (const uid of ["comms-1", "greeter-1", "admin-1", "expired-1",
-        "inactive-1", "orgmgr-1", "gone-1", "stranger"]) {
+      for (const uid of ["comms-1", "relations-1", "greeter-1", "admin-1",
+        "expired-1", "inactive-1", "orgmgr-1", "gone-1", "stranger"]) {
         await assertFails(get(uid));
       }
       await assertFails(getDocs(query(collection(authed("owner-1"),

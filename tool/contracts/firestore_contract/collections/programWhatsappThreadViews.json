@@ -6,11 +6,11 @@
   "typescriptInterface": "ProgramWhatsappThreadViewDocument",
   "rulesTestFile": "functions/test/rules/program_batch5_reads.rules.test.cjs",
   "rulesTestNames": [
-    "lists thread views for managers and the communications duty only"
+    "lists thread views for managers and the inbox duties only"
   ],
   "owner": "Programme read model projector: programWhatsapp threadViewTriggers",
   "writerContext": "programmes",
-  "read": "get and list (query naming programId) for the programme owner and the communications duty (programAccessViews), while not deleted",
+  "read": "get and list (query naming programId) for the programme owner and the inbox duties, communications and guest relations (programAccessViews), while not deleted",
   "write": "server only; written from programWhatsappThreads, programHouseholds and organizerPrograms",
   "exportedFunctions": [
     "onProgramWhatsappThreadViewThreadChanged",

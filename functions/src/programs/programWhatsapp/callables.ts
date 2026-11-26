@@ -189,9 +189,10 @@ export async function listProgramWhatsappThreadsHandler(
 
 /**
  * Marks one thread read: the write half of opening a thread, now that the
- * thread and its messages are read through listeners. Managers and
- * communications staff; an archived programme stays read-only, so the call
- * changes nothing there. Answers with the thread's handling and revision.
+ * thread and its messages are read through listeners. Managers and the
+ * staff who talk to guests (communications and guest relations); an
+ * archived programme stays read-only, so the call changes nothing there.
+ * Answers with the thread's handling and revision.
  */
 export async function markProgramWhatsappThreadReadHandler(
   request: CallableRequest<unknown>,

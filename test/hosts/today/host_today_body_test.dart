@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/bookings/domain/host_request.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
 import 'package:catch_dating_app/hosts/today/host_today_body.dart';
@@ -71,6 +72,7 @@ HostTodayState _content({
 class _Calls {
   final events = <Event>[];
   final attention = <HostAttentionItem>[];
+  final requests = <HostTodayRequestFocus>[];
   final actions = <HostTodayAction>[];
   int viewEvents = 0;
   int insights = 0;
@@ -97,6 +99,7 @@ Future<_Calls> _pump(
             now: todayNow,
             onOpenEvent: calls.events.add,
             onOpenAttention: calls.attention.add,
+            onOpenRequests: calls.requests.add,
             onAction: calls.actions.add,
             onViewEvents: () => calls.viewEvents++,
             onOpenInsights: () => calls.insights++,
@@ -158,6 +161,99 @@ void main() {
     await tester.tap(find.text('Insights'));
     expect(calls.viewEvents, 1);
     expect(calls.insights, 1);
+  });
+
+  testWidgets('a join request item with people waiting opens the requests '
+      'queue there; one with nobody in the read keeps its destination', (
+    tester,
+  ) async {
+    final calls = await _pump(
+      tester,
+      _content(
+        needsYou: HostTodayNeedsYou(
+          items: [
+            todayAttention('join', dueAt: DateTime(2026, 10, 27, 18)),
+            todayAttention(
+              'waitlist',
+              kind: HostAttentionKind.eventWaitlistReview,
+              dueAt: DateTime(2026, 10, 27, 18, 30),
+            ),
+          ],
+          requests: [todayRequest('zoya', HostRequestKind.request)],
+        ),
+      ),
+    );
+
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const ValueKey<String>('host-today-attention-join')),
+        matching: find.widgetWithText(CatchButton, 'Review'),
+      ),
+    );
+    expect(calls.requests, const [
+      HostTodayRequestFocus(eventId: 'tonight', kind: HostRequestKind.request),
+    ]);
+    expect(calls.attention, isEmpty);
+
+    await tester.tap(
+      find.byKey(const ValueKey<String>('host-today-attention-waitlist')),
+    );
+    expect(calls.attention.single.id, 'waitlist');
+  });
+
+  testWidgets('people waiting at an event no item covers join the same '
+      'list and open the queue', (tester) async {
+    final focus = const HostTodayRequestFocus(
+      eventId: 'run',
+      kind: HostRequestKind.waitlist,
+    );
+    final calls = await _pump(
+      tester,
+      _content(
+        needsYou: HostTodayNeedsYou(
+          items: [todayAttention('join', dueAt: DateTime(2026, 10, 27, 18))],
+          requests: [
+            todayRequest('zoya', HostRequestKind.request),
+            todayRequest('nikhil', HostRequestKind.waitlist, eventId: 'run'),
+          ],
+          requestGroups: [
+            HostTodayRequestGroup(
+              focus: focus,
+              eventName: 'Salt Air Social Run',
+              eventStart: DateTime(2026, 11, 1, 6, 30),
+              count: 3,
+            ),
+          ],
+          requestsComplete: false,
+        ),
+      ),
+    );
+
+    final row = find.byKey(
+      const ValueKey<String>('host-today-requests-run-waitlist'),
+    );
+    expect(
+      find.descendant(
+        of: row,
+        matching: find.text('3 people are waiting for Salt Air Social Run.'),
+      ),
+      findsOneWidget,
+    );
+    double top(Finder finder) => tester.getTopLeft(finder).dy;
+    expect(
+      top(find.byKey(const ValueKey<String>('host-today-attention-join'))),
+      lessThan(top(row)),
+    );
+    expect(top(row), lessThan(top(find.text('This week'))));
+    expect(find.textContaining('Showing the first people'), findsOneWidget);
+
+    await tester.tap(
+      find.descendant(
+        of: row,
+        matching: find.widgetWithText(CatchButton, 'Review'),
+      ),
+    );
+    expect(calls.requests, [focus]);
   });
 
   testWidgets('a live event adds the live console', (tester) async {

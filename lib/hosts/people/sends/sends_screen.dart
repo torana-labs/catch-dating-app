@@ -386,15 +386,16 @@ class _HostSendsScreenState extends ConsumerState<HostSendsScreen> {
   /// Checks the stored number again, opens WhatsApp with the prepared
   /// message and records that it opened.
   Future<HostManualSendTask> _openWhatsapp(HostManualSendTask task) async {
+    // Read before the first await, so the handoff still opens and is
+    // recorded if the screen closes meanwhile.
     final commands = ref.read(hostAudienceControllerProvider);
+    final links = ref.read(externalLinkControllerProvider);
     final l10n = context.l10n;
     final validated = await commands.validateManualSendTaskLaunch(task);
-    final opened = await ref
-        .read(externalLinkControllerProvider)
-        .openWhatsappHandoff(
-          phoneE164: validated.phoneE164,
-          message: validated.prefillText,
-        );
+    final opened = await links.openWhatsappHandoff(
+      phoneE164: validated.phoneE164,
+      message: validated.prefillText,
+    );
     if (!opened) {
       throw ExternalActionException(l10n.hostCustomersWhatsappOpenFailed);
     }

@@ -13,6 +13,6 @@
     "Deleted by the archive retention sweep."
   ],
   "rulesTestNames": [
-    "reads saved replies and photo records by the same duty"
+    "reads saved replies by the inbox duties, photos by communications"
   ]
 }
