@@ -44,6 +44,23 @@ export function externalBookingTermsPatch(event: EventDocument):
     eventPolicy: initialPolicyFromTerms({...event, ...terms} as EventDocument)};
 }
 
+/** The provenance a Catch-sold progressive event gets at first publish.
+ * Stopgap until the declared event kind lands (#2576): without it the app
+ * and the booking callables refuse Catch booking. Tickets sold elsewhere get
+ * none, so booking stays on the event's own page.
+ */
+export function catchNativeOriginPatch(event: EventDocument):
+  Partial<EventDocument> {
+  if (event.eventOrigin !== undefined || event.externalBooking !== undefined) {
+    return {};
+  }
+  return {eventOrigin: {mode: "catchNative", bookingAuthority: "catch",
+    rosterAuthority: "catchProjection", provider: "catch",
+    externalEventId: null, externalEventUrl: null,
+    sourceExternalEventId: null, adapterVersion: null, connectedAt: null,
+    connectedBy: null}};
+}
+
 /** Same candidate projection and validation for manager preview and commit. */
 export function preparePublishedEventPatch(params: {
   event: EventDocument;
@@ -70,6 +87,7 @@ export function preparePublishedEventPatch(params: {
     eventFormat: configured.eventFormat});
   const patch: Partial<EventDocument> = {
     ...external,
+    ...catchNativeOriginPatch(event),
     ...publicationRegistrationPatch(event),
     ...(event.description === undefined ? {description: ""} : {}),
     ...eventDiscoveryProjection({event: configured,

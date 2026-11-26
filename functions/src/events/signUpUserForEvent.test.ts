@@ -7,6 +7,9 @@ import * as admin from "firebase-admin";
 import {createHash} from "crypto";
 import {signUpUserForEvent} from "./signUpUserForEvent";
 import {catchNativeEventOrigin} from "../shared/testUtils";
+import {catchNativeOriginPatch} from
+  "./progressiveSetup/publicationReadiness";
+import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 import {seatIdentityAliasId, seatIdentityValueHash,
   seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
@@ -699,6 +702,30 @@ test("signUpUserForEvent never books a private event", async () => {
   );
   assert.equal((db as unknown as FakeFirestore)
     .get("eventBookings/event-1_runner-1"), undefined);
+});
+
+test("signUpUserForEvent books a published progressive event", async () => {
+  // Progressive setup creates events without provenance; first publish adds
+  // the Catch-native origin, which the booking guard requires.
+  const progressive = event();
+  delete progressive.eventOrigin;
+  const unstamped = firestore({
+    "events/event-1": progressive,
+    "users/runner-1": user(),
+  });
+  await assert.rejects(
+    () => signUp(unstamped, "event-1", "runner-1"),
+    (error) => error instanceof Error && "code" in error &&
+      error.code === "failed-precondition"
+  );
+  const db = firestore({
+    "events/event-1": {...progressive, ...catchNativeOriginPatch(
+      progressive as unknown as EventDocument)},
+    "users/runner-1": user(),
+  });
+  await signUp(db, "event-1", "runner-1");
+  assert.equal((db as unknown as FakeFirestore)
+    .get("eventBookings/event-1_runner-1")?.status, "signedUp");
 });
 
 test("signUpUserForEvent rejects missing account identity", async () => {
