@@ -1,5 +1,6 @@
 import {renderHook, waitFor} from "@testing-library/react";
-import {describe, expect, it} from "vitest";
+import {describe, expect, it, vi} from "vitest";
+import * as adminApi from "../../../shared/api/adminApi";
 import {createQueryHarness} from "../../../shared/test/queryHarness";
 import {useEventPageController} from "./useEventPageController";
 
@@ -12,12 +13,15 @@ describe("useEventPageController", () => {
     expect(result.current.record?.event.title).toBe("Padel mixer");
   });
 
-  it("finds an imported event by its id in the external list", async () => {
+  it("reads an imported event by its id, not by searching the external list", async () => {
+    const reads = vi.spyOn(adminApi, "listExternalEventDetails");
     const {wrapper} = createQueryHarness();
     const eventId = "ext-moonmoth-202503151800-nightfall-run-rave-e99b5e2138";
     const {result} = renderHook(() => useEventPageController("imported", eventId), {wrapper});
     await waitFor(() => expect(result.current.loadState).toBe("ready"));
     expect(result.current.record).toMatchObject({source: "imported", event: {eventId}});
+    expect(reads).toHaveBeenCalledWith({eventId});
+    reads.mockRestore();
   });
 
   it("reports an imported event that is not there", async () => {
