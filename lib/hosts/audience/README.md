@@ -255,7 +255,6 @@ Typed handoffs:
 - `test/hosts/people/duplicates/duplicates_flow_test.dart`
 - `test/hosts/forms/forms_body_test.dart`
 - `test/hosts/forms/host_form_builder_screen_test.dart`
-- `test/hosts/host_operations_screen_test.dart`
 
 ## Maintenance
 

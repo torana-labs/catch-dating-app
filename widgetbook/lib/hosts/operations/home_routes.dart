@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
@@ -35,11 +34,6 @@ final _longNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
       .copyWith(name: 'Bandra West Promenade amphitheatre'),
 );
 
-@widgetbook.UseCase(
-  name: 'Covered by host home route states',
-  type: HostLoadingScreen,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
   type: CatchEmptyState,
@@ -226,11 +220,3 @@ Widget hostOrganizerSwitcherSheetStates(BuildContext context) {
     ],
   );
 }
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostLoadingScreen,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostLoadingScreenCatalogStates(BuildContext context) =>
-    hostHomeRouteStates(context);

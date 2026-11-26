@@ -13,7 +13,7 @@ Own the organizer as an operating entity: profile and media, publication readine
 
 Current implementation roots:
 
-- `lib/hosts/presentation/host_operations`
+- `lib/hosts/organizer`
 - `lib/hosts/presentation/organizer_management`
 - `lib/hosts/presentation/payments`
 - `lib/hosts/insights`
@@ -54,17 +54,20 @@ Typed handoffs:
 
 | Owner | Source | Responsibility |
 |---|---|---|
-| `HostOrganizersScreen` | `lib/hosts/presentation/host_operations/host_organizers_screen.dart` | Actions: sign_in, retry_organizer_workspace. |
-| `HostOrganizersScaffold` | `lib/hosts/presentation/host_operations/host_organizers_scaffold.dart` | Actions: create_organizer, select_workspace_tab. |
-| `HostOrganizerEditBody` | `lib/hosts/presentation/host_operations/host_organizer_edit_body.dart` | Actions: open_organizer_setting. |
+| `OrganizerScreen` | `lib/hosts/organizer/organizer_screen.dart` | Actions: sign_in, retry_organizer_workspace, switch_organizer, open_organizer_setting. |
+| `OrganizerPageEditScreen` | `lib/hosts/organizer/page_edit_screen.dart` | Actions: update_organizer, update_organizer_media. |
+| `OrganizerSettingsScreen` | `lib/hosts/organizer/settings_screen.dart` | Actions: save_host_profile, open_legal_link, request_account_deletion, sign_out. |
 | `HostOrganizerEditController` | `lib/hosts/presentation/organizer_management/host_organizer_edit_controller.dart` | Actions: update_organizer, update_organizer_media. |
-| `HostOrganizerSpokeAsyncBoundary` | `lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart` | Actions: retry_organizer_setting. |
+| `watchHostOrganizerScope` | `lib/hosts/organizer/organizer_controller.dart` | Actions: retry_organizer_setting. |
 | `HostOrganizerDefaultsSaver` | `lib/hosts/presentation/organizer_management/host_organizer_defaults_saver.dart` | Actions: save_event_defaults. |
 | `HostInsightsScreen` | `lib/hosts/insights/host_insights_screen.dart` | Actions: retry_insights, select_insights_range, open_insights_event_report. |
 | `HostEventReportScreen` | `lib/hosts/insights/host_event_report_screen.dart` | Actions: share_event_report, open_event_reviews, invite_event_guests, choose_event_guests, download_event_csv. |
-| `HostPaymentAccountControllerCard` | `lib/hosts/presentation/payments/host_payment_account_controller_card.dart` | Actions: retry_payout_account. |
-| `HostPaymentAccountController` | `lib/hosts/presentation/payments/host_payment_account_controller.dart` | Actions: start_payout_onboarding, refresh_payout_status. |
-| `HostOrganizerTeamScreen` | `lib/hosts/presentation/host_operations/host_organizer_team_screen.dart` | Actions: retry_host_profile, retry_hosted_organizers, open_hosted_organizer, select_team_tab, leave_team_workspace. |
+| `OrganizerTeamScreen` | `lib/hosts/organizer/team_screen.dart` | Actions: add_host, remove_host, transfer_organizer_ownership. |
+| `OrganizerPaymentsScreen` | `lib/hosts/organizer/payments_screen.dart` | Actions: connect_razorpay, refresh_razorpay, disconnect_razorpay, pay_bill. |
+| `HostEventDefaultsScreen` | `lib/hosts/events/event_defaults_screen.dart` | Actions: save_event_defaults, retry_event_defaults_save. |
+| `HostEventDefaultsDetailsScreen` | `lib/hosts/events/event_defaults_details_screen.dart` | Structural owner. |
+| `OrganizerEventPolicyScreen` | `lib/hosts/organizer/event_policy_screen.dart` | Actions: save_event_defaults. |
+| `OrganizerLiveGuideScreen` | `lib/hosts/organizer/live_guide_screen.dart` | Actions: save_event_defaults. |
 | `HostTeamManagementSection` | `lib/hosts/presentation/widgets/host_team_management_section.dart` | Structural owner. |
 | `HostTeamManagementController` | `lib/hosts/presentation/organizer_management/host_team_management_controller.dart` | Actions: add_host, remove_host, transfer_organizer_ownership. |
 | `HostProfileController` | `lib/hosts/presentation/host_profile_controller.dart` | Actions: create_host_profile, save_host_profile. |
@@ -106,10 +109,16 @@ Typed handoffs:
 - `test/hosts/host_team_management_controller_test.dart`
 - `test/hosts/host_team_management_section_test.dart`
 - `test/payments/host_payment_account_test.dart`
-- `test/hosts/host_operations_screen_test.dart`
 - `test/hosts/insights/host_insights_body_test.dart`
 - `test/hosts/insights/host_event_report_body_test.dart`
 - `test/hosts/insights/host_insights_controller_test.dart`
+- `test/hosts/organizer/organizer_screen_test.dart`
+- `test/hosts/organizer/page_edit_test.dart`
+- `test/hosts/organizer/settings_screen_test.dart`
+- `test/hosts/organizer/team_settings_memberships_test.dart`
+- `test/hosts/organizer/payments_body_test.dart`
+- `test/hosts/events/event_defaults_details_test.dart`
+- `test/hosts/events/event_defaults_retry_test.dart`
 
 ## Maintenance
 

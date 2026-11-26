@@ -18,6 +18,7 @@ import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -197,6 +198,38 @@ void main() {
     expect(
       find.text('Could not open that link. Please try again.'),
       findsOneWidget,
+    );
+  });
+
+  testWidgets('a link still opening freezes the account actions', (
+    tester,
+  ) async {
+    _useProdLegalUrlDefines();
+    final launch = Completer<bool>();
+    await _pump(
+      tester,
+      launcher: (uri, {mode = LaunchMode.platformDefault}) => launch.future,
+    );
+    await tester.tap(find.text('Terms'));
+    await tester.pump();
+    expect(
+      tester
+          .widget<CatchButton>(find.byKey(const ValueKey('settings-sign-out')))
+          .onPressed,
+      isNull,
+    );
+
+    launch.complete(false);
+    await pumpFeatureUi(tester);
+    expect(
+      find.text('Could not open that link. Please try again.'),
+      findsOneWidget,
+    );
+    expect(
+      tester
+          .widget<CatchButton>(find.byKey(const ValueKey('settings-sign-out')))
+          .onPressed,
+      isNotNull,
     );
   });
 }

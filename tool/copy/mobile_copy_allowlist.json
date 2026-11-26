@@ -2,18 +2,5 @@
   "version": 1,
   "updated": "2026-07-18",
   "description": "Intentional inline Flutter strings that are not marketing-owned product copy. Every entry requires a narrow reason.",
-  "entries": [
-    {
-      "file": "lib/hosts/presentation/host_operations/host_organizer_edit_body.dart",
-      "kind": "variable:description",
-      "text": "description",
-      "reason": "Stable Host club field identifier used for edit routing, not visible copy."
-    },
-    {
-      "file": "lib/hosts/presentation/host_operations/host_organizer_edit_body.dart",
-      "kind": "variable:name",
-      "text": "name",
-      "reason": "Stable Host club field identifier used for edit routing, not visible copy."
-    }
-  ]
+  "entries": []
 }
