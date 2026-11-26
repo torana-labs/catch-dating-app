@@ -692,3 +692,63 @@ class _PersonalTargets extends _Targets {
     );
   }
 }
+
+/// The redesigned offer screen checks the offer with the server before it
+/// sends it, and says the offer holds no place.
+void _newOfferScreenTests() {
+  testWidgets('the new offer previews before it sends and says it holds no '
+      'place', (tester) async {
+    final auth = _SwitchingAuth('manager');
+    final storage = MemoryCommandJournalStorage();
+    final functions = _RouteFunctions();
+    final firestore = await _routeFirestore();
+    final offers = _Offers();
+    addTearDown(storage.close);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('manager')),
+          firebaseAuthProvider.overrideWithValue(auth),
+          firebaseFunctionsProvider.overrideWithValue(functions),
+          firebaseFirestoreProvider.overrideWithValue(firestore),
+          eventOfferConfigurationReadsProvider.overrideWithValue(
+            _GatedConfigurationReads(),
+          ),
+          commandJournalStorageProvider.overrideWithValue(() async => storage),
+          hostEventOfferDependenciesProvider.overrideWithValue(
+            HostEventOfferDependencies(gateway: offers),
+          ),
+          hostFormResponseDetailProvider(
+            organizerId: 'org',
+            responseId: 'response-one',
+          ).overrideWith((ref) async => _detail('contact-one')),
+          hostFormResponseReadBackProvider(
+            'org',
+          ).overrideWithValue((_) async => _detail('contact-one')),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const HostOfferScreen(
+            organizerId: 'org',
+            responseId: 'response-one',
+          ),
+        ),
+      ),
+    );
+    await pumpUntilFound(
+      tester,
+      find.byKey(const ValueKey('host-offer-event-event-one')),
+    );
+    await tester.tap(find.byKey(const ValueKey('host-offer-event-event-one')));
+    final l10n = AppLocalizationsEn();
+    await pumpUntilFound(tester, find.text(l10n.hostEventOfferPreview));
+    expect(find.text(l10n.hostEventOfferNoReservation), findsOneWidget);
+    expect(find.text(l10n.hostFormsOfferSend), findsNothing);
+    await tester.tap(find.text(l10n.hostEventOfferPreview));
+    await pumpUntilFound(tester, find.text(l10n.hostFormsOfferSend));
+    expect(offers.previewCalls, 1);
+    expect(tester.takeException(), isNull);
+  });
+}

@@ -1,7 +1,11 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_response_query.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'host_response_query_repository.g.dart';
 
 /// The route opts into this gateway only when the manager callable is live.
 abstract interface class HostResponseQueryGateway {
@@ -50,3 +54,9 @@ class HostResponseQueryRepository implements HostResponseQueryGateway {
         },
       );
 }
+
+/// The manager response-query callable, as the gateway the query
+/// workspace reads through.
+@riverpod
+HostResponseQueryGateway hostResponseQueryGateway(Ref ref) =>
+    HostResponseQueryRepository(ref.watch(firebaseFunctionsProvider));

@@ -24,6 +24,7 @@ import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:catch_platform/firebase/scoped_read_models.dart';
+import 'package:catch_platform/persistence/command_journal_provider.dart';
 import 'package:catch_platform/persistence/command_journal_storage.dart';
 import 'package:catch_platform/persistence/local_command_journal.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
@@ -753,4 +754,16 @@ Map<Object?, Object?> _requiredMap(Object? value, String label) {
 List<Map<Object?, Object?>> _mapList(Object? value, String label) {
   if (value is! List<Object?>) throw FormatException('Invalid $label.');
   return value.map((item) => _requiredMap(item, label)).toList(growable: false);
+}
+
+/// The journalled export gateway: one pending export per form at a time,
+/// recovered after a restart for the same signed-in manager.
+@riverpod
+HostResponseExportGateway hostResponseExportGateway(Ref ref) {
+  final auth = ref.watch(firebaseAuthProvider);
+  return JournalHostResponseExportGateway(
+    repository: ref.watch(hostFormsRepositoryProvider),
+    storage: ref.watch(commandJournalStorageProvider),
+    currentAccountId: () => auth.currentUser?.uid,
+  );
 }
