@@ -26,6 +26,8 @@ import {
   eventParticipationPatch,
   eventBookingsByStatusInTransaction,
 } from "../shared/relationshipDocuments";
+import {deleteEventGuestDisclosure, writeEventGuestDisclosure} from
+  "../shared/admissionVisibility";
 import {readBookingCohort, writeBookingCohort} from
   "../shared/bookingPrivateFacts";
 import {checkRateLimit} from "../shared/rateLimit";
@@ -235,6 +237,8 @@ export async function joinEventWaitlistHandler(
     };
     tx.set(participationRef, waitlisting, {merge: true});
     writeBookingCohort({db, tx, eventId, uid: userId, cohortAtSignup});
+    writeEventGuestDisclosure({db, tx, eventId, uid: userId, event,
+      gender: user.gender});
     incrementInviteLinkCounterInTransaction({
       tx,
       db,
@@ -363,6 +367,7 @@ export async function leaveEventWaitlistHandler(
       status: "cancelled",
     });
     tx.set(participationRef, leaving, {merge: true});
+    deleteEventGuestDisclosure({db, tx, eventId, uid: userId});
     writeCatchBookingRoster({db, tx, slot: rosterSlot,
       booking: participationAfterPatch(participationSnap.data(), leaving),
       now: admin.firestore.Timestamp.now()});

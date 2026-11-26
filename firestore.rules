@@ -1390,6 +1390,22 @@ service cloud.firestore {
     // share any event, so the event is in the id: a guest gets the copy only
     // while both bookings are signedUp or attended, so a cancellation hides it
     // at once. Organisers have no path here.
+    // What the event's admission policy lets its organiser read about one
+    // guest beyond the card: today gender on a gender-balanced event
+    // (#2493, FIX-19). Get only, by the event's organiser managers, until it
+    // expires. A disclosure gated on a profile-share grant stays closed until
+    // grants exist. The server writes and deletes it.
+    match /eventGuestDisclosures/{disclosureId} {
+      allow get: if isAuthed()
+        && resource.data.eventId is string
+        && resource.data.uid is string
+        && disclosureId == resource.data.eventId + '__' + resource.data.uid
+        && request.time < resource.data.expiresAt
+        && resource.data.grantKey == null
+        && isOrganizerHostForEvent(resource.data.eventId);
+      allow list, write: if false;
+    }
+
     match /eventGuestProfiles/{copyId} {
       allow get: if isAuthed()
         && !isDeletedUser(request.auth.uid)

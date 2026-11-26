@@ -290,6 +290,9 @@ export async function deleteAccountEventParticipations(params: {
       // The booking cohort (sexual orientation) goes with the account.
       tx.delete(db.collection("eventBookingPrivateFacts")
         .doc(`${eventId}_${uid}`));
+      // So does what the admission policy showed the organiser (#2493).
+      tx.delete(db.collection("eventGuestDisclosures")
+        .doc(`${eventId}__${uid}`));
     });
   }
 }
