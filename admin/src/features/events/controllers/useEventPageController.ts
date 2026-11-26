@@ -5,8 +5,8 @@ import type {
   AdminExternalEventListRow,
 } from "../../../shared/types/adminTypes";
 import {
-  listExternalEventProfiles,
   loadEventProfile,
+  loadExternalEventProfile,
 } from "../api/eventPublishingRepository";
 
 export type EventPageSource = "catch" | "imported";
@@ -23,8 +23,8 @@ export interface EventPageController {
 }
 
 /**
- * One event's page. A Catch event reads its full record; an imported event is read from the
- * external events list, which searches by event id, since imports have no record read of their own.
+ * One event's page. A Catch event reads its full record; an imported event reads its one
+ * externalEvents document by id, so a deep link works whatever the event's date or status.
  */
 export async function loadEventPageRecord(
   source: EventPageSource,
@@ -33,8 +33,7 @@ export async function loadEventPageRecord(
   if (source === "catch") {
     return {source, event: (await loadEventProfile({eventId})).event};
   }
-  const response = await listExternalEventProfiles({query: eventId, timeWindow: "all", limit: 25});
-  const event = response.rows.find((row) => row.eventId === eventId);
+  const event = await loadExternalEventProfile(eventId);
   if (!event) throw new Error("Imported event not found.");
   return {source, event};
 }

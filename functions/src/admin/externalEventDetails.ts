@@ -1,4 +1,4 @@
-import {CallableRequest} from "firebase-functions/v2/https";
+import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import type {ExternalEventDocument} from
   "../shared/generated/firestoreAdminTypes";
@@ -77,7 +77,8 @@ export interface AdminListExternalEventDetailsResponse {
 }
 
 /**
- * Lists read-only external event supply from externalEvents/{eventId}.
+ * Lists read-only external event supply from externalEvents/{eventId}, or
+ * reads one event by eventId for its own Admin page.
  * Policy: externalEventDetailsRoles (STR-10).
  * @param {ExternalEventDetailsDeps} deps Dependencies.
  * @return {CallableSpec} The callable.
@@ -118,6 +119,13 @@ async function adminListExternalEventDetailsWork(
     {maxRequests: 60, windowMs: 60 * 1000}
   );
 
+  if (data.eventId) {
+    return {
+      generatedAt: (deps.now?.() ?? new Date()).toISOString(),
+      rows: await readOneExternalEvent(db, data),
+    };
+  }
+
   const limit = clampLimit(data.limit);
   const queryText = normalizeSearchText(data.query);
   const timeWindow = normalizeTimeWindow(data.timeWindow);
@@ -150,6 +158,36 @@ async function adminListExternalEventDetailsWork(
     generatedAt: now.toISOString(),
     rows,
   };
+}
+
+/**
+ * Reads one externalEvents/{eventId} document for that event's Admin page,
+ * so a deep link never depends on the event appearing in a bounded list.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {AdminListExternalEventDetailsCallablePayload} data Payload.
+ * @return {Promise<AdminExternalEventListRow[]>} The event, or no rows.
+ */
+async function readOneExternalEvent(
+  db: FirebaseFirestore.Firestore,
+  data: AdminListExternalEventDetailsCallablePayload
+): Promise<AdminExternalEventListRow[]> {
+  const listFilters = [
+    data.query, data.citySlug, data.citySlugs, data.publicationStatus,
+    data.status, data.timeWindow, data.limit,
+  ];
+  if (listFilters.some((value) => value !== undefined && value !== null)) {
+    throw new HttpsError(
+      "invalid-argument",
+      "eventId reads one event; send it without list filters."
+    );
+  }
+  const eventId = data.eventId as string;
+  const snapshot = await db.collection("externalEvents").doc(eventId).get();
+  if (!snapshot.exists) return [];
+  return [publicExternalEventListRow(
+    snapshot.id,
+    requireDoc<ExternalEventDocument>(snapshot, "ExternalEventDocument")
+  )];
 }
 
 /**
@@ -217,6 +255,7 @@ function normalizeAdminListExternalEventDetailsPayload(
   const data = value as Record<string, unknown>;
   return {
     ...data,
+    eventId: normalizeNullableString(data.eventId),
     query: normalizeNullableString(data.query),
     citySlug: normalizeNullableString(data.citySlug),
     citySlugs: normalizeCitySlugs(data.citySlugs),
