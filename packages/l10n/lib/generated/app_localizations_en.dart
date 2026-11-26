@@ -1871,11 +1871,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Post-event host report';
 
   @override
-  String
-  get eventSuccessEventSuccessFeatureBlocksSubtitleAConcreteReportSurface =>
-      'A concrete report surface that turns event outcomes into the next change the host should make.';
-
-  @override
   String get eventSuccessEventSuccessFeatureBlocksLabelCheckIn16e104 =>
       'Check-in';
 
@@ -5784,12 +5779,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostAnalyticsLabelAllTime => 'All time';
-
-  @override
-  String get hostsHostAnalyticsLabelPartial => 'Partial';
-
-  @override
-  String get hostsHostAnalyticsLabelMissing => 'Missing';
 
   @override
   String get hostsHostAuthRequiredScreenTitleSignInRequired =>
