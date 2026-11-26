@@ -6337,6 +6337,48 @@ abstract class AppLocalizations {
   /// **'Show me on map'**
   String get safetySettingsScreenTitleShowMeOnMap;
 
+  /// Title of the settings section with a switch per sensitive profile answer (#2493).
+  ///
+  /// In en, this message translates to:
+  /// **'Profile answers guests see'**
+  String get safetySettingsScreenTitleProfileAnswers;
+
+  /// Explains the profile answer switches: off hides the answer from other guests; organisers never see them; religion is hidden by default.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn an answer off and no other guest sees it. Organisers never see these answers. Religion stays hidden until you turn it on.'**
+  String get safetySettingsScreenBodyProfileAnswers;
+
+  /// Switch that shows the guest's religion to other guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Religion'**
+  String get safetySettingsScreenTitleProfileAnswerReligion;
+
+  /// Switch that shows the guest's relationship goal to other guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Relationship goal'**
+  String get safetySettingsScreenTitleProfileAnswerRelationshipGoal;
+
+  /// Switch that shows the guest's drinking answer to other guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Drinking'**
+  String get safetySettingsScreenTitleProfileAnswerDrinking;
+
+  /// Switch that shows the guest's smoking answer to other guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Smoking'**
+  String get safetySettingsScreenTitleProfileAnswerSmoking;
+
+  /// Switch that shows the guest's answer about children to other guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Children'**
+  String get safetySettingsScreenTitleProfileAnswerChildren;
+
   /// Product copy used by lib/safety/presentation/settings_screen.dart (title).
   ///
   /// In en, this message translates to:

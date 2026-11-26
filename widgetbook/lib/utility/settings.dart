@@ -35,6 +35,22 @@ Widget blockedAccountsSectionStates(BuildContext context) =>
     settingsScreenStates(context);
 
 @widgetbook.UseCase(
+  name: 'Notification switches',
+  type: SettingsNotificationsSection,
+  path: '[P3 utility surfaces]/Settings',
+)
+Widget settingsNotificationsSectionStates(BuildContext context) =>
+    settingsScreenStates(context);
+
+@widgetbook.UseCase(
+  name: 'Profile answers other guests see',
+  type: SettingsProfileAnswersSection,
+  path: '[P3 utility surfaces]/Settings',
+)
+Widget settingsProfileAnswersSectionStates(BuildContext context) =>
+    settingsScreenStates(context);
+
+@widgetbook.UseCase(
   name: 'Account profile states',
   type: AccountProfileSection,
   path: '[P3 utility surfaces]/Settings',
