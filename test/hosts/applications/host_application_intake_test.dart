@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/contexts/forms/data/host_application_repository.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/forms/response_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_platform/device/external_links.dart';
@@ -18,7 +17,7 @@ Widget _app(List overrides) => ProviderScope(
   overrides: [...overrides],
   child: MaterialApp(
     theme: AppTheme.light,
-    home: const HostApplicationDetailScreen(
+    home: const HostResponseScreen.application(
       organizerId: 'org-1',
       applicationId: 'app-1',
     ),

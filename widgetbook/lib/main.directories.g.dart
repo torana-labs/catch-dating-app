@@ -213,6 +213,8 @@ import 'package:widgetbook_workspace/hosts/host_form_editor_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_editor_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_payment_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_payment_use_cases;
+import 'package:widgetbook_workspace/hosts/host_form_settings_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_form_settings_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_workspace_use_cases;
 import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
@@ -6318,7 +6320,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostResponseOfferPreferencesRouteScreen',
+            name: 'HostOfferSettingsScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Signed-out preferences boundary',
@@ -10605,17 +10607,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostAutomationRuleEditor',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Acceptance automation editor',
-                    builder:
-                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
-                            .hostAutomationEditorState,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerIdentityInputSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10623,6 +10614,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerIdentityInputStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormAutomationEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Acceptance automation editor',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostAutomationEditorState,
                   ),
                 ],
               ),
@@ -10653,6 +10655,28 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Forms',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormAutomationActionSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Automation step',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormAutomationActionSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormAutomationsBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Form automations',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormAutomationsBodyPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormAvailabilityField',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10664,6 +10688,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormAvailabilitySection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Availability',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormAvailabilitySectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10671,6 +10706,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_workspace_use_cases
                             .hostFormBodyPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormCompletionSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'After submission',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormCompletionSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormDateField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Date',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormDateFieldPreview,
                   ),
                 ],
               ),
@@ -10697,6 +10754,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormFeeSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Payment setup',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormPaymentSetupSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormFeeSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Fee sheet',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormFeeSheetPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormInspectorSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10704,6 +10783,50 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_editor_use_cases
                             .hostFormInspectorSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormLifecycleMenu',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Settings menu',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormSettingsMenuPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormLogicRuleSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Add a rule',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormLogicRuleSheetPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormLogicSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Conditional logic',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormLogicSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormMessagingSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'WhatsApp updates',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormMessagingSectionPreview,
                   ),
                 ],
               ),
@@ -10807,6 +10930,50 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormPreviewBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Preview body',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormPreviewBodyPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormPreviewField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Preview field',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormPreviewFieldPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormPreviewScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Form preview',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormPreviewScreenPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormPublishReviewSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Review before publishing',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormPublishReviewSheetPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormPublishText',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10906,6 +11073,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormSettingsBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Settings body',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormSettingsBodyPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormSettingsMenu',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10917,6 +11095,39 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormSettingsNotice',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Save notices',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormSettingsNoticePreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormSettingsPaymentSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Fee and account',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormSettingsPaymentSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormSettingsScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Form settings',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormSettingsScreenPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormSettingsSectionList',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10924,6 +11135,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_editor_use_cases
                             .hostFormSettingsSectionListPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormSettingsTargetSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Where it is used',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormSettingsTargetSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormTargetEventList',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Upcoming events',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormTargetEventListPreview,
                   ),
                 ],
               ),
@@ -11030,17 +11263,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostEventOfferPreferencesScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Published event offer preferences',
-                builder:
-                    _widgetbook_workspace_hosts_unified_event_setup_use_cases
-                        .hostEventOfferPreferencesScreenPreview,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'HostManagerEventSetupPreferencesSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -11052,7 +11274,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostOfferPaymentConfirmationSection',
+            name: 'HostOfferSettingsConfirmationNotice',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Offer payment confirmation contract',
@@ -11063,7 +11285,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostOfferPaymentDetailsSection',
+            name: 'HostOfferSettingsDetailsSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Offer payment details',
@@ -11074,7 +11296,18 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostOfferPaymentModeSection',
+            name: 'HostOfferSettingsEditor',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Offer payment setup step',
+                builder:
+                    _widgetbook_workspace_hosts_host_offer_payment_use_cases
+                        .hostOfferPaymentSetupPageBodyPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostOfferSettingsModeSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Offer payment mode section',
@@ -11085,18 +11318,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostOfferPaymentModeTile',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Offer payment collection modes',
-                builder:
-                    _widgetbook_workspace_hosts_host_offer_payment_use_cases
-                        .hostOfferPaymentModeTilePreview,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostOfferPaymentReviewSheet',
+            name: 'HostOfferSettingsReviewSheet',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Offer payment review sheet',
@@ -11107,13 +11329,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostOfferPaymentSetupPageBody',
+            name: 'HostOfferSettingsScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Offer payment setup step',
+                name: 'Published event offer preferences',
                 builder:
-                    _widgetbook_workspace_hosts_host_offer_payment_use_cases
-                        .hostOfferPaymentSetupPageBodyPreview,
+                    _widgetbook_workspace_hosts_unified_event_setup_use_cases
+                        .hostEventOfferPreferencesScreenPreview,
               ),
             ],
           ),
@@ -11406,7 +11628,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Response review',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'HostApplicationDetailScreen',
+                name: 'HostResponseScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Existing application link',
