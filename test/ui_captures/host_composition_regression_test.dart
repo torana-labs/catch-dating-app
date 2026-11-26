@@ -14,7 +14,7 @@ import 'support/capture_pump.dart';
 void main() {
   for (final id in [
     'host_people_phone',
-    'host_clubs_management',
+    'host_organizer_media_summary',
     'host_home_dashboard',
     'host_inbox_queries',
   ]) {
@@ -42,17 +42,16 @@ void main() {
           drive: (tester) async {
             await entry.drive?.call(tester);
             if (id == 'host_customers_populated' ||
-                id == 'host_clubs_management') {
-              final fields = id == 'host_clubs_management'
+                id == 'host_organizer_media_summary') {
+              final fields = id == 'host_organizer_media_summary'
                   ? find.byWidgetPredicate(
                       (widget) =>
-                          widget is CatchField &&
-                          widget.title == 'Organizer name',
+                          widget is CatchField && widget.title == 'Name',
                     )
                   : find.byType(CatchField);
               expect(fields, findsWidgets);
               final field = fields.first;
-              if (id == 'host_clubs_management') {
+              if (id == 'host_organizer_media_summary') {
                 await Scrollable.ensureVisible(
                   tester.element(field),
                   alignment: 0.35,

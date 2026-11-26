@@ -50,7 +50,7 @@ final class HostEventCommandsProvider
   }
 }
 
-String _$hostEventCommandsHash() => r'22e3ba8b2151d5fb72340cf67ceb45d74f9cf72d';
+String _$hostEventCommandsHash() => r'70d8ba382d015865d9e96b36f1b2d9a3547ec7e3';
 
 /// The commands the event screens commit. Every one is an existing
 /// command; none invalidates a read, since each screen reads through a

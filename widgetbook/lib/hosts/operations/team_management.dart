@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
@@ -12,11 +11,6 @@ import '../../support/page_preview.dart';
 import 'preview.dart';
 import 'shell_fixture.dart';
 
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostOrganizersScaffold,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
 @widgetbook.UseCase(
   name: 'Owner and co-host section states',
   type: HostTeamManagementSection,
