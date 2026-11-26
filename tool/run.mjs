@@ -260,7 +260,10 @@ async function runChecks(tools, {marketingChecksInReact = false, deferVisualRepo
       stdio: "inherit",
     });
     if (result.status !== 0) {
-      failures.push({toolId, category: categoryOf.get(toolId), command, status: result.status ?? 1});
+      const status = result.status ?? 1;
+      // One searchable marker per failure: later output can bury the end-of-run list.
+      console.error(`FAILED: ${toolId} (exit ${status})`);
+      failures.push({toolId, category: categoryOf.get(toolId), command, status});
       failedTools.add(toolId);
     }
   }
@@ -272,7 +275,7 @@ async function runChecks(tools, {marketingChecksInReact = false, deferVisualRepo
   console.log("Tool checks passed.");
 }
 
-/** Lists every failed check, in the log and in the CI step summary. */
+/** Lists every failed check as plain text, for the log. */
 function formatToolFailures(failures) {
   return [
     `${failures.length} tool check${failures.length === 1 ? "" : "s"} failed:`,
@@ -281,12 +284,23 @@ function formatToolFailures(failures) {
   ].join("\n");
 }
 
-function reportToolFailures(failures) {
+/**
+ * Wraps the plain-text list in a fenced code block for the CI step summary, so
+ * backticks or `|` in a command render literally instead of as Markdown. The
+ * fence is longer than any backtick run in the text, so no command can close it.
+ */
+function formatToolFailuresMarkdown(failures) {
   const report = formatToolFailures(failures);
-  console.error(`\n${report}`);
+  const longestRun = Math.max(0, ...(report.match(/`+/gu) ?? []).map((run) => run.length));
+  const fence = "`".repeat(Math.max(3, longestRun + 1));
+  return `### Failed tool checks\n\n${fence}text\n${report}\n${fence}\n`;
+}
+
+function reportToolFailures(failures) {
+  console.error(`\n${formatToolFailures(failures)}`);
   if (!process.env.GITHUB_STEP_SUMMARY) return;
   try {
-    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `### Failed tool checks\n\n${report}\n`);
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, formatToolFailuresMarkdown(failures));
   } catch (error) {
     console.error(`Could not write the step summary: ${error.message}`);
   }
