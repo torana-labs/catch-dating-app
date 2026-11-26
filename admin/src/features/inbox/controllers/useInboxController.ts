@@ -1,5 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useCallback, useMemo, useRef, useState} from "react";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {
   approveListing,
   decideAccess,
@@ -47,6 +48,7 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
   onSelect: (itemId: string | null) => void;
 }) {
   const queryClient = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const [scope, setScopeState] = useState<InboxScope>("waiting");
   const [type, setTypeState] = useState<InboxType | null>(null);
   const [city, setCityState] = useState<string | null>(null);
@@ -114,6 +116,8 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
   const refresh = useCallback(() => queryClient.invalidateQueries({queryKey: inboxKey}), [queryClient]);
 
   const run = useCallback(async <T>(action: () => Promise<T>, notice: string, moveOn: boolean) => {
+    const operation = beginOperation();
+    if (!operation) return false;
     onError(null);
     try {
       await action();
@@ -124,8 +128,10 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
     } catch (error) {
       onError(error instanceof Error ? error.message : String(error));
       return false;
+    } finally {
+      endOperation(operation);
     }
-  }, [nextItem, onError, onNotice, onSelect, refresh]);
+  }, [beginOperation, endOperation, nextItem, onError, onNotice, onSelect, refresh]);
 
   return {
     scope,
