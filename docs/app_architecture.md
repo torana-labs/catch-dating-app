@@ -1392,7 +1392,7 @@ counts; unknown booking membership never becomes a prospective classification.
 controllers own pagination and generation fences. `hostConversationController`
 composes the person's authorized sources and `HostConversationCommands` owns
 WhatsApp reply and read IO; the screen owns only presentation and ephemeral
-selection. Reply drafts (`hostConversationDrafts`) are scoped by account,
+selection. Reply drafts (owned by Messages) are scoped by account,
 organizer, person, scope and route; retries preserve the operation id and
 successful sends clear only the unchanged draft. Authentication changes clear
 session drafts.

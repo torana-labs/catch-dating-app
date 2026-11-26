@@ -6,7 +6,6 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
-import 'package:catch_dating_app/hosts/people/conversation/conversation_drafts.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_history_controller.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_pages_controller.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_people.dart';
@@ -47,19 +46,6 @@ class HostConversationRequest {
 
   @override
   int get hashCode => Object.hash(organizerId, selection, scope);
-}
-
-/// The reply drafts for the signed-in account: kept while the Host app
-/// runs so a draft survives moving between conversations, and dropped with
-/// the account.
-// keepalive: account-scoped: rebuilt (and the old drafts disposed) whenever
-// the signed-in uid changes, so no draft outlives its account.
-@Riverpod(keepAlive: true)
-HostReplyDrafts hostConversationDrafts(Ref ref) {
-  ref.watch(uidProvider.select((uid) => uid.value));
-  final drafts = HostReplyDrafts();
-  ref.onDispose(drafts.dispose);
-  return drafts;
 }
 
 /// One WhatsApp conversation while it is open, live: a new customer message

@@ -13,6 +13,7 @@ import 'package:catch_dating_app/contexts/programmes/data/program_setup_reposito
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_body.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_controller.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_drafts.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_pages_controller.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_people.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_programme_controller.dart';
@@ -122,6 +123,8 @@ void main() {
   }) async {
     final source = preview('catch-a', 'guest', events: ['event']);
     final conversations = _Conversations();
+    final drafts = HostReplyDrafts();
+    addTearDown(drafts.dispose);
     final container = ProviderContainer(
       overrides: [
         uidProvider.overrideWithValue(const AsyncData('host')),
@@ -214,6 +217,7 @@ void main() {
                     selection: value.selection,
                     scope: value.scope,
                   ),
+                  drafts: drafts,
                   presentation: HostConversationPresentation.pane,
                   onBack: () {},
                 ),

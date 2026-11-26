@@ -230,11 +230,6 @@ Widget conversationScreen(BuildContext context) {
   );
   return ProviderScope(
     overrides: [
-      hostConversationDraftsProvider.overrideWith((ref) {
-        final drafts = HostReplyDrafts();
-        ref.onDispose(drafts.dispose);
-        return drafts;
-      }),
       hostConversationControllerProvider(request).overrideWithValue(
         const HostConversationState(
           status: HostConversationStatus.programme,
@@ -243,6 +238,12 @@ Widget conversationScreen(BuildContext context) {
         ),
       ),
     ],
-    child: _phone(HostConversationScreen(request: request, onBack: () {})),
+    child: _phone(
+      HostConversationScreen(
+        request: request,
+        drafts: HostReplyDrafts(),
+        onBack: () {},
+      ),
+    ),
   );
 }

@@ -9,6 +9,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_controller.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_drafts.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_pages_controller.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_people.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_screen.dart';
@@ -65,6 +66,8 @@ void main() {
     bool validCatch = true,
   }) {
     final source = preview('source-id', 'guest');
+    final drafts = HostReplyDrafts();
+    addTearDown(drafts.dispose);
     final container = ProviderContainer(
       overrides: [
         uidProvider.overrideWithValue(const AsyncData('host')),
@@ -146,6 +149,7 @@ void main() {
               selection: 'source-id',
               scope: HostInboxScope.general(),
             ),
+            drafts: drafts,
             onBack: () {},
           ),
         ),

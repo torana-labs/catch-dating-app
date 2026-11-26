@@ -62,6 +62,7 @@ class HostMessagesRequest {
       Object.hash(organizerId, day, filter, scope, segment, query);
 }
 
+// provider-graph: high-fan-out:hostMessagesControllerProvider accepted -- One route read model for the Messages list: the account, the live Catch conversations and their older pages, the WhatsApp thread pages, the organizer's events and programmes for the scope menu, the chosen event's bookings for Booked and Prospective, a programme's verified identity, and the Automatic messages summary. Each source answers one visible part of the same list, and splitting them would let the scope, counts and partial notice disagree.
 /// Messages, composed from the Catch conversations listener and its older
 /// pages, the WhatsApp threads listener and its pages, the organizer's
 /// events (for Tonight and the scope menu), their programmes, the chosen

@@ -8,60 +8,6 @@ part of 'conversation_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The reply drafts for the signed-in account: kept while the Host app
-/// runs so a draft survives moving between conversations, and dropped with
-/// the account.
-
-@ProviderFor(hostConversationDrafts)
-final hostConversationDraftsProvider = HostConversationDraftsProvider._();
-
-/// The reply drafts for the signed-in account: kept while the Host app
-/// runs so a draft survives moving between conversations, and dropped with
-/// the account.
-
-final class HostConversationDraftsProvider
-    extends
-        $FunctionalProvider<HostReplyDrafts, HostReplyDrafts, HostReplyDrafts>
-    with $Provider<HostReplyDrafts> {
-  /// The reply drafts for the signed-in account: kept while the Host app
-  /// runs so a draft survives moving between conversations, and dropped with
-  /// the account.
-  HostConversationDraftsProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'hostConversationDraftsProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$hostConversationDraftsHash();
-
-  @$internal
-  @override
-  $ProviderElement<HostReplyDrafts> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  HostReplyDrafts create(Ref ref) {
-    return hostConversationDrafts(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(HostReplyDrafts value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<HostReplyDrafts>(value),
-    );
-  }
-}
-
-String _$hostConversationDraftsHash() =>
-    r'57a18c3ef2569f424e1f77b67e684f05c5cc0f27';
-
 /// One WhatsApp conversation while it is open, live: a new customer message
 /// or a reply shows without a reload. Null until the thread has a view.
 
@@ -347,4 +293,4 @@ final class HostConversationCommandsProvider
 }
 
 String _$hostConversationCommandsHash() =>
-    r'2d360a9277cc96f15cf6ef503644806ea75b51ca';
+    r'7cf15d1061aab583b1a251f6ab0886209c838926';

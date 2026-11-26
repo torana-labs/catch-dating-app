@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_body.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_controller.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_drafts.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_pages_controller.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_people.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_programme_controller.dart';
@@ -73,6 +74,17 @@ class _HostMessagesScreenState extends ConsumerState<HostMessagesScreen> {
   late HostInboxAudienceSegment _segment = widget.initialSegment;
   String _query = '';
 
+  /// Reply drafts for every conversation opened here, by person, scope and
+  /// route; cleared when the account changes.
+  final _drafts = HostReplyDrafts();
+  String? _accountId;
+
+  @override
+  void dispose() {
+    _drafts.dispose();
+    super.dispose();
+  }
+
   @override
   void didUpdateWidget(covariant HostMessagesScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -90,6 +102,16 @@ class _HostMessagesScreenState extends ConsumerState<HostMessagesScreen> {
       builder: (context) {
         final split =
             CatchRootScope.sizeClassOf(context) != CatchWindowSize.compact;
+        final uid = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+        if (!uid.isLoading) {
+          if (_accountId != null && _accountId != uid.value) {
+            // Cleared after this frame: the open conversation listens.
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) _drafts.clear();
+            });
+          }
+          _accountId = uid.value;
+        }
         final l10n = context.l10n;
         final now = widget.now ?? ref.read(appClockProvider).now();
         final scope = ref.watch(
@@ -109,6 +131,7 @@ class _HostMessagesScreenState extends ConsumerState<HostMessagesScreen> {
           return HostConversationScreen(
             key: ValueKey<HostConversationRequest>(conversation),
             request: conversation,
+            drafts: _drafts,
             onBack: () => _closeThread(organizer!.id),
           );
         }
@@ -184,6 +207,7 @@ class _HostMessagesScreenState extends ConsumerState<HostMessagesScreen> {
                       HostConversationScreen(
                         key: ValueKey<HostConversationRequest>(conversation),
                         request: conversation,
+                        drafts: _drafts,
                         presentation: HostConversationPresentation.pane,
                         onBack: () => _closeThread(organizer.id),
                       )

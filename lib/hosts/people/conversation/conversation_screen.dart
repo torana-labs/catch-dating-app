@@ -28,7 +28,8 @@ enum HostConversationAction { share, report, block }
 /// together, with a reply on one chosen route.
 ///
 /// It watches [hostConversationControllerProvider], keeps the drafts in
-/// [hostConversationDraftsProvider] (by route, for the signed-in account),
+/// the [drafts] Messages owns (by person, scope and route, for the
+/// signed-in account),
 /// marks each Catch conversation read while its newest message is in view,
 /// and sends with the shared chat controller (Catch text and photos) or
 /// [HostConversationCommands.reply] (WhatsApp inside its 24-hour window).
@@ -37,11 +38,16 @@ class HostConversationScreen extends ConsumerStatefulWidget {
   const HostConversationScreen({
     super.key,
     required this.request,
+    required this.drafts,
     required this.onBack,
     this.presentation = HostConversationPresentation.screen,
   });
 
   final HostConversationRequest request;
+
+  /// The reply drafts, owned by Messages so a draft survives moving between
+  /// conversations; cleared with the account.
+  final HostReplyDrafts drafts;
   final VoidCallback onBack;
   final HostConversationPresentation presentation;
 
@@ -163,7 +169,7 @@ class _HostConversationScreenState
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = ref.watch(hostConversationControllerProvider(widget.request));
-    final drafts = ref.watch(hostConversationDraftsProvider);
+    final drafts = widget.drafts;
     if (state.status == HostConversationStatus.ready) {
       _openContext = _draftContext(state);
       _attachDrafts(drafts, state);
