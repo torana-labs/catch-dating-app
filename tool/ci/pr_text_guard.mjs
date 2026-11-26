@@ -22,7 +22,9 @@ export const allowedBots = new Set(["dependabot", "github-actions", "copilot"]);
 
 // GitHub logins: letters, digits and single hyphens, at most 39 characters,
 // optionally followed by /team. An address like name@example.com is not one.
-const mention = /(?<![\w`@./-])@([A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38})(\/[A-Za-z0-9_.-]+)?(?![\w@-])/gu;
+// The look-behind also skips `]` and `+`, which come before `@` in a bot's
+// noreply address (`name[bot]@users.noreply.github.com`).
+const mention = /(?<![\w`@./+\]-])@([A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38})(\/[A-Za-z0-9_.-]+)?(?![\w@-])/gu;
 
 // Code, quoted HTML code and comments never notify anyone.
 export function withoutCode(text) {
@@ -87,12 +89,26 @@ async function github(url, token) {
   }});
 }
 
-async function commitMessages({api, repo, number, token}) {
+/**
+ * The pull request's own commits: those on its head that the base branch does
+ * not have now. The pulls/{n}/commits list compares with the base SHA GitHub
+ * recorded for the pull request, which can be older than the branch's tip, so
+ * after the author merges main it also lists main's commits, other people's
+ * text the guard has no business re-judging (25 Nov 2026: two Dependabot bump
+ * commits failed every pull request that merged main). Comparing with the
+ * base branch by name leaves only what this pull request adds.
+ * @param {{api: string, repo: string, base: string, head: string, token: string,
+ *   fetchJson?: (url: string) => Promise<{ok: boolean, status: number, json: () => Promise<any>}>}} input
+ * @returns {Promise<Array<{sha: string, message: string}>>}
+ */
+export async function ownCommitMessages({api, repo, base, head, token,
+  fetchJson = (url) => github(url, token)}) {
   const messages = [];
+  const range = `${encodeURIComponent(base)}...${encodeURIComponent(head)}`;
   for (let page = 1; page <= 3; page += 1) {
-    const response = await github(`${api}/repos/${repo}/pulls/${number}/commits?per_page=100&page=${page}`, token);
-    if (!response.ok) throw new Error(`Listing the pull request's commits failed with HTTP ${response.status}.`);
-    const commits = await response.json();
+    const response = await fetchJson(`${api}/repos/${repo}/compare/${range}?per_page=100&page=${page}`);
+    if (!response.ok) throw new Error(`Comparing the pull request with its base branch failed with HTTP ${response.status}.`);
+    const commits = (await response.json()).commits ?? [];
     messages.push(...commits.map((commit) => ({sha: commit.sha, message: commit.commit?.message ?? ""})));
     if (commits.length < 100) break;
   }
@@ -110,7 +126,7 @@ async function main() {
   const api = process.env.GITHUB_API_URL ?? "https://api.github.com";
   const token = process.env.GITHUB_TOKEN;
   const [owner] = repo.split("/");
-  const commits = await commitMessages({api, repo, number: pr.number, token});
+  const commits = await ownCommitMessages({api, repo, base: pr.base.ref, head: pr.head.sha, token});
   const sections = [
     {label: "title", text: pr.title ?? ""},
     {label: "body", text: pr.body ?? ""},

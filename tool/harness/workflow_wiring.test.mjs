@@ -1983,14 +1983,15 @@ test("Tools check shells request inventory producer proofs and no capture proof"
     for (const inventory of ["true", "false"]) {
       const result = spawnSync("bash", ["-c", step.run], {encoding: "utf8", env: {
         ...process.env, PATH: `${root}${path.delimiter}${process.env.PATH}`,
-        INVENTORY_MATERIALIZED: inventory, MARKETING_CHECKS_IN_REACT: "true",
+        INVENTORY_MATERIALIZED: inventory, MARKETING_CHECKS_IN_REACT: "true", VISUAL_REPORT: "",
         BASE_SHA: "base", SOURCE_SHA: "source", MODE: "pr", COMMIT_WINDOW: "false", CATEGORIES: "marketing ui-capture design",
       }});
       assert.equal(result.status, 0, result.stderr);
       const actual = JSON.parse(result.stdout);
       assert.equal(actual.args.includes("--generated-inventories-materialized"), inventory === "true");
       assert.ok(actual.args.includes("--marketing-checks-in-react"));
-      // Outside the nightly (VISUAL_REPORT unset here) the visual report is deferred.
+      // Outside the nightly (VISUAL_REPORT cleared here, since the nightly job
+      // running this test sets it) the visual report is deferred.
       assert.ok(actual.args.includes("--defer-visual-report"));
     }
     for (const [visualReport, deferred] of [["true", false], ["false", true]]) {
