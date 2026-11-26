@@ -270,37 +270,41 @@ class OrganizerPageEditBody extends StatelessWidget {
           ],
         ),
         field(PageEditField.name, l10n.hostOrganizerPageName, draft.name),
-        CatchField<OrganizerType>.select(
-          key: ValueKey<String>('page-edit-type-$revision'),
-          copy: copy,
-          title: l10n.hostsOrganizerTypeLabel,
-          contract: CatchContractConstraints
-              .updateOrganizerCallablePayloadFieldsOrganizerType,
-          contractValueBuilder: (type) => type.name,
-          values: OrganizerType.values,
-          itemLabelBuilder: (type) => organizerTypeLabel(l10n, type),
-          value: draft.type,
-          onChanged: editable
-              ? (type) {
-                  if (type != null) onType(type);
-                }
-              : null,
+        CatchFieldLanes.single(
+          child: CatchField<OrganizerType>.select(
+            key: ValueKey<String>('page-edit-type-$revision'),
+            copy: copy,
+            title: l10n.hostsOrganizerTypeLabel,
+            contract: CatchContractConstraints
+                .updateOrganizerCallablePayloadFieldsOrganizerType,
+            contractValueBuilder: (type) => type.name,
+            values: OrganizerType.values,
+            itemLabelBuilder: (type) => organizerTypeLabel(l10n, type),
+            value: draft.type,
+            onChanged: editable
+                ? (type) {
+                    if (type != null) onType(type);
+                  }
+                : null,
+          ),
         ),
-        CatchField<String>.select(
-          key: ValueKey<String>('page-edit-city-$revision'),
-          copy: copy,
-          title: l10n.hostsHostOrganizerProfileLabelCity,
-          contract: CatchContractConstraints
-              .updateOrganizerCallablePayloadFieldsLocation,
-          values: [for (final (id, _) in cities) id],
-          itemLabelBuilder: (id) =>
-              cities.firstWhere((city) => city.$1 == id).$2,
-          value: draft.city,
-          onChanged: editable
-              ? (city) {
-                  if (city != null) onCity(city);
-                }
-              : null,
+        CatchFieldLanes.single(
+          child: CatchField<String>.select(
+            key: ValueKey<String>('page-edit-city-$revision'),
+            copy: copy,
+            title: l10n.hostsHostOrganizerProfileLabelCity,
+            contract: CatchContractConstraints
+                .updateOrganizerCallablePayloadFieldsLocation,
+            values: [for (final (id, _) in cities) id],
+            itemLabelBuilder: (id) =>
+                cities.firstWhere((city) => city.$1 == id).$2,
+            value: draft.city,
+            onChanged: editable
+                ? (city) {
+                    if (city != null) onCity(city);
+                  }
+                : null,
+          ),
         ),
         field(
           PageEditField.about,

@@ -36,7 +36,15 @@ void main() {
 
     expect(find.byKey(const ValueKey('live-guide-read')), findsNothing);
     expect(find.text('Could not save.'), findsOneWidget);
-    await tester.tap(find.byType(CatchToggleInput).first);
+    // The guide's own on/off switch sits in the field titled with its name.
+    final guideToggle = find.descendant(
+      of: find.ancestor(
+        of: find.text('Live event guide'),
+        matching: find.byWidgetPredicate((widget) => widget is CatchField),
+      ),
+      matching: find.byType(CatchToggleInput),
+    );
+    await tester.tap(guideToggle);
     expect(updates, hasLength(1));
   });
 }

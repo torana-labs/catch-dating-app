@@ -29,14 +29,22 @@ import 'package:url_launcher/url_launcher.dart';
 // links opening outside the app. A host with no organizer reaches this
 // screen from the Organiser tab.
 
-class _DeletionController extends SettingsController {
+/// Records what the fake controller was asked to do. The notifier itself keeps
+/// no public fields, so its whole public API stays on `state`.
+class _DeletionCalls {
   int requests = 0;
   final completion = Completer<void>();
+}
+
+class _DeletionController extends SettingsController {
+  _DeletionController(this._calls);
+
+  final _DeletionCalls _calls;
 
   @override
   Future<void> requestAccountDeletion() {
-    requests++;
-    return completion.future;
+    _calls.requests++;
+    return _calls.completion.future;
   }
 }
 
@@ -106,37 +114,37 @@ void main() {
   testWidgets('a host with no organizer can cancel account deletion', (
     tester,
   ) async {
-    final controller = _DeletionController();
-    await _pump(tester, controller: controller);
+    final calls = _DeletionCalls();
+    await _pump(tester, controller: _DeletionController(calls));
     await _openDeletion(tester);
     expect(find.textContaining('Shared business records'), findsOneWidget);
     await tester.tap(find.text('Cancel'));
     await pumpFeatureUi(tester);
-    expect(controller.requests, 0);
+    expect(calls.requests, 0);
   });
 
   testWidgets('deletion needs confirmation, then signs out to the start', (
     tester,
   ) async {
-    final controller = _DeletionController();
-    await _pump(tester, controller: controller);
+    final calls = _DeletionCalls();
+    await _pump(tester, controller: _DeletionController(calls));
     await _openDeletion(tester);
-    expect(controller.requests, 0);
+    expect(calls.requests, 0);
     await tester.tap(find.text('Delete'));
     await pumpFeatureUi(tester);
-    expect(controller.requests, 1);
-    controller.completion.complete();
+    expect(calls.requests, 1);
+    calls.completion.complete();
     await pumpFeatureUi(tester);
     expect(find.text('Signed out after deletion'), findsOneWidget);
   });
 
   testWidgets('a failed deletion keeps the account screen', (tester) async {
-    final controller = _DeletionController();
-    await _pump(tester, controller: controller);
+    final calls = _DeletionCalls();
+    await _pump(tester, controller: _DeletionController(calls));
     await _openDeletion(tester);
     await tester.tap(find.text('Delete'));
     await pumpFeatureUi(tester);
-    controller.completion.completeError(StateError('Deletion unavailable'));
+    calls.completion.completeError(StateError('Deletion unavailable'));
     await pumpFeatureUi(tester);
     expect(find.text('Signed out after deletion'), findsNothing);
     expect(find.byKey(const ValueKey('settings-row-delete')), findsOneWidget);

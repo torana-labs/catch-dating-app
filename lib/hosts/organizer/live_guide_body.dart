@@ -44,15 +44,17 @@ class OrganizerLiveGuideBody extends StatelessWidget {
             subtitle: subtitle,
           )
         else
-          CatchField.read(
-            key: const ValueKey<String>('live-guide-read'),
-            copy: catchFieldCopy(l10n),
-            title: l10n.hostsHostOrganizerEditTabLabelLiveEventGuide,
-            body: subtitle,
-            valueText: guide.enabled
-                ? l10n.hostsHostOrganizerEditTabValueOn
-                : l10n.hostsHostOrganizerEditTabValueOff,
-            icon: CatchIcons.magic,
+          CatchFieldLanes.single(
+            child: CatchField.read(
+              key: const ValueKey<String>('live-guide-read'),
+              copy: catchFieldCopy(l10n),
+              title: l10n.hostsHostOrganizerEditTabLabelLiveEventGuide,
+              body: subtitle,
+              valueText: guide.enabled
+                  ? l10n.hostsHostOrganizerEditTabValueOn
+                  : l10n.hostsHostOrganizerEditTabValueOff,
+              icon: CatchIcons.magic,
+            ),
           ),
         if (errorMessage case final message?)
           CatchNotice.inline(
