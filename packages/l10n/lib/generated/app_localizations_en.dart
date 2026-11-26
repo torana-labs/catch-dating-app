@@ -24550,6 +24550,251 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get hostProgrammeLodgingRoomBoard => 'Room board';
+
+  @override
+  String get hostProgrammeLodgingRefresh => 'Refresh rooms';
+
+  @override
+  String get hostProgrammeLodgingGroups => 'Groups';
+
+  @override
+  String get hostProgrammeLodgingGroup => 'Group label';
+
+  @override
+  String get hostProgrammeLodgingGuest => 'Guest name';
+
+  @override
+  String get hostProgrammeLodgingTitle => 'Stay planner';
+
+  @override
+  String get hostProgrammeLodgingSubtitle =>
+      'Plan rooms around people, dates and verified needs.';
+
+  @override
+  String get hostProgrammeLodgingSetupMissing =>
+      'Add lodging dates, confirmed sharing parties and contracted rooms to start planning.';
+
+  @override
+  String get hostProgrammeLodgingReview => 'Review this proposal';
+
+  @override
+  String get hostProgrammeLodgingBoundedSearch =>
+      'The search reached its limit. Review this proposal before approval.';
+
+  @override
+  String get hostProgrammeLodgingRegenerate => 'Regenerate unlocked placements';
+
+  @override
+  String get hostProgrammeLodgingApprove => 'Approve proposal';
+
+  @override
+  String get hostProgrammeLodgingPublish => 'Publish rooms to guests';
+
+  @override
+  String get hostProgrammeLodgingParties => 'Room-sharing parties';
+
+  @override
+  String get hostProgrammeLodgingList => 'List';
+
+  @override
+  String get hostProgrammeLodgingMap => 'Floor map';
+
+  @override
+  String get hostProgrammeLodgingMove => 'Move party';
+
+  @override
+  String get hostProgrammeLodgingLocked => 'Locked';
+
+  @override
+  String get hostProgrammeLodgingProvisional => 'Exact room pending';
+
+  @override
+  String get hostProgrammeLodgingEmpty => 'No contracted rooms on this floor.';
+
+  @override
+  String hostProgrammeLodgingUnplaced({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count parties still need rooms.',
+      one: 'One party still needs a room.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostProgrammeLodgingSetup => 'Set up lodging';
+
+  @override
+  String get hostProgrammeLodgingEditSetup =>
+      'Edit dates, sharing and inventory';
+
+  @override
+  String get hostProgrammeLodgingDemand => 'Guests who need rooms';
+
+  @override
+  String get hostProgrammeLodgingSharingHint =>
+      'Invitation households and social groups do not confirm room sharing. Select and confirm each party explicitly.';
+
+  @override
+  String get hostProgrammeLodgingArrival => 'Arrival date (YYYY-MM-DD)';
+
+  @override
+  String get hostProgrammeLodgingDeparture => 'Checkout date (YYYY-MM-DD)';
+
+  @override
+  String get hostProgrammeLodgingBeds => 'Beds needed';
+
+  @override
+  String get hostProgrammeLodgingFeatures =>
+      'Functional features (comma separated)';
+
+  @override
+  String get hostProgrammeLodgingAddDemand => 'Keep these stay dates';
+
+  @override
+  String get hostProgrammeLodgingParty => 'Sharing party';
+
+  @override
+  String get hostProgrammeLodgingConfirmed => 'Guests have confirmed sharing';
+
+  @override
+  String get hostProgrammeLodgingAddParty => 'Keep this sharing party';
+
+  @override
+  String get hostProgrammeLodgingPriority => 'Room priority';
+
+  @override
+  String get hostProgrammeLodgingRoomType => 'Required room type';
+
+  @override
+  String get hostProgrammeLodgingInventory => 'Contracted inventory';
+
+  @override
+  String get hostProgrammeLodgingContract => 'Room block';
+
+  @override
+  String get hostProgrammeLodgingZone => 'Floor area or corridor';
+
+  @override
+  String get hostProgrammeLodgingBuilding => 'Building';
+
+  @override
+  String get hostProgrammeLodgingFloor => 'Floor';
+
+  @override
+  String get hostProgrammeLodgingWing => 'Wing';
+
+  @override
+  String get hostProgrammeLodgingRoomLabel =>
+      'Hotel room number (leave empty until released)';
+
+  @override
+  String get hostProgrammeLodgingOccupants => 'Verified occupant capacity';
+
+  @override
+  String get hostProgrammeLodgingAddInventory => 'Keep this inventory unit';
+
+  @override
+  String get hostProgrammeLodgingInventoryHint =>
+      'Verify beds, capacity and functional features with the hotel. A type-only unit keeps its identity while the physical room is pending.';
+
+  @override
+  String get hostProgrammeLodgingNesting => 'Nested social groups';
+
+  @override
+  String get hostProgrammeLodgingParents => 'Parent groups';
+
+  @override
+  String get hostProgrammeLodgingAddNesting => 'Keep this nesting';
+
+  @override
+  String get hostProgrammeLodgingAdoptions => 'Verify existing stays';
+
+  @override
+  String get hostProgrammeLodgingAdopt => 'Keep this verified stay link';
+
+  @override
+  String get hostProgrammeLodgingSaveSetup => 'Save setup and plan rooms';
+
+  @override
+  String get hostProgrammeLodgingAdd => 'Add new';
+
+  @override
+  String get hostProgrammeLodgingRemove => 'Remove selected item';
+
+  @override
+  String get hostProgrammeLodgingPinHotel => 'Pin to hotel';
+
+  @override
+  String get hostProgrammeLodgingPinRoom => 'Pin to room';
+
+  @override
+  String get hostProgrammeLodgingPinZone => 'Pin to floor area';
+
+  @override
+  String get hostProgrammeLodgingSaveHint =>
+      'Add dated demand, confirmed sharing choices and verified contracted inventory before planning.';
+
+  @override
+  String get hostProgrammeLodgingResources => 'Shared component rooms';
+
+  @override
+  String get hostProgrammeLodgingResourcesHint =>
+      'For a whole villa, select the same component identities used by its rooms so they cannot be allocated twice.';
+
+  @override
+  String get hostProgrammeLodgingVerified => 'Verified unchanged stay';
+
+  @override
+  String hostProgrammeLodgingConfirmHotel({required String hotel}) {
+    return 'Record hotel confirmation: $hotel';
+  }
+
+  @override
+  String hostProgrammeLodgingHotelConfirmed({required String hotel}) {
+    return 'Hotel confirmed: $hotel';
+  }
+
+  @override
+  String get hostProgrammeLodgingMembershipTitle => 'Review social memberships';
+
+  @override
+  String get hostProgrammeLodgingMembershipHint =>
+      'Lists suggest memberships. Choose the groups to include; saving records explicit exclusions too. These choices never create a room-sharing party.';
+
+  @override
+  String get hostProgrammeLodgingMembershipIncluded => 'Included';
+
+  @override
+  String get hostProgrammeLodgingMembershipExcluded => 'Excluded';
+
+  @override
+  String get hostProgrammeLodgingMembershipSuggested =>
+      'Suggestion awaiting review';
+
+  @override
+  String get hostProgrammeLodgingMembershipCanonical =>
+      'Existing membership; source not verified';
+
+  @override
+  String get hostProgrammeLodgingMembershipSave => 'Save membership choices';
+
+  @override
+  String get hostProgrammeLodgingMembershipExpired =>
+      'Access expired. Return and refresh before reviewing memberships.';
+
+  @override
+  String hostProgrammeLodgingMembershipEvidence({
+    required String group,
+    required String status,
+    required String source,
+  }) {
+    return '$group: $status · $source';
+  }
+
+  @override
   String get hostProgrammeCreateTitle => 'New programme';
 
   @override

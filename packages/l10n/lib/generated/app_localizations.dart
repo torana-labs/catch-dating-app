@@ -39848,6 +39848,436 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 guest placed} other{{count} guests placed}}'**
   String hostProgrammeRoomsPlaced({required int count});
 
+  /// Program operations copy: programsRoomsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Room board'**
+  String get hostProgrammeLodgingRoomBoard;
+
+  /// Program operations copy: programsRoomsRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh rooms'**
+  String get hostProgrammeLodgingRefresh;
+
+  /// Program workspace copy: programsGuestsGroupsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Groups'**
+  String get hostProgrammeLodgingGroups;
+
+  /// Program workspace copy: programsGuestsGroupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Group label'**
+  String get hostProgrammeLodgingGroup;
+
+  /// Program workspace copy: programsGuestsNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest name'**
+  String get hostProgrammeLodgingGuest;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay planner'**
+  String get hostProgrammeLodgingTitle;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan rooms around people, dates and verified needs.'**
+  String get hostProgrammeLodgingSubtitle;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add lodging dates, confirmed sharing parties and contracted rooms to start planning.'**
+  String get hostProgrammeLodgingSetupMissing;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review this proposal'**
+  String get hostProgrammeLodgingReview;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'The search reached its limit. Review this proposal before approval.'**
+  String get hostProgrammeLodgingBoundedSearch;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Regenerate unlocked placements'**
+  String get hostProgrammeLodgingRegenerate;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve proposal'**
+  String get hostProgrammeLodgingApprove;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish rooms to guests'**
+  String get hostProgrammeLodgingPublish;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Room-sharing parties'**
+  String get hostProgrammeLodgingParties;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'List'**
+  String get hostProgrammeLodgingList;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Floor map'**
+  String get hostProgrammeLodgingMap;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Move party'**
+  String get hostProgrammeLodgingMove;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get hostProgrammeLodgingLocked;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Exact room pending'**
+  String get hostProgrammeLodgingProvisional;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No contracted rooms on this floor.'**
+  String get hostProgrammeLodgingEmpty;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{One party still needs a room.} other{{count} parties still need rooms.}}'**
+  String hostProgrammeLodgingUnplaced({required int count});
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up lodging'**
+  String get hostProgrammeLodgingSetup;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit dates, sharing and inventory'**
+  String get hostProgrammeLodgingEditSetup;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests who need rooms'**
+  String get hostProgrammeLodgingDemand;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation households and social groups do not confirm room sharing. Select and confirm each party explicitly.'**
+  String get hostProgrammeLodgingSharingHint;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival date (YYYY-MM-DD)'**
+  String get hostProgrammeLodgingArrival;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout date (YYYY-MM-DD)'**
+  String get hostProgrammeLodgingDeparture;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Beds needed'**
+  String get hostProgrammeLodgingBeds;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Functional features (comma separated)'**
+  String get hostProgrammeLodgingFeatures;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep these stay dates'**
+  String get hostProgrammeLodgingAddDemand;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing party'**
+  String get hostProgrammeLodgingParty;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests have confirmed sharing'**
+  String get hostProgrammeLodgingConfirmed;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep this sharing party'**
+  String get hostProgrammeLodgingAddParty;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Room priority'**
+  String get hostProgrammeLodgingPriority;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Required room type'**
+  String get hostProgrammeLodgingRoomType;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Contracted inventory'**
+  String get hostProgrammeLodgingInventory;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Room block'**
+  String get hostProgrammeLodgingContract;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Floor area or corridor'**
+  String get hostProgrammeLodgingZone;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Building'**
+  String get hostProgrammeLodgingBuilding;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Floor'**
+  String get hostProgrammeLodgingFloor;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Wing'**
+  String get hostProgrammeLodgingWing;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel room number (leave empty until released)'**
+  String get hostProgrammeLodgingRoomLabel;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified occupant capacity'**
+  String get hostProgrammeLodgingOccupants;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep this inventory unit'**
+  String get hostProgrammeLodgingAddInventory;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify beds, capacity and functional features with the hotel. A type-only unit keeps its identity while the physical room is pending.'**
+  String get hostProgrammeLodgingInventoryHint;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Nested social groups'**
+  String get hostProgrammeLodgingNesting;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent groups'**
+  String get hostProgrammeLodgingParents;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep this nesting'**
+  String get hostProgrammeLodgingAddNesting;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify existing stays'**
+  String get hostProgrammeLodgingAdoptions;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep this verified stay link'**
+  String get hostProgrammeLodgingAdopt;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Save setup and plan rooms'**
+  String get hostProgrammeLodgingSaveSetup;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add new'**
+  String get hostProgrammeLodgingAdd;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove selected item'**
+  String get hostProgrammeLodgingRemove;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin to hotel'**
+  String get hostProgrammeLodgingPinHotel;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin to room'**
+  String get hostProgrammeLodgingPinRoom;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin to floor area'**
+  String get hostProgrammeLodgingPinZone;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add dated demand, confirmed sharing choices and verified contracted inventory before planning.'**
+  String get hostProgrammeLodgingSaveHint;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared component rooms'**
+  String get hostProgrammeLodgingResources;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'For a whole villa, select the same component identities used by its rooms so they cannot be allocated twice.'**
+  String get hostProgrammeLodgingResourcesHint;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified unchanged stay'**
+  String get hostProgrammeLodgingVerified;
+
+  /// Record an explicit received hotel confirmation for the currently approved room proposal. Does not contact or book a hotel.
+  ///
+  /// In en, this message translates to:
+  /// **'Record hotel confirmation: {hotel}'**
+  String hostProgrammeLodgingConfirmHotel({required String hotel});
+
+  /// Hotel confirmation recorded for this exact approved proposal.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel confirmed: {hotel}'**
+  String hostProgrammeLodgingHotelConfirmed({required String hotel});
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review social memberships'**
+  String get hostProgrammeLodgingMembershipTitle;
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Lists suggest memberships. Choose the groups to include; saving records explicit exclusions too. These choices never create a room-sharing party.'**
+  String get hostProgrammeLodgingMembershipHint;
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Included'**
+  String get hostProgrammeLodgingMembershipIncluded;
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Excluded'**
+  String get hostProgrammeLodgingMembershipExcluded;
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestion awaiting review'**
+  String get hostProgrammeLodgingMembershipSuggested;
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing membership; source not verified'**
+  String get hostProgrammeLodgingMembershipCanonical;
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Save membership choices'**
+  String get hostProgrammeLodgingMembershipSave;
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Access expired. Return and refresh before reviewing memberships.'**
+  String get hostProgrammeLodgingMembershipExpired;
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'{group}: {status} · {source}'**
+  String hostProgrammeLodgingMembershipEvidence({
+    required String group,
+    required String status,
+    required String source,
+  });
+
   /// Create programme top bar title.
   ///
   /// In en, this message translates to:
