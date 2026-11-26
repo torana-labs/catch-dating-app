@@ -1,9 +1,8 @@
 import * as admin from "firebase-admin";
-import {onCall, HttpsError, type CallableRequest} from
+import {HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
 import {journeyOf} from "../domain/organizers/organizerJourneySteps";
 import {requireAuth} from "../shared/auth";
-import {appCheckCallableOptions} from "../shared/callableOptions";
 import {isOrganizerManager} from "../shared/organizerHosts";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
@@ -207,5 +206,3 @@ export async function listMyOrganizerJourneysHandler(
   return result;
 }
 
-export const listMyOrganizerJourneys = onCall(appCheckCallableOptions,
-  (request) => listMyOrganizerJourneysHandler(request));

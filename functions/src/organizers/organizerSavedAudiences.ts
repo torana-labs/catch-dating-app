@@ -757,10 +757,6 @@ export const upsertOrganizerSavedAudience = onCall(
   appCheckCallableOptionsWithLimits(savedAudienceCallableLimits),
   (request) => upsertOrganizerSavedAudienceHandler(request),
 );
-export const listOrganizerSavedAudiences = onCall(
-  appCheckCallableOptionsWithLimits(savedAudienceCallableLimits),
-  (request) => listOrganizerSavedAudiencesHandler(request),
-);
 export const previewOrganizerSavedAudience = onCall(
   appCheckCallableOptionsWithLimits(savedAudienceCallableLimits),
   (request) => previewOrganizerSavedAudienceHandler(request),

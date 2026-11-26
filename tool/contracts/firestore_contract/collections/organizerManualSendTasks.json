@@ -14,7 +14,6 @@
   "write": "server only with deterministic idempotency and optimistic revisions",
   "exportedFunctions": [
     "prepareOrganizerManualSendTask",
-    "listOrganizerManualSendTasks",
     "validateOrganizerManualSendTaskLaunch",
     "openOrganizerManualSendTask",
     "markOrganizerManualSendTask",
