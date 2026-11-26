@@ -105,6 +105,13 @@ test("timings average over runs and validate", () => {
   assert.ok(validateTimings({defaultSeconds: 0, seconds: {b: 1, a: 2}}).length >= 2);
 });
 
+test("regenerate keeps a fallback value only for tools the logs do not cover", () => {
+  const fallback = {defaultSeconds: 3, seconds: {"a:one": 99, "c:three": 7}};
+  const built = buildTimings([{"a:one": 10, "b:two": 2}], {runIds: ["5"], fallback});
+  assert.deepEqual(built.seconds, {"a:one": 10, "b:two": 2, "c:three": 7});
+  assert.deepEqual(built.source.keptFromFallback, ["c:three"]);
+});
+
 test("ids, setup and regenerate work from the command line", () => {
   const script = path.join(import.meta.dirname, "tool_buckets.mjs");
   const ids = spawnSync(process.execPath, [script, "ids", "--bucket", "1"], {encoding: "utf8"});

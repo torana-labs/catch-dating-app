@@ -8,12 +8,14 @@
 //   node tool/ci/tool_buckets.mjs ids --bucket <n>        tool ids for bucket n (1-based), one per line
 //   node tool/ci/tool_buckets.mjs setup --bucket <n>      that bucket's CI setup requirements (JSON)
 //   node tool/ci/tool_buckets.mjs plan [--json]           every bucket's tools and estimated seconds
-//   node tool/ci/tool_buckets.mjs regenerate [--runs <id,...>] [--out <file>] <job-log>...
+//   node tool/ci/tool_buckets.mjs regenerate [--runs <id,...>] [--out <file>] [--fallback <file>] <job-log>...
 //
 // `regenerate` reads saved logs (files named <run-id>-<job>.log group by run) of full-matrix bucket jobs (the "Check tool
 // categories" step, timestamped GitHub log lines) and writes each tool's
 // seconds: the time from its "==> <tool-id>:" lines to the next such line,
-// summed per tool and averaged over the runs that ran it.
+// summed per tool and averaged over the runs that ran it. With --fallback, a
+// tool the logs do not cover (a log GitHub truncated, a tool that did not run)
+// keeps its seconds from that earlier timing file.
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -114,7 +116,7 @@ export function toolSecondsFromLog(text) {
 }
 
 /** Averages per-run tool seconds (each run = all its bucket logs) into a timing file. */
-export function buildTimings(runs, {runIds = []} = {}) {
+export function buildTimings(runs, {runIds = [], fallback = null} = {}) {
   const totals = new Map();
   for (const run of runs) {
     for (const [tool, value] of Object.entries(run)) {
@@ -124,13 +126,14 @@ export function buildTimings(runs, {runIds = []} = {}) {
       totals.set(tool, entry);
     }
   }
-  const seconds = Object.fromEntries([...totals.keys()].sort()
-    .map((tool) => [tool, Math.round((totals.get(tool).sum / totals.get(tool).count) * 10) / 10]));
+  const measured = new Map([...totals].map(([tool, {sum, count}]) => [tool, Math.round((sum / count) * 10) / 10]));
+  const kept = Object.entries(fallback?.seconds ?? {}).filter(([tool]) => !measured.has(tool));
+  const seconds = Object.fromEntries([...measured, ...kept].sort(([a], [b]) => a.localeCompare(b)));
   const values = Object.values(seconds).sort((a, b) => a - b);
   const median = values.length ? values[Math.floor(values.length / 2)] : 1;
   return {
     description: "Measured seconds per tool in the full Tools matrix; tool/ci/tool_buckets.mjs balances the buckets from it. Regenerate with `node tool/ci/tool_buckets.mjs regenerate`.",
-    source: {runs: runIds},
+    source: {runs: runIds, ...(kept.length > 0 ? {keptFromFallback: kept.map(([tool]) => tool)} : {})},
     defaultSeconds: Math.max(1, median),
     seconds,
   };
@@ -152,7 +155,7 @@ function bucketArg(args) {
 function main(argv) {
   const [command, ...args] = argv;
   if (command === "regenerate") {
-    const valueFlags = new Set(["--runs", "--out"]);
+    const valueFlags = new Set(["--runs", "--out", "--fallback"]);
     const logs = args.filter((arg, index) => !arg.startsWith("--") && !valueFlags.has(args[index - 1]));
     if (logs.length === 0) throw new Error("regenerate needs one or more job log files.");
     // Files named <run>-<anything>.log group into runs; other files form one run each.
@@ -164,7 +167,9 @@ function main(argv) {
     }
     const runIds = (argValue(args, "--runs") ?? [...byRun.keys()].join(",")).split(",").filter(Boolean);
     const out = argValue(args, "--out") ?? TIMINGS_PATH;
-    fs.writeFileSync(out, `${JSON.stringify(buildTimings([...byRun.values()], {runIds}), null, 2)}\n`);
+    const fallbackFile = argValue(args, "--fallback");
+    const fallback = fallbackFile ? readTimings(fallbackFile) : null;
+    fs.writeFileSync(out, `${JSON.stringify(buildTimings([...byRun.values()], {runIds, fallback}), null, 2)}\n`);
     console.log(`Wrote ${path.relative(process.cwd(), out)} from ${byRun.size} run(s).`);
     return;
   }
@@ -182,7 +187,7 @@ function main(argv) {
       }
     }
   } else {
-    throw new Error("Usage: tool_buckets.mjs ids|setup --bucket <n> | plan [--json] | regenerate [--runs <ids>] [--out <file>] <job-log>...");
+    throw new Error("Usage: tool_buckets.mjs ids|setup --bucket <n> | plan [--json] | regenerate [--runs <ids>] [--out <file>] [--fallback <file>] <job-log>...");
   }
 }
 
