@@ -1,7 +1,5 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_l10n/l10n.dart';
-import 'package:catch_platform/theme/activity_palette.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -21,37 +19,6 @@ Future<String?> showHostOrganizerSwitcherSheet({
       selectedOrganizerId: selectedOrganizerId,
     ),
   );
-}
-
-class HostOrganizerAvatar extends StatelessWidget {
-  const HostOrganizerAvatar({
-    super.key,
-    required this.organizer,
-    required this.size,
-    this.selected = false,
-  });
-
-  final Organizer organizer;
-  final double size;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final rawLogoUrl = organizer.logoPhotoUrl?.trim();
-    return CatchAvatar(
-      size: size,
-      name: organizer.name,
-      initials: CatchAvatar.initialsOf(organizer.name),
-      imageUrl: rawLogoUrl?.isNotEmpty == true ? rawLogoUrl : null,
-      colors: ActivityPalette.resolve(
-        context,
-        organizer.hostDefaults.primaryActivityKind,
-      ).avatarColors,
-      borderWidth: selected ? CatchStroke.underline : CatchStroke.hairline,
-      borderColor: selected ? t.ink : t.line2,
-    );
-  }
 }
 
 class HostOrganizerSwitcherSheet extends StatelessWidget {
