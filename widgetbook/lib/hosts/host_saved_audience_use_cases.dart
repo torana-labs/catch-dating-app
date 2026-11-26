@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_filter_options.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
+import 'package:catch_dating_app/hosts/forms/form_automation_editor.dart';
+import 'package:catch_dating_app/hosts/forms/form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,7 +32,7 @@ const _options = HostSavedAudienceFilterOptions(
 
 @widgetbook.UseCase(
   name: 'Acceptance automation editor',
-  type: HostAutomationRuleEditor,
+  type: HostFormAutomationEditor,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostAutomationEditorState(BuildContext context) => ProviderScope(
@@ -47,7 +48,7 @@ Widget hostAutomationEditorState(BuildContext context) => ProviderScope(
   child: SizedBox(
     width: WidgetbookPreviewLayout.wideContractWidth,
     height: WidgetbookPreviewLayout.hostEditorViewportHeight,
-    child: HostAutomationRuleEditor(
+    child: HostFormAutomationEditor(
       organizerId: 'preview-organizer',
       onSaved: () {},
       onCancel: () {},

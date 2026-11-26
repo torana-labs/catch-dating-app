@@ -7,7 +7,7 @@
       "lib/routing/consumer_router.dart",
       "lib/routing/host_router.dart"
     ],
-    "routeContractSha256": "d210e1abc5512e7b2935290755a4661d30babc3e92ce04e6dcf9d029cb64431d",
+    "routeContractSha256": "9e5a9e01e1c29feed239b2a10c6b499c11b01eea5f22a90eb9ae2f7a465beb44",
     "goRouteCount": 138,
     "shellBranchCount": 8,
     "enumRouteCount": 115,
@@ -824,8 +824,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostResponseOfferPreferencesScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostResponseOfferPreferencesRouteScreen(organizerId:_routeOrganizerQueryId(state)!,eventId:state.pathParameters['eventId']!,onBack:()=>hostWorkspaceBack(context,fallback:state.uri.replace(path:Routes.hostResponseOfferScreen.path.replaceAll(':responseId',Uri.encodeComponent(state.pathParameters['responseId']!))).toString()))",
-      "presentationTarget": "HostResponseOfferPreferencesRouteScreen",
+      "presentationExpression": "(context,state)=>HostOfferSettingsScreen(organizerId:_routeOrganizerQueryId(state)!,eventId:state.pathParameters['eventId']!,onBack:()=>hostWorkspaceBack(context,fallback:state.uri.replace(path:Routes.hostResponseOfferScreen.path.replaceAll(':responseId',Uri.encodeComponent(state.pathParameters['responseId']!))).toString()))",
+      "presentationTarget": "HostOfferSettingsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -842,8 +842,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostResponseQueryOfferPreferencesScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostResponseOfferPreferencesRouteScreen(organizerId:_routeOrganizerQueryId(state)!,eventId:state.pathParameters['eventId']!,onBack:()=>hostWorkspaceBack(context,fallback:state.uri.replace(path:Routes.hostResponseQueryOfferScreen.path.replaceAll(':formId',Uri.encodeComponent(state.pathParameters['formId']!))).toString()))",
-      "presentationTarget": "HostResponseOfferPreferencesRouteScreen",
+      "presentationExpression": "(context,state)=>HostOfferSettingsScreen(organizerId:_routeOrganizerQueryId(state)!,eventId:state.pathParameters['eventId']!,onBack:()=>hostWorkspaceBack(context,fallback:state.uri.replace(path:Routes.hostResponseQueryOfferScreen.path.replaceAll(':formId',Uri.encodeComponent(state.pathParameters['formId']!))).toString()))",
+      "presentationTarget": "HostOfferSettingsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1070,8 +1070,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostApplicationDetailScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostApplicationDetailScreen(organizerId:state.uri.queryParameters['organizerId']??'',applicationId:state.pathParameters['applicationId']!)",
-      "presentationTarget": "HostApplicationDetailScreen",
+      "presentationExpression": "(context,state)=>HostResponseScreen.application(organizerId:state.uri.queryParameters['organizerId']??'',applicationId:state.pathParameters['applicationId']!)",
+      "presentationTarget": "HostResponseScreen.application",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
