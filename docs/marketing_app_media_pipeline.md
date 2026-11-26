@@ -606,10 +606,6 @@ CI or grant merge/deployment authority. The producer and consumers preserve
 existing regression checks. Export alone does not publish a website or prove
 product/backend availability.
 
-CI also materializes the route inventory and only the generated region of the
-widget catalog in each complete source-preflight, Tools and Flutter analysis
-checkout using `tool/ci/generated_inventories.mjs`. It preserves authored catalog
-prose, component identities, fixtures, goldens and coverage decisions. A new route
-still requires its authored coverage decision. First-phase migration retains
-tracked outputs for existing local consumers; their eventual removal requires
-an owned handoff, not deletion of another task's files.
+The route inventory and the widget inventory are not committed: every check
+that reads one derives it from live source. A new route still requires its
+authored coverage decision.
