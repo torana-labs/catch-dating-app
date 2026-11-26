@@ -233,7 +233,13 @@ class _HostFollowerUpdateSheetState extends State<HostFollowerUpdateSheet> {
   Object? _error;
   bool _pending = false;
   bool _whatsapp = false;
-  late String _requestId = widget.requestIdFactory();
+  late String _requestId;
+
+  @override
+  void initState() {
+    super.initState();
+    _requestId = widget.requestIdFactory();
+  }
 
   @override
   void dispose() {
@@ -347,6 +353,39 @@ class _HostFollowerUpdateSheetState extends State<HostFollowerUpdateSheet> {
       });
     }
   }
+}
+
+/// Opens the follower update sheet and, once the callable accepts the
+/// post, confirms it (with the WhatsApp messages queued, if any). Returns
+/// true only after the post was accepted; dismissing returns false.
+Future<bool> showHostFollowerUpdateSheet({
+  required BuildContext context,
+  required int remainingQuota,
+  required String Function() requestIdFactory,
+  required HostFollowerUpdateSubmit onSubmitPost,
+  bool whatsappAvailable = false,
+}) async {
+  final posted = await showCatchBottomSheet<HostFollowerUpdatePosted>(
+    context: context,
+    builder: (_) => HostFollowerUpdateSheet(
+      remainingQuota: remainingQuota,
+      requestIdFactory: requestIdFactory,
+      whatsappAvailable: whatsappAvailable,
+      onSubmit: onSubmitPost,
+    ),
+  );
+  if (posted != null && context.mounted) {
+    final whatsapp = posted.response?.whatsapp;
+    showCatchNotice(
+      context,
+      whatsapp == null
+          ? context.l10n.hostsHostOrganizerToolsCatchbuttonPostedToFollowers
+          : context.l10n.hostFollowerUpdatePostedWhatsapp(
+              count: whatsapp.queuedCount,
+            ),
+    );
+  }
+  return posted != null;
 }
 
 /// What the follower update sheet pops once the callable accepted the post.

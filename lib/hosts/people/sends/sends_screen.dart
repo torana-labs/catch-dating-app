@@ -324,33 +324,22 @@ class _HostSendsScreenState extends ConsumerState<HostSendsScreen> {
     final organizerId = organizer.id;
     final whatsappAvailable = await _followerWhatsappAvailable(organizerId);
     if (!mounted || organizerId != _organizerId) return;
-    final posted = await showCatchBottomSheet<HostFollowerUpdatePosted>(
+    final posted = await showHostFollowerUpdateSheet(
       context: context,
-      builder: (_) => HostFollowerUpdateSheet(
-        remainingQuota: remainingQuota,
-        requestIdFactory: HostOrganizerPostController.generateRequestId,
-        whatsappAvailable: whatsappAvailable,
-        onSubmit: ({required requestId, required text, required whatsapp}) =>
-            ref
-                .read(hostOrganizerPostControllerProvider)
-                .createPost(
-                  organizerId: organizerId,
-                  requestId: requestId,
-                  text: text,
-                  whatsapp: whatsapp,
-                ),
-      ),
+      remainingQuota: remainingQuota,
+      requestIdFactory: HostOrganizerPostController.generateRequestId,
+      whatsappAvailable: whatsappAvailable,
+      onSubmitPost: ({required requestId, required text, required whatsapp}) =>
+          ref
+              .read(hostOrganizerPostControllerProvider)
+              .createPost(
+                organizerId: organizerId,
+                requestId: requestId,
+                text: text,
+                whatsapp: whatsapp,
+              ),
     );
-    if (!mounted || posted == null) return;
-    final whatsapp = posted.response?.whatsapp;
-    showCatchNotice(
-      context,
-      whatsapp == null
-          ? context.l10n.hostsHostOrganizerToolsCatchbuttonPostedToFollowers
-          : context.l10n.hostFollowerUpdatePostedWhatsapp(
-              count: whatsapp.queuedCount,
-            ),
-    );
+    if (!mounted || !posted) return;
     setState(() => _flow = null);
   }
 

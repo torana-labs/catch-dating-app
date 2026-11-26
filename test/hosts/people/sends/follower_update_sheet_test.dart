@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/organizers/data/organizer_callable_responses.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_follower_update_composer_sheet.dart';
+import 'package:catch_dating_app/hosts/people/sends/sends_sheets_body.dart';
 import 'package:catch_platform/theme/app_theme.dart';
-import 'package:catch_test_support/organizers_test_helpers.dart'
-    as organizer_test;
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,7 +15,6 @@ void main() {
     String? submitted;
     String? submittedRequestId;
     var requestSequence = 0;
-    final organizer = organizer_test.buildOrganizer(id: 'organizer-1');
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
@@ -27,9 +24,8 @@ void main() {
             builder: (context) => Scaffold(
               body: TextButton(
                 onPressed: () => unawaited(
-                  showHostFollowerUpdateComposer(
+                  showHostFollowerUpdateSheet(
                     context: context,
-                    organizer: organizer,
                     remainingQuota: 2,
                     requestIdFactory: () => 'request-${requestSequence++}',
                     onSubmitPost:
@@ -78,7 +74,6 @@ void main() {
     final requestIds = <String>[];
     var requestSequence = 0;
     var attempts = 0;
-    final organizer = organizer_test.buildOrganizer(id: 'organizer-1');
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
@@ -88,9 +83,8 @@ void main() {
             builder: (context) => Scaffold(
               body: TextButton(
                 onPressed: () => unawaited(
-                  showHostFollowerUpdateComposer(
+                  showHostFollowerUpdateSheet(
                     context: context,
-                    organizer: organizer,
                     remainingQuota: 2,
                     requestIdFactory: () => 'request-${requestSequence++}',
                     onSubmitPost:
@@ -149,7 +143,6 @@ void main() {
     tester,
   ) async {
     bool? sentOnWhatsapp;
-    final organizer = organizer_test.buildOrganizer(id: 'organizer-1');
     Future<void> open({required bool available}) async {
       await tester.pumpWidget(
         ProviderScope(
@@ -160,9 +153,8 @@ void main() {
               builder: (context) => Scaffold(
                 body: TextButton(
                   onPressed: () => unawaited(
-                    showHostFollowerUpdateComposer(
+                    showHostFollowerUpdateSheet(
                       context: context,
-                      organizer: organizer,
                       remainingQuota: 2,
                       requestIdFactory: () => 'request-1',
                       whatsappAvailable: available,
@@ -236,17 +228,15 @@ void main() {
   testWidgets('without a ready WhatsApp number the switch stays off', (
     tester,
   ) async {
-    final organizer = organizer_test.buildOrganizer(id: 'organizer-1');
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: HostFollowerUpdateComposerSheet(
-              organizer: organizer,
+            body: HostFollowerUpdateSheet(
               remainingQuota: 2,
               requestIdFactory: () => 'request-1',
-              onSubmitPost:
+              onSubmit:
                   ({
                     required requestId,
                     required text,
