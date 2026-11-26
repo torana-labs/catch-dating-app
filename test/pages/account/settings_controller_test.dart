@@ -44,6 +44,30 @@ void main() {
     expect(userRepository.updatedFields, {'prefsWeeklyDigest': true});
   });
 
+  test('profile answer switches write the inverted hide field', () async {
+    final userRepository = _SettingsUserProfileRepository();
+    final container = ProviderContainer(
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        userProfileRepositoryProvider.overrideWith((ref) => userRepository),
+      ],
+    );
+    addTearDown(container.dispose);
+    await _primeUidProvider(container);
+
+    await container
+        .read(settingsControllerProvider.notifier)
+        .savePreference(
+          preference: SettingsPreference.showReligion,
+          value: true,
+        );
+
+    expect(userRepository.updatedFields, {'prefsHideReligion': false});
+    expect(SettingsPreference.showDrinking.patch(false).toFieldsJson(), {
+      'prefsHideDrinking': true,
+    });
+  });
+
   test(
     'Cross Paths preference uses the private global-consent field',
     () async {
