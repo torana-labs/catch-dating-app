@@ -13,6 +13,7 @@
 // Usage (Main CI alert workflow): GH_TOKEN, GITHUB_REPOSITORY, RUN_ID set.
 import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
+import fs from "node:fs";
 import {fileURLToPath} from "node:url";
 import {REPORTING_LANES, REQUIRED_CI_JOB, laneOfJob} from "./required_ci_floor.mjs";
 import {MOBILE_BLOCK_JOBS} from "./golden_policy.mjs";
@@ -283,6 +284,74 @@ export function decideUncovered({uncovered, openIssue, reported = new Set(), cou
     {action: "open", title: ISSUE_TITLE, body: body + owedMarker([REQUIRED_CI_JOB]) + FOOTER};
 }
 
+/**
+ * The run-name of the Main CI alert run that handles CI run `runId`. It is
+ * also the durable record that the run was handled: the Scheduled run
+ * watchdog follows up a CI nightly that has no such run.
+ */
+export const alertRunTitle = (runId) => `Main CI alert for run ${runId}`;
+
+/**
+ * The CI run a Main CI alert run handles, and whether it should. A
+ * workflow_run wake handles its payload's run. A dispatch (the watchdog's
+ * follow-up of a CI nightly, whose completion fires no workflow_run because
+ * GITHUB_TOKEN dispatched it) names a run_id: that run is fetched and refused
+ * unless it is a completed CI nightly of main in this repository. Either way,
+ * a run an earlier alert run already handled successfully is not handled again.
+ *
+ * @param {object} input
+ * @param {string} input.event GITHUB_EVENT_NAME of the alert run.
+ * @param {object} [input.payloadRun] github.event.workflow_run, for a workflow_run wake.
+ * @param {string} [input.inputRunId] inputs.run_id, for a dispatch.
+ * @param {object} [input.fetchedRun] The dispatched run_id's run, as the runs API returns it.
+ * @param {string} input.repository owner/name.
+ * @param {Array<object>} input.alertRuns Recent Main CI alert runs.
+ * @param {number} input.selfRunId This alert run's id.
+ */
+export function resolveAlertRun({event, payloadRun, inputRunId, fetchedRun, repository, alertRuns, selfRunId}) {
+  let run;
+  if (event === "workflow_run") {
+    run = payloadRun;
+  } else {
+    assert.equal(event, "workflow_dispatch", `Unexpected event ${event}`);
+    assert.match(String(inputRunId ?? ""), /^[1-9][0-9]*$/u, "run_id must be a CI run id");
+    run = fetchedRun;
+    assert.equal(String(run?.id), String(inputRunId), "The fetched run is not the requested run");
+    const ours = run.repository?.full_name === repository && run.head_repository?.full_name === repository &&
+      String(run.path ?? "").split("@")[0] === ".github/workflows/ci.yml";
+    assert.ok(ours && run.head_branch === "main" && isNightlyRun(run),
+      `Refused: run ${inputRunId} is not a CI nightly of main in ${repository}`);
+    assert.equal(run.status, "completed", `Refused: run ${inputRunId} has not completed`);
+  }
+  assert.ok(Number.isSafeInteger(Number(run?.id)), "No CI run to handle");
+  const handled = alertRuns.find((candidate) => Number(candidate.id) !== Number(selfRunId) &&
+    candidate.display_title === alertRunTitle(run.id) && candidate.conclusion === "success");
+  return {proceed: !handled, reason: handled ? `alert run ${handled.id} already handled run ${run.id}` : "",
+    runId: String(run.id), event: run.event, nightly: isNightlyRun(run), conclusion: run.conclusion ?? "",
+    headSha: run.head_sha ?? "", headBranch: run.head_branch ?? ""};
+}
+
+/** --resolve: writes resolveAlertRun's answer to GITHUB_OUTPUT for the workflow's jobs. */
+function resolveMain() {
+  const repository = process.env.GITHUB_REPOSITORY;
+  assert.match(repository ?? "", /^[\w.-]+\/[\w.-]+$/u, "GITHUB_REPOSITORY is required");
+  const event = process.env.GITHUB_EVENT_NAME;
+  const payload = process.env.GITHUB_EVENT_PATH ? JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, "utf8")) : {};
+  const inputRunId = process.env.INPUT_RUN_ID;
+  const fetchedRun = event === "workflow_dispatch" && /^[1-9][0-9]*$/u.test(inputRunId ?? "") ?
+    JSON.parse(gh(["api", `repos/${repository}/actions/runs/${inputRunId}`])) : null;
+  const alertRuns = JSON.parse(gh(["api", `repos/${repository}/actions/workflows/main-red-alert.yml/runs?per_page=100`]))
+    .workflow_runs ?? [];
+  const target = resolveAlertRun({event, payloadRun: payload.workflow_run, inputRunId, fetchedRun, repository, alertRuns,
+    selfRunId: Number(process.env.GITHUB_RUN_ID)});
+  console.log(target.proceed ? `Handling run ${target.runId} (${target.event})` : `Skipping: ${target.reason}`);
+  if (process.env.GITHUB_OUTPUT) {
+    fs.appendFileSync(process.env.GITHUB_OUTPUT, [`proceed=${target.proceed}`, `run_id=${target.runId}`,
+      `event=${target.event}`, `nightly=${target.nightly}`, `conclusion=${target.conclusion}`,
+      `head_sha=${target.headSha}`, `head_branch=${target.headBranch}`].join("\n") + "\n");
+  }
+}
+
 function gh(args, input) {
   const result = spawnSync("gh", args, {encoding: "utf8", input, maxBuffer: 32 * 1024 * 1024});
   assert.equal(result.status, 0, result.stderr || `gh ${args.join(" ")} failed`);
@@ -397,4 +466,7 @@ function floorExit(repository, issues, alertOpen) {
   console.log(`Sprint floor exit: ${decision.action}${decision.reason ? ` (${decision.reason})` : ""}`);
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) main();
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  if (process.argv.includes("--resolve")) resolveMain();
+  else main();
+}

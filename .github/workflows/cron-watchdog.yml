@@ -14,6 +14,10 @@ name: Scheduled run watchdog
 # watches (no slot started from 01:47 to 04:47 UTC on 23 Nov 2026); the records
 # and the concurrency group keep the extra runs from acting twice. An
 # occurrence from before a workflow reached main is not owed.
+# It also follows up each completed CI nightly that no Main CI alert run has
+# handled, by dispatching main-red-alert.yml with that run's run_id: GITHUB_TOKEN
+# dispatched the nightly, so its completion wakes no workflow (owner decision,
+# 26 Nov 2026). That is the only other workflow it may dispatch.
 # Logic and tests: tool/ci/cron_watchdog.mjs. Operator guide:
 # docs/release_operations.md, "Scheduled run watchdog".
 
