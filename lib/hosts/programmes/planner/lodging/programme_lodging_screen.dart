@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/contexts/programmes/data/program_lodging_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_projection_lifetime.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_board.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_setup.dart';

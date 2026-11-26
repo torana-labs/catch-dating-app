@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:catch_dating_app/contexts/programmes/data/program_lodging_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_board.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_review.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_setup.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/lodging/programme_lodging_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/lodging/programme_lodging_state.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';

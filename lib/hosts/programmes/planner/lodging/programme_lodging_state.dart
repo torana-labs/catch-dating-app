@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/contexts/programmes/data/program_lodging_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_review.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_setup.dart';
 import 'package:flutter/foundation.dart';
 
 /// The stay planner at one moment: the private lodging setup read through

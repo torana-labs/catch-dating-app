@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_lodging_providers.dart';
-import 'package:catch_dating_app/contexts/programmes/data/program_lodging_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_projection_lifetime.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_review.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_setup.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/lodging/programme_lodging_screen.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_exception.dart';

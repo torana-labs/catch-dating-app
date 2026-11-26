@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/contexts/programmes/data/program_lodging_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_setup.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_l10n/l10n.dart';
