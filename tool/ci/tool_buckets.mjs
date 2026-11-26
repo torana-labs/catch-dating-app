@@ -68,32 +68,63 @@ export function sharedCommandGroups(tools) {
   return [...groups.values()];
 }
 
+// Median seconds each optional bucket setup step costs (full-matrix bucket
+// jobs, 24 Nov 2026): setup-flutter including its post step, flutter pub get,
+// root npm ci, Functions npm ci, the Playwright browser and ripgrep. Node and
+// the checkout are common to every bucket. The cached contracts step installs
+// the Functions dependencies itself when they are missing, so functions-npm
+// costs little extra.
+export const SETUP_SECONDS = Object.freeze({
+  flutter: 30, "flutter-pub": 4, "root-npm": 31, "functions-npm": 5, playwright: 9, ripgrep: 1, node: 0,
+});
+
+function setupSeconds(setup) {
+  return setup.reduce((sum, requirement) => sum + (SETUP_SECONDS[requirement] ?? 0), 0);
+}
+
 /**
- * Longest-first greedy assignment over shared-command groups: groups sorted by
- * seconds (then first tool id) go one by one to the bucket with the least load
- * so far (lowest index on a tie). Each bucket lists its tools in manifest
- * order. Deterministic for the same inputs.
+ * Longest-first greedy assignment over shared-command groups, counting each
+ * bucket's setup as well as its checks: groups sorted by seconds (then first
+ * tool id) go one by one to the bucket whose finish (setup it would need plus
+ * checks) stays lowest, the lowest index on a tie. Tools that need the same
+ * setup therefore gather, and a bucket without Flutter or root npm tools skips
+ * those steps. Each bucket lists its tools in manifest order. Deterministic for
+ * the same inputs.
  */
 export function assignBuckets({tools, timings, count = BUCKET_COUNT}) {
   if (!Number.isInteger(count) || count < 1) throw new Error("Bucket count must be a positive integer.");
   const secondsOf = (tool) => timings.seconds[tool.id] ?? timings.defaultSeconds;
   const order = new Map(tools.map((tool, index) => [tool.id, index]));
-  const buckets = Array.from({length: count}, () => ({seconds: 0, tools: []}));
+  const buckets = Array.from({length: count}, () => ({seconds: 0, tools: [], setup: new Set()}));
   const groups = sharedCommandGroups(tools).map((members) => ({
-    members, seconds: members.reduce((sum, tool) => sum + secondsOf(tool), 0), key: members[0].id}));
+    members,
+    seconds: members.reduce((sum, tool) => sum + secondsOf(tool), 0),
+    setup: projectToolCiRequirements(members).setup,
+    key: members[0].id,
+  }));
   groups.sort((a, b) => b.seconds - a.seconds || a.key.localeCompare(b.key));
+  const finishWith = (bucket, group) =>
+    bucket.seconds + group.seconds + setupSeconds([...new Set([...bucket.setup, ...group.setup])]);
   for (const group of groups) {
-    const target = buckets.reduce((best, bucket) => (bucket.seconds < best.seconds ? bucket : best), buckets[0]);
+    let target = buckets[0];
+    for (const bucket of buckets.slice(1)) {
+      if (finishWith(bucket, group) < finishWith(target, group)) target = bucket;
+    }
     target.seconds += group.seconds;
     target.tools.push(...group.members);
+    for (const requirement of group.setup) target.setup.add(requirement);
   }
   for (const bucket of buckets) bucket.tools.sort((a, b) => order.get(a.id) - order.get(b.id));
-  return buckets.map((bucket, index) => ({
-    bucket: index + 1,
-    seconds: Math.round(bucket.seconds),
-    toolIds: bucket.tools.map((tool) => tool.id),
-    setup: projectToolCiRequirements(bucket.tools).setup,
-  }));
+  return buckets.map((bucket, index) => {
+    const setup = projectToolCiRequirements(bucket.tools).setup;
+    return {
+      bucket: index + 1,
+      seconds: Math.round(bucket.seconds),
+      setupSeconds: setupSeconds(setup),
+      toolIds: bucket.tools.map((tool) => tool.id),
+      setup,
+    };
+  });
 }
 
 /** Rejects a timing file that is not the shape regenerate writes. */
@@ -223,7 +254,7 @@ function main(argv) {
       console.log(JSON.stringify(buckets, null, 2));
     } else {
       for (const bucket of buckets) {
-        console.log(`bucket ${bucket.bucket}: ${bucket.toolIds.length} tools, about ${(bucket.seconds / 60).toFixed(1)} min; setup ${bucket.setup.join(", ")}`);
+        console.log(`bucket ${bucket.bucket}: ${bucket.toolIds.length} tools, checks about ${(bucket.seconds / 60).toFixed(1)} min + optional setup ${bucket.setupSeconds} s; setup ${bucket.setup.join(", ")}`);
       }
     }
   } else {
