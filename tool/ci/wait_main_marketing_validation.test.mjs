@@ -272,6 +272,15 @@ test("a full run of main validates a head whose own change ran no website valida
   }
 });
 
+test("the dispatched nightly, titled CI nightly, is a full run of main; that title on any other event is refused", async () => {
+  const nightly = {...fullRun, name: "CI nightly", display_title: "CI nightly"};
+  const result = await waitMainMarketingValidation(fixture({results: skippedWebsite, fullRuns: [nightly],
+    queueRuns: [queueRun], queueResults: [queueJob(32, "marketing", "skipped"), queueJob(33, "capture-freshness", "skipped")]}));
+  assert.deepEqual([result.validated, result.sourceCiRunId, result.sourceCiEvent], [true, fullRun.id, "workflow_dispatch"]);
+  assert.throws(() => selectSameSourceRun({runs: [{...run, name: "CI nightly"}], canonical, repository, sourceSha}),
+    /invalid workflow, repository, or attempt identity/u);
+});
+
 test("a full run's validation outranks the queue run's captures for an app-only head", async () => {
   // The queue run rendered fresh captures but, with no website change, ran no Marketing validation.
   const captureOnly = [queueJob(32, "marketing", "skipped"), queueJob(33, jobs[1].name)];

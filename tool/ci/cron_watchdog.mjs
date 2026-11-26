@@ -29,6 +29,7 @@
 import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
+import {NIGHTLY_FROM_HOUR, isNightlyRun} from "./ci_nightly.mjs";
 
 export const MISSED_TITLE = "Scheduled run missed";
 export const MAIN_RED_TITLE = "Main CI is red";
@@ -43,8 +44,9 @@ const FOOTER = "\n\n---\n_Posted by the Scheduled run watchdog workflow (tool/ci
 /**
  * The watched schedules. `dispatch` is the dev-only run the watchdog starts
  * itself; `ask` is the prod run it only reports, with the command for the
- * owner; `issue` is where it reports. Each cron must match the workflow's own
- * `schedule` (a test checks it).
+ * owner; `issue` is where it reports. Each cron must match the `schedule` of
+ * `scheduleIn`, or else of the workflow itself (a test checks it). `counts`
+ * says which runs of the workflow stand in for the schedule.
  */
 export const TARGETS = Object.freeze([
   {
@@ -69,7 +71,15 @@ export const TARGETS = Object.freeze([
     id: "nightly-ci",
     name: "CI (nightly)",
     workflow: "ci.yml",
+    // Since 26 Nov 2026 ci-nightly.yml holds the cron and dispatches ci.yml as
+    // the nightly once per UTC day, from 02:00 (tool/ci/ci_nightly.mjs).
+    scheduleIn: "ci-nightly.yml",
     cron: "23 2 * * *",
+    dailyFrom: NIGHTLY_FROM_HOUR,
+    // Only the nightly counts: not a push run, nor another dispatch of ci.yml.
+    counts: isNightlyRun,
+    // A missed nightly is backfilled with a full run, as before; only
+    // ci-nightly.yml dispatches the nightly itself.
     dispatch: {full: "true"},
     nightly: true,
     issue: MAIN_RED_TITLE,
@@ -181,8 +191,8 @@ export function decide({now, graceHours, repository, runs, records, onMainBy = {
       Math.min(expected, Date.UTC(...utcDay(expected), target.dailyFrom));
     const events = target.dailyFrom === undefined ? ["schedule", "workflow_dispatch"] :
       ["schedule", "workflow_dispatch", "workflow_run"];
-    const started = (runs[target.id] ?? []).some((run) => events.includes(run.event) &&
-      Date.parse(run.created_at) >= from);
+    const counts = target.counts ?? ((run) => events.includes(run.event));
+    const started = (runs[target.id] ?? []).some((run) => counts(run) && Date.parse(run.created_at) >= from);
     if (onMainBy[target.id] === false) {
       checks.push({target: target.id, expected: expectedIso, status: "not_scheduled_yet"});
       continue;
@@ -273,7 +283,7 @@ function main() {
     // existed then; none means the workflow was added later.
     const until = new Date(expectedRun(target.cron, args.now, graceHours)).toISOString();
     onMainBy[target.id] = JSON.parse(gh(["api",
-      `repos/${repository}/commits?sha=main&path=.github/workflows/${target.workflow}&until=${until}&per_page=1`])).length > 0;
+      `repos/${repository}/commits?sha=main&path=.github/workflows/${target.scheduleIn ?? target.workflow}&until=${until}&per_page=1`])).length > 0;
     runs[target.id] = target.id === args.assumeMissing ? [] : JSON.parse(gh(["api",
       `repos/${repository}/actions/workflows/${target.workflow}/runs?branch=main&created=%3E%3D${from}&per_page=100`]))
       .workflow_runs ?? [];

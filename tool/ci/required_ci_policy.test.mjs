@@ -198,7 +198,8 @@ test("the semantic gates block every merge-queue entry, the nightly and an unpro
   // Every queue entry, the nightly, a non-draft pull request and a main push
   // without queue proof; never plan-selected.
   assert.match(job, /producer_attempt == format\('\{0\}', github\.run_attempt\)/u);
-  assert.match(job, /github\.event_name == 'merge_group' \|\| github\.event_name == 'schedule'/u);
+  // The nightly is ci-nightly.yml's dispatch with `nightly` set (26 Nov 2026).
+  assert.match(job, /github\.event_name == 'merge_group' \|\| \(github\.event_name == 'workflow_dispatch' && inputs\.nightly\)/u);
   assert.match(job, /github\.event_name == 'pull_request' && !github\.event\.pull_request\.draft/u);
   assert.match(job, /github\.event_name == 'push' && !needs\.plan\.outputs\.queue_verified_run/u);
   assert.doesNotMatch(job, /needs\.plan\.outputs\.(?!producer_attempt|queue_verified_run)/u);
@@ -219,7 +220,7 @@ test("the semantic gates block every merge-queue entry, the nightly and an unpro
   };
   const blocking = {
     "merge-queue entry": {EVENT_NAME: "merge_group"},
-    "nightly": {EVENT_NAME: "schedule"},
+    "nightly": {EVENT_NAME: "workflow_dispatch", NIGHTLY: "true"},
     "main push with no queue proof": {EVENT_NAME: "push", GITHUB_REF: "refs/heads/main", QUEUE_RUN: ""},
   };
   for (const [label, env] of Object.entries(blocking)) {
@@ -237,4 +238,6 @@ test("the semantic gates block every merge-queue entry, the nightly and an unpro
   // even when a gate fails; a skipped draft run passes too.
   passed(run("Require every selected lane", withGate("success", {})));
   passed(run("Require every selected lane", withGate("skipped", {})));
+  // Another dispatch (full or base_sha) is not the nightly, so a skipped gate job passes.
+  passed(run("Require every selected lane", withGate("skipped", {EVENT_NAME: "workflow_dispatch", NIGHTLY: "false"})));
 });

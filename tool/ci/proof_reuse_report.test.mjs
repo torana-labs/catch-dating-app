@@ -4,7 +4,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import {MISS_TITLE, SCHEMA, buildDaily, laneSeconds, missBody, newMisses, summaryMarkdown} from "./proof_reuse_report.mjs";
+import {GH_ATTEMPTS, MISS_TITLE, SCHEMA, buildDaily, laneSeconds, missBody, newMisses, summaryMarkdown, transientGhFailure,
+  withRetry} from "./proof_reuse_report.mjs";
 
 const fixtures = new URL("./fixtures/proof-reuse-daily/", import.meta.url).pathname;
 const input = JSON.parse(fs.readFileSync(path.join(fixtures, "input.json"), "utf8"));
@@ -84,7 +85,7 @@ test("the summary states runner time and every compared lane", () => {
 });
 
 // The real script against a fake gh serving the fixture day: runs, artifacts, jobs and the miss issue.
-function runCli(t, {openIssue = null, comments = []} = {}) {
+function runCli(t, {openIssue = null, comments = [], flaky = []} = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "proof-reuse-daily-"));
   t.after(() => fs.rmSync(root, {recursive: true, force: true}));
   const zips = {};
@@ -95,7 +96,9 @@ function runCli(t, {openIssue = null, comments = []} = {}) {
     zips[run] = path.join(dir, "report.zip");
     assert.equal(spawnSync("zip", ["-q", "-j", zips[run], path.join(dir, "proof-reuse-shadow.json")]).status, 0);
   }
-  const state = {runs: input.runs, jobs: input.jobs, zips, openIssue, comments, posts: path.join(root, "posts.jsonl")};
+  // `flaky` endpoint patterns answer HTTP 502 the first time they are read.
+  const state = {runs: input.runs, jobs: input.jobs, zips, openIssue, comments, posts: path.join(root, "posts.jsonl"),
+    flaky, failed: path.join(root, "failed.txt")};
   const bin = path.join(root, "bin");
   fs.mkdirSync(bin);
   fs.writeFileSync(path.join(bin, "gh"), `#!/usr/bin/env node
@@ -105,6 +108,13 @@ const args = process.argv.slice(2);
 const endpoint = args.find((arg) => arg.startsWith("repos/"));
 const page = (value) => console.log(JSON.stringify(args.includes("--slurp") ? [value] : value));
 let found;
+const flaky = state.flaky.find((pattern) => endpoint && endpoint.includes(pattern));
+const failedBefore = fs.existsSync(state.failed) ? fs.readFileSync(state.failed, "utf8").split("\\n") : [];
+if (flaky && !failedBefore.includes(endpoint)) {
+  fs.appendFileSync(state.failed, endpoint + "\\n");
+  process.stderr.write("gh: Server Error (HTTP 502)\\n");
+  process.exit(1);
+}
 if (args.includes("POST")) {
   const body = fs.readFileSync(0, "utf8");
   fs.appendFileSync(state.posts, JSON.stringify({endpoint, title: args.find((arg) => arg.startsWith("title=")) ?? null, body}) + "\\n");
@@ -131,10 +141,11 @@ if (args.includes("POST")) {
   const result = spawnSync(process.execPath, [new URL("./proof_reuse_report.mjs", import.meta.url).pathname,
     "--date", "2026-11-22", "--out", out], {encoding: "utf8", env: {...process.env,
     PATH: `${bin}${path.delimiter}${process.env.PATH}`, GITHUB_REPOSITORY: "owner/repo", GITHUB_RUN_ID: "9000",
-    GITHUB_SHA: input.source.sha, GITHUB_STEP_SUMMARY: summary, GITHUB_OUTPUT: output}});
+    GITHUB_SHA: input.source.sha, GITHUB_STEP_SUMMARY: summary, GITHUB_OUTPUT: output, PROOF_REUSE_RETRY_BASE_MS: "1"}});
   assert.equal(result.status, 0, result.stderr);
   const posts = fs.existsSync(state.posts) ? fs.readFileSync(state.posts, "utf8").trim().split("\n").map((line) => JSON.parse(line)) : [];
-  return {daily: JSON.parse(fs.readFileSync(path.join(out, "proof-reuse-daily-2026-11-22.json"), "utf8")),
+  const failed = fs.existsSync(state.failed) ? fs.readFileSync(state.failed, "utf8").trim().split("\n") : [];
+  return {failed, daily: JSON.parse(fs.readFileSync(path.join(out, "proof-reuse-daily-2026-11-22.json"), "utf8")),
     log: result.stdout, posts, summary: fs.readFileSync(summary, "utf8"), output: fs.readFileSync(output, "utf8")};
 }
 
@@ -160,4 +171,43 @@ test("the script comments on the open miss issue, and only with misses not yet p
   const posted = runCli(t, {openIssue, comments: [{body: "<!-- proof-reuse-miss 502:1:contracts -->\n<!-- proof-reuse-miss 504:1:operations -->"}]});
   assert.match(posted.log, /miss issue: already_posted/u);
   assert.deepEqual(posted.posts, []);
+});
+
+
+test("an API read that GitHub answers 5xx is retried, up to three attempts with backoff; nothing else is", () => {
+  const answers = (...list) => {
+    const calls = [];
+    return {calls, call: () => { calls.push(1); return list[calls.length - 1]; }};
+  };
+  const ok = {status: 0, stdout: "{}", stderr: ""};
+  const bad = (code) => ({status: 1, stdout: "", stderr: `gh: Server Error (HTTP ${code})\n`});
+  const waits = [];
+  const sleep = (ms) => waits.push(ms);
+  let run = answers(bad(502), bad(503), ok);
+  assert.equal(withRetry(run.call, {baseMs: 100, sleep}), ok);
+  assert.deepEqual([run.calls.length, waits], [3, [100, 200]]);
+  // Three 5xx in a row: the last failure is returned for the caller to report.
+  waits.length = 0;
+  run = answers(bad(500), bad(502), bad(504), ok);
+  assert.deepEqual(withRetry(run.call, {baseMs: 100, sleep}), bad(504));
+  assert.deepEqual([run.calls.length, waits, GH_ATTEMPTS], [3, [100, 200], 3]);
+  // A 4xx or any other failure is not transient: no retry, no wait.
+  waits.length = 0;
+  for (const failure of [bad(404), {status: 1, stdout: "", stderr: "gh: Not Found (HTTP 404)"}, {status: 1, stderr: "spawn gh ENOENT"}]) {
+    run = answers(failure, ok);
+    assert.equal(withRetry(run.call, {baseMs: 100, sleep}), failure);
+    assert.equal(run.calls.length, 1);
+  }
+  assert.deepEqual(waits, []);
+  assert.equal(transientGhFailure("gh: Bad Gateway (HTTP 502)"), true);
+  assert.equal(transientGhFailure("HTTP 5020 bytes"), false);
+  assert.equal(transientGhFailure(undefined), false);
+});
+
+test("the script survives a 502 on the runs listing and on a run's jobs, and writes the same day", (t) => {
+  const {daily, failed} = runCli(t, {flaky: ["/runs?event=merge_group", "/jobs"]});
+  assert.ok(failed.some((endpoint) => endpoint.includes("/runs?event=merge_group")), "the runs listing failed once");
+  assert.ok(failed.some((endpoint) => endpoint.includes("/jobs")), "a jobs read failed once");
+  const expected = fixtureDaily();
+  assert.deepEqual({...daily, generatedAt: null}, {...expected, generatedAt: null});
 });
