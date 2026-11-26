@@ -129,22 +129,19 @@ class _HostResponsesQueryEditorState extends State<HostResponsesQueryEditor> {
     return CatchSheet.standard(
       title: l10n.hostResponseQueryEditorTitle,
       footer: CatchStack(
-        direction: CatchStackDirection.row,
         gap: CatchStackGap.g8,
-        equal: true,
         children: [
-          CatchButton(
-            key: const ValueKey<String>('response-query-reset'),
-            label: l10n.hostFiltersResetAll,
-            variant: CatchButtonVariant.secondary,
-            fullWidth: true,
-            onPressed: () => setState(() => _root = _rootOf(null)),
-          ),
-          CatchButton(
+          CatchButton.sheet(
             key: const ValueKey<String>('response-query-apply'),
             label: l10n.hostResponseQueryApply,
-            fullWidth: true,
+            role: CatchButtonEmphasis.commit,
             onPressed: widget.fields.isEmpty ? null : _apply,
+          ),
+          CatchButton.sheet(
+            key: const ValueKey<String>('response-query-reset'),
+            label: l10n.hostFiltersResetAll,
+            role: CatchButtonEmphasis.alternative,
+            onPressed: () => setState(() => _root = _rootOf(null)),
           ),
         ],
       ),

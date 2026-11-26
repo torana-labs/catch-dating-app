@@ -67,125 +67,127 @@ class HostResponsesFilterSheet extends StatelessWidget {
                 when selected <= version.published - hostResponsesVersionChips)
               selected,
           ];
-    return CatchSheet.standard(
+    return CatchSheet.filter(
       title: l10n.hostCustomersFilters,
-      footer: CatchButton(
+      closeLabel: l10n.hostSheetClose,
+      onClose: () => Navigator.of(context).maybePop(),
+      trailing: CatchButton(
         key: const ValueKey<String>('host-responses-filters-reset'),
         label: l10n.hostFiltersResetAll,
-        variant: CatchButtonVariant.secondary,
-        fullWidth: true,
+        variant: CatchButtonVariant.quiet,
+        size: CatchButtonSize.md,
         onPressed: onReset,
       ),
       child: CatchStack(
-        gap: CatchStackGap.g24,
+        gap: CatchStackGap.g8,
         children: [
           if (version != null)
-            CatchSection(
+            CatchSection.choiceGroup(
               title: l10n.hostFormsResponsesVersionTitle,
-              dividers: CatchSectionPlacement.none,
-              children: [
-                CatchStack(
-                  direction: CatchStackDirection.row,
-                  gap: CatchStackGap.g8,
-                  wrap: true,
-                  children: [
-                    CatchChip.choice(
-                      key: const ValueKey<String>('response-version-all'),
-                      label: l10n.hostFormsResponsesAllVersions,
-                      selected: version.selected == null,
-                      mode: CatchChipMode.single,
-                      size: CatchChipSize.sm,
-                      onPressed: () => onVersion(null),
-                    ),
-                    for (final number in numbers)
-                      CatchChip.choice(
-                        key: ValueKey<String>('response-version-$number'),
-                        label: l10n.hostFormsResponsesVersion(version: number),
-                        selected: version.selected == number,
-                        mode: CatchChipMode.single,
-                        size: CatchChipSize.sm,
-                        onPressed: () => onVersion(number),
-                      ),
-                  ],
-                ),
-                if (version.published > hostResponsesVersionChips)
-                  CatchFieldLanes.single(
-                    child: CatchField.input(
-                      key: const ValueKey<String>('response-version-number'),
-                      copy: catchFieldCopy(l10n),
-                      title: l10n.hostFormsResponsesOlderVersion,
-                      helperText: l10n.hostFormsResponsesOlderVersionHelp(
-                        version: version.published,
-                      ),
-                      keyboardType: TextInputType.number,
-                      maxLength: 7,
-                      contractExemption:
-                          'A published version number, bounded by the form '
-                          'version the server reports.',
-                      onSubmitted: (value) {
-                        final number = int.tryParse(value.trim());
-                        if (number == null ||
-                            number < 1 ||
-                            number > version.published) {
-                          return;
-                        }
-                        onVersion(number);
-                      },
-                    ),
-                  ),
-              ],
-            ),
-          if (version == null || version.selected != null)
-            for (final option in options)
-              CatchSection(
-                key: ValueKey<String>('response-filter-${option.questionId}'),
-                title: option.label,
-                dividers: CatchSectionPlacement.none,
+              first: true,
+              child: CatchStack(
                 children: [
                   CatchStack(
                     direction: CatchStackDirection.row,
                     gap: CatchStackGap.g8,
                     wrap: true,
                     children: [
-                      for (final MapEntry(key: value, value: label)
-                          in option.options.entries)
+                      CatchChip.choice(
+                        key: const ValueKey<String>('response-version-all'),
+                        label: l10n.hostFormsResponsesAllVersions,
+                        selected: version.selected == null,
+                        mode: CatchChipMode.single,
+                        size: CatchChipSize.sm,
+                        onPressed: () => onVersion(null),
+                      ),
+                      for (final number in numbers)
                         CatchChip.choice(
-                          key: ValueKey<String>(
-                            'response-filter-${option.questionId}-$value',
+                          key: ValueKey<String>('response-version-$number'),
+                          label: l10n.hostFormsResponsesVersion(
+                            version: number,
                           ),
-                          label: label,
-                          selected:
-                              answers[option.questionId]?.contains(value) ??
-                              false,
-                          mode: CatchChipMode.multiple,
+                          selected: version.selected == number,
+                          mode: CatchChipMode.single,
                           size: CatchChipSize.sm,
-                          onPressed:
-                              !answers.containsKey(option.questionId) &&
-                                  answers.length >= maxQuestions
-                              ? null
-                              : () {
-                                  final chosen = {
-                                    ...?answers[option.questionId],
-                                  };
-                                  if (!chosen.remove(value)) {
-                                    if (maxValues != null &&
-                                        chosen.length >= maxValues) {
-                                      showCatchNotice(
-                                        context,
-                                        l10n.hostResponseFilterSelectionLimit(
-                                          count: maxValues,
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    chosen.add(value);
-                                  }
-                                  onAnswers(option.questionId, chosen);
-                                },
+                          onPressed: () => onVersion(number),
                         ),
                     ],
                   ),
+                  if (version.published > hostResponsesVersionChips)
+                    CatchFieldLanes.single(
+                      child: CatchField.input(
+                        key: const ValueKey<String>('response-version-number'),
+                        copy: catchFieldCopy(l10n),
+                        title: l10n.hostFormsResponsesOlderVersion,
+                        helperText: l10n.hostFormsResponsesOlderVersionHelp(
+                          version: version.published,
+                        ),
+                        keyboardType: TextInputType.number,
+                        maxLength: 7,
+                        contractExemption:
+                            'A published version number, bounded by the form '
+                            'version the server reports.',
+                        onSubmitted: (value) {
+                          final number = int.tryParse(value.trim());
+                          if (number == null ||
+                              number < 1 ||
+                              number > version.published) {
+                            return;
+                          }
+                          onVersion(number);
+                        },
+                      ),
+                    ),
                 ],
+              ),
+            ),
+          if (version == null || version.selected != null)
+            for (final option in options)
+              CatchSection.choiceGroup(
+                key: ValueKey<String>('response-filter-${option.questionId}'),
+                title: option.label,
+                first: version == null && option == options.first,
+                child: CatchStack(
+                  direction: CatchStackDirection.row,
+                  gap: CatchStackGap.g8,
+                  wrap: true,
+                  children: [
+                    for (final MapEntry(key: value, value: label)
+                        in option.options.entries)
+                      CatchChip.choice(
+                        key: ValueKey<String>(
+                          'response-filter-${option.questionId}-$value',
+                        ),
+                        label: label,
+                        selected:
+                            answers[option.questionId]?.contains(value) ??
+                            false,
+                        mode: CatchChipMode.multiple,
+                        size: CatchChipSize.sm,
+                        onPressed:
+                            !answers.containsKey(option.questionId) &&
+                                answers.length >= maxQuestions
+                            ? null
+                            : () {
+                                final chosen = {...?answers[option.questionId]};
+                                if (!chosen.remove(value)) {
+                                  if (maxValues != null &&
+                                      chosen.length >= maxValues) {
+                                    showCatchNotice(
+                                      context,
+                                      l10n.hostResponseFilterSelectionLimit(
+                                        count: maxValues,
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  chosen.add(value);
+                                }
+                                onAnswers(option.questionId, chosen);
+                              },
+                      ),
+                  ],
+                ),
               ),
         ],
       ),
