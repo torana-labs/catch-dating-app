@@ -54,8 +54,7 @@ for (const status of statuses) {
     () => {
       const previous = applyPatch({}, eventParticipationPatch({
         ...identity, exists: false, status,
-        genderAtSignup: "woman", cohortAtSignup: "cohort_test",
-        paymentId: "pay_test",
+        genderAtSignup: "woman", paymentId: "pay_test",
       }));
       for (const nextStatus of statuses) {
         const document = applyPatch(previous, eventParticipationPatch({
@@ -64,11 +63,28 @@ for (const status of statuses) {
         assertValid(document);
         assert.equal(document.genderAtSignup, "woman");
         assert.equal(document.paymentId, "pay_test");
-        assert.equal(document.cohortAtSignup, "cohort_test");
         assert.deepEqual(document.createdAt, firstTime);
         assert.deepEqual(document.updatedAt, nextTime);
       }
     });
+}
+
+// A cohort encodes the guest's sexual orientation, and organisers read the
+// booking (#2493): no write ever stores one, and every write to an existing
+// booking removes a copy an older write left.
+for (const status of statuses) {
+  test(`a ${status} booking write never carries the guest's cohort`, () => {
+    const created = eventParticipationPatch({
+      ...identity, exists: false, status, genderAtSignup: "woman",
+    });
+    assert.equal(Object.hasOwn(created, "cohortAtSignup"), false);
+    const legacy = {...applyPatch({}, created), cohortAtSignup: "queerOrOpen"};
+    const document = applyPatch(legacy, eventParticipationPatch({
+      ...identity, exists: true, status,
+    }), nextTime);
+    assertValid(document);
+    assert.equal(Object.hasOwn(document, "cohortAtSignup"), false);
+  });
 }
 
 test("rebooking clears stale lifecycle values without removing required fields",

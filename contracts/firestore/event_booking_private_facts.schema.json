@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_booking_private_facts.schema.json",
+  "title": "EventBookingPrivateFactsDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "description": "Server-only admission facts for one Catch booking, at eventBookingPrivateFacts/{eventId}_{uid} (the booking's own id). A booking cohort encodes the guest's gender and who they are interested in, which is their sexual orientation. Organisers read eventBookings and eventWaitlistOffers, so no cohort is stored there (#2493). The seat counters still need the exact cohort a booking was counted under and the one a waitlist offer reserves, so both are kept here. No client and no organiser reads it.",
+  "x-firestore-collection": "eventBookingPrivateFacts",
+  "x-firestore-path": "eventBookingPrivateFacts/{bookingId}",
+  "x-document-id-field": "bookingId",
+  "x-owner": "booking, waitlist, offer and cancellation callables, in the booking's transaction",
+  "required": [
+    "eventId",
+    "uid",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "cohortAtSignup": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "The cohort the booking was counted under in the event's cohortCounts or waitlistedCohortCounts.",
+      "x-catch-ownership": "server-only"
+    },
+    "cohortAtOffer": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "The cohort the guest's live waitlist offer reserves.",
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}
