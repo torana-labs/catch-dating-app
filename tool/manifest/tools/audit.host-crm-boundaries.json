@@ -27,7 +27,7 @@
       "title": "Keep Host CRM identity, provenance, permission, intent, route, and delivery authorities separate",
       "appliesTo": [
         "lib/hosts/presentation/customers/**",
-        "lib/hosts/presentation/inbox/**",
+        "lib/hosts/people/**",
         "lib/hosts/presentation/host_audience_controller.dart",
         "packages/l10n/lib/app_en.arb",
         "lib/routing/host_router.dart",

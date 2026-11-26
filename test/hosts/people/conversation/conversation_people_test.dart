@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_people.dart';
 import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
 import 'package:catch_test_support/events_test_helpers.dart';
@@ -196,4 +197,116 @@ void main() {
     expect(audience.contactIds, {'contact-a'});
     expect(audience.linkedUids, {'guest-uid'});
   });
+
+  // Which scope the conversation list opens on (carried over from the old
+  // inbox view model test).
+  group('resolveHostInboxScope', () {
+    final now = DateTime(2026, 7, 10, 18);
+    final live = buildEvent(
+      id: 'live',
+      startTime: now.subtract(const Duration(minutes: 30)),
+      endTime: now.add(const Duration(minutes: 30)),
+    );
+    final upcoming = buildEvent(
+      id: 'upcoming',
+      startTime: now.add(const Duration(hours: 2)),
+      endTime: now.add(const Duration(hours: 3)),
+    );
+
+    test('defaults live first, then nearest upcoming', () {
+      expect(
+        resolveHostInboxScope(events: [upcoming, live], now: now),
+        const HostInboxScope.event('live'),
+      );
+      expect(
+        resolveHostInboxScope(events: [upcoming], now: now),
+        const HostInboxScope.event('upcoming'),
+      );
+    });
+
+    test('explicit event wins and General stays explicit', () {
+      expect(
+        resolveHostInboxScope(
+          events: [live, upcoming],
+          now: now,
+          initialEventId: 'upcoming',
+          preferGeneral: true,
+        ),
+        const HostInboxScope.event('upcoming'),
+      );
+      expect(
+        resolveHostInboxScope(
+          events: [live],
+          now: now,
+          requestedScope: const HostInboxScope.general(),
+        ),
+        const HostInboxScope.general(),
+      );
+    });
+
+    test('unknown event id falls back to the default event', () {
+      expect(
+        resolveHostInboxScope(
+          events: [upcoming],
+          now: now,
+          initialEventId: 'not-hosted',
+        ),
+        const HostInboxScope.event('upcoming'),
+      );
+    });
+
+    test('requested program scope survives a truncated or loading menu', () {
+      final programs = [_program('program-1')];
+      expect(
+        resolveHostInboxScope(
+          events: [upcoming],
+          now: now,
+          requestedScope: const HostInboxScope.program('program-1'),
+          programs: programs,
+        ),
+        const HostInboxScope.program('program-1'),
+      );
+      expect(
+        resolveHostInboxScope(
+          events: [upcoming],
+          now: now,
+          requestedScope: const HostInboxScope.program('foreign'),
+          programs: programs,
+        ),
+        const HostInboxScope.program('foreign'),
+      );
+      expect(
+        resolveHostInboxScope(
+          events: [upcoming],
+          now: now,
+          requestedScope: const HostInboxScope.program('program-1'),
+        ),
+        const HostInboxScope.program('program-1'),
+      );
+    });
+
+    test('scope equality distinguishes program from event and general', () {
+      expect(
+        const HostInboxScope.program('program-1'),
+        const HostInboxScope.program('program-1'),
+      );
+      expect(
+        const HostInboxScope.program('program-1'),
+        isNot(const HostInboxScope.program('program-2')),
+      );
+      expect(
+        const HostInboxScope.program('program-1'),
+        isNot(const HostInboxScope.event('program-1')),
+      );
+      expect(const HostInboxScope.program('program-1').isGeneral, isFalse);
+    });
+  });
 }
+
+OrganizerProgramSummary _program(String id) => OrganizerProgramSummary(
+  programId: id,
+  title: 'Program $id',
+  kind: ProgramKind.wedding,
+  status: ProgramStatus.active,
+  revision: 1,
+);

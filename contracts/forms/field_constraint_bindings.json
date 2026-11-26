@@ -256,8 +256,6 @@
       "exploreDistanceFilter",
       "exploreHighRatedOnly",
       "exploreJoinedOnly",
-      "hostBroadcastTemplate",
-      "hostInboxAudienceSegment",
       "onboardingDateOfBirthText",
       "suvbotTesterPhoneNumber"
     ],
@@ -357,7 +355,6 @@
       "command.payload.owner"
     ],
     "sendEventBroadcastCallablePayload": [
-      "audience",
       "body"
     ],
     "sendEventChatMessageCallablePayload": [

@@ -184,7 +184,7 @@ Widget sendsCampaignBody(BuildContext context) => ProviderScope(
 Widget sendsTaskSheet(BuildContext context) => _phone(
   HostManualSendSheet(
     task: _task,
-    onOpenWhatsapp: (task) async => task,
+    onOpenWhatsapp: (task, {required stillOpen}) async => task,
     onMark: (_, _) async {},
   ),
 );
