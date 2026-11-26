@@ -38,6 +38,7 @@ class HostPeopleDesktopBody extends StatelessWidget {
     this.onUndoMerge,
     this.duplicates,
     this.onOpenDuplicates,
+    this.onExport,
   });
 
   final HostPeopleState state;
@@ -66,6 +67,10 @@ class HostPeopleDesktopBody extends StatelessWidget {
   final HostPeopleDuplicateSummary? duplicates;
   final VoidCallback? onOpenDuplicates;
 
+  /// Exports this list (its filter and search) as a CSV; null while an
+  /// export is running.
+  final VoidCallback? onExport;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -82,11 +87,23 @@ class HostPeopleDesktopBody extends StatelessWidget {
             CatchPaneHeader(
               title: l10n.hostPeopleTitle,
               count: total,
-              trailing: CatchButton(
-                label: l10n.hostPeopleMessage,
-                leading: CatchIcon(CatchIcons.chat, size: CatchIconSize.xs),
-                size: CatchButtonSize.sm,
-                onPressed: onCompose,
+              trailing: CatchStack(
+                direction: CatchStackDirection.row,
+                gap: CatchStackGap.g8,
+                children: [
+                  CatchIconAction.icon(
+                    key: const ValueKey<String>('host-people-export'),
+                    icon: CatchIcons.download,
+                    tooltip: l10n.hostsHostAudienceExport,
+                    onPressed: onExport,
+                  ),
+                  CatchButton(
+                    label: l10n.hostPeopleMessage,
+                    leading: CatchIcon(CatchIcons.chat, size: CatchIconSize.xs),
+                    size: CatchButtonSize.sm,
+                    onPressed: onCompose,
+                  ),
+                ],
               ),
             ),
             HostPeopleTabBar(selected: HostPeopleView.people, onView: onView),
