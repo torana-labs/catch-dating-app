@@ -134,16 +134,6 @@ class HostFormQuestionSheet extends StatelessWidget {
     return CatchSheet.standard(
       title: label.isEmpty ? l10n.hostFormsQuestionUntitled : label,
       subtitle: hostFormQuestionKindText(l10n, question.kind),
-      footer: CatchButton(
-        key: ValueKey<String>('host-form-question-remove-$id'),
-        label: l10n.hostFormRemoveQuestion,
-        variant: CatchButtonVariant.danger,
-        fullWidth: true,
-        onPressed: () {
-          editor.removeQuestion(sectionIndex, questionIndex);
-          onRemoved();
-        },
-      ),
       child: CatchStack(
         gap: CatchStackGap.g24,
         children: [
@@ -363,6 +353,16 @@ class HostFormQuestionSheet extends StatelessWidget {
                 onChanged: (value) => update(hostPresentation: value),
               ),
             ],
+          ),
+          CatchButton(
+            key: ValueKey<String>('host-form-question-remove-$id'),
+            label: l10n.hostFormRemoveQuestion,
+            variant: CatchButtonVariant.danger,
+            fullWidth: true,
+            onPressed: () {
+              editor.removeQuestion(sectionIndex, questionIndex);
+              onRemoved();
+            },
           ),
         ],
       ),

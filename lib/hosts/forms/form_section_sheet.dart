@@ -151,15 +151,6 @@ class HostFormSectionSheet extends StatelessWidget {
     return CatchSheet.standard(
       title: hostFormSectionTitle(l10n, title, index),
       subtitle: l10n.hostFormQuestionCount(count: questionCount),
-      footer: count > 1
-          ? CatchButton(
-              key: ValueKey<String>('host-form-section-remove-$sectionId'),
-              label: l10n.hostFormRemoveSection,
-              variant: CatchButtonVariant.danger,
-              fullWidth: true,
-              onPressed: onRemove,
-            )
-          : null,
       child: CatchStack(
         gap: CatchStackGap.g16,
         children: [
@@ -208,6 +199,14 @@ class HostFormSectionSheet extends StatelessWidget {
               ),
             ],
           ),
+          if (count > 1)
+            CatchButton(
+              key: ValueKey<String>('host-form-section-remove-$sectionId'),
+              label: l10n.hostFormRemoveSection,
+              variant: CatchButtonVariant.danger,
+              fullWidth: true,
+              onPressed: onRemove,
+            ),
         ],
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_question.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_section.dart';
+import 'package:catch_dating_app/contexts/forms/parts/host_form_question_tile.dart';
 import 'package:catch_dating_app/hosts/forms/form_question_sheet.dart';
 import 'package:catch_dating_app/hosts/forms/form_questions_body.dart';
 import 'package:catch_dating_app/hosts/forms/form_questions_state.dart';
@@ -11,6 +12,7 @@ import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'forms_fixtures.dart';
@@ -439,5 +441,71 @@ void main() {
         );
       }
     });
+  });
+
+  group('Question tile', () {
+    for (final scale in [1.0, 2.0]) {
+      testWidgets('the whole question reads at 375 wide, text x$scale', (
+        tester,
+      ) async {
+        tester.view.physicalSize = const Size(375, 900);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        await tester.pumpWidget(
+          MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: TextScaler.linear(scale)),
+              child: child!,
+            ),
+            home: CatchRoot(
+              child: CatchScreen(
+                body: CatchPageBody.screen(
+                  child: HostFormQuestionTile(
+                    question: formQuestion(
+                      'name',
+                      'What should we call you on the night?',
+                      required: true,
+                    ),
+                    open: false,
+                    onOpen: () {},
+                    onRequiredChanged: (_) {},
+                    onLabelChanged: (_) {},
+                    onOptionChanged: (_, _) {},
+                    onAddOption: () {},
+                    onRemove: () {},
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await pumpFeatureUi(tester);
+
+        expect(tester.takeException(), isNull);
+        final title = find.text('What should we call you on the night?');
+        final paragraph = tester.renderObject<RenderParagraph>(
+          find.descendant(of: title, matching: find.byType(RichText)),
+        );
+        expect(paragraph.didExceedMaxLines, isFalse);
+        final chip = find.byKey(
+          const ValueKey('host-forms-question-required-name'),
+        );
+        if (scale >= 2) {
+          expect(
+            tester.getTopLeft(chip).dy,
+            greaterThanOrEqualTo(tester.getBottomLeft(title).dy),
+          );
+        } else {
+          expect(
+            tester.getTopLeft(chip).dy,
+            lessThan(tester.getBottomLeft(title).dy),
+          );
+        }
+      });
+    }
   });
 }

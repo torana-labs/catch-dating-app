@@ -46,6 +46,22 @@ class HostFormQuestionTile extends StatelessWidget {
     final l10n = context.l10n;
     final label = question.label.trim();
     final choices = hostFormQuestionHasChoices(question.kind);
+    // At large text the question needs the row's width, so Required or
+    // Optional moves under it instead of squeezing it from the side.
+    final stacked =
+        MediaQuery.textScalerOf(context).scale(1) >= _stackedTextScale;
+    final requirement = CatchChip.choice(
+      key: ValueKey<String>(
+        'host-forms-question-required-${question.questionId}',
+      ),
+      label: question.required
+          ? l10n.hostFormsQuestionRequired
+          : l10n.hostFormsQuestionOptional,
+      selected: question.required,
+      mode: CatchChipMode.multiple,
+      size: CatchChipSize.sm,
+      onPressed: () => onRequiredChanged(!question.required),
+    );
     return CatchSurface(
       child: CatchStack(
         gap: CatchStackGap.g8,
@@ -57,24 +73,18 @@ class HostFormQuestionTile extends StatelessWidget {
             icon: CatchIcons.dragHandle,
             onTap: onOpen,
             density: CatchIndexRowSize.compact,
-            trailing: CatchChip.choice(
-              label: question.required
-                  ? l10n.hostFormsQuestionRequired
-                  : l10n.hostFormsQuestionOptional,
-              selected: question.required,
-              mode: CatchChipMode.multiple,
-              size: CatchChipSize.sm,
-              onPressed: () => onRequiredChanged(!question.required),
-            ),
+            trailing: stacked ? null : requirement,
           ),
-          if (choices && !open && question.options.isNotEmpty)
+          if (stacked || (choices && !open && question.options.isNotEmpty))
             CatchStack(
               direction: CatchStackDirection.row,
               gap: CatchStackGap.g6,
               wrap: true,
               children: [
-                for (final option in question.options)
-                  CatchChip.tag(label: option.label, size: CatchChipSize.sm),
+                if (stacked) requirement,
+                if (choices && !open)
+                  for (final option in question.options)
+                    CatchChip.tag(label: option.label, size: CatchChipSize.sm),
               ],
             ),
           if (open) ...[
@@ -140,4 +150,8 @@ class HostFormQuestionTile extends StatelessWidget {
       ),
     );
   }
+
+  /// The text scale from which Required or Optional sits under the
+  /// question, as system sections move their action under the title.
+  static const _stackedTextScale = 1.6;
 }
