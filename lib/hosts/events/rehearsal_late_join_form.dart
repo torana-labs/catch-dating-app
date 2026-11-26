@@ -283,7 +283,11 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
             },
           ),
         if (view.error case final error?) CatchLocalizedErrorBanner(error),
-        ..._phaseNotice(l10n),
+        _HostRehearsalLateJoinPhaseNotice(
+          phase: view.phase,
+          onRetry: onRetry,
+          onReload: onReload,
+        ),
         CatchStack(
           gap: CatchStackGap.g8,
           children: [
@@ -330,10 +334,26 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
       ],
     );
   }
+}
 
-  List<Widget> _phaseNotice(AppLocalizations l10n) => switch (view.phase) {
-    HostRehearsalLateJoinPhase.retry => [
-      CatchNotice.inline(
+/// The unresolved or confirmed command under the choices: retry the same
+/// command, reload the review, or the saved confirmation.
+class _HostRehearsalLateJoinPhaseNotice extends StatelessWidget {
+  const _HostRehearsalLateJoinPhaseNotice({
+    required this.phase,
+    required this.onRetry,
+    required this.onReload,
+  });
+
+  final HostRehearsalLateJoinPhase phase;
+  final VoidCallback onRetry;
+  final VoidCallback onReload;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return switch (phase) {
+      HostRehearsalLateJoinPhase.retry => CatchNotice.inline(
         tone: CatchNoticeTone.warning,
         body: l10n.eventAssistanceRuntimeRetryBody,
         action: CatchNoticeAction(
@@ -341,9 +361,7 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
           onPressed: onRetry,
         ),
       ),
-    ],
-    HostRehearsalLateJoinPhase.refresh => [
-      CatchNotice.inline(
+      HostRehearsalLateJoinPhase.refresh => CatchNotice.inline(
         tone: CatchNoticeTone.warning,
         body: l10n.eventAssistanceLateJoinRefreshBody,
         action: CatchNoticeAction(
@@ -351,16 +369,14 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
           onPressed: onReload,
         ),
       ),
-    ],
-    HostRehearsalLateJoinPhase.applied => [
-      CatchNotice.inline(
+      HostRehearsalLateJoinPhase.applied => CatchNotice.inline(
         tone: CatchNoticeTone.success,
         body: l10n.hostEventRehearsalUpdatesSaved,
       ),
-    ],
-    HostRehearsalLateJoinPhase.editing ||
-    HostRehearsalLateJoinPhase.submitting => const <Widget>[],
-  };
+      HostRehearsalLateJoinPhase.editing ||
+      HostRehearsalLateJoinPhase.submitting => const SizedBox.shrink(),
+    };
+  }
 }
 
 /// The practice delivery outcomes automation plays through, one to six.
@@ -385,9 +401,16 @@ class _HostRehearsalLateJoinOutcomes extends StatelessWidget {
     return CatchStack(
       gap: CatchStackGap.g8,
       children: [
+        CatchText(
+          l10n.hostEventRehearsalUpdatesScript,
+          variant: CatchTextVariant.sectionTitle,
+        ),
+        CatchText(
+          l10n.hostEventRehearsalUpdatesScriptBody,
+          variant: CatchTextVariant.bodySmall,
+          tone: CatchTextTone.secondary,
+        ),
         CatchSection(
-          title: l10n.hostEventRehearsalUpdatesScript,
-          note: l10n.hostEventRehearsalUpdatesScriptBody,
           children: [
             for (final (index, outcome) in outcomes.indexed)
               CatchField<String>.select(

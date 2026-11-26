@@ -15,6 +15,7 @@ import 'package:catch_dating_app/event_success/event_success.dart'
 import 'package:catch_dating_app/hosts/events/rehearsal_late_join_form.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_late_join_state.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -77,28 +78,120 @@ class _HostRehearsalLateJoinSheetState
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final page = ref.watch(eventRehearsalAssistanceProvider(widget.sessionId));
+    final pageState = catchAsyncStateFromAsyncValue(
+      ref.watch(eventRehearsalAssistanceProvider(widget.sessionId)),
+    );
     final editorState = ref.watch(_editor);
     final form = editorState is RehearsalAssistanceForm ? editorState : null;
-    final fresh = page.asData?.value;
+    final fresh = pageState.value;
     final review = form?.review ?? fresh;
     final snapshot = _latest(fresh?.snapshot, form?.result ?? review?.snapshot);
     final actor = snapshot?.actors
         .where((a) => a.actorId == widget.actorId)
         .firstOrNull;
-    Widget body;
+    // The host's fresh read carries the settings and movement reviews a
+    // command result may omit; the guest's own state is the latest read.
+    final reviewed = fresh?.snapshot ?? snapshot;
+    final open =
+        reviewed != null &&
+        reviewed.settingsReview != null &&
+        hostRehearsalLateJoinOpen(reviewed);
+    final choices = open && actor != null
+        ? _choices ??= HostRehearsalLateJoinChoices.initial(reviewed, actor)
+        : null;
+    final selection = choices == null
+        ? null
+        : RehearsalMovementSelection(
+            scope: rehearsalMovementScope(reviewed!.session, choices.groupId),
+          );
+    final movementState = selection == null
+        ? null
+        : catchAsyncStateFromAsyncValue(
+            ref.watch(eventRehearsalMovementProvider(selection)),
+          );
+    final plan = choices == null
+        ? null
+        : _plan(
+            snapshot: snapshot!,
+            reviewed: reviewed!,
+            actor: actor!,
+            choices: choices,
+            fresh: fresh,
+            form: form,
+            movement: movementState?.value,
+            movementError: movementState?.error,
+          );
+    final Widget body;
     if (snapshot == null || actor == null) {
-      body = page.hasError
-          ? CatchLocalizedErrorBanner(page.error!, onRetry: _reloadReview)
-          : const CatchLoadingIndicator();
-    } else if (snapshot.settingsReview == null ||
-        !hostRehearsalLateJoinOpen(snapshot)) {
+      final error = pageState.error;
+      body = error == null
+          ? const CatchLoadingIndicator()
+          : CatchLocalizedErrorBanner(error, onRetry: _reloadReview);
+    } else if (plan == null || choices == null || selection == null) {
       body = CatchText(
         l10n.hostEventRehearsalStaffReadOnly,
         tone: CatchTextTone.secondary,
       );
     } else {
-      body = _form(snapshot, actor, fresh, form);
+      final movement = movementState?.value;
+      final draft = plan.draft;
+      final settings = reviewed!.settingsReview!;
+      void choose(HostRehearsalLateJoinChoices next) =>
+          setState(() => _choices = next);
+      body = HostRehearsalLateJoinForm(
+        view: plan.view,
+        onGroup: (id) => choose(choices.copyWith(groupId: id)),
+        onPoint: (id) => choose(choices.copyWith(joiningPointId: id)),
+        onLater: (id) => choose(
+          choices.copyWith(
+            laterPointIds: choices.laterPointIds.contains(id)
+                ? ({...choices.laterPointIds}..remove(id))
+                : {...choices.laterPointIds, id},
+          ),
+        ),
+        onMode: (mode) => choose(choices.copyWith(mode: mode)),
+        onRules: () => _openSettings(choices.groupId),
+        onChannels: () => _openSettings(null),
+        onDeadline: () => unawaited(
+          _chooseDeadline(
+            serverTime: settings.serverTime,
+            eventEnd: settings.eventEnd,
+          ),
+        ),
+        onClearDeadline: () => choose(choices.withDeadline(null)),
+        onOutcomes: (outcomes) => choose(choices.copyWith(outcomes: outcomes)),
+        onRetry: _retry,
+        onReload: () => _reload(selection),
+        onPublish: plan.canPublish && movement != null && draft != null
+            ? () => _command(
+                fresh!,
+                (editor) => editor.selectPublication(draft, movement),
+              )
+            : null,
+        onSave: plan.canSave && movement != null && draft != null
+            ? () => _command(
+                fresh!,
+                (editor) =>
+                    editor.selectAutomation(draft, choices.outcomes, movement),
+              )
+            : null,
+        onPause: fresh == null
+            ? null
+            : () => _command(
+                fresh,
+                (editor) => editor.select(
+                  RehearsalPauseAutomation(actorId: actor.actorId),
+                ),
+              ),
+        onResume: fresh == null
+            ? null
+            : () => _command(
+                fresh,
+                (editor) => editor.select(
+                  RehearsalResumeAutomation(actorId: actor.actorId),
+                ),
+              ),
+      );
     }
     return PopScope(
       canPop: editorState.canDismiss,
@@ -120,25 +213,28 @@ class _HostRehearsalLateJoinSheetState
     );
   }
 
-  Widget _form(
-    EventRehearsalBootstrap snapshot,
-    EventRehearsalActor actor,
-    RehearsalAssistanceReview? fresh,
-    RehearsalAssistanceForm? form,
-  ) {
-    final choices = _choices ??= HostRehearsalLateJoinChoices.initial(
-      snapshot,
-      actor,
-    );
-    final selection = RehearsalMovementSelection(
-      scope: rehearsalMovementScope(snapshot.session, choices.groupId),
-    );
-    final movementValue = ref.watch(eventRehearsalMovementProvider(selection));
-    final movement = movementValue.asData?.value;
+  /// The publication draft for [choices], what it would tell the guest,
+  /// whether it can publish or save, and the form's view.
+  ({
+    RehearsalPublicationDraft? draft,
+    bool canPublish,
+    bool canSave,
+    HostRehearsalLateJoinView view,
+  })
+  _plan({
+    required EventRehearsalBootstrap snapshot,
+    required EventRehearsalBootstrap reviewed,
+    required EventRehearsalActor actor,
+    required HostRehearsalLateJoinChoices choices,
+    required RehearsalAssistanceReview? fresh,
+    required RehearsalAssistanceForm? form,
+    required RehearsalMovementPage? movement,
+    required Object? movementError,
+  }) {
     RehearsalPublicationDraft? draft;
     HostRehearsalLateJoinPreviewKind? kind;
     String? previewText;
-    Object? previewError = movementValue.error;
+    var previewError = movementError;
     var canPublish = false;
     var canSave = false;
     if (movement != null && fresh != null) {
@@ -164,102 +260,54 @@ class _HostRehearsalLateJoinSheetState
       } on Object catch (error) {
         previewError = error;
       }
-      if (draft != null) {
-        canPublish = _succeeds(() => draft!.prepare(fresh.snapshot));
+      if (draft case final ready?) {
+        canPublish = _succeeds(() => ready.prepare(fresh.snapshot));
         canSave = _succeeds(
-          () => draft!.configure(fresh.snapshot, choices.outcomes),
+          () => ready.configure(fresh.snapshot, choices.outcomes),
         );
       }
     }
-    final automation = actor.assistanceAutomation;
-    final settings = snapshot.settingsReview!;
-    final view = HostRehearsalLateJoinView(
-      status: hostRehearsalLateJoinStatus(actor),
-      remainingOutcomes: automation?.remainingOutcomes,
-      latestText: actor.assistanceMessage?.text,
-      latestReply: actor.assistanceMessage?.responseLabel,
-      groups: snapshot.movementReview?.groups ?? const [],
-      groupId: choices.groupId,
-      points: movement?.snapshot.destinations,
-      pointId: movement == null
-          ? null
-          : choices.joiningPoint(movement.snapshot)?.destination.alternativeId,
-      laterPointIds: choices.laterPointIds,
-      mode: choices.mode,
-      rules: choices.rules(snapshot),
-      routes: draft?.routes ?? const <AssistanceMessageRoute>[],
-      responseDeadline: choices.responseDeadline,
-      outcomes: choices.outcomes,
-      previewKind: kind,
-      previewText: previewText,
-      phase: switch (form?.phase) {
-        null ||
-        RehearsalAssistancePhase.choosing => HostRehearsalLateJoinPhase.editing,
-        RehearsalAssistancePhase.submitting =>
-          HostRehearsalLateJoinPhase.submitting,
-        RehearsalAssistancePhase.retryRequired =>
-          HostRehearsalLateJoinPhase.retry,
-        RehearsalAssistancePhase.refreshRequired =>
-          HostRehearsalLateJoinPhase.refresh,
-        RehearsalAssistancePhase.applied => HostRehearsalLateJoinPhase.applied,
-      },
-      error: form?.error ?? previewError,
-    );
-    void choose(HostRehearsalLateJoinChoices next) =>
-        setState(() => _choices = next);
-    return HostRehearsalLateJoinForm(
-      view: view,
-      onGroup: (id) => choose(choices.copyWith(groupId: id)),
-      onPoint: (id) => choose(choices.copyWith(joiningPointId: id)),
-      onLater: (id) => choose(
-        choices.copyWith(
-          laterPointIds: choices.laterPointIds.contains(id)
-              ? ({...choices.laterPointIds}..remove(id))
-              : {...choices.laterPointIds, id},
-        ),
+    final message = actor.assistanceMessage;
+    return (
+      draft: draft,
+      canPublish: canPublish,
+      canSave: canSave,
+      view: HostRehearsalLateJoinView(
+        status: hostRehearsalLateJoinStatus(actor),
+        remainingOutcomes: actor.assistanceAutomation?.remainingOutcomes,
+        latestText: message?.text,
+        latestReply: message?.responseLabel,
+        groups: reviewed.movementReview?.groups ?? const [],
+        groupId: choices.groupId,
+        points: movement?.snapshot.destinations,
+        pointId: movement == null
+            ? null
+            : choices
+                  .joiningPoint(movement.snapshot)
+                  ?.destination
+                  .alternativeId,
+        laterPointIds: choices.laterPointIds,
+        mode: choices.mode,
+        rules: choices.rules(reviewed),
+        routes: draft?.routes ?? const <AssistanceMessageRoute>[],
+        responseDeadline: choices.responseDeadline,
+        outcomes: choices.outcomes,
+        previewKind: kind,
+        previewText: previewText,
+        phase: switch (form?.phase) {
+          null || RehearsalAssistancePhase.choosing =>
+            HostRehearsalLateJoinPhase.editing,
+          RehearsalAssistancePhase.submitting =>
+            HostRehearsalLateJoinPhase.submitting,
+          RehearsalAssistancePhase.retryRequired =>
+            HostRehearsalLateJoinPhase.retry,
+          RehearsalAssistancePhase.refreshRequired =>
+            HostRehearsalLateJoinPhase.refresh,
+          RehearsalAssistancePhase.applied =>
+            HostRehearsalLateJoinPhase.applied,
+        },
+        error: form?.error ?? previewError,
       ),
-      onMode: (mode) => choose(choices.copyWith(mode: mode)),
-      onRules: () => _openSettings(choices.groupId),
-      onChannels: () => _openSettings(null),
-      onDeadline: () => unawaited(
-        _chooseDeadline(
-          serverTime: settings.serverTime,
-          eventEnd: settings.eventEnd,
-        ),
-      ),
-      onClearDeadline: () => choose(choices.withDeadline(null)),
-      onOutcomes: (outcomes) => choose(choices.copyWith(outcomes: outcomes)),
-      onRetry: _retry,
-      onReload: () => _reload(selection),
-      onPublish: canPublish && movement != null
-          ? () => _command(
-              fresh!,
-              (editor) => editor.selectPublication(draft!, movement),
-            )
-          : null,
-      onSave: canSave && movement != null
-          ? () => _command(
-              fresh!,
-              (editor) =>
-                  editor.selectAutomation(draft!, choices.outcomes, movement),
-            )
-          : null,
-      onPause: fresh == null
-          ? null
-          : () => _command(
-              fresh,
-              (editor) => editor.select(
-                RehearsalPauseAutomation(actorId: actor.actorId),
-              ),
-            ),
-      onResume: fresh == null
-          ? null
-          : () => _command(
-              fresh,
-              (editor) => editor.select(
-                RehearsalResumeAutomation(actorId: actor.actorId),
-              ),
-            ),
     );
   }
 

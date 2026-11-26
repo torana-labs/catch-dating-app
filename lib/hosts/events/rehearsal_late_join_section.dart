@@ -32,23 +32,37 @@ class HostRehearsalLateJoinSection extends StatelessWidget {
         final rank = _rank(a).compareTo(_rank(b));
         return rank != 0 ? rank : a.displayName.compareTo(b.displayName);
       });
-    return CatchSection(
+    return CatchStack(
       key: const ValueKey<String>('host-rehearsal-late-join-section'),
-      title: l10n.hostRehearsalLateJoinTitle,
-      note: l10n.hostRehearsalLateJoinBody,
-      empty: l10n.eventAssistanceGroupNoGuests,
+      gap: CatchStackGap.g8,
       children: [
-        for (final actor in actors)
-          CatchIndexRow(
-            key: ValueKey<String>('host-rehearsal-late-join-${actor.actorId}'),
-            title: actor.displayName,
-            subtitle: _subtitle(l10n, actor),
-            leading: CatchAvatar.system(
-              size: CatchAvatarSize.sm,
-              name: actor.displayName,
-            ),
-            onTap: () => onOpen(actor.actorId),
-          ),
+        CatchText(
+          l10n.hostRehearsalLateJoinTitle,
+          variant: CatchTextVariant.sectionTitle,
+        ),
+        CatchText(
+          l10n.hostRehearsalLateJoinBody,
+          variant: CatchTextVariant.bodySmall,
+          tone: CatchTextTone.secondary,
+        ),
+        CatchSection(
+          empty: l10n.eventAssistanceGroupNoGuests,
+          children: [
+            for (final actor in actors)
+              CatchIndexRow(
+                key: ValueKey<String>(
+                  'host-rehearsal-late-join-${actor.actorId}',
+                ),
+                title: actor.displayName,
+                subtitle: _subtitle(l10n, actor),
+                leading: CatchAvatar.system(
+                  size: CatchAvatarSize.sm,
+                  name: actor.displayName,
+                ),
+                onTap: () => onOpen(actor.actorId),
+              ),
+          ],
+        ),
       ],
     );
   }
