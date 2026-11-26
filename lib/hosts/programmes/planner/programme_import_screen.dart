@@ -89,6 +89,7 @@ class _HostProgrammeImportScreenState
   Future<void> _run(String mode) async {
     final mapped = _mapped;
     if (mapped.rows.isEmpty) return;
+    final container = ProviderScope.containerOf(context, listen: false);
     setState(() {
       _pending = true;
       _error = null;
@@ -104,6 +105,7 @@ class _HostProgrammeImportScreenState
                 'manifest_${mode}_${DateTime.now().microsecondsSinceEpoch}',
             rows: mapped.rows,
           );
+      if (mode == 'commit') refreshHostProgrammeIn(container, widget.programId);
       if (!mounted) return;
       setState(() {
         if (mode == 'preview') {
@@ -112,7 +114,6 @@ class _HostProgrammeImportScreenState
           _committed = result;
         }
       });
-      if (mode == 'commit') refreshHostProgramme(ref, widget.programId);
     } on Object catch (error) {
       if (mounted) setState(() => _error = error);
     } finally {

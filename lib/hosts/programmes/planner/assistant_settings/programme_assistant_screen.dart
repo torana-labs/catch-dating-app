@@ -72,6 +72,7 @@ class _HostProgrammeAssistantScreenState
     ProgramAssistantSettingsChange change,
   ) async {
     final l10n = context.l10n;
+    final container = ProviderScope.containerOf(context, listen: false);
     setState(() => _busy = true);
     var ok = true;
     try {
@@ -88,7 +89,7 @@ class _HostProgrammeAssistantScreenState
     } on Object {
       ok = false;
     }
-    ref.invalidate(programAssistantSettingsProvider(widget.programId));
+    container.invalidate(programAssistantSettingsProvider(widget.programId));
     if (!mounted) return;
     setState(() => _busy = false);
     if (!ok) {
