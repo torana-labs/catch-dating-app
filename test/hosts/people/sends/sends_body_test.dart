@@ -91,6 +91,65 @@ void main() {
     expect(replanned.single.single.taskId, 'task-1');
   });
 
+  testWidgets('row status stacks under the details at phone width and text '
+      'scale 2', (tester) async {
+    tester.view.physicalSize = const Size(375, 1600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final opened = HostManualSendTask(
+      organizerId: 'org',
+      taskId: 'task-2',
+      contactId: 'contact-2',
+      displayName: 'Ishaan Mehta',
+      status: HostManualSendTaskStatus.handoffOpened,
+      active: true,
+      revision: 1,
+      phoneE164: '+919800000002',
+      prefillText: 'See you tonight',
+      openCount: 1,
+      createdAt: DateTime(2026, 10, 27),
+      updatedAt: DateTime(2026, 10, 27),
+      openedAt: DateTime(2026, 10, 27),
+      expiresAt: DateTime(2026, 11, 26),
+    );
+    await tester.pumpWidget(
+      MediaQuery(
+        data: const MediaQueryData(
+          size: Size(375, 1600),
+          textScaler: TextScaler.linear(2),
+        ),
+        child: _frame(
+          HostSendsBody(
+            state: HostSendsState(
+              history: LivePages(items: [_announcement], hasMore: false),
+              historyStatus: HostSendsReadStatus.ready,
+              tasks: LivePages(items: [opened], hasMore: false),
+              tasksStatus: HostSendsReadStatus.ready,
+            ),
+            onChoose: () {},
+            onSettings: () {},
+            onOpen: (_) {},
+            onLoadMore: () {},
+            onOpenTask: (_) {},
+            onReplan: (_) {},
+            onLoadMoreTasks: () {},
+            onRetry: () {},
+          ),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    expect(tester.takeException(), isNull);
+    final status = tester.getTopLeft(find.text('WhatsApp opened'));
+    final title = tester.getTopLeft(find.text('Ishaan Mehta'));
+    expect(status.dy, greaterThan(title.dy));
+    expect(status.dx, title.dx);
+    final partial = tester.getTopLeft(
+      find.text('Some deliveries need attention'),
+    );
+    expect(partial.dx, tester.getTopLeft(find.text('Tuesday Trivia Night')).dx);
+  });
+
   testWidgets('choosing what to send shows what can start now', (tester) async {
     final event = buildEvent(organizerId: 'org');
     var announced = 0;

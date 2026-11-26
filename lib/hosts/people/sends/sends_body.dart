@@ -71,7 +71,9 @@ class HostSendsBody extends StatelessWidget {
                   key: ValueKey<String>('host-send-${hostSendKey(send)}'),
                   title: hostSendTitle(l10n, send),
                   subtitle: hostSendMetadata(l10n, send),
-                  value: hostSendStatus(l10n, send),
+                  // Stacked under the details, never beside them.
+                  meta: hostSendStatus(l10n, send),
+                  metaTone: hostSendStatusTone(send),
                   icon: CatchIcons.send,
                   chevron: true,
                   onTap: busy ? null : () => onOpen(send),
@@ -204,7 +206,8 @@ class HostSendsQueueSection extends StatelessWidget {
                 key: ValueKey<String>('host-manual-send-${task.taskId}'),
                 title: task.displayName,
                 subtitle: hostManualTaskBody(l10n, task),
-                value: hostManualTaskStatus(l10n, task),
+                // Stacked under the details, never beside them.
+                meta: hostManualTaskStatus(l10n, task),
                 chevron: true,
                 onTap: () => onOpenTask(task),
               ),
@@ -265,6 +268,16 @@ String hostSendMetadata(AppLocalizations l10n, HostSendSummary send) =>
         AppTimeFormatters.shortDate(update.createdAt),
       ].join(' · '),
     };
+
+/// A send's status tone: a warning when delivery needs attention.
+CatchIndexRowTone hostSendStatusTone(HostSendSummary send) => switch (send) {
+  HostAnnouncementSendSummary(:final partialFailure) when partialFailure =>
+    CatchIndexRowTone.warning,
+  HostFollowerUpdateSendSummary update
+      when update.hasTrackedDelivery && !update.deliveryCompleted =>
+    CatchIndexRowTone.warning,
+  _ => CatchIndexRowTone.neutral,
+};
 
 /// The campaign's status, the announcement's audience or partial
 /// delivery, or the follower update's delivery.
