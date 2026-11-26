@@ -14,6 +14,9 @@ import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehe
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator_body.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_sweep_section.dart';
+import 'package:catch_dating_app/hosts/events/rehearsal_late_join_section.dart';
+import 'package:catch_dating_app/hosts/events/rehearsal_late_join_sheet.dart';
+import 'package:catch_dating_app/hosts/events/rehearsal_late_join_state.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_practice_actions.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
@@ -26,7 +29,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Practice tools, on the night theme: what a rehearsal adds to the
 /// rebuilt console, the way Night tools adds to a real night. The
 /// rehearsal's run and virtual clock, made-up guests' behaviour and
-/// faults, the help, delivery and sweep queues, settings, groups and
+/// faults, the help, delivery and sweep queues, settings, late joiner
+/// directions and automatic updates, groups and
 /// checkpoints, staff and the role to practise as, the guest phone link,
 /// setup, the roster and the recap. Each section is the rehearsal's own,
 /// reused as it is, and runs only rehearsal commands.
@@ -86,6 +90,12 @@ class HostRehearsalPracticeToolsScreen extends ConsumerWidget {
                     role: role,
                     busy: busy,
                     actions: actions,
+                    onLateJoiner: (actorId) => showHostRehearsalLateJoinSheet(
+                      context,
+                      ref,
+                      sessionId: sessionId,
+                      actorId: actorId,
+                    ),
                   ),
                 ),
               ),
@@ -96,11 +106,13 @@ class HostRehearsalPracticeToolsScreen extends ConsumerWidget {
 
 /// The practice tools [rehearsal] uses, in the order the screen shows
 /// them. [role] is the staff role being practised; null is the host.
+/// [onLateJoiner] opens the late joiner sheet for one made-up guest.
 List<Widget> hostRehearsalPracticeTools(
   EventRehearsalBootstrap rehearsal, {
   required String? role,
   required bool busy,
   required HostRehearsalPracticeActions actions,
+  ValueChanged<String>? onLateJoiner,
 }) {
   final session = rehearsal.session;
   final staff = rehearsal.staffReview;
@@ -130,6 +142,12 @@ List<Widget> hostRehearsalPracticeTools(
       ),
     if (rehearsal.settingsReview case final review? when role == null)
       EventRehearsalSettingsSection(sessionId: session.id, review: review),
+    // Late joiner directions and automation are the host's alone.
+    if (role == null &&
+        rehearsal.settingsReview != null &&
+        onLateJoiner != null &&
+        hostRehearsalLateJoinOpen(rehearsal))
+      HostRehearsalLateJoinSection(rehearsal: rehearsal, onOpen: onLateJoiner),
     if ((rehearsal.movementReview?.groups.isNotEmpty ?? false) &&
         (session.setup.movementSimulation?.itinerary.any(
               (stop) => stop.location != null,
