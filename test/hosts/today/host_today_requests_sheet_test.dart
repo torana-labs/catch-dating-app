@@ -46,7 +46,7 @@ Future<void> _pump(
       supportedLocales: AppLocalizations.supportedLocales,
       home: CatchRoot(
         child: Scaffold(
-          body: HostTodayRequestsQueue(
+          body: HostTodayRequestsBody(
             requests: HostRequests(rows: rows, complete: complete),
             now: todayNow,
             initialFocus: focus,

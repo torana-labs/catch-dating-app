@@ -119,14 +119,35 @@ class HostTodayBody extends StatelessWidget {
               null => () => onOpenAttention(item),
             },
           ),
+        // Waiting people no item covers, in the attention row's shape and
+        // copy.
         for (final group in needsYou.requestGroups)
-          _HostTodayRequestGroupRow(
+          CatchIndexRow(
             key: ValueKey<String>(
               'host-today-requests-${group.focus.eventId}-'
               '${group.focus.kind.name}',
             ),
-            group: group,
-            onOpen: () => onOpenRequests(group.focus),
+            title: group.focus.kind == HostRequestKind.request
+                ? l10n.hostTodayAttentionJoinTitle
+                : l10n.hostsHostHomeScreenStateTitleReviewWaitlist,
+            subtitle: group.focus.kind == HostRequestKind.request
+                ? l10n.hostTodayAttentionJoinBody(
+                    count: group.count,
+                    eventName: group.eventName,
+                  )
+                : l10n.hostTodayAttentionWaitlistBody(
+                    count: group.count,
+                    eventName: group.eventName,
+                  ),
+            onTap: () => onOpenRequests(group.focus),
+            marker: CatchIndexRowTone.info,
+            action: CatchIndexRowAction(
+              label: group.focus.kind == HostRequestKind.request
+                  ? l10n.hostTodayAttentionReview
+                  : l10n.hostsHostHomeScreenStateVisiblecopyReview,
+              onPressed: () => onOpenRequests(group.focus),
+            ),
+            density: CatchIndexRowSize.roomy,
           ),
         if (!needsYou.requestsComplete)
           CatchNotice.inline(
@@ -204,46 +225,6 @@ class HostTodayBody extends StatelessWidget {
           statsSection,
         ],
       ),
-    );
-  }
-}
-
-/// The people of one kind waiting on a coming event no attention item
-/// covers, in the attention row's shape and copy.
-class _HostTodayRequestGroupRow extends StatelessWidget {
-  const _HostTodayRequestGroupRow({
-    super.key,
-    required this.group,
-    required this.onOpen,
-  });
-
-  final HostTodayRequestGroup group;
-  final VoidCallback onOpen;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final request = group.focus.kind == HostRequestKind.request;
-    final action = request
-        ? l10n.hostTodayAttentionReview
-        : l10n.hostsHostHomeScreenStateVisiblecopyReview;
-    return CatchIndexRow(
-      title: request
-          ? l10n.hostTodayAttentionJoinTitle
-          : l10n.hostsHostHomeScreenStateTitleReviewWaitlist,
-      subtitle: request
-          ? l10n.hostTodayAttentionJoinBody(
-              count: group.count,
-              eventName: group.eventName,
-            )
-          : l10n.hostTodayAttentionWaitlistBody(
-              count: group.count,
-              eventName: group.eventName,
-            ),
-      onTap: onOpen,
-      marker: CatchIndexRowTone.info,
-      action: CatchIndexRowAction(label: action, onPressed: onOpen),
-      density: CatchIndexRowSize.roomy,
     );
   }
 }

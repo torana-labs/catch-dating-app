@@ -97,7 +97,7 @@ class HostTodayRequestsSheet extends ConsumerWidget {
         ].any((state) => state.isPending))
           key,
     };
-    return HostTodayRequestsQueue(
+    return HostTodayRequestsBody(
       requests: requests,
       now: ref.watch(appClockProvider).now(),
       initialFocus: focus,
@@ -169,8 +169,8 @@ enum _HostTodayRequestsFilter { all, asked, waitlist }
 /// filters and everyone waiting, or one person with the decision in the
 /// dock. When a decision removes that person, the next one in the same
 /// place takes over.
-class HostTodayRequestsQueue extends StatefulWidget {
-  const HostTodayRequestsQueue({
+class HostTodayRequestsBody extends StatefulWidget {
+  const HostTodayRequestsBody({
     super.key,
     required this.requests,
     required this.now,
@@ -196,10 +196,10 @@ class HostTodayRequestsQueue extends StatefulWidget {
   final ValueChanged<HostRequest> onOffer;
 
   @override
-  State<HostTodayRequestsQueue> createState() => _HostTodayRequestsQueueState();
+  State<HostTodayRequestsBody> createState() => _HostTodayRequestsBodyState();
 }
 
-class _HostTodayRequestsQueueState extends State<HostTodayRequestsQueue> {
+class _HostTodayRequestsBodyState extends State<HostTodayRequestsBody> {
   _HostTodayRequestsFilter _filter = _HostTodayRequestsFilter.all;
   String? _selectedKey;
   int _selectedIndex = 0;
@@ -243,7 +243,7 @@ class _HostTodayRequestsQueueState extends State<HostTodayRequestsQueue> {
     final selected = rows.isEmpty ? null : rows[index];
     if (_open && selected != null) {
       final next = index + 1 < rows.length ? rows[index + 1] : null;
-      return HostTodayRequestPerson(
+      return HostTodayRequestDetailBody(
         key: ValueKey<String>('host-request-detail-${selected.key}'),
         row: selected,
         now: widget.now,
@@ -336,8 +336,8 @@ class _HostTodayRequestsQueueState extends State<HostTodayRequestsQueue> {
 /// One waiting person: the facts for the decision, how they got here, and
 /// the decision in the dock. A request is let in or declined; a waitlisted
 /// person is offered a spot, once while an offer is open.
-class HostTodayRequestPerson extends StatelessWidget {
-  const HostTodayRequestPerson({
+class HostTodayRequestDetailBody extends StatelessWidget {
+  const HostTodayRequestDetailBody({
     super.key,
     required this.row,
     required this.now,

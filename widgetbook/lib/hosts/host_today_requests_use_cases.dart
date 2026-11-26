@@ -61,11 +61,11 @@ Widget _phone(Widget child) => SizedBox(
 
 @widgetbook.UseCase(
   name: 'Everyone waiting',
-  type: HostTodayRequestsQueue,
+  type: HostTodayRequestsBody,
   path: _path,
 )
 Widget hostTodayRequestsWaiting(BuildContext context) => _phone(
-  HostTodayRequestsQueue(
+  HostTodayRequestsBody(
     requests: _waiting,
     now: _now,
     onLetIn: (_) {},
@@ -76,7 +76,7 @@ Widget hostTodayRequestsWaiting(BuildContext context) => _phone(
 
 @widgetbook.UseCase(
   name: 'Cut off and no one waiting',
-  type: HostTodayRequestsQueue,
+  type: HostTodayRequestsBody,
   path: _path,
 )
 Widget hostTodayRequestsEdges(BuildContext context) => Wrap(
@@ -84,7 +84,7 @@ Widget hostTodayRequestsEdges(BuildContext context) => Wrap(
   runSpacing: CatchSpacing.s6,
   children: [
     _phone(
-      HostTodayRequestsQueue(
+      HostTodayRequestsBody(
         requests: HostRequests(rows: _waiting.rows, complete: false),
         now: _now,
         onLetIn: (_) {},
@@ -93,7 +93,7 @@ Widget hostTodayRequestsEdges(BuildContext context) => Wrap(
       ),
     ),
     _phone(
-      HostTodayRequestsQueue(
+      HostTodayRequestsBody(
         requests: const HostRequests(rows: [], complete: true),
         now: _now,
         onLetIn: (_) {},
@@ -106,11 +106,11 @@ Widget hostTodayRequestsEdges(BuildContext context) => Wrap(
 
 @widgetbook.UseCase(
   name: 'A request, then the next person',
-  type: HostTodayRequestPerson,
+  type: HostTodayRequestDetailBody,
   path: _path,
 )
 Widget hostTodayRequestPersonAsked(BuildContext context) => _phone(
-  HostTodayRequestPerson(
+  HostTodayRequestDetailBody(
     row: _waiting.rows.first,
     now: _now,
     nextName: 'Ishaan Bose',
@@ -124,11 +124,11 @@ Widget hostTodayRequestPersonAsked(BuildContext context) => _phone(
 
 @widgetbook.UseCase(
   name: 'A live waitlist offer',
-  type: HostTodayRequestPerson,
+  type: HostTodayRequestDetailBody,
   path: _path,
 )
 Widget hostTodayRequestPersonOffered(BuildContext context) => _phone(
-  HostTodayRequestPerson(
+  HostTodayRequestDetailBody(
     row: _row(
       'nikhil',
       HostRequestKind.waitlist,
