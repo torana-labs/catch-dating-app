@@ -8,8 +8,11 @@ import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
 
-import {compare, targets} from "./shadow_plan.mjs";
+import {selectNxLanes, targets} from "./lanes.mjs";
 import {loadToolsManifest} from "../lib/tools_manifest.mjs";
+
+// The lanes Nx selects for one change, sorted.
+const nxSelection = (input) => [...selectNxLanes(input).lanes].sort();
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const readJson = (file) => JSON.parse(fs.readFileSync(path.join(workspaceRoot, file), "utf8"));
@@ -44,7 +47,7 @@ function affectedGraph(file) {
 }
 const affectedTasks = (file) => affectedGraph(file).nxTasks;
 // The lanes a pull request runs for one changed file.
-const lanesFor = (file) => compare({plannerLanes: [], mode: "pr", ...affectedGraph(file)}).nxLanes;
+const lanesFor = (file) => nxSelection({mode: "pr", ...affectedGraph(file)});
 
 // 3c2d0499 (#1803) edited a website story and the planner ran capture
 // freshness; Nx did not. marketing-captures.yml renders captures from the
