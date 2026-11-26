@@ -3783,6 +3783,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get safetySettingsScreenTitleShowMeOnMap => 'Show me on map';
 
   @override
+  String get safetySettingsScreenTitleProfileAnswers =>
+      'Profile answers guests see';
+
+  @override
+  String get safetySettingsScreenBodyProfileAnswers =>
+      'Turn an answer off and no other guest sees it. Organisers never see these answers. Religion stays hidden until you turn it on.';
+
+  @override
+  String get safetySettingsScreenTitleProfileAnswerReligion => 'Religion';
+
+  @override
+  String get safetySettingsScreenTitleProfileAnswerRelationshipGoal =>
+      'Relationship goal';
+
+  @override
+  String get safetySettingsScreenTitleProfileAnswerDrinking => 'Drinking';
+
+  @override
+  String get safetySettingsScreenTitleProfileAnswerSmoking => 'Smoking';
+
+  @override
+  String get safetySettingsScreenTitleProfileAnswerChildren => 'Children';
+
+  @override
   String get safetySettingsScreenTitlePrivacyPolicy => 'Privacy policy';
 
   @override

@@ -14285,6 +14285,26 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'SettingsNotificationsSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Notification switches',
+                builder: _widgetbook_workspace_utility_settings
+                    .settingsNotificationsSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'SettingsProfileAnswersSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Profile answers other guests see',
+                builder: _widgetbook_workspace_utility_settings
+                    .settingsProfileAnswersSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'SettingsScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
