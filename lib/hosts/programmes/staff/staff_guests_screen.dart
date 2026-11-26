@@ -70,6 +70,8 @@ class _StaffGuestsScreenState extends ConsumerState<StaffGuestsScreen> {
       final url = AppConfig.publicSiteUrl.resolve(
         '/rsvp/${Uri.encodeComponent(link.token)}',
       );
+      // The share sheet belongs to this screen; skip it once it is gone.
+      if (!mounted) return;
       // provider-graph: ownership-widget-async:_StaffGuestsScreenState._shareLink:await:externalShareControllerProvider.shareText watch CAT156 -- Sharing the issued link through the platform share controller; mechanical share-sheet feedback under the same local sharing flag.
       await ref
           .read(externalShareControllerProvider)

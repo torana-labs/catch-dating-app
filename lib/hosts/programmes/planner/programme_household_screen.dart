@@ -109,6 +109,7 @@ class _HostProgrammeHouseholdScreenState
     final origin = box == null
         ? null
         : box.localToGlobal(Offset.zero) & box.size;
+    final logger = ref.read(errorLoggerProvider);
     setState(() => _sending = true);
     try {
       // provider-graph: ownership-widget-async:_HostProgrammeHouseholdScreenState._sendLink:await:programWorkspaceControllerProvider.issueHouseholdRsvpLink watch CAT156 -- The workspace controller issues the RSVP link and owns its error; the widget holds a local sending flag while the share sheet opens. Move the flag into the controller in the CAT156 migration.
@@ -121,14 +122,14 @@ class _HostProgrammeHouseholdScreenState
       final url = AppConfig.publicSiteUrl.resolve(
         '/rsvp/${Uri.encodeComponent(link.token)}',
       );
+      // The share sheet belongs to this screen; skip it once it is gone.
+      if (!mounted) return;
       // provider-graph: ownership-widget-async:_HostProgrammeHouseholdScreenState._sendLink:await:externalShareControllerProvider.shareText watch CAT156 -- Sharing the issued link through the platform share controller; mechanical share-sheet feedback under the same local sending flag.
       await ref
           .read(externalShareControllerProvider)
           .shareText(text: url.toString(), subject: subject, origin: origin);
     } on Object catch (error, stackTrace) {
-      ref
-          .read(errorLoggerProvider)
-          .logError(error, stackTrace, reason: 'send a household RSVP link');
+      logger.logError(error, stackTrace, reason: 'send a household RSVP link');
       if (mounted) {
         showCatchNoticeError(
           context,
