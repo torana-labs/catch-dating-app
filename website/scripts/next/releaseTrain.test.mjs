@@ -171,7 +171,7 @@ test("the CI workflow declares every input the train's validation dispatch sends
   // A base dispatch plans live..head as a main push does; a full dispatch still runs everything.
   assert.match(workflow, /DISPATCH_BASE_SHA: \$\{\{ inputs\.base_sha \}\}/u);
   assert.match(workflow, /event_mode="main"\n\s+base_sha="\$DISPATCH_BASE_SHA"\n\s+window_flag=\(--commit-window\)/u);
-  assert.match(workflow, /REQUEST_FULL: \$\{\{ github\.event_name == 'schedule' \|\| inputs\.full \}\}/u);
+  assert.match(workflow, /REQUEST_FULL: \$\{\{ inputs\.nightly \|\| inputs\.full \}\}/u);
   // PRs, main pushes and the merge queue run CI; the train follows main's runs.
   for (const event of ["pull_request", "push", "merge_group"]) assert.match(on, new RegExp(`^ {2}${event}:`, "mu"));
 });
