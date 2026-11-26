@@ -726,7 +726,7 @@
             "hostOrganizerMessagingScreen"
           ],
           "file": "lib/hosts/organizer/messaging_screen.dart",
-          "symbol": "OrganizerMessagingScreen",
+          "symbol": "_OrganizerMessagingScreenState",
           "family": "pushed-route",
           "expression": "CatchScreen",
           "bodyGeometry": "standard",
