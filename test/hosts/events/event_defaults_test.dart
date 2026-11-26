@@ -34,6 +34,7 @@ void main() {
               onChange: saved.add,
               onRetryUpdate: () => retries++,
               onEdit: () {},
+              onEditPolicy: () {},
               onRetry: () {},
             ),
           ),
