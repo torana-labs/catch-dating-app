@@ -1,0 +1,30 @@
+{
+  "id": "eventGuestDisclosures",
+  "path": "eventGuestDisclosures/{disclosureId}",
+  "rulesMatch": "/eventGuestDisclosures/{disclosureId}",
+  "typescriptInterface": "EventGuestDisclosuresDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/admission_visibility.rules.test.cjs",
+  "owner": "functions/src/shared/admissionVisibility.ts, called in the transaction of the booking, waitlist and request callables; deleted by cancellation, leaving the waitlist and account deletion",
+  "writerContext": "shared",
+  "sharedWriterReason": "The booking, waitlist and request commands (events and bookings) write it in the booking's transaction, and account deletion (safety) deletes it with the account's bookings. One module writes it.",
+  "read": "the event's organiser managers get one guest's disclosure until expiresAt; no list, and no guest or stranger reads it",
+  "write": "server only",
+  "exportedFunctions": [
+    "signUpForFreeEvent",
+    "cancelEventSignUp",
+    "joinEventWaitlist",
+    "leaveEventWaitlist",
+    "registerPublicEvent",
+    "requestAccountDeletion"
+  ],
+  "migrationNotes": [
+    "Issue #2493 (FIX-19). Added 26 Nov 2026: what each admission format lets the organiser read beyond the card is declared in contracts/catalogs/admission_visibility.json. Today only gender, on gender-balanced formats. No screen reads it yet, and eventBookings keeps genderAtSignup until the Host app reads disclosures. Bookings made before this have none; nothing backfills them, because the booking still carries genderAtSignup."
+  ],
+  "newCollectionRationale": {
+    "whyNotAnExistingCollection": "The organiser may read a guest's gender only on a gender-balanced event and only until shortly after it ends, and later only the profile answers the guest chose to share. eventBookings is readable by the organiser for every format and has no expiry, guestProfiles and eventGuestProfiles are for co-guests, and rules cannot hide one field of a document or expire one, so the disclosure needs its own document with its own expiry.",
+    "readers": [
+      "the event's organiser managers, by get, once the Host app reads disclosures"
+    ]
+  }
+}

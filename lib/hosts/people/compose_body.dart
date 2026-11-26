@@ -21,6 +21,7 @@ class HostComposeBody extends StatelessWidget {
     required this.onAudience,
     required this.onEvent,
     required this.onRetry,
+    this.onTemplate,
     this.sending = false,
   });
 
@@ -33,6 +34,9 @@ class HostComposeBody extends StatelessWidget {
   final ValueChanged<HostComposeAudience> onAudience;
   final ValueChanged<Event> onEvent;
   final VoidCallback onRetry;
+
+  /// Fills the message from a template.
+  final ValueChanged<HostComposeTemplate>? onTemplate;
   final bool sending;
 
   @override
@@ -98,6 +102,33 @@ class HostComposeBody extends StatelessWidget {
               onTap: null,
             ),
           ),
+          CatchNotice.inline(
+            key: const ValueKey<String>('host-compose-disclosure'),
+            title: l10n.hostSendsCatchAnnouncementChannel,
+            body: l10n.hostInboxAnnouncementDisclosure,
+          ),
+          if (state.recipients(audience) == 0)
+            CatchText(
+              l10n.hostsHostBroadcastComposerSheetTextThisAudienceHasNo,
+              key: const ValueKey<String>('host-compose-no-recipients'),
+              variant: CatchTextVariant.bodySmall,
+              tone: CatchTextTone.secondary,
+            ),
+          if (onTemplate case final pick? when event != null)
+            CatchSection(
+              title: l10n.hostsHostBroadcastComposerSheetTextTemplate,
+              children: [
+                for (final template in HostComposeTemplate.values)
+                  CatchIndexRow(
+                    key: ValueKey<String>(
+                      'host-compose-template-${template.name}',
+                    ),
+                    title: hostComposeTemplateLabel(l10n, template),
+                    subtitle: hostComposeTemplateDescription(l10n, template),
+                    onTap: sending ? null : () => pick(template),
+                  ),
+              ],
+            ),
           CatchFieldLanes.single(
             child: CatchField.input(
               key: const ValueKey<String>('host-compose-message'),
@@ -173,6 +204,51 @@ String hostComposeAudienceLabel(
   HostComposeAudience.booked => l10n.hostPeopleComposeBooked,
   HostComposeAudience.waitlist => l10n.hostPeopleComposeWaitlist,
   HostComposeAudience.everyone => l10n.hostPeopleComposeEveryone,
+};
+
+/// A template's name.
+String hostComposeTemplateLabel(
+  AppLocalizations l10n,
+  HostComposeTemplate template,
+) => switch (template) {
+  HostComposeTemplate.reminder =>
+    l10n.hostsHostBroadcastComposerSheetLabelReminder,
+  HostComposeTemplate.meetingPoint =>
+    l10n.hostsHostBroadcastComposerSheetLabelMeetingPoint,
+  HostComposeTemplate.change => l10n.hostsHostBroadcastComposerSheetLabelChange,
+};
+
+/// What a template is for.
+String hostComposeTemplateDescription(
+  AppLocalizations l10n,
+  HostComposeTemplate template,
+) => switch (template) {
+  HostComposeTemplate.reminder =>
+    l10n.hostsHostBroadcastComposerSheetDescriptionConfirmTimingAndHelp,
+  HostComposeTemplate.meetingPoint =>
+    l10n.hostsHostBroadcastComposerSheetDescriptionShareArrivalNotesParking,
+  HostComposeTemplate.change =>
+    l10n.hostsHostBroadcastComposerSheetDescriptionCallOutAnImportant,
+};
+
+/// The message a template starts for an event.
+String hostComposeTemplateBody(
+  AppLocalizations l10n,
+  HostComposeTemplate template,
+  Event event,
+) => switch (template) {
+  HostComposeTemplate.reminder =>
+    l10n.hostsHostBroadcastComposerSheetBodyforReminderForTitleDoors(
+      title: event.title,
+    ),
+  HostComposeTemplate.meetingPoint =>
+    l10n.hostsHostBroadcastComposerSheetBodyforWeAreMeetingAt(
+      locationName: event.locationName,
+    ),
+  HostComposeTemplate.change =>
+    l10n.hostsHostBroadcastComposerSheetBodyforQuickUpdateForTitle(
+      title: event.title,
+    ),
 };
 
 /// "7:30 PM · Harbour Room".

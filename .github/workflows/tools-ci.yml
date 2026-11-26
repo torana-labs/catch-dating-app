@@ -339,21 +339,9 @@ jobs:
             package-lock.json
             functions/package-lock.json
 
-      - uses: ./.github/actions/setup-flutter
-
-      - name: Install scanner dependencies
-        uses: ./.github/actions/install-ripgrep
-
-      - name: Resolve Flutter and standalone Dart tool dependencies
-        run: |
-          flutter pub get
-          dart pub get -C tool/widget_dedupe
-
-      - run: npm ci
-
-      - run: npm --prefix functions ci
-
-      - uses: ./.github/actions/generate-contracts-cached
+      # The bucket's tools decide its setup, by the same CI-requirement
+      # projection the affected job uses (tool/ci/tool_buckets.mjs). It needs
+      # only the pinned Node and the checkout.
       - id: bucket
         name: Resolve this bucket's tools
         env:
@@ -363,6 +351,27 @@ jobs:
           node tool/ci/tool_buckets.mjs ids --bucket "$BUCKET" > "$RUNNER_TEMP/bucket-tools.txt"
           test -s "$RUNNER_TEMP/bucket-tools.txt"
           echo "setup=$(node tool/ci/tool_buckets.mjs setup --bucket "$BUCKET")" >> "$GITHUB_OUTPUT"
+
+      - uses: ./.github/actions/setup-flutter
+        if: ${{ contains(fromJSON(steps.bucket.outputs.setup), 'flutter') }}
+
+      - name: Install scanner dependencies
+        if: ${{ contains(fromJSON(steps.bucket.outputs.setup), 'ripgrep') }}
+        uses: ./.github/actions/install-ripgrep
+
+      - name: Resolve Flutter and standalone Dart tool dependencies
+        if: ${{ contains(fromJSON(steps.bucket.outputs.setup), 'flutter-pub') }}
+        run: |
+          flutter pub get
+          dart pub get -C tool/widget_dedupe
+
+      - run: npm ci
+        if: ${{ contains(fromJSON(steps.bucket.outputs.setup), 'root-npm') }}
+
+      - run: npm --prefix functions ci
+        if: ${{ contains(fromJSON(steps.bucket.outputs.setup), 'functions-npm') }}
+
+      - uses: ./.github/actions/generate-contracts-cached
 
       - name: Install marketing design browser
         if: ${{ contains(fromJSON(steps.bucket.outputs.setup), 'playwright') }}

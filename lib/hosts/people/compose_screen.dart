@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/people/compose_body.dart';
 import 'package:catch_dating_app/hosts/people/compose_controller.dart';
@@ -43,6 +44,10 @@ class HostComposeScreen extends ConsumerStatefulWidget {
 class _HostComposeScreenState extends ConsumerState<HostComposeScreen> {
   final _message = TextEditingController();
   HostComposeAudience _audience = HostComposeAudience.booked;
+
+  /// The host picked an audience; until then an event with no one booked
+  /// but a waitlist starts on the waitlist.
+  bool _audienceChosen = false;
   String? _eventId;
   String? _requestId;
   late final DateTime _openedAt =
@@ -92,6 +97,12 @@ class _HostComposeScreenState extends ConsumerState<HostComposeScreen> {
               ),
             ),
           );
+    if (!_audienceChosen &&
+        state.status == HostComposeStatus.ready &&
+        state.booked == 0 &&
+        state.waitlisted > 0) {
+      _audience = HostComposeAudience.waitlist;
+    }
     final recipients = state.recipients(_audience);
     final event = state.event;
     final ready =
@@ -118,8 +129,22 @@ class _HostComposeScreenState extends ConsumerState<HostComposeScreen> {
           sending: sending,
           onAudience: (audience) => setState(() {
             _audience = audience;
+            _audienceChosen = true;
             _requestId = null;
           }),
+          onTemplate: event == null
+              ? null
+              : (template) {
+                  _message
+                    ..text = hostComposeTemplateBody(
+                      context.l10n,
+                      template,
+                      event,
+                    )
+                    ..selection = TextSelection.collapsed(
+                      offset: _message.text.length,
+                    );
+                },
           onEvent: (event) => setState(() {
             _eventId = event.id;
             _requestId = null;
@@ -161,10 +186,15 @@ class _HostComposeScreenState extends ConsumerState<HostComposeScreen> {
             ),
       );
       if (!mounted) return;
+      final l10n = context.l10n;
+      final partial = result.status == EventBroadcastDeliveryStatus.partial;
       showCatchNotice(
         context,
-        context.l10n.hostPeopleComposeSent(count: result.recipientCount),
-        tone: CatchNoticeTone.success,
+        partial
+            ? '${l10n.hostPeopleComposeSent(count: result.recipientCount)} '
+                  '${l10n.hostsHostInboxScreenVisiblecopySomePushAttemptsFailed}'
+            : l10n.hostPeopleComposeSent(count: result.recipientCount),
+        tone: partial ? CatchNoticeTone.warning : CatchNoticeTone.success,
       );
       await Navigator.of(context).maybePop(result);
     } on Object {

@@ -988,6 +988,28 @@ test("tools fanout selects exactly one affected or full execution path", () => {
   assert.doesNotMatch(tools, /--category "\$category"/u);
 });
 
+test("full tool buckets install only the setup their computed tools need", () => {
+  const tools = workflow("tools-ci.yml");
+  const buckets = tools.match(/  tool-buckets:\n(?<body>[\s\S]*?)\n  tools:/u)?.groups?.body;
+  assert.ok(buckets, "tool-buckets job must remain present");
+  const resolve = buckets.indexOf("name: Resolve this bucket's tools");
+  assert.ok(resolve > buckets.indexOf("uses: actions/setup-node@"), "the pinned Node resolves the bucket");
+  for (const [marker, requirement] of [
+    ["uses: ./.github/actions/setup-flutter", "flutter"],
+    ["name: Install scanner dependencies", "ripgrep"],
+    ["name: Resolve Flutter and standalone Dart tool dependencies", "flutter-pub"],
+    ["- run: npm ci", "root-npm"],
+    ["- run: npm --prefix functions ci", "functions-npm"],
+    ["name: Install marketing design browser", "playwright"],
+  ]) {
+    const at = buckets.indexOf(marker);
+    assert.ok(at > resolve, `${marker} follows the bucket resolution`);
+    const step = buckets.slice(at, buckets.indexOf("\n\n", at));
+    assert.ok(step.includes(`if: \${{ contains(fromJSON(steps.bucket.outputs.setup), '${requirement}') }}`), marker);
+  }
+  assert.match(buckets, /- uses: \.\/\.github\/actions\/generate-contracts-cached\n/u);
+});
+
 test("fast structural ratchets block dependency-heavy full tool buckets", () => {
   const tools = workflow("tools-ci.yml");
   const fastJob = tools.match(
