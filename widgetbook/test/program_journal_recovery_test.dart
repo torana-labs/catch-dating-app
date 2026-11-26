@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_operations_outbox.dart';
+import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_notice.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
@@ -17,8 +18,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Opens the recovery sheet the way the staff screens do (Save a copy in
-/// `StaffOperationsScreen.saveCopyOf`), so the sheet is tested on its own.
+/// Watches the programme outbox and opens the recovery sheet the way the
+/// staff screens do (`StaffOperationsScreen.watchOperations` and Save a copy
+/// in `saveCopyOf`), so the sheet is tested on its own.
 Widget _app(ProviderContainer container) => UncontrolledProviderScope(
   container: container,
   child: MaterialApp(
@@ -27,17 +29,20 @@ Widget _app(ProviderContainer container) => UncontrolledProviderScope(
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(
-      body: Builder(
-        builder: (context) => Center(
-          child: CatchButton(
-            label: 'Recover saved work',
-            onPressed: () => showCatchBottomSheet<void>(
-              context: context,
-              builder: (_) =>
-                  const ProgramJournalRecoverySheet(accountId: 'account'),
+      body: Consumer(
+        builder: (context, ref, _) {
+          ref.watch(programOperationsStateProvider('p'));
+          return Center(
+            child: CatchButton(
+              label: 'Recover saved work',
+              onPressed: () => showCatchBottomSheet<void>(
+                context: context,
+                builder: (_) =>
+                    const ProgramJournalRecoverySheet(accountId: 'account'),
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     ),
   ),
