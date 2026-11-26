@@ -6,11 +6,11 @@
   "typescriptInterface": "ProgramSenderViewDocument",
   "rulesTestFile": "functions/test/rules/program_whatsapp_setting_views.rules.test.cjs",
   "rulesTestNames": [
-    "admits the owner and the communications duty to the sender view, by id only"
+    "admits the owner and the inbox duties to the sender view, by id only"
   ],
   "owner": "Programme read model projector: programWhatsapp settingViewTriggers",
   "writerContext": "programmes",
-  "read": "get by programme id for the programme owner and the communications duty (programAccessViews; coordinators hold it), while not deleted; never listed",
+  "read": "get by programme id for the programme owner and the inbox duties, communications and guest relations (programAccessViews; coordinators hold both), while not deleted; never listed",
   "write": "server only; written from organizerPrograms and organizerSenderConnections",
   "exportedFunctions": [
     "dispatchOrganizerPrograms",

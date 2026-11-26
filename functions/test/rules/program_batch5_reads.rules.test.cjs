@@ -63,11 +63,14 @@ const seedView = (uid, overrides) => seedRaw(
   accessGrantPath("program-1", uid),
   accessGrantFromView(view(uid, overrides)));
 
-// Who holds what: the creator, a communications staff member, a greeter,
-// a coordinator (every duty but programAdmin), and one who lost the duty.
+// Who holds what: the creator, a communications staff member, a guest
+// relations staff member, a greeter, door staff, a coordinator (every duty
+// but programAdmin), and one who lost the duty.
 async function seedPeople() {
   await seedView("owner-1", {role: "manager", expiresAtMillis: null});
   await seedView("comms-1", {duties: {communications: future(2)}});
+  await seedView("relations-1", {duties: {guestRelations: future(2)}});
+  await seedView("door-1", {duties: {functionCheckIn: future(2)}});
   await seedView("greeter-1", {duties: {airportGreeter: future(2)}});
   await seedView("coord-1", {duties: {communications: future(2),
     programCoordinator: future(2)}});
@@ -77,18 +80,29 @@ async function seedPeople() {
   await seedRaw(["deletedUsers", "gone-1"], {deletedAt: new Date()});
 }
 
-const inboxReaders = ["owner-1", "comms-1", "coord-1"];
-const inboxDenied = ["greeter-1", "expired-1", "gone-1", "stranger"];
+// The guest inbox opens to both duties that talk to guests; photo records
+// stay with communications.
+const inboxReaders = ["owner-1", "comms-1", "relations-1", "coord-1"];
+const inboxDenied = ["greeter-1", "door-1", "expired-1", "gone-1",
+  "stranger"];
+const photoReaders = ["owner-1", "comms-1", "coord-1"];
+const photoDenied = ["relations-1", ...inboxDenied];
 
 async function readsByProgram(collectionName, ...filters) {
+  await readsByProgramFor(inboxReaders, inboxDenied, collectionName,
+    ...filters);
+}
+
+async function readsByProgramFor(readers, denied, collectionName,
+  ...filters) {
   const list = (uid) => getDocs(query(collection(authed(uid), collectionName),
     where("programId", "==", "program-1"), ...filters));
-  for (const uid of inboxReaders) await assertSucceeds(list(uid));
-  for (const uid of inboxDenied) await assertFails(list(uid));
+  for (const uid of readers) await assertSucceeds(list(uid));
+  for (const uid of denied) await assertFails(list(uid));
 }
 
 describe("programme WhatsApp rules", () => {
-  it("lists thread views for managers and the communications duty only",
+  it("lists thread views for managers and the inbox duties only",
     async () => {
       await seedPeople();
       await seedRaw(["programWhatsappThreadViews", "program-1_h1"], {
@@ -139,7 +153,8 @@ describe("programme WhatsApp rules", () => {
         "programWhatsappMessages", "m2"), {programId: "program-1"}));
     });
 
-  it("reads saved replies and photo records by the same duty", async () => {
+  it("reads saved replies by the inbox duties, photos by communications",
+    async () => {
     await seedPeople();
     await seedRaw(["programWhatsappCannedReplies", "program-1_bus"], {
       programId: "program-1", organizerId: "org-1", cannedReplyId: "bus",
@@ -149,11 +164,14 @@ describe("programme WhatsApp rules", () => {
       photoId: "photo_" + "a".repeat(40), storagePath: "programs/program-1/photos/x",
       status: "visible"});
     await readsByProgram("programWhatsappCannedReplies");
-    await readsByProgram("programPhotos");
+    await readsByProgramFor(photoReaders, photoDenied, "programPhotos");
     await assertFails(setDoc(doc(authed("owner-1"), "programPhotos", "p9"),
       {programId: "program-1"}));
-    await assertFails(setDoc(doc(authed("comms-1"),
-      "programWhatsappCannedReplies", "program-1_x"), {programId: "program-1"}));
+    for (const uid of ["comms-1", "relations-1"]) {
+      await assertFails(setDoc(doc(authed(uid),
+        "programWhatsappCannedReplies", "program-1_x"),
+      {programId: "program-1"}));
+    }
   });
 });
 

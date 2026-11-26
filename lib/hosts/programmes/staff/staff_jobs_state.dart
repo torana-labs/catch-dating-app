@@ -159,7 +159,8 @@ class StaffJobsState {
       links: [
         if (lead != null) StaffJobLink.alerts,
         if (messages) StaffJobLink.messages,
-        if (messages && access.isManager) StaffJobLink.inbox,
+        // The guest inbox, for the duties that talk to guests.
+        if (messages || guests) StaffJobLink.inbox,
         if (guests) StaffJobLink.guests,
         if (guests) StaffJobLink.importList,
         if (savedAt == null && canImportWeddingPhoneContacts(access, now))

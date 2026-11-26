@@ -254,6 +254,13 @@ service cloud.firestore {
           && programReach(programId).duties.get(duty, 0) > request.time.toMillis());
     }
 
+    // The guest inbox: the duties that talk to guests, communications or
+    // guest relations, as requireInboxAccess admits them.
+    function holdsProgramInboxDuty(programId) {
+      return hasProgramDuty(programId, 'communications')
+        || hasProgramDuty(programId, 'guestRelations');
+    }
+
     // The duty covers one pickup point, hotel or function: every one, or that
     // one by name. Each dimension is checked alone, as allowedPickupPointIds,
     // allowedHotelIds and allowedFunctionIds union them; a read that needs two
@@ -2937,9 +2944,10 @@ service cloud.firestore {
     // display number, verified name and status the inbox header, the
     // assistant settings and new planned messages show. The trigger never
     // copies provider ids, the secret reference or test evidence. Read by id
-    // by the owner and the communications duty (coordinators hold it).
+    // by the owner and the inbox duties, communications and guest relations
+    // (coordinators hold both).
     match /programSenderViews/{programId} {
-      allow get: if hasProgramDuty(programId, 'communications');
+      allow get: if holdsProgramInboxDuty(programId);
       allow list, write: if false;
     }
 
@@ -3006,11 +3014,11 @@ service cloud.firestore {
 
     // The inbox row of one thread (#1339): the latest message preview and the
     // household's names are personal data, so only the programme's managers
-    // and communications duty read them, listing by a query naming the
-    // programme. The phone hash, the sender connection and who took the
-    // thread over stay on the server-only thread.
+    // and the inbox duties (communications and guest relations) read them,
+    // listing by a query naming the programme. The phone hash, the sender
+    // connection and who took the thread over stay on the server-only thread.
     match /programWhatsappThreadViews/{threadId} {
-      allow get, list: if hasProgramDuty(resource.data.programId, 'communications');
+      allow get, list: if holdsProgramInboxDuty(resource.data.programId);
       allow write: if false;
     }
 
@@ -3018,7 +3026,7 @@ service cloud.firestore {
     // messages by a query naming the programme and the thread. Only the
     // inbound router, the reply callables and the assistant write them.
     match /programWhatsappMessages/{programWhatsappMessageId} {
-      allow get, list: if hasProgramDuty(resource.data.programId, 'communications');
+      allow get, list: if holdsProgramInboxDuty(resource.data.programId);
       allow write: if false;
     }
 
@@ -3026,10 +3034,11 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Saved replies are planner text: the same readers list one programme's.
-    // Saving stays upsertProgramWhatsappCannedReply.
+    // Saved replies are planner text: the same readers list one programme's
+    // to fill the composer. Saving stays upsertProgramWhatsappCannedReply,
+    // for the communications duty.
     match /programWhatsappCannedReplies/{programWhatsappCannedReplyId} {
-      allow get, list: if hasProgramDuty(resource.data.programId, 'communications');
+      allow get, list: if holdsProgramInboxDuty(resource.data.programId);
       allow write: if false;
     }
 

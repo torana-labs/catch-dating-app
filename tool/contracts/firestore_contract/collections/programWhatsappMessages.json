@@ -6,7 +6,7 @@
   "rulesTestFile": "functions/test/rules/program_batch5_reads.rules.test.cjs",
   "owner": "programme WhatsApp inbound router and reply callables",
   "writerContext": "programmes",
-  "read": "get and list (query naming programId and threadId) for the programme owner and the communications duty (programAccessViews), while not deleted",
+  "read": "get and list (query naming programId and threadId) for the programme owner and the inbox duties, communications and guest relations (programAccessViews), while not deleted",
   "write": "server only",
   "migrationNotes": [
     "One guest, assistant or planner message; media is recorded by reference only.",
