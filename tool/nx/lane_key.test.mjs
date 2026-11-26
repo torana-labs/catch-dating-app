@@ -7,7 +7,7 @@ import test from "node:test";
 import {fileURLToPath} from "node:url";
 
 import {alwaysRead, laneInputs, laneKey, taskInputScopes, treeBlobs} from "./lane_key.mjs";
-import {callerGraph, comparedLanes, laneForTask, targets} from "./shadow_plan.mjs";
+import {callerGraph, comparedLanes, laneForTask, targets} from "./lanes.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const nx = (args) => execFileSync("npx", ["nx", ...args], {cwd: repoRoot, encoding: "utf8", maxBuffer: 64 * 1024 * 1024,

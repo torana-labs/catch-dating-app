@@ -9,7 +9,7 @@ import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
 
-import {laneForTask, targets} from "./shadow_plan.mjs";
+import {laneForTask, targets} from "./lanes.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
