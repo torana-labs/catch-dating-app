@@ -77,10 +77,14 @@ void main() {
     await tester.tap(find.text('View page'));
     await tester.tap(find.byKey(const ValueKey('organizer-page-share')));
     await tester.tap(find.text('All insights'));
+    await tester.tap(find.byKey(const ValueKey('organizer-row-audience')));
     await tester.tap(find.text('Payments and billing'));
     await tester.tap(find.text('Team'));
     await tester.tap(find.text('Memberships'));
     await tester.tap(find.text('Event defaults'));
+    await tester.tap(find.text('Live event guide'));
+    await tester.tap(find.text('Your page so far'));
+    await tester.tap(find.text('Meta Pixel and Google Analytics'));
     await tester.tap(find.text('Rehearse a night'));
     await tester.tap(find.text('Settings'));
     await tester.tap(find.text('Help'));
@@ -89,10 +93,14 @@ void main() {
       OrganizerAction.viewPage,
       OrganizerAction.sharePage,
       OrganizerAction.insights,
+      OrganizerAction.audience,
       OrganizerAction.payments,
       OrganizerAction.team,
       OrganizerAction.memberships,
       OrganizerAction.eventDefaults,
+      OrganizerAction.liveGuide,
+      OrganizerAction.journey,
+      OrganizerAction.tracking,
       OrganizerAction.rehearse,
       OrganizerAction.settings,
       OrganizerAction.help,

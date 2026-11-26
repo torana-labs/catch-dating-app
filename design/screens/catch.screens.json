@@ -14058,7 +14058,7 @@
             "symbol": "ChatsEmptyState"
           },
           {
-            "file": "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
+            "file": "lib/hosts/organizer/whatsapp_setup_section.dart",
             "symbol": "HostWhatsappSetupSection"
           },
           {
@@ -15090,7 +15090,7 @@
             "layer": "section",
             "claudeComponents": [],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
+              "file": "lib/hosts/organizer/whatsapp_setup_section.dart",
               "symbol": "HostWhatsappSetupSection"
             },
             "currentOwner": "hosts.presentation.inbox",

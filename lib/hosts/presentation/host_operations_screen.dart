@@ -3,14 +3,11 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
-import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
-import 'package:catch_dating_app/contexts/messaging/data/host_whatsapp_embedded_signup.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_profile_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
@@ -21,7 +18,6 @@ import 'package:catch_dating_app/contexts/profiles/domain/image_upload_job.dart'
 import 'package:catch_dating_app/event_success/event_success.dart'
     show EventSuccessDefaultsSection;
 import 'package:catch_dating_app/hosts/insights/host_insights_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_count_formatters.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_defaults_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_preferences_section.dart';
@@ -72,6 +68,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+export 'package:catch_dating_app/hosts/organizer/whatsapp_setup_section.dart'
+    show HostWhatsappSetupSection;
 export 'package:catch_dating_app/hosts/presentation/host_operations_screen_state.dart';
 
 part 'host_operations/host_loading_screen.dart';
@@ -89,7 +87,6 @@ part 'host_operations/host_organizer_team_screen.dart';
 part 'host_operations/host_organizers_scaffold.dart';
 part 'host_operations/host_organizers_screen.dart';
 part 'host_operations/host_team_hosted_organizers_section.dart';
-part 'host_operations/host_whatsapp_setup_section.dart';
 
 enum HostTeamMode { edit, preview }
 
