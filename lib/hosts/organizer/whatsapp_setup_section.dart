@@ -171,15 +171,20 @@ class _HostWhatsappSetupSectionState
     );
   }
 
-  Future<void> _connectWhatsapp(HostMessagingSetup setup) => _run(() async {
-    final result = await startHostWhatsappEmbeddedSignup(setup.embeddedSignup);
-    await ref
-        .read(hostAudienceControllerProvider)
-        .completeWhatsappConnection(
-          organizerId: widget.organizer.id,
-          result: result,
-        );
-  });
+  // The commands are read before the signup: a signup that finishes after the
+  // section closed still completes the connection.
+  Future<void> _connectWhatsapp(HostMessagingSetup setup) {
+    final commands = ref.read(hostAudienceControllerProvider);
+    return _run(() async {
+      final result = await startHostWhatsappEmbeddedSignup(
+        setup.embeddedSignup,
+      );
+      await commands.completeWhatsappConnection(
+        organizerId: widget.organizer.id,
+        result: result,
+      );
+    });
+  }
 
   Future<void> _syncTemplates(String connectionId) => _run(() async {
     await ref
