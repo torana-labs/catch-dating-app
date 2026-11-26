@@ -88,6 +88,7 @@
       ],
       "minLength": 1,
       "maxLength": 120,
+      "description": "Retired 24 Nov 2026 (#2493): never written. A booking cohort encodes the guest's gender and who they are interested in, and organisers read this document, so the cohort lives only in eventBookingPrivateFacts. Tolerated only until move-booking-cohorts clears the copies older writes left; every booking write also removes it.",
       "x-catch-ownership": "callable-owned"
     },
     "paymentId": {

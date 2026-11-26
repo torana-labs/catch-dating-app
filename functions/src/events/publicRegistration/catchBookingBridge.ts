@@ -7,6 +7,8 @@ import {
   eventParticipationId,
   eventParticipationPatch,
 } from "../../shared/relationshipDocuments";
+import {readBookingCohort, writeBookingCohort} from
+  "../../shared/bookingPrivateFacts";
 import {
   activityNotificationId,
   eventActivityNotificationCopy,
@@ -22,7 +24,6 @@ type Participation = {
   status?: string;
   paymentId?: string | null;
   genderAtSignup?: string | null;
-  cohortAtSignup?: string | null;
 };
 
 /** A Consumer booking whose seat and money belong to an organizer-routed
@@ -71,6 +72,8 @@ export async function prepareCatchBookingAdmission(input: {
     user.gender : null;
   const cohortId = cohortIdForUser(user);
   const wasWaitlisted = existing?.status === "waitlisted";
+  const waitlistedCohort = wasWaitlisted ? await readBookingCohort({db, tx,
+    eventId, uid, booking: existing}) : undefined;
   return {
     eventCounts(event: EventDocument): Record<string, unknown> {
       return {
@@ -81,7 +84,7 @@ export async function prepareCatchBookingAdmission(input: {
           waitlistedCount: admin.firestore.FieldValue.increment(-1),
           waitlistedCohortCounts: decrementCount(
             event.waitlistedCohortCounts ?? {},
-            existing?.cohortAtSignup ?? cohortId,
+            waitlistedCohort ?? cohortId,
           ),
         } : {}),
       };
@@ -95,10 +98,10 @@ export async function prepareCatchBookingAdmission(input: {
         uid,
         status: "signedUp",
         genderAtSignup: gender ?? undefined,
-        cohortAtSignup: cohortId,
         paymentId,
       });
       tx.set(participationRef, admission, {merge: true});
+      writeBookingCohort({db, tx, eventId, uid, cohortAtSignup: cohortId});
       // The admission writes the web row itself; it gains only the booking
       // facts and the pointer here.
       writeCatchBookingRoster({db, tx, slot: rosterSlot,
@@ -132,6 +135,8 @@ export function catchBookingCancellation(input: {
   event: EventDocument;
   eventId: string;
   uid: string;
+  /** The cohort the booking was counted under (readBookingCohort). */
+  cohortAtSignup?: string;
 }): Record<string, unknown> {
   const {tx, participationRef, participation, event, eventId, uid} = input;
   const cancellation = eventParticipationPatch({
@@ -149,7 +154,7 @@ export function catchBookingCancellation(input: {
   return {
     ...(gender ? {[`genderCounts.${gender}`]:
       Math.max(0, (event.genderCounts?.[gender] ?? 1) - 1)} : {}),
-    ...(participation.cohortAtSignup ? {cohortCounts: decrementCount(
-      event.cohortCounts ?? {}, participation.cohortAtSignup)} : {}),
+    ...(input.cohortAtSignup ? {cohortCounts: decrementCount(
+      event.cohortCounts ?? {}, input.cohortAtSignup)} : {}),
   };
 }

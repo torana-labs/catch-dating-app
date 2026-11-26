@@ -1,5 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useState} from "react";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {
   getTakedownRequest,
   updateTakedownRequest,
@@ -25,6 +26,7 @@ export function useTakedownRequestController({requestId, onError, onNotice, onCh
   onChanged?: () => void;
 }) {
   const queryClient = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const key = ["takedownRequest", requestId] as const;
   const detail = useQuery({queryKey: key, queryFn: () => getTakedownRequest(requestId)});
   const [infoTemplate, setInfoTemplate] = useState<TakedownInfoTemplate | null>(null);
@@ -46,8 +48,20 @@ export function useTakedownRequestController({requestId, onError, onNotice, onCh
 
   const caseNeeded = outcome !== null && (detail.data?.caseOutcomes ?? []).includes(outcome);
   const caseIdValid = caseIdPattern.test(caseId.trim());
-  const run = (input: Omit<TakedownStep, "requestId" | "note">) =>
-    step.mutate({requestId, ...input, ...(note.trim() ? {note: note.trim().slice(0, 500)} : {})});
+  const takeStep = async (input: Omit<TakedownStep, "requestId" | "note">) => {
+    const operation = beginOperation();
+    if (!operation) return;
+    try {
+      await step.mutateAsync({requestId, ...input, ...(note.trim() ? {note: note.trim().slice(0, 500)} : {})});
+    } catch {
+      // The mutation's onError has already told the operator.
+    } finally {
+      endOperation(operation);
+    }
+  };
+  const run = (input: Omit<TakedownStep, "requestId" | "note">) => {
+    void takeStep(input);
+  };
 
   return {
     detail: detail.data ?? null,

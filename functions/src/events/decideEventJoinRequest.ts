@@ -38,6 +38,7 @@ import {
   eventBookingsByStatusInTransaction,
   participantUids,
 } from "../shared/relationshipDocuments";
+import {readBookingCohort} from "../shared/bookingPrivateFacts";
 import {
   releaseUserEventScheduleInTransaction,
 } from "./scheduleConflicts";
@@ -174,7 +175,6 @@ export async function decideEventJoinRequestHandler(
     const participation = participationSnap.exists ?
       participationSnap.data() as {
         status?: string;
-        cohortAtSignup?: string;
       } :
       null;
 
@@ -195,7 +195,8 @@ export async function decideEventJoinRequestHandler(
     }
     const scheduledEvent = requireEventTimeRange(event);
 
-    const cohortId = participation.cohortAtSignup ?? cohortIdForUser(requester);
+    const cohortId = await readBookingCohort({db, tx, eventId, uid: userId,
+      booking: participation}) ?? cohortIdForUser(requester);
     const decidedAt = deps.serverTimestamp();
 
     if (decision === "decline") {
@@ -215,7 +216,6 @@ export async function decideEventJoinRequestHandler(
           uid: userId,
           status: "cancelled",
           genderAtSignup: requester.gender,
-          cohortAtSignup: cohortId,
         }),
         hostApprovalStatus: "declined",
         hostApprovalDecidedAt: decidedAt,
