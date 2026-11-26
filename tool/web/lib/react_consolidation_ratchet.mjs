@@ -38,13 +38,14 @@ export const strandedByRetirementCeiling = Object.freeze({
 
 /**
  * Debt the owner accepted on 11 Nov 2026 so the website could release, each
- * with the issue that pays it down by its due date. The baseline's
+ * with the issue that pays it down by its due date (first due 25 Nov 2026,
+ * moved to 10 Dec 2026 while #1670 is still open). The baseline's
  * `acceptedDebt` record may hold these and only these, as
  * "<issue> due <YYYY-MM-DD>". An entry still measured after its due date
  * fails the check; one that is paid down leaves both the gate and the record.
  * Delete this list with the record's last entry.
  */
-const acceptedPlan = "#1670 due 2026-11-25";
+const acceptedPlan = "#1670 due 2026-12-10";
 export const acceptedDebtCeiling = Object.freeze({
   "library.cross_framework_parity": Object.freeze({
     "catch.notice": acceptedPlan,
@@ -61,6 +62,23 @@ export const acceptedDebtCeiling = Object.freeze({
   }),
 });
 const acceptedPlanPattern = /^(#\d+) due (\d{4}-\d{2}-\d{2})$/u;
+/**
+ * Plans the closed list held before, mapped to the plan that replaced them, so
+ * a merge base that still records an earlier due date parses. Only the merge
+ * base is read this way; the recorded baseline must hold the current plan.
+ * Delete with acceptedDebtCeiling.
+ */
+const supersededAcceptedPlans = Object.freeze({"#1670 due 2026-11-25": acceptedPlan});
+
+/** A merge-base baseline with superseded accepted-debt plans read as current. */
+export function withCurrentAcceptedPlans(document) {
+  if (!object(document) || !object(document.acceptedDebt)) return document;
+  const acceptedDebt = Object.fromEntries(Object.entries(document.acceptedDebt).map(([gate, record]) =>
+    [gate, object(record) ? Object.fromEntries(Object.entries(record).map(([id, plan]) =>
+      [id, acceptedDebtCeiling[gate]?.[id] && supersededAcceptedPlans[plan] === acceptedDebtCeiling[gate][id]
+        ? acceptedDebtCeiling[gate][id] : plan])) : record]));
+  return {...document, acceptedDebt};
+}
 
 const sortedBudgets = (budgets) =>
   Object.fromEntries(Object.entries(budgets).sort(([left], [right]) => left.localeCompare(right)));
@@ -259,7 +277,7 @@ function mergeBase(root) {
 export function previousConsolidationBaseline(root, base = mergeBase(root)) {
   const git = (args) => execFileSync("git", args, {cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]}).trim();
   return git(["ls-tree", "--name-only", base, baselinePath])
-    ? parseConsolidationBaseline(JSON.parse(git(["show", `${base}:${baselinePath}`]))) : null;
+    ? parseConsolidationBaseline(withCurrentAcceptedPlans(JSON.parse(git(["show", `${base}:${baselinePath}`])))) : null;
 }
 
 /** Called only by the existing check; scorecard --json inventory stays read-only. */
