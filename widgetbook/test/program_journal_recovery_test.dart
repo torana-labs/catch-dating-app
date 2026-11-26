@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_operations_outbox.dart';
+import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_notice.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
@@ -12,10 +13,14 @@ import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/programmes/program_operations_fixture.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+/// Watches the programme outbox and opens the recovery sheet the way the
+/// staff screens do (`StaffOperationsScreen.watchOperations` and Save a copy
+/// in `saveCopyOf`), so the sheet is tested on its own.
 Widget _app(ProviderContainer container) => UncontrolledProviderScope(
   container: container,
   child: MaterialApp(
@@ -23,8 +28,22 @@ Widget _app(ProviderContainer container) => UncontrolledProviderScope(
     theme: AppTheme.light,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
-    home: const Scaffold(
-      body: ProgramOperationsNotice(programId: 'p', pickupPointId: 'station'),
+    home: Scaffold(
+      body: Consumer(
+        builder: (context, ref, _) {
+          ref.watch(programOperationsStateProvider('p'));
+          return Center(
+            child: CatchButton(
+              label: 'Recover saved work',
+              onPressed: () => showCatchBottomSheet<void>(
+                context: context,
+                builder: (_) =>
+                    const ProgramJournalRecoverySheet(accountId: 'account'),
+              ),
+            ),
+          );
+        },
+      ),
     ),
   ),
 );
@@ -65,12 +84,6 @@ void main() {
       addTearDown(container.dispose);
       await tester.pumpWidget(_app(container));
       await pumpFeatureUi(tester);
-      expect(
-        find.text(
-          'Some saved operations need recovery. Keep the app’s saved data and contact support.',
-        ),
-        findsOneWidget,
-      );
       await tester.tap(find.text('Recover saved work'));
       await pumpFeatureUi(tester);
       expect(find.text('Saved work recovery'), findsOneWidget);

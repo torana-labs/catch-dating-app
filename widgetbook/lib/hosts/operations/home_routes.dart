@@ -5,7 +5,6 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switc
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -38,17 +37,12 @@ final _longNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
 
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostOrganizerAvatar,
+  type: HostLoadingScreen,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
   type: CatchEmptyState,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host home route states',
-  type: HostLoadingScreen,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 Widget hostHomeRouteStates(BuildContext context) {
@@ -211,50 +205,27 @@ Widget hostHomeRouteStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Navigation identity states',
-  type: HostOrganizerAvatar,
+  name: 'Long-press switcher states',
+  type: HostOrganizerSwitcherSheet,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
-Widget hostOrganizerIdentityPillStates(BuildContext context) {
-  final organizer = HostOperationsFixtures.primaryOrganizer.copyWith(
-    profileImageUrl: 'assets/fixtures/club_hero_portrait.jpg',
-  );
+Widget hostOrganizerSwitcherSheetStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'HostOrganizerAvatar',
-    contractId: 'component.host.navigation.organizer-avatar',
+    title: 'HostOrganizerSwitcherSheet',
+    contractId: 'component.host.navigation.organizer-switcher',
     children: [
-      WidgetbookPageStateCard(
-        label: 'navigation avatar',
-        child: WidgetbookHostHomeSectionFrame(
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: HostOrganizerAvatar(
-              organizer: organizer,
-              size: CatchLayout.appShellNavigationIdentityExtent,
-            ),
-          ),
-        ),
-      ),
       WidgetbookPageStateCard(
         label: 'long-press switcher sheet',
         child: WidgetbookHostHomeSectionFrame(
           child: HostOrganizerSwitcherSheet(
             organizers: HostOperationsFixtures.organizers,
-            selectedOrganizerId: organizer.id,
+            selectedOrganizerId: HostOperationsFixtures.primaryOrganizer.id,
           ),
         ),
       ),
     ],
   );
 }
-
-@widgetbook.UseCase(
-  name: 'Long-press switcher states',
-  type: HostOrganizerSwitcherSheet,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostOrganizerSwitcherSheetStates(BuildContext context) =>
-    hostOrganizerIdentityPillStates(context);
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

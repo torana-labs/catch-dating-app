@@ -23615,58 +23615,6 @@
     "x-owner": "product",
     "x-surface": "event_rehearsal.presentation"
   },
-  "hostRehearsalStartTitle": "Start dress rehearsal",
-  "@hostRehearsalStartTitle": {
-    "description": "Title for the rehearsal starting-point sheet.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_rehearsal.presentation"
-  },
-  "hostRehearsalStartSubtitle": "Choose a starting point",
-  "@hostRehearsalStartSubtitle": {
-    "description": "Supporting copy for the rehearsal starting-point sheet.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_rehearsal.presentation"
-  },
-  "hostRehearsalStartUpcoming": "Rehearse {title}",
-  "@hostRehearsalStartUpcoming": {
-    "description": "Choice that starts from an upcoming event.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_rehearsal.presentation",
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
-  "hostRehearsalStartUpcomingDescription": "Uses its format and {count}-person guest list. You can adjust the rehearsal copy.",
-  "@hostRehearsalStartUpcomingDescription": {
-    "description": "Explains what is copied from the selected upcoming event.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_rehearsal.presentation",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "hostRehearsalStartCustom": "Create a custom rehearsal",
-  "@hostRehearsalStartCustom": {
-    "description": "Choice that starts from organizer defaults.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_rehearsal.presentation"
-  },
-  "hostRehearsalStartCustomDescription": "Start with organiser defaults, then choose the format, guests and scenario.",
-  "@hostRehearsalStartCustomDescription": {
-    "description": "Explains the editable custom rehearsal path.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_rehearsal.presentation"
-  },
   "hostRehearsalEntrySample": "Practise hosting",
   "@hostRehearsalEntrySample": {
     "description": "Dress rehearsal entry and optional configuration: EntrySample.",
@@ -25540,8 +25488,6 @@
   "@coreSavedOperationsQuarantined": {"description": "Shared attendance/program command journal contains quarantined records requiring recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "core.app_error_message"},
   "coreSavedOperationsUnavailable": "Saved operations could not be read or saved. Free device space and try again. Keep the app’s saved data if you need support.",
   "@coreSavedOperationsUnavailable": {"description": "Shared attendance/program command journal storage is unavailable; original data must be preserved.", "x-audience": "host", "x-owner": "product", "x-surface": "core.app_error_message"},
-  "programsRecoveryAction": "Recover saved work",
-  "@programsRecoveryAction": {"description": "Opens recovery options when the local operations journal cannot be read.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
   "programsRecoveryTitle": "Saved work recovery",
   "@programsRecoveryTitle": {"description": "Title of the saved operations recovery sheet and exported file.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
   "programsRecoveryBody": "Export a recovery copy for review with support. It includes this account’s saved operations across all programs on this device and may contain private guest or trip details. Choose a trusted place to save it. Exporting does not repair, send, or delete any saved operation. Keep the original app data until recovery is complete.",
@@ -25550,12 +25496,6 @@
   "@programsRecoveryExport": {"description": "Opens the platform file share or download flow for a recovery copy; does not automatically contact support.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
   "programsOperationsPassengersNotReady": "Every passenger must be marked ready at the curb before this vehicle departs.",
   "@programsOperationsPassengersNotReady": {"description": "Program saved operation review and recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
-  "programsArrivalsOutboxTitle": "Offline queue",
-  "@programsArrivalsOutboxTitle": {"description": "Program operations copy: programsArrivalsOutboxTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
-  "programsArrivalsOutboxSync": "Sync now",
-  "@programsArrivalsOutboxSync": {"description": "Program operations copy: programsArrivalsOutboxSync.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
-  "programsArrivalsOutboxClear": "Review changes",
-  "@programsArrivalsOutboxClear": {"description": "Program operations copy: programsArrivalsOutboxClear.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
   "programsDoorRsvpAttending": "Attending",
   "@programsDoorRsvpAttending": {"description": "RSVP badge: attending.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_door_screen"},
   "programsDoorRsvpDeclined": "Declined",
@@ -25634,10 +25574,6 @@
   "@programsRoomsStatusCheckedOut": {"description": "Program operations copy: programsRoomsStatusCheckedOut.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_rooms_screen"},
   "programsRoomsStatusCancelled": "Cancelled",
   "@programsRoomsStatusCancelled": {"description": "Program operations copy: programsRoomsStatusCancelled.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_rooms_screen"},
-  "programsArrivalsOutboxPending": "{count} change(s) queued while offline. They will sync when connectivity returns.",
-  "@programsArrivalsOutboxPending": {"description": "Program operations copy: programsArrivalsOutboxPending.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen", "placeholders": {"count": {"type": "int"}}},
-  "programsArrivalsOutboxReview": "{pending} pending, {review} need review before they can sync.",
-  "@programsArrivalsOutboxReview": {"description": "Program operations copy: programsArrivalsOutboxReview.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen", "placeholders": {"pending": {"type": "int"}, "review": {"type": "int"}}},
   "hostResponseFilterSelectionLimit": "Choose up to {count} options per question.",
   "@hostResponseFilterSelectionLimit": {"description": "Shown only when a response filter selection exceeds the API limit.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation"},
   "eventMatchingTitle": "Use form answers for event matching",

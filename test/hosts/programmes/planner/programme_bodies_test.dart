@@ -160,6 +160,47 @@ void main() {
     expect(sent, 1);
   });
 
+  testWidgets('a household member opens their answers to change them', (
+    tester,
+  ) async {
+    String? edited;
+    await pumpPlannerBody(
+      tester,
+      HostProgrammeHouseholdBody(
+        state: plannerState,
+        householdId: 'mehra',
+        onCall: (_) {},
+        onSendLink: () {},
+        onRetry: () {},
+        onEditMember: (member) => edited = member.guestId,
+      ),
+    );
+    await tester.tap(find.byKey(const ValueKey('host-programme-member-kamla')));
+    expect(edited, 'kamla');
+  });
+
+  testWidgets('the guest list offers phone contacts when allowed', (
+    tester,
+  ) async {
+    var opened = 0;
+    await pumpPlannerBody(
+      tester,
+      HostProgrammeGuestsBody(
+        state: plannerState,
+        filter: HostProgrammeGuestFilter.all,
+        onView: (_) {},
+        onFilter: (_) {},
+        onImport: () {},
+        onOpenHousehold: (_) {},
+        onRetry: () {},
+        onPhoneImport: () => opened++,
+      ),
+    );
+    expect(find.text('Import phone contacts'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('program-guests-phone-import')));
+    expect(opened, 1);
+  });
+
   testWidgets('travel shows what needs the planner', (tester) async {
     HostProgrammeTravelLink? link;
     await pumpPlannerBody(

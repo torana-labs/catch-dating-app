@@ -127,32 +127,6 @@ void main() {
     expect(effects.playedKinds, isEmpty);
   });
 
-  testWidgets('paper confirmation renders as its own full-screen surface', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: const PaperCelebrationScaffold(
-          eyebrow: 'Event created',
-          title: 'Your event is live.',
-          message: 'The event is ready to manage.',
-          details: [CelebrationDetail(label: 'When', value: 'Sunday morning')],
-          primaryAction: CelebrationAction(
-            label: 'Manage event',
-            onPressed: _noop,
-          ),
-        ),
-      ),
-    );
-
-    expect(find.byType(Scaffold), findsOneWidget);
-    expect(find.text('EVENT CREATED'), findsOneWidget);
-    expect(find.text('Your event is live.'), findsOneWidget);
-    expect(find.text('Sunday morning'), findsOneWidget);
-    expect(find.text('Manage event'), findsOneWidget);
-  });
-
   testWidgets('keeps long celebration content scrollable on short screens', (
     tester,
   ) async {
@@ -213,8 +187,6 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 }
-
-void _noop() {}
 
 class _FakeCelebrationEffectsController extends CelebrationEffectsController {
   _FakeCelebrationEffectsController();

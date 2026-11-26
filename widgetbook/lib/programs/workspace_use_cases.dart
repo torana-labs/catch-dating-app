@@ -353,29 +353,6 @@ class _DialogFrame extends StatelessWidget {
 
 @widgetbook.UseCase(
   name: 'Screen states',
-  type: ProgramGuestsScreen,
-  path: '[P1 product surfaces]/Program guests',
-)
-Widget programGuestsScreenStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProgramGuestsScreen',
-    contractId: 'screen.programs.guests',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'household grid',
-        child: WidgetbookUtilityDeviceFrame(
-          child: ProviderScope(
-            overrides: _workspaceOverrides(),
-            child: const ProgramGuestsScreen(programId: _programId),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Screen states',
   type: ProgramGuestDeskScreen,
   path: '[P1 product surfaces]/Program guests',
 )
