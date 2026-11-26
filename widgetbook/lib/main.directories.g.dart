@@ -251,6 +251,8 @@ import 'package:widgetbook_workspace/hosts/host_sends_use_cases.dart'
     as _widgetbook_workspace_hosts_host_sends_use_cases;
 import 'package:widgetbook_workspace/hosts/host_setup_claim_use_cases.dart'
     as _widgetbook_workspace_hosts_host_setup_claim_use_cases;
+import 'package:widgetbook_workspace/hosts/host_staff_event_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_staff_event_use_cases;
 import 'package:widgetbook_workspace/hosts/host_system_parts_use_cases.dart'
     as _widgetbook_workspace_hosts_host_system_parts_use_cases;
 import 'package:widgetbook_workspace/hosts/host_today_requests_use_cases.dart'
@@ -10359,6 +10361,22 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_booking_provider_use_cases
                             .hostRuntimeClaimListState,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Staff',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'StaffEventScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Cancelled event',
+                    builder:
+                        _widgetbook_workspace_hosts_host_staff_event_use_cases
+                            .staffEventScreenCancelledUseCase,
                   ),
                 ],
               ),

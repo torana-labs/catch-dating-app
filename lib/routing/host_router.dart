@@ -52,7 +52,6 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_pr
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_route_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_operator_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_create_organizer_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/programmes.dart';
@@ -405,7 +404,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostWorkEventScreen.path,
     name: Routes.hostWorkEventScreen.name,
     builder: (context, state) =>
-        HostEventOperatorScreen(eventId: state.pathParameters['eventId']!),
+        StaffEventScreen(eventId: state.pathParameters['eventId']!),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.today,

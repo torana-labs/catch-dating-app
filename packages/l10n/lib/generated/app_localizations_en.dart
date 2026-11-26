@@ -11426,17 +11426,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsEventStaffStatusExpired => 'Expired';
 
   @override
-  String get hostsEventOperatorTitle => 'Event operations';
-
-  @override
   String get hostsEventOperatorCancelledTitle => 'This event was cancelled';
 
   @override
   String get hostsEventOperatorCancelledMessage =>
       'Its roster can no longer be changed from the staff workspace.';
-
-  @override
-  String get hostsEventOperatorAccessTitle => 'Restricted event access';
 
   @override
   String get hostsEventOperatorAccessSubtitle =>
