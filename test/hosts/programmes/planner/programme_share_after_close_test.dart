@@ -53,7 +53,7 @@ void main() {
         expect(tester.takeException(), isNull);
         expect(probe.shared, hasLength(1));
         expect(probe.shared.single, contains('link-token'));
-        await tester.pump(const Duration(minutes: 1));
+        await pumpFeatureUiFor(tester, const Duration(minutes: 1));
       });
 
       testWidgets('a link that lands after the screen closes opens no share '
@@ -70,7 +70,7 @@ void main() {
 
         expect(tester.takeException(), isNull);
         expect(probe.shared, isEmpty);
-        await tester.pump(const Duration(minutes: 1));
+        await pumpFeatureUiFor(tester, const Duration(minutes: 1));
       });
     });
   }

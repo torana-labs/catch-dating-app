@@ -61,7 +61,7 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(logger.errors, hasLength(1));
     // Let the mutation's own timers run out before the test ends.
-    await tester.pump(const Duration(minutes: 1));
+    await pumpFeatureUiFor(tester, const Duration(minutes: 1));
   });
 }
 
