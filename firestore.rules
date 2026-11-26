@@ -3898,9 +3898,12 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // FIX-12: scorecards hold event-level catch, match and chat counts.
+    // Hosts get no direct read until an event-level stats screen applies
+    // the group-size floor (config/guestDataVisibility); the server still
+    // computes them.
     match /eventSuccessScorecards/{eventId} {
-      allow read: if isAuthed() && isOrganizerHostForEvent(eventId);
-      allow write: if false;
+      allow read, write: if false;
     }
 
     // ── Participant success / marketplace metrics ───────────────────────────
