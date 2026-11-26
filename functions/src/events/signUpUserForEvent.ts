@@ -66,6 +66,8 @@ import {
   type EventBookingCountersPatch,
   updateEventBookingCounters,
 } from "../domain/events/eventDocumentWrites";
+import {readEventWithCohortCounts} from
+  "../domain/events/eventCohortCounts";
 
 /**
  * Core sign-up business logic — shared by signUpForFreeEvent (free events),
@@ -150,13 +152,8 @@ export async function signUpUserForEvent(
       throw new HttpsError("not-found", "User profile not found.");
     }
 
-    const event = requireDoc<EventDocument>(
-
-      eventSnap,
-
-      "EventDocument"
-
-    );
+    const event = await readEventWithCohortCounts(tx, db, eventId,
+      requireDoc<EventDocument>(eventSnap, "EventDocument"));
     const pairHoldSnap = pairHoldRef ? await tx.get(pairHoldRef) : null;
     const pairHold = pairHoldSnap?.exists ?
       requireDoc<CrossPathsPairHoldDocument>(

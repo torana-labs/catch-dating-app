@@ -48,6 +48,7 @@ export class Store {
       limit: (count: number) => ({collection: name, filters, count, order}),
     });
     return {doc: (id: string) => ({path: `${name}/${id}`, id,
+      firestore: this,
       collection: (child: string) =>
         this.collection(`${name}/${id}/${child}`)}),
     where: (field: string, op: string, value: unknown) =>

@@ -62,6 +62,10 @@ export function createAccountDeletionHarness(params: {
     const ref = {
       id: docId,
       path,
+      // Like a DocumentReference, so writers can reach sibling documents.
+      get firestore() {
+        return firestore;
+      },
       collectionPath,
       docId,
       data: () => seed[path],
@@ -75,7 +79,7 @@ export function createAccountDeletionHarness(params: {
         setWrites.push({path, data, options});
         seed[path] = options?.merge ? {...seed[path], ...data} : data;
       },
-    } as FakeDocumentReference;
+    } as unknown as FakeDocumentReference;
     ref.ref = ref;
     return ref;
   };

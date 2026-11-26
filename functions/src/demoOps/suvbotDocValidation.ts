@@ -1,6 +1,9 @@
 import type {ValidateFunction} from "ajv";
 import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
 import {
+  validateEventCohortCountsDocument,
+} from "../shared/generated/validators/eventCohortCountsDocument";
+import {
   validateActivityNotificationDocument,
 } from "../shared/generated/validators/activityNotificationDocument";
 import {
@@ -96,6 +99,10 @@ const contractedPaths: ReadonlyArray<{
   {
     pattern: /^eventSeatReservations\/[^/]+$/u,
     validate: validateEventSeatReservationDocument,
+  },
+  {
+    pattern: /^eventCohortCounts\/[^/]+$/u,
+    validate: validateEventCohortCountsDocument,
   },
   {pattern: /^savedEvents\/[^/]+$/u, validate: validateSavedEventDocument},
   {

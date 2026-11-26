@@ -55,6 +55,8 @@ import {
 } from "./stripe";
 import {findHostPaymentAccount, providerAccountId} from
   "./hostPaymentAccounts";
+import {fetchEventWithCohortCounts} from
+  "../domain/events/eventCohortCounts";
 
 interface CreateStripeCheckoutSessionDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -109,10 +111,11 @@ export async function createStripeCheckoutSessionHandler(
     throw new HttpsError("not-found", "User profile not found.");
   }
 
-  const event = requirePublicConfiguredEvent(requireDoc<EventDocument>(
-    eventSnap,
-    "EventDocument"
-  ));
+  const event = await fetchEventWithCohortCounts(db, eventId,
+    requirePublicConfiguredEvent(requireDoc<EventDocument>(
+      eventSnap,
+      "EventDocument"
+    )));
   requireCatchBookingAuthority(event);
   const user = requireDoc<UserProfileDocument>(
     userSnap,

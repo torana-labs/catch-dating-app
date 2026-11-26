@@ -70,7 +70,8 @@ test("a Catch user's paid admission is also their app booking", async () => {
     ?.cohortAtSignup, "womenInterestedInMen");
   const event = h.store.get(`events/${eventId}`)!;
   assert.equal(event.bookedCount, 1);
-  assert.deepEqual(event.cohortCounts, {womenInterestedInMen: 4});
+  assert.deepEqual(h.store.get(`eventCohortCounts/${eventId}`)?.cohortCounts,
+    {womenInterestedInMen: 4});
   assert.equal(h.store.get(`eventSeatLedgers/${eventId}`)?.occupied, 1);
 });
 
@@ -100,7 +101,8 @@ for (const refund of [0, 10000]) {
     assert.equal(h.store.get(`eventSeatLedgers/${eventId}`)?.occupied, 0);
     const event = h.store.get(`events/${eventId}`)!;
     assert.equal(event.bookedCount, 0);
-    assert.deepEqual(event.cohortCounts, {womenInterestedInMen: 3});
+    assert.deepEqual(h.store.get(`eventCohortCounts/${eventId}`)
+      ?.cohortCounts, {womenInterestedInMen: 3});
   });
 }
 
