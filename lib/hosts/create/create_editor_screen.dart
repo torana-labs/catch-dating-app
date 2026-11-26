@@ -1,9 +1,7 @@
-import 'package:catch_dating_app/hosts/create/create_basics_screen.dart';
+import 'package:catch_dating_app/hosts/create/create_edit_handlers.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_handlers.dart';
-import 'package:catch_dating_app/hosts/create/create_plan_screen.dart';
-import 'package:catch_dating_app/hosts/create/create_tickets_screen.dart';
-import 'package:catch_dating_app/hosts/create/create_when_screen.dart';
+import 'package:catch_dating_app/hosts/create/create_step_form.dart';
 import 'package:catch_dating_app/hosts/create/widgets/create_editor_rail.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -13,6 +11,10 @@ import 'package:flutter/widgets.dart';
 /// organizer, New event, Close, Save draft and the next step, over the
 /// editor pane layout with the step list, the current step's form and the
 /// live preview.
+///
+/// With [edit] handlers it edits a saved event: the bar says Edit event
+/// and has Save changes in place of Save draft and the next step, and the
+/// step list moves between the steps' forms.
 class CreateEditorScreen extends StatelessWidget {
   const CreateEditorScreen({
     super.key,
@@ -21,6 +23,8 @@ class CreateEditorScreen extends StatelessWidget {
     required this.today,
     required this.stillToSet,
     this.overlay,
+    this.edit,
+    this.header,
   });
 
   final CreateFlowState state;
@@ -29,33 +33,66 @@ class CreateEditorScreen extends StatelessWidget {
   final List<String> stillToSet;
   final Widget? overlay;
 
+  /// Set when the editor changes a saved event.
+  final CreateEditHandlers? edit;
+
+  /// Above the form: an edit's scope notice and save error.
+  final Widget? header;
+
   @override
   Widget build(BuildContext context) {
     final step = state.step;
     final busy = state.working || state.savingDraft;
-    final form = switch (step) {
-      CreateStep.basics => CreateBasicsScreen.bodyFor(
-        state,
-        handlers,
-        showTitle: true,
-      ),
-      CreateStep.when => CreateWhenScreen.bodyFor(
-        state,
-        handlers,
-        today: today,
-        showTitle: true,
-      ),
-      CreateStep.tickets => CreateTicketsScreen.bodyFor(
-        state,
-        handlers,
-        showTitle: true,
-      ),
-      CreateStep.plan || CreateStep.share => CreatePlanScreen.bodyFor(
-        state,
-        handlers,
-        showTitle: true,
-      ),
-    };
+    final edit = this.edit;
+    final header = this.header;
+    final stepForm = CreateStepForm(
+      state: state,
+      handlers: handlers,
+      step: step,
+      today: today,
+      edit: edit,
+      showTitle: true,
+    );
+    final form = header == null
+        ? stepForm
+        : CatchStack(gap: CatchStackGap.g24, children: [header, stepForm]);
+    if (edit != null) {
+      return CatchScreen(
+        key: const ValueKey<String>('edit-event-editor'),
+        topBar: CatchTopBar(
+          variant: CatchTopBarVariant.tool,
+          kicker: state.organizer.name,
+          title: context.l10n.hostsEditHostedEventScreenTitleEditEvent,
+          back: CatchTopBarBack(
+            label: context.l10n.hostCreateClose,
+            close: true,
+            onPressed: state.working ? null : handlers.onBack,
+          ),
+          actions: [
+            CatchButton(
+              key: const ValueKey<String>('edit-event-save'),
+              label: context.l10n.hostsEventEditSaveChanges,
+              size: CatchButtonSize.md,
+              status: state.working
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
+              onPressed: state.canChange ? edit.onSave : null,
+            ),
+          ],
+        ),
+        body: CatchPageBody(
+          child: CatchPaneLayout(
+            pattern: CatchPaneLayoutMode.editor,
+            children: [
+              form,
+              CreateEditorPreview(state: state, stillToSet: stillToSet),
+              CreateStepRail(state: state, onStep: handlers.onStep),
+            ],
+          ),
+        ),
+        overlay: overlay,
+      );
+    }
     final nextLabel = step == CreateStep.plan
         ? context.l10n.hostCreatePublish
         : context.l10n.hostCreateNextTo(

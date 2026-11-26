@@ -9,6 +9,10 @@ import 'package:flutter/widgets.dart';
 /// Step one in board order: the photo with two add cards, the name, the
 /// format chips with the chosen format's note, and what it is like. A
 /// social run adds distance and pace, as its note says.
+///
+/// Editing a saved event keeps its format and photos as they are, checks
+/// the distance of a moving event, and adds [trailing] fields under the
+/// description.
 class CreateBasicsBody extends StatelessWidget {
   const CreateBasicsBody({
     super.key,
@@ -20,6 +24,7 @@ class CreateBasicsBody extends StatelessWidget {
     required this.onPace,
     required this.onAddPhoto,
     this.showTitle = false,
+    this.trailing = const <Widget>[],
   });
 
   final CreateFlowState state;
@@ -33,6 +38,9 @@ class CreateBasicsBody extends StatelessWidget {
   /// The desktop editor names the step above the form.
   final bool showTitle;
 
+  /// Fields an edit adds under the description.
+  final List<Widget> trailing;
+
   static const _paces = ['easy', 'moderate', 'fast', 'competitive'];
 
   @override
@@ -41,6 +49,13 @@ class CreateBasicsBody extends StatelessWidget {
     final draft = state.draft;
     final format = state.format;
     final photos = state.photoUrls;
+    final edit = state.edit;
+    final states = <WidgetState>{
+      if (edit != null && !state.canChange) WidgetState.disabled,
+    };
+    final moving =
+        edit?.event.eventFormat.activityKind.isDistanceBased ??
+        format == CreateFormat.run;
     final addPhoto = state.canAddPhotos && !state.uploadingPhotos
         ? onAddPhoto
         : null;
@@ -75,12 +90,13 @@ class CreateBasicsBody extends StatelessWidget {
                   semanticLabel: context.l10n.hostCreatePhotos,
                 ),
               ),
-            CatchStack(
-              direction: CatchStackDirection.row,
-              gap: CatchStackGap.g8,
-              equal: true,
-              children: addCards.take(2).toList(),
-            ),
+            if (edit == null)
+              CatchStack(
+                direction: CatchStackDirection.row,
+                gap: CatchStackGap.g8,
+                equal: true,
+                children: addCards.take(2).toList(),
+              ),
             if (state.eventId == null)
               CatchText(
                 context.l10n.hostCreateAddPhotoLater,
@@ -98,6 +114,7 @@ class CreateBasicsBody extends StatelessWidget {
                 .createPrivateEventSetupCallablePayloadBasicsName,
             initialValue: draft.name ?? '',
             onChanged: onName,
+            states: states,
             textInputAction: TextInputAction.next,
             errorText: state.problems.contains(CreateProblem.name)
                 ? context.l10n.hostCreateNameNeeded
@@ -125,7 +142,8 @@ class CreateBasicsBody extends StatelessWidget {
                     mode: CatchChipMode.single,
                     dot: option.tint,
                     colourWhenSelected: true,
-                    onPressed: () => onFormat(option),
+                    // A saved event keeps the format it was set up with.
+                    onPressed: edit == null ? () => onFormat(option) : null,
                   ),
               ],
             ),
@@ -142,7 +160,7 @@ class CreateBasicsBody extends StatelessWidget {
             ),
           ],
         ),
-        if (format == CreateFormat.run) ...[
+        if (moving) ...[
           CatchFieldLanes.single(
             child: CatchField.input(
               key: const ValueKey<String>('create-distance'),
@@ -155,7 +173,16 @@ class CreateBasicsBody extends StatelessWidget {
                 decimal: true,
               ),
               suffixText: 'km',
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(
+                  RegExp(context.l10n.hostsEditHostedEventScreenBodyDD),
+                ),
+              ],
               onChanged: onDistance,
+              states: states,
+              errorText: state.problems.contains(CreateProblem.distance)
+                  ? _distanceError(context.l10n, draft.distance)
+                  : null,
             ),
           ),
           CatchStack(
@@ -176,7 +203,7 @@ class CreateBasicsBody extends StatelessWidget {
                       selected: draft.paceName == pace,
                       mode: CatchChipMode.single,
                       size: CatchChipSize.sm,
-                      onPressed: () => onPace(pace),
+                      onPressed: states.isEmpty ? () => onPace(pace) : null,
                     ),
                 ],
               ),
@@ -192,13 +219,25 @@ class CreateBasicsBody extends StatelessWidget {
                 .updatePrivateEventDetailsCallablePayloadDetailsDescription,
             initialValue: draft.description ?? '',
             onChanged: onDescription,
+            states: states,
             minLines: 3,
             maxLines: 6,
             keyboardType: TextInputType.multiline,
             maxLength: 2000,
           ),
         ),
+        ...trailing,
       ],
     );
   }
+}
+
+/// Why an edited distance cannot be saved.
+String _distanceError(AppLocalizations l10n, String? value) {
+  final text = (value ?? '').trim();
+  if (text.isEmpty) return l10n.hostsEditHostedEventScreenBodyRequired;
+  if (double.tryParse(text) == null) {
+    return l10n.hostsEditHostedEventScreenBodyInvalid;
+  }
+  return l10n.hostsEditHostedEventScreenBodyMustBe0;
 }

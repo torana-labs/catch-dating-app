@@ -2,7 +2,7 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
+import 'package:catch_dating_app/hosts/create/edit_event_state.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
 import 'package:catch_dating_app/pages/organizer/organizer_detail_view_model.dart';
 import 'package:catch_platform/app_config.dart';
@@ -97,18 +97,18 @@ void main() {
   test('stale display profile cannot open the event edit route', () {
     final organizer = _revokedOrganizer();
     final event = buildEvent(organizerId: organizer.id);
-    final state = HostEventEditState.resolve(
+    final state = EditEventRouteState.resolve(
       uid: const CatchAsyncState<String?>.data(_removed),
       organizer: CatchAsyncState<Organizer?>.data(organizer),
       event: CatchAsyncState.data(event),
     );
-    expect(state.status, HostEventEditRouteStatus.unauthorized);
-    final ownerState = HostEventEditState.resolve(
+    expect(state.status, EditEventRouteStatus.unauthorized);
+    final ownerState = EditEventRouteState.resolve(
       uid: const CatchAsyncState<String?>.data('owner'),
       organizer: CatchAsyncState<Organizer?>.data(organizer),
       event: CatchAsyncState.data(event),
     );
-    expect(ownerState.status, HostEventEditRouteStatus.ready);
+    expect(ownerState.status, EditEventRouteStatus.ready);
   });
 
   test(
