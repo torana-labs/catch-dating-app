@@ -142,6 +142,9 @@ import 'package:catch_dating_app/hosts/events/events_screen.dart'
     show HostEventsTabScreen;
 import 'package:catch_dating_app/hosts/events/rehearsal_practice_screen.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_practice_tools_screen.dart';
+import 'package:catch_dating_app/hosts/forms/form_automations_screen.dart';
+import 'package:catch_dating_app/hosts/forms/form_preview_screen.dart';
+import 'package:catch_dating_app/hosts/forms/form_settings_screen.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_photos_controller.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_photos_state.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
@@ -150,11 +153,8 @@ import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_preview_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
@@ -12285,10 +12285,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_form_settings',
     routeIds: const <String>['hostFormBuilderScreen'],
     device: CaptureDevice.iphone17Pro,
-    builder: (_) => HostFormBuilderScreen(
+    builder: (_) => HostFormSettingsScreen(
       organizerId: HostOperationsFixtures.primaryOrganizer.id,
       formId: 'saturday-social-application',
-      initialView: HostFormWorkspaceView.settings,
     ),
     providerOverrides: _audienceCaptureFormOverrides(),
     includeOverlays: true,
