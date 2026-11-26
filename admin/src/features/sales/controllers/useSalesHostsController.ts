@@ -1,5 +1,6 @@
 import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useCallback, useState} from "react";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {
   addSalesEvidence,
   getSalesAccount,
@@ -59,6 +60,7 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
   onNotice: (message: string) => void;
 }) {
   const queryClient = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const [query, setQuery] = useState("");
   const [researchStatus, setResearchStatus] = useState<SalesResearchStatus | null>(null);
   const [mineOnly, setMineOnly] = useState(false);
@@ -118,6 +120,8 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
   const savingValue = useMutation({mutationFn: setSalesCustomFieldValue});
 
   const run = useCallback(async (action: () => Promise<unknown>, notice: string) => {
+    const operation = beginOperation();
+    if (!operation) return false;
     onError(null);
     try {
       await action();
@@ -127,8 +131,10 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
     } catch (error) {
       onError(error instanceof Error ? error.message : String(error));
       return false;
+    } finally {
+      endOperation(operation);
     }
-  }, [onError, onNotice, queryClient]);
+  }, [beginOperation, endOperation, onError, onNotice, queryClient]);
   const organizerId = selectedOrganizerId as string;
 
   return {

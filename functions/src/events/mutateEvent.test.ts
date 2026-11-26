@@ -1328,6 +1328,29 @@ test("deleteEvent removes the event's setup preferences and invite code",
       undefined);
   });
 
+test("deleteEvent removes the event's success plan and invite links",
+  async () => {
+    const h = harness({"organizers/club-1": organizer(),
+      "events/event-1": event(),
+      "eventSuccessPlans/event-1": {eventId: "event-1"},
+      "eventSuccessPlans/event-2": {eventId: "event-2"},
+      "eventInviteLinks/link-1": {eventId: "event-1"},
+      "eventInviteLinkSecrets/link-1": {eventId: "event-1"},
+      "eventInviteLinks/link-2": {eventId: "event-2"},
+      "eventInviteLinkSecrets/link-2": {eventId: "event-2"},
+      "eventInviteTouches/touch-1": {inviteLinkId: "link-1"},
+      "eventInviteAttributions/credit-1": {inviteLinkId: "link-1"}});
+    await deleteEventHandler(request("host-1", {eventId: "event-1"}), h.deps);
+    assert.equal(h.firestore.get("eventSuccessPlans/event-1"), undefined);
+    assert.equal(h.firestore.get("eventInviteLinks/link-1"), undefined);
+    assert.equal(h.firestore.get("eventInviteLinkSecrets/link-1"), undefined);
+    for (const survivor of ["eventSuccessPlans/event-2",
+      "eventInviteLinks/link-2", "eventInviteLinkSecrets/link-2",
+      "eventInviteTouches/touch-1", "eventInviteAttributions/credit-1"]) {
+      assert.notEqual(h.firestore.get(survivor), undefined, survivor);
+    }
+  });
+
 test("rich mutations refuse an event without a setup state", async () => {
   for (const missing of ["publicationState", "setupRevision"]) {
     const stored = event();

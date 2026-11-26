@@ -24,7 +24,6 @@ _EventParticipation _$EventParticipationFromJson(
   cancelledAt: const NullableTimestampConverter().fromJson(json['cancelledAt']),
   deletedAt: const NullableTimestampConverter().fromJson(json['deletedAt']),
   genderAtSignup: $enumDecodeNullable(_$GenderEnumMap, json['genderAtSignup']),
-  cohortAtSignup: json['cohortAtSignup'] as String?,
   paymentId: json['paymentId'] as String?,
   hostApprovalStatus: $enumDecodeNullable(
     _$EventJoinRequestStatusEnumMap,
@@ -74,7 +73,6 @@ Map<String, dynamic> _$EventParticipationToJson(
   ),
   'deletedAt': const NullableTimestampConverter().toJson(instance.deletedAt),
   'genderAtSignup': _$GenderEnumMap[instance.genderAtSignup],
-  'cohortAtSignup': instance.cohortAtSignup,
   'paymentId': instance.paymentId,
   'hostApprovalStatus':
       _$EventJoinRequestStatusEnumMap[instance.hostApprovalStatus],

@@ -1,5 +1,6 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {useRef} from "react";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
 import {
   loadOrganizerOverview,
@@ -27,10 +28,13 @@ export function useOrganizerOverviewController(
     queryFn: () => loadOrganizerOverview(organizerId),
     retry: false,
   });
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const checking = useMutation({mutationFn: refreshOrganizerEvents});
   // A retry of the same check keeps its request id, so the server replays it.
   const requestId = useRef<string | null>(null);
   const checkForEvents = async () => {
+    const operation = beginOperation();
+    if (!operation) return;
     requestId.current ??= `refresh-${crypto.randomUUID()}`;
     onError(null);
     try {
@@ -40,6 +44,8 @@ export function useOrganizerOverviewController(
         "Any that need a person reach the Inbox when the read finishes.");
     } catch (error) {
       onError(error instanceof Error ? error.message : String(error));
+    } finally {
+      endOperation(operation);
     }
   };
   return {

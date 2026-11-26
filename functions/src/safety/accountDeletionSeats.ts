@@ -287,6 +287,9 @@ export async function deleteAccountEventParticipations(params: {
         tx.set(found!.ref, {status: "deleted", updatedAt: now,
           deletedAt: now}, {merge: true});
       }
+      // The booking cohort (sexual orientation) goes with the account.
+      tx.delete(db.collection("eventBookingPrivateFacts")
+        .doc(`${eventId}_${uid}`));
     });
   }
 }
