@@ -7,7 +7,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
 /// Step four in board order: what the plan does, Start from the format's
-/// template or blank, the steps with their times, and Add a step.
+/// template or blank, the steps with their times, and Add a step. An edit
+/// adds the route plan of a moving event in [trailing].
 class CreatePlanBody extends StatelessWidget {
   const CreatePlanBody({
     super.key,
@@ -18,6 +19,7 @@ class CreatePlanBody extends StatelessWidget {
     required this.onAdd,
     this.onPlanVisible,
     this.showTitle = false,
+    this.trailing = const <Widget>[],
   });
 
   final CreateFlowState state;
@@ -30,11 +32,15 @@ class CreatePlanBody extends StatelessWidget {
   final ValueChanged<bool>? onPlanVisible;
   final bool showTitle;
 
+  /// Fields an edit adds under the steps.
+  final List<Widget> trailing;
+
   @override
   Widget build(BuildContext context) {
     final format = state.format ?? CreateFormat.other;
     final steps = state.plan;
     final start = createMinutes(state.draft.eventLocalStartTime);
+    final frozen = state.edit != null && !state.canChange;
     return CatchStack(
       gap: CatchStackGap.g24,
       children: [
@@ -64,7 +70,7 @@ class CreatePlanBody extends StatelessWidget {
               selected: steps.isNotEmpty,
               mode: CatchChipMode.single,
               size: CatchChipSize.sm,
-              onPressed: onTemplate,
+              onPressed: frozen ? null : onTemplate,
             ),
             CatchChip.choice(
               key: const ValueKey<String>('create-plan-blank'),
@@ -72,7 +78,7 @@ class CreatePlanBody extends StatelessWidget {
               selected: steps.isEmpty,
               mode: CatchChipMode.single,
               size: CatchChipSize.sm,
-              onPressed: onBlank,
+              onPressed: frozen ? null : onBlank,
             ),
           ],
         ),
@@ -97,7 +103,7 @@ class CreatePlanBody extends StatelessWidget {
                   editLabel: context.l10n.hostCreateEditStepLabel(
                     title: step.title,
                   ),
-                  onEdit: () => onEdit(step),
+                  onEdit: frozen ? null : () => onEdit(step),
                 ),
             ],
           ),
@@ -107,7 +113,8 @@ class CreatePlanBody extends StatelessWidget {
           title: context.l10n.hostCreateAddStep,
           contract: CatchContractConstraints
               .updatePrivateEventDetailsCallablePayloadDetailsItinerary,
-          onTap: onAdd,
+          // A plan holds at most the event document's number of steps.
+          onTap: frozen || steps.length >= _maxSteps ? null : onAdd,
         ),
         if (onPlanVisible != null)
           CatchIndexRow(
@@ -122,10 +129,14 @@ class CreatePlanBody extends StatelessWidget {
               onChanged: onPlanVisible,
             ),
           ),
+        ...trailing,
       ],
     );
   }
 }
+
+final _maxSteps =
+    CatchContractConstraints.eventDocumentItinerary.maxItems ?? 40;
 
 /// A stored "HH:mm" as minutes after midnight.
 int? createMinutes(String? localTime) {
