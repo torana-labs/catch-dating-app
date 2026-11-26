@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
+import {buildInventory} from "../ui_capture/check_route_inventory.mjs";
 
 const coveragePath = fromRepo("design/screens/screen_coverage.json");
-const routeInventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
 const screenContractsPath = fromRepo("design/screens/catch.screens.json");
 const captureCoveragePath = fromRepo("tool/ui_capture/capture_coverage.json");
 
@@ -28,7 +28,7 @@ if (command === "--help" || command === "-h" || command === "help") {
 
 function checkCoverage({summary = false} = {}) {
   const coverage = readJson(coveragePath);
-  const routeInventory = readJson(routeInventoryPath);
+  const routeInventory = buildInventory();
   const screenContracts = readJson(screenContractsPath);
   const captureCoverage = readJson(captureCoveragePath);
 
@@ -63,8 +63,8 @@ function validateCoverage({coverage, routeInventory, screenContracts, captureCov
 
   if (coverage.version !== 1) errors.push("version must be 1.");
   if (!isDate(coverage.updated)) errors.push("updated must be YYYY-MM-DD.");
-  if (coverage.generatedAgainst !== "tool/ui_capture/route_inventory.json") {
-    errors.push("generatedAgainst must be tool/ui_capture/route_inventory.json.");
+  if (coverage.generatedAgainst !== "tool/ui_capture/check_route_inventory.mjs") {
+    errors.push("generatedAgainst must be tool/ui_capture/check_route_inventory.mjs.");
   }
   if (typeof coverage.description !== "string" || coverage.description.trim() === "") {
     errors.push("description is required.");

@@ -5,6 +5,12 @@
   "command": "node tool/web/check_admin_live_data_sources.mjs --check",
   "surface": "remote-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Requires every Admin navigation and Intake workspace to declare callable-backed live reads, rejects retained operational JSON snapshots and generated operational imports, and can verify every declared callable against a deployed Firebase environment.",
   "checks": [
     "node --check tool/web/check_admin_live_data_sources.mjs",

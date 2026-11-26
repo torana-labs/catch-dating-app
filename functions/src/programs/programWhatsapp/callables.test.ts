@@ -9,6 +9,8 @@ import {
   markProgramWhatsappThreadReadHandler,
   sendProgramWhatsappReplyHandler,
 } from "./callables";
+import {upsertProgramWhatsappCannedReplyHandler} from "./cannedReplies";
+import {setProgramWhatsappThreadHandlingHandler} from "./handling";
 import {routeProgramWhatsappInbound} from "./inbound";
 import {inboundEvent, strangerPhone, whatsappSeed} from "./testFixtures";
 
@@ -112,4 +114,56 @@ test("the planner's reply goes through the reservation path", async () => {
     text: "Hi", idempotencyKey: "reply-key-0002",
     expectedLastInboundAtMillis: now.toMillis()}, "manager-1"), replyDeps),
   code("not-found"));
+});
+
+function staffGrant(uid: string, duty: string) {
+  return {[`programStaffGrants/program-1__${uid}`]: {
+    organizerId: "org-1", programId: "program-1", uid, displayName: uid,
+    phoneLastFour: "0009",
+    duties: [{duty, expiresAtMillis: now.toMillis() + 86_400_000,
+      pickupPointIds: [], hotelIds: [], functionIds: []}],
+    status: "active", createdBy: "manager-1", createdAt: now,
+    expiresAt: admin.firestore.Timestamp.fromMillis(
+      now.toMillis() + 86_400_000),
+    revokedBy: null, revokedAt: null, updatedAt: now, revision: 1,
+  }};
+}
+
+test("guest relations staff use the inbox; door staff and saving saved " +
+  "replies stay out", async () => {
+  const db = await seeded();
+  for (const [path, data] of Object.entries({
+    ...staffGrant("relations-1", "guestRelations"),
+    ...staffGrant("door-1", "functionCheckIn"),
+  })) {
+    db.setDoc(path, data);
+  }
+  const thread = {programId: "program-1", threadId: "program-1_household-1"};
+  const list = await listProgramWhatsappThreadsHandler(request({
+    programId: "program-1", filter: "all"}, "relations-1"), deps(db));
+  assert.equal(list.counts.all, 2);
+  const read = await markProgramWhatsappThreadReadHandler(
+    request(thread, "relations-1"), deps(db));
+  const taken = await setProgramWhatsappThreadHandlingHandler(request({
+    ...thread, handledBy: "planner", expectedRevision: read.revision},
+  "relations-1"), deps(db));
+  assert.equal(taken.handledBy, "planner");
+  await assert.rejects(upsertProgramWhatsappCannedReplyHandler(request({
+    programId: "program-1", cannedReplyId: "bus-times", label: "Bus times",
+    variants: [{language: "en", text: "Buses leave at six."}],
+    expectedRevision: 0, requestId: "canned-cmd-9"}, "relations-1"),
+  deps(db)), code("permission-denied"));
+
+  await assert.rejects(listProgramWhatsappThreadsHandler(request({
+    programId: "program-1", filter: "all"}, "door-1"), deps(db)),
+  code("permission-denied"));
+  await assert.rejects(markProgramWhatsappThreadReadHandler(
+    request(thread, "door-1"), deps(db)), code("permission-denied"));
+  await assert.rejects(setProgramWhatsappThreadHandlingHandler(request({
+    ...thread, handledBy: "assistant", expectedRevision: taken.revision},
+  "door-1"), deps(db)), code("permission-denied"));
+  await assert.rejects(sendProgramWhatsappReplyHandler(request({
+    ...thread, text: "Hi", idempotencyKey: "reply-key-0009",
+    expectedLastInboundAtMillis: now.toMillis()}, "door-1"), deps(db)),
+  code("permission-denied"));
 });

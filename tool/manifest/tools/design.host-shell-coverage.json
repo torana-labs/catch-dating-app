@@ -7,7 +7,10 @@
     "design/source_packs/host-v2/host-coverage-manifest.json",
     "docs/design_parity/host_shell_route_ui_audit.md",
     "lib/routing/shell/host_shell_navigation.dart",
-    "tool/ui_capture/route_inventory.json",
+    "tool/ui_capture/check_route_inventory.mjs",
+    "packages/platform/lib/routing/route_contract.dart",
+    "lib/routing/consumer_router.dart",
+    "lib/routing/host_router.dart",
     "tool/ui_capture/capture_coverage.json"
   ],
   "ciRequirements": {

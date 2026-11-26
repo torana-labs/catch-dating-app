@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  BUDGET_ISSUE_TITLE, DEFAULT_LIMIT_MS, DEFAULT_RUNS, decideBudgetIssue, gateChecks, overBudget, parseArgs, renderBudgetIssue, renderSummary, runGates,
+  BUDGET_ISSUE_TITLE, DEFAULT_LIMIT_MS, DEFAULT_RUNS, applyBudgetDecision, decideBudgetIssue, gateChecks, overBudget, parseArgs, renderBudgetIssue, renderSummary, runGates,
 } from "./semantic_gates.mjs";
+import {fakeIssueApi} from "../lib/github_issues.mjs";
 
 const manifest = {tools: [
   {id: "b:gate", status: "active", command: "node b.mjs", queueGate: "always"},
@@ -84,4 +85,25 @@ test("decideBudgetIssue opens, updates only on change, and closes once within bu
   assert.deepEqual(decideBudgetIssue({body: "old", openIssue: open}), {action: "none"});
   assert.deepEqual(decideBudgetIssue({body: null, openIssue: open}), {action: "close", issue: 7});
   assert.deepEqual(decideBudgetIssue({body: null, openIssue: null}), {action: "none"});
+});
+
+test("two nightly alert runs racing to open the budget issue leave one issue carrying the report", () => {
+  let race = null;
+  const fake = fakeIssueApi({between: (name) => {
+    if (name === "create" && race) {
+      const write = race;
+      race = null;
+      write();
+    }
+  }});
+  const options = {runs: DEFAULT_RUNS, limitMs: DEFAULT_LIMIT_MS};
+  race = () => applyBudgetDecision(fake.api, decideBudgetIssue({body: "report from the earlier nightly", openIssue: null}), options);
+  applyBudgetDecision(fake.api, decideBudgetIssue({body: "report from the later nightly", openIssue: null}), options);
+  const open = fake.state.issues.filter((issue) => issue.state === "open");
+  assert.deepEqual(open.map((issue) => [issue.number, issue.title]), [[1, BUDGET_ISSUE_TITLE]]);
+  assert.equal(open[0].body, "report from the later nightly", "the run that wrote last leaves its table");
+  // A run that finds the issue open replaces the table instead of commenting.
+  applyBudgetDecision(fake.api, decideBudgetIssue({body: "newest", openIssue: null}), options);
+  assert.equal(open[0].comments.length, 1, "only the moved duplicate");
+  assert.equal(fake.state.issues[0].body, "newest");
 });

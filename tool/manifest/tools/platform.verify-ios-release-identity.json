@@ -5,6 +5,12 @@
   "command": "node tool/platform/verify_ios_release_identity.mjs --help",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Verifies an archived or exported iOS app against its manifest target, compiled Flutter composition marker, embedded Firebase identity and URL scheme, version/build, signing identity, and role-specific entitlements.",
   "checks": [
     "node --check tool/platform/verify_ios_release_identity.mjs",

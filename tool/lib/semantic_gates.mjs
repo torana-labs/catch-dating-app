@@ -27,7 +27,6 @@ export const EXCLUDED = Object.freeze({
   "ci:flutter-workspace-analysis": "needs Flutter at run time",
   "contracts:generate-schemas": "generator: the replay runs it as preparation",
   "design:website-playbook-tokens": "generator: imports kit tokens",
-  "design:widget-dedupe-probes": "needs Dart at run time",
   "docs:metadata": "diff-scoped: reads the docs changed since --base",
   "env:check-web-hosting": "needs a surface argument",
   "firebase:plan-function-deploy": "needs deploy manifests as arguments",

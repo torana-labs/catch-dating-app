@@ -253,6 +253,8 @@ import 'package:widgetbook_workspace/hosts/host_setup_claim_use_cases.dart'
     as _widgetbook_workspace_hosts_host_setup_claim_use_cases;
 import 'package:widgetbook_workspace/hosts/host_system_parts_use_cases.dart'
     as _widgetbook_workspace_hosts_host_system_parts_use_cases;
+import 'package:widgetbook_workspace/hosts/host_today_requests_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_today_requests_use_cases;
 import 'package:widgetbook_workspace/hosts/operations/analytics.dart'
     as _widgetbook_workspace_hosts_operations_analytics;
 import 'package:widgetbook_workspace/hosts/operations/audiences.dart'
@@ -301,6 +303,10 @@ import 'package:widgetbook_workspace/hosts/operations/wizard_chrome.dart'
     as _widgetbook_workspace_hosts_operations_wizard_chrome;
 import 'package:widgetbook_workspace/hosts/operations/workflow_components.dart'
     as _widgetbook_workspace_hosts_operations_workflow_components;
+import 'package:widgetbook_workspace/hosts/organizer_live_guide_use_cases.dart'
+    as _widgetbook_workspace_hosts_organizer_live_guide_use_cases;
+import 'package:widgetbook_workspace/hosts/organizer_messaging_use_cases.dart'
+    as _widgetbook_workspace_hosts_organizer_messaging_use_cases;
 import 'package:widgetbook_workspace/hosts/organizer_moments_use_cases.dart'
     as _widgetbook_workspace_hosts_organizer_moments_use_cases;
 import 'package:widgetbook_workspace/hosts/people_duplicates_use_cases.dart'
@@ -9595,6 +9601,177 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookFolder(
+            name: 'Organiser',
+            children: [
+              _widgetbook.WidgetbookFolder(
+                name: 'WhatsApp Business',
+                children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'OrganizerMessagingBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Active',
+                        builder:
+                            _widgetbook_workspace_hosts_organizer_messaging_use_cases
+                                .messagingActive,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Could not load',
+                        builder:
+                            _widgetbook_workspace_hosts_organizer_messaging_use_cases
+                                .messagingError,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Not connected, web',
+                        builder:
+                            _widgetbook_workspace_hosts_organizer_messaging_use_cases
+                                .messagingNotConnected,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Verification pending',
+                        builder:
+                            _widgetbook_workspace_hosts_organizer_messaging_use_cases
+                                .messagingTesting,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'OrganizerMessagingScreen',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Signed-out scope',
+                        builder:
+                            _widgetbook_workspace_hosts_organizer_messaging_use_cases
+                                .messagingScreen,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Organizer',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventDefaultsScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Before the defaults load',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .hostEventDefaultsScreenUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostProfilePreviewSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Active host with a bio',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .hostProfilePreviewSheetUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerAudienceBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Audience unavailable',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerAudienceBodyUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerAudienceScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Before the organizer loads',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerAudienceScreenUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerEventPolicyBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Owner edits the policy',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerEventPolicyBodyUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerEventPolicyEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Owner edits the policy',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerEventPolicyEditorUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerEventPolicyScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Before the organizer loads',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerEventPolicyScreenUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerLiveGuideBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Manager reads the guide',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerLiveGuideBodyManagerUseCase,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Owner tunes the guide',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerLiveGuideBodyOwnerUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerLiveGuideEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Manager reads the guide',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerLiveGuideEditorUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerLiveGuideScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Before the organizer loads',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_live_guide_use_cases
+                            .organizerLiveGuideScreenUseCase,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
             name: 'People',
             children: [
               _widgetbook.WidgetbookFolder(
@@ -10182,6 +10359,61 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_booking_provider_use_cases
                             .hostRuntimeClaimListState,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Today',
+            children: [
+              _widgetbook.WidgetbookFolder(
+                name: 'Requests',
+                children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostTodayRequestDetailBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'A live waitlist offer',
+                        builder:
+                            _widgetbook_workspace_hosts_host_today_requests_use_cases
+                                .hostTodayRequestPersonOffered,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'A request, then the next person',
+                        builder:
+                            _widgetbook_workspace_hosts_host_today_requests_use_cases
+                                .hostTodayRequestPersonAsked,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostTodayRequestsBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Cut off and no one waiting',
+                        builder:
+                            _widgetbook_workspace_hosts_host_today_requests_use_cases
+                                .hostTodayRequestsEdges,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Everyone waiting',
+                        builder:
+                            _widgetbook_workspace_hosts_host_today_requests_use_cases
+                                .hostTodayRequestsWaiting,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostTodayRequestsSheet',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Opened from a join request row',
+                        builder:
+                            _widgetbook_workspace_hosts_host_today_requests_use_cases
+                                .hostTodayRequestsSheet,
+                      ),
+                    ],
                   ),
                 ],
               ),

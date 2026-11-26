@@ -6,6 +6,12 @@
   "surface": "remote-write",
   "guard": "apply-and-prod-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "One-off move of booking cohorts (a guest's orientation) from eventBookings, eventParticipations and eventWaitlistOffers into the server-only eventBookingPrivateFacts (#2493); dry run by default.",
   "checks": [
     "node --check tool/data/move_booking_cohorts.mjs",

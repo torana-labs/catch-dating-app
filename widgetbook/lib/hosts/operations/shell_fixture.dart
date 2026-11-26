@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
+import 'package:catch_dating_app/contexts/bookings/data/host_requests_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/host_request.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
@@ -107,6 +109,10 @@ class WidgetbookHostShellScope extends StatelessWidget {
               HostOperationsFixtures.eventsByOrganizer[query.organizerId] ??
                   const [],
             ),
+      ),
+      hostOrganizerRequestsProvider.overrideWith(
+        (ref, organizerId) =>
+            Stream.value(const HostRequests(rows: [], complete: true)),
       ),
       hostAttentionProjectionProvider.overrideWith(
         (ref, organizerId) => Stream.value(

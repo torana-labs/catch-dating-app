@@ -8,24 +8,13 @@ import {fileURLToPath} from "node:url";
 
 const generatedFiles = ["app_localizations.dart", "app_localizations_en.dart"];
 
-export function compareGeneratedFiles({expectedDir, actualDir, files = generatedFiles}) {
-  const errors = [];
-  for (const file of files) {
-    const expectedPath = path.join(expectedDir, file);
-    const actualPath = path.join(actualDir, file);
-    if (!fs.existsSync(expectedPath)) {
-      errors.push(`Tracked localization output is missing: ${expectedPath}`);
-      continue;
-    }
-    if (!fs.existsSync(actualPath)) {
-      errors.push(`Flutter did not generate expected localization output: ${file}`);
-      continue;
-    }
-    if (!fs.readFileSync(expectedPath).equals(fs.readFileSync(actualPath))) {
-      errors.push(`Tracked localization output is stale: ${file}`);
-    }
-  }
-  return errors;
+// The outputs aren't tracked (flutter pub get writes them), so there is no
+// committed copy to compare. The check is the rule underneath: the ARB must
+// generate every output cleanly, which also enforces the l10n.yaml settings
+// (required resource attributes, escaping, named parameters).
+export function missingGeneratedFiles({actualDir, files = generatedFiles}) {
+  return files.filter((file) => !fs.existsSync(path.join(actualDir, file)))
+    .map((file) => `Flutter did not generate expected localization output: ${file}`);
 }
 
 // gen-l10n formats its output for the package's language version, which pub
@@ -88,10 +77,7 @@ export function checkFlutterL10n({
       };
     }
     return {
-      errors: compareGeneratedFiles({
-        expectedDir: path.join(packageRoot, "lib", "generated"),
-        actualDir: path.join(arbDir, "generated"),
-      }),
+      errors: missingGeneratedFiles({actualDir: path.join(arbDir, "generated")}),
       stdout: generation.stdout ?? "",
     };
   } finally {
@@ -125,7 +111,7 @@ function main() {
     process.exitCode = 1;
     return;
   }
-  console.log("Generated Flutter localization outputs are current.");
+  console.log("The ARB generates every Flutter localization output.");
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) main();

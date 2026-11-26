@@ -5,6 +5,12 @@
   "command": "ruby tool/platform/configure_apple_flavors.rb",
   "surface": "local-writes-repo",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Configures Apple flavor schemes and Firebase copy phases.",
   "checks": [
     "ruby -c tool/platform/configure_apple_flavors.rb"

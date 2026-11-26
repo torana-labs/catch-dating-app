@@ -6,6 +6,12 @@
   "surface": "remote-write",
   "guard": "apply-and-prod-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Writes config/cities with dry-run and prod guards.",
   "checks": [
     "node --check tool/firebase/create_config_cities.mjs"

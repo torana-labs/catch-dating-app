@@ -240,7 +240,7 @@ function writeFile(root, file, text) {
 
 // Performs a plan that has no errors: renames, rewritten text, pruned map
 // entries, the log entry, directive sorting, comment cleanup and the
-// generators, then one commit with the regenerated inventories folded in.
+// generators, then one commit.
 // `external: false` skips the steps that need the Dart SDK and the
 // repository's generators (directive sorting, comment cleanup, regeneration),
 // as the codemod's own fixture tests do.
@@ -336,13 +336,6 @@ function applyOnCleanTree({root, plan, cleanupComments, external}) {
     "",
   ].join("\n");
   git(["commit", "-q", "-F", "-"], root, {input: message});
-  if (external) runRegeneration(root, "after-commit", {sourceSha: headSha(root)});
-  const changedOutputs = git(["diff", "--name-only"], root).split("\n").filter(Boolean)
-    .filter((file) => plan.regenerated.includes(file));
-  if (changedOutputs.length > 0) {
-    git(["add", "--", ...changedOutputs], root);
-    git(["commit", "-q", "--amend", "--no-edit"], root);
-  }
   const leftover = git(["status", "--porcelain"], root).trim();
   return {
     commit: headSha(root),
@@ -350,7 +343,7 @@ function applyOnCleanTree({root, plan, cleanupComments, external}) {
     prunedEntries: pruned.removed,
     carried,
     removedComments: removedComments.length,
-    regenerated: external ? [...regeneratedBefore, "inventories"] : [],
+    regenerated: external ? [...regeneratedBefore] : [],
     unstaged: leftover === "" ? [] : leftover.split("\n"),
   };
 }

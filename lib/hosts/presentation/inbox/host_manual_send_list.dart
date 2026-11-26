@@ -272,19 +272,21 @@ class _HostManualSendTaskSheetState
 
   Future<void> _openWhatsapp() async {
     if (_busy) return;
+    // Read before the first await: once WhatsApp has opened, the handoff is
+    // recorded even if the sheet closed meanwhile.
+    final commands = ref.read(hostAudienceControllerProvider);
+    final links = ref.read(externalLinkControllerProvider);
     setState(() => _busy = true);
     try {
       // provider-graph: ownership-widget-async:_HostManualSendTaskSheetState._openWhatsapp:await:hostAudienceControllerProvider.validateManualSendTaskLaunch watch CAT156 -- Existing bounded review signal at _HostManualSendTaskSheetState._openWhatsapp (await:hostAudienceControllerProvider.validateManualSendTaskLaunch). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
-      final validated = await ref
-          .read(hostAudienceControllerProvider)
-          .validateManualSendTaskLaunch(_task);
+      final validated = await commands.validateManualSendTaskLaunch(_task);
+      // Nothing opens for a sheet that closed while the number was checked.
+      if (!mounted) return;
       // provider-graph: ownership-widget-async:_HostManualSendTaskSheetState._openWhatsapp:await:externalLinkControllerProvider.openWhatsappHandoff watch CAT156 -- Existing bounded review signal at _HostManualSendTaskSheetState._openWhatsapp (await:externalLinkControllerProvider.openWhatsappHandoff). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
-      final opened = await ref
-          .read(externalLinkControllerProvider)
-          .openWhatsappHandoff(
-            phoneE164: validated.phoneE164,
-            message: validated.prefillText,
-          );
+      final opened = await links.openWhatsappHandoff(
+        phoneE164: validated.phoneE164,
+        message: validated.prefillText,
+      );
       if (!opened) {
         if (!mounted) return;
         throw ExternalActionException(
@@ -292,9 +294,7 @@ class _HostManualSendTaskSheetState
         );
       }
       // provider-graph: ownership-widget-async:_HostManualSendTaskSheetState._openWhatsapp:await:hostAudienceControllerProvider.recordManualHandoffOpened watch CAT156 -- Existing bounded review signal at _HostManualSendTaskSheetState._openWhatsapp (await:hostAudienceControllerProvider.recordManualHandoffOpened). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
-      final updated = await ref
-          .read(hostAudienceControllerProvider)
-          .recordManualHandoffOpened(validated);
+      final updated = await commands.recordManualHandoffOpened(validated);
       if (mounted) setState(() => _task = updated);
     } on Object catch (error) {
       if (mounted) {

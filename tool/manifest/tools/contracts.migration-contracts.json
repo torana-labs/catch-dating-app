@@ -5,6 +5,12 @@
   "command": "node tool/contracts/check_migration_contracts.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Validates staged migration contract phase metadata and live-apply evidence.",
   "checks": [
     "node --check tool/contracts/check_migration_contracts.mjs",

@@ -5,6 +5,13 @@
   "command": "node --experimental-strip-types --test website/scripts/analyticsContract.test.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
   "description": "Validates website copy-version event tagging and unset, essential-only, and accepted consent presentation states.",
   "checks": [
     "node --check website/scripts/analyticsContract.test.mjs",

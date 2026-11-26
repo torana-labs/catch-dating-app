@@ -5,6 +5,12 @@
   "command": "node tool/repository_hygiene.mjs --json",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "role": "operator",
   "description": "Reports regenerable repository state and deletes only manifest-allowlisted paths after explicit apply and scope flags.",
   "checks": [

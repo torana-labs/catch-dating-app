@@ -5,6 +5,12 @@
   "command": "node tool/ci/main_push_queue_proof.mjs",
   "surface": "remote-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "impactPaths": [
     ".github/workflows/ci.yml",
     "tool/ci/main_push_queue_proof.mjs",

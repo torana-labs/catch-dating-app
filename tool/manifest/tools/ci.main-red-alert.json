@@ -7,17 +7,26 @@
   "guard": "none",
   "guardReason": "Opens, comments on and closes the main-CI alert issue with gh; meant to run only from main-red-alert.yml.",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "impactPaths": [
     ".github/workflows/main-red-alert.yml",
-    "tool/ci/main_red_alert.mjs",
     "tool/ci/golden_policy.mjs",
+    "tool/ci/main_red_alert.mjs",
     "tool/ci/main_red_alert.test.mjs",
-    "tool/ci/required_ci_floor.mjs"
+    "tool/ci/required_ci_floor.mjs",
+    "tool/lib/github_issues.mjs",
+    "tool/lib/github_issues.test.mjs"
   ],
   "description": "Keeps one 'Main CI is red' GitHub issue in step with main's push and nightly CI: opens it on the first failure (naming gating and reporting jobs), comments on further failures, and closes it on the next green run. After a green run it opens one issue once main has been fully green for 7 days, the owner's condition for ending the sprint floor. After each main push run it also reports, on the same issue, a commit whose push run was replaced before it ran and that no other main push run covers; it triggers nothing.",
   "checks": [
     "node --check tool/ci/main_red_alert.mjs",
-    "node --test tool/ci/main_red_alert.test.mjs"
+    "node --test tool/ci/main_red_alert.test.mjs",
+    "node --test tool/lib/github_issues.test.mjs"
   ],
   "role": "gate",
   "runbook": "docs/release_operations.md#main-ci-alert"

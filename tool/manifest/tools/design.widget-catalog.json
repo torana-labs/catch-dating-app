@@ -6,7 +6,6 @@
     "tool/design/generate_widget_catalog.test.mjs",
     "tool/design/lib/component_naming.mjs",
     "design/components/catch.components.schema.json",
-    "docs/widget_catalog.md",
     "design/components/catch.components.json",
     "lib/**",
     "packages/platform/lib/**",
@@ -21,7 +20,7 @@
   "surface": "local-writes-repo",
   "status": "active",
   "role": "generator",
-  "description": "Generates and checks the widget catalog inventory from production declarations and reviewed shared-component identities. Source, registry and catalog changes select its drift check; temporary fixtures prove membership retention, documentation attachment and hand-edit rejection.",
+  "description": "Checks the rules the widget inventory encodes against live source: every public production Widget is discovered, every shared Widget has an exact registry identity, reviewed level and role, and the naming ratchet holds. --write prunes fixed naming debt and writes the inventory to the ignored build/generated/widget_catalog.md; nothing commits it. Temporary fixtures prove membership retention, documentation attachment and live derivation.",
   "checks": [
     "node --check tool/design/generate_widget_catalog.mjs",
     "node --test tool/design/generate_widget_catalog.test.mjs",

@@ -5,6 +5,12 @@
   "command": "bash tool/check_catch_ui_lint_drift.sh",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Projects focused Catch UI analyzer reports (--summary, --count, --json, --code). The zero-diagnostic rule itself is enforced by ci:flutter-workspace-analysis, whose dart analyze --fatal-infos fails on any catch_* diagnostic; Flutter CI also runs --check on that analysis output.",
   "checks": [
     "bash -n tool/check_catch_ui_lint_drift.sh",

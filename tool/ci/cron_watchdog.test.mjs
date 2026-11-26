@@ -2,13 +2,20 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
 import {
+  ALERT_WORKFLOW,
   DEFAULT_GRACE_HOURS,
+  FOLLOW_UP_ATTEMPTS,
+  FOLLOW_UP_HOURS,
   MAIN_RED_TITLE,
   MISSED_TITLE,
   TARGETS,
   decide,
   expectedRun,
+  DISPATCH_MARKER_HOURS,
+  dispatchMarker,
+  followUpReport,
   latestOccurrence,
+  nightlyFollowUps,
   recordsFrom,
 } from "./cron_watchdog.mjs";
 
@@ -266,4 +273,94 @@ test("the nightly counts only the dispatched or scheduled nightly, from 02:00, a
   assert.equal(check([{created_at: "2026-11-27T03:00:00Z", event: "push", display_title: "CI"},
     {created_at: "2026-11-27T03:10:00Z", event: "workflow_dispatch", display_title: "CI"},
     {created_at: "2026-11-26T02:30:00Z", event: "workflow_dispatch", display_title: "CI nightly"}]), "unknown");
+});
+
+
+test("each completed CI nightly gets one Main CI alert follow-up; a second failed attempt is reported, never retried", () => {
+  const now = at("2026-11-26T13:00:00Z");
+  const nightly = (id, extra = {}) => ({id, event: "workflow_dispatch", display_title: "CI nightly", head_branch: "main",
+    head_repository: {full_name: repository}, status: "completed", conclusion: "success", created_at: "2026-11-26T11:18:39Z", ...extra});
+  const alert = (id, runId, extra = {}) => ({id, display_title: `Main CI alert for run ${runId}`, status: "completed",
+    conclusion: "success", html_url: `https://github.com/${repository}/actions/runs/${id}`, ...extra});
+  const nightlies = [
+    nightly(1), nightly(2), nightly(3, {status: "in_progress", conclusion: null}), nightly(10), nightly(11), nightly(12),
+    // Not the nightly, or not ours: never followed up.
+    nightly(4, {display_title: "CI"}), nightly(5, {event: "push", display_title: "CI"}),
+    nightly(6, {event: "schedule", display_title: "CI"}), nightly(7, {head_branch: "feature"}),
+    nightly(8, {head_repository: {full_name: "someone/fork"}}),
+    // Older than the follow-up window.
+    nightly(9, {created_at: new Date(now - (FOLLOW_UP_HOURS + 1) * 60 * 60 * 1000).toISOString()}),
+  ];
+  const alertRuns = [
+    alert(50, 2),                                              // handled
+    alert(51, 10, {conclusion: "failure"}),                     // one failed attempt: dispatch again
+    alert(52, 11, {conclusion: "failure"}), alert(53, 11, {conclusion: "cancelled"}), // two: reported, never again
+    alert(54, 12, {conclusion: "failure"}), alert(55, 12, {status: "queued", conclusion: null}), // retry under way
+    alert(56, 70),
+  ];
+  const followUps = nightlyFollowUps({nightlies, alertRuns, now, repository});
+  assert.deepEqual(followUps, [
+    {runId: 1, status: "dispatch", failedAttempts: 0}, {runId: 2, status: "recorded"},
+    {runId: 3, status: "waiting", failedAttempts: 0}, {runId: 10, status: "dispatch", failedAttempts: 1},
+    {runId: 11, status: "failed", failedRuns: [`https://github.com/${repository}/actions/runs/52`, `https://github.com/${repository}/actions/runs/53`]},
+    {runId: 12, status: "recorded"}]);
+  assert.equal(FOLLOW_UP_ATTEMPTS, 2);
+  // The failed follow-up goes to the watchdog's own issue once, with a link to the last attempt.
+  const report = followUpReport({followUps, records: new Set(), repository});
+  assert.match(report, new RegExp(`- nightly 11 follow-up failed twice: https://github\\.com/${repository}/actions/runs/53 `, "u"));
+  assert.doesNotMatch(report, /nightly 10 |nightly 1 /u);
+  assert.deepEqual([...recordsFrom([report])], ["nightly-alert@11"]);
+  assert.equal(followUpReport({followUps, records: recordsFrom([report]), repository}), null);
+  assert.equal(followUpReport({followUps: [{runId: 1, status: "dispatch"}], records: new Set(), repository}), null);
+  assert.equal(ALERT_WORKFLOW, "main-red-alert.yml");
+});
+
+test("a dispatch marker stands in for an alert run the listing does not show yet, for 2 hours", () => {
+  const nightly = (id) => ({id, event: "workflow_dispatch", display_title: "CI nightly", head_branch: "main",
+    head_repository: {full_name: repository}, status: "completed", conclusion: "failure", created_at: "2026-11-26T11:18:39Z"});
+  const failedAlert = (id, runId) => ({id, display_title: `Main CI alert for run ${runId}`, status: "completed",
+    conclusion: "failure", created_at: "2026-11-26T12:00:00Z"});
+  const marked = (...times) => times.map((created_at) => ({name: dispatchMarker(1), created_at}));
+  const followUp = (now, {alertRuns = [], markers = {}} = {}) =>
+    nightlyFollowUps({nightlies: [nightly(1)], alertRuns, markers, now: at(now), repository})[0];
+  assert.equal(DISPATCH_MARKER_HOURS, 2);
+  assert.equal(dispatchMarker(45825214505), "nightly-alert-dispatched-45825214505");
+  // The wake right after a dispatch: the listing shows no alert run yet, the marker does.
+  assert.deepEqual(followUp("2026-11-26T12:30:00Z", {markers: {1: marked("2026-11-26T12:00:05Z")}}),
+    {runId: 1, status: "recorded", pendingSince: "2026-11-26T12:00:05.000Z"});
+  // Two hours on, the run never appeared: the usual retry applies.
+  assert.deepEqual(followUp("2026-11-26T14:00:05Z", {markers: {1: marked("2026-11-26T12:00:05Z")}}),
+    {runId: 1, status: "dispatch", failedAttempts: 0});
+  // A marker whose run is listed (and failed) is spent: one failed attempt, so dispatch the second.
+  assert.deepEqual(followUp("2026-11-26T12:30:00Z",
+    {alertRuns: [failedAlert(60, 1)], markers: {1: marked("2026-11-26T12:00:05Z")}}),
+  {runId: 1, status: "dispatch", failedAttempts: 1});
+  // The retry's own marker, its run not listed yet: recorded again, never a third dispatch.
+  assert.deepEqual(followUp("2026-11-26T13:10:00Z",
+    {alertRuns: [failedAlert(60, 1)], markers: {1: marked("2026-11-26T12:00:05Z", "2026-11-26T12:47:30Z")}}),
+  {runId: 1, status: "recorded", pendingSince: "2026-11-26T12:47:30.000Z"});
+  // Two failed listed runs still settle as failed, whatever the markers say.
+  assert.equal(followUp("2026-11-26T13:10:00Z", {alertRuns: [failedAlert(60, 1), failedAlert(61, 1)],
+    markers: {1: marked("2026-11-26T12:00:05Z", "2026-11-26T12:47:30Z")}}).status, "failed");
+  // A marker for another nightly counts for nothing.
+  assert.equal(followUp("2026-11-26T12:30:00Z", {markers: {2: marked("2026-11-26T12:00:05Z")}}).status, "dispatch");
+});
+
+test("the watchdog dispatches one follow-up per wake and the workflow uploads its marker", () => {
+  const source = fs.readFileSync(new URL("./cron_watchdog.mjs", import.meta.url), "utf8");
+  assert.match(source, /followUp\.status === "dispatch"\)\.slice\(0, 1\);/u);
+  assert.match(source, /`alert_marker=\$\{dispatchMarker\(followUp\.runId\)\}\\n`/u);
+  assert.match(source, /actions\/artifacts\?name=\$\{dispatchMarker\(run\.id\)\}/u);
+  const workflow = fs.readFileSync(new URL("../../.github/workflows/cron-watchdog.yml", import.meta.url), "utf8");
+  assert.match(workflow, /- id: watch\n\s+name: Dispatch or report missed scheduled runs/u);
+  assert.equal([...workflow.matchAll(/if: steps\.watch\.outputs\.alert_marker != ''/gu)].length, 2);
+  assert.match(workflow, /name: \$\{\{ steps\.watch\.outputs\.alert_marker \}\}/u);
+});
+
+test("the watchdog dispatches main-red-alert.yml only with a followed-up nightly's run_id", () => {
+  const source = fs.readFileSync(new URL("./cron_watchdog.mjs", import.meta.url), "utf8");
+  const dispatches = [...source.matchAll(/actions\/workflows\/\$\{([^}]+)\}\/dispatches/gu)].map((match) => match[1]);
+  assert.deepEqual(dispatches.sort(), ["ALERT_WORKFLOW", "dispatch.workflow"]);
+  assert.match(source, /`inputs\[run_id\]=\$\{followUp\.runId\}`/u);
+  assert.match(source, /const alertDispatches = followUps\.filter\(\(followUp\) => followUp\.status === "dispatch"\)\.slice\(0, 1\);/u);
 });

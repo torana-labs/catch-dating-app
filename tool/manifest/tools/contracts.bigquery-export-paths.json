@@ -5,6 +5,12 @@
   "command": "node tool/contracts/check_bigquery_export_paths.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Checks that every extensions/*.env BigQuery export reads a collection in the live Firestore registry, that env files and firebase.json extension instances match, and that the host analytics contract pins what the env files deploy.",
   "impactPaths": [
     "tool/contracts/check_bigquery_export_paths.test.mjs",

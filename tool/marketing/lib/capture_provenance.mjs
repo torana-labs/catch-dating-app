@@ -33,6 +33,37 @@ const notFollowed = new Set([captureCatalogIndex]);
 // constants that coverage cannot see, so every app capture lists all of them.
 const globalTrees = ['packages/catch_tokens/lib', 'packages/platform/lib/theme'];
 const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+// The localizations are build output, not committed: every workspace
+// `flutter pub get` writes them from the template ARB (component graph entry
+// flutter.l10n, tracked: false). The Node-only jobs that validate a capture
+// have no Flutter to write them, so a capture records and hashes that
+// generator's declared inputs in their place. Those inputs determine the
+// output, so an edit to any of them stales the capture exactly as before.
+const componentGraphPath = 'tool/harness/component_graph.json';
+const untrackedGenerators = new Set(['flutter.l10n']);
+let generatedOutputSources;
+function sourcesOfGeneratedOutputs() {
+  if (generatedOutputSources) return generatedOutputSources;
+  generatedOutputSources = new Map();
+  // Without the graph nothing is mapped, and a missing output still fails the hash.
+  if (!fs.existsSync(fromRepo(componentGraphPath))) return generatedOutputSources;
+  for (const entry of JSON.parse(fs.readFileSync(fromRepo(componentGraphPath), 'utf8')).compileCodegen ?? []) {
+    if (!untrackedGenerators.has(entry.id) || entry.tracked !== false) continue;
+    for (const file of [...entry.outputs, ...entry.inputs]) {
+      if (/[*?[{]/u.test(file)) throw new Error(`Capture inputs need exact generator paths: ${file} (${entry.id})`);
+    }
+    for (const output of entry.outputs) generatedOutputSources.set(output, entry.inputs);
+  }
+  return generatedOutputSources;
+}
+
+/** `files` with each untracked generated output replaced by its generator's inputs. */
+export function withGeneratedSources(files) {
+  const sources = sourcesOfGeneratedOutputs();
+  const inputs = new Set();
+  for (const file of files) for (const input of sources.get(file) ?? [file]) inputs.add(input);
+  return inputs;
+}
 // A capture renders from these manifest fields alone. Everything else in an
 // entry (website copy, the pages that show it, scenario pointers and facts) is
 // presentation and never invalidates a render; scenario data enters through
@@ -183,7 +214,7 @@ function closure(ctx, roots, kinds) {
 
 /** Adds manifests, declared assets/fonts and named data files; sorts. */
 function finalize(ctx, files) {
-  const inputs = new Set(files);
+  const inputs = withGeneratedSources(files);
   addManifestInputs(ctx, inputs);
   for (const file of [...inputs]) {
     if (file.endsWith('.dart')) for (const data of dataFilesNamedBy(source(ctx, file), file)) inputs.add(data);
@@ -298,7 +329,7 @@ export function constConstructorLines(text) {
 
 // Bump when the way recorded inputs are chosen or hashed changes: every app
 // capture then renders again once, instead of being judged by an old rule.
-export const INPUT_RECIPE = 3;
+export const INPUT_RECIPE = 4;
 
 /**
  * An app capture's input hash over `files` (its recorded list), or a web
@@ -313,7 +344,7 @@ export function captureInputHash(capture, files) {
   // Declared asset directories are read as they are now, so adding or
   // removing an asset stales every app capture even though the recorded
   // list was written before it existed.
-  const inputs = new Set(files);
+  const inputs = withGeneratedSources(files);
   addManifestInputs(dartContext(), inputs);
   for (const file of [...inputs].sort()) {
     if (!fs.existsSync(fromRepo(file)) || !fs.statSync(fromRepo(file)).isFile()) {

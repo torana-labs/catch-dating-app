@@ -106,7 +106,9 @@ final class HostTodayAttendanceOutboxFamily extends $Family
 }
 
 /// Today, composed from its read owners: the organizer's events, the
-/// attention queue and the roster of the featured event are listeners, the
+/// attention queue, everyone waiting across the coming events
+/// (`hostEventRequestViews`) and the roster of the featured event are
+/// listeners, the
 /// thirty-day report is the cached host-reports read, and the local
 /// attendance outbox joins the attention queue. Nothing here invalidates a
 /// read after a write.
@@ -115,7 +117,9 @@ final class HostTodayAttendanceOutboxFamily extends $Family
 final hostTodayControllerProvider = HostTodayControllerFamily._();
 
 /// Today, composed from its read owners: the organizer's events, the
-/// attention queue and the roster of the featured event are listeners, the
+/// attention queue, everyone waiting across the coming events
+/// (`hostEventRequestViews`) and the roster of the featured event are
+/// listeners, the
 /// thirty-day report is the cached host-reports read, and the local
 /// attendance outbox joins the attention queue. Nothing here invalidates a
 /// read after a write.
@@ -124,7 +128,9 @@ final class HostTodayControllerProvider
     extends $FunctionalProvider<HostTodayState, HostTodayState, HostTodayState>
     with $Provider<HostTodayState> {
   /// Today, composed from its read owners: the organizer's events, the
-  /// attention queue and the roster of the featured event are listeners, the
+  /// attention queue, everyone waiting across the coming events
+  /// (`hostEventRequestViews`) and the roster of the featured event are
+  /// listeners, the
   /// thirty-day report is the cached host-reports read, and the local
   /// attendance outbox joins the attention queue. Nothing here invalidates a
   /// read after a write.
@@ -183,7 +189,9 @@ String _$hostTodayControllerHash() =>
     r'9ef7fc394db3e89e91eb08b3d363c5b267b2183f';
 
 /// Today, composed from its read owners: the organizer's events, the
-/// attention queue and the roster of the featured event are listeners, the
+/// attention queue, everyone waiting across the coming events
+/// (`hostEventRequestViews`) and the roster of the featured event are
+/// listeners, the
 /// thirty-day report is the cached host-reports read, and the local
 /// attendance outbox joins the attention queue. Nothing here invalidates a
 /// read after a write.
@@ -200,7 +208,9 @@ final class HostTodayControllerFamily extends $Family
       );
 
   /// Today, composed from its read owners: the organizer's events, the
-  /// attention queue and the roster of the featured event are listeners, the
+  /// attention queue, everyone waiting across the coming events
+  /// (`hostEventRequestViews`) and the roster of the featured event are
+  /// listeners, the
   /// thirty-day report is the cached host-reports read, and the local
   /// attendance outbox joins the attention queue. Nothing here invalidates a
   /// read after a write.

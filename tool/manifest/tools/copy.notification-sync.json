@@ -5,6 +5,12 @@
   "command": "node tool/copy/sync_notification_copy.mjs",
   "surface": "local-writes-repo",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Keeps Functions notification templates generated from the marketing-reviewable English catalog.",
   "checks": [
     "node --check tool/copy/sync_notification_copy.mjs",

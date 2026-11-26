@@ -159,6 +159,9 @@ class _HostSetupScreenState extends ConsumerState<HostSetupScreen> {
 
   Future<void> _pickLogo() async {
     final PickedOrganizerProfileImage? picked;
+    // Read before the pick: a failed pick that returns after the screen
+    // closed is still logged.
+    final logger = ref.read(errorLoggerProvider);
     try {
       // provider-graph: ownership-widget-async:_HostSetupScreenState._pickLogo:await:createOrganizerControllerProvider.pickProfileImage watch CAT156 -- A platform image pick through the organizer create controller; the picked file is local form media until create sends it, and a failed pick is logged. Mechanical media feedback, not business state.
       picked = await ref
@@ -174,7 +177,7 @@ class _HostSetupScreenState extends ConsumerState<HostSetupScreen> {
           action: 'pick the organizer logo',
           resource: 'organizer_profile_image',
         ),
-        logError: ref.read(errorLoggerProvider),
+        logError: logger,
       );
       return;
     }

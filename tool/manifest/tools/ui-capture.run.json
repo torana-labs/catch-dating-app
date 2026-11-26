@@ -5,6 +5,12 @@
   "command": "node tool/ui_capture/run_captures.mjs",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Runs the Flutter UI capture harness and writes review PNG artifacts.",
   "checks": [
     "node --check tool/ui_capture/run_captures.mjs"

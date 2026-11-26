@@ -7,6 +7,13 @@
   "guard": "none",
   "guardReason": "Opens, comments on and closes the golden and capture issues, and dispatches the dispatch-only baseline workflows, with gh; meant to run only from main-red-alert.yml.",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
   "impactPaths": [
     ".github/workflows/main-red-alert.yml",
     ".github/workflows/marketing-captures.yml",
@@ -14,7 +21,9 @@
     ".github/workflows/visual-integration-ci.yml",
     ".github/workflows/widgetbook-golden-baselines.yml",
     "tool/ci/golden_policy.mjs",
-    "tool/ci/golden_policy.test.mjs"
+    "tool/ci/golden_policy.test.mjs",
+    "tool/lib/github_issues.mjs",
+    "tool/lib/github_issues.test.mjs"
   ],
   "description": "Keeps two GitHub issues in step with main's macOS goldens and capture render (push and nightly runs): 'Golden or capture failure', labelled release-block:mobile so Release Readiness fails while it is open, when either job failed; and the report-only 'Golden baselines drifted', which dispatches the drifted suite's baseline workflow at that commit for a person to review and commit. No auto-revert.",
   "checks": [

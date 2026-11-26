@@ -5,6 +5,13 @@
   "command": "npm --prefix website run build",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
   "description": "Builds the Vite React marketing website and route-specific static metadata.",
   "checks": [
     "node --check website/scripts/checkOrganizerBuildOutputs.mjs",

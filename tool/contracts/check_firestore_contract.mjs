@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -24,6 +25,10 @@ const generatedTypesPath = path.join(
   "functions/src/shared/generated/firestoreAdminTypes.ts"
 );
 const contractRoot = path.join(repoRoot, "contracts");
+
+// STR-11 (see validateNewCollectionRule).
+const NEW_COLLECTION_LIST = "collectionsPredatingNewCollectionRule";
+const MIN_RATIONALE_CHARS = 40;
 
 const OWNERSHIP_TAGS = new Set([
   "client-writable",
@@ -101,6 +106,7 @@ validateCallableAliases();
 validateDartCallableRoutes();
 
 validateRulesTestCoverage();
+validateNewCollectionRule();
 validateRulesIntentForSchemas();
 validateEveryRulesMatchIsRegistered();
 validateEverySchemaIsRegistered();
@@ -887,6 +893,118 @@ function validateRulesTestMentionsCollection(collection, label) {
       `"${name}"; point at the test that covers it, or list it in ` +
       `collectionsWithoutRulesTests`
     );
+  }
+}
+
+// STR-11, the new-collection rule. A collection registered after the rule
+// carries newCollectionRationale: why a field or a document type on an
+// existing collection cannot hold the data, and the readers that need it
+// (exported Functions or repository files). Collections registered before
+// the rule are listed in collectionsPredatingNewCollectionRule, which only
+// shrinks: an id leaves when its entry gains a rationale or the collection
+// goes, and no id joins that is not already on origin/main's list.
+
+function validateNewCollectionRule() {
+  const header = contract[NEW_COLLECTION_LIST];
+  if (header === undefined || header === null || typeof header !== "object" ||
+      !Array.isArray(header.collections)) {
+    errors.push(`${NEW_COLLECTION_LIST}.collections must be an array of collection ids`);
+    return;
+  }
+  const listed = new Set();
+  for (const id of header.collections) {
+    if (typeof id !== "string" || id.length === 0) {
+      errors.push(`${NEW_COLLECTION_LIST} holds a non-string id`);
+      continue;
+    }
+    if (listed.has(id)) errors.push(`${NEW_COLLECTION_LIST}: duplicate id ${id}`);
+    listed.add(id);
+  }
+  const ids = new Set((contract.collections ?? []).map((collection) => collection.id));
+  for (const id of listed) {
+    if (!ids.has(id)) {
+      errors.push(`${NEW_COLLECTION_LIST}: ${id} is not a collection in this contract; remove it`);
+    }
+  }
+  const previous = previousNewCollectionList();
+  if (previous) {
+    for (const id of listed) {
+      if (!previous.has(id)) {
+        errors.push(
+          `${NEW_COLLECTION_LIST}: ${id} is not on origin/main's list, and the list only ` +
+          `shrinks; give collections/${id}.json a newCollectionRationale instead`
+        );
+      }
+    }
+  }
+  for (const collection of contract.collections ?? []) {
+    const label = collection.id ?? "<unknown>";
+    const rationale = collection.newCollectionRationale;
+    if (rationale === undefined) {
+      if (!listed.has(collection.id)) {
+        errors.push(
+          `${label}: a new collection needs newCollectionRationale ` +
+          "{whyNotAnExistingCollection, readers}: why a field or a document type on an " +
+          "existing collection cannot hold this data, and who reads it (STR-11)"
+        );
+      }
+      continue;
+    }
+    if (listed.has(collection.id)) {
+      errors.push(`${label}: has a newCollectionRationale, so remove it from ${NEW_COLLECTION_LIST}`);
+    }
+    validateNewCollectionRationale(rationale, `${label}.newCollectionRationale`);
+  }
+}
+
+function validateNewCollectionRationale(rationale, label) {
+  if (rationale === null || typeof rationale !== "object" || Array.isArray(rationale)) {
+    errors.push(`${label} must be an object {whyNotAnExistingCollection, readers}`);
+    return;
+  }
+  for (const key of Object.keys(rationale)) {
+    if (key !== "whyNotAnExistingCollection" && key !== "readers") {
+      errors.push(`${label}: unknown field ${key}`);
+    }
+  }
+  const why = rationale.whyNotAnExistingCollection;
+  if (typeof why !== "string" || why.trim().length < MIN_RATIONALE_CHARS) {
+    errors.push(
+      `${label}.whyNotAnExistingCollection must say, in at least ` +
+      `${MIN_RATIONALE_CHARS} characters, why a field or a document type on an existing ` +
+      "collection cannot hold this data"
+    );
+  }
+  const readers = rationale.readers;
+  if (!Array.isArray(readers) || readers.length === 0) {
+    errors.push(`${label}.readers must name at least one reader`);
+    return;
+  }
+  for (const reader of readers) {
+    if (typeof reader !== "string" || reader.length === 0) {
+      errors.push(`${label}.readers holds a non-string reader`);
+    } else if (!hasNamedExport(reader) &&
+        !(reader.includes("/") && fs.existsSync(path.join(repoRoot, reader)))) {
+      errors.push(
+        `${label}.readers: "${reader}" is neither an exported Function nor a ` +
+        "repository file; name the Function, screen, repository or tool that reads it"
+      );
+    }
+  }
+}
+
+/** origin/main's grandfather list, or null when origin/main is unreadable. */
+function previousNewCollectionList() {
+  const result = spawnSync("git", ["show",
+    `origin/main:${firestoreContractDir}/contract.json`], {
+    cwd: repoRoot, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"],
+  });
+  if (result.status !== 0 || !result.stdout) return null;
+  try {
+    const previous = JSON.parse(result.stdout)[NEW_COLLECTION_LIST]?.collections;
+    return Array.isArray(previous) ? new Set(previous) : null;
+  } catch {
+    return null;
   }
 }
 

@@ -6,6 +6,12 @@
   "surface": "remote-write",
   "guard": "apply-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "role": "operator",
   "description": "Creates, refreshes or removes publicEvents/{id} (#1666) for every event from the current event record. Dry run unless --apply; writes only publicEvents documents. Run before the events read rules deploy and again after the Functions deploy.",
   "checks": [

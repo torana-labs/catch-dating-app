@@ -6,6 +6,12 @@
   "surface": "remote-destructive",
   "guard": "apply-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Deletes reviews only with explicit confirmation.",
   "checks": [
     "node --check tool/data/delete_firestore_reviews.mjs"

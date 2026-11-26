@@ -5,6 +5,12 @@
   "command": "node tool/ci/proof_reuse_report.mjs",
   "surface": "remote-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "impactPaths": [
     ".github/workflows/proof-reuse-daily.yml",
     "tool/ci/fixtures/proof-reuse-daily/input.json",

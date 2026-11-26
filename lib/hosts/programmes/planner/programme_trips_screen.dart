@@ -103,6 +103,8 @@ class _HostProgrammeTripsScreenState
     );
     if (decision == null || !mounted) return;
     final actions = ref.read(programTripActionsProvider.notifier);
+    final logger = ref.read(errorLoggerProvider);
+    final container = ProviderScope.containerOf(context, listen: false);
     final reason = decision.voidReason;
     try {
       if (reason == null) {
@@ -122,9 +124,7 @@ class _HostProgrammeTripsScreenState
         );
       }
     } on Object catch (error, stackTrace) {
-      ref
-          .read(errorLoggerProvider)
-          .logError(error, stackTrace, reason: 'change a programme trip');
+      logger.logError(error, stackTrace, reason: 'change a programme trip');
       if (mounted) {
         showCatchNoticeError(
           context,
@@ -134,11 +134,12 @@ class _HostProgrammeTripsScreenState
       }
       return;
     }
-    if (mounted) refreshHostProgrammeTrips(ref, widget.programId);
+    refreshHostProgrammeTripsIn(container, widget.programId);
   }
 
   Future<void> _export(String? title) async {
     final l10n = context.l10n;
+    final logger = ref.read(errorLoggerProvider);
     setState(() => _exporting = true);
     try {
       await ref
@@ -151,9 +152,7 @@ class _HostProgrammeTripsScreenState
             ),
           );
     } on Object catch (error, stackTrace) {
-      ref
-          .read(errorLoggerProvider)
-          .logError(error, stackTrace, reason: 'export programme trips');
+      logger.logError(error, stackTrace, reason: 'export programme trips');
       if (mounted) {
         showCatchNoticeError(
           context,

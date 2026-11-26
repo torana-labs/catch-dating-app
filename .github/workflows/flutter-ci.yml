@@ -163,9 +163,6 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      - name: Derive exact-source route and widget inventories
-        run: node tool/ci/generated_inventories.mjs --source-sha "$GITHUB_SHA"
-
       - uses: ./.github/actions/setup-flutter
 
       - name: Analyze every Dart and Flutter package

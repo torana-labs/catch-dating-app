@@ -5,6 +5,12 @@
   "command": "node tool/contracts/validate_schema_contracts.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Validates JSON schema source consistency.",
   "checks": [
     "node --check tool/contracts/validate_schema_contracts.mjs"

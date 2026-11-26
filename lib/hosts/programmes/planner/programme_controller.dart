@@ -31,8 +31,19 @@ HostProgrammeState hostProgrammeController(Ref ref, String programId) {
   );
 }
 
+/// The reads a programme refresh invalidates: the programme and its guest
+/// list. Both refresh helpers below go through this one list.
+List<ProviderOrFamily> hostProgrammeReads(String programId) => [
+  organizerProgramDetailProvider(programId),
+  programGuestListProvider(programId),
+];
+
 /// Reads the programme and its guest list again.
-void refreshHostProgramme(WidgetRef ref, String programId) {
-  ref.invalidate(organizerProgramDetailProvider(programId));
-  ref.invalidate(programGuestListProvider(programId));
-}
+void refreshHostProgramme(WidgetRef ref, String programId) =>
+    hostProgrammeReads(programId).forEach(ref.invalidate);
+
+/// [refreshHostProgramme] through a [ProviderContainer] captured before an
+/// `await`, so a write that finishes after its screen is gone still
+/// refreshes the programme.
+void refreshHostProgrammeIn(ProviderContainer container, String programId) =>
+    hostProgrammeReads(programId).forEach(container.invalidate);

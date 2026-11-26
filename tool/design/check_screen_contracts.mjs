@@ -4,10 +4,10 @@ import path from "node:path";
 import Ajv2020 from "ajv/dist/2020.js";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {readCaptureCatalogSource} from "../ui_capture/lib/capture_catalog_sources.mjs";
+import {buildInventory} from "../ui_capture/check_route_inventory.mjs";
 
 const registryPath = fromRepo("design/screens/catch.screens.json");
 const schemaPath = fromRepo("design/screens/catch.screens.schema.json");
-const routeInventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
 const componentRegistryPath = fromRepo("design/components/catch.components.json");
 
 const args = process.argv.slice(2);
@@ -28,7 +28,7 @@ if (command === "--help" || command === "-h" || command === "help") {
 function checkContracts({summary = false} = {}) {
   const registry = readJson(registryPath);
   const schema = readJson(schemaPath);
-  const routeInventory = readJson(routeInventoryPath);
+  const routeInventory = buildInventory();
   const componentRegistry = readJson(componentRegistryPath);
   const captureCatalog = parseCaptureCatalog(readCaptureCatalogSource());
 

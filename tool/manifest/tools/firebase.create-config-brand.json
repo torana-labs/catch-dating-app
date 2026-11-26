@@ -6,6 +6,13 @@
   "surface": "remote-write",
   "guard": "apply-and-prod-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
   "description": "Publishes packages/brand/brand.json to config/brand with dry-run and prod guards; --verify compares the live document read-only.",
   "checks": [
     "node --check tool/firebase/create_config_brand.mjs",

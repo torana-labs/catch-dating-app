@@ -6,6 +6,12 @@
   "surface": "remote-write",
   "guard": "apply-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Repairs event aggregate counts from participation edges.",
   "checks": [
     "node --check tool/data/recompute_event_aggregate_counts.mjs",

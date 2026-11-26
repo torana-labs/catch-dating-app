@@ -5,6 +5,12 @@
   "command": "node tool/contracts/check_client_write_contracts.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Checks that every direct client create, update or delete firestore.rules allows has a contracts/client_writes schema, and that every such schema still matches an allowed write, a registered path and its document schema.",
   "impactPaths": [
     "tool/contracts/check_client_write_contracts.test.mjs",

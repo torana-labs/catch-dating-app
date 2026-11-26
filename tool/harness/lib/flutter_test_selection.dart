@@ -364,6 +364,7 @@ class _Imports {
         throw StateError('Unsupported Dart URI: $value');
       }
       if (!files.containsKey(target)) {
+        if (_untrackedGeneratedL10n(target)) return;
         if (opaqueGenerated && _untrackedGeneratedDart(target)) return;
         throw StateError('Missing local Dart module: $target');
       }

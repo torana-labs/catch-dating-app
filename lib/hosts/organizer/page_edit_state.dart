@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/events/parts/event_catch_format.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/image_upload_job.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/foundation.dart';
@@ -21,6 +22,8 @@ const pageEditFormats = <(CatchFormat, ActivityKind)>[
 class PageEditDraft {
   const PageEditDraft({
     required this.name,
+    required this.type,
+    required this.city,
     required this.about,
     required this.area,
     required this.instagram,
@@ -33,6 +36,8 @@ class PageEditDraft {
   /// The draft as the organizer stands.
   factory PageEditDraft.of(Organizer organizer) => PageEditDraft(
     name: organizer.name,
+    type: organizer.organizerType,
+    city: organizer.location,
     about: organizer.description,
     area: organizer.area,
     instagram: organizer.instagramHandle ?? '',
@@ -43,6 +48,12 @@ class PageEditDraft {
   );
 
   final String name;
+
+  /// What kind of organizer this is: a club, a venue, a brand and so on.
+  final OrganizerType type;
+
+  /// The city the organizer runs in, as its market id.
+  final String city;
   final String about;
   final String area;
   final String instagram;
@@ -55,6 +66,8 @@ class PageEditDraft {
 
   PageEditDraft copyWith({
     String? name,
+    OrganizerType? type,
+    String? city,
     String? about,
     String? area,
     String? instagram,
@@ -64,6 +77,8 @@ class PageEditDraft {
     bool? listed,
   }) => PageEditDraft(
     name: name ?? this.name,
+    type: type ?? this.type,
+    city: city ?? this.city,
     about: about ?? this.about,
     area: area ?? this.area,
     instagram: instagram ?? this.instagram,
@@ -80,8 +95,15 @@ class PageEditDraft {
     return next.isEmpty ? this : copyWith(formats: next);
   }
 
-  /// The name is required.
-  bool get valid => name.trim().isNotEmpty;
+  /// The name is required, and an email, when given, has to look like one.
+  bool get valid => name.trim().isNotEmpty && emailValid;
+
+  /// Whether the email is empty or shaped like an address.
+  bool get emailValid {
+    final value = email.trim();
+    return value.isEmpty ||
+        RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value);
+  }
 
   /// The update for what changed against [organizer]; empty when nothing did.
   /// The listing switch is sent only for an owner.
@@ -95,11 +117,16 @@ class PageEditDraft {
       return value.isEmpty ? null : value;
     }
 
-    final instagram = optional(this.instagram, was.instagram);
+    final instagram = optional(
+      this.instagram.trim().replaceFirst(RegExp('^@'), ''),
+      was.instagram,
+    );
     final phone = optional(this.phone, was.phone);
     final email = optional(this.email, was.email);
     return UpdateOrganizerPatch.raw({
       'name': ?changed(name, was.name),
+      if (type != was.type) 'organizerType': type.name,
+      'location': ?changed(city, was.city),
       'description': ?changed(about, was.about),
       'area': ?changed(area, was.area),
       if (!identical(instagram, _unset)) 'instagramHandle': instagram,
@@ -115,6 +142,8 @@ class PageEditDraft {
   bool operator ==(Object other) =>
       other is PageEditDraft &&
       other.name == name &&
+      other.type == type &&
+      other.city == city &&
       other.about == about &&
       other.area == area &&
       other.instagram == instagram &&
@@ -126,6 +155,8 @@ class PageEditDraft {
   @override
   int get hashCode => Object.hash(
     name,
+    type,
+    city,
     about,
     area,
     instagram,
@@ -193,6 +224,7 @@ class OrganizerPageEditState {
     this.saving = false,
     this.mediaPending = false,
     this.pageLink,
+    this.uploads = const <PageEditUpload>[],
   });
 
   final Organizer organizer;
@@ -210,6 +242,10 @@ class OrganizerPageEditState {
   /// The page address for the top bar, without its scheme.
   final String? pageLink;
 
+  /// Photos picked but not yet on the page: uploading, or failed and
+  /// waiting for Retry.
+  final List<PageEditUpload> uploads;
+
   bool get dirty => draft != PageEditDraft.of(organizer);
 
   List<String> get photoUrls => [
@@ -218,4 +254,15 @@ class OrganizerPageEditState {
     ]..sort((a, b) => a.position.compareTo(b.position)))
       photo.url,
   ];
+}
+
+/// One picked photo on its way to the page.
+@immutable
+class PageEditUpload {
+  const PageEditUpload({required this.id, required this.job});
+
+  final String id;
+  final ImageUploadJobState job;
+
+  bool get failed => job.canRetry;
 }

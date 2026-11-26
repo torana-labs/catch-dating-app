@@ -37,6 +37,13 @@ bool _untrackedGeneratedDart(String name) =>
     name.startsWith('packages/platform/lib/schema_contracts/generated/') ||
     RegExp(r'^lib/contexts/[^/]+/data/generated/').hasMatch(name);
 
+// gen-l10n's output isn't tracked either: `flutter pub get` writes it from
+// app_en.arb. An .arb change is already a global input, so these files are
+// always an opaque leaf; their only imports are SDK and external packages.
+bool _untrackedGeneratedL10n(String name) => RegExp(
+  r'^packages/l10n/lib/generated/app_localizations(?:_[a-z]+)?\.dart$',
+).hasMatch(name);
+
 const _globalInputDirectories = [
   '.github/actions/load-toolchain/',
   '.github/actions/setup-flutter/',

@@ -5,6 +5,14 @@
   "command": "npm --workspace catch-marketing run test:storybook:a11y",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm",
+      "playwright"
+    ]
+  },
   "description": "Runs all marketing Storybook stories in Playwright Chromium with project-default axe failures blocking CI and exact legacy todos ratcheted separately.",
   "checks": [
     "npm --workspace catch-marketing run test:storybook:a11y"

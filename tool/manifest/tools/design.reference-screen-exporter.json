@@ -5,6 +5,12 @@
   "command": "node tool/design/export_reference_screen.mjs",
   "surface": "local-writes-repo",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Exports a single Claude Design data-screen-label panel to a reference PNG with explicit --write approval, optional fixed clip, and optional localStorage state.",
   "checks": [
     "node --check tool/design/export_reference_screen.mjs",

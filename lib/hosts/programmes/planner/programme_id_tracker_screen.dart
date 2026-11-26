@@ -55,6 +55,7 @@ class _HostProgrammeIdTrackerScreenState
     ProgramGuestIdDecision decision,
   ) async {
     final l10n = context.l10n;
+    final container = ProviderScope.containerOf(context, listen: false);
     setState(() => _busy = true);
     var ok = true;
     try {
@@ -71,7 +72,7 @@ class _HostProgrammeIdTrackerScreenState
     } on Object {
       ok = false;
     }
-    ref.invalidate(programIdTrackerProvider(widget.programId, _hotelId));
+    container.invalidate(programIdTrackerProvider(widget.programId, _hotelId));
     if (!mounted) return;
     setState(() => _busy = false);
     if (!ok) {
@@ -100,6 +101,9 @@ class _HostProgrammeIdTrackerScreenState
       final url = AppConfig.publicSiteUrl.resolve(
         '/hotel/${Uri.encodeComponent(link.token)}',
       );
+      // A share sheet for a screen that is gone helps nobody; the link stays
+      // issued and the next send shares it again.
+      if (!mounted) return;
       await ref
           .read(externalShareControllerProvider)
           .shareText(

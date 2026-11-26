@@ -35,11 +35,43 @@ test("every catalogued committed compile generator has a staged-source trigger",
   assert.equal(plan.l10nInputChanged, true);
 });
 
+test("untracked localizations are generated, never formatted or staged", () => {
+  const untracked = {compileCodegen: graph.compileCodegen.map((generator) =>
+    generator.id === "flutter.l10n" ? {...generator, tracked: false} : generator)};
+  const output = "packages/l10n/lib/generated/app_localizations.dart";
+  // Their one staged change is the deletion that untracks them.
+  const plan = planPreCommitActions({graph: untracked, stagedPaths: [output, "packages/l10n/lib/app_en.arb"]});
+  assert.equal(plan.l10nTracked, false);
+  assert.equal(plan.dartPaths.includes(output), false);
+  assert.ok(plan.triggeredGeneratorIds.includes("flutter.l10n"));
+  const calls = [];
+  const result = runPreCommitGeneratedArtifacts({
+    fileExists: () => true, graph: untracked, repoRoot: "/fixture",
+    runCommand: (spec) => {
+      if (spec.encoding === "buffer") return {status: 0, stdout: ""};
+      calls.push({command: spec.command, args: spec.args});
+      return {status: 0, stderr: "", stdout: ""};
+    },
+    stagedPaths: ["packages/l10n/lib/app_en.arb"], unstagedPaths: [],
+  });
+  assert.deepEqual(result.generated, []);
+  assert.ok(result.checked.includes("flutter.l10n"));
+  assert.deepEqual(calls.filter((call) => call.command === "git"), []);
+  assert.ok(calls.some((call) => call.args.join(" ") === "-c node packages/l10n/generate.mjs"));
+});
+
+// The tracked-localization path stays supported for a generator that commits them.
+const trackedL10nGraph = {compileCodegen: graph.compileCodegen.map((generator) => {
+  if (generator.id !== "flutter.l10n") return generator;
+  const {tracked: _tracked, ...committed} = generator;
+  return committed;
+})};
+
 test("ARB generation, Dart formatting, explicit staging, and freshness checks stay ordered", () => {
   const calls = [];
   const result = runPreCommitGeneratedArtifacts({
     fileExists: (candidate) => candidate.endsWith(".dart"),
-    graph,
+    graph: trackedL10nGraph,
     repoRoot: "/fixture",
     runCommand: (spec) => {
       if (spec.encoding === "buffer") return {status: 0, stdout: ""};
