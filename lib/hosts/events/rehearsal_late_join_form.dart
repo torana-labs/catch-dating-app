@@ -193,27 +193,34 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
                       ),
                   ],
                 ),
-                for (final point in points)
-                  if (view.laterPointIds.contains(point.alternativeId))
-                    CatchField.input(
-                      key: ValueKey<String>(
-                        'host-rehearsal-late-join-label-${point.alternativeId}',
-                      ),
-                      copy: copy,
-                      title: l10n.hostRehearsalLateJoinChoiceLabel(
-                        place: point.label,
-                      ),
-                      contractExemption:
-                          'Optional button label for one later joining choice; the practice plan bounds it at 80 characters.',
-                      placeholder: point.label,
-                      initialValue: view.laterLabels[point.alternativeId],
-                      maxLength: 80,
-                      inputMode: _editing
-                          ? CatchTextInputMode.editable
-                          : CatchTextInputMode.inactive,
-                      onChanged: (value) =>
-                          onLaterLabel(point.alternativeId, value),
-                    ),
+                if (points.any(
+                  (point) => view.laterPointIds.contains(point.alternativeId),
+                ))
+                  CatchSection(
+                    children: [
+                      for (final point in points)
+                        if (view.laterPointIds.contains(point.alternativeId))
+                          CatchField.input(
+                            key: ValueKey<String>(
+                              'host-rehearsal-late-join-label-${point.alternativeId}',
+                            ),
+                            copy: copy,
+                            title: l10n.hostRehearsalLateJoinChoiceLabel(
+                              place: point.label,
+                            ),
+                            contractExemption:
+                                'Optional button label for one later joining choice; the practice plan bounds it at 80 characters.',
+                            placeholder: point.label,
+                            initialValue: view.laterLabels[point.alternativeId],
+                            maxLength: 80,
+                            inputMode: _editing
+                                ? CatchTextInputMode.editable
+                                : CatchTextInputMode.inactive,
+                            onChanged: (value) =>
+                                onLaterLabel(point.alternativeId, value),
+                          ),
+                    ],
+                  ),
               ],
             ),
         ],
