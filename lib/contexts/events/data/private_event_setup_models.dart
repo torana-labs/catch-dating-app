@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/private_event_setup_basics.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
@@ -103,17 +105,36 @@ class PrivateEventBasicsUpdateRequest {
 }
 
 /// Explicit terms for one event; these do not open public registration.
+///
+/// The optional [eventPolicy], [constraints] and [inviteCode] replace the
+/// event's admission policy, age and cohort limits and invite code in the
+/// same command; left out, the saved ones stay as they are.
 class PrivateEventAdmissionTerms {
   const PrivateEventAdmissionTerms({
     required this.capacityLimit,
     required this.priceInPaise,
     required this.currency,
     required this.cancellationPolicyId,
+    this.eventPolicy,
+    this.constraints,
+    this.inviteCode,
   });
   final int capacityLimit;
   final int priceInPaise;
   final String currency;
   final String cancellationPolicyId;
+
+  /// The whole event policy bundle, as the event stores it.
+  final Map<String, Object?>? eventPolicy;
+
+  /// `minAge`, `maxAge`, `maxMen` and `maxWomen`.
+  final Map<String, Object?>? constraints;
+
+  /// The code an invite-only event admits with.
+  final String? inviteCode;
+
+  static final _inviteCodePattern = RegExp(r'^[A-Za-z0-9_-]{4,64}$');
+
   bool get isValid =>
       acceptsContractValue(
         CatchContractConstraints
@@ -137,13 +158,22 @@ class PrivateEventAdmissionTerms {
       ) &&
       (priceInPaise == 0
           ? cancellationPolicyId == 'notApplicable'
-          : cancellationPolicyId != 'notApplicable');
+          : cancellationPolicyId != 'notApplicable') &&
+      (inviteCode == null || _inviteCodePattern.hasMatch(inviteCode!)) &&
+      _validConstraints(constraints);
+
   Map<String, Object?> toJson() => {
     'capacityLimit': capacityLimit,
     'priceInPaise': priceInPaise,
     'currency': currency,
     'cancellationPolicyId': cancellationPolicyId,
+    if (eventPolicy != null) 'eventPolicy': eventPolicy,
+    if (constraints != null) 'constraints': constraints,
+    if (inviteCode != null) 'privateAccess': {'inviteCode': inviteCode},
   };
+
+  /// The four terms the event's setup view returns; it never returns the
+  /// policy, the limits or the code.
   factory PrivateEventAdmissionTerms.fromResponse(Object? raw) {
     if (raw is! Map ||
         raw.length != 4 ||
@@ -161,6 +191,101 @@ class PrivateEventAdmissionTerms {
     );
     if (!result.isValid) throw const FormatException('Invalid admission terms');
     return result;
+  }
+
+  /// The terms a stored command carries, as [toJson] wrote them: the four
+  /// terms and any of the policy, the limits and the invite code.
+  factory PrivateEventAdmissionTerms.fromCommandJson(Object? raw) {
+    if (raw is! Map) {
+      throw const FormatException('Invalid event admission terms');
+    }
+    const extras = {'eventPolicy', 'constraints', 'privateAccess'};
+    final map = Map<String, Object?>.from(raw);
+    final terms = PrivateEventAdmissionTerms.fromResponse({
+      for (final entry in map.entries)
+        if (!extras.contains(entry.key)) entry.key: entry.value,
+    });
+    final policy = map['eventPolicy'];
+    final limits = map['constraints'];
+    final access = map['privateAccess'];
+    if ((policy != null && policy is! Map) ||
+        (limits != null && limits is! Map) ||
+        (access != null &&
+            (access is! Map ||
+                access.keys.any((key) => key != 'inviteCode') ||
+                (access['inviteCode'] != null &&
+                    access['inviteCode'] is! String)))) {
+      throw const FormatException('Invalid event admission terms');
+    }
+    final result = PrivateEventAdmissionTerms(
+      capacityLimit: terms.capacityLimit,
+      priceInPaise: terms.priceInPaise,
+      currency: terms.currency,
+      cancellationPolicyId: terms.cancellationPolicyId,
+      eventPolicy: policy == null
+          ? null
+          : Map<String, Object?>.from(policy as Map),
+      constraints: limits == null
+          ? null
+          : Map<String, Object?>.from(limits as Map),
+      inviteCode: access == null
+          ? null
+          : (access as Map)['inviteCode'] as String?,
+    );
+    if (!result.isValid) throw const FormatException('Invalid admission terms');
+    return result;
+  }
+}
+
+/// Age bounds within 0 to 120 and in order, and cohort caps not below zero.
+bool _validConstraints(Map<String, Object?>? constraints) {
+  if (constraints == null) return true;
+  const keys = {'minAge', 'maxAge', 'maxMen', 'maxWomen'};
+  if (constraints.keys.any((key) => !keys.contains(key))) return false;
+  final minAge = constraints['minAge'];
+  final maxAge = constraints['maxAge'];
+  final maxMen = constraints['maxMen'];
+  final maxWomen = constraints['maxWomen'];
+  bool age(Object? value) =>
+      value == null || (value is int && value >= 0 && value <= 120);
+  bool cap(Object? value) => value == null || (value is int && value >= 0);
+  return age(minAge) &&
+      age(maxAge) &&
+      cap(maxMen) &&
+      cap(maxWomen) &&
+      ((maxAge as int? ?? 99) >= (minAge as int? ?? 0));
+}
+
+/// The admission policy and limits a private event saved with its tickets:
+/// what its setup view leaves out, so resuming setup can keep them.
+class PrivateEventSavedPolicy {
+  const PrivateEventSavedPolicy({
+    required this.eventPolicy,
+    required this.constraints,
+    required this.currency,
+  });
+
+  final EventPolicyBundle eventPolicy;
+  final EventConstraints constraints;
+  final String currency;
+
+  /// Read from the event document; null until the tickets are saved.
+  static PrivateEventSavedPolicy? fromEventDocument(
+    Map<String, dynamic>? data,
+  ) {
+    final policy = data?['eventPolicy'];
+    if (data == null || policy is! Map) return null;
+    final constraints = data['constraints'];
+    final currency = data['currency'];
+    return PrivateEventSavedPolicy(
+      eventPolicy: EventPolicyBundle.fromJson(
+        Map<String, dynamic>.from(policy),
+      ),
+      constraints: constraints is Map
+          ? EventConstraints.fromJson(Map<String, dynamic>.from(constraints))
+          : const EventConstraints(),
+      currency: currency is String ? currency : 'INR',
+    );
   }
 }
 

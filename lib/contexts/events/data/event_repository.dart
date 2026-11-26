@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:catch_dating_app/contexts/events/data/event_callable_adapters.dart';
 import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/contexts/events/data/event_stream_utils.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_setup_models.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
@@ -140,6 +141,24 @@ class EventRepository with EventRepositoryActions {
           service: BackendService.firestore,
           action: 'watch event private access',
           resource: 'eventPrivateAccess',
+        ),
+      );
+
+  /// The admission policy and limits a private event saved, which its
+  /// setup view leaves out; null until its tickets are saved.
+  Stream<PrivateEventSavedPolicy?> watchPrivateEventPolicy(String eventId) =>
+      withBackendErrorStream(
+        () => _db
+            .collection(_collectionPath)
+            .doc(eventId)
+            .snapshots()
+            .map(
+              (doc) => PrivateEventSavedPolicy.fromEventDocument(doc.data()),
+            ),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch private event policy',
+          resource: _collectionPath,
         ),
       );
 
@@ -456,6 +475,13 @@ EventRepository eventRepository(Ref ref) => EventRepository(
 @riverpod
 Stream<Event?> watchEvent(Ref ref, String eventId) =>
     ref.watch(eventRepositoryProvider).watchEvent(eventId);
+
+/// A private event's saved admission policy; resuming setup reads it.
+@riverpod
+Stream<PrivateEventSavedPolicy?> watchPrivateEventPolicy(
+  Ref ref,
+  String eventId,
+) => ref.watch(eventRepositoryProvider).watchPrivateEventPolicy(eventId);
 
 @riverpod
 Stream<EventPrivateAccess?> watchEventPrivateAccess(Ref ref, String eventId) =>

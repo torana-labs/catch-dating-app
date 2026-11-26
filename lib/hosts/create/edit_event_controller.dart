@@ -4,12 +4,12 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/create/create_draft_values.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
+import 'package:catch_dating_app/hosts/create/create_policy_fields.dart';
 import 'package:catch_dating_app/hosts/create/edit_event_values.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
@@ -38,7 +38,8 @@ class EditEventArgs {
 /// It reads the event's private access for an invite-only event's code;
 /// it writes nothing itself.
 @riverpod
-class EditEventController extends _$EditEventController {
+class EditEventController extends _$EditEventController
+    with CreatePolicyFields {
   ProviderSubscription<AsyncValue<EventPrivateAccess?>>? _invite;
   bool _inviteSeeded = false;
 
@@ -69,6 +70,7 @@ class EditEventController extends _$EditEventController {
 
   // ---- the form ----
 
+  @override
   void edit(EventDraft Function(EventDraft draft) change) {
     if (!state.canChange) return;
     state = state.copyWith(
@@ -142,53 +144,12 @@ class EditEventController extends _$EditEventController {
   void setRoutePlan(RouteEventPlan? plan) =>
       edit((draft) => draft.copyWith(routePlan: plan?.toJson()));
 
-  /// Who can book. Leaving open capacity turns cohort caps off; leaving
-  /// balanced singles turns demand pricing off; an invite-only event reads
-  /// its current code.
+  /// Who can book; an invite-only event reads its current code.
+  @override
   void setAdmission(EventAdmissionPreset preset) {
-    edit(
-      (draft) => draft.copyWith(
-        admissionPreset: preset.name,
-        dynamicPricingEnabled:
-            preset == EventAdmissionPreset.balancedSingles &&
-            draft.dynamicPricingEnabled,
-      ),
-    );
+    super.setAdmission(preset);
     if (preset == EventAdmissionPreset.inviteOnly) _followInviteCode();
   }
-
-  void setCohortCaps(bool on) => edit(
-    (draft) => draft.copyWith(
-      admissionPreset: on
-          ? editFixedCohortCapsPreset
-          : EventAdmissionPreset.openCapacity.name,
-    ),
-  );
-
-  /// Demand pricing starts from a small step and a ceiling when its fields
-  /// are empty.
-  void setDemandPricing(bool on) => edit(
-    (draft) => draft.copyWith(
-      dynamicPricingEnabled: on,
-      dynamicPricingStep: on && (draft.dynamicPricingStep ?? '').isEmpty
-          ? '250'
-          : draft.dynamicPricingStep,
-      dynamicPricingMax: on && (draft.dynamicPricingMax ?? '').isEmpty
-          ? '1500'
-          : draft.dynamicPricingMax,
-    ),
-  );
-
-  /// The age range, stored with 0 and 99 as no limit.
-  void setAgeRange(int minAge, int maxAge) => edit(
-    (draft) => draft.copyWith(
-      minAge: minAge <= 18 ? '' : '$minAge',
-      maxAge: maxAge >= 99 ? '' : '$maxAge',
-    ),
-  );
-
-  void setCancellationPolicy(EventCancellationPolicyId id) =>
-      edit((draft) => draft.copyWith(cancellationPolicy: id.name));
 
   // ---- saving ----
 

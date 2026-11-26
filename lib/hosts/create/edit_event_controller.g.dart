@@ -77,7 +77,7 @@ final class EditEventControllerProvider
 }
 
 String _$editEventControllerHash() =>
-    r'e9acc63162ec72cb7e826a457bfa5a1f6399eff0';
+    r'5b0ba6f1da954759b29a1dcf6f27e3f43fb09581';
 
 /// Editing a saved event with the create editor. The event fills the draft;
 /// what bookings lock is worked out once, when editing starts; Save checks
