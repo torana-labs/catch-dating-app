@@ -88,13 +88,18 @@ class CatchFieldLabelText extends StatelessWidget {
         textBaseline: TextBaseline.alphabetic,
         children: [
           Flexible(child: labelText),
-          Text(
-            copy.optionalSuffix,
-            style: effectiveStyle.copyWith(
-              color: hasError ? t.danger : t.ink3,
-              fontWeight: FontWeight.w500,
+          // Large text in a narrow lane shortens the qualifier rather than
+          // overflowing; the name keeps the room it needs first.
+          Flexible(
+            child: Text(
+              copy.optionalSuffix,
+              style: effectiveStyle.copyWith(
+                color: hasError ? t.danger : t.ink3,
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            maxLines: 1,
           ),
         ],
       );
