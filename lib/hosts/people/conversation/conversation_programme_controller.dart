@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/programmes/domain/organizer_program_vi
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'host_inbox_program_audience_controller.g.dart';
+part 'conversation_programme_controller.g.dart';
 
 /// Verified program identity and the guest pages loaded for its Inbox scope.
 /// An incomplete page set is never presented as the full program audience.

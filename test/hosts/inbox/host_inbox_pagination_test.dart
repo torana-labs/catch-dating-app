@@ -8,7 +8,7 @@ import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'host_inbox_test_fixtures.dart';
+import '../people/conversation/conversation_fixtures.dart';
 
 final _now = DateTime(2026, 9, 12);
 

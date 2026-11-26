@@ -6,7 +6,7 @@ import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'host_inbox_catch_pages_controller.g.dart';
+part 'conversation_pages_controller.g.dart';
 
 class HostInboxCatchPageState {
   const HostInboxCatchPageState({
