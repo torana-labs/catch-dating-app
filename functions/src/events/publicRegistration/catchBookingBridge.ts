@@ -7,6 +7,8 @@ import {
   eventParticipationId,
   eventParticipationPatch,
 } from "../../shared/relationshipDocuments";
+import {writeEventGuestDisclosure} from
+  "../../shared/admissionVisibility";
 import {readBookingCohort, writeBookingCohort} from
   "../../shared/bookingPrivateFacts";
 import {
@@ -102,6 +104,7 @@ export async function prepareCatchBookingAdmission(input: {
       });
       tx.set(participationRef, admission, {merge: true});
       writeBookingCohort({db, tx, eventId, uid, cohortAtSignup: cohortId});
+      writeEventGuestDisclosure({db, tx, eventId, uid, event, gender});
       // The admission writes the web row itself; it gains only the booking
       // facts and the pointer here.
       writeCatchBookingRoster({db, tx, slot: rosterSlot,

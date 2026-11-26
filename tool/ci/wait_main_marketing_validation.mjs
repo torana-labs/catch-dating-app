@@ -4,6 +4,7 @@ import fs from "node:fs";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {sourceCiPasses} from "./required_ci_floor.mjs";
+import {NIGHTLY_TITLE} from "./ci_nightly.mjs";
 import {CAPTURE_PRODUCER_JOBS, selectCaptureProducerJob, verifyArtifactMetadata} from "../marketing/import_hosted_captures.mjs";
 
 const workflowPath = ".github/workflows/ci.yml";
@@ -32,7 +33,9 @@ export function selectSameSourceRun({runs, canonical, repository, sourceSha, eve
   const candidates = runs.filter(run => run.head_sha === sourceSha && run.event === event && isMainCiSource(run));
   for (const run of candidates) {
     assert.ok(positive(run.id) && positive(run.run_attempt) && positive(run.run_number) &&
-      run.workflow_id === canonical.id && run.path?.split("@")[0] === workflowPath && run.name === "CI" &&
+      run.workflow_id === canonical.id && run.path?.split("@")[0] === workflowPath &&
+      // CI's run-name: "CI", or "CI nightly" for the dispatched nightly (26 Nov 2026).
+      (run.name === "CI" || (run.event === "workflow_dispatch" && run.name === NIGHTLY_TITLE)) &&
       run.repository?.full_name === repository && run.head_repository?.full_name === repository &&
       positive(run.repository?.id) && run.head_repository?.id === run.repository.id,
     "Same-source CI run has an invalid workflow, repository, or attempt identity.");

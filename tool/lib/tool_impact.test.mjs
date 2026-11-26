@@ -388,7 +388,7 @@ test("combined layout inputs preserve all owner checks and mixed runtime require
   }
   assert.deepEqual(layoutPlan(layoutPaths, unannotated).toolIds, combined.toolIds);
   for (const [paths, setup] of [
-    [["tool/design/check_component_lexicon.mjs"], ["node", "flutter", "flutter-pub"]],
+    [["tool/design/check_component_lexicon.mjs"], ["node", "flutter", "flutter-pub", "root-npm"]],
     [["tool/design/check_public_surface_behavior.test.mjs"], ["node", "root-npm"]],
     [["tool/design/check_component_lexicon.mjs", "tool/design/check_public_surface_behavior.test.mjs"],
       ["node", "flutter", "flutter-pub", "root-npm"]],

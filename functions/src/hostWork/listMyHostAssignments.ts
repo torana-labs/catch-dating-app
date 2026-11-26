@@ -9,9 +9,8 @@
   status:ASCENDING
 ) */
 import * as admin from "firebase-admin";
-import {CallableRequest, onCall} from "firebase-functions/v2/https";
+import {CallableRequest} from "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
-import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkInstanceRateLimit} from "../shared/instanceRateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
@@ -55,8 +54,6 @@ const defaultDeps: HostWorkDeps = {
   firestore: () => admin.firestore(),
   now: () => admin.firestore.Timestamp.now(),
 };
-
-const hostWorkCallableLimits = {timeoutSeconds: 60, maxInstances: 20};
 
 /**
  * The caller's live staff assignments across program and event scopes.
@@ -247,7 +244,3 @@ function toDto(
   };
 }
 
-export const listMyHostAssignments = onCall(
-  appCheckCallableOptionsWithLimits(hostWorkCallableLimits),
-  (request) => listMyHostAssignmentsHandler(request)
-);

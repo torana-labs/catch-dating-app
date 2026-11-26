@@ -180,7 +180,6 @@ export async function setEventPublicationHandler(
 export const setEventPublication = onCall(appCheckCallableOptions,
   (request) => setEventPublicationHandler(request));
 
-
 /**
  * Kept for installed Host builds that send admission-terms saves here; the
  * current app calls updatePrivateEventDetails. Every event has its seat
@@ -209,5 +208,3 @@ export async function reconcilePrivateEventSeatsHandler(
   }
   return result;
 }
-export const reconcilePrivateEventSeats = onCall(appCheckCallableOptions,
-  (request) => reconcilePrivateEventSeatsHandler(request));

@@ -74,6 +74,15 @@ test("the summary measures answer time, minutes, queue reuse on main and failure
   assert.equal(metrics.events.schedule.answerP50, null);
 });
 
+test("the Nightly row counts scheduled and dispatched nightlies, never a plain full dispatch", () => {
+  const runs = [run(1, "schedule", {display_title: "CI"}), run(2, "workflow_dispatch", {display_title: "CI nightly"}),
+    run(3, "workflow_dispatch", {display_title: "CI"})];
+  const jobsByRun = new Map(runs.map(({id}) => [id, [job("Required CI", 10, 11, {run_id: id})]]));
+  const metrics = summarize({runs, jobsByRun, mergedPullRequests: 0});
+  assert.equal(metrics.events.schedule.runs, 2);
+  assert.equal(Object.values(metrics.events).reduce((sum, event) => sum + event.runs, 0), 2);
+});
+
 test("the report compares with last week's numbers and carries this week's for next time", () => {
   const metrics = summarize({runs: [run(1, "pull_request")],
     jobsByRun: new Map([[1, [job("Required CI", 20, 21, {run_id: 1})]]]), mergedPullRequests: 4});

@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
 import {selectEmulatorTests} from "../lib/functions_test_selection.mjs";
-import {COMMIT_LIMIT, ISSUE_TITLE, decideSelectionMiss, failingEmulatorTests, failingUnitTests, testId, unionSelection}
-  from "./selection_miss_report.mjs";
+import {COMMIT_LIMIT, ISSUE_TITLE, decideSelectionMiss, failingEmulatorTests, failingUnitTests, lastGreenNightly, testId,
+  unionSelection} from "./selection_miss_report.mjs";
 
 const run = {html_url: "https://example.test/run/9", head_sha: "f".repeat(40)};
 const commits = (count) => Array.from({length: count}, (_, n) => ({sha: String(n + 1).repeat(40).slice(0, 40), subject: `commit ${n + 1}`}));
@@ -146,7 +146,10 @@ test("the selection-miss job reads only main's failed nightlies and can only wri
   assert.match(workflow, /^permissions: \{\}$/mu);
   const job = workflow.slice(workflow.indexOf("\n  selection-miss:\n"));
   assert.ok(job.length > 1, "main-red-alert.yml has a selection-miss job");
-  assert.match(job, /if: \$\{\{ github\.event\.workflow_run\.head_branch == 'main' && github\.event\.workflow_run\.event == 'schedule' && github\.event\.workflow_run\.conclusion == 'failure' \}\}/u);
+  // The nightly: dispatched by ci-nightly.yml and titled "CI nightly" since 26 Nov 2026, scheduled before.
+  assert.ok(job.includes("if: ${{ github.event.workflow_run.head_branch == 'main' && (github.event.workflow_run.event == 'schedule' || " +
+    "(github.event.workflow_run.event == 'workflow_dispatch' && github.event.workflow_run.display_title == 'CI nightly')) && " +
+    "github.event.workflow_run.conclusion == 'failure' }}"), "selection-miss runs on a failed nightly only");
   assert.match(job, /permissions:\n\s+actions: read\n\s+contents: read\n\s+issues: write\n/u);
   assert.doesNotMatch(job, /contents: write|pull-requests: write|actions: write/u);
   assert.match(job, /ref: \$\{\{ github\.event\.workflow_run\.head_sha \}\}/u);
@@ -158,4 +161,21 @@ test("the selection-miss job reads only main's failed nightlies and can only wri
   assert.match(functions, /name: functions-unit-junit-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/u);
   const rules = fs.readFileSync(new URL("../../.github/workflows/firestore-rules-ci.yml", import.meta.url), "utf8");
   assert.match(rules, /name: backend-integration-execution-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}-/u);
+});
+
+
+test("a failed nightly's window starts at the last green nightly, scheduled or dispatched, never a plain full dispatch", () => {
+  const failed = {event: "workflow_dispatch", display_title: "CI nightly", created_at: "2026-11-28T02:40:00Z", head_sha: "f".repeat(40)};
+  const greens = [
+    {id: 4, event: "workflow_dispatch", display_title: "CI", created_at: "2026-11-27T15:00:00Z", head_sha: "d".repeat(40)},
+    {id: 3, event: "workflow_dispatch", display_title: "CI nightly", created_at: "2026-11-27T02:40:00Z", head_sha: "c".repeat(40)},
+    {id: 2, event: "schedule", display_title: "CI", created_at: "2026-11-25T09:00:00Z", head_sha: "b".repeat(40)},
+  ];
+  const all = () => true;
+  assert.equal(lastGreenNightly({greens, nightly: failed, isAncestor: all}).id, 3);
+  // A commit main no longer holds is skipped, back to the last green scheduled nightly.
+  assert.equal(lastGreenNightly({greens, nightly: failed, isAncestor: (sha) => sha !== "c".repeat(40)}).id, 2);
+  // A scheduled nightly that failed reads the same window as a dispatched one.
+  assert.equal(lastGreenNightly({greens, nightly: {...failed, event: "schedule", display_title: "CI"}, isAncestor: all}).id, 3);
+  assert.equal(lastGreenNightly({greens: greens.slice(0, 1), nightly: failed, isAncestor: all}), null);
 });

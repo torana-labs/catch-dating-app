@@ -26,6 +26,7 @@ import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {semanticGateIds} from "../lib/semantic_gates.mjs";
+import {nightlyRuns} from "./ci_nightly.mjs";
 import {loadToolsManifest} from "../lib/tools_manifest.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -162,8 +163,8 @@ function gh(args, input) {
 
 /** Downloads the newest nightly runs' gate timings into a fresh directory. */
 function downloadNightlyTimings(repository, runs) {
-  const nightly = JSON.parse(gh(["api",
-    `repos/${repository}/actions/workflows/ci.yml/runs?branch=main&event=schedule&status=completed&per_page=${runs}`]));
+  const nightly = {workflow_runs: nightlyRuns((endpoint) => JSON.parse(gh(["api", endpoint])), repository,
+    `status=completed&per_page=${runs}`)};
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "semantic-timings-"));
   for (const run of nightly.workflow_runs ?? []) {
     const artifacts = JSON.parse(gh(["api", `repos/${repository}/actions/runs/${run.id}/artifacts?per_page=100`]));

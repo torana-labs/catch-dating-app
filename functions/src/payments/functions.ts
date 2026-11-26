@@ -3,8 +3,6 @@
 
 export {dispatchGuestPayments} from "./dispatch/guestPayments.generated";
 export {razorpayWebhook} from "./razorpayWebhook";
-export {listOrganizerFormPayments} from
-  "./formPayments/formPaymentLedger";
 export {managePaymentRoutingPolicy} from
   "./managePaymentRoutingPolicy";
 export {prepareOrganizerFormPayment, getOrganizerFormPayment,

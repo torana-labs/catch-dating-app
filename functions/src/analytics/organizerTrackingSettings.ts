@@ -132,7 +132,5 @@ export async function setOrganizerTrackingSettingsHandler(
   });
 }
 
-export const getOrganizerTrackingSettings = onCall(appCheckCallableOptions,
-  (request) => getOrganizerTrackingSettingsHandler(request));
 export const setOrganizerTrackingSettings = onCall(appCheckCallableOptions,
   (request) => setOrganizerTrackingSettingsHandler(request));

@@ -7,7 +7,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
 /// The guest list on a phone in board order: how many households, Import a
-/// list, the filters, the reply key and the household by function grid.
+/// list, Choose phone contacts when the planner may import them, the
+/// filters, the reply key and the household by function grid.
 class HostProgrammeGuestsBody extends StatelessWidget {
   const HostProgrammeGuestsBody({
     super.key,
@@ -18,6 +19,9 @@ class HostProgrammeGuestsBody extends StatelessWidget {
     required this.onImport,
     required this.onOpenHousehold,
     required this.onRetry,
+    this.onPhoneImport,
+    this.phoneImportFailure,
+    this.onRetryPhoneImport,
   });
 
   final HostProgrammeState state;
@@ -27,6 +31,17 @@ class HostProgrammeGuestsBody extends StatelessWidget {
   final VoidCallback onImport;
   final ValueChanged<HostProgrammeHousehold> onOpenHousehold;
   final VoidCallback onRetry;
+
+  /// Opens the phone contacts import; null when this planner cannot import
+  /// them (not a wedding, archived, or no fresh manager access).
+  final VoidCallback? onPhoneImport;
+
+  /// Why the access read behind Choose phone contacts failed, in words, for
+  /// a failure worth retrying; null otherwise.
+  final String? phoneImportFailure;
+
+  /// Reads the access behind Choose phone contacts again.
+  final VoidCallback? onRetryPhoneImport;
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +88,45 @@ class HostProgrammeGuestsBody extends StatelessWidget {
           fullWidth: true,
           onPressed: onImport,
         ),
+        if (onPhoneImport case final phoneImport?)
+          CatchSection(
+            title: l10n.phoneImportEntryTitle,
+            children: [
+              CatchText(
+                l10n.phoneImportEntryHelp,
+                variant: CatchTextVariant.bodySmall,
+                tone: CatchTextTone.secondary,
+              ),
+              CatchButton(
+                key: const ValueKey<String>('program-guests-phone-import'),
+                label: l10n.phoneImportChooseContacts,
+                variant: CatchButtonVariant.secondary,
+                leading: CatchIcon(CatchIcons.addPerson),
+                fullWidth: true,
+                onPressed: phoneImport,
+              ),
+            ],
+          )
+        else if (phoneImportFailure case final failure?)
+          CatchSection(
+            title: l10n.phoneImportEntryTitle,
+            children: [
+              CatchText(
+                failure,
+                variant: CatchTextVariant.bodySmall,
+                tone: CatchTextTone.secondary,
+              ),
+              CatchButton(
+                key: const ValueKey<String>(
+                  'program-guests-phone-import-retry',
+                ),
+                label: l10n.sharedActionTryAgain,
+                variant: CatchButtonVariant.secondary,
+                fullWidth: true,
+                onPressed: onRetryPhoneImport,
+              ),
+            ],
+          ),
         HostProgrammeGuestFilterTabBar(
           state: state,
           filter: filter,

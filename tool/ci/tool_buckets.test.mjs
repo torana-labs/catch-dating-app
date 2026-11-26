@@ -10,6 +10,7 @@ import {
   buildTimings,
   fullMatrixTools,
   readTimings,
+  SETUP_SECONDS,
   sharedCommandGroups,
   toolSecondsFromLog,
   validateTimings,
@@ -79,8 +80,8 @@ test("a bucket's setup is the affected job's projection of its tools' CI require
   assert.ok(third.setup.includes("playwright") && third.setup.includes("flutter"));
 });
 
-test("the committed buckets stay within a minute of each other", () => {
-  const loads = buckets.map((bucket) => bucket.seconds);
+test("the committed buckets finish within a minute of each other, setup included", () => {
+  const loads = buckets.map((bucket) => bucket.seconds + bucket.setupSeconds);
   assert.ok(Math.max(...loads) - Math.min(...loads) <= 60, `bucket loads ${loads.join(", ")}`);
 });
 
@@ -167,4 +168,18 @@ test("tools sharing a command or prerequisite form one group, deterministically"
   const timings = {defaultSeconds: 1, seconds: {"a:one": 5, "b:two": 5, "c:three": 4, "d:four": 4, "e:five": 9}};
   const plan = assignBuckets({tools, timings, count: 2});
   assert.deepEqual(plan.map((bucket) => bucket.toolIds), [["a:one", "b:two"], ["c:three", "d:four", "e:five"]]);
+});
+
+test("tools that need the same setup gather, so a bucket can skip Flutter and root npm", () => {
+  const flutter = (id, seconds) => ({id, checks: [`dart ${id}`], ciRequirements: {repositoryView: "full", setup: ["node", "flutter", "flutter-pub"]}, seconds});
+  const plain = (id, seconds) => ({id, checks: [`node ${id}`], ciRequirements: {repositoryView: "full", setup: ["node"]}, seconds});
+  const tools = [flutter("f:a", 60), plain("n:a", 60), flutter("f:b", 55), plain("n:b", 55), flutter("f:c", 5), plain("n:c", 5)];
+  const timings = {defaultSeconds: 1, seconds: Object.fromEntries(tools.map((tool) => [tool.id, tool.seconds]))};
+  const plan = assignBuckets({tools, timings, count: 2});
+  const flutterBucket = plan.find((bucket) => bucket.toolIds.includes("f:a"));
+  const nodeBucket = plan.find((bucket) => bucket !== flutterBucket);
+  assert.deepEqual(flutterBucket.toolIds.filter((id) => id.startsWith("f:")).sort(), ["f:a", "f:b", "f:c"]);
+  assert.deepEqual(nodeBucket.setup, ["node"]);
+  assert.equal(nodeBucket.setupSeconds, 0);
+  assert.equal(flutterBucket.setupSeconds, SETUP_SECONDS.flutter + SETUP_SECONDS["flutter-pub"]);
 });

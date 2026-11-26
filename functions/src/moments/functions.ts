@@ -7,7 +7,6 @@ export {
   pauseOrganizerMoment,
   resumeOrganizerMoment,
   runOrganizerMoment,
-  listOrganizerMoments,
 } from "./momentCallables";
 export {
   onOrganizerMomentViewChanged,

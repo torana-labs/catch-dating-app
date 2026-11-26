@@ -29076,42 +29076,6 @@ abstract class AppLocalizations {
   /// **'Rehearse your next event'**
   String get hostRehearsalEntryUpcoming;
 
-  /// Title for the rehearsal starting-point sheet.
-  ///
-  /// In en, this message translates to:
-  /// **'Start dress rehearsal'**
-  String get hostRehearsalStartTitle;
-
-  /// Supporting copy for the rehearsal starting-point sheet.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose a starting point'**
-  String get hostRehearsalStartSubtitle;
-
-  /// Choice that starts from an upcoming event.
-  ///
-  /// In en, this message translates to:
-  /// **'Rehearse {title}'**
-  String hostRehearsalStartUpcoming({required String title});
-
-  /// Explains what is copied from the selected upcoming event.
-  ///
-  /// In en, this message translates to:
-  /// **'Uses its format and {count}-person guest list. You can adjust the rehearsal copy.'**
-  String hostRehearsalStartUpcomingDescription({required int count});
-
-  /// Choice that starts from organizer defaults.
-  ///
-  /// In en, this message translates to:
-  /// **'Create a custom rehearsal'**
-  String get hostRehearsalStartCustom;
-
-  /// Explains the editable custom rehearsal path.
-  ///
-  /// In en, this message translates to:
-  /// **'Start with organiser defaults, then choose the format, guests and scenario.'**
-  String get hostRehearsalStartCustomDescription;
-
   /// Dress rehearsal entry and optional configuration: EntrySample.
   ///
   /// In en, this message translates to:
@@ -31092,12 +31056,6 @@ abstract class AppLocalizations {
   /// **'Saved operations could not be read or saved. Free device space and try again. Keep the app’s saved data if you need support.'**
   String get coreSavedOperationsUnavailable;
 
-  /// Opens recovery options when the local operations journal cannot be read.
-  ///
-  /// In en, this message translates to:
-  /// **'Recover saved work'**
-  String get programsRecoveryAction;
-
   /// Title of the saved operations recovery sheet and exported file.
   ///
   /// In en, this message translates to:
@@ -31121,24 +31079,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Every passenger must be marked ready at the curb before this vehicle departs.'**
   String get programsOperationsPassengersNotReady;
-
-  /// Program operations copy: programsArrivalsOutboxTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Offline queue'**
-  String get programsArrivalsOutboxTitle;
-
-  /// Program operations copy: programsArrivalsOutboxSync.
-  ///
-  /// In en, this message translates to:
-  /// **'Sync now'**
-  String get programsArrivalsOutboxSync;
-
-  /// Program operations copy: programsArrivalsOutboxClear.
-  ///
-  /// In en, this message translates to:
-  /// **'Review changes'**
-  String get programsArrivalsOutboxClear;
 
   /// RSVP badge: attending.
   ///
@@ -31379,21 +31319,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancelled'**
   String get programsRoomsStatusCancelled;
-
-  /// Program operations copy: programsArrivalsOutboxPending.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} change(s) queued while offline. They will sync when connectivity returns.'**
-  String programsArrivalsOutboxPending({required int count});
-
-  /// Program operations copy: programsArrivalsOutboxReview.
-  ///
-  /// In en, this message translates to:
-  /// **'{pending} pending, {review} need review before they can sync.'**
-  String programsArrivalsOutboxReview({
-    required int pending,
-    required int review,
-  });
 
   /// Shown only when a response filter selection exceeds the API limit.
   ///

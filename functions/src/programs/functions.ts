@@ -7,7 +7,6 @@ export {dispatchOrganizerPrograms} from
 export {
   createOrganizerProgram,
   updateOrganizerProgram,
-  listOrganizerPrograms,
   getOrganizerProgram,
 } from "./programs";
 export {
@@ -65,7 +64,6 @@ export {
 } from "./programStaffInvites";
 export {
   upsertProgramGuest,
-  listProgramGuests,
   upsertProgramHousehold,
   listProgramHouseholds,
 } from "./programGuests";
@@ -104,8 +102,6 @@ export {
 } from "./hampers";
 export {signProgramPhotoUrls, upsertProgramPhoto} from "./photos";
 export {
-  getProgramAssistantSettings,
-  listProgramWhatsappThreads,
   sendProgramWhatsappReply,
   markProgramWhatsappThreadRead,
   setProgramWhatsappThreadHandling,
@@ -126,11 +122,7 @@ export {
 export {onProgramWhatsappInboundMessageCreated} from
   "./programWhatsapp/inboundTrigger";
 export {previewProgramAssistantReply} from "./assistant/preview";
-export {
-  getProgramHotelRooms,
-  upsertProgramStay,
-  upsertProgramRoomBlock,
-} from "./programRooms";
+export {upsertProgramStay, upsertProgramRoomBlock} from "./programRooms";
 export {getProgramAttendanceReport} from
   "./attendanceReportView";
 export {getProgramStakeholderCounts} from

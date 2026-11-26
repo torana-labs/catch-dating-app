@@ -10,7 +10,6 @@
   "read": "server only; authorized managers receive sanitized candidate decisions",
   "write": "server only",
   "exportedFunctions": [
-    "listOrganizerContactMergeCandidates",
     "reviewOrganizerContactMergeCandidate"
   ],
   "migrationNotes": [

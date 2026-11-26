@@ -1,7 +1,6 @@
 import {getFirestore} from "firebase-admin/firestore";
-import {CallableRequest, onCall} from "firebase-functions/v2/https";
+import {CallableRequest} from "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
-import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {EventAttendanceReportStore} from "../domain/live/attendanceReport";
 
@@ -25,5 +24,3 @@ export async function getEventAttendanceReportHandler(
   return deps.store(db).get(uid, request.data);
 }
 
-export const getEventAttendanceReport = onCall(appCheckCallableOptions,
-  (request) => getEventAttendanceReportHandler(request));

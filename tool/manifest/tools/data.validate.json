@@ -10,6 +10,7 @@
     "repositoryView": "full",
     "setup": [
       "node",
+      "root-npm",
       "functions-npm"
     ]
   },

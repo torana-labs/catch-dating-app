@@ -10,14 +10,13 @@ import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_route_controller.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_route_state.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_screen.dart';
 import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
-import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -151,8 +150,9 @@ class _Fixture {
       GoRoute(
         path: Routes.hostProgramGuestsScreen.path,
         name: Routes.hostProgramGuestsScreen.name,
-        builder: (_, state) =>
-            ProgramGuestsScreen(programId: state.pathParameters['programId']!),
+        builder: (_, state) => HostProgrammeGuestsScreen(
+          programId: state.pathParameters['programId']!,
+        ),
       ),
       GoRoute(
         path: Routes.hostWorkPhoneImportScreen.path,
@@ -194,10 +194,10 @@ void main() {
     await f.mount(tester);
     expect(find.text('Import phone contacts'), findsOneWidget);
     expect(find.byKey(_entryKey).hitTestable(), findsOneWidget);
-    expect(find.text('Add guest'), findsOneWidget);
+    expect(find.text('Import a list'), findsOneWidget);
     expect(
       tester.getTopLeft(find.byKey(_entryKey)).dy,
-      lessThan(tester.getTopLeft(find.text('Add guest')).dy),
+      greaterThan(tester.getTopLeft(find.text('Import a list')).dy),
     );
     await tester.tap(find.byKey(_entryKey));
     await pumpFeatureUi(tester);
@@ -225,7 +225,7 @@ void main() {
       await f.mount(tester);
       expect(find.byKey(_entryKey), findsNothing);
       expect(find.text('Import phone contacts'), findsNothing);
-      expect(find.text('Add guest'), findsOneWidget);
+      expect(find.text('Import a list'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
     });
@@ -255,12 +255,12 @@ void main() {
     final refresh = Completer<ProgramReadView<ProgramWorkAccess>>();
     f.readAccess = () => refresh.future;
     f.container.invalidate(programWorkEntryProvider('p-1', null));
-    await pumpUntilFound(tester, find.byType(CatchLoadingIndicator));
+    await tester.pump();
     expect(find.byKey(_entryKey), findsNothing);
     refresh.completeError(const PermissionException('Synthetic revocation'));
     await pumpFeatureUi(tester);
     expect(find.byKey(_entryKey), findsNothing);
-    expect(find.text('Add guest'), findsOneWidget);
+    expect(find.text('Import a list'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
   });
@@ -275,10 +275,14 @@ void main() {
         );
       await f.mount(tester);
       expect(find.byKey(_entryKey), findsNothing);
-      expect(find.text('Add guest'), findsOneWidget);
+      expect(find.text('Import a list'), findsOneWidget);
       expect(find.text('Try again'), findsOneWidget);
       f.readAccess = () async => _view();
-      await tester.tap(find.text('Try again'));
+      final retry = find.byKey(
+        const ValueKey('program-guests-phone-import-retry'),
+      );
+      await tester.ensureVisible(retry);
+      await tester.tap(retry);
       await pumpFeatureUi(tester);
       expect(find.byKey(_entryKey), findsOneWidget);
       expect(f.accessReads, 2);

@@ -2,13 +2,12 @@ import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
 import {FieldPath, Timestamp} from "firebase-admin/firestore";
-import {onCall, HttpsError, type CallableRequest} from
+import {HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../../shared/auth";
 import {checkRateLimit} from "../../shared/rateLimit";
 import {requireOrganizerManager} from "../../shared/organizerManagerAuthority";
 import {requireDoc, validateCallableWithAjv} from "../../shared/validation";
-import {appCheckCallableOptionsWithLimits} from "../../shared/callableOptions";
 import {formPaymentId} from "./formPaymentIdentity";
 import type {ListOrganizerFormPaymentsCallablePayload as Payload} from
   "../../shared/generated/listOrganizerFormPaymentsCallablePayload";
@@ -129,6 +128,3 @@ function decodeCursor(value: string | null, scope: string): Cursor | null {
   }
 }
 
-export const listOrganizerFormPayments = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 30, maxInstances: 20}),
-  (request) => listOrganizerFormPaymentsHandler(request));

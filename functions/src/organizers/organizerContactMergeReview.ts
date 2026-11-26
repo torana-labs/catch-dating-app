@@ -724,11 +724,6 @@ function normalizePayloadStrings(
   return input;
 }
 
-export const listOrganizerContactMergeCandidates = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 10}),
-  (request) => listOrganizerContactMergeCandidatesHandler(request)
-);
-
 export const reviewOrganizerContactMergeCandidate = onCall(
   appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 10}),
   (request) => reviewOrganizerContactMergeCandidateHandler(request)
