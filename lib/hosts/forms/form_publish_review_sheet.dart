@@ -56,17 +56,16 @@ class HostFormPublishReviewSheet extends StatelessWidget {
       footer: CatchStack(
         gap: CatchStackGap.g8,
         children: [
-          CatchButton(
+          CatchButton.sheet(
             key: const ValueKey<String>('host-form-review-preview'),
+            role: CatchButtonEmphasis.alternative,
             label: l10n.hostFormPreview,
-            variant: CatchButtonVariant.secondary,
-            fullWidth: true,
             onPressed: () => onChoose(HostFormPublishReviewChoice.preview),
           ),
-          CatchButton(
+          CatchButton.sheet(
             key: const ValueKey<String>('host-form-review-publish'),
+            role: CatchButtonEmphasis.commit,
             label: live ? l10n.hostFormPublishChanges : l10n.hostFormPublish,
-            fullWidth: true,
             onPressed: () => onChoose(HostFormPublishReviewChoice.publish),
           ),
         ],

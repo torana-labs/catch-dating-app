@@ -413,16 +413,15 @@ class HostOfferSettingsReviewSheet extends StatelessWidget {
         gap: CatchStackGap.g8,
         equal: true,
         children: [
-          CatchButton(
+          CatchButton.sheet(
+            role: CatchButtonEmphasis.dismiss,
             label: l10n.coreCatchFieldLabelCancel,
-            variant: CatchButtonVariant.secondary,
-            fullWidth: true,
             onPressed: () => Navigator.of(context).pop(false),
           ),
-          CatchButton(
+          CatchButton.sheet(
+            role: CatchButtonEmphasis.commit,
             key: const ValueKey('offer-payment-review-apply'),
             label: l10n.hostsEventPreferenceApply,
-            fullWidth: true,
             onPressed: () => Navigator.of(context).pop(true),
           ),
         ],

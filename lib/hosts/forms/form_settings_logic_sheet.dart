@@ -154,10 +154,10 @@ class _HostFormLogicRuleSheetState extends State<HostFormLogicRuleSheet> {
         (!sectionAction || targetSectionId != null);
     return CatchSheet.standard(
       title: l10n.hostFormAddRule,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
+        role: CatchButtonEmphasis.commit,
         key: const ValueKey<String>('host-form-logic-save'),
         label: l10n.hostFormRuleSave,
-        fullWidth: true,
         onPressed: !canSave
             ? null
             : () => widget.onSave((

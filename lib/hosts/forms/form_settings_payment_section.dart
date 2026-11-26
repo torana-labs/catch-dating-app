@@ -369,10 +369,10 @@ class _HostFormFeeSheetState extends State<HostFormFeeSheet> {
     return CatchSheet.standard(
       title: l10n.hostFormPaymentConfigure,
       subtitle: l10n.hostFormPaymentHelp,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
+        role: CatchButtonEmphasis.commit,
         key: const ValueKey<String>('host-form-fee-save'),
         label: l10n.hostFormPaymentSave,
-        fullWidth: true,
         onPressed: !canSave
             ? null
             : () => Navigator.of(context).pop(
