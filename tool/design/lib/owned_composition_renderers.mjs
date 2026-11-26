@@ -63,15 +63,6 @@ declare("lib/routing/host_router.dart", "lib/routing/host_router.dart", null,
 declare("lib/routing/detail_route_pages.dart", "lib/routing/consumer_router.dart", null,
   ["_eventDetailScreen"], ["EventDetailScreen"]);
 
-// The owner-approved route-shell-construction-ownership family retains each
-// screen's async boundary and its state-specific CatchRouteBody. These exact
-// typed factories configure the canonical shell; they are not new widgets.
-for (const [file, owner] of [
-  ["lib/hosts/presentation/host_event_operator_screen.dart", "HostEventOperatorScreen"],
-]) {
-  declare(file, file, owner, ["_routeScaffold"], ["CatchRouteScaffold"]);
-}
-
 export function isOwnedCompositionRenderer(entry) {
   return declarations.some((expected) => Object.entries(expected)
     .every(([key, value]) => entry[key] === value));

@@ -506,4 +506,46 @@ void main() {
       expect(sub.read().scanned, isNull);
     });
   });
+
+  test('event staff never open the participations or the roster labels, '
+      'and see the booked guests', () async {
+    var managerReads = 0;
+    final container = ProviderContainer.test(
+      overrides: [
+        watchEventAttendeesProvider(doorEventId).overrideWith(
+          (ref) => Stream.value([doorAttendee('dp', 'Dev Patel')]),
+        ),
+        watchEventParticipationsForEventProvider(doorEventId).overrideWith((
+          ref,
+        ) {
+          managerReads++;
+          return Stream.value(const <EventParticipation>[]);
+        }),
+        hostEventRosterInsightsProvider(doorEventId).overrideWith((ref) {
+          managerReads++;
+          return Stream.value(
+            const HostEventRosterInsights.missing(doorEventId),
+          );
+        }),
+        watchEventProvider(
+          doorEventId,
+        ).overrideWith((ref) => Stream.value(null)),
+        watchEventStaffPresenceProvider(
+          doorEventId,
+        ).overrideWith((ref) => Stream.value(const [])),
+        uidProvider.overrideWith((ref) => Stream.value('staff-1')),
+      ],
+    );
+    final sub = container.listen(
+      doorControllerProvider(doorEventId, manage: false),
+      (_, _) {},
+    );
+    addTearDown(sub.close);
+    container.listen(doorSessionProvider(doorEventId), (_, _) {});
+    await flushTestEventQueue();
+
+    expect(sub.read().status, DoorStatus.content);
+    expect(sub.read().expected, 1);
+    expect(managerReads, 0);
+  });
 }

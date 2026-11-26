@@ -17923,12 +17923,6 @@ abstract class AppLocalizations {
   /// **'Expired'**
   String get hostsEventStaffStatusExpired;
 
-  /// Restricted operator route title.
-  ///
-  /// In en, this message translates to:
-  /// **'Event operations'**
-  String get hostsEventOperatorTitle;
-
   /// Cancelled event operator state title.
   ///
   /// In en, this message translates to:
@@ -17940,12 +17934,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Its roster can no longer be changed from the staff workspace.'**
   String get hostsEventOperatorCancelledMessage;
-
-  /// Operator access summary title.
-  ///
-  /// In en, this message translates to:
-  /// **'Restricted event access'**
-  String get hostsEventOperatorAccessTitle;
 
   /// Operator access boundary explanation.
   ///
