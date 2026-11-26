@@ -63,7 +63,6 @@ import 'package:catch_dating_app/pages/chat/event_profile_screen.dart';
 import 'package:catch_dating_app/pages/event/event_detail_screen.dart';
 import 'package:catch_dating_app/pages/organizer/organizer_detail_screen.dart';
 import 'package:catch_dating_app/pages/start/start_welcome_route_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_rooms_screen.dart';
 import 'package:catch_dating_app/routing/host_legacy_redirects.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
@@ -506,7 +505,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostWorkGuestsScreen.path,
     name: Routes.hostWorkGuestsScreen.name,
     builder: (context, state) =>
-        ProgramGuestDeskScreen(programId: state.pathParameters['programId']!),
+        StaffGuestsScreen(programId: state.pathParameters['programId']!),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.today,
