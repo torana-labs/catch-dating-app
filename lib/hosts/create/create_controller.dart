@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_view.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_details_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_default_view_reads.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
@@ -487,15 +486,7 @@ class CreateController extends _$CreateController with CreatePolicyFields {
     );
     if (current.error != null) throw current.error!;
     if (patch.eventFormat != null && !current.canEditFormat) {
-      patch = PrivateEventDetailsPatch(
-        description: patch.description,
-        durationMinutes: patch.durationMinutes,
-        meetingLocation: patch.meetingLocation,
-        itinerary: patch.itinerary,
-        admissionTerms: patch.admissionTerms,
-        planVisibleToGuests: patch.planVisibleToGuests,
-        externalBooking: patch.externalBooking,
-      );
+      patch = createPatchWithoutFormat(patch);
       if (!patch.isValid) return;
     }
     await ref
@@ -550,19 +541,11 @@ class CreateController extends _$CreateController with CreatePolicyFields {
           privateEventPreferencesControllerProvider(_scope(eventId)).notifier,
         )
         .save(
-          PrivateEventPreferenceIntents(
-            usualDurationMinutes: intents.usualDurationMinutes,
-            preferredVenueId: intents.preferredVenueId,
-            offerValidityMinutes: intents.offerValidityMinutes,
-            collectionPreference: intents.collectionPreference,
-            currency: intents.currency,
-            offerMessageTemplate: intents.offerMessageTemplate,
-            paymentInstructions: intents.paymentInstructions,
-            reusablePaymentPage: intents.reusablePaymentPage,
-            admissionPreset: EventSetupValue.set(preset),
-            expectedAmountMinor: intents.expectedAmountMinor,
-            bookingMode: EventSetupValue.set(booking),
-            waitlistEnabled: EventSetupValue.set(state.waitlist),
+          createTicketIntents(
+            intents,
+            preset: preset,
+            booking: booking,
+            waitlist: state.waitlist,
           ),
         );
     current = await _untilPreferences(
@@ -753,30 +736,54 @@ class CreateController extends _$CreateController with CreatePolicyFields {
   Future<PrivateEventDetailsState> _untilDetails(
     String eventId,
     bool Function(PrivateEventDetailsState) ready,
-  ) => _until(privateEventDetailsControllerProvider(_scope(eventId)), ready);
+  ) => _until(
+    (listener) => ref.listen(
+      privateEventDetailsControllerProvider(_scope(eventId)),
+      listener,
+      fireImmediately: true,
+    ),
+    ready,
+  );
 
   /// The first preferences state of [eventId] that [ready] accepts.
   Future<EventPreferencesEditorState> _untilPreferences(
     String eventId,
     bool Function(EventPreferencesEditorState) ready,
-  ) =>
-      _until(privateEventPreferencesControllerProvider(_scope(eventId)), ready);
+  ) => _until(
+    (listener) => ref.listen(
+      privateEventPreferencesControllerProvider(_scope(eventId)),
+      listener,
+      fireImmediately: true,
+    ),
+    ready,
+  );
 
   /// The first publication state of [eventId] that [ready] accepts.
   Future<EventPublicationState> _untilPublication(
     String eventId,
     bool Function(EventPublicationState) ready,
-  ) => _until(eventPublicationControllerProvider(_scope(eventId)), ready);
+  ) => _until(
+    (listener) => ref.listen(
+      eventPublicationControllerProvider(_scope(eventId)),
+      listener,
+      fireImmediately: true,
+    ),
+    ready,
+  );
 
-  /// The first value of [provider] that [ready] accepts; the subscription
-  /// closes once answered.
-  Future<T> _until<T>(ProviderListenable<T> provider, bool Function(T) ready) {
+  /// The first value that [ready] accepts from the subscription [listen]
+  /// opens; it closes once answered.
+  Future<T> _until<T>(
+    ProviderSubscription<T> Function(void Function(T?, T) listener) listen,
+    bool Function(T) ready,
+  ) {
     final done = Completer<T>();
-    final subscription = ref.listen<T>(provider, (_, next) {
+    ProviderSubscription<T>? subscription;
+    subscription = listen((_, next) {
       if (!done.isCompleted && ready(next)) done.complete(next);
-    }, fireImmediately: true);
+    });
     // Close once answered; the first value may already have answered.
-    unawaited(done.future.whenComplete(subscription.close));
+    unawaited(done.future.whenComplete(() => subscription?.close()));
     return done.future;
   }
 }

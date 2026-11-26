@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_models.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
@@ -140,3 +141,25 @@ String createPreferencePreset(EventDraft draft) {
 bool createAsksFirst(EventDraft draft, {required bool approveEach}) =>
     approveEach ||
     (!draft.externalBookingMode && editAdmissionPreset(draft).requiresReview);
+
+/// The tickets step's preferences: [intents] as saved, with the admission
+/// [preset], the [booking] mode and the [waitlist] choice set.
+PrivateEventPreferenceIntents createTicketIntents(
+  PrivateEventPreferenceIntents intents, {
+  required String preset,
+  required String booking,
+  required bool waitlist,
+}) => PrivateEventPreferenceIntents(
+  usualDurationMinutes: intents.usualDurationMinutes,
+  preferredVenueId: intents.preferredVenueId,
+  offerValidityMinutes: intents.offerValidityMinutes,
+  collectionPreference: intents.collectionPreference,
+  currency: intents.currency,
+  offerMessageTemplate: intents.offerMessageTemplate,
+  paymentInstructions: intents.paymentInstructions,
+  reusablePaymentPage: intents.reusablePaymentPage,
+  admissionPreset: EventSetupValue.set(preset),
+  expectedAmountMinor: intents.expectedAmountMinor,
+  bookingMode: EventSetupValue.set(booking),
+  waitlistEnabled: EventSetupValue.set(waitlist),
+);

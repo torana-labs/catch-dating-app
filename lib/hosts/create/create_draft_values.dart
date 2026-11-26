@@ -100,6 +100,19 @@ PrivateEventDetailsPatch createBasicsPatch(
   );
 }
 
+/// [patch] without its format, for an event whose format commitments lock.
+PrivateEventDetailsPatch createPatchWithoutFormat(
+  PrivateEventDetailsPatch patch,
+) => PrivateEventDetailsPatch(
+  description: patch.description,
+  durationMinutes: patch.durationMinutes,
+  meetingLocation: patch.meetingLocation,
+  itinerary: patch.itinerary,
+  admissionTerms: patch.admissionTerms,
+  planVisibleToGuests: patch.planVisibleToGuests,
+  externalBooking: patch.externalBooking,
+);
+
 String createLocalDate(DateTime date) =>
     '${date.year.toString().padLeft(4, '0')}-'
     '${date.month.toString().padLeft(2, '0')}-'
