@@ -1,10 +1,14 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/hosts/organizer/audience_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/live_guide_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_body.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_controller.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_section.dart';
+import 'package:catch_dating_app/hosts/presentation/organizer_journey/host_organizer_journey_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
@@ -61,6 +65,18 @@ class OrganizerScreen extends ConsumerWidget {
           kicker: organizer == null ? null : _kicker(l10n, organizer),
           title: organizer?.name ?? l10n.hostNavigationOrganizer,
           actions: [
+            // With no organizer yet, Settings still holds the account: help,
+            // terms, privacy, deleting the account and signing out.
+            if (scope != null && organizer == null)
+              CatchIconAction.icon(
+                key: const ValueKey<String>('organizer-settings'),
+                icon: CatchIcons.settings,
+                tooltip: l10n.hostOrganizerRowSettings,
+                onPressed: () => context.goNamed(
+                  Routes.hostOrganizerScreen.name,
+                  queryParameters: const {'tab': 'settings'},
+                ),
+              ),
             if (scope != null && organizer != null && scope.canSwitch)
               CatchIconAction.icon(
                 key: const ValueKey<String>('organizer-switch'),
@@ -139,6 +155,12 @@ class OrganizerScreen extends ConsumerWidget {
           Routes.hostOrganizerScreen.name,
           queryParameters: {...query, 'tab': 'insights'},
         );
+      case OrganizerAction.audience:
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(
+            builder: (_) => OrganizerAudienceScreen(organizerId: organizer.id),
+          ),
+        );
       case OrganizerAction.payments:
         await context.pushNamed<void>(
           Routes.hostOrganizerPaymentsScreen.name,
@@ -158,6 +180,25 @@ class OrganizerScreen extends ConsumerWidget {
         await context.pushNamed<void>(
           Routes.hostOrganizerEventDefaultsScreen.name,
           queryParameters: query,
+        );
+      case OrganizerAction.liveGuide:
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(
+            builder: (_) => OrganizerLiveGuideScreen(organizerId: organizer.id),
+          ),
+        );
+      case OrganizerAction.journey:
+        await showCatchBottomSheet<void>(
+          context: context,
+          builder: (_) => HostOrganizerJourneySheet(organizerId: organizer.id),
+        );
+      case OrganizerAction.tracking:
+        await showCatchBottomSheet<void>(
+          context: context,
+          builder: (_) => CatchSheet.standard(
+            title: context.l10n.hostsTrackingSettingsTitle,
+            child: HostTrackingSettingsSection(organizerId: organizer.id),
+          ),
         );
       case OrganizerAction.rehearse:
         await context.pushNamed<void>(

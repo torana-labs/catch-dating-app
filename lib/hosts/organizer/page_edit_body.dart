@@ -1,4 +1,7 @@
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/organizer/page_edit_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_organizer_publication_state.dart';
+import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
@@ -12,27 +15,49 @@ enum PageEditField { name, about, area, instagram, phone, email }
 /// Your page in board order: the logo, the photos, the fields, the kinds of
 /// night, the links and what shows on the page. It holds no draft: every
 /// change goes back to the screen, which keeps it until Save changes.
+///
+/// Only the owner changes the page details; a manager sees them read-only
+/// with a note saying so, and still changes the logo and photos, as the
+/// organizer update allows.
 class OrganizerPageEditBody extends StatelessWidget {
   const OrganizerPageEditBody({
     super.key,
     required this.state,
     required this.onField,
+    required this.onType,
+    required this.onCity,
     required this.onFormat,
     required this.onListed,
     required this.onChangeLogo,
     required this.onAddPhotos,
-    required this.onRemovePhoto,
+    required this.onPhoto,
+    required this.onRetryUpload,
+    required this.onDropUpload,
+    this.onRemoveLogo,
   });
 
   final OrganizerPageEditState state;
   final void Function(PageEditField field, String value) onField;
+  final ValueChanged<OrganizerType> onType;
+
+  /// The city, as its market id.
+  final ValueChanged<String> onCity;
   final ValueChanged<CatchFormat> onFormat;
   final ValueChanged<bool> onListed;
   final VoidCallback onChangeLogo;
   final VoidCallback onAddPhotos;
 
-  /// The photo at this place on the page.
-  final ValueChanged<int> onRemovePhoto;
+  /// Takes the logo off the page; null while there is none.
+  final VoidCallback? onRemoveLogo;
+
+  /// The photo at this place on the page, to move or remove.
+  final ValueChanged<int> onPhoto;
+
+  /// Sends a failed upload again, by its id.
+  final ValueChanged<String> onRetryUpload;
+
+  /// Lets a failed upload go, by its id.
+  final ValueChanged<String> onDropUpload;
 
   @override
   Widget build(BuildContext context) {
@@ -41,19 +66,68 @@ class OrganizerPageEditBody extends StatelessWidget {
     final draft = state.draft;
     final organizer = state.organizer;
     final busy = state.saving || state.mediaPending;
+    final editable = state.isOwner && !state.saving;
+    final cities = _cityOptions(draft.city);
     final photos = state.photoUrls;
     final tiles = <Widget>[
       for (final (index, url) in photos.indexed)
         CatchSurface(
           key: ValueKey<String>('page-edit-photo-$index'),
           block: CatchSurfaceBlock.plain,
-          semanticLabel: l10n.hostOrganizerPagePhotoRemove,
-          onPress: busy ? null : () => onRemovePhoto(index),
+          semanticLabel: l10n.coreOrderedPhotoPickerActionPhotoOptions,
+          onPress: busy ? null : () => onPhoto(index),
           child: CatchNetworkImage(
             url,
             aspect: 1,
             corner: CatchNetworkImageSize.md,
             placeholder: _placeholders[index % _placeholders.length],
+          ),
+        ),
+      for (final upload in state.uploads)
+        CatchSurface(
+          key: ValueKey<String>('page-edit-upload-${upload.id}'),
+          block: CatchSurfaceBlock.plain,
+          child: CatchStack(
+            gap: CatchStackGap.g8,
+            align: CatchStackAlign.center,
+            children: [
+              CatchText(
+                upload.failed
+                    ? l10n.coreOrderedPhotoPickerStatusUploadFailed
+                    : l10n.coreOrderedPhotoPickerStatusUploadingProgress(
+                        percent: (upload.job.progress * 100).round(),
+                      ),
+                variant: CatchTextVariant.bodySmall,
+                tone: upload.failed
+                    ? CatchTextTone.danger
+                    : CatchTextTone.secondary,
+                align: TextAlign.center,
+              ),
+              if (upload.failed) ...[
+                CatchButton(
+                  key: ValueKey<String>('page-edit-retry-${upload.id}'),
+                  label: l10n.coreOrderedPhotoPickerActionRetry,
+                  variant: CatchButtonVariant.secondary,
+                  size: CatchButtonSize.sm,
+                  onPressed: state.mediaPending
+                      ? null
+                      : () => onRetryUpload(upload.id),
+                ),
+                CatchButton(
+                  key: ValueKey<String>('page-edit-drop-${upload.id}'),
+                  label: l10n.coreOrderedPhotoPickerActionRemove,
+                  variant: CatchButtonVariant.quiet,
+                  size: CatchButtonSize.sm,
+                  onPressed: state.mediaPending
+                      ? null
+                      : () => onDropUpload(upload.id),
+                ),
+              ] else
+                CatchMeter(
+                  value: (upload.job.progress * 100).round(),
+                  label: l10n.coreOrderedPhotoPickerStatusUploading,
+                ),
+            ],
           ),
         ),
       CatchChoiceTile(
@@ -99,12 +173,24 @@ class OrganizerPageEditBody extends StatelessWidget {
       maxLines: minLines == null ? 1 : null,
       keyboardType: keyboardType,
       prefixText: prefixText,
+      inputMode: state.isOwner
+          ? CatchTextInputMode.editable
+          : CatchTextInputMode.readOnly,
+      errorText: id == PageEditField.email && !draft.emailValid
+          ? l10n.hostsValidationEnterValidEmail
+          : null,
       onChanged: (value) => onField(id, value),
     );
     return CatchPageBody.screen(
       variant: CatchPageBodyVariant.fixed,
       gap: CatchPageBodyGap.tight,
       children: [
+        if (!state.isOwner)
+          CatchNotice.inline(
+            key: const ValueKey<String>('page-edit-owner-only'),
+            tone: CatchNoticeTone.neutral,
+            body: l10n.coreAppErrorMessageVisiblecopyOnlyTheOrganizerOwner,
+          ),
         CatchStack(
           direction: CatchStackDirection.row,
           gap: CatchStackGap.g16,
@@ -127,15 +213,31 @@ class OrganizerPageEditBody extends StatelessWidget {
                     variant: CatchTextVariant.bodySmall,
                     tone: CatchTextTone.secondary,
                   ),
-                  CatchButton(
-                    key: const ValueKey<String>('page-edit-change-logo'),
-                    label: l10n.hostOrganizerPageChangeLogo,
-                    variant: CatchButtonVariant.secondary,
-                    size: CatchButtonSize.sm,
-                    status: state.mediaPending
-                        ? CatchButtonStatus.loading
-                        : CatchButtonStatus.idle,
-                    onPressed: busy ? null : onChangeLogo,
+                  CatchStack(
+                    direction: CatchStackDirection.row,
+                    gap: CatchStackGap.g8,
+                    wrap: true,
+                    children: [
+                      CatchButton(
+                        key: const ValueKey<String>('page-edit-change-logo'),
+                        label: l10n.hostOrganizerPageChangeLogo,
+                        variant: CatchButtonVariant.secondary,
+                        size: CatchButtonSize.sm,
+                        status: state.mediaPending
+                            ? CatchButtonStatus.loading
+                            : CatchButtonStatus.idle,
+                        onPressed: busy ? null : onChangeLogo,
+                      ),
+                      if (onRemoveLogo case final remove?)
+                        CatchButton(
+                          key: const ValueKey<String>('page-edit-remove-logo'),
+                          label: l10n
+                              .hostsCreateOrganizerPhotosPickerActionRemoveLogo,
+                          variant: CatchButtonVariant.quiet,
+                          size: CatchButtonSize.sm,
+                          onPressed: busy ? null : remove,
+                        ),
+                    ],
                   ),
                 ],
               ),
@@ -168,6 +270,42 @@ class OrganizerPageEditBody extends StatelessWidget {
           ],
         ),
         field(PageEditField.name, l10n.hostOrganizerPageName, draft.name),
+        CatchFieldLanes.single(
+          child: CatchField<OrganizerType>.select(
+            key: ValueKey<String>('page-edit-type-$revision'),
+            copy: copy,
+            title: l10n.hostsOrganizerTypeLabel,
+            contract: CatchContractConstraints
+                .updateOrganizerCallablePayloadFieldsOrganizerType,
+            contractValueBuilder: (type) => type.name,
+            values: OrganizerType.values,
+            itemLabelBuilder: (type) => organizerTypeLabel(l10n, type),
+            value: draft.type,
+            onChanged: editable
+                ? (type) {
+                    if (type != null) onType(type);
+                  }
+                : null,
+          ),
+        ),
+        CatchFieldLanes.single(
+          child: CatchField<String>.select(
+            key: ValueKey<String>('page-edit-city-$revision'),
+            copy: copy,
+            title: l10n.hostsHostOrganizerProfileLabelCity,
+            contract: CatchContractConstraints
+                .updateOrganizerCallablePayloadFieldsLocation,
+            values: [for (final (id, _) in cities) id],
+            itemLabelBuilder: (id) =>
+                cities.firstWhere((city) => city.$1 == id).$2,
+            value: draft.city,
+            onChanged: editable
+                ? (city) {
+                    if (city != null) onCity(city);
+                  }
+                : null,
+          ),
+        ),
         field(
           PageEditField.about,
           l10n.hostOrganizerPageAbout,
@@ -201,7 +339,9 @@ class OrganizerPageEditBody extends StatelessWidget {
                     mode: CatchChipMode.multiple,
                     dot: format,
                     colourWhenSelected: true,
-                    onPressed: busy ? null : () => onFormat(format),
+                    onPressed: busy || !state.isOwner
+                        ? null
+                        : () => onFormat(format),
                   ),
               ],
             ),
@@ -237,7 +377,18 @@ class OrganizerPageEditBody extends StatelessWidget {
             children: [
               CatchIndexRow(
                 title: l10n.hostOrganizerPageListed,
-                subtitle: l10n.hostOrganizerPageListedNote,
+                subtitle: switch (HostOrganizerPublicationState.fromOrganizer(
+                  organizer,
+                ).kind) {
+                  // Catch and the website out of step say which is which.
+                  HostOrganizerPublicationKind.catchOnly =>
+                    l10n.hostsHostOrganizerPublicationBodyCatchOnly,
+                  HostOrganizerPublicationKind.websiteOnly =>
+                    l10n.hostsHostOrganizerPublicationBodyWebsiteOnly,
+                  HostOrganizerPublicationKind.private ||
+                  HostOrganizerPublicationKind.everywhere =>
+                    l10n.hostOrganizerPageListedNote,
+                },
                 density: CatchIndexRowSize.regular,
                 trailing: CatchToggleInput(
                   key: const ValueKey<String>('page-edit-listed'),
@@ -254,6 +405,17 @@ class OrganizerPageEditBody extends StatelessWidget {
       ],
     );
   }
+
+  /// The cities a host can pick, with the organizer own city kept even when
+  /// it is not one of them.
+  static List<(String, String)> _cityOptions(String current) => [
+    for (final city in defaultCityOptions.where((city) => city.hostCreatable))
+      (city.effectiveMarketId, city.label),
+    if (!defaultCityOptions.any(
+      (city) => city.hostCreatable && city.effectiveMarketId == current,
+    ))
+      (current, cityLabel(current)),
+  ];
 
   static const _placeholders = [
     CatchNetworkImageColor.games,
@@ -273,3 +435,14 @@ class OrganizerPageEditBody extends StatelessWidget {
         null => null,
       };
 }
+
+/// The label for an organizer type.
+String organizerTypeLabel(AppLocalizations l10n, OrganizerType type) =>
+    switch (type) {
+      OrganizerType.club => l10n.hostsOrganizerTypeClub,
+      OrganizerType.community => l10n.hostsOrganizerTypeCommunity,
+      OrganizerType.individual => l10n.hostsOrganizerTypeIndividual,
+      OrganizerType.eventProducer => l10n.hostsOrganizerTypeEventProducer,
+      OrganizerType.venue => l10n.hostsOrganizerTypeVenue,
+      OrganizerType.brand => l10n.hostsOrganizerTypeBrand,
+    };

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/image_upload_job.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_controller.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/page_edit_body.dart';
@@ -17,9 +18,9 @@ import 'package:go_router/go_router.dart';
 
 /// Your page: the logo, photos, fields and kinds of night the public page
 /// shows. It keeps the typed draft until Save changes sends it through the
-/// existing organizer update; a new logo or photo is sent as soon as it is
-/// picked, through the existing media update. The organizer listener brings
-/// the result back.
+/// existing organizer update; a new, moved or removed logo or photo is sent
+/// straight away through the existing media update. The organizer listener
+/// brings the result back.
 class OrganizerPageEditScreen extends ConsumerStatefulWidget {
   const OrganizerPageEditScreen({super.key, this.initialOrganizerId});
 
@@ -35,6 +36,11 @@ class _PageEditScreenState extends ConsumerState<OrganizerPageEditScreen> {
   String? _draftFor;
   int _revision = 0;
   bool _mediaPending = false;
+
+  /// Photos picked but not yet on the page, by id: the latest input to send
+  /// (already uploaded once it has been) and its upload state.
+  final Map<String, ({HostOrganizerMediaInput input, ImageUploadJobState job})>
+  _uploads = {};
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +87,10 @@ class _PageEditScreenState extends ConsumerState<OrganizerPageEditScreen> {
         saving: saving,
         mediaPending: _mediaPending,
         pageLink: pageUri == null ? null : organizerPageLink(pageUri),
+        uploads: [
+          for (final MapEntry(:key, :value) in _uploads.entries)
+            PageEditUpload(id: key, job: value.job),
+        ],
       );
       body = OrganizerPageEditBody(
         state: state,
@@ -94,12 +104,19 @@ class _PageEditScreenState extends ConsumerState<OrganizerPageEditScreen> {
             PageEditField.email => _draft!.copyWith(email: value),
           };
         }),
+        onType: (type) => setState(() => _draft = _draft!.copyWith(type: type)),
+        onCity: (city) => setState(() => _draft = _draft!.copyWith(city: city)),
         onFormat: (format) => setState(() => _draft = _draft!.toggle(format)),
         onListed: (listed) =>
             setState(() => _draft = _draft!.copyWith(listed: listed)),
         onChangeLogo: () => unawaited(_changeLogo(organizer)),
         onAddPhotos: () => unawaited(_addPhotos(organizer)),
-        onRemovePhoto: (index) => unawaited(_removePhoto(organizer, index)),
+        onPhoto: (index) => unawaited(_photoOptions(organizer, index)),
+        onRetryUpload: (_) => unawaited(_sendUploads(organizer)),
+        onDropUpload: (id) => unawaited(_dropUpload(id)),
+        onRemoveLogo: organizer.logoPhotoUrl == null
+            ? null
+            : () => unawaited(_removeLogo(organizer)),
       );
     }
 
@@ -187,19 +204,165 @@ class _PageEditScreenState extends ConsumerState<OrganizerPageEditScreen> {
 
   Future<void> _addPhotos(Organizer organizer) async {
     final actions = ref.read(hostOrganizerEditControllerProvider);
+    // provider-graph: ownership-widget-async:_PageEditScreenState._addPhotos:await:hostOrganizerEditControllerProvider.pickOrganizerPhotos watch CAT156 -- Picking photos opens the system picker through the organizer edit controller; the widget only queues the picked images in its local upload list, which is per-photo progress feedback, not business data. Move the queue into a generated owner in the CAT156 migration.
     final picked = await actions.pickOrganizerPhotos();
     if (picked.isEmpty || !mounted) return;
-    await _runMedia(
-      () => actions.updateOrganizerMedia(
-        organizer: organizer,
-        photoInputs: [
-          ..._existingPhotos(organizer),
-          for (final photo in picked)
-            HostNewOrganizerPhotoInput(id: photo.id, image: photo.image),
-        ],
+    setState(() {
+      for (final photo in picked) {
+        _uploads[photo.id] = (
+          input: HostNewOrganizerPhotoInput(id: photo.id, image: photo.image),
+          job: const ImageUploadJobState.queued(),
+        );
+      }
+    });
+    await _sendUploads(organizer);
+  }
+
+  /// Sends every photo still waiting with the ones on the page. Each shows
+  /// its progress; one that fails stays with Retry, and the ones that did
+  /// upload are not sent again.
+  Future<void> _sendUploads(Organizer organizer) async {
+    if (_uploads.isEmpty) return;
+    setState(() {
+      for (final id in [..._uploads.keys]) {
+        _uploads[id] = (
+          input: _uploads[id]!.input,
+          job: const ImageUploadJobState.queued(),
+        );
+      }
+    });
+    // provider-graph: ownership-widget-async:_PageEditScreenState._sendUploads:await:hostOrganizerEditControllerProvider.updateOrganizerMedia watch CAT156 -- The save runs through the organizer edit media mutation, which owns its pending and error; the widget keeps per-photo upload progress and the Retry or Remove state for photos that failed. Move that queue into a generated owner in the CAT156 migration.
+    final result = await _runMedia(
+      () => ref
+          .read(hostOrganizerEditControllerProvider)
+          .updateOrganizerMedia(
+            organizer: organizer,
+            photoInputs: [
+              ..._existingPhotos(organizer),
+              for (final upload in _uploads.values) upload.input,
+            ],
+            onProgress: (progress) {
+              final upload = _uploads[progress.id];
+              if (upload == null || !mounted) return;
+              setState(
+                () => _uploads[progress.id] = (
+                  input: upload.input,
+                  job: progress.state,
+                ),
+              );
+            },
+          ),
+      keepFailures: true,
+    );
+    if (result == null || !mounted) return;
+    final resolved = {
+      for (final input
+          in result.photoInputs ?? const <HostOrganizerMediaInput>[])
+        input.id: input,
+    };
+    setState(() {
+      if (!result.hasFailures) {
+        _uploads.clear();
+        return;
+      }
+      for (final id in [..._uploads.keys]) {
+        final error = result.failures[id];
+        _uploads[id] = (
+          input: resolved[id] ?? _uploads[id]!.input,
+          job: error == null
+              ? const ImageUploadJobState(
+                  stage: ImageUploadJobStage.complete,
+                  progress: 1,
+                )
+              : ImageUploadJobState(
+                  stage: ImageUploadJobStage.failed,
+                  error: error,
+                ),
+        );
+      }
+    });
+  }
+
+  /// Lets a failed photo go, discarding what it uploaded.
+  Future<void> _dropUpload(String id) async {
+    final upload = _uploads[id];
+    if (upload == null) return;
+    setState(() => _uploads.remove(id));
+    // provider-graph: ownership-widget-async:_PageEditScreenState._dropUpload:await:hostOrganizerEditControllerProvider.discardOrganizerMedia watch CAT156 -- Discarding a failed photo is storage cleanup through the organizer edit controller after the widget drops it from its local upload list. Move the list into a generated owner in the CAT156 migration.
+    await ref
+        .read(hostOrganizerEditControllerProvider)
+        .discardOrganizerMedia(photoInputs: [upload.input]);
+  }
+
+  /// Moves a photo, makes it the cover or takes it off the page.
+  Future<void> _photoOptions(Organizer organizer, int index) async {
+    final l10n = context.l10n;
+    final count = organizer.organizerPhotos.length;
+    final action = await showCatchBottomSheet<_PhotoAction>(
+      context: context,
+      builder: (context) => CatchSheet.standard(
+        title: l10n.coreOrderedPhotoPickerActionPhotoOptions,
+        child: CatchStack(
+          gap: CatchStackGap.none,
+          children: [
+            for (final (action, label, enabled) in [
+              (
+                _PhotoAction.cover,
+                l10n.coreOrderedPhotoPickerActionSetAsCover,
+                index > 0,
+              ),
+              (
+                _PhotoAction.earlier,
+                l10n.coreOrderedPhotoPickerActionMoveEarlier,
+                index > 0,
+              ),
+              (
+                _PhotoAction.later,
+                l10n.coreOrderedPhotoPickerActionMoveLater,
+                index < count - 1,
+              ),
+              (
+                _PhotoAction.remove,
+                l10n.coreOrderedPhotoPickerActionRemove,
+                true,
+              ),
+            ])
+              CatchMenuRow<_PhotoAction>.sheet(
+                key: ValueKey<String>('page-edit-photo-${action.name}'),
+                item: CatchMenuItem<_PhotoAction>(
+                  value: action,
+                  label: label,
+                  enabled: enabled,
+                  danger: action == _PhotoAction.remove,
+                ),
+                onSelected: (value, _) => Navigator.of(context).pop(value),
+              ),
+          ],
+        ),
       ),
     );
+    if (action == null || !mounted) return;
+    final photos = _existingPhotos(organizer);
+    final to = switch (action) {
+      _PhotoAction.cover => 0,
+      _PhotoAction.earlier => index - 1,
+      _PhotoAction.later => index + 1,
+      _PhotoAction.remove => null,
+    };
+    if (to == null) return _removePhoto(organizer, index);
+    photos.insert(to, photos.removeAt(index));
+    await _runMedia(
+      () => ref
+          .read(hostOrganizerEditControllerProvider)
+          .updateOrganizerMedia(organizer: organizer, photoInputs: photos),
+    );
   }
+
+  Future<void> _removeLogo(Organizer organizer) async => _runMedia(
+    () => ref
+        .read(hostOrganizerEditControllerProvider)
+        .updateOrganizerMedia(organizer: organizer, removeLogo: true),
+  );
 
   Future<void> _removePhoto(Organizer organizer, int index) async {
     final l10n = context.l10n;
@@ -232,10 +395,12 @@ class _PageEditScreenState extends ConsumerState<OrganizerPageEditScreen> {
       HostExistingOrganizerPhotoInput(photo),
   ];
 
-  /// Runs one media update; a failed upload is said once and discarded.
-  Future<void> _runMedia(
-    Future<HostOrganizerMediaSaveResult> Function() update,
-  ) async {
+  /// Runs one media update. A failed upload is said once; it is discarded,
+  /// unless [keepFailures] leaves it for the caller to offer Retry.
+  Future<HostOrganizerMediaSaveResult?> _runMedia(
+    Future<HostOrganizerMediaSaveResult> Function() update, {
+    bool keepFailures = false,
+  }) async {
     setState(() => _mediaPending = true);
     try {
       // provider-graph: ownership-widget-async-callback:_PageEditScreenState._runMedia:await:update watch CAT156 -- The media save runs through the organizer edit mutation, which owns its pending and error; the widget keeps only the local spinner flag around it. Move the flag into the mutation state in the CAT156 migration.
@@ -245,18 +410,25 @@ class _PageEditScreenState extends ConsumerState<OrganizerPageEditScreen> {
       );
       if (result.hasFailures && mounted) {
         showCatchNotice(context, context.l10n.hostOrganizerPagePhotoFailed);
-        // provider-graph: ownership-widget-async:_PageEditScreenState._runMedia:await:hostOrganizerEditControllerProvider.discardOrganizerMedia watch CAT156 -- Discarding unsaved media after a failed save is cleanup through the organizer edit controller; the widget publishes only its local spinner flag. Move the flag into the mutation state in the CAT156 migration.
-        await ref
-            .read(hostOrganizerEditControllerProvider)
-            .discardOrganizerMedia(
-              photoInputs: result.photoInputs ?? const [],
-              logo: result.logo,
-            );
+        if (!keepFailures) {
+          // provider-graph: ownership-widget-async:_PageEditScreenState._runMedia:await:hostOrganizerEditControllerProvider.discardOrganizerMedia watch CAT156 -- Discarding unsaved media after a failed save is cleanup through the organizer edit controller; the widget publishes only its local spinner flag. Move the flag into the mutation state in the CAT156 migration.
+          await ref
+              .read(hostOrganizerEditControllerProvider)
+              .discardOrganizerMedia(
+                photoInputs: result.photoInputs ?? const [],
+                logo: result.logo,
+              );
+        }
       }
+      return result;
     } on Object {
       // The mutation listener shows the error.
+      return null;
     } finally {
       if (mounted) setState(() => _mediaPending = false);
     }
   }
 }
+
+/// What a host picked for one photo.
+enum _PhotoAction { cover, earlier, later, remove }

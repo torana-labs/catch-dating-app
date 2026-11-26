@@ -22,8 +22,8 @@
       "workspaceRoute",
       "indexRoutes"
     ],
-    "imperativePageRouteCount": 35,
-    "imperativePageTargetCount": 30
+    "imperativePageRouteCount": 37,
+    "imperativePageTargetCount": 32
   },
   "routes": [
     {
@@ -1930,12 +1930,12 @@
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/hosts/events/event_defaults_screen.dart:501497bd00dd92ceba59a43c5988c0698640716b9959812f5e04fcc3f34b1c55:1",
-      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostOrganizerEventDefaultsScreen(organizerId:organizerId))",
+      "siteId": "material-page:lib/hosts/events/event_defaults_screen.dart:ed72ca920440e75d17e61a5a9f9fca97f816c13abd0d9957ee314ee547c0dbea:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>OrganizerEventPolicyScreen(organizerId:organizerId))",
       "sourcePath": "lib/hosts/events/event_defaults_screen.dart",
       "ordinal": 1,
-      "presentationExpression": "(_)=>HostOrganizerEventDefaultsScreen(organizerId:organizerId)",
-      "presentationTarget": "HostOrganizerEventDefaultsScreen",
+      "presentationExpression": "(_)=>OrganizerEventPolicyScreen(organizerId:organizerId)",
+      "presentationTarget": "OrganizerEventPolicyScreen",
       "fullscreenDialogExpression": null
     },
     {
@@ -2143,6 +2143,24 @@
       "ordinal": 1,
       "presentationExpression": "(_)=>HostLiveToolsScreen(event:event)",
       "presentationTarget": "HostLiveToolsScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/organizer/organizer_screen.dart:b319bd91ccc2987ea0b6c1f4061a2c0604006b1bade06ba9e2ef6a515e90d78d:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>OrganizerAudienceScreen(organizerId:organizer.id))",
+      "sourcePath": "lib/hosts/organizer/organizer_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>OrganizerAudienceScreen(organizerId:organizer.id)",
+      "presentationTarget": "OrganizerAudienceScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/organizer/organizer_screen.dart:c1c611c18d417617b93643d4ba8e39e83775453b51e52d781d2e940d9b37b246:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>OrganizerLiveGuideScreen(organizerId:organizer.id))",
+      "sourcePath": "lib/hosts/organizer/organizer_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>OrganizerLiveGuideScreen(organizerId:organizer.id)",
+      "presentationTarget": "OrganizerLiveGuideScreen",
       "fullscreenDialogExpression": null
     },
     {

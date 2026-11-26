@@ -7,7 +7,9 @@ import 'package:flutter/widgets.dart';
 
 /// Event defaults in the board's idiom: what every new event starts with,
 /// as value rows, and how guests pay as a choice that saves on change.
-/// Tickets, refunds, booking questions and messages save on change.
+/// Tickets, refunds, booking questions and messages save on change. A save
+/// this phone could not confirm waits above them with Retry, and nothing
+/// else changes until it goes through.
 class HostEventDefaultsBody extends StatelessWidget {
   const HostEventDefaultsBody({
     super.key,
@@ -16,6 +18,7 @@ class HostEventDefaultsBody extends StatelessWidget {
     required this.onEdit,
     required this.onRetry,
     this.onChange,
+    this.onRetryUpdate,
     this.saving = false,
   });
 
@@ -28,6 +31,10 @@ class HostEventDefaultsBody extends StatelessWidget {
   /// Opens the editor for the text and number defaults.
   final VoidCallback onEdit;
   final VoidCallback onRetry;
+
+  /// Sends again the save this phone could not confirm; null while there
+  /// is none.
+  final VoidCallback? onRetryUpdate;
 
   /// A defaults save is on its way.
   final bool saving;
@@ -66,7 +73,7 @@ class HostEventDefaultsBody extends StatelessWidget {
       label: l10n.hostEventsDefaultsEdit,
       onPressed: onEdit,
     );
-    final change = saving ? null : onChange;
+    final change = saving || onRetryUpdate != null ? null : onChange;
     final priceRupees = (preferences.startingPriceMinor ?? 0) ~/ 100;
     final messages =
         preferences.autoMessages ??
@@ -76,6 +83,17 @@ class HostEventDefaultsBody extends StatelessWidget {
       child: CatchStack(
         gap: CatchStackGap.g16,
         children: [
+          if (onRetryUpdate case final retry?)
+            CatchNotice.inline(
+              key: const ValueKey<String>('event-defaults-unresolved'),
+              tone: CatchNoticeTone.warning,
+              title: l10n.hostsEventDefaultsPendingUpdate,
+              body: l10n.hostsEventDefaultsPendingUpdateBody,
+              action: CatchNoticeAction(
+                label: l10n.hostsEventDefaultsRetryUpdate,
+                onPressed: saving ? null : retry,
+              ),
+            ),
           CatchSection(
             title: context.l10n.hostEventSettingsTickets,
             children: [
@@ -328,7 +346,10 @@ class HostEventDefaultsBody extends StatelessWidget {
                   selected: preferences.collectionPreference == option,
                   contractExemption:
                       'An organizer default committed by its own command.',
-                  onTap: saving || preferences.collectionPreference == option
+                  onTap:
+                      saving ||
+                          onRetryUpdate != null ||
+                          preferences.collectionPreference == option
                       ? null
                       : () => onCollection(option),
                 ),

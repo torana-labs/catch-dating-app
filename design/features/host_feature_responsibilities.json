@@ -716,7 +716,7 @@
         },
         {
           "id": "whatsapp_setup",
-          "file": "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
+          "file": "lib/hosts/organizer/whatsapp_setup_section.dart",
           "symbol": "HostWhatsappSetupSection",
           "role": "Actions: manage_whatsapp_sender."
         },

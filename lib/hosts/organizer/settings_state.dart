@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 /// What a row or button in Settings asks for.
 enum OrganizerSettingsAction {
   editName,
+  previewProfile,
   switchOrganizer,
   guides,
   terms,
@@ -25,6 +26,7 @@ class OrganizerSettingsState {
     this.termsAvailable = false,
     this.privacyAvailable = false,
     this.busy = false,
+    this.hasProfile = false,
   });
 
   /// The host profile name, else the account first name.
@@ -45,6 +47,9 @@ class OrganizerSettingsState {
 
   /// Signing out, deleting the account or opening a page.
   final bool busy;
+
+  /// Whether the host has a professional profile to preview.
+  final bool hasProfile;
 
   bool get hasHelp => guidesAvailable || termsAvailable || privacyAvailable;
 }

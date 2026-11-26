@@ -54,7 +54,7 @@ Typed handoffs:
 | `HostManualSendList` | `lib/hosts/presentation/inbox/host_manual_send_list.dart` | Actions: open_manual_send_task, open_manual_handoff, mark_manual_send_task, replan_manual_send_tasks. |
 | `showHostFollowerUpdateComposer` | `lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart` | Actions: send_follower_update. |
 | `HostMessagingSetupScreen` | `lib/hosts/presentation/inbox/host_messaging_setup_screen.dart` | Structural owner. |
-| `HostWhatsappSetupSection` | `lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart` | Actions: manage_whatsapp_sender. |
+| `HostWhatsappSetupSection` | `lib/hosts/organizer/whatsapp_setup_section.dart` | Actions: manage_whatsapp_sender. |
 | `HostCampaignEditor` | `lib/hosts/presentation/inbox/host_campaign_editor.dart` | Structural owner. |
 | `HostAudienceController` | `lib/hosts/presentation/host_audience_controller.dart` | Actions: manage_campaign. |
 
