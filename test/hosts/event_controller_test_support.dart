@@ -12,9 +12,9 @@ import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_pref
 import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_journal.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
+import 'package:catch_dating_app/hosts/forms/offer_settings_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_setup_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_defaults_controller.dart';
 import 'package:catch_test_support/hosts/read_model_feeds.dart';
@@ -349,7 +349,7 @@ class TestEventOfferPreferencesController {
   ) => _controller.previewRequest(value);
   Widget screen({required VoidCallback onBack}) => UncontrolledProviderScope(
     container: container,
-    child: HostOfferPaymentSetupPageBody(scope: scope, onBack: onBack),
+    child: HostOfferSettingsEditor(scope: scope, onBack: onBack),
   );
 }
 

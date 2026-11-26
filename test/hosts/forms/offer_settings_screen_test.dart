@@ -6,8 +6,8 @@ import 'package:catch_dating_app/contexts/events/data/private_event_setup_reposi
 import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
+import 'package:catch_dating_app/hosts/forms/offer_settings_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -17,7 +17,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'event_controller_test_support.dart';
+import '../event_controller_test_support.dart';
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
@@ -141,7 +141,7 @@ void main() {
           StatefulBuilder(
             builder: (context, setState) {
               updateRoute = setState;
-              return HostEventOfferPreferencesScreen(
+              return HostOfferSettingsScreen(
                 organizerId: organizerId,
                 eventId: eventId,
                 onBack: () {},
@@ -151,7 +151,7 @@ void main() {
         ),
       ),
     );
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(CatchLoadingIndicator), findsOneWidget);
     expect(bindings, isEmpty);
     accounts.add(uid);
     await pumpFeatureUi(tester);
@@ -182,7 +182,7 @@ void main() {
     expect(find.text('Free admission'), findsOneWidget);
     expect(find.text('Payment page link'), findsOneWidget);
     expect(find.text('Manual instructions'), findsOneWidget);
-    expect(find.text('CHOOSE HOW GUESTS PAY'), findsOneWidget);
+    expect(find.text('Choose how guests pay'), findsOneWidget);
     // Catch checkout stays gated until provider activation ships.
     final checkout = tester.widget<CatchChoiceTile>(
       find.byKey(const ValueKey('offer-payment-mode-catchCheckout')),
@@ -227,21 +227,21 @@ void main() {
         find.byKey(const ValueKey('offer-payment-page-url')),
         findsOneWidget,
       );
-      expect(find.text('SET A TICKET PRICE'), findsOneWidget);
+      expect(find.text('Set a ticket price'), findsOneWidget);
 
       await tester.enterText(
         find.byKey(const ValueKey('offer-payment-amount')),
         '1200',
       );
       await pumpFeatureUi(tester);
-      expect(find.text('ADD THE PAYMENT PAGE LINK'), findsOneWidget);
+      expect(find.text('Add the payment page link'), findsOneWidget);
 
       await tester.enterText(
         find.byKey(const ValueKey('offer-payment-page-url')),
         'https://rzp.io/l/saturday-social',
       );
       await pumpFeatureUi(tester);
-      expect(find.text('CONFIRM THE PAGE CAN BE REUSED'), findsOneWidget);
+      expect(find.text('Confirm the page can be reused'), findsOneWidget);
 
       final reuseField = find.byKey(const ValueKey('offer-payment-page-reuse'));
       await tester.ensureVisible(reuseField);
@@ -253,16 +253,16 @@ void main() {
         ),
       );
       await pumpFeatureUi(tester);
-      expect(find.text('SET OFFER VALIDITY'), findsOneWidget);
+      expect(find.text('Set offer validity'), findsOneWidget);
 
       await tester.tap(find.text('Offer valid for'));
       await pumpFeatureUi(tester);
       await tester.tap(find.text('24 h'));
       await pumpFeatureUi(tester);
-      expect(find.text('CHOOSE HOW GUESTS PAY'), findsNothing);
-      expect(find.textContaining('READY'), findsOneWidget);
+      expect(find.text('Choose how guests pay'), findsNothing);
+      expect(find.textContaining('Ready —'), findsOneWidget);
 
-      await tester.tap(find.byKey(const ValueKey('offer-payment-setup-save')));
+      await tester.tap(find.text('Save payment settings'));
       await pumpFeatureUi(tester);
       expect(writes, hasLength(1));
       final intents = writes.single.intents;
@@ -314,7 +314,7 @@ void main() {
     );
     expect(find.byKey(const ValueKey('offer-payment-mode-free')), findsNothing);
 
-    await tester.tap(find.byKey(const ValueKey('offer-payment-mode-change')));
+    await tester.tap(find.text('Change'));
     await pumpFeatureUi(tester);
     await tester.tap(find.byKey(const ValueKey('offer-payment-mode-free')));
     await pumpFeatureUi(tester);
@@ -324,9 +324,9 @@ void main() {
       findsNothing,
     );
     expect(find.text('Nothing to confirm'), findsOneWidget);
-    expect(find.textContaining('READY'), findsOneWidget);
+    expect(find.textContaining('Ready —'), findsOneWidget);
 
-    await tester.tap(find.byKey(const ValueKey('offer-payment-setup-save')));
+    await tester.tap(find.text('Save payment settings'));
     await pumpFeatureUi(tester);
     expect(writes, hasLength(1));
     expect(writes.single.intents.expectedAmountMinor.value, 0);
