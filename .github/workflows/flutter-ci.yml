@@ -696,3 +696,78 @@ jobs:
       - run: flutter pub get
       - name: Deterministic app-shell integration suites
         run: bash tool/test_app_shell_integration.sh
+
+  # build_runner output does not depend on the platform, so stale generated
+  # code is caught here, on Linux, on every pull request and merge-queue entry
+  # that selects Flutter. The same check in the macOS goldens job runs only on
+  # main, after merge (#2416 shipped a stale provider hash; #2431 blocked mobile
+  # releases for a day).
+  generated-outputs:
+    name: Committed Flutter generated outputs are current
+    # Report-only for three days (owner decision, 26 Nov 2026): a failure
+    # shows on the job and uploads the drift patch, but leaves the Flutter
+    # lane, and so Required CI, green. Removing this line makes it blocking.
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/generate-contracts
+      - uses: ./.github/actions/setup-flutter
+      - run: flutter pub get
+
+      # A full build in every package that runs build_runner. A filtered build
+      # deletes tracked outputs outside its filter, so it is never used.
+      - name: Generate Flutter source outputs
+        run: |
+          dart run build_runner build --delete-conflicting-outputs
+          (cd apps/host && dart run build_runner build --delete-conflicting-outputs)
+          (cd apps/consumer && dart run build_runner build --delete-conflicting-outputs)
+
+      - name: Resolve Widgetbook dependencies
+        run: (cd widgetbook && flutter pub get)
+
+      - name: Generate Widgetbook directories
+        run: (cd widgetbook && dart run build_runner build)
+
+      - name: Verify committed Flutter outputs are current
+        id: codegen-current
+        run: |
+          git diff --exit-code -- '*.g.dart' '*.freezed.dart'
+          untracked="$(git status --porcelain --untracked-files=all -- '*.g.dart' '*.freezed.dart')"
+          if [[ -n "$untracked" ]]; then
+            printf 'Generated outputs are not committed:\n%s\n' "$untracked" >&2
+            exit 1
+          fi
+
+      # The regenerated outputs that differ, as a patch to read or apply
+      # (git apply generated-flutter-drift.patch).
+      - name: Retain generated output drift
+        if: ${{ failure() && steps.codegen-current.outcome == 'failure' }}
+        run: |
+          mkdir -p build/ci
+          git add --intent-to-add -- '*.g.dart' '*.freezed.dart'
+          git diff -- '*.g.dart' '*.freezed.dart' > build/ci/generated-flutter-drift.patch
+          {
+            echo '### Committed generated outputs are stale'
+            echo
+            echo 'Run build_runner in the root, apps/host, apps/consumer and widgetbook and commit the result,'
+            echo 'or apply the `generated-flutter-drift-linux` patch from this run.'
+            echo
+            echo '```'
+            git diff --stat -- '*.g.dart' '*.freezed.dart'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload generated output drift
+        if: ${{ failure() && steps.codegen-current.outcome == 'failure' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: generated-flutter-drift-linux-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/ci/generated-flutter-drift.patch
+          if-no-files-found: ignore
+          retention-days: 7
