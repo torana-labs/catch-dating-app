@@ -2395,6 +2395,8 @@ final _createHandlers = CreateHandlers(
     onAgeRange: _ignoreAges,
     onCancellationPolicy: _ignore,
   ),
+  onIncluded: _ignore,
+  onAccessibility: _ignore,
   onTemplate: () {},
   onBlank: () {},
   onEditStep: _ignore,

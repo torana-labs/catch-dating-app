@@ -16,6 +16,7 @@ import 'package:catch_kernel/brand.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_test_support/organizers_test_helpers.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -269,7 +270,7 @@ void main() {
       await tester.tap(
         find.text(l10n.hostsEditHostedEventScreenLabelAdmissionFormat),
       );
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       for (final preset in EventAdmissionPreset.values) {
         expect(find.text(preset.title(l10n)), findsWidgets);
       }

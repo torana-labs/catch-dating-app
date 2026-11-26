@@ -20,6 +20,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/priv
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
 import 'package:catch_test_support/events_test_helpers.dart' as events;
 import 'package:catch_test_support/organizers_test_helpers.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -160,7 +161,7 @@ void main() {
       container.read(createControllerProvider(args));
 
   /// Lets the setup views' subscriptions open.
-  Future<void> settle() => Future<void>.delayed(Duration.zero);
+  Future<void> settle() => flushTestEventQueue();
 
   CreateFlowArgs args({
     EventDraft? draft,
