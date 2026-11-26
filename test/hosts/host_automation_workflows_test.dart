@@ -9,7 +9,7 @@ import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart'
 import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_automation_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_summary_reads.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automation.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
+import 'package:catch_dating_app/hosts/forms/form_automation_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
@@ -54,7 +54,7 @@ void main() {
         tester,
         forms,
         _Crm(),
-        HostAutomationRuleEditor(
+        HostFormAutomationEditor(
           organizerId: 'org',
           onSaved: () => saved++,
           onCancel: () {},
@@ -74,13 +74,13 @@ void main() {
       await tester.enterText(_namedInput('Signing secret'), 's' * 32);
       await tester.ensureVisible(find.byType(CatchToggleInput));
       await tester.tap(find.byType(CatchToggleInput));
-      await tester.tap(find.byKey(const ValueKey('automation-save')));
+      await tester.tap(find.text('Save automation'));
       await pumpFeatureUi(tester);
       expect(saved, 0);
       expect(forms.requests, hasLength(1));
       final response = Completer<void>();
       forms.saveWait = response.future;
-      await tester.tap(find.byKey(const ValueKey('automation-save')));
+      await tester.tap(find.text('Save automation'));
       await pumpFeatureUiFor(tester, const Duration(milliseconds: 300));
       expect(saved, 0);
       response.complete();
@@ -123,7 +123,7 @@ void main() {
       tester,
       forms,
       _Crm(),
-      HostAutomationRuleEditor(
+      HostFormAutomationEditor(
         organizerId: 'org',
         initialRule: rule,
         onSaved: () {},
@@ -138,7 +138,7 @@ void main() {
           .text,
       isEmpty,
     );
-    await tester.tap(find.byKey(const ValueKey('automation-save')));
+    await tester.tap(find.text('Save automation'));
     await pumpFeatureUi(tester);
     expect(forms.actions!.single['webhookSecret'], isNull);
     expect(forms.expectedRevision, 3);
@@ -169,7 +169,7 @@ void main() {
         tester,
         forms,
         crm,
-        HostAutomationRuleEditor(
+        HostFormAutomationEditor(
           organizerId: 'org',
           initialRule: rule,
           onSaved: () {},
@@ -184,7 +184,7 @@ void main() {
       await tester.tap(find.text('Load more message drafts'));
       await pumpFeatureUi(tester);
       await _choose(tester, 'Message draft', 'Follow up · Thanks · Attendees');
-      await tester.tap(find.byKey(const ValueKey('automation-save')));
+      await tester.tap(find.text('Save automation'));
       await pumpFeatureUi(tester);
       expect(crm.pager.loadMoreCalls, 1);
       expect(forms.last!.delayMinutes, 90);
