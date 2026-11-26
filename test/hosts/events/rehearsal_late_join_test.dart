@@ -67,12 +67,18 @@ void main() {
             snapshot.actors.first,
           ).copyWith(
             laterPointIds: {ids[1], ids[2]},
+            laterLabels: {ids[1]: '  First stop  ', ids[2]: ' '},
             mode: HostRehearsalLateJoinMode.prepare,
           );
       final draft = choices.draft(snapshot, movement, 'actor-01')!;
       expect(draft.laterChoices.map((c) => c.point.destination.alternativeId), [
         ids[1],
         ids[2],
+      ]);
+      // A custom label is trimmed; a blank one falls back to the place.
+      expect(draft.laterChoices.map((c) => c.label), [
+        'First stop',
+        movement.destinations[2].label,
       ]);
       expect(
         (draft.setting! as AssistanceTemplateEnabled).authority,
@@ -81,6 +87,7 @@ void main() {
       // Another group has its own places.
       final moved = choices.copyWith(groupId: 'group-b');
       expect(moved.laterPointIds, isEmpty);
+      expect(moved.laterLabels, isEmpty);
       expect(moved.joiningPointId, isNull);
     });
 
@@ -134,6 +141,7 @@ void main() {
           HostRehearsalLateJoinPreviewKind.confirmed,
       HostRehearsalLateJoinMode mode = HostRehearsalLateJoinMode.automatic,
       HostRehearsalLateJoinStatus status = HostRehearsalLateJoinStatus.none,
+      Set<String> later = const <String>{},
     }) {
       final movement = movementReview('departed');
       return HostRehearsalLateJoinView(
@@ -147,6 +155,7 @@ void main() {
         groupId: movement.scope.groupId,
         points: movement.destinations,
         pointId: movement.destinations.first.alternativeId,
+        laterPointIds: later,
         mode: mode,
         rules: practiceRules(),
         routes: const [AssistanceMessageRoute.catchEventSms],
@@ -165,10 +174,14 @@ void main() {
       await pump(
         tester,
         HostRehearsalLateJoinForm(
-          view: view(status: HostRehearsalLateJoinStatus.automatic),
+          view: view(
+            status: HostRehearsalLateJoinStatus.automatic,
+            later: {movement.destinations[1].alternativeId},
+          ),
           onGroup: (_) => calls.add('group'),
           onPoint: (id) => calls.add('point:$id'),
           onLater: (id) => calls.add('later:$id'),
+          onLaterLabel: (id, label) => calls.add('label:$id:$label'),
           onMode: (mode) => calls.add('mode:${mode.name}'),
           onRules: () => calls.add('rules'),
           onChannels: () => calls.add('channels'),
@@ -201,6 +214,16 @@ void main() {
 
       await tap('host-rehearsal-late-join-point-$second');
       await tap('host-rehearsal-late-join-later-$second');
+      final label = find.byKey(
+        ValueKey<String>('host-rehearsal-late-join-label-$second'),
+      );
+      expect(find.text('Button label for Stop one (optional)'), findsOneWidget);
+      await tester.ensureVisible(label);
+      await tester.enterText(
+        find.descendant(of: label, matching: find.byType(EditableText)),
+        'Stop 1',
+      );
+      await tester.pump();
       await tap('host-rehearsal-late-join-mode-observe');
       await tap('host-rehearsal-late-join-rules');
       await tap('host-rehearsal-late-join-channels');
@@ -212,6 +235,7 @@ void main() {
       expect(calls, [
         'point:$second',
         'later:$second',
+        'label:$second:Stop 1',
         'mode:observe',
         'rules',
         'channels',
@@ -238,6 +262,7 @@ void main() {
           onGroup: (_) {},
           onPoint: (_) {},
           onLater: (_) {},
+          onLaterLabel: (_, _) {},
           onMode: (_) {},
           onRules: () {},
           onChannels: () {},
@@ -282,6 +307,7 @@ void main() {
           onGroup: (_) {},
           onPoint: (_) {},
           onLater: (_) {},
+          onLaterLabel: (_, _) {},
           onMode: (_) {},
           onRules: () {},
           onChannels: () {},

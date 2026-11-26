@@ -55,6 +55,7 @@ class HostRehearsalLateJoinChoices {
     required this.outcomes,
     this.joiningPointId,
     this.laterPointIds = const <String>{},
+    this.laterLabels = const <String, String>{},
     this.responseDeadline,
   });
 
@@ -91,6 +92,10 @@ class HostRehearsalLateJoinChoices {
 
   /// Alternative ids of the places the guest may choose between later.
   final Set<String> laterPointIds;
+
+  /// Optional short button labels for later places, by alternative id; a
+  /// place without one uses its own label.
+  final Map<String, String> laterLabels;
   final HostRehearsalLateJoinMode mode;
 
   /// Epoch milliseconds of the response deadline, or null for none.
@@ -101,6 +106,7 @@ class HostRehearsalLateJoinChoices {
     String? groupId,
     String? joiningPointId,
     Set<String>? laterPointIds,
+    Map<String, String>? laterLabels,
     HostRehearsalLateJoinMode? mode,
     List<RehearsalDeliveryOutcome>? outcomes,
   }) => HostRehearsalLateJoinChoices(
@@ -112,6 +118,9 @@ class HostRehearsalLateJoinChoices {
     laterPointIds: groupId != null && groupId != this.groupId
         ? const <String>{}
         : laterPointIds ?? this.laterPointIds,
+    laterLabels: groupId != null && groupId != this.groupId
+        ? const <String, String>{}
+        : laterLabels ?? this.laterLabels,
     mode: mode ?? this.mode,
     responseDeadline: responseDeadline,
     outcomes: outcomes ?? this.outcomes,
@@ -122,6 +131,7 @@ class HostRehearsalLateJoinChoices {
         groupId: groupId,
         joiningPointId: joiningPointId,
         laterPointIds: laterPointIds,
+        laterLabels: laterLabels,
         mode: mode,
         responseDeadline: at,
         outcomes: outcomes,
@@ -164,7 +174,10 @@ class HostRehearsalLateJoinChoices {
       laterChoices: [
         for (final later in rehearsalJoiningPoints(movement))
           if (laterPointIds.contains(later.destination.alternativeId))
-            RehearsalLaterJoiningOption(later),
+            RehearsalLaterJoiningOption(
+              later,
+              label: _label(laterLabels[later.destination.alternativeId]),
+            ),
       ],
     );
   }
@@ -232,6 +245,7 @@ class HostRehearsalLateJoinView {
     this.phase = HostRehearsalLateJoinPhase.editing,
     this.pointId,
     this.laterPointIds = const <String>{},
+    this.laterLabels = const <String, String>{},
     this.remainingOutcomes,
     this.latestText,
     this.latestReply,
@@ -257,6 +271,9 @@ class HostRehearsalLateJoinView {
   final List<RehearsalMovementDestination>? points;
   final String? pointId;
   final Set<String> laterPointIds;
+
+  /// Custom button labels for later places, by alternative id.
+  final Map<String, String> laterLabels;
   final HostRehearsalLateJoinMode mode;
 
   /// The group's late arrival rule; null when the host has none to read.
@@ -275,4 +292,10 @@ class HostRehearsalLateJoinView {
 
   bool get deadlineRequired =>
       rules?.unanswered == LateJoinUnansweredRule.hostReviewAtDeadline;
+}
+
+/// A trimmed custom label, or null to use the place's own.
+String? _label(String? value) {
+  final trimmed = value?.trim();
+  return trimmed == null || trimmed.isEmpty ? null : trimmed;
 }

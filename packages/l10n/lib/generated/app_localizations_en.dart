@@ -28340,4 +28340,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostRehearsalLateJoinReplied({required String choice}) {
     return 'Replied: $choice';
   }
+
+  @override
+  String hostRehearsalLateJoinChoiceLabel({required String place}) {
+    return 'Button label for $place (optional)';
+  }
 }

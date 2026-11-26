@@ -152,6 +152,9 @@ class _HostRehearsalLateJoinSheetState
                 : {...choices.laterPointIds, id},
           ),
         ),
+        onLaterLabel: (id, label) => choose(
+          choices.copyWith(laterLabels: {...choices.laterLabels, id: label}),
+        ),
         onMode: (mode) => choose(choices.copyWith(mode: mode)),
         onRules: () => _openSettings(choices.groupId),
         onChannels: () => _openSettings(null),
@@ -290,6 +293,7 @@ class _HostRehearsalLateJoinSheetState
                   ?.destination
                   .alternativeId,
         laterPointIds: choices.laterPointIds,
+        laterLabels: choices.laterLabels,
         mode: choices.mode,
         rules: choices.rules(reviewed),
         routes: draft?.routes ?? const <AssistanceMessageRoute>[],

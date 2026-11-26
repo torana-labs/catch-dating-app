@@ -45665,6 +45665,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Replied: {choice}'**
   String hostRehearsalLateJoinReplied({required String choice});
+
+  /// Late joiner sheet: optional short button label for one place the guest can choose later; empty uses the place name.
+  ///
+  /// In en, this message translates to:
+  /// **'Button label for {place} (optional)'**
+  String hostRehearsalLateJoinChoiceLabel({required String place});
 }
 
 class _AppLocalizationsDelegate

@@ -30426,5 +30426,7 @@
   "hostRehearsalLateJoinLatest": "Latest directions",
   "@hostRehearsalLateJoinLatest": {"description": "Late joiner sheet: the most recent directions the made-up guest was sent.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events"},
   "hostRehearsalLateJoinReplied": "Replied: {choice}",
-  "@hostRehearsalLateJoinReplied": {"description": "Late joiner sheet: the made-up guest's reply to the latest directions.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events", "placeholders": {"choice": {"type": "String"}}}
+  "@hostRehearsalLateJoinReplied": {"description": "Late joiner sheet: the made-up guest's reply to the latest directions.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events", "placeholders": {"choice": {"type": "String"}}},
+  "hostRehearsalLateJoinChoiceLabel": "Button label for {place} (optional)",
+  "@hostRehearsalLateJoinChoiceLabel": {"description": "Late joiner sheet: optional short button label for one place the guest can choose later; empty uses the place name.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events", "placeholders": {"place": {"type": "String"}}}
 }

@@ -121,6 +121,8 @@ Widget hostRehearsalLateJoinFormUseCase(BuildContext context) =>
             ),
           ],
           pointId: 'alternative:${'a' * 64}',
+          laterPointIds: {'alternative:${'b' * 64}'},
+          laterLabels: {'alternative:${'b' * 64}': 'Park'},
           mode: HostRehearsalLateJoinMode.automatic,
           rules: AssistanceLateJoinRules(
             destination: const LateJoinConfirmedProgress(),
@@ -139,6 +141,7 @@ Widget hostRehearsalLateJoinFormUseCase(BuildContext context) =>
         onGroup: (_) {},
         onPoint: (_) {},
         onLater: (_) {},
+        onLaterLabel: (_, _) {},
         onMode: (_) {},
         onRules: () {},
         onChannels: () {},

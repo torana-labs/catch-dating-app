@@ -29,6 +29,7 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
     required this.onGroup,
     required this.onPoint,
     required this.onLater,
+    required this.onLaterLabel,
     required this.onMode,
     required this.onRules,
     required this.onChannels,
@@ -49,6 +50,9 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
 
   /// Adds or removes one place they can choose later.
   final ValueChanged<String> onLater;
+
+  /// Sets the optional button label for one later place, by alternative id.
+  final void Function(String pointId, String label) onLaterLabel;
   final ValueChanged<HostRehearsalLateJoinMode> onMode;
 
   /// Opens the group's late arrival rule.
@@ -189,6 +193,27 @@ class HostRehearsalLateJoinForm extends StatelessWidget {
                       ),
                   ],
                 ),
+                for (final point in points)
+                  if (view.laterPointIds.contains(point.alternativeId))
+                    CatchField.input(
+                      key: ValueKey<String>(
+                        'host-rehearsal-late-join-label-${point.alternativeId}',
+                      ),
+                      copy: copy,
+                      title: l10n.hostRehearsalLateJoinChoiceLabel(
+                        place: point.label,
+                      ),
+                      contractExemption:
+                          'Optional button label for one later joining choice; the practice plan bounds it at 80 characters.',
+                      placeholder: point.label,
+                      initialValue: view.laterLabels[point.alternativeId],
+                      maxLength: 80,
+                      inputMode: _editing
+                          ? CatchTextInputMode.editable
+                          : CatchTextInputMode.inactive,
+                      onChanged: (value) =>
+                          onLaterLabel(point.alternativeId, value),
+                    ),
               ],
             ),
         ],
