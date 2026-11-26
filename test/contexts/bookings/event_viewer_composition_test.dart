@@ -94,6 +94,30 @@ void main() {
     );
   });
 
+  test('a Host-created event books once first publish stamps its origin', () {
+    // Progressive setup creates events without an origin (#2575).
+    expect(
+      compose(event(origin: null)).restriction,
+      EventViewerRestriction.unsupportedRoute,
+    );
+    // The origin catchNativeOriginPatch writes at first publish.
+    final stamped = EventOrigin.fromJson(const {
+      'mode': 'catchNative',
+      'bookingAuthority': 'catch',
+      'rosterAuthority': 'catchProjection',
+      'provider': 'catch',
+      'externalEventId': null,
+      'externalEventUrl': null,
+      'sourceExternalEventId': null,
+      'adapterVersion': null,
+      'connectedAt': null,
+      'connectedBy': null,
+    });
+    final booked = compose(event(origin: stamped));
+    expect(booked.restriction, isNull);
+    expect(booked.route, EventViewerRoute.catchFreeBooking);
+  });
+
   test('a full event shows its quote and the full restriction', () {
     final full = compose(event(price: 30000, booked: 20));
     expect(full.restriction, EventViewerRestriction.full);
