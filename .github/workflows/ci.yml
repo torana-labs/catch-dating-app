@@ -97,6 +97,7 @@ jobs:
             /tool/harness.mjs
             /tool/harness/verify_local.mjs
             /tool/harness/compare_selectors.mjs
+            /tool/nx/lanes.mjs
             /tool/nx/select_lanes.mjs
             /tool/nx/shadow_plan.mjs
             /tool/nx/workflow_callers.mjs

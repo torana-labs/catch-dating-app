@@ -341,7 +341,10 @@ path, and invokes reusable validation workflows only for affected targets.
 Pull requests, merge queues, main pushes, and nightly full validation use the
 explicit `pr`, `merge_group`, `main`, and `nightly` graph modes respectively.
 For `pr`, `merge_group` and `main`, `tool/nx/select_lanes.mjs` runs the lanes
-`nx affected` selects, and only those (design A; main from 22 Nov 2026). The planner's selection is a
+`nx affected` selects, and only those (design A; main from 22 Nov 2026). The
+lane list, the Nx project-to-lane map and the per-mode rules (capture freshness
+for app inputs in the queue only, iOS only for a native or build input, the slow
+lanes left to the queue) are `selectNxLanes` in `tool/nx/lanes.mjs`. The planner's selection is a
 shadow. The plan summary lists each lane the planner would also run, with the
 `shadow_plan.mjs` rule that explains it, or UNEXPLAINED. The count of
 unexplained lanes is the `planner_unexplained` output and is also stored in the
@@ -367,7 +370,7 @@ the Nx query (about 10 s) to a run that executes lanes for about 20 minutes.
 On main the native app builds (`flutter_build_android`, `_ios`, `_web`) run
 only for a native build input (owner decision, 22 Nov 2026): native project
 folders, pubspec files and lockfiles, Gradle, CocoaPods and Xcode files, and
-native plugin code (`nativeBuildInputGlobs` in `shadow_plan.mjs`). A Dart-only
+native plugin code (`nativeBuildInputGlobs` in `tool/nx/lanes.mjs`). A Dart-only
 app change relies on the merge queue's web smoke and the nightly full builds,
 so main runs neither; a build lane the CI caller graph selects (its workflow, a
 script it runs, a selector) still runs (`mainBuildLanes`). Main's builds upload
