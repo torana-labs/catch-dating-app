@@ -14534,7 +14534,7 @@
           "status": "tested",
           "source": "HostSendsPageBody + showHostFollowerUpdateComposer + HostOrganizerPostController",
           "tests": [
-            "test/hosts/host_follower_update_composer_sheet_test.dart",
+            "test/hosts/people/sends/follower_update_sheet_test.dart",
             "test/hosts/host_inbox_screen_test.dart",
             "test/hosts/host_crm_repository_test.dart"
           ],
@@ -14608,7 +14608,7 @@
             "HostCampaignEditor/Campaign and sender states"
           ],
           "tests": [
-            "test/hosts/host_campaign_editor_test.dart",
+            "test/hosts/people/sends/campaign_body_test.dart",
             "test/hosts/host_inbox_screen_test.dart"
           ]
         },

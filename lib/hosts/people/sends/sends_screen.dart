@@ -330,6 +330,7 @@ class _HostSendsScreenState extends ConsumerState<HostSendsScreen> {
       requestIdFactory: HostOrganizerPostController.generateRequestId,
       whatsappAvailable: whatsappAvailable,
       onSubmitPost: ({required requestId, required text, required whatsapp}) =>
+          // provider-graph: ownership-widget-async:_HostSendsScreenState._followerUpdate:await:hostOrganizerPostControllerProvider.createPost watch CAT156 -- Carried from the Sends workspace: the post controller owns the callable; the sheet holds the pending flag and the request id, and this callback only names the organizer.
           ref
               .read(hostOrganizerPostControllerProvider)
               .createPost(

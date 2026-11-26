@@ -245,6 +245,8 @@ import 'package:widgetbook_workspace/hosts/host_saved_audience_use_cases.dart'
     as _widgetbook_workspace_hosts_host_saved_audience_use_cases;
 import 'package:widgetbook_workspace/hosts/host_send_intent_use_cases.dart'
     as _widgetbook_workspace_hosts_host_send_intent_use_cases;
+import 'package:widgetbook_workspace/hosts/host_sends_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_sends_use_cases;
 import 'package:widgetbook_workspace/hosts/host_setup_claim_use_cases.dart'
     as _widgetbook_workspace_hosts_host_setup_claim_use_cases;
 import 'package:widgetbook_workspace/hosts/host_system_parts_use_cases.dart'
@@ -9784,6 +9786,121 @@ final directories = <_widgetbook.WidgetbookNode>[
                         builder:
                             _widgetbook_workspace_hosts_people_duplicates_use_cases
                                 .peopleDuplicatesRow,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookFolder(
+                name: 'Sends',
+                children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostCampaignBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Setup loading',
+                        builder:
+                            _widgetbook_workspace_hosts_host_sends_use_cases
+                                .sendsCampaignBody,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostCampaignReportSection',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Previewed, ready to approve',
+                        builder:
+                            _widgetbook_workspace_hosts_host_sends_use_cases
+                                .sendsCampaignReport,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostFollowerUpdateSheet',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'WhatsApp unavailable',
+                        builder:
+                            _widgetbook_workspace_hosts_host_sends_use_cases
+                                .sendsFollowerSheet,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostManualSendReplanSheet',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Check options results',
+                        builder:
+                            _widgetbook_workspace_hosts_host_sends_use_cases
+                                .sendsReplanSheet,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostManualSendSheet',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Opened in WhatsApp',
+                        builder:
+                            _widgetbook_workspace_hosts_host_sends_use_cases
+                                .sendsTaskSheet,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostSendsBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'History and handoffs',
+                        builder:
+                            _widgetbook_workspace_hosts_host_sends_use_cases
+                                .sendsHistory,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostSendsChooseBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'What to send',
+                        builder:
+                            _widgetbook_workspace_hosts_host_sends_use_cases
+                                .sendsChoose,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostSendsQueueSection',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Needs your send',
+                        builder:
+                            _widgetbook_workspace_hosts_host_sends_use_cases
+                                .sendsQueue,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostSendsReportBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Announcement sent',
+                        builder:
+                            _widgetbook_workspace_hosts_host_sends_use_cases
+                                .sendsReport,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostSendsScreen',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Signed out',
+                        builder:
+                            _widgetbook_workspace_hosts_host_sends_use_cases
+                                .sendsScreen,
                       ),
                     ],
                   ),
