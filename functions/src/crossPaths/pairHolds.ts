@@ -9,6 +9,8 @@ import {
   type EventPairHoldCountersPatch,
   updateEventPairHoldCounters,
 } from "../domain/events/eventDocumentWrites";
+import {readEventWithCohortCounts} from
+  "../domain/events/eventCohortCounts";
 
 export type PairHoldReleaseReason =
   "expired" | "cancelled" | "event_unavailable" |
@@ -37,7 +39,9 @@ export async function releaseCrossPathsPairHoldInTransaction(params: {
       hold.expiresAt.toMillis() > params.now.toMillis())) return hold;
   const eventRef = params.db.collection("events").doc(hold.eventId);
   const eventSnap = await params.tx.get(eventRef);
-  const event = eventSnap.data();
+  const stored = eventSnap.data();
+  const event = stored ? await readEventWithCohortCounts(params.tx,
+    params.db, hold.eventId, stored) : stored;
   const seatHold = hold.status === "active" ?
     await preparePairSeatTransition({db: params.db, tx: params.tx,
       event, eventId: hold.eventId, organizerId: hold.organizerId,

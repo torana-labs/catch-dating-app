@@ -5,7 +5,8 @@ import {Store} from "../../organizerFormAdmission/admissionTestFixture";
 import type {EventDocument} from "../../shared/generated/firestoreAdminTypes";
 import {deriveEventSeatPolicy} from "../seatAuthority/firestoreAdapter";
 import {newEventSeatLedger} from "../seatAuthority/eventSeatLedgers";
-import {eventListingTermsPatch, preparePrivateListingTerms} from
+import {eventListingTermsPatch, preparePrivateListingTerms,
+  privateListingInviteCode} from
   "./listingTerms";
 
 const terms = {capacityLimit: 20, priceInPaise: 50000, currency: "INR",
@@ -133,4 +134,57 @@ test("term edits preserve restrictions and validate refunds", () => {
   assert.throws(() => eventListingTermsPatch(h.before,
     {...terms, priceInPaise: 0}), (e) => e instanceof HttpsError &&
     e.code === "invalid-argument");
+});
+
+const invalid = (e: unknown) => e instanceof HttpsError &&
+  e.code === "invalid-argument";
+
+test("a full policy and constraints replace the terms' own, as update does",
+  () => {
+    const h = setup();
+    const base = h.after.eventPolicy!;
+    const policy = {...base, admission: {...base.admission,
+      format: "fixedCohortCaps" as const, inviteRequired: true,
+      cohortCapacityLimits: {menInterestedInWomen: 8,
+        womenInterestedInMen: 9}}};
+    const next = eventListingTermsPatch(h.before, {...terms,
+      eventPolicy: policy as never,
+      constraints: {minAge: 24, maxAge: 40, maxMen: 8, maxWomen: 9}});
+    assert.equal(next.eventPolicy!.admission.format, "fixedCohortCaps");
+    assert.equal(next.eventPolicy!.admission.inviteRequired, true);
+    assert.deepEqual(next.eventPolicy!.admission.cohortCapacityLimits,
+      {menInterestedInWomen: 8, womenInterestedInMen: 9});
+    assert.deepEqual(next.constraints,
+      {minAge: 24, maxAge: 40, maxMen: 8, maxWomen: 9});
+    // A policy that disagrees with the terms beside it, or ages out of
+    // order, is refused.
+    for (const bad of [
+      {...policy, admission: {...policy.admission, capacityLimit: 21}},
+      {...policy, pricing: {...policy.pricing, basePriceInPaise: 1}},
+      {...policy, cancellation: {policyId: "strict" as const}},
+    ]) {
+      assert.throws(() => eventListingTermsPatch(h.before,
+        {...terms, eventPolicy: bad as never}), invalid);
+    }
+    assert.throws(() => eventListingTermsPatch(h.before,
+      {...terms, constraints: {minAge: 40, maxAge: 30}}), invalid);
+  });
+
+test("an invite-only listing keeps a 4 to 64 character code", () => {
+  const h = setup();
+  const open = h.after.eventPolicy!;
+  const invite = {...open, admission: {...open.admission,
+    inviteRequired: true}};
+  assert.equal(privateListingInviteCode({eventPolicy: open, terms,
+    savedCode: "SAVED1"}), null);
+  assert.equal(privateListingInviteCode({eventPolicy: invite,
+    terms: {...terms, privateAccess: {inviteCode: " SEAFACE "}},
+    savedCode: "SAVED1"}), "SEAFACE");
+  assert.equal(privateListingInviteCode({eventPolicy: invite, terms,
+    savedCode: "SAVED1"}), "SAVED1");
+  assert.throws(() => privateListingInviteCode({eventPolicy: invite, terms,
+    savedCode: undefined}), invalid);
+  assert.throws(() => privateListingInviteCode({eventPolicy: invite,
+    terms: {...terms, privateAccess: {inviteCode: "abc"}},
+    savedCode: undefined}), invalid);
 });

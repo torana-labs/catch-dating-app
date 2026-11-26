@@ -259,6 +259,72 @@ test("fresh progressive event publishes after details", async () => {
 });
 
 
+test("create's invite-only policy, age range and code survive publishing",
+  async () => {
+    const h = setup();
+    h.store.rows.delete("events/event1");
+    const db = {
+      collection: (name: string) => {
+        const source = h.store.collection(name);
+        return {...source, doc: (id = "invite-event") =>
+          ({...source.doc(id), id})};
+      },
+      runTransaction: h.store.runTransaction.bind(h.store),
+    } as unknown as FirebaseFirestore.Firestore;
+    const deps = {...h.deps, db};
+    const created = await createPrivateEventSetup({actorUid: "host1", deps,
+      command: {organizerId: "org1", requestId: "create-invite",
+        basics: {name: "Members supper", city: {mode: "set", value: {
+          cityId: "in-mp-indore", marketId: "in-mp-indore"}},
+        localDate: "2030-03-17", localStartTime: "19:00",
+        timezone: {mode: "set", value: "Asia/Kolkata"}}}});
+    const defaults = await getManagerEventSetupDefaults({actorUid: "host1",
+      organizerId: "org1", deps: eventSetupDefaultsDependencies(db)});
+    const policy = {version: 2, admission: {format: "inviteOnly",
+      capacityLimit: 12, waitlistPolicy: {mode: "rankedOffer",
+        offerWindowMinutes: 20}, inviteRequired: true,
+      membershipRequired: false, manualApprovalRequired: false,
+      privateAccessPolicy: {mode: "inviteCode", inviteCodeHint: "SE...CE",
+        privateLinkEnabled: false},
+      cohortCapacityLimits: {}, balancedRatioPolicy: null},
+    pricing: {basePriceInPaise: 50000, cohortAdjustmentsInPaise: {},
+      demandPricingRules: []},
+    cancellation: {policyId: "flexible"},
+    settlement: {hostPayoutTiming: "afterEventCompletion"}};
+    const saved = await updatePrivateEventDetails({actorUid: "host1", deps,
+      command: {organizerId: "org1", eventId: created.eventId,
+        requestId: "details-invite", expectedSetupRevision: 1,
+        reviewedDefaultsHash: defaults.preferencesHash, details: {
+          durationMinutes: {mode: "set", value: 90},
+          venue: {mode: "set", value: {name: "Town Hall",
+            latitude: 22.7, longitude: 75.8}},
+          description: "A shared dinner with new friends.",
+          eventFormat: {mode: "set", value: {version: 1,
+            activityKind: "dinner", interactionModel: "seatedTable"}},
+          admissionTerms: {capacityLimit: 12, priceInPaise: 50000,
+            currency: "INR", cancellationPolicyId: "flexible",
+            eventPolicy: policy as never,
+            constraints: {minAge: 25, maxAge: 45},
+            privateAccess: {inviteCode: "SEAFACE"}}}}});
+    assert.equal(h.store.get(`eventPrivateAccess/${created.eventId}`)!
+      .inviteCode, "SEAFACE");
+    await setEventPublication({actorUid: "host1", deps,
+      nowMillis: () => Date.parse("2030-03-01T00:00:00Z"),
+      command: {...h.command, eventId: created.eventId,
+        expectedSetupRevision: saved.setupRevision}});
+    const event = h.store.get(`events/${created.eventId}`)!;
+    assert.equal(validateEventDocument(event), true,
+      JSON.stringify(validateEventDocument.errors));
+    const admission = (event.eventPolicy as EventDocument["eventPolicy"])!
+      .admission;
+    assert.equal(admission.inviteRequired, true);
+    assert.equal(admission.format, "inviteOnly");
+    assert.deepEqual(event.constraints,
+      {minAge: 25, maxAge: 45, maxMen: null, maxWomen: null});
+    assert.equal(h.store.get(`eventPrivateAccess/${created.eventId}`)!
+      .inviteCode, "SEAFACE");
+  });
+
 test("stale marker identifies an uncommitted command", async () => {
   const h = setup();
   const stale = {...h.command, expectedSetupRevision: 2};

@@ -1,0 +1,26 @@
+{
+  "id": "ci:tool-buckets",
+  "category": "ci",
+  "path": "tool/ci/tool_buckets.mjs",
+  "command": "node tool/ci/tool_buckets.mjs plan",
+  "surface": "local-read",
+  "status": "active",
+  "role": "operator",
+  "description": "Splits the full Tools matrix into six time-balanced buckets: every active tool goes to exactly one bucket by longest-first balancing over the measured seconds in tool/ci/tool_bucket_timings.json (unknown tools count as its defaultSeconds). ids and setup give one bucket's tools and CI setup requirements; regenerate rebuilds the timing file from saved bucket job logs.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/ci/tool_buckets.test.mjs",
+    "tool/ci/tool_bucket_timings.json"
+  ],
+  "checks": [
+    "node --check tool/ci/tool_buckets.mjs",
+    "node --test tool/ci/tool_buckets.test.mjs",
+    "node tool/ci/tool_buckets.mjs plan"
+  ],
+  "runbook": "docs/release_operations.md#tool-buckets"
+}
