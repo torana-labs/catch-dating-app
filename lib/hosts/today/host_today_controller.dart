@@ -3,6 +3,8 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_reposi
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_insights.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/host_attendance_outbox.dart';
+import 'package:catch_dating_app/contexts/bookings/data/host_requests_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/host_request.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
@@ -66,7 +68,9 @@ Future<HostAttendanceOutboxSummary> hostTodayAttendanceOutbox(
     .loadAll(accountId: accountId, now: ref.read(appClockProvider).now());
 
 /// Today, composed from its read owners: the organizer's events, the
-/// attention queue and the roster of the featured event are listeners, the
+/// attention queue, everyone waiting across the coming events
+/// (`hostEventRequestViews`) and the roster of the featured event are
+/// listeners, the
 /// thirty-day report is the cached host-reports read, and the local
 /// attendance outbox joins the attention queue. Nothing here invalidates a
 /// read after a write.
@@ -119,12 +123,15 @@ HostTodayState hostTodayController(Ref ref, HostTodayRequest request) {
 }
 
 /// Starts again the reads behind what failed: the events listener for a
-/// screen error, the attention listener when it ended in an error, and the
-/// outbox read. A healthy listener is left alone.
+/// screen error, the attention and requests listeners when they ended in an
+/// error, and the outbox read. A healthy listener is left alone.
 void retryHostTodayReads(WidgetRef ref, HostTodayRequest request) {
   ref.invalidate(watchActiveEventsForOrganizerProvider(request.eventsQuery));
   if (ref.read(hostAttentionProjectionProvider(request.organizerId)).hasError) {
     ref.invalidate(hostAttentionProjectionProvider(request.organizerId));
+  }
+  if (ref.read(hostOrganizerRequestsProvider(request.organizerId)).hasError) {
+    ref.invalidate(hostOrganizerRequestsProvider(request.organizerId));
   }
   ref.invalidate(hostTodayAttendanceOutboxProvider(request.accountId));
 }
@@ -179,15 +186,60 @@ HostTodayNeedsYou _needsYou(
         now: request.now,
       ),
   ]..sort(compareHostAttentionItems);
+  final requests = catchAsyncStateFromAsyncValue(
+    ref.watch(hostOrganizerRequestsProvider(request.organizerId)),
+  );
+  final waiting = requests.value;
   final doors = featured?.startTime;
   return HostTodayNeedsYou(
     items: List<HostAttentionItem>.unmodifiable(items),
+    requests: waiting?.rows ?? const <HostRequest>[],
+    requestGroups: waiting == null
+        ? const <HostTodayRequestGroup>[]
+        : hostTodayRequestGroups(waiting.rows, items),
+    requestsComplete: waiting?.complete ?? true,
     dueBeforeDoors: doors == null || !doors.isAfter(request.now)
         ? 0
         : items.where((item) => item.dueAt.isBefore(doors)).length,
-    checking: projection == null || !projection.isComplete || outbox.isLoading,
-    failed: (attention.hasError && projection == null) || outbox.hasError,
+    checking:
+        projection == null ||
+        !projection.isComplete ||
+        outbox.isLoading ||
+        (waiting == null && !requests.hasError),
+    failed:
+        (attention.hasError && projection == null) ||
+        outbox.hasError ||
+        (requests.hasError && waiting == null),
   );
+}
+
+/// The waiting people no join request or waitlist attention item covers,
+/// one group per event and kind, in [rows] order (soonest event first, then
+/// the oldest ask).
+@visibleForTesting
+List<HostTodayRequestGroup> hostTodayRequestGroups(
+  List<HostRequest> rows,
+  List<HostAttentionItem> items,
+) {
+  final covered = <HostTodayRequestFocus>{
+    for (final item in items)
+      if (hostTodayRequestKindOf(item.kind) case final kind?)
+        if (item.eventId ?? item.destination.eventId case final eventId?)
+          HostTodayRequestFocus(eventId: eventId, kind: kind),
+  };
+  final groups = <HostTodayRequestFocus, HostTodayRequestGroup>{};
+  for (final row in rows) {
+    final focus = HostTodayRequestFocus(eventId: row.eventId, kind: row.kind);
+    if (covered.contains(focus)) continue;
+    final group = groups[focus];
+    groups[focus] = HostTodayRequestGroup(
+      focus: focus,
+      eventName: row.eventName,
+      eventStart: row.eventStart,
+      count: (group?.count ?? 0) + 1,
+    );
+  }
+  return List<HostTodayRequestGroup>.unmodifiable(groups.values);
 }
 
 /// The thirty-day report as stats, or null while it is first read. A failed

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/bookings/domain/host_request.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/parts/host_event_poster.dart';
 import 'package:catch_dating_app/contexts/events/parts/host_event_week_row.dart';
@@ -14,6 +15,10 @@ import 'package:flutter/widgets.dart';
 /// week and Last 30 days in one column; on expanded windows a feed with the
 /// poster, actions and week on the left and Needs you and the stats on the
 /// right.
+///
+/// Needs you is one list: the attention items, then the coming events
+/// whose join requests or waitlist no item covers yet. A join request or
+/// waitlist row with someone waiting opens the requests queue there.
 class HostTodayBody extends StatelessWidget {
   const HostTodayBody({
     super.key,
@@ -21,6 +26,7 @@ class HostTodayBody extends StatelessWidget {
     required this.now,
     required this.onOpenEvent,
     required this.onOpenAttention,
+    required this.onOpenRequests,
     required this.onAction,
     required this.onViewEvents,
     required this.onOpenInsights,
@@ -33,6 +39,9 @@ class HostTodayBody extends StatelessWidget {
   final DateTime now;
   final ValueChanged<Event> onOpenEvent;
   final ValueChanged<HostAttentionItem> onOpenAttention;
+
+  /// Opens the requests queue on the first person waiting there.
+  final ValueChanged<HostTodayRequestFocus> onOpenRequests;
   final ValueChanged<HostTodayAction> onAction;
   final VoidCallback onViewEvents;
   final VoidCallback onOpenInsights;
@@ -105,7 +114,26 @@ class HostTodayBody extends StatelessWidget {
           HostAttentionRow(
             key: ValueKey<String>('host-today-attention-${item.id}'),
             item: item,
-            onOpen: () => onOpenAttention(item),
+            onOpen: switch (needsYou.requestFocusOf(item)) {
+              final focus? => () => onOpenRequests(focus),
+              null => () => onOpenAttention(item),
+            },
+          ),
+        for (final group in needsYou.requestGroups)
+          _HostTodayRequestGroupRow(
+            key: ValueKey<String>(
+              'host-today-requests-${group.focus.eventId}-'
+              '${group.focus.kind.name}',
+            ),
+            group: group,
+            onOpen: () => onOpenRequests(group.focus),
+          ),
+        if (!needsYou.requestsComplete)
+          CatchNotice.inline(
+            key: const ValueKey<String>('host-today-requests-partial'),
+            tone: CatchNoticeTone.neutral,
+            icon: CatchIcons.info,
+            body: l10n.hostRequestsPartial,
           ),
       ],
     );
@@ -176,6 +204,46 @@ class HostTodayBody extends StatelessWidget {
           statsSection,
         ],
       ),
+    );
+  }
+}
+
+/// The people of one kind waiting on a coming event no attention item
+/// covers, in the attention row's shape and copy.
+class _HostTodayRequestGroupRow extends StatelessWidget {
+  const _HostTodayRequestGroupRow({
+    super.key,
+    required this.group,
+    required this.onOpen,
+  });
+
+  final HostTodayRequestGroup group;
+  final VoidCallback onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final request = group.focus.kind == HostRequestKind.request;
+    final action = request
+        ? l10n.hostTodayAttentionReview
+        : l10n.hostsHostHomeScreenStateVisiblecopyReview;
+    return CatchIndexRow(
+      title: request
+          ? l10n.hostTodayAttentionJoinTitle
+          : l10n.hostsHostHomeScreenStateTitleReviewWaitlist,
+      subtitle: request
+          ? l10n.hostTodayAttentionJoinBody(
+              count: group.count,
+              eventName: group.eventName,
+            )
+          : l10n.hostTodayAttentionWaitlistBody(
+              count: group.count,
+              eventName: group.eventName,
+            ),
+      onTap: onOpen,
+      marker: CatchIndexRowTone.info,
+      action: CatchIndexRowAction(label: action, onPressed: onOpen),
+      density: CatchIndexRowSize.roomy,
     );
   }
 }
