@@ -16,6 +16,7 @@ import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {REPORTING_LANES, REQUIRED_CI_JOB, laneOfJob} from "./required_ci_floor.mjs";
 import {MOBILE_BLOCK_JOBS} from "./golden_policy.mjs";
+import {isNightlyRun, nightlyRuns} from "./ci_nightly.mjs";
 
 export const ISSUE_TITLE = "Main CI is red";
 export const FLOOR_EXIT_TITLE = "Main CI green for 7 days: reporting lanes can block again";
@@ -71,7 +72,7 @@ export function decideAlert({run, jobs, openIssue, nightlies = null, owed = null
     const sha = run.head_sha.slice(0, 8);
     const known = owed && !owed.unknown;
     // A nightly selects every lane, so it settles every owed job.
-    const missing = run.event === "schedule" ? [] : known ? owed.jobs.filter((name) => !passed.has(name)) : null;
+    const missing = isNightlyRun(run) ? [] : known ? owed.jobs.filter((name) => !passed.has(name)) : null;
     if (missing?.length === 0) {
       return {action: "close", issue: openIssue.number, body: `Main CI is green again at ${sha}: ${run.html_url}${FOOTER}`};
     }
@@ -100,8 +101,8 @@ export function decideAlert({run, jobs, openIssue, nightlies = null, owed = null
     "**Required CI failed**: PRs that select these lanes are blocked and no release can promote this commit." :
     "Required CI passed; only reporting lanes failed.";
   const body = [
-    `Main CI (${run.event}) failed at ${run.head_sha.slice(0, 8)} (${run.display_title ?? "CI"}): ${run.html_url}`,
-    ...(run.event === "schedule" ? [nightlyWindow({run, nightlies})] : []),
+    `Main CI (${isNightlyRun(run) ? "nightly" : run.event}) failed at ${run.head_sha.slice(0, 8)} (${run.display_title ?? "CI"}): ${run.html_url}`,
+    ...(isNightlyRun(run) ? [nightlyWindow({run, nightlies})] : []),
     "", severity,
     ...(gating.length ? ["", "Gating jobs:", ...gating.map(line)] : []),
     ...(reporting.length ? ["", "Reporting jobs:", ...reporting.map(line)] : []),
@@ -151,14 +152,14 @@ export function decideFloorExit({runs, now, openIssue, alertOpen = false, report
   if (reportingLanes.length === 0 || openIssue) return {action: "none"};
   if (alertOpen) return {action: "none", reason: "alert_open"};
   const since = now - FLOOR_EXIT_DAYS * DAY;
-  const counted = runs.filter((run) => ["push", "schedule"].includes(run.event) && run.status === "completed" &&
+  const counted = runs.filter((run) => (run.event === "push" || isNightlyRun(run)) && run.status === "completed" &&
     !["cancelled", "skipped", "neutral", null].includes(run.conclusion));
   // The history must reach past the window, or a red run just before it could hide.
   if (!counted.some((run) => Date.parse(run.created_at) < since)) return {action: "none", reason: "history_too_short"};
   const lastRed = counted.filter((run) => run.conclusion !== "success" && !mobileOnly.has(Number(run.id)))
     .reduce((latest, run) => Math.max(latest, Date.parse(run.created_at)), -Infinity);
   if (lastRed >= since) return {action: "none", reason: "red_within_window"};
-  const nightlies = counted.filter((run) => run.event === "schedule" && Date.parse(run.created_at) >= since).length;
+  const nightlies = counted.filter((run) => isNightlyRun(run) && Date.parse(run.created_at) >= since).length;
   if (nightlies < FLOOR_EXIT_DAYS - 1) return {action: "none", reason: "too_few_nightlies"};
   const body = [
     `Every main push and nightly CI run for the last ${FLOOR_EXIT_DAYS} days succeeded, reporting lanes included ` +
@@ -180,7 +181,7 @@ export function decideFloorExit({runs, now, openIssue, alertOpen = false, report
 export function nightlyWindow({run, nightlies}) {
   const before = (candidate) => Date.parse(candidate.created_at) < Date.parse(run.created_at);
   const green = (nightlies ?? [])
-    .filter((candidate) => candidate.event === "schedule" && candidate.conclusion === "success" &&
+    .filter((candidate) => isNightlyRun(candidate) && candidate.conclusion === "success" &&
       candidate.id !== run.id && before(candidate) && /^[0-9a-f]{40}$/u.test(String(candidate.head_sha)))
     .sort((left, right) => Date.parse(right.created_at) - Date.parse(left.created_at))[0];
   if (!green) return "Commits since the last green nightly: unknown (none in the runs read).";
@@ -301,10 +302,9 @@ function main() {
   const owed = openIssue ? owedFromIssue([openIssue.body, ...JSON.parse(gh(["api", "--paginate", "--slurp",
     `repos/${repository}/issues/${openIssue.number}/comments?per_page=100`])).flat().map((comment) => comment.body)]) : null;
   let nightlies = null;
-  if (run.event === "schedule" && FAILED.has(run.conclusion)) {
+  if (isNightlyRun(run) && FAILED.has(run.conclusion)) {
     try {
-      nightlies = JSON.parse(gh(["api", `repos/${repository}/actions/workflows/ci.yml/runs?branch=main&event=schedule&per_page=30`]))
-        .workflow_runs ?? null;
+      nightlies = nightlyRuns((endpoint) => JSON.parse(gh(["api", endpoint])), repository, "per_page=30");
     } catch {
       nightlies = null; // The alert still posts; the window reads "unknown".
     }
@@ -380,7 +380,7 @@ function floorExit(repository, issues, alertOpen) {
   const since = now - FLOOR_EXIT_DAYS * DAY;
   const mobileOnly = new Set();
   for (const run of runs) {
-    if (!["push", "schedule"].includes(run.event) || run.status !== "completed" || !FAILED.has(run.conclusion) ||
+    if (!(run.event === "push" || isNightlyRun(run)) || run.status !== "completed" || !FAILED.has(run.conclusion) ||
       Date.parse(run.created_at) < since) continue;
     try {
       const jobs = JSON.parse(gh(["api", "--paginate", "--slurp",

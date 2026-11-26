@@ -250,6 +250,20 @@ for (const [label, runOverrides] of [
 }
 
 
+test("the dispatched CI nightly asks the native probe like the scheduled one; any other dispatch does not", async t => {
+  const h = seedHarness(t);
+  const all = h.manifest.captures.map(c => c.id).sort();
+  const changed = {fontSha256: "0".repeat(64), runnerImage: "macos-26-arm64/20261201.1"};
+  // Since 26 Nov 2026 ci-nightly.yml dispatches the nightly (nightly: true).
+  let plan = await h.plan("workflow_dispatch", changed, true);
+  assert.deepEqual([plan.nativeChanged, plan.renderIds.sort()], [true, all]);
+  h.git("checkout", "--", ".");
+  // A full or base_sha dispatch is not the nightly: the probe is never asked.
+  plan = await h.plan("workflow_dispatch", changed);
+  assert.deepEqual([plan.nativeChanged, plan.render, plan.renderIds], [false, false, []]);
+});
+
+
 test("the nightly reuses unless the native font or macOS runner image changed, and fails closed", async t => {
   const image = "macos-26-arm64/20261101.1";
   const previous = process.env.ImageVersion;

@@ -19,6 +19,7 @@ import {createRequire} from "node:module";
 import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {isNightlyRun, nightlyRuns} from "./ci_nightly.mjs";
 
 export const ISSUE_TITLE = "Test selection missed a failing test";
 // Nightlies are daily, so a day of merges fits well within this; older or
@@ -125,7 +126,7 @@ async function main() {
   assert.match(repository ?? "", /^[\w.-]+\/[\w.-]+$/u, "GITHUB_REPOSITORY is required");
   assert.match(runId ?? "", /^[1-9][0-9]*$/u, "RUN_ID is required");
   const nightly = JSON.parse(gh(["api", `repos/${repository}/actions/runs/${runId}`]));
-  assert.equal(nightly.event, "schedule", "Only the nightly run is checked");
+  assert.ok(isNightlyRun(nightly), "Only the nightly run is checked");
 
   // The reports of the run's latest attempt.
   const attempt = nightly.run_attempt;
@@ -168,11 +169,19 @@ async function main() {
 /** main's commits since the last green nightly, each with both lanes' pull request selection. */
 async function commitSelections(repository, nightly) {
   const {repoRoot} = await import("../lib/repo_paths.mjs");
-  const greens = JSON.parse(gh(["api",
-    `repos/${repository}/actions/workflows/${nightly.workflow_id}/runs?branch=main&event=schedule&status=success&per_page=30`]));
-  const green = (greens.workflow_runs ?? []).find((candidate) => candidate.created_at < nightly.created_at &&
-    spawnSync("git", ["merge-base", "--is-ancestor", candidate.head_sha, nightly.head_sha], {cwd: repoRoot}).status === 0);
+  const greens = nightlyRuns((endpoint) => JSON.parse(gh(["api", endpoint])), repository, "status=success&per_page=30");
+  const green = lastGreenNightly({greens, nightly, isAncestor: (sha) =>
+    spawnSync("git", ["merge-base", "--is-ancestor", sha, nightly.head_sha], {cwd: repoRoot}).status === 0});
   return selectionsSince({base: green?.head_sha ?? null, head: nightly.head_sha});
+}
+
+/**
+ * The newest green nightly before this one whose commit main still contains:
+ * the start of the window whose commits a failed nightly checks. Dispatched
+ * and scheduled nightlies both count (isNightlyRun); any other run does not.
+ */
+export function lastGreenNightly({greens, nightly, isAncestor}) {
+  return greens.find((candidate) => isNightlyRun(candidate) && candidate.created_at < nightly.created_at && isAncestor(candidate.head_sha)) ?? null;
 }
 
 /**
