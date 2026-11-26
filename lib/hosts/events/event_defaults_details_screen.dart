@@ -32,7 +32,10 @@ class HostEventDefaultsDetailsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final state = ref.watch(hostEventDefaultsControllerProvider(organizerId));
-    final saving = ref.watch(HostEventCommands.defaultsMutation).isPending;
+    final save = ref.watch(HostEventCommands.defaultsMutation);
+    // A failed save waits on Event defaults for Retry; nothing else changes
+    // until it goes through, so the editor says so and freezes.
+    final unresolved = save.hasError;
     return CatchRoot(
       child: CatchScreen(
         key: const ValueKey<String>('host-event-defaults-details-screen'),
@@ -45,7 +48,8 @@ class HostEventDefaultsDetailsScreen extends ConsumerWidget {
         bodyScrolls: false,
         body: HostEventDefaultsDetailsBody(
           state: state,
-          onChange: saving ? null : onChange,
+          unresolved: unresolved,
+          onChange: save.isPending || unresolved ? null : onChange,
           onRetry: () => ref.invalidate(
             managerEventSetupDefaultsViewProvider(organizerId),
           ),

@@ -19,11 +19,16 @@ class HostEventDefaultsDetailsBody extends StatelessWidget {
     required this.state,
     required this.onRetry,
     this.onChange,
+    this.unresolved = false,
   });
 
   final HostEventDefaultsState state;
   final VoidCallback onRetry;
   final ValueChanged<ManagerEventSetupPreferences>? onChange;
+
+  /// A save this phone could not confirm waits on Event defaults; the
+  /// editor says so and stays read-only until it goes through.
+  final bool unresolved;
 
   static const durationChoices = <int>[15, 30, 45, 60, 90, 120, 180, 240];
   static const validityChoices = <int>[5, 15, 30, 60, 120, 1440, 2880, 10080];
@@ -63,6 +68,13 @@ class HostEventDefaultsDetailsBody extends StatelessWidget {
       child: CatchSectionList(
         emptyStateOmitted: true,
         children: [
+          if (unresolved)
+            CatchNotice.inline(
+              key: const ValueKey<String>('event-defaults-details-unresolved'),
+              tone: CatchNoticeTone.warning,
+              title: l10n.hostsEventDefaultsPendingUpdate,
+              body: l10n.hostsEventDefaultsPendingUpdateBody,
+            ),
           CatchSection.fieldRows(
             first: true,
             title: l10n.hostEventsDefaultsEachEvent,

@@ -170,6 +170,13 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('an unresolved save is called out above the read-only editor', (
+    tester,
+  ) async {
+    await _pump(tester, unresolved: true);
+    expect(find.text('Previous defaults save unresolved'), findsOneWidget);
+  });
+
   testWidgets('the editor stays scrollable at 360px and 2x text', (
     tester,
   ) async {
@@ -235,6 +242,7 @@ Future<void> _pump(
   ManagerEventSetupPreferences preferences =
       const ManagerEventSetupPreferences(),
   ValueChanged<ManagerEventSetupPreferences>? onChange,
+  bool unresolved = false,
   Size size = const Size(390, 2400),
   double textScale = 1,
 }) async {
@@ -252,6 +260,7 @@ Future<void> _pump(
               preferences: preferences,
             ),
             onChange: onChange,
+            unresolved: unresolved,
             onRetry: () {},
           ),
         ),
