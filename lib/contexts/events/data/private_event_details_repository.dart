@@ -341,7 +341,7 @@ class PrivateEventDetailsPatch {
           : null,
       admissionTerms: json['admissionTerms'] == null
           ? null
-          : PrivateEventAdmissionTerms.fromResponse(json['admissionTerms']),
+          : PrivateEventAdmissionTerms.fromCommandJson(json['admissionTerms']),
       meetingLocation: hasLocation
           ? parse<EventMeetingLocation>(rawVenue, (raw) {
               if (raw is! Map ||

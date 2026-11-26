@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
@@ -256,48 +257,35 @@ class EditEventSaveRequest {
       notes: _trimToNull(locationDetails),
     ).normalized();
     final includePolicy = !policyLocked;
-    final eventPolicyDefaults = includePolicy
-        ? EventPolicyDefaults(
-            admissionPreset: _admissionDefaultPresetFromSelected(
-              admissionPreset,
-              cohortCapsEnabled: cohortCapsEnabled,
-            ),
-            minAge: int.tryParse(minAgeText.trim()) ?? 0,
-            maxAge: int.tryParse(maxAgeText.trim()) ?? 99,
-            maxMen: int.tryParse(maxMenText.trim()),
-            maxWomen: int.tryParse(maxWomenText.trim()),
-            dynamicPricingEnabled: dynamicPricingEnabled,
-            dynamicPricingStepInPaise: _minorUnits(
-              dynamicPricingStepText,
-              currencyCode: event.currency,
-            ),
-            dynamicPricingMaxInPaise: _minorUnits(
-              dynamicPricingMaxText,
-              currencyCode: event.currency,
-            ),
-            cancellationPolicyId: cancellationPolicyId,
-          )
-        : null;
     final capacityLimit = includePolicy
         ? int.parse(capacityText.trim())
         : event.capacityLimit;
     final priceInPaise = includePolicy
         ? _minorUnits(priceText, currencyCode: event.currency)!
         : event.priceInPaise;
-    final eventPolicy = includePolicy
-        ? _eventPolicyForDefaults(
-            defaults: eventPolicyDefaults!,
+    final terms = includePolicy
+        ? editPolicyTermsFor(
             admissionPreset: admissionPreset,
+            cohortCapsEnabled: cohortCapsEnabled,
+            dynamicPricingEnabled: dynamicPricingEnabled,
+            minAgeText: minAgeText,
+            maxAgeText: maxAgeText,
+            maxMenText: maxMenText,
+            maxWomenText: maxWomenText,
+            dynamicPricingStepText: dynamicPricingStepText,
+            dynamicPricingMaxText: dynamicPricingMaxText,
+            cancellationPolicyId: cancellationPolicyId,
+            inviteCodeText: inviteCodeText,
+            currencyCode: event.currency,
             capacityLimit: capacityLimit,
             basePriceInPaise: priceInPaise,
-            inviteCodeHint: _inviteCodeHint(inviteCodeText),
             crossPathsPairCapacity: event
                 .effectiveEventPolicy
                 .admissionPolicy
                 .crossPathsPairInventory
                 .reservedPairCapacity,
           )
-        : event.eventPolicy;
+        : null;
     final eventFormat = routePlanChanged
         ? _eventFormatWithRoutePlan(event.eventFormat, routePlan)
         : event.eventFormat;
@@ -324,10 +312,8 @@ class EditEventSaveRequest {
         description: description.trim(),
         capacityLimit: capacityLimit,
         priceInPaise: priceInPaise,
-        constraints: includePolicy
-            ? eventPolicyDefaults!.toConstraints()
-            : event.constraints,
-        eventPolicy: eventPolicy,
+        constraints: terms?.constraints ?? event.constraints,
+        eventPolicy: terms == null ? event.eventPolicy : terms.eventPolicy,
       ),
       includePolicy: includePolicy,
       inviteCode: _trimToNull(inviteCodeText),
@@ -346,9 +332,6 @@ Set<CreateProblem> editEventProblems({
 }) {
   final distance = double.tryParse((draft.distance ?? '').trim());
   final start = editStartOf(draft);
-  final preset = editAdmissionPreset(draft);
-  final cohortCaps = editCohortCapsEnabled(draft);
-  final invite = (draft.inviteCode ?? '').trim();
   return {
     if ((draft.name ?? '').trim().isEmpty) CreateProblem.name,
     if (event.eventFormat.activityKind.isDistanceBased &&
@@ -375,21 +358,160 @@ Set<CreateProblem> editEventProblems({
         CreateProblem.price,
       if ((int.tryParse((draft.capacity ?? '').trim()) ?? 0) < 1)
         CreateProblem.capacity,
-      if (preset == EventAdmissionPreset.inviteOnly &&
-          (invite.length < 4 || invite.length > 64))
-        CreateProblem.inviteCode,
-      if (cohortCaps &&
-          (!_positiveOrEmpty(draft.maxMen) ||
-              !_positiveOrEmpty(draft.maxWomen)))
-        CreateProblem.cohortCaps,
-      if (preset == EventAdmissionPreset.balancedSingles &&
-          draft.dynamicPricingEnabled &&
-          (!_positive(draft.dynamicPricingStep) ||
-              !_positive(draft.dynamicPricingMax)))
-        CreateProblem.demandPricing,
+      ...editPolicyProblems(draft),
     },
   };
 }
+
+/// What a draft's admission fields still need: an invite-only event's code
+/// of 4 to 64 characters, cohort caps above zero and demand pricing's step
+/// and maximum. [savedInviteCode] lets the code stay empty when the event
+/// may already have one the backend keeps.
+Set<CreateProblem> editPolicyProblems(
+  EventDraft draft, {
+  bool savedInviteCode = false,
+}) {
+  final preset = editAdmissionPreset(draft);
+  final invite = (draft.inviteCode ?? '').trim();
+  return {
+    if (preset == EventAdmissionPreset.inviteOnly &&
+        !(savedInviteCode && invite.isEmpty) &&
+        (invite.length < 4 || invite.length > 64))
+      CreateProblem.inviteCode,
+    if (editCohortCapsEnabled(draft) &&
+        (!_positiveOrEmpty(draft.maxMen) || !_positiveOrEmpty(draft.maxWomen)))
+      CreateProblem.cohortCaps,
+    if (preset == EventAdmissionPreset.balancedSingles &&
+        draft.dynamicPricingEnabled &&
+        (!_positive(draft.dynamicPricingStep) ||
+            !_positive(draft.dynamicPricingMax)))
+      CreateProblem.demandPricing,
+  };
+}
+
+// ---- the admission fields, shared by create and edit ----
+
+/// Who can book. Leaving open capacity turns cohort caps off; leaving
+/// balanced singles turns demand pricing off.
+EventDraft editDraftWithAdmission(
+  EventDraft draft,
+  EventAdmissionPreset preset,
+) => draft.copyWith(
+  admissionPreset: preset.name,
+  dynamicPricingEnabled:
+      preset == EventAdmissionPreset.balancedSingles &&
+      draft.dynamicPricingEnabled,
+);
+
+/// Cohort caps on or off, as open capacity with or without its limits.
+EventDraft editDraftWithCohortCaps(EventDraft draft, bool on) => draft.copyWith(
+  admissionPreset: on
+      ? editFixedCohortCapsPreset
+      : EventAdmissionPreset.openCapacity.name,
+);
+
+/// Demand pricing starts from a small step and a ceiling when its fields
+/// are empty.
+EventDraft editDraftWithDemandPricing(EventDraft draft, bool on) =>
+    draft.copyWith(
+      dynamicPricingEnabled: on,
+      dynamicPricingStep: on && (draft.dynamicPricingStep ?? '').isEmpty
+          ? '250'
+          : draft.dynamicPricingStep,
+      dynamicPricingMax: on && (draft.dynamicPricingMax ?? '').isEmpty
+          ? '1500'
+          : draft.dynamicPricingMax,
+    );
+
+/// The age range, stored with 0 and 99 as no limit.
+EventDraft editDraftWithAgeRange(EventDraft draft, int minAge, int maxAge) =>
+    draft.copyWith(
+      minAge: minAge <= 18 ? '' : '$minAge',
+      maxAge: maxAge >= 99 ? '' : '$maxAge',
+    );
+
+/// The event policy and the age and cohort limits that admission fields
+/// describe, for an event of [capacityLimit] places at [basePriceInPaise].
+/// A request-to-join format keeps the cancellation policy and asks the host
+/// to approve each booking; the others follow the organizer-default presets.
+/// Editing and creating both send these.
+({EventPolicyBundle eventPolicy, EventConstraints constraints})
+editPolicyTermsFor({
+  required EventAdmissionPreset admissionPreset,
+  required bool cohortCapsEnabled,
+  required bool dynamicPricingEnabled,
+  required String minAgeText,
+  required String maxAgeText,
+  required String maxMenText,
+  required String maxWomenText,
+  required String dynamicPricingStepText,
+  required String dynamicPricingMaxText,
+  required EventCancellationPolicyId cancellationPolicyId,
+  required String inviteCodeText,
+  required String currencyCode,
+  required int capacityLimit,
+  required int basePriceInPaise,
+  required int crossPathsPairCapacity,
+}) {
+  final defaults = EventPolicyDefaults(
+    admissionPreset: _admissionDefaultPresetFromSelected(
+      admissionPreset,
+      cohortCapsEnabled: cohortCapsEnabled,
+    ),
+    minAge: int.tryParse(minAgeText.trim()) ?? 0,
+    maxAge: int.tryParse(maxAgeText.trim()) ?? 99,
+    maxMen: int.tryParse(maxMenText.trim()),
+    maxWomen: int.tryParse(maxWomenText.trim()),
+    dynamicPricingEnabled: dynamicPricingEnabled,
+    dynamicPricingStepInPaise: _minorUnits(
+      dynamicPricingStepText,
+      currencyCode: currencyCode,
+    ),
+    dynamicPricingMaxInPaise: _minorUnits(
+      dynamicPricingMaxText,
+      currencyCode: currencyCode,
+    ),
+    cancellationPolicyId: cancellationPolicyId,
+  );
+  return (
+    eventPolicy: _eventPolicyForDefaults(
+      defaults: defaults,
+      admissionPreset: admissionPreset,
+      capacityLimit: capacityLimit,
+      basePriceInPaise: basePriceInPaise,
+      inviteCodeHint: _inviteCodeHint(inviteCodeText),
+      crossPathsPairCapacity: crossPathsPairCapacity,
+    ),
+    constraints: defaults.toConstraints(),
+  );
+}
+
+/// [editPolicyTermsFor] read from a draft's admission fields.
+({EventPolicyBundle eventPolicy, EventConstraints constraints})
+editPolicyTermsOfDraft(
+  EventDraft draft, {
+  required String currencyCode,
+  required int capacityLimit,
+  required int basePriceInPaise,
+  required EventCancellationPolicyId cancellationPolicyId,
+  int crossPathsPairCapacity = 0,
+}) => editPolicyTermsFor(
+  admissionPreset: editAdmissionPreset(draft),
+  cohortCapsEnabled: editCohortCapsEnabled(draft),
+  dynamicPricingEnabled: draft.dynamicPricingEnabled,
+  minAgeText: draft.minAge ?? '',
+  maxAgeText: draft.maxAge ?? '',
+  maxMenText: draft.maxMen ?? '',
+  maxWomenText: draft.maxWomen ?? '',
+  dynamicPricingStepText: draft.dynamicPricingStep ?? '',
+  dynamicPricingMaxText: draft.dynamicPricingMax ?? '',
+  cancellationPolicyId: cancellationPolicyId,
+  inviteCodeText: draft.inviteCode ?? '',
+  currencyCode: currencyCode,
+  capacityLimit: capacityLimit,
+  basePriceInPaise: basePriceInPaise,
+  crossPathsPairCapacity: crossPathsPairCapacity,
+);
 
 bool _positive(String? value) => (int.tryParse((value ?? '').trim()) ?? 0) > 0;
 
