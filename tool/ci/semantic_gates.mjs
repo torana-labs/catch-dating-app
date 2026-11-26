@@ -28,6 +28,7 @@ import {fileURLToPath} from "node:url";
 import {semanticGateIds} from "../lib/semantic_gates.mjs";
 import {nightlyRuns} from "./ci_nightly.mjs";
 import {loadToolsManifest} from "../lib/tools_manifest.mjs";
+import {githubIssueApi, oldestOpen, openIssueOnce} from "../lib/github_issues.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 export const DEFAULT_LIMIT_MS = 10000;
@@ -155,6 +156,26 @@ export function decideBudgetIssue({body, openIssue}) {
   return openIssue.body === body ? {action: "none"} : {action: "update", issue: openIssue.number, body};
 }
 
+/**
+ * Applies the budget decision. Opening goes through openIssueOnce, so two
+ * nightly alert runs reporting at once leave one issue; the report is the
+ * same p95 table either way, so the issue kept gets it as its body.
+ */
+export function applyBudgetDecision(api, decision, options) {
+  if (decision.action === "open") {
+    const opened = openIssueOnce(api, {title: decision.title, body: decision.body,
+      onExisting: (number) => api.update(number, decision.body)});
+    // Another run opened it first: the report is the same p95 table, so the kept issue gets it as its body.
+    if (opened.closed.length && !opened.created) api.update(opened.number, decision.body);
+  } else if (decision.action === "update") {
+    api.update(decision.issue, decision.body);
+  } else if (decision.action === "close") {
+    api.comment(decision.issue,
+      `Every semantic gate is back within ${seconds(options.limitMs)} s at p95 over the last ${options.runs} nightly runs.`);
+    api.close(decision.issue, "completed");
+  }
+}
+
 function gh(args, input) {
   const result = spawnSync("gh", args, {encoding: "utf8", maxBuffer: 64 * 1024 * 1024, input});
   if (result.status !== 0) throw new Error(result.stderr || `gh ${args.join(" ")} failed`);
@@ -182,18 +203,10 @@ function reportBudgetToGithub(manifest, options) {
   if (!/^[\w.-]+\/[\w.-]+$/u.test(repository ?? "")) throw new Error("GITHUB_REPOSITORY is required.");
   const documents = loadTimings(downloadNightlyTimings(repository, options.runs));
   const over = overBudget(documents, {gateIds: semanticGateIds(manifest), runs: options.runs, limitMs: options.limitMs});
-  const issues = JSON.parse(gh(["api", `repos/${repository}/issues?state=open&creator=github-actions%5Bbot%5D&per_page=100`]));
-  const openIssue = issues.find((issue) => issue.title === BUDGET_ISSUE_TITLE && !issue.pull_request) ?? null;
+  const api = githubIssueApi(gh, repository);
+  const openIssue = oldestOpen(api.listOpen(), BUDGET_ISSUE_TITLE);
   const decision = decideBudgetIssue({body: renderBudgetIssue(over, options), openIssue});
-  if (decision.action === "open") {
-    gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${decision.title}`, "-F", "body=@-"], decision.body);
-  } else if (decision.action === "update") {
-    gh(["api", "-X", "PATCH", `repos/${repository}/issues/${decision.issue}`, "-F", "body=@-"], decision.body);
-  } else if (decision.action === "close") {
-    gh(["api", "-X", "POST", `repos/${repository}/issues/${decision.issue}/comments`, "-F", "body=@-"],
-      `Every semantic gate is back within ${seconds(options.limitMs)} s at p95 over the last ${options.runs} nightly runs.`);
-    gh(["api", "-X", "PATCH", `repos/${repository}/issues/${decision.issue}`, "-f", "state=closed", "-f", "state_reason=completed"]);
-  }
+  applyBudgetDecision(api, decision, options);
   console.log(`Semantic gate budget: ${documents.length} nightly timing file(s), ${over.length} over budget; issue ${decision.action}.`);
 }
 

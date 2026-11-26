@@ -2560,6 +2560,28 @@ none of the last 30 nightly runs was green. Opening the issue notifies repositor
 runs change nothing. Fix forward on main; never close the issue by hand
 while main is still red.
 
+Alert runs never replace each other: each has its own concurrency group,
+`main-red-alert-<CI run id>`, with cancel-in-progress off. A single group used
+to keep one pending run and cancel an older pending one, which lost a push
+alert and a nightly follow-up on 26 Nov 2026. Alert runs for different CI runs
+therefore run in parallel, and `tool/lib/github_issues.mjs` guards their
+issue writes:
+
+- An issue is opened only if none with its title is open. After opening, the
+  run lists again; if more than one is open, it keeps the lowest-numbered,
+  closes each other one as a duplicate and moves its body and comments into a
+  comment on the issue it keeps. Every reader acts on the lowest-numbered open
+  issue. This covers "Main CI is red", the floor-exit issue, the golden failure
+  and drift issues, the semantic budget issue and the selection miss issue.
+- A close racing an open settles to the latest head run. After writing, an
+  alert run looks for a newer completed main push or nightly run. Once that
+  run's own alert run has finished (waiting up to 3 minutes while it runs), it
+  applies that run's decision too, but only an open or a close, so the head's
+  comments are never repeated. A head alert run still queued reads the issue
+  after this write and needs nothing. The golden drift issue is only ever
+  closed this way, since opening it dispatches baseline workflows, which the
+  head run's own alert already did.
+
 After each main push run, the alert also reports a commit main CI has not
 validated and will not until the next push (22 Nov 2026). GitHub can create a
 queue batch's push runs out of order, so an earlier commit's run can replace a
