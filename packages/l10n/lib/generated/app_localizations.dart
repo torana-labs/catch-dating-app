@@ -3140,13 +3140,6 @@ abstract class AppLocalizations {
   /// **'Post-event host report'**
   String get eventSuccessEventSuccessFeatureBlocksTitlePostEventHostReport;
 
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (subtitle).
-  ///
-  /// In en, this message translates to:
-  /// **'A concrete report surface that turns event outcomes into the next change the host should make.'**
-  String
-  get eventSuccessEventSuccessFeatureBlocksSubtitleAConcreteReportSurface;
-
   /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).
   ///
   /// In en, this message translates to:
@@ -9238,18 +9231,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All time'**
   String get hostsHostAnalyticsLabelAllTime;
-
-  /// Badge for a partially available Host metric.
-  ///
-  /// In en, this message translates to:
-  /// **'Partial'**
-  String get hostsHostAnalyticsLabelPartial;
-
-  /// Badge for an unavailable Host metric.
-  ///
-  /// In en, this message translates to:
-  /// **'Missing'**
-  String get hostsHostAnalyticsLabelMissing;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_auth_required_screen.dart (title).
   ///
