@@ -13,6 +13,7 @@ Own organizer communication work: inquiry conversations, WhatsApp threads, outbo
 
 Current implementation roots:
 
+- `lib/hosts/people`
 - `lib/hosts/presentation/inbox`
 
 ## This feature owns
@@ -45,17 +46,15 @@ Typed handoffs:
 
 | Owner | Source | Responsibility |
 |---|---|---|
-| `HostInboxScreen` | `lib/hosts/presentation/inbox/host_inbox_screen.dart` | Actions: select_workspace, retry_inbox, select_scope, select_audience_segment, open_conversation. |
-| `ChatsSearchHeaderController` | `lib/pages/inbox/chats_search_header_controller.dart` | Actions: toggle_search. |
-| `ChatSearchQuery` | `lib/pages/inbox/chats_list_view_model.dart` | Actions: search_inquiries. |
-| `HostBroadcastComposerSheet` | `lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart` | Actions: select_broadcast_audience, select_broadcast_template. |
-| `HostInboxBroadcastController` | `lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart` | Actions: send_broadcast. |
-| `_HostSendsPageBodySliverState` | `lib/hosts/presentation/inbox/host_sends_workspace.dart` | Actions: open_event_announcement_composer. |
-| `HostManualSendList` | `lib/hosts/presentation/inbox/host_manual_send_list.dart` | Actions: open_manual_send_task, open_manual_handoff, mark_manual_send_task, replan_manual_send_tasks. |
-| `showHostFollowerUpdateComposer` | `lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart` | Actions: send_follower_update. |
+| `HostMessagesScreen` | `lib/hosts/people/messages_screen.dart` | Actions: retry_inbox, select_scope, select_audience_segment, search_inquiries, open_conversation, open_sends. |
+| `HostComposeScreen` | `lib/hosts/people/compose_screen.dart` | Actions: select_broadcast_audience, select_broadcast_template. |
+| `HostComposeCommands` | `lib/hosts/people/compose_controller.dart` | Actions: send_broadcast. |
+| `_HostSendsScreenState` | `lib/hosts/people/sends/sends_screen.dart` | Actions: open_event_announcement_composer. |
+| `HostManualSendSheet` | `lib/hosts/people/sends/sends_sheets_body.dart` | Actions: open_manual_send_task, open_manual_handoff, mark_manual_send_task, replan_manual_send_tasks. |
+| `showHostFollowerUpdateSheet` | `lib/hosts/people/sends/sends_sheets_body.dart` | Actions: send_follower_update. |
 | `HostMessagingSetupScreen` | `lib/hosts/presentation/inbox/host_messaging_setup_screen.dart` | Structural owner. |
 | `HostWhatsappSetupSection` | `lib/hosts/organizer/whatsapp_setup_section.dart` | Actions: manage_whatsapp_sender. |
-| `HostCampaignEditor` | `lib/hosts/presentation/inbox/host_campaign_editor.dart` | Structural owner. |
+| `HostCampaignScreen` | `lib/hosts/people/sends/campaign_screen.dart` | Structural owner. |
 | `HostAudienceController` | `lib/hosts/presentation/host_audience_controller.dart` | Actions: manage_campaign. |
 
 ## Shared dependencies
@@ -100,8 +99,10 @@ Typed handoffs:
 
 ## Focused tests
 
-- `test/hosts/host_inbox_screen_test.dart`
-- `test/hosts/host_inbox_view_model_test.dart`
+- `test/hosts/people/conversation/messages_scope_test.dart`
+- `test/hosts/people/sends/sends_body_test.dart`
+- `test/hosts/people/compose_request_id_test.dart`
+- `test/hosts/people/conversation/conversation_people_test.dart`
 - `test/hosts/host_operations_screen_test.dart`
 
 ## Maintenance

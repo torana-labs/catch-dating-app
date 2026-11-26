@@ -5047,43 +5047,8 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
   },
-  "hostsHostBroadcastComposerSheetTitleNewBroadcast": "New broadcast",
-  "@hostsHostBroadcastComposerSheetTitleNewBroadcast": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_broadcast_composer_sheet"
-  },
-  "hostsHostBroadcastComposerSheetTextAudience": "Audience",
-  "@hostsHostBroadcastComposerSheetTextAudience": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_broadcast_composer_sheet"
-  },
   "hostsHostBroadcastComposerSheetTextTemplate": "Template",
   "@hostsHostBroadcastComposerSheetTextTemplate": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_broadcast_composer_sheet"
-  },
-  "hostsHostBroadcastComposerSheetTitleMessage": "Message",
-  "@hostsHostBroadcastComposerSheetTitleMessage": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_broadcast_composer_sheet"
-  },
-  "hostsHostBroadcastComposerSheetPlaceholderWriteAClearUpdate": "Write a clear update for attendees",
-  "@hostsHostBroadcastComposerSheetPlaceholderWriteAClearUpdate": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (placeholder).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_broadcast_composer_sheet"
-  },
-  "hostsHostBroadcastComposerSheetTextSendingStaysOffIn": "Sending stays off in this build until the production callable passes the release preflight.",
-  "@hostsHostBroadcastComposerSheetTextSendingStaysOffIn": {
     "description": "Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
@@ -5092,13 +5057,6 @@
   "hostsHostBroadcastComposerSheetTextThisAudienceHasNo": "This audience has no eligible recipients yet.",
   "@hostsHostBroadcastComposerSheetTextThisAudienceHasNo": {
     "description": "Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_broadcast_composer_sheet"
-  },
-  "hostsHostBroadcastComposerSheetLabelSendTo1Person": "Send to 1 person",
-  "@hostsHostBroadcastComposerSheetLabelSendTo1Person": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_broadcast_composer_sheet"
@@ -7534,13 +7492,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_inbox_screen"
   },
-  "hostsHostInboxScreenTitleNoProgramConversations": "No guest conversations for this program yet",
-  "@hostsHostInboxScreenTitleNoProgramConversations": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_inbox_screen"
-  },
   "hostsHostPaymentAccountCardTitlePayouts": "Payouts",
   "@hostsHostPaymentAccountCardTitlePayouts": {
     "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).",
@@ -7844,46 +7795,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.edit_hosted_event_screen"
-  },
-  "hostsHostBroadcastComposerSheetLabelBookedBookedcount": "Booked · {bookedCount}",
-  "@hostsHostBroadcastComposerSheetLabelBookedBookedcount": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (label).",
-    "placeholders": {
-      "bookedCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_broadcast_composer_sheet"
-  },
-  "hostsHostBroadcastComposerSheetLabelWaitlistProspectivecount": "Waitlist · {prospectiveCount}",
-  "@hostsHostBroadcastComposerSheetLabelWaitlistProspectivecount": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (label).",
-    "placeholders": {
-      "prospectiveCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_broadcast_composer_sheet"
-  },
-  "hostsHostBroadcastComposerSheetLabelEveryoneRecipientcount": "Everyone · {recipientCount}",
-  "@hostsHostBroadcastComposerSheetLabelEveryoneRecipientcount": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (label).",
-    "placeholders": {
-      "recipientCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_broadcast_composer_sheet"
-  },
-  "hostsHostBroadcastComposerSheetLabelSendToRecipientcountPeople": "Send to {recipientCount} people",
-  "@hostsHostBroadcastComposerSheetLabelSendToRecipientcountPeople": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart (label).",
-    "placeholders": {
-      "recipientCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_broadcast_composer_sheet"
   },
   "hostsHostInboxScreenLabelBookedBookedthreadcount": "Booked · {bookedThreadCount}",
   "@hostsHostInboxScreenLabelBookedBookedthreadcount": {
@@ -15181,24 +15092,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_inbox_screen"
   },
-  "hostsHostInboxScreenVisiblecopyBroadcastSentToRecipientcount": "Broadcast sent to {recipientCount} people.{suffix}",
-  "@hostsHostInboxScreenVisiblecopyBroadcastSentToRecipientcount": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).",
-    "placeholders": {
-      "recipientCount": {},
-      "suffix": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_inbox_screen"
-  },
-  "hostsHostInboxScreenVisiblecopySelectAnEventOr": "Select an event or general inquiries",
-  "@hostsHostInboxScreenVisiblecopySelectAnEventOr": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_inbox_screen"
-  },
   "hostsHostInboxScreenVisiblecopyGeneralInquiries": "General inquiries",
   "@hostsHostInboxScreenVisiblecopyGeneralInquiries": {
     "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).",
@@ -15216,49 +15109,6 @@
   "hostsHostInboxScreenVisiblecopyProgramGuests": "Program guests",
   "@hostsHostInboxScreenVisiblecopyProgramGuests": {
     "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_inbox_screen"
-  },
-  "hostsHostInboxScreenVisiblecopyLongweekdayEventtitlelabel": "{longWeekday} {eventTitleLabel}",
-  "@hostsHostInboxScreenVisiblecopyLongweekdayEventtitlelabel": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).",
-    "placeholders": {
-      "longWeekday": {},
-      "eventTitleLabel": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_inbox_screen"
-  },
-  "hostsHostInboxScreenVisiblecopyTonightTime": "Tonight {time}",
-  "@hostsHostInboxScreenVisiblecopyTonightTime": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).",
-    "placeholders": {
-      "time": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_inbox_screen"
-  },
-  "hostsHostInboxScreenVisiblecopyShortdatelabelTime": "{shortDateLabel} · {time}",
-  "@hostsHostInboxScreenVisiblecopyShortdatelabelTime": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).",
-    "placeholders": {
-      "shortDateLabel": {},
-      "time": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_inbox_screen"
-  },
-  "hostsHostInboxScreenVisiblecopyEventnameTiming": "{eventName} · {timing}",
-  "@hostsHostInboxScreenVisiblecopyEventnameTiming": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).",
-    "placeholders": {
-      "eventName": {},
-      "timing": {}
-    },
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_inbox_screen"
@@ -19006,8 +18856,6 @@
   "@eventSuccessRoomMapReleasePinned": {"description": "Releases durable attendee placement.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_room_map"},
   "eventSuccessRoomMapDragHint": "On larger screens, drag is also available. Tap controls always work.",
   "@eventSuccessRoomMapDragHint": {"description": "Additive drag affordance explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_room_map"},
-  "hostMessagingWorkspaceInbox": "Inbox",
-  "@hostMessagingWorkspaceInbox": {"description": "Messaging workspace label for reply-capable direct inquiries and conversations.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostMessagingWorkspaceSends": "Sends",
   "@hostMessagingWorkspaceSends": {"description": "Messaging workspace label for outbound history and composing.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostSendsSubtitle": "Outbound delivery and history.",
@@ -19040,8 +18888,6 @@
   "@hostSendsEventAnnouncementIntentBody": {"description": "Names the event and its two authoritative announcement audiences.", "placeholders": {"eventTitle": {"type": "String"}, "bookedCount": {"type": "int"}, "prospectiveCount": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostSendsEventAudienceSelected": "{count, plural, =1{1 selected} other{{count} selected}}",
   "@hostSendsEventAudienceSelected": {"description": "Selected initial event-announcement segment count.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
-  "hostSendsEventAnnouncementUnavailableShort": "Unavailable now",
-  "@hostSendsEventAnnouncementUnavailableShort": {"description": "Compact unavailable state for an event announcement.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostSendsEventAnnouncementNoAudience": "No audience yet",
   "@hostSendsEventAnnouncementNoAudience": {"description": "Compact empty-roster state for an event announcement.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostSendsFollowerUpdateIntent": "Post a follower update",
@@ -22955,13 +22801,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox"
   },
-  "hostInboxChoosePerson": "Choose someone from People or add a new person.",
-  "@hostInboxChoosePerson": {
-    "description": "Person-based Host messaging interface copy.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox"
-  },
   "hostInboxReplyVia": "Reply via",
   "@hostInboxReplyVia": {
     "description": "Person-based Host messaging interface copy.",
@@ -22990,20 +22829,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox"
   },
-  "hostInboxMoreProgramGuests": "Load more program guests",
-  "@hostInboxMoreProgramGuests": {
-    "description": "Loads the next verified guest page for a program-scoped Inbox.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox"
-  },
-  "hostInboxProgramContactsUnlinked": "Some program guests have no verified messaging contact link. They cannot appear in this inbox; guest-to-contact linking is not available here yet.",
-  "@hostInboxProgramContactsUnlinked": {
-    "description": "Explains why unlinked program guests cannot be shown or messaged from the Inbox.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox"
-  },
   "hostInboxUnclassified": "Booking status is unavailable for some people. Their conversations are included below.",
   "@hostInboxUnclassified": {
     "description": "Person-based Host messaging interface copy.",
@@ -23017,18 +22842,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox"
-  },
-  "hostInboxPartialUnread": "At least {count} unread messages. Some source read counts are unavailable.",
-  "@hostInboxPartialUnread": {
-    "description": "Person-based Host messaging interface copy.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "hostInboxHistoryCoverage": "This conversation shows available retained history. Some older messages may be missing.",
   "@hostInboxHistoryCoverage": {
