@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "launchAccessScreen"
+      ],
+      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "symbol": "LaunchAccessApplicationScreen",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Launch Access is a canonical pushed application route."
+}

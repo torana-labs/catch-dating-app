@@ -1,0 +1,9 @@
+{
+  "routeId": "hostNewMessageScreen",
+  "status": "captured",
+  "priority": "P2",
+  "captureIds": [
+    "host_compose_phone"
+  ],
+  "reason": "The People compose screen sends one message to an event's booked guests or waitlist."
+}

@@ -1,0 +1,614 @@
+{
+  "id": "screen.host.customers",
+  "shell": {
+    "owner": "host",
+    "nestedScaffoldAllowed": false,
+    "reason": "The Host shell owns global navigation; the shared viewport presents directory, person, and submitted-detail levels in full-height panes or one compact pane."
+  },
+  "topBar": {
+    "role": "shell",
+    "expression": "CatchLegacyTopBar.primaryRail + CatchScreenTopBar",
+    "owner": "HostCustomersScreen, HostFormsScreen, HostAddCustomerScreen, HostSavedAudienceEditorScreen, and HostCustomerDetailScreen",
+    "reason": "Each pane owns its actions and peer tabs. Audience and person tab rows align; person selection and nested submissions remain in the root navigation path at every width."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "offline",
+      "permission"
+    ],
+    "owner": "HostCustomersDirectoryController, HostCustomersController, hostAllSavedAudiencesProvider, HostAudienceController, and hostContactSummaryRowProvider + hostContactDetailFactsProvider + hostContactNotesProvider"
+  },
+  "name": "Host Audience",
+  "owner": "hosts",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "hostAudienceScreen",
+      "path": "/host/audience",
+      "role": "primary"
+    },
+    {
+      "id": "hostAddCustomerScreen",
+      "path": "/host/audience/people/new",
+      "role": "host"
+    },
+    {
+      "id": "hostCreateSavedAudienceScreen",
+      "path": "/host/audience/audiences/new",
+      "role": "host"
+    },
+    {
+      "id": "hostSavedAudienceDetailScreen",
+      "path": "/host/audience/audiences/:audienceId",
+      "role": "host"
+    },
+    {
+      "id": "hostFormTemplatesScreen",
+      "path": "/host/audience/forms/new",
+      "role": "host"
+    },
+    {
+      "id": "hostFormResponseDetailScreen",
+      "path": "/host/audience/responses/:responseId",
+      "role": "host"
+    },
+    {
+      "id": "hostFormBuilderScreen",
+      "path": "/host/audience/forms/:formId",
+      "role": "host"
+    },
+    {
+      "id": "hostFormPreviewScreen",
+      "path": "/host/audience/forms/:formId/preview",
+      "role": "host"
+    },
+    {
+      "id": "hostFormShareScreen",
+      "path": "/host/audience/forms/:formId/share",
+      "role": "host"
+    },
+    {
+      "id": "hostFormAnalyticsScreen",
+      "path": "/host/audience/forms/:formId/analytics",
+      "role": "host"
+    },
+    {
+      "id": "hostAudienceAutomationsScreen",
+      "path": "/host/audience/automations",
+      "role": "host"
+    },
+    {
+      "id": "hostFormAutomationsScreen",
+      "path": "/host/audience/forms/:formId/automations",
+      "role": "host"
+    },
+    {
+      "id": "hostPeopleDuplicatesScreen",
+      "path": "/host/audience/duplicates",
+      "role": "host"
+    },
+    {
+      "id": "hostCustomerDetailScreen",
+      "path": "/host/audience/people/:contactId",
+      "role": "host"
+    }
+  ],
+  "source": {
+    "file": "lib/hosts/people/people_screen.dart",
+    "symbol": "HostPeopleScreen"
+  },
+  "stateController": {
+    "primary": "hostCustomersDirectoryControllerProvider + hostAllSavedAudiencesProvider + hostContactSummaryRowProvider + hostContactDetailFactsProvider + hostContactNotesProvider + hostDuplicateReviewPagesProvider + hostOrganizerSelectionProvider",
+    "files": [
+      {
+        "file": "lib/hosts/presentation/customers/host_customers_controller.dart",
+        "symbol": "HostCustomersDirectoryController"
+      },
+      {
+        "file": "lib/hosts/presentation/customers/host_customers_screen_state.dart",
+        "symbol": "HostCustomersDirectoryState"
+      },
+      {
+        "file": "lib/contexts/audience/data/crm/host_contacts_repository.dart",
+        "symbol": "hostContactDetailFacts"
+      },
+      {
+        "file": "lib/hosts/presentation/host_organizer_selection_controller.dart",
+        "symbol": "HostOrganizerSelection"
+      },
+      {
+        "file": "lib/hosts/people/duplicates/duplicates_controller.dart",
+        "symbol": "HostDuplicateReviewPages"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/hosts/presentation/customers/host_customers_controller.dart",
+        "symbol": "HostCustomersController"
+      },
+      {
+        "file": "lib/hosts/people/duplicates/duplicates_controller.dart",
+        "symbol": "HostDuplicateCommands"
+      },
+      {
+        "file": "lib/hosts/presentation/host_audience_controller.dart",
+        "symbol": "HostAudienceController"
+      }
+    ],
+    "notes": "Audience is the sole organizer CRM and intake destination and follows the shell-selected organizer. People owns normalized customer search, computed segments, organizer tag vocabulary, server cursor, id de-duplication, export, contact administration and customer detail. Audiences owns reusable saved groups. Forms and Responses own intake definition and response review without becoming shell destinations. Inbox selects saved audience ids and never authors a competing filter expression."
+  },
+  "designRefs": [],
+  "captures": [
+    {
+      "id": "host_customer_add",
+      "status": "captured",
+      "notes": "Full-page Add customer route groups the shared identity fields under Details, the optional first note under Memory, and a pinned canonical primary action."
+    }
+  ],
+  "states": [
+    {
+      "id": "customers_loading",
+      "kind": "loading",
+      "status": "implemented",
+      "source": "HostCustomersDirectoryController build",
+      "nextAction": "Add deterministic directory loading capture."
+    },
+    {
+      "id": "customers_error",
+      "kind": "error",
+      "status": "implemented",
+      "source": "CatchErrorState in HostCustomersList",
+      "nextAction": "Add retry interaction test."
+    },
+    {
+      "id": "customers_empty",
+      "kind": "empty",
+      "status": "implemented",
+      "source": "HostCustomersList empty branch",
+      "nextAction": "Capture the first-customer path."
+    },
+    {
+      "id": "customers_filtered_empty",
+      "kind": "empty",
+      "status": "implemented",
+      "source": "HostCustomersList filtered branch",
+      "tests": [
+        "test/hosts/host_customers_screen_state_test.dart"
+      ],
+      "nextAction": "Add deterministic filtered-empty capture."
+    },
+    {
+      "id": "customers_paginating",
+      "kind": "mutation",
+      "status": "implemented",
+      "source": "HostCustomersDirectoryController loadMore",
+      "nextAction": "Add pagination controller test with duplicate contact ids."
+    },
+    {
+      "id": "customer_sorted_most_attended",
+      "kind": "populated",
+      "status": "tested",
+      "source": "HostCustomersScreen _sort + listOrganizerContacts mostAttended",
+      "tests": [
+        "test/hosts/host_customers_screen_state_test.dart",
+        "test/hosts/host_crm_repository_test.dart"
+      ],
+      "nextAction": "Add a dedicated visual variant only if the selected menu state diverges from the populated directory capture."
+    },
+    {
+      "id": "customer_sorted_name",
+      "kind": "populated",
+      "status": "tested",
+      "source": "HostCustomersScreen _sort + listOrganizerContacts name",
+      "tests": [
+        "test/hosts/host_customers_screen_state_test.dart",
+        "test/hosts/host_crm_repository_test.dart"
+      ],
+      "nextAction": "Keep alphabetical pagination bound to the normalized searchName cursor."
+    },
+    {
+      "id": "customer_filter_sheet",
+      "kind": "populated",
+      "status": "implemented",
+      "source": "HostCustomerFilterSheet grouped counted segments",
+      "tests": [
+        "test/hosts/host_customers_screen_state_test.dart"
+      ],
+      "nextAction": "Add deterministic grouped-filter-sheet capture."
+    },
+    {
+      "id": "customer_filter_manual_tag",
+      "kind": "populated",
+      "status": "tested",
+      "source": "HostCustomerFilterSheet Your tags group + HostCustomerFilterSummarySection",
+      "tests": [
+        "test/hosts/host_customer_filter_summary_test.dart",
+        "test/hosts/host_crm_contact_memory_test.dart"
+      ],
+      "nextAction": "Keep organizer tags visually separate while allowing their exact current result to become an Audience-owned saved audience."
+    },
+    {
+      "id": "customer_campaign_bridge_ready",
+      "kind": "populated",
+      "status": "tested",
+      "source": "HostCustomerFilterSummarySection enabled Message these N action + HostSaveAudienceSheet",
+      "tests": [
+        "test/hosts/host_customer_filter_summary_test.dart",
+        "test/hosts/host_campaign_segment_eligibility_test.dart",
+        "test/hosts/host_crm_repository_test.dart"
+      ],
+      "nextAction": "Keep exact coverage, non-search persistence, saved-audience preview, and active-sender gates aligned with campaign blockers."
+    },
+    {
+      "id": "customer_campaign_bridge_blocked",
+      "kind": "permission",
+      "status": "tested",
+      "source": "HostCustomerFilterSummarySection blocker copy with optional dedicated sender-setup recovery",
+      "tests": [
+        "test/hosts/host_customer_filter_summary_test.dart",
+        "test/hosts/host_campaign_segment_eligibility_test.dart",
+        "test/hosts/host_customers_screen_state_test.dart"
+      ],
+      "nextAction": "Never replace an unavailable audience action with a generic Messaging shortcut; only sender readiness may deep-link to dedicated setup."
+    },
+    {
+      "id": "customer_saved_audience_empty",
+      "kind": "empty",
+      "status": "tested",
+      "source": "HostSavedAudiencesWorkspace CatchEmptyState",
+      "previewIds": [],
+      "tests": [],
+      "nextAction": "Capture the Audience-owned first-audience path when the authenticated gallery is refreshed."
+    },
+    {
+      "id": "customer_saved_audience_error",
+      "kind": "error",
+      "status": "tested",
+      "source": "HostSavedAudiencesWorkspace CatchErrorState",
+      "previewIds": [],
+      "tests": [],
+      "nextAction": "Capture retry treatment when the authenticated gallery is refreshed."
+    },
+    {
+      "id": "customer_saved_audience_detail",
+      "kind": "populated",
+      "status": "tested",
+      "source": "HostSavedAudienceSection member and rule overview with explicit editing",
+      "tests": [],
+      "nextAction": "Refresh the full-shell capture with the owner during the deferred visual pass.",
+      "previewIds": []
+    },
+    {
+      "id": "customer_saved_audience_mutation",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "HostAudienceController save then exact preview",
+      "tests": [
+        "test/hosts/host_crm_repository_test.dart",
+        "functions/src/organizers/organizerSavedAudiences.test.ts"
+      ],
+      "nextAction": "Add a deterministic pending-state capture."
+    },
+    {
+      "id": "customer_saved_audience_archive",
+      "kind": "mutation",
+      "status": "implemented",
+      "source": "HostSavedAudienceEditorScreen archive confirmation",
+      "tests": [
+        "test/hosts/host_crm_repository_test.dart"
+      ],
+      "nextAction": "Add a focused confirmation interaction test."
+    },
+    {
+      "id": "manual_add_pending",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "HostAddCustomerScreen submit lifecycle",
+      "previewIds": [],
+      "captureIds": [
+        "host_customer_add"
+      ],
+      "tests": [
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "nextAction": "Keep the route-level name-plus-endpoint validation aligned with the callable schema."
+    },
+    {
+      "id": "customer_detail_loading",
+      "kind": "loading",
+      "status": "implemented",
+      "source": "hostContactDetailFactsProvider",
+      "nextAction": "Add deterministic detail loading capture."
+    },
+    {
+      "id": "customer_detail_error",
+      "kind": "error",
+      "status": "implemented",
+      "source": "CatchErrorState in HostCustomerDetailScreen",
+      "nextAction": "Add detail retry interaction test."
+    },
+    {
+      "id": "customer_detail_linked",
+      "kind": "populated",
+      "status": "implemented",
+      "source": "HostCustomerIdentityCard",
+      "previewIds": [],
+      "tests": [
+        "test/hosts/host_customers_screen_state_test.dart",
+        "test/hosts/host_crm_repository_test.dart"
+      ],
+      "nextAction": "Capture linked identity and conversation availability."
+    },
+    {
+      "id": "customer_detail_unlinked",
+      "kind": "permission",
+      "status": "tested",
+      "source": "resolveOrganizerCommunicationPlan catchAccountRequired route blocker",
+      "tests": [
+        "functions/src/communications/organizerCommunicationPlan.test.ts",
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "nextAction": "Capture the server-resolved manual handoff path for an organizer-only contact."
+    },
+    {
+      "id": "customer_detail_ambiguous",
+      "kind": "permission",
+      "status": "tested",
+      "source": "resolveOrganizerCommunicationPlan identityAmbiguous route blocker",
+      "tests": [
+        "functions/src/communications/organizerCommunicationPlan.test.ts",
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "nextAction": "Capture the server-resolved ambiguous-identity messaging boundary."
+    },
+    {
+      "id": "customer_note_editing",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "HostCustomerNoteSheet",
+      "tests": [
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "nextAction": "Preserve optimistic note revisions and original author stamps."
+    },
+    {
+      "id": "customer_tags_editing",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "HostCustomerTagsSheet",
+      "tests": [
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "nextAction": "Keep the five-per-contact and twenty-per-organizer caps visible and server-enforced."
+    },
+    {
+      "id": "customer_merge_review",
+      "kind": "populated",
+      "status": "tested",
+      "source": "HostContactMergeReviewSheet + HostContactMergeCandidateCard",
+      "tests": [
+        "test/hosts/host_crm_repository_test.dart"
+      ],
+      "nextAction": "Add a deterministic candidate-card preview after an approved reference exists."
+    },
+    {
+      "id": "customer_merge_dismissed",
+      "kind": "populated",
+      "status": "tested",
+      "source": "HostContactMergeDismissedCard",
+      "tests": [
+        "test/hosts/host_crm_repository_test.dart"
+      ],
+      "nextAction": "Keep Different people durable and same-manager reversible."
+    },
+    {
+      "id": "customer_merge_conflict_confirmation",
+      "kind": "permission",
+      "status": "implemented",
+      "source": "HostContactMergeCandidateCard conflict confirmation dialog",
+      "nextAction": "Add focused rendered coverage for contradictory UID, phone, or email confirmation."
+    },
+    {
+      "id": "customer_active_merges",
+      "kind": "populated",
+      "status": "tested",
+      "source": "HostCustomerActiveMerges",
+      "tests": [
+        "test/hosts/host_crm_repository_test.dart"
+      ],
+      "nextAction": "Keep active survivor receipts newest-first and individually reversible."
+    },
+    {
+      "id": "customer_unmerge_pending",
+      "kind": "mutation",
+      "status": "implemented",
+      "source": "HostCustomerDetailScreen _undoMerge",
+      "nextAction": "Add focused rendered pending and revision-conflict coverage."
+    },
+    {
+      "id": "customer_revenue_exact",
+      "kind": "populated",
+      "status": "implemented",
+      "source": "HostCustomerRevenueCard exact coverage",
+      "previewIds": [],
+      "tests": [
+        "test/hosts/host_crm_repository_test.dart"
+      ],
+      "nextAction": "Add multi-currency revenue formatting test."
+    },
+    {
+      "id": "customer_revenue_partial",
+      "kind": "populated",
+      "status": "implemented",
+      "source": "HostCustomerRevenueCard partial coverage",
+      "nextAction": "Capture bounded-history warning."
+    },
+    {
+      "id": "customer_revenue_unavailable",
+      "kind": "permission",
+      "status": "implemented",
+      "source": "HostCustomerRevenueCard unavailable coverage",
+      "nextAction": "Capture unlinked revenue boundary."
+    },
+    {
+      "id": "conversation_available",
+      "kind": "populated",
+      "status": "tested",
+      "source": "resolveOrganizerCommunicationPlan available Catch chat route",
+      "previewIds": [],
+      "tests": [
+        "functions/src/organizers/organizerCommunicationPlans.test.ts",
+        "test/hosts/host_crm_repository_test.dart",
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "nextAction": "Keep route authority on the server and recheck it inside every delivery mutation."
+    },
+    {
+      "id": "conversation_unavailable",
+      "kind": "permission",
+      "status": "tested",
+      "source": "resolveOrganizerCommunicationPlan unavailable Catch chat route with blocker",
+      "tests": [
+        "functions/src/communications/organizerCommunicationPlan.test.ts",
+        "test/hosts/host_crm_repository_test.dart",
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "nextAction": "Add a dedicated deterministic unavailable-plan capture."
+    },
+    {
+      "id": "personal_whatsapp_unavailable",
+      "kind": "permission",
+      "status": "tested",
+      "source": "resolveOrganizerCommunicationPlan + HostCustomerConversationCard",
+      "tests": [
+        "functions/src/communications/organizerCommunicationPlan.test.ts",
+        "functions/src/organizers/organizerCommunicationPlans.test.ts",
+        "test/hosts/host_operations_screen_test.dart",
+        "test/hosts/host_crm_repository_test.dart"
+      ],
+      "nextAction": "Keep the exact server-derived missing-phone, organizer-suppression, or contact-opt-out reason visible without exposing an executable action."
+    },
+    {
+      "id": "personal_whatsapp_handoff",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "HostCustomerDetailScreen _openWhatsapp + _HostWhatsappHandoffSheet + ExternalLinks.openWhatsappHandoff",
+      "tests": [
+        "test/hosts/host_operations_screen_test.dart",
+        "test/core/external_links_test.dart",
+        "test/communications/communication_route_test.dart"
+      ],
+      "nextAction": "Add a deterministic Widgetbook variant for the editable handoff sheet; never present external app launch as message delivery."
+    },
+    {
+      "id": "customer_export_pending",
+      "kind": "mutation",
+      "status": "implemented",
+      "source": "HostCustomersScreen export lifecycle",
+      "nextAction": "Add native-share controller widget coverage."
+    },
+    {
+      "id": "customer_manage",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "HostCustomerIdentityCard inline editor + HostCustomerDetailScreen _saveCustomerDetails",
+      "tests": [
+        "test/hosts/host_operations_screen_test.dart",
+        "test/hosts/host_customers_screen_state_test.dart"
+      ],
+      "nextAction": "Keep organizer-owned identity edits inline while verified Catch endpoints remain read-only."
+    },
+    {
+      "id": "customer_manage_pending",
+      "kind": "mutation",
+      "status": "implemented",
+      "source": "HostCustomerManageSheet submit lifecycle",
+      "nextAction": "Add revision-conflict widget coverage."
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "implemented",
+      "source": "CatchErrorState AppException mapping",
+      "nextAction": "Add deterministic offline capture."
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "planned",
+      "source": "Host Audience screen contract",
+      "nextAction": "Verify directory and detail at 2x text scale."
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "planned",
+      "source": "Host Audience screen contract",
+      "nextAction": "Verify mutation and route transitions with reduced motion."
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "planned",
+      "source": "Catch token primitives",
+      "nextAction": "Capture directory and detail in light and dark themes."
+    }
+  ],
+  "composition": {
+    "currentLayout": "The Audience destination has People, Audiences, Forms, and Responses peer tabs under one organizer scope. People presents CRM summary, search, grouped filters, Sort/Filters controls, export, manual add, duplicate review and a paginated divided directory; nested routes own full-page add and customer detail. Audiences presents explanatory ownership copy and one flat divided saved-audience directory with one New audience section action; full-page routes own create, detail, edit, exact preview and archive. Forms and Responses reuse the same Audience chrome while retaining their specialized authoring and review routes. The Messaging bridge persists and previews an eligible People filter before opening Sends by id, but campaign composition lives only in Messaging.",
+    "targetLayout": "Keep Audience as the sole CRM and intake owner with first-class People, Audiences, Forms, and Responses peer views. Keep add-customer chrome People-specific, audience creation singular and explicit, form authoring nested, and message composition in Messaging.",
+    "sections": [
+      {
+        "id": "section.host.customers.people",
+        "name": "People and saved groups",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "HostPeopleScreen"
+        ],
+        "flutter": {
+          "file": "lib/hosts/people/people_screen.dart",
+          "symbol": "HostPeopleScreen"
+        },
+        "currentOwner": "hosts.people",
+        "targetOwner": "hosts.people",
+        "dependencies": [
+          "catch.button",
+          "catch.chip",
+          "catch.search_field",
+          "catch.surface",
+          "catch.top_bar"
+        ],
+        "states": [
+          "customers_loading",
+          "customers_empty",
+          "customers_filtered_empty"
+        ],
+        "migration": "People draws the directory, the person and saved groups on the system; the legacy Customers directory and detail retired."
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "HOST-CUSTOMERS-001",
+      "status": "blocked",
+      "nextAction": "Add High spender only after payment writes maintain an indexed, versioned organizer-contact trait projection; do not scan payment history in the directory."
+    },
+    {
+      "id": "HOST-CUSTOMERS-002",
+      "status": "open",
+      "nextAction": "Add authenticated full-shell capture coverage for the Audiences workspace plus remaining manual identity, revenue coverage, and conversation-gate states."
+    },
+    {
+      "id": "HOST-CUSTOMERS-003",
+      "status": "closed",
+      "nextAction": "Audience owns People plus reusable Audiences authoring and the saved-audience bridge; Inbox owns provider administration and Sends. Keep the legacy Organizer Audience redirect covered while old links age out."
+    }
+  ]
+}

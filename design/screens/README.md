@@ -1,6 +1,7 @@
 # Screen Composition Registry
 
-`catch.screens.json` binds each public screen contract to its route inventory,
+`catch.screens.json` and the per-entry files under `registry/` bind each
+public screen contract to its route inventory,
 resolved Dart source, state controller, captures, sections, and three UI
 enforcement columns:
 
@@ -9,6 +10,21 @@ enforcement columns:
 - `topBar` names the canonical chrome role/expression and owner;
 - `statePolicy` names the loading/error/empty/data states the registered screen
   must own.
+
+One file per entry keeps parallel screen PRs apart: a screen is
+`registry/screens/<screen id>.json`, and a route's layout, layout-only or
+imperative-page contract is `registry/layout_contracts/<routeId>.json`,
+`registry/layout_only_routes/<routeId>.json` or
+`registry/imperative_pages/<key>.json`. The file name must equal the entry's
+key. `catch.screens.json` keeps only the shared fields. Every reader goes
+through `tool/design/lib/screen_registries.mjs`, which merges the files and
+fails on a duplicate key, a misnamed file or an entry left inline in the index;
+the schema then validates the merged registry exactly as it validated the
+single file. The top-bar registry
+(`tool/design/screen_top_bar_contracts/`) and capture coverage
+(`tool/ui_capture/capture_coverage/<routeId>.json`) are split the same way.
+After merging a branch that still adds an entry inline, run
+`node tool/design/lib/screen_registries.mjs --split` to move it to its file.
 
 Run both gates after changing a screen or route composition:
 

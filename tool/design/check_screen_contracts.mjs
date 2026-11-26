@@ -5,8 +5,8 @@ import Ajv2020 from "ajv/dist/2020.js";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {readCaptureCatalogSource} from "../ui_capture/lib/capture_catalog_sources.mjs";
 import {buildInventory} from "../ui_capture/check_route_inventory.mjs";
+import {readScreenRegistry} from "./lib/screen_registries.mjs";
 
-const registryPath = fromRepo("design/screens/catch.screens.json");
 const schemaPath = fromRepo("design/screens/catch.screens.schema.json");
 const componentRegistryPath = fromRepo("design/components/catch.components.json");
 
@@ -26,7 +26,8 @@ if (command === "--help" || command === "-h" || command === "help") {
 }
 
 function checkContracts({summary = false} = {}) {
-  const registry = readJson(registryPath);
+  // One file per screen and per contract; validated merged, as one registry.
+  const registry = readScreenRegistry();
   const schema = readJson(schemaPath);
   const routeInventory = buildInventory();
   const componentRegistry = readJson(componentRegistryPath);

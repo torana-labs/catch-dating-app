@@ -1,0 +1,10 @@
+{
+  "routeId": "hostProgramsScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "host_programmes_home_phone",
+    "host_programmes_home_desktop"
+  ],
+  "reason": "view=home with an organizerId opens the planner home from deterministic planner fixtures; legacy Programs links still redirect to Events and preserve organizer query parameters."
+}

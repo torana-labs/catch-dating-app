@@ -1,0 +1,181 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostAudienceScreen"
+      ],
+      "file": "lib/hosts/forms/forms_screen.dart",
+      "symbol": "_HostFormsScreenState",
+      "family": "root",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostAddCustomerScreen"
+      ],
+      "file": "lib/hosts/presentation/customers/host_customer_editor.dart",
+      "symbol": "_HostAddCustomerScreenState",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    },
+    {
+      "routes": [
+        "hostFormTemplatesScreen"
+      ],
+      "file": "lib/hosts/forms/form_new_screen.dart",
+      "symbol": "_HostFormNewScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostFormResponseDetailScreen"
+      ],
+      "file": "lib/hosts/forms/response_screen.dart",
+      "symbol": "_HostResponseScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostFormBuilderScreen"
+      ],
+      "file": "lib/hosts/presentation/forms/host_form_builder_screen.dart",
+      "symbol": "_HostFormBuilderScreenState",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "mixed",
+      "topEdge": "route-chrome"
+    },
+    {
+      "routes": [
+        "hostFormPreviewScreen"
+      ],
+      "file": "lib/hosts/presentation/forms/host_form_preview_screen.dart",
+      "symbol": "HostFormPreviewScreen",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    },
+    {
+      "routes": [
+        "hostFormShareScreen"
+      ],
+      "file": "lib/hosts/forms/form_share_screen.dart",
+      "symbol": "_HostFormShareScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostFormAnalyticsScreen"
+      ],
+      "file": "lib/hosts/forms/responses_screen.dart",
+      "symbol": "_HostResponsesScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostFormAutomationsScreen"
+      ],
+      "file": "lib/hosts/presentation/forms/host_automation_rule_editor.dart",
+      "symbol": "_HostAutomationRuleEditorState",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    },
+    {
+      "routes": [
+        "hostFormAutomationsScreen"
+      ],
+      "file": "lib/hosts/presentation/forms/host_form_automations_screen.dart",
+      "symbol": "_HostFormAutomationsScreenState",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    },
+    {
+      "routes": [
+        "hostAudienceScreen"
+      ],
+      "file": "lib/routing/host_navigation_workspace.dart",
+      "symbol": "HostNavigationWorkspace",
+      "family": "root",
+      "expression": "CatchNavigationViewport",
+      "bodyGeometry": "full-bleed",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostCreateSavedAudienceScreen"
+      ],
+      "file": "lib/hosts/people/saved_group_screen.dart",
+      "symbol": "_HostSavedGroupScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostSavedAudienceDetailScreen"
+      ],
+      "file": "lib/hosts/people/saved_group_screen.dart",
+      "symbol": "_HostSavedGroupScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostAudienceAutomationsScreen"
+      ],
+      "file": "lib/hosts/people/automations_screen.dart",
+      "symbol": "_HostAutomationsScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostPeopleDuplicatesScreen"
+      ],
+      "file": "lib/hosts/people/duplicates/duplicates_screen.dart",
+      "symbol": "_HostPeopleDuplicatesScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostCustomerDetailScreen"
+      ],
+      "file": "lib/hosts/people/person_screen.dart",
+      "symbol": "HostPersonScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "Audience owns one primary-rail root and a complete set of canonical pushed editor, form, and customer routes."
+}

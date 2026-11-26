@@ -1,0 +1,608 @@
+{
+  "id": "screen.host.home",
+  "shell": {
+    "owner": "host",
+    "nestedScaffoldAllowed": false,
+    "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "shell",
+    "expression": "shell-owned",
+    "owner": "AdaptiveTabScaffold",
+    "reason": "Today and Events delegate to the shared pane header rhythm; selected event management or recap remains adjacent to its root on wide layouts."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "offline",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Host Today and Events",
+  "owner": "hosts",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "hostTodayScreen",
+      "path": "/host/today",
+      "role": "primary"
+    },
+    {
+      "id": "hostEventsScreen",
+      "path": "/host/events",
+      "role": "primary"
+    },
+    {
+      "id": "hostTodayFocusScreen",
+      "path": "/host/today/focus",
+      "role": "host"
+    }
+  ],
+  "source": {
+    "file": "lib/hosts/today/host_today_screen.dart",
+    "symbol": "HostTodayScreen"
+  },
+  "stateController": {
+    "primary": "hostTodayController + HostEventsTimelineController",
+    "files": [
+      {
+        "file": "lib/hosts/today/host_today_controller.dart",
+        "symbol": "hostTodayController"
+      },
+      {
+        "file": "lib/contexts/organizers/data/organizers_repository.dart",
+        "symbol": "watchOrganizersHostedBy"
+      },
+      {
+        "file": "lib/contexts/organizers/data/organizers_repository.dart",
+        "symbol": "watchOrganizersOwnedBy"
+      },
+      {
+        "file": "lib/contexts/events/data/event_repository.dart",
+        "symbol": "EventRepository"
+      },
+      {
+        "file": "lib/hosts/events/presentation/host_events_timeline_controller.dart",
+        "symbol": "HostEventsTimelineController"
+      }
+    ],
+    "mutationOwners": [],
+    "notes": "HostTodayScreen and HostEventsScreen are independent route edges with separate route state and controllers. Today owns its bounded command-centre feed, live-first spotlight, event-identified attention, and Later projection. Events owns paginated schedule/history inventory through HostEventsTimelineController. Both consume shared event and organizer repositories without importing each other's presentation controller. Today has no personalization: the boards fix its order."
+  },
+  "designRefs": [
+    {
+      "id": "repo.host-operations-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/hosts/host_operations_screen_test.dart",
+      "notes": "Host operations tests cover operational spotlight/task routing, paginated schedule/history rendering and recovery, owned club and co-host switching, event actions, and opening lifecycle-aware Host Event Manage sections."
+    },
+    {
+      "id": "claude.host-home",
+      "kind": "claude",
+      "status": "available",
+      "notes": "Host Today reference remains registered as source material for the independent operational spotlight, attention queue, seven-day horizon, and responsive command-centre composition.",
+      "path": "design/source_packs/host-v2/templates/hosts-today/Today.dc.html"
+    },
+    {
+      "id": "claude.host-events",
+      "kind": "claude",
+      "status": "available",
+      "path": "design/source_packs/host-v2/templates/hosts-events/Events.dc.html",
+      "notes": "Host Events tab reference exported to events_list.png and registered for advisory comparison against host_home_events_list."
+    }
+  ],
+  "captures": [
+    {
+      "id": "host_home_dashboard",
+      "status": "captured",
+      "notes": "Canonical deterministic Today capture. It exercises the independent command centre with minute-refreshing temporal status, source-backed metrics, event-identified attention, a seven-day horizon, typed event and rehearsal handoffs, and the preserved adaptive Host shell."
+    },
+    {
+      "id": "host_home_switcher_cohost",
+      "status": "captured",
+      "notes": "Deterministic Host Home Events capture selects a co-hosted club while owned clubs are also available in the switcher."
+    },
+    {
+      "id": "host_home_long_club_names",
+      "status": "captured",
+      "notes": "Deterministic Host Home Events capture exercises long selected-club and switcher labels with matching event streams."
+    },
+    {
+      "id": "host_home_signed_out",
+      "status": "captured",
+      "notes": "Deterministic Host Home capture renders the signed-out/access-required state."
+    },
+    {
+      "id": "host_home_clubs_loading",
+      "status": "captured",
+      "notes": "Deterministic Host Home capture renders host club loading with host-shaped skeletons."
+    },
+    {
+      "id": "host_home_clubs_error",
+      "status": "captured",
+      "notes": "Deterministic Host Home capture renders generic host club loading failure."
+    },
+    {
+      "id": "host_home_clubs_offline",
+      "status": "captured",
+      "notes": "Deterministic Host Home capture renders typed offline host club loading failure."
+    },
+    {
+      "id": "host_home_empty_clubs",
+      "status": "captured",
+      "notes": "Deterministic Host Home capture renders the no-host-clubs empty state."
+    },
+    {
+      "id": "host_home_events_loading",
+      "status": "captured",
+      "notes": "Deterministic Host Home capture renders nested event-list loading under selected club chrome."
+    },
+    {
+      "id": "host_home_events_error",
+      "status": "captured",
+      "notes": "Deterministic Host Home capture renders nested event-list failure under selected club chrome."
+    },
+    {
+      "id": "host_home_events_offline",
+      "status": "captured",
+      "notes": "Deterministic capture renders hosted-event list offline failure while the host club shell remains loaded."
+    },
+    {
+      "id": "host_home_cohost_empty_events",
+      "status": "captured",
+      "notes": "Deterministic Host Home capture renders the co-host role with an empty event list."
+    },
+    {
+      "id": "host_home_text_scale_2",
+      "status": "captured",
+      "notes": "Deterministic Host Home capture renders the route at text scale 2.0."
+    },
+    {
+      "id": "host_home_reduced_motion",
+      "status": "captured",
+      "notes": "Deterministic Host Home capture renders the route with reduced motion requested."
+    },
+    {
+      "id": "host_home_light_dark",
+      "status": "captured",
+      "notes": "Deterministic Host Home capture records paired light/dark output."
+    }
+  ],
+  "states": [
+    {
+      "id": "uid_missing",
+      "kind": "permission",
+      "status": "captured",
+      "source": "Null uid renders the signed-out Host Home route state with Sign in required copy and an auth route retry.",
+      "nextAction": "Keep signed-out/access capture synced with host auth copy.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ],
+      "captureIds": [
+        "host_home_signed_out"
+      ]
+    },
+    {
+      "id": "host_clubs_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "_hostOrganizersForUserProvider loading renders _HostLoadingScreen with HostRouteLoadingBody and host-operations-shaped skeletons.",
+      "nextAction": "Keep loading capture synced with HostRouteLoadingBody visual edits.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ],
+      "captureIds": [
+        "host_home_clubs_loading"
+      ]
+    },
+    {
+      "id": "host_clubs_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "Hosted or owned club stream errors become CatchLocalizedErrorScaffold with AppErrorContext.club and retry invalidation.",
+      "nextAction": "Keep generic and offline load-error captures synced with AppErrorMessage copy.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ],
+      "captureIds": [
+        "host_home_clubs_error",
+        "host_home_clubs_offline"
+      ]
+    },
+    {
+      "id": "no_host_clubs",
+      "kind": "empty",
+      "status": "captured",
+      "source": "No hosted or owned clubs renders HostEmptyActionCard with Create your first club copy and Create club action.",
+      "nextAction": "Verify create-club CTA routing in host shell once Host Club Create callbacks are fully typed.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ],
+      "captureIds": [
+        "host_home_empty_clubs"
+      ]
+    },
+    {
+      "id": "one_owned_club",
+      "kind": "populated",
+      "status": "captured",
+      "source": "A single owned organizer lets HostTodayScreen compose its live-or-next spotlight and seven-day needs-you queue from HostTodayState, while the separate Events route renders the durable lifecycle inventory.",
+      "tests": [
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "nextAction": "Add single-owned-club-only capture if it diverges from the existing owned baseline.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ],
+      "captureIds": [
+        "host_home_dashboard"
+      ]
+    },
+    {
+      "id": "multiple_clubs_switcher",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Multiple owned or hosted organizers use the shell-owned organizer switcher; changing selection updates the independent Today command centre, Events inventory, and other organizer-scoped destinations.",
+      "tests": [
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "nextAction": "Captured by host_home_switcher_cohost and host_home_long_club_names; remaining switcher work is future menu-open or pixel-reference variants if design requires them.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ],
+      "captureIds": [
+        "host_home_switcher_cohost",
+        "host_home_long_club_names"
+      ]
+    },
+    {
+      "id": "cohost_role",
+      "kind": "permission",
+      "status": "captured",
+      "source": "Co-hosted clubs show HOST TEAM role badge and keep operations scoped to the selected hosted club.",
+      "tests": [
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "nextAction": "Confirm create/manage affordances match ownership rules as Host Event Create/Manage callbacks are typed.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ],
+      "captureIds": [
+        "host_home_cohost_empty_events"
+      ]
+    },
+    {
+      "id": "club_events_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "HostEventsOrganizerCard maps the selected club timeline async branch into HostEventsWorkspaceState.loading before HostEventsOrganizerSection renders the event-list skeleton.",
+      "nextAction": "Keep the event-list loading capture synced with timeline workspace geometry.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ],
+      "captureIds": [
+        "host_home_events_loading"
+      ]
+    },
+    {
+      "id": "club_events_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "HostEventsOrganizerCard maps event errors into HostEventsWorkspaceState; HostEventsTimelineBody renders CatchLocalizedSliverErrorState in the canonical page viewport with AppErrorContext.event and a typed retry callback.",
+      "nextAction": "Add nested event-list offline capture if event-specific offline copy diverges from club-load offline.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ],
+      "captureIds": [
+        "host_home_events_error"
+      ]
+    },
+    {
+      "id": "club_events_offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "hostEventsTimelineControllerProvider offline errors render CatchLocalizedSliverErrorState with retryable connection issue copy inside the canonical page viewport.",
+      "captureIds": [
+        "host_home_events_offline"
+      ],
+      "nextAction": "Keep nested event-list offline capture synced with shared Catch offline copy and retry treatment."
+    },
+    {
+      "id": "upcoming_events",
+      "kind": "populated",
+      "status": "captured",
+      "source": "HostEventsWorkspaceState excludes cancelled events, groups Upcoming by day and Past by month/year, and feeds HostEventLifecycleRow. CatchRootScreenScaffold owns the sticky Upcoming/Past rail; CatchRecordRow owns natural-height activity-led rows and semantic facts.",
+      "tests": [
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "nextAction": "Re-baseline the deliberately consolidated Events composition through an approved design-parity change, then remove the applicable visual-drift debt. Pending approval, offer, draft, and guest-inquiry sources remain future truthful attention inputs rather than fabricated UI.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ],
+      "captureIds": [
+        "host_home_dashboard"
+      ]
+    },
+    {
+      "id": "event_schedule_paginating",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "HostEventsTimelineController.loadMoreActive preserves visible schedule and history rows, disables duplicate requests, and appends an event-id-de-duplicated page.",
+      "tests": [
+        "test/hosts/host_events_timeline_controller_test.dart",
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "nextAction": "Add a deterministic load-more-schedule capture only if the loading treatment becomes visually distinct."
+    },
+    {
+      "id": "event_history_paginating",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "HostEventsTimelineController.loadMorePast preserves visible schedule and history rows, disables duplicate requests, and appends an event-id-de-duplicated history page.",
+      "tests": [
+        "test/hosts/host_events_timeline_controller_test.dart",
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "nextAction": "Add a deterministic load-more-history capture only if the loading treatment becomes visually distinct."
+    },
+    {
+      "id": "event_history_error",
+      "kind": "error",
+      "status": "tested",
+      "source": "A history-page failure preserves the loaded schedule and history, renders a scoped inline error, and retries through HostEventsTimelineController.retryPast.",
+      "tests": [
+        "test/hosts/host_events_timeline_controller_test.dart",
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "nextAction": "Add a deterministic partial-history-error capture if this branch needs standalone visual evidence."
+    },
+    {
+      "id": "empty_events",
+      "kind": "empty",
+      "status": "captured",
+      "source": "When the selected organizer has no current schedule or completed-event history, Events retains its create action and renders the canonical empty state.",
+      "nextAction": "Add owner-empty-events capture if it diverges from the co-host empty-events variant.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ],
+      "captureIds": [
+        "host_home_cohost_empty_events"
+      ]
+    },
+    {
+      "id": "create_event_action",
+      "kind": "populated",
+      "status": "tested",
+      "source": "HostEventsRouteScaffold owns the typed Add event callback and pushes hostCreateEventScreen with selected organizer id plus organizer extra.",
+      "tests": [
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "nextAction": "Coordinate this callback contract with screen.host.event.create once the create flow gets a fuller route-state adapter.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ]
+    },
+    {
+      "id": "manage_event_navigation",
+      "kind": "populated",
+      "status": "tested",
+      "source": "HostTodayScreen and HostEventsRouteScaffold each own lifecycle-aware event callbacks at their independent route edges and push hostAppEventManageScreen with organizer id, event id, event extra, and live/setup/report section; provider-free Today and Events widgets pass taps through instead of reading GoRouter.",
+      "tests": [
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "nextAction": "Keep this callback contract aligned with screen.host.event.manage as the host manage adapter is expanded.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ]
+    },
+    {
+      "id": "dress_rehearsal_action",
+      "kind": "populated",
+      "status": "tested",
+      "source": "A dress-rehearsal attention item pushes hostEventRehearsalStartScreen with the selected organizer id. HostEventEntrySheet does not expose rehearsal as an event-creation intent.",
+      "tests": [
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "nextAction": "Keep rehearsal entry in Today when the combined Today and Events screen authority is split during the Events vertical-slice migration.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ]
+    },
+    {
+      "id": "program_inventory_rows",
+      "kind": "populated",
+      "status": "implemented",
+      "source": "Events renders identifiable program date-range/count rows opening the existing workspace, with bounded paging, exact saved-ID anchors and scoped read retry.",
+      "nextAction": "Verify unified inventory and old-link redirect regressions and captures.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ]
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Club and event stream errors currently use generic club/event error mapping.",
+      "nextAction": "Club-load offline is captured; nested hosted-event offline is tracked separately as club_events_offline.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ],
+      "captureIds": [
+        "host_home_clubs_offline"
+      ]
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Host Home has a deterministic text-scale 2.0 capture.",
+      "nextAction": "Add text-scale captures for empty/error/event-loading states if those layouts diverge.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ],
+      "captureIds": [
+        "host_home_text_scale_2"
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Host Home has a deterministic reduced-motion capture.",
+      "nextAction": "Review host shell branch switching, menus, and any future status animation under reduced motion.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ],
+      "captureIds": [
+        "host_home_reduced_motion"
+      ]
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "Host Home has paired light/dark deterministic capture output.",
+      "nextAction": "Add paired theme captures for empty/error/event-loading states if those layouts diverge.",
+      "previewIds": [
+        "hostHomeRouteStates"
+      ],
+      "captureIds": [
+        "host_home_light_dark"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "HostTodayScreen is the direct Today route edge: a CatchRoot and CatchScreen with the tab-home top bar, and the provider-free HostTodayBody below it. Compact and medium windows stack tonight's poster and its actions, Needs you, This week and Last 30 days; expanded windows use the feed pane layout with the poster, actions and week beside Needs you and the stats. HostAttentionPolicy derives supported work from backend facts, while Events exclusively owns create, repeat, import, draft-resume, schedule, and history inventory. No speculative recent-activity feed is rendered without an authoritative source.",
+    "targetLayout": "Complete. Keep Today as the independent time-sensitive command centre and Events as the durable lifecycle inventory. Preserve their separate route, state, view-model, and controller boundaries, shared repository-owned event facts, and the original adaptive Catch navigation chrome.",
+    "sections": [
+      {
+        "id": "section.host.today_command_centre",
+        "name": "Host Today command centre",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "HostTodayBody"
+        ],
+        "flutter": {
+          "file": "lib/hosts/today/host_today_body.dart",
+          "symbol": "HostTodayBody"
+        },
+        "currentOwner": "HostTodayBody with parts from the events and insights contexts",
+        "targetOwner": "provider-free responsive Today composition",
+        "dependencies": [
+          "catch.button",
+          "catch.field",
+          "catch.section",
+          "catch.surface"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "quiet",
+          "content",
+          "compact",
+          "wide",
+          "attention_incomplete"
+        ],
+        "migration": "Complete. Today renders one current-event decision layer, every supported time-sensitive attention item, up to three additional events inside the named seven-day horizon, and View full calendar plus Dress Rehearsal handoffs. Compact layouts use a quiet outlined spotlight and a vertical stack; capable layouts remove the spotlight container and add a fixed attention pane. Event creation remains Events-owned and Recent signals stays absent until an authoritative feed exists.",
+        "previewIds": [
+          "hostHomeRouteStates"
+        ]
+      },
+      {
+        "id": "section.host.home_top_bar",
+        "name": "Host destination titles and shell organizer identity",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "HostOrganizerSwitcherSheet"
+        ],
+        "flutter": {
+          "file": "lib/hosts/presentation/widgets/host_organizer_switcher_sheet.dart",
+          "symbol": "HostOrganizerSwitcherSheet"
+        },
+        "currentOwner": "HostTodayHeader + HostEventsOrganizerSection + HostShellScreen",
+        "targetOwner": "direct destination titles plus shell-owned organizer identity",
+        "dependencies": [
+          "catch.top_bar",
+          "catch.person_avatar",
+          "catch.surface"
+        ],
+        "states": [
+          "single_club",
+          "multiple_clubs",
+          "long_club_name",
+          "owner",
+          "host_team"
+        ],
+        "migration": "HostTodayHeader renders Today, organizer identity, and a capable-width date without a creation action. HostEventsOrganizerSection renders the direct Events title and New event action. HostShellScreen shows the selected organizer as the rail and sidebar header and opens HostOrganizerSwitcherSheet with haptic feedback from that header or a long press on the Organizer destination when multiple organizers are available.",
+        "previewIds": [
+          "hostHomeRouteStates",
+          "HostOrganizerSwitcherSheet/Long-press switcher states"
+        ]
+      },
+      {
+        "id": "section.host.home_empty",
+        "name": "Host home empty state",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "HostEmptyActionCard"
+        ],
+        "flutter": {
+          "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
+          "symbol": "CatchEmptyState"
+        },
+        "currentOwner": "HostEventsRouteScaffold + CatchSliverEmptyState",
+        "targetOwner": "shared CatchEmptyState and CatchSliverEmptyState",
+        "dependencies": [
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "no_host_clubs",
+          "no_events",
+          "access_required"
+        ],
+        "migration": "Keep no-clubs and no-events copy/action construction in route call sites; the active empty-state compositions use CatchEmptyState and CatchSliverEmptyState.",
+        "previewIds": [
+          "hostHomeRouteStates",
+          "CatchEmptyState/Action card states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-HOST-HOME-001",
+      "status": "closed",
+      "nextAction": "Add Widgetbook states for host top bar, club switcher, metadata row, upcoming events, event rows, empty/access/loading/error states, offline, text scale, reduced motion, and light/dark."
+    },
+    {
+      "id": "DS-HOST-HOME-002",
+      "status": "blocked",
+      "nextAction": "Blocked/reference-only until a visually distinct owner-only variant or additional pixel-reference source exists: auth required, club loading/error/offline, no clubs, owned baseline, co-host empty events, events loading/error/offline, text-scale, reduced-motion, and light/dark are captured."
+    },
+    {
+      "id": "DS-HOST-HOME-003",
+      "status": "closed",
+      "nextAction": "Closed. HostTodayRouteState and HostEventsRouteState independently map auth and organizer branches. hostTodayController composes the Today listeners and the cached report; HostEventsTimelineController owns schedule/history pagination and partial recovery; HostEventsWorkspaceState maps inventory branches and render-ready rows."
+    },
+    {
+      "id": "DS-HOST-HOME-004",
+      "status": "blocked",
+      "nextAction": "Blocked/reference-only until canonical state-variant exports exist for the separate Today and Events destinations. The current compact and wide Today captures establish the populated command-centre baseline; loading, quiet, role/cohost, offline/error, text-scale, reduced-motion, light/dark, and additional Events-list variants still need approved reference exports before reference work can continue."
+    },
+    {
+      "id": "DS-HOST-HOME-005",
+      "status": "open",
+      "nextAction": "Close feature.host_home's 22 registered evidence exceptions with focused route, attention-coverage, nested-event, empty, offline, accessibility, and theme tests; standalone captures for create/manage navigation; and a dedicated Widgetbook scenario for nested hosted-event offline."
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "path": "lib/hosts/presentation/event_management/widgets/route_path_builder_screen.dart",
+  "role": "compact",
+  "expression": "CatchLegacyTopBar.route",
+  "owner": "CatchLegacyTopBar"
+}

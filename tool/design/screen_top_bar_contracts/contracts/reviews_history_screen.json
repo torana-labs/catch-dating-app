@@ -1,0 +1,8 @@
+{
+  "path": "lib/reviews/presentation/reviews_history_screen.dart",
+  "role": "compact",
+  "expression": "CatchLegacyTopBar.route",
+  "owner": "CatchLegacyTopBar",
+  "surface": "CatchRouteScaffold",
+  "leading": "back"
+}

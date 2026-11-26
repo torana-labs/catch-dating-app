@@ -3,6 +3,8 @@
   "category": "design",
   "path": "tool/design/check_host_shell_coverage.mjs",
   "impactPaths": [
+    "tool/lib/split_registry.mjs",
+    "tool/design/lib/screen_registries.mjs",
     "tool/design/check_host_shell_coverage.test.mjs",
     "design/source_packs/host-v2/host-coverage-manifest.json",
     "docs/design_parity/host_shell_route_ui_audit.md",
@@ -11,7 +13,8 @@
     "packages/platform/lib/routing/route_contract.dart",
     "lib/routing/consumer_router.dart",
     "lib/routing/host_router.dart",
-    "tool/ui_capture/capture_coverage.json"
+    "tool/ui_capture/capture_coverage.json",
+    "tool/ui_capture/capture_coverage/**"
   ],
   "ciRequirements": {
     "repositoryView": "full",

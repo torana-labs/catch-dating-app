@@ -1,0 +1,16 @@
+{
+  "branchKey": "keys.hostOrganizer",
+  "routeName": "Routes.hostOrganizerScreen.name",
+  "surfaces": [
+    {
+      "path": "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart",
+      "symbol": "HostOrganizerStateScaffold",
+      "owner": "CatchRootScreenHeader.title"
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart",
+      "symbol": "_HostOrganizersScaffoldState",
+      "owner": "CatchRootScreenHeader.title"
+    }
+  ]
+}

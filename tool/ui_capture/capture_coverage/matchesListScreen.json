@@ -1,0 +1,19 @@
+{
+  "routeId": "matchesListScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "matches_list_context",
+    "matches_list_loading",
+    "matches_list_error",
+    "matches_list_offline",
+    "matches_list_no_matches_empty",
+    "matches_list_search_open",
+    "matches_list_search_empty",
+    "matches_list_duplicate_collapsed",
+    "matches_list_match_celebration",
+    "matches_list_text_scale_2",
+    "matches_list_reduced_motion"
+  ],
+  "reason": "Consumer match list captures now cover loading, error, offline, empty, search, duplicate collapse, match celebration, text scale, reduced motion, and populated conversation rows."
+}

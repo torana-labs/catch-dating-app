@@ -1,0 +1,6 @@
+{
+  "routeId": "paymentConfirmationScreen",
+  "status": "excluded",
+  "priority": "P3",
+  "reason": "Route requires transaction extra; capture only with deterministic confirmation data."
+}

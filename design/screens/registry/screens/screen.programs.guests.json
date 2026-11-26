@@ -1,0 +1,157 @@
+{
+  "id": "screen.programs.guests",
+  "name": "Program guests RSVP grid",
+  "owner": "programs",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "hostWorkGuestsScreen",
+      "path": "/host/work/:programId/guests",
+      "role": "host"
+    }
+  ],
+  "source": {
+    "file": "lib/programs/presentation/program_guest_desk_screen.dart",
+    "symbol": "ProgramGuestDeskScreen"
+  },
+  "shell": {
+    "owner": "host",
+    "nestedScaffoldAllowed": false,
+    "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchLegacyTopBar",
+    "owner": "CatchRouteScaffold",
+    "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading"
+    ],
+    "owner": "program providers, ProgramTripActions, ProgramOperationsOutbox and CatchAsyncBoundary"
+  },
+  "stateController": {
+    "primary": "programGuestList",
+    "files": [
+      {
+        "file": "lib/programs/presentation/program_guest_desk_screen.dart",
+        "symbol": "ProgramGuestDeskScreen"
+      },
+      {
+        "file": "lib/contexts/programmes/data/program_setup_repository.dart",
+        "symbol": "programGuestList"
+      },
+      {
+        "file": "lib/contexts/programmes/data/program_setup_repository.dart",
+        "symbol": "organizerProgramDetail"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/programs/presentation/program_workspace_controller.dart",
+        "symbol": "ProgramWorkspaceController"
+      }
+    ],
+    "notes": "Mutations route through ProgramWorkspaceController: guest upsert, function RSVP, household and group writes."
+  },
+  "designRefs": [
+    {
+      "id": "repo.program-rollout",
+      "kind": "repo",
+      "status": "available",
+      "path": "docs/plans/program_operations_rollout_spec.md",
+      "notes": "R1 organizer program workspace surface."
+    }
+  ],
+  "captures": [],
+  "states": [
+    {
+      "id": "loading",
+      "kind": "loading",
+      "status": "implemented",
+      "source": "ProgramGuestDeskScreen renders the canonical loading viewport while providers resolve.",
+      "nextAction": "Review against program design references when they land.",
+      "previewIds": [
+        "ProgramGuestDeskScreen/Screen states"
+      ]
+    },
+    {
+      "id": "error",
+      "kind": "error",
+      "status": "implemented",
+      "source": "ProgramGuestDeskScreen renders CatchLocalizedErrorState with scoped retry.",
+      "nextAction": "Review against program design references when they land.",
+      "previewIds": [
+        "ProgramGuestDeskScreen/Screen states"
+      ]
+    },
+    {
+      "id": "populated",
+      "kind": "populated",
+      "status": "implemented",
+      "source": "Household sections and unaffiliated guests render the function RSVP matrix, group chips and per-guest edit and RSVP controls.",
+      "nextAction": "Review against program design references when they land.",
+      "previewIds": [
+        "ProgramGuestDeskScreen/Screen states",
+        "ProgramGuestsPageBody/Body states"
+      ]
+    },
+    {
+      "id": "empty",
+      "kind": "empty",
+      "status": "implemented",
+      "source": "Programs without guests render CatchEmptyState with add and import calls to action.",
+      "nextAction": "Review against program design references when they land.",
+      "previewIds": [
+        "ProgramGuestDeskScreen/Screen states",
+        "ProgramGuestsPageBody/Body states"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "ProgramGuestDeskScreen composes the group ledger, household sections with per-function RSVP cells, the unaffiliated guest lane and guest, group and household dialogs through CatchRouteScaffold.",
+    "targetLayout": "The matrix stays joined on listProgramGuests and keeps household, group and RSVP writes behind the shared workspace controller.",
+    "sections": [
+      {
+        "id": "section.programs_guests.desk",
+        "name": "Programme guest desk route adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "ProgramGuestDeskScreen"
+        ],
+        "flutter": {
+          "file": "lib/programs/presentation/program_guest_desk_screen.dart",
+          "symbol": "ProgramGuestDeskScreen"
+        },
+        "currentOwner": "ProgramGuestDeskScreen + ProgramGuestsPageBody",
+        "targetOwner": "staff guest desk on the system",
+        "dependencies": [
+          "catch.top_bar",
+          "catch.section",
+          "catch.badge",
+          "catch.field"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "populated",
+          "empty"
+        ],
+        "migration": "The guest desk keeps the legacy guest list body until the staff guest desk is drawn on the system; the planner guest list is a system destination."
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DP-PROGRAMS-GUESTS-001",
+      "status": "open",
+      "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+    }
+  ]
+}

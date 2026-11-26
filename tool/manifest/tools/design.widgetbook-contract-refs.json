@@ -13,6 +13,10 @@
   ],
   "impactPaths": [
     "tool/design/check_widgetbook_contract_refs.test.mjs",
+    "design/screens/catch.screens.json",
+    "design/screens/registry/**",
+    "tool/design/lib/screen_registries.mjs",
+    "tool/lib/split_registry.mjs",
     "widgetbook/lib/**"
   ],
   "role": "finder",

@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "packages/platform/lib/media/ordered_photo_picker.dart",
+      "symbol": "_OrderedPhotoManagerScreenState",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Both profile and Host media launch sites share one canonical pushed photo-manager surface."
+}

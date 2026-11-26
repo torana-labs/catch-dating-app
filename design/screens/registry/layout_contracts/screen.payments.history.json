@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "file": "lib/payments/presentation/payment_history_screen.dart",
+      "symbol": "PaymentHistoryScreen",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Payment History is a canonical pushed list route."
+}

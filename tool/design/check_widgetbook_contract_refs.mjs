@@ -5,9 +5,9 @@ import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {extractCallBlocks} from "../lib/dart_call_blocks.mjs";
 import {isPlannedWithoutDart} from "./component_concepts.mjs";
+import {readScreenRegistry} from "./lib/screen_registries.mjs";
 
 const componentRegistryPath = fromRepo("design/components/catch.components.json");
-const screenContractsPath = fromRepo("design/screens/catch.screens.json");
 const widgetbookDirectoriesPath = fromRepo("widgetbook/lib/main.directories.g.dart");
 const widgetbookPrimitiveContractsPath = fromRepo("widgetbook/lib/primitives/contracts");
 const requiredFoundationSpecimens = [
@@ -104,7 +104,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
 
 function checkRefs({summary = false} = {}) {
   const componentRegistry = readJson(componentRegistryPath);
-  const screenContracts = readJson(screenContractsPath);
+  const screenContracts = readScreenRegistry();
   const widgetbookSource = fs.readFileSync(widgetbookDirectoriesPath, "utf8");
   const widgetbook = parseWidgetbookDirectories(widgetbookSource);
   const primitiveContracts = collectPrimitiveContractUseCases();

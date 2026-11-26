@@ -1,0 +1,9 @@
+{
+  "routeId": "hostResponseOfferScreen",
+  "status": "captured",
+  "priority": "P2",
+  "reason": "Deterministic phone captures of the system offer screen in its chrome with fixture state.",
+  "captureIds": [
+    "host_offer_phone"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostProgramsScreen"
+      ],
+      "file": "lib/hosts/programmes/planner/programmes_home_screen.dart",
+      "symbol": "HostProgrammesHomeScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "The organizer's programmes home, pushed from Events; a link without an organizer still redirects to Events. Its typed layout owner lives here."
+}

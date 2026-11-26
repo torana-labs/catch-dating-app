@@ -1,0 +1,9 @@
+{
+  "path": "lib/programs/presentation/program_guests_screen.dart",
+  "role": "compact",
+  "expression": "CatchLegacyTopBar.route",
+  "owner": "CatchLegacyTopBar",
+  "surface": "CatchRouteScaffold",
+  "leading": "back",
+  "occurrences": 1
+}

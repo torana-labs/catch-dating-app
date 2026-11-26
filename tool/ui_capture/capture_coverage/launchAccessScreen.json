@@ -1,0 +1,17 @@
+{
+  "routeId": "launchAccessScreen",
+  "status": "captured",
+  "priority": "P2",
+  "captureIds": [
+    "launch_access_application",
+    "launch_access_loading",
+    "launch_access_submit_pending",
+    "launch_access_signed_out",
+    "launch_access_error",
+    "launch_access_offline",
+    "launch_access_approved",
+    "launch_access_text_scale_2",
+    "launch_access_reduced_motion"
+  ],
+  "reason": "Launch Access captures cover the editable application, application-stream loading/error/offline, signed-out permission state, approved status, text scale 2.0, and reduced motion on the normal Consumer route."
+}

@@ -1,0 +1,7 @@
+{
+  "routeId": "hostTodayFocusScreen",
+  "status": "alias",
+  "priority": "P1",
+  "canonicalRouteId": "hostTodayScreen",
+  "reason": "Today has no focus page; the old path redirects to Today."
+}

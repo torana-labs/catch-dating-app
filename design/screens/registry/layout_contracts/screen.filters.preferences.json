@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "filtersScreen"
+      ],
+      "file": "lib/swipes/presentation/filters_screen.dart",
+      "symbol": "_FiltersScreenState",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Catches filters are a conventional pushed settings route."
+}

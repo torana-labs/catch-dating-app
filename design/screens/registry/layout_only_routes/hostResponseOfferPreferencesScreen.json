@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "file": "lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart",
+      "symbol": "_HostEventOfferPreferencesScreenState",
+      "family": "step-flow",
+      "expression": "CatchScaffold.stepFlow",
+      "bodyGeometry": "intrinsic",
+      "topEdge": "safe-area",
+      "routes": [
+        "hostResponseOfferPreferencesScreen"
+      ]
+    }
+  ],
+  "reason": "Named Host workspace continuation reuses the existing content owner; route metadata supplies its ancestors and preserves push results."
+}

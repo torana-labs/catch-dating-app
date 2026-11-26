@@ -1,0 +1,490 @@
+{
+  "id": "screen.filters.preferences",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchLegacyTopBar",
+    "owner": "CatchLegacyTopBar",
+    "reason": "The source owns canonical compact route chrome."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "error",
+      "loading",
+      "mutation",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Filters Preferences",
+  "owner": "swipes",
+  "priority": "P2",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "filtersScreen",
+      "path": "/filters",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/swipes/presentation/filters_screen.dart",
+    "symbol": "FiltersScreen"
+  },
+  "stateController": {
+    "primary": "FiltersScreen + watchUserProfileProvider + FiltersController.saveFiltersMutation",
+    "files": [
+      {
+        "file": "lib/swipes/presentation/filters_screen.dart",
+        "symbol": "FiltersScreen"
+      },
+      {
+        "file": "lib/swipes/presentation/filters_screen_state.dart",
+        "symbol": "FiltersPreferencesState"
+      },
+      {
+        "file": "lib/swipes/presentation/filters_controller.dart",
+        "symbol": "FiltersController"
+      },
+      {
+        "file": "lib/contexts/profiles/data/user_profile_repository.dart",
+        "symbol": "watchUserProfile"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/swipes/presentation/filters_controller.dart",
+        "symbol": "FiltersController"
+      },
+      {
+        "file": "lib/contexts/profiles/data/user_profile_repository.dart",
+        "symbol": "UserProfileRepository"
+      }
+    ],
+    "notes": "FiltersScreen watches the current profile, owns route close/pop and mutation listening, resets mutation state on first mount, saves through FiltersController.saveFiltersMutation, and delegates draft values, dirty state, reset/apply availability, and save request fields to FiltersPreferencesState."
+  },
+  "designRefs": [
+    {
+      "id": "repo.filters-screen-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/swipes/filters_screen_test.dart",
+      "notes": "Filters tests cover profile defaults, range/chip editing, controller mutation writes, and pop-on-success behavior."
+    },
+    {
+      "id": "claude.filters-preferences",
+      "kind": "claude",
+      "status": "available",
+      "notes": "Canonical Filters default-preferences reference exported, masked, manifest-registered, and wired to the filters_preferences capture for advisory comparison. Dirty, loading/error, save mutation, text-scale, and theme variants still need captures/references before screen parity is complete.",
+      "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-settings/Settings.dc.html"
+    },
+    {
+      "id": "generated.filters-default-preferences-reference",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/screen.filters.preferences/default_preferences.png",
+      "notes": "390x812 Filters Preferences default_preferences PNG reference exported from the Claude template."
+    },
+    {
+      "id": "generated.filters-preferences-reference-manifest",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/manifest.json",
+      "notes": "Reference-screen manifest wiring Filters Preferences default_preferences to filters_preferences for advisory pixel comparison."
+    }
+  ],
+  "captures": [
+    {
+      "id": "filters_preferences",
+      "status": "captured",
+      "notes": "Profile-backed filter defaults fixture."
+    },
+    {
+      "id": "filters_loading",
+      "status": "captured",
+      "notes": "Profile loading route with top bar, control-shaped body skeleton, and apply dock placeholder."
+    },
+    {
+      "id": "filters_profile_error",
+      "status": "captured",
+      "notes": "Profile provider error branch with retry affordance."
+    },
+    {
+      "id": "filters_missing_profile",
+      "status": "captured",
+      "notes": "Resolved null profile branch with branded profile-unavailable copy and a profile-provider retry action."
+    },
+    {
+      "id": "filters_dirty_edit",
+      "status": "captured",
+      "notes": "Provider-free FiltersBody dirty edit state with changed age range and gender chips."
+    },
+    {
+      "id": "filters_reset_restored",
+      "status": "captured",
+      "notes": "Provider-free FiltersBody reset-restored defaults state."
+    },
+    {
+      "id": "filters_save_pending",
+      "status": "captured",
+      "notes": "Provider-free FiltersBody save-pending state with loading apply button."
+    },
+    {
+      "id": "filters_save_error",
+      "status": "captured",
+      "notes": "Route-level save failure seeded through FiltersController.saveFiltersMutation and listenToCatchMutationErrors."
+    },
+    {
+      "id": "filters_text_scale_2",
+      "status": "captured",
+      "notes": "Text scale 2.0 route capture for top bar, range value, slider, chips, and apply dock."
+    },
+    {
+      "id": "filters_reduced_motion",
+      "status": "captured",
+      "notes": "Reduced-motion route capture for top bar, slider, chips, and apply dock."
+    },
+    {
+      "id": "filters_light_dark",
+      "status": "captured",
+      "notes": "Explicit default preferences baseline for paired light/dark output."
+    }
+  ],
+  "states": [
+    {
+      "id": "profile_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "watchUserProfileProvider loading renders FiltersContentSkeleton under the filters top bar, including age slider, gender chips, and apply-dock placeholders.",
+      "captureIds": [
+        "filters_loading"
+      ],
+      "tests": [
+        "test/swipes/filters_screen_test.dart"
+      ],
+      "nextAction": "Compare loading skeleton hierarchy against future loading reference if design adds one.",
+      "previewIds": [
+        "FiltersScreen/Route states"
+      ]
+    },
+    {
+      "id": "profile_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "watchUserProfileProvider errors render CatchLocalizedErrorState with AppErrorContext.profile and retry invalidation.",
+      "captureIds": [
+        "filters_profile_error"
+      ],
+      "nextAction": "Compare profile error copy against future error reference if design adds one.",
+      "previewIds": [
+        "FiltersScreen/Route states"
+      ]
+    },
+    {
+      "id": "profile_missing",
+      "kind": "permission",
+      "status": "captured",
+      "source": "A resolved null profile renders a branded Profile not available CatchEmptyState with onboarding/sign-in guidance and profile-provider retry.",
+      "captureIds": [
+        "filters_missing_profile"
+      ],
+      "tests": [
+        "test/swipes/filters_screen_test.dart"
+      ],
+      "nextAction": "Keep the missing-profile recovery copy and retry proof current if onboarding access policy changes.",
+      "previewIds": [
+        "FiltersScreen/Route states"
+      ]
+    },
+    {
+      "id": "default_preferences",
+      "kind": "populated",
+      "status": "captured",
+      "source": "filters_preferences renders the saved profile defaults for age range and interested-in gender chips.",
+      "captureIds": [
+        "filters_preferences",
+        "filters_light_dark"
+      ],
+      "tests": [
+        "test/swipes/filters_screen_test.dart"
+      ],
+      "nextAction": "Filters default preferences has a manifest-registered design reference plus deterministic light/dark captures.",
+      "previewIds": [
+        "FiltersScreen/Route states",
+        "FiltersBody/Content states"
+      ]
+    },
+    {
+      "id": "edited_preferences",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Local draft state updates age range and gender chip selections before persistence.",
+      "captureIds": [
+        "filters_dirty_edit"
+      ],
+      "tests": [
+        "test/swipes/filters_screen_test.dart"
+      ],
+      "nextAction": "Compare dirty edit treatment against future dirty-state reference if design adds one.",
+      "previewIds": [
+        "FiltersBody/Content states"
+      ]
+    },
+    {
+      "id": "reset_preferences",
+      "kind": "populated",
+      "status": "captured",
+      "source": "The top-bar Reset action restores the local draft from the profile while not saving.",
+      "captureIds": [
+        "filters_reset_restored"
+      ],
+      "nextAction": "Reset-restored visual state is captured; add interaction proof only if reset policy changes.",
+      "previewIds": [
+        "FiltersBody/Content states"
+      ]
+    },
+    {
+      "id": "save_pending",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "FiltersController.saveFiltersMutation pending drives Apply filters loading and disables reset/apply duplicate work.",
+      "captureIds": [
+        "filters_save_pending"
+      ],
+      "tests": [
+        "test/swipes/filters_screen_state_test.dart"
+      ],
+      "nextAction": "Compare pending apply treatment against future mutation reference if design adds one.",
+      "previewIds": [
+        "FiltersBody/Content states"
+      ]
+    },
+    {
+      "id": "save_error",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "listenToCatchMutationErrors surfaces save failures from FiltersController.saveFiltersMutation.",
+      "captureIds": [
+        "filters_save_error"
+      ],
+      "nextAction": "Save failure snackbar is now seeded through the real mutation listener in deterministic captures.",
+      "previewIds": [
+        "FiltersScreen/Route states"
+      ]
+    },
+    {
+      "id": "save_success_exit",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "A successful save updates UserProfileRepository and pops the route.",
+      "tests": [
+        "test/swipes/filters_screen_test.dart"
+      ],
+      "nextAction": "Keep controller mutation and pop behavior covered while extracting an adapter."
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Text-scale 2.0 Filters capture covers range value, slider, chips, top bar, and bottom dock.",
+      "captureIds": [
+        "filters_text_scale_2"
+      ],
+      "nextAction": "Compare text-scale layout against future accessibility reference if design adds one.",
+      "previewIds": [
+        "FiltersScreen/Route states",
+        "FiltersBody/Content states"
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Widgetbook and deterministic route captures render Filters with MediaQuery.disableAnimations enabled.",
+      "captureIds": [
+        "filters_reduced_motion"
+      ],
+      "nextAction": "Compare reduced-motion behavior against future accessibility reference if design adds one.",
+      "previewIds": [
+        "FiltersScreen/Route states",
+        "FiltersBody/Content states"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "FiltersScreen owns profile provider state, top-bar close, mutation listener, and pop-on-success behavior while FiltersPreferencesState owns draft values, saved defaults, dirty/reset/apply availability, pending state, and save request fields before composing provider-free FiltersBody.",
+    "targetLayout": "Filters should keep FiltersPreferencesState as the provider-free adapter for draft values, dirty/reset/apply availability, mutation state, and save request fields while future passes add save-error proof, captures, and visual parity.",
+    "sections": [
+      {
+        "id": "section.filters.preferences_adapter",
+        "name": "Filters route state adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "FiltersPreferencesState"
+        ],
+        "flutter": {
+          "file": "lib/swipes/presentation/filters_screen.dart",
+          "symbol": "FiltersScreen"
+        },
+        "currentOwner": "FiltersScreen + FiltersPreferencesState + FiltersController",
+        "targetOwner": "FiltersScreen + FiltersPreferencesState + FiltersController",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "profile_loading",
+          "profile_error",
+          "default_preferences",
+          "save_pending"
+        ],
+        "migration": "FiltersScreen keeps provider waves, mutation listening, and route close/pop behavior at the route edge while FiltersPreferencesState owns saved defaults, draft values, dirty state, reset/apply availability, pending state, and save request fields before composing provider-free FiltersBody.",
+        "previewIds": [
+          "FiltersScreen/Route states",
+          "FiltersBody/Content states"
+        ]
+      },
+      {
+        "id": "section.filters.top_bar",
+        "name": "Filters top bar",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "FiltersTopBar"
+        ],
+        "flutter": {
+          "file": "lib/swipes/presentation/filters_screen.dart",
+          "symbol": "FiltersScreen"
+        },
+        "currentOwner": "FiltersScreen",
+        "targetOwner": "provider-free filters top bar section",
+        "dependencies": [
+          "catch.top_bar"
+        ],
+        "states": [
+          "default_preferences",
+          "edited_preferences",
+          "reset_preferences"
+        ],
+        "migration": "Route Widgetbook states now cover the shared CatchLegacyTopBar with close/reset actions across loading, default, text-scale, reduced-motion, save-error, and dark-theme review; FiltersPreferencesState owns reset enabled state while FiltersScreen owns the close/reset route callbacks.",
+        "previewIds": [
+          "FiltersScreen/Route states"
+        ]
+      },
+      {
+        "id": "section.filters.age",
+        "name": "Age preference section",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "AgeFilterSection"
+        ],
+        "flutter": {
+          "file": "lib/swipes/presentation/filters_screen.dart",
+          "symbol": "FiltersSection"
+        },
+        "currentOwner": "FiltersScreen",
+        "targetOwner": "provider-free age filter section",
+        "dependencies": [
+          "catch.field"
+        ],
+        "states": [
+          "default_preferences",
+          "edited_preferences",
+          "text_scale_2"
+        ],
+        "migration": "FiltersBody exposes range display and changed callbacks through provider-free content state while preserving CatchRangeInput treatment; Widgetbook covers default, dirty, reset, pending, text-scale, reduced-motion, and dark-theme bodies.",
+        "previewIds": [
+          "FiltersBody/Content states"
+        ]
+      },
+      {
+        "id": "section.filters.interested_in",
+        "name": "Interested-in preference section",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "InterestedInFilterSection"
+        ],
+        "flutter": {
+          "file": "lib/swipes/presentation/filters_screen.dart",
+          "symbol": "FiltersSection"
+        },
+        "currentOwner": "FiltersScreen",
+        "targetOwner": "provider-free interested-in filter section",
+        "dependencies": [
+          "catch.chip"
+        ],
+        "states": [
+          "default_preferences",
+          "edited_preferences",
+          "text_scale_2"
+        ],
+        "migration": "FiltersBody exposes selected chip set and toggles through provider-free content state while preserving the stronger CatchChip.selectable treatment; Widgetbook covers default, dirty, reset, pending, text-scale, reduced-motion, and dark-theme bodies.",
+        "previewIds": [
+          "FiltersBody/Content states"
+        ]
+      },
+      {
+        "id": "section.filters.apply_dock",
+        "name": "Filters apply dock",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "FiltersApplyDock"
+        ],
+        "flutter": {
+          "file": "lib/swipes/presentation/filters_screen.dart",
+          "symbol": "FiltersBody"
+        },
+        "currentOwner": "FiltersScreen",
+        "targetOwner": "provider-free apply dock section",
+        "dependencies": [
+          "catch.button"
+        ],
+        "states": [
+          "default_preferences",
+          "save_pending",
+          "save_error",
+          "save_success_exit"
+        ],
+        "migration": "FiltersBody now renders the apply dock from explicit saving state and typed apply callback; the route Widgetbook state seeds FiltersController.saveFiltersMutation failure to exercise the real snackbar listener.",
+        "previewIds": [
+          "FiltersBody/Content states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-FILTERS-001",
+      "status": "closed",
+      "nextAction": "Closed by Filters Widgetbook route/content states covering default, dirty edits, reset-restored content, loading, profile error, offline profile error, missing profile, save pending, save-error snackbar seeding, text scale, reduced motion, and explicit dark-theme specimens."
+    },
+    {
+      "id": "DS-FILTERS-002",
+      "status": "closed",
+      "nextAction": "Closed by deterministic Filters captures for loading, profile error, missing profile, dirty edit, reset-restored content, save pending, save error, text scale, reduced motion, and paired light/dark output."
+    },
+    {
+      "id": "DS-FILTERS-003",
+      "status": "closed",
+      "nextAction": "Closed by FiltersPreferencesState owning saved defaults, draft values, dirty state, reset/apply availability, pending state, and save request fields while FiltersScreen retains provider waves, mutation listening, route close/pop behavior, and controller execution."
+    },
+    {
+      "id": "DS-FILTERS-004",
+      "status": "closed",
+      "nextAction": "Closed under REG-PENDING-SNAPSHOT-001. Filter save now freezes route dismissal, close, Reset, age range, gender choices, and Apply while the controller deduplicates repeated saves. Focused controller, presentation-state, and route tests prove the visible draft cannot diverge from the persisted request."
+    },
+    {
+      "id": "DS-FILTERS-005",
+      "status": "closed",
+      "nextAction": "Closed. A resolved null profile now renders branded Profile not available guidance with profile-provider retry instead of a blank body, and the focused route test proves both visible copy and retry invalidation."
+    }
+  ]
+}

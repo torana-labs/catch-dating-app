@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "onboardingScreen"
+      ],
+      "file": "lib/onboarding/presentation/onboarding_screen.dart",
+      "symbol": "_OnboardingScreenState",
+      "family": "step-flow",
+      "expression": "CatchScaffold.stepFlow",
+      "bodyGeometry": "intrinsic",
+      "topEdge": "body-owned"
+    }
+  ],
+  "reason": "Onboarding is a route-level multi-step flow with its own step chrome."
+}

@@ -1,0 +1,7 @@
+{
+  "routeId": "hostWorkEventScreen",
+  "status": "alias",
+  "priority": "P1",
+  "canonicalRouteId": "hostAppEventManageScreen",
+  "reason": "Restricted staff route reuses the canonical operational roster composition while removing every manager-only control."
+}

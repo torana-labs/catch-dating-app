@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "file": "lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart",
+      "symbol": "HostCreateEventRouteLoadingScreen",
+      "family": "step-flow",
+      "expression": "CatchScaffold.stepFlow",
+      "bodyGeometry": "intrinsic",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "Event creation and its loading state share the explicit step-flow owner."
+}

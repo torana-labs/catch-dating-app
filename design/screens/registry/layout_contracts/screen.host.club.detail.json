@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostOrganizerDetailScreen"
+      ],
+      "file": "lib/pages/organizer/organizer_detail_screen.dart",
+      "symbol": "OrganizerDetailScreen",
+      "family": "media-hero",
+      "expression": "CatchScaffold.workspace",
+      "bodyGeometry": "mixed",
+      "topEdge": "body-owned"
+    }
+  ],
+  "reason": "The Host club-detail alias reuses the governed Club Detail media-hero owner."
+}

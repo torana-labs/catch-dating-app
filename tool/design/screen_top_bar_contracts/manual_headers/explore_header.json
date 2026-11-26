@@ -1,0 +1,7 @@
+{
+  "path": "lib/explore/presentation/widgets/explore_header.dart",
+  "symbol": "_ExploreDiscoveryTopBar",
+  "role": "screen",
+  "owner": "CatchLegacyTopBar.screen",
+  "reason": "Explore discovery delegates its body-owned floating screen chrome to the canonical screen top bar."
+}

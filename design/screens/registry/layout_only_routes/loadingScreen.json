@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "loadingScreen"
+      ],
+      "file": "lib/routing/router_frame.dart",
+      "symbol": "RouteLoadingScreen",
+      "family": "standalone",
+      "expression": "CatchScaffold.standalone",
+      "bodyGeometry": "full-bleed",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "The transient startup route is excluded from design parity but still has typed layout ownership."
+}

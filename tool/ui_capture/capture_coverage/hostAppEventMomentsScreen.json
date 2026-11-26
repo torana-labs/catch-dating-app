@@ -1,0 +1,6 @@
+{
+  "routeId": "hostAppEventMomentsScreen",
+  "status": "planned",
+  "priority": "P1",
+  "reason": "The organizer moments workspace is implemented with scope loading/error/empty/list/editor/mutation states; captures remain planned until an authenticated organizer fixture is admitted to the canonical capture catalog."
+}

@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/events/presentation/location_picker_screen.dart",
+      "symbol": "_LocationPickerScreenState",
+      "family": "immersive",
+      "expression": "CatchScaffold.workspace",
+      "bodyGeometry": "full-bleed",
+      "topEdge": "body-owned"
+    }
+  ],
+  "reason": "Every create/edit location launch site shares the full-bleed map workspace owner."
+}

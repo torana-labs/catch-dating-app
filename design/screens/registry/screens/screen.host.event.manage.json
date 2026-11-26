@@ -1,0 +1,236 @@
+{
+  "id": "screen.host.event.manage",
+  "shell": {
+    "owner": "host",
+    "nestedScaffoldAllowed": false,
+    "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchLegacyTopBar",
+    "owner": "CatchLegacyTopBar",
+    "reason": "The route shell shows compact back chrome only while it reads the event or refuses access; every loaded section renders a rebuilt screen with its own chrome."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "error",
+      "loading",
+      "offline",
+      "permission"
+    ],
+    "owner": "HostEventManageRouteScreen and Catch state surfaces"
+  },
+  "name": "Host event route",
+  "owner": "hosts",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "hostAppEventManageScreen",
+      "path": "/host/organizers/:organizerId/events/:eventId/manage",
+      "role": "primary"
+    },
+    {
+      "id": "hostWorkEventScreen",
+      "path": "/host/work/event/:eventId",
+      "role": "host"
+    },
+    {
+      "id": "hostAppAttendanceSheet",
+      "path": "/host/organizers/:organizerId/events/:eventId/attendance",
+      "role": "host"
+    },
+    {
+      "id": "hostAppEventSuccessScreen",
+      "path": "/host/organizers/:organizerId/events/:eventId/success",
+      "role": "host"
+    }
+  ],
+  "source": {
+    "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
+    "symbol": "HostEventManageRouteScreen"
+  },
+  "stateController": {
+    "primary": "HostEventManageRouteScreen + hostEventRouteDestination",
+    "files": [
+      {
+        "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
+        "symbol": "HostEventManageRouteScreen"
+      },
+      {
+        "file": "lib/hosts/presentation/host_event_route_destination.dart",
+        "symbol": "hostEventRouteDestination"
+      },
+      {
+        "file": "lib/hosts/presentation/host_event_manage_screen_state.dart",
+        "symbol": "hostEventWorkspacePhaseFor"
+      },
+      {
+        "file": "lib/contexts/organizers/data/organizers_repository.dart",
+        "symbol": "watchOrganizer"
+      },
+      {
+        "file": "lib/contexts/events/data/event_repository.dart",
+        "symbol": "watchEvent"
+      }
+    ],
+    "mutationOwners": [],
+    "notes": "Setup and guests open the rebuilt workspace and guest lists without reading the event. Live and report read the uid, organizer and event, gate access, then open the rebuilt live console, run or crawl board, or report. The old event screen and its live console are retired."
+  },
+  "designRefs": [
+    {
+      "id": "repo.host-event-route-destination-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/hosts/host_event_route_destination_test.dart",
+      "notes": "Every section and lifecycle phase resolves to a rebuilt screen."
+    }
+  ],
+  "captures": [
+    {
+      "id": "host_live_console",
+      "status": "captured",
+      "notes": "Marketing capture of the rebuilt live console for the synthetic India host night."
+    },
+    {
+      "id": "host_live_room_workspace",
+      "status": "captured",
+      "notes": "A night with a saved room layout opens the rebuilt live console, whose Room shows the seat map."
+    },
+    {
+      "id": "host_post_event_report",
+      "status": "captured",
+      "notes": "Marketing capture of the rebuilt event report after the synthetic India host night."
+    }
+  ],
+  "states": [
+    {
+      "id": "route_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "Live and report wait for the uid, organizer and event unless an initial event extra is present.",
+      "nextAction": "None.",
+      "previewIds": [
+        "HostEventManageRouteScreen/Route and section states"
+      ],
+      "captureIds": [
+        "host_manage_route_loading"
+      ]
+    },
+    {
+      "id": "route_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "A failed organizer or event read renders CatchLocalizedErrorState with retry.",
+      "nextAction": "None.",
+      "previewIds": [
+        "HostEventManageRouteScreen/Route and section states"
+      ],
+      "captureIds": [
+        "host_manage_route_error"
+      ]
+    },
+    {
+      "id": "route_offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "An offline organizer or event read renders the offline error state with retry.",
+      "nextAction": "None.",
+      "previewIds": [
+        "HostEventManageRouteScreen/Route and section states"
+      ],
+      "captureIds": [
+        "host_manage_route_offline"
+      ]
+    },
+    {
+      "id": "not_found",
+      "kind": "empty",
+      "status": "captured",
+      "source": "A missing organizer or event renders the not-found error state with back.",
+      "nextAction": "None.",
+      "previewIds": [
+        "HostEventManageRouteScreen/Route and section states"
+      ],
+      "captureIds": [
+        "host_manage_not_found"
+      ]
+    },
+    {
+      "id": "unauthorized",
+      "kind": "permission",
+      "status": "captured",
+      "source": "A signed-in user outside the host team renders the access error state with back.",
+      "nextAction": "None.",
+      "previewIds": [
+        "HostEventManageRouteScreen/Route and section states"
+      ],
+      "captureIds": [
+        "host_manage_unauthorized"
+      ]
+    },
+    {
+      "id": "rebuilt_screen",
+      "kind": "populated",
+      "status": "captured",
+      "source": "A loaded live or report section opens the rebuilt live console, run or crawl board, or report.",
+      "nextAction": "None.",
+      "previewIds": [
+        "HostEventManageRouteScreen/Route and section states"
+      ],
+      "captureIds": [
+        "host_live_console",
+        "host_live_room_workspace",
+        "host_post_event_report"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "HostEventManageRouteScreen resolves each event link through hostEventRouteDestination to a rebuilt screen; it renders only its own loading, error, not-found and access states.",
+    "targetLayout": "Keep the route shell as the single resolver for event links and their legacy aliases.",
+    "sections": [
+      {
+        "id": "section.host.event_manage_route_adapter",
+        "name": "Host event route shell",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "HostManageAccessState"
+        ],
+        "flutter": {
+          "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
+          "symbol": "HostEventManageRouteScreen"
+        },
+        "currentOwner": "HostEventManageRouteScreen",
+        "targetOwner": "HostEventManageRouteScreen",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "route_loading",
+          "route_error",
+          "route_offline",
+          "not_found",
+          "unauthorized",
+          "rebuilt_screen"
+        ],
+        "migration": "Complete: the old event screen and its live console are retired; every loaded section is a rebuilt screen.",
+        "previewIds": [
+          "HostEventManageRouteScreen/Route and section states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [],
+  "captureIds": [
+    "host_manage_route_loading",
+    "host_manage_route_error",
+    "host_manage_route_offline",
+    "host_manage_not_found",
+    "host_manage_unauthorized",
+    "host_live_console",
+    "host_live_room_workspace",
+    "host_post_event_report"
+  ]
+}

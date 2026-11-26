@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "chatScreen"
+      ],
+      "file": "lib/pages/chat/chat_screen.dart",
+      "symbol": "_ChatScreenState",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "mixed",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "A consumer conversation is a pushed route with mixed message-list and composer geometry."
+}

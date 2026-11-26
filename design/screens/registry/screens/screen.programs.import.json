@@ -1,0 +1,161 @@
+{
+  "id": "screen.programs.import",
+  "name": "Program manifest import",
+  "owner": "programs",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "hostWorkPhoneImportScreen",
+      "path": "/host/work/:programId/phone-import",
+      "role": "host"
+    }
+  ],
+  "source": {
+    "file": "lib/hosts/audience/phone_import/presentation/phone_import_screen.dart",
+    "symbol": "PhoneImportScreen"
+  },
+  "shell": {
+    "owner": "host",
+    "nestedScaffoldAllowed": false,
+    "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchLegacyTopBar",
+    "owner": "CatchRouteScaffold",
+    "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading"
+    ],
+    "owner": "program providers, ProgramTripActions, ProgramOperationsOutbox and CatchAsyncBoundary"
+  },
+  "stateController": {
+    "primary": "programWorkspaceActions",
+    "files": [
+      {
+        "file": "lib/programs/presentation/program_workspace_controller.dart",
+        "symbol": "ProgramWorkspaceController"
+      },
+      {
+        "file": "lib/hosts/audience/phone_import/presentation/phone_import_route_controller.dart",
+        "symbol": "PhoneImportRouteController"
+      },
+      {
+        "file": "lib/hosts/audience/phone_import/presentation/phone_import_submission_controller.dart",
+        "symbol": "PhoneImportSubmissionController"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/programs/presentation/program_workspace_controller.dart",
+        "symbol": "ProgramWorkspaceController"
+      },
+      {
+        "file": "lib/hosts/audience/phone_import/presentation/phone_import_submission_controller.dart",
+        "symbol": "PhoneImportSubmissionController"
+      }
+    ],
+    "notes": "ProgramWorkspaceController owns manifest file imports. The phone route controller resolves fresh scoped wedding access and planner; PhoneImportSubmissionController binds preview, explicit consent, persisted confirmed command and identical retries through the canonical importer."
+  },
+  "designRefs": [
+    {
+      "id": "repo.program-rollout",
+      "kind": "repo",
+      "status": "available",
+      "path": "docs/plans/program_operations_rollout_spec.md",
+      "notes": "R1 organizer program workspace surface."
+    }
+  ],
+  "captures": [],
+  "states": [
+    {
+      "id": "loading",
+      "kind": "loading",
+      "status": "implemented",
+      "source": "ProgramImportScreen renders the canonical loading viewport while providers resolve.",
+      "nextAction": "Review against program design references when they land.",
+      "previewIds": []
+    },
+    {
+      "id": "error",
+      "kind": "error",
+      "status": "implemented",
+      "source": "ProgramImportScreen renders CatchLocalizedErrorState with scoped retry.",
+      "nextAction": "Review against program design references when they land.",
+      "previewIds": []
+    },
+    {
+      "id": "populated",
+      "kind": "populated",
+      "status": "implemented",
+      "source": "Parsed tables render per-row field mapping and preview results render created, updated and skipped counts with row errors.",
+      "nextAction": "Review against program design references when they land.",
+      "previewIds": []
+    },
+    {
+      "id": "empty",
+      "kind": "empty",
+      "status": "implemented",
+      "source": "Before a file is chosen the screen renders the file picker call to action only.",
+      "nextAction": "Review against program design references when they land.",
+      "previewIds": []
+    }
+  ],
+  "composition": {
+    "currentLayout": "ProgramImportScreen composes file mapping and import results. PhoneImportScreen resolves fresh wedding access; PhoneImportReviewScreen composes selected guest review, explicit international phone confirmation, family side and household fields, explicit sharing, saved command recovery and actual import outcomes through CatchRouteScaffold.",
+    "targetLayout": "Both import variants use importProgramManifest. Phone preview and commit preserve an unchanged operation ID and ordered content for identical retry; selected contact review uses the canonical CRM authority.",
+    "sections": [
+      {
+        "id": "section.programs_import.phone_review",
+        "name": "Selected phone guests",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "PhoneImportReviewScreen",
+          "PhoneImportGuestSection",
+          "PhoneImportSavedReviewSection"
+        ],
+        "flutter": {
+          "file": "lib/hosts/audience/phone_import/presentation/phone_import_review_screen.dart",
+          "symbol": "PhoneImportReviewScreen"
+        },
+        "currentOwner": "PhoneImportRouteController + PhoneImportSubmissionController + PhoneImportController",
+        "targetOwner": "canonical scoped manifest importer",
+        "dependencies": [
+          "catch.top_bar",
+          "catch.section",
+          "catch.field",
+          "catch.button"
+        ],
+        "states": [
+          "access_loading",
+          "access_error",
+          "review",
+          "ready",
+          "retry",
+          "completed"
+        ],
+        "migration": "Apply the phone source only after reviewed CRM authority and receipt semantics are integrated; shared owner regenerates route, l10n and Widgetbook inventories.",
+        "previewIds": [
+          "PhoneImportReviewScreen/Local demo · empty and selected guests",
+          "hostPhoneImportGuestStates",
+          "PhoneImportSavedReviewSection/Saved review · synthetic read-only rows",
+          "PhoneImportScreen/Workspace route · access unavailable"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DP-PROGRAMS-IMPORT-001",
+      "status": "open",
+      "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+    }
+  ]
+}

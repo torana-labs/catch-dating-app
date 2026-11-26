@@ -1,0 +1,499 @@
+{
+  "id": "screen.event.recap",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchTopBar",
+    "owner": "EventRecapScreen",
+    "reason": "A moment screen with a Close action over the after-event sections (RbAppAfter)."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "After the event",
+  "owner": "swipes",
+  "priority": "P2",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "eventRecapScreen",
+      "path": "/catches/:eventId/recap",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/swipes/presentation/event_recap_screen.dart",
+    "symbol": "EventRecapScreen"
+  },
+  "stateController": {
+    "primary": "EventRecapScreen + eventRecapViewModelProvider + publicProfilesByIdsProvider + EventRecapController",
+    "files": [
+      {
+        "file": "lib/swipes/presentation/event_recap_screen.dart",
+        "symbol": "EventRecapScreen"
+      },
+      {
+        "file": "lib/swipes/presentation/event_recap_screen_state.dart",
+        "symbol": "EventRecapScreenState"
+      },
+      {
+        "file": "lib/swipes/presentation/event_recap_view_model.dart",
+        "symbol": "EventRecapViewModel"
+      },
+      {
+        "file": "lib/swipes/presentation/event_recap_view_model.dart",
+        "symbol": "eventRecapViewModel"
+      },
+      {
+        "file": "lib/contexts/events/data/event_repository.dart",
+        "symbol": "watchEvent"
+      },
+      {
+        "file": "lib/contexts/bookings/data/event_participation_repository.dart",
+        "symbol": "watchEventParticipationsForEvent"
+      },
+      {
+        "file": "lib/contexts/profiles/data/public_profiles_lookup.dart",
+        "symbol": "publicProfilesByIds"
+      },
+      {
+        "file": "lib/swipes/presentation/event_recap_controller.dart",
+        "symbol": "EventRecapController"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/swipes/presentation/event_recap_controller.dart",
+        "symbol": "EventRecapController"
+      },
+      {
+        "file": "lib/contexts/organizers/actions/organizer_follow_controller.dart",
+        "symbol": "OrganizerFollowController"
+      }
+    ],
+    "notes": "EventRecapScreen watches the event, the guest's profile, participation, private feedback, team or table assignment, the event chat's access, the organizer and their coming events and follows. EventRecapScreenState builds the kicker, private rating, group chat row, Stay in touch rows (team first), pick window, next event and follow state; the route keeps provider invalidation, the pick and rating mutations and GoRouter navigation."
+  },
+  "designRefs": [
+    {
+      "id": "repo.event-recap-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/swipes/event_recap_screen_test.dart",
+      "notes": "After-event tests cover the sections, the no-dating-language scan, picks recording a like once, the private rating saving Event Success feedback, follow state, the profile prompt, and EventRecapScreenState branches."
+    },
+    {
+      "id": "claude.event-recap",
+      "kind": "claude",
+      "status": "available",
+      "notes": "Design canvas \"Catch directions\", page \"Consumer app · rebuilt\": RbAppAfter, RbAppDinnerAfter and RbAppGroupChat. Photos from the host are not built yet: no guest-facing host photo source exists."
+    }
+  ],
+  "captures": [
+    {
+      "id": "event_recap_attendees",
+      "status": "captured",
+      "notes": "After-event screen with the group chat, team-first Stay in touch rows and the next event."
+    },
+    {
+      "id": "event_recap_rated_following",
+      "status": "captured",
+      "notes": "Real route with a saved rating and the organizer already followed."
+    },
+    {
+      "id": "event_recap_loading",
+      "status": "captured",
+      "notes": "Route-level loading skeleton for recap hero, attendee grid, and CTA placeholders."
+    },
+    {
+      "id": "event_recap_error",
+      "status": "captured",
+      "notes": "View-model error branch with event-context retry UI."
+    },
+    {
+      "id": "event_recap_missing_event",
+      "status": "captured",
+      "notes": "Deleted or unavailable event branch."
+    },
+    {
+      "id": "event_recap_empty_roster",
+      "status": "captured",
+      "notes": "Ready branch with no other checked-in attendees to tag."
+    },
+    {
+      "id": "event_recap_partial_profiles",
+      "status": "captured",
+      "notes": "Batched profile lookup fallback where missing profiles render Guest tiles."
+    },
+    {
+      "id": "event_recap_profile_lookup_loading",
+      "status": "captured",
+      "notes": "Resolved recap with batched attendee-profile enrichment still loading."
+    },
+    {
+      "id": "event_recap_profile_lookup_error",
+      "status": "captured",
+      "notes": "Resolved recap with attendee-profile enrichment failure and exact-query retry."
+    },
+    {
+      "id": "event_recap_text_scale_2",
+      "status": "captured",
+      "notes": "Text scale 2.0 route capture for hero stats, intro copy, grid labels, and CTA."
+    },
+    {
+      "id": "event_recap_reduced_motion",
+      "status": "captured",
+      "notes": "Reduced-motion route capture for selection and state animation review."
+    },
+    {
+      "id": "event_recap_light_dark",
+      "status": "captured",
+      "notes": "Explicit populated baseline for paired light/dark output."
+    }
+  ],
+  "states": [
+    {
+      "id": "recap_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "eventRecapViewModelProvider loading renders EventRecapLoadingBody under the Event recap top bar, including recap hero, attendee grid, and CTA placeholders.",
+      "captureIds": [
+        "event_recap_loading"
+      ],
+      "tests": [
+        "test/swipes/event_recap_screen_test.dart"
+      ],
+      "nextAction": "Compare loading skeleton hierarchy against the canonical recap source once available.",
+      "previewIds": [
+        "EventRecapScreen/Event recap route states"
+      ]
+    },
+    {
+      "id": "recap_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "View model errors render CatchLocalizedErrorState with AppErrorContext.event and invalidate event, participation, uid, and view-model providers on retry.",
+      "captureIds": [
+        "event_recap_error"
+      ],
+      "tests": [
+        "test/swipes/event_recap_screen_state_test.dart"
+      ],
+      "nextAction": "Compare event error copy against the canonical recap source once available.",
+      "previewIds": [
+        "EventRecapScreen/Event recap route states"
+      ]
+    },
+    {
+      "id": "event_not_found",
+      "kind": "empty",
+      "status": "captured",
+      "source": "A null event from the view model renders Event not found through CatchErrorState.",
+      "captureIds": [
+        "event_recap_missing_event"
+      ],
+      "tests": [
+        "test/swipes/event_recap_screen_state_test.dart"
+      ],
+      "nextAction": "Compare missing-event treatment against the canonical recap source once available.",
+      "previewIds": [
+        "EventRecapScreen/Event recap route states"
+      ]
+    },
+    {
+      "id": "populated_attendees",
+      "kind": "populated",
+      "status": "captured",
+      "source": "event_recap_attendees renders the private rating, group chat, Stay in touch rows with Pick actions (team first), and the organizer's next event.",
+      "captureIds": [
+        "event_recap_attendees",
+        "event_recap_light_dark"
+      ],
+      "tests": [
+        "test/swipes/event_recap_screen_test.dart"
+      ],
+      "nextAction": "Compare against RbAppAfter once host photos exist.",
+      "previewIds": [
+        "EventRecapScreen/Event recap route states"
+      ]
+    },
+    {
+      "id": "empty_roster",
+      "kind": "empty",
+      "status": "captured",
+      "source": "No other checked-in attendee ids render the No attendees to tag CatchEmptyState.",
+      "captureIds": [
+        "event_recap_empty_roster"
+      ],
+      "tests": [
+        "test/swipes/event_recap_screen_state_test.dart"
+      ],
+      "nextAction": "Compare empty-roster copy against the canonical recap source once available.",
+      "previewIds": [
+        "EventRecapScreen/Event recap route states"
+      ]
+    },
+    {
+      "id": "profile_lookup_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "When the recap is resolved but publicProfilesByIdsProvider is still loading, EventRecapReadyBody preserves the hero and deck action while VibeGridSkeleton replaces unresolved attendee rows.",
+      "captureIds": [
+        "event_recap_profile_lookup_loading"
+      ],
+      "tests": [
+        "test/swipes/event_recap_screen_state_test.dart",
+        "test/swipes/event_recap_screen_test.dart"
+      ],
+      "nextAction": "Keep profile-enrichment loading visually distinct from a resolved empty roster.",
+      "previewIds": [
+        "EventRecapScreen/Event recap route states"
+      ]
+    },
+    {
+      "id": "profile_lookup_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "A failed batched public-profile lookup renders CatchErrorState (inline/compact mode) with AppErrorContext.profile and retries the exact attendee-id query without discarding the resolved recap.",
+      "captureIds": [
+        "event_recap_profile_lookup_error"
+      ],
+      "tests": [
+        "test/swipes/event_recap_screen_state_test.dart",
+        "test/swipes/event_recap_screen_test.dart"
+      ],
+      "nextAction": "Keep the retry scoped to the exact attendee-id query while preserving resolved recap context.",
+      "previewIds": [
+        "EventRecapScreen/Event recap route states"
+      ]
+    },
+    {
+      "id": "profile_lookup_fallback",
+      "kind": "populated",
+      "status": "captured",
+      "source": "After the batched lookup resolves, genuinely missing public-profile entries alone render Guest fallback tiles while resolved profile photos use CatchNetworkImage.",
+      "captureIds": [
+        "event_recap_partial_profiles"
+      ],
+      "tests": [
+        "test/swipes/event_recap_screen_state_test.dart"
+      ],
+      "nextAction": "Keep the Guest fallback limited to resolved absence; loading and failure retain their separate skeleton and retry states.",
+      "previewIds": [
+        "EventRecapScreen/Event recap route states"
+      ]
+    },
+    {
+      "id": "picked_and_rated",
+      "kind": "populated",
+      "status": "captured",
+      "source": "A saved rating fills the stars; picks turn Pick into Picked and cannot be undone; Follow hides once the organizer is followed.",
+      "captureIds": [
+        "event_recap_rated_following"
+      ],
+      "tests": [
+        "test/swipes/event_recap_screen_state_test.dart",
+        "test/swipes/event_recap_screen_test.dart"
+      ],
+      "nextAction": "Keep picks one-way unless the backend gains an undo.",
+      "previewIds": [
+        "EventRecapScreen/Event recap route states"
+      ]
+    },
+    {
+      "id": "needs_profile",
+      "kind": "empty",
+      "status": "tested",
+      "source": "A guest without a social-ready profile sees the rating, chat and next event; Stay in touch asks them to finish their profile.",
+      "tests": [
+        "test/swipes/event_recap_screen_test.dart"
+      ],
+      "nextAction": "Add a capture for the profile prompt."
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Widgetbook renders the Event Recap route at text scale 2.0 for hero stats, intro copy, grid labels, empty/error states, and CTA review.",
+      "captureIds": [
+        "event_recap_text_scale_2"
+      ],
+      "nextAction": "Compare text-scale layout against the canonical recap source once available.",
+      "previewIds": [
+        "EventRecapScreen/Event recap route states"
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Widgetbook renders Event Recap with MediaQuery.disableAnimations enabled for selection animation and route-state review.",
+      "captureIds": [
+        "event_recap_reduced_motion"
+      ],
+      "nextAction": "Compare reduced-motion behavior against the canonical recap source once available.",
+      "previewIds": [
+        "EventRecapScreen/Event recap route states"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "EventRecapScreen keeps provider watching, the pick, rating and follow mutations and GoRouter execution at the route edge; EventRecapReadyBody renders EventRecapScreenState.",
+    "targetLayout": "The after-event screen (RbAppAfter): kicker and title, private rating, group chat, Stay in touch, photos from the host, the next event.",
+    "sections": [
+      {
+        "id": "section.event_recap.adapter",
+        "name": "Event recap route state adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "EventRecapScreenState"
+        ],
+        "flutter": {
+          "file": "lib/swipes/presentation/event_recap_screen.dart",
+          "symbol": "EventRecapScreen"
+        },
+        "currentOwner": "EventRecapScreen + EventRecapViewModel",
+        "targetOwner": "EventRecapScreenState adapter",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "recap_loading",
+          "recap_error",
+          "event_not_found",
+          "populated_attendees"
+        ],
+        "migration": "EventRecapScreenState owns the async branches and every section's display data; EventRecapScreen runs the mutations and navigation."
+      },
+      {
+        "id": "section.event_recap.rating",
+        "name": "Private rating",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "RbAppAfter"
+        ],
+        "flutter": {
+          "file": "lib/swipes/presentation/event_recap_screen.dart",
+          "symbol": "EventRecapReadyBody"
+        },
+        "currentOwner": "EventRecapReadyBody",
+        "targetOwner": "EventRecapReadyBody",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "populated_attendees",
+          "picked_and_rated"
+        ],
+        "migration": "Stars save Event Success feedback that only reaches the organizer inside the event summary."
+      },
+      {
+        "id": "section.event_recap.group_chat",
+        "name": "Group chat",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "RbAppAfter"
+        ],
+        "flutter": {
+          "file": "lib/swipes/presentation/event_recap_screen.dart",
+          "symbol": "EventRecapReadyBody"
+        },
+        "currentOwner": "EventRecapReadyBody",
+        "targetOwner": "EventRecapReadyBody",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "populated_attendees"
+        ],
+        "migration": "Opens the event chat; shows the host's closing date when one is set."
+      },
+      {
+        "id": "section.event_recap.stay_in_touch",
+        "name": "Stay in touch",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "RbAppAfter"
+        ],
+        "flutter": {
+          "file": "lib/swipes/presentation/event_recap_screen.dart",
+          "symbol": "EventRecapReadyBody"
+        },
+        "currentOwner": "EventRecapReadyBody",
+        "targetOwner": "EventRecapReadyBody",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "populated_attendees",
+          "empty_roster",
+          "needs_profile"
+        ],
+        "migration": "Pick people you'd like to see again; a mutual pick opens a direct chat."
+      },
+      {
+        "id": "section.event_recap.next_event",
+        "name": "Next event and follow",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "RbAppAfter"
+        ],
+        "flutter": {
+          "file": "lib/swipes/presentation/event_recap_screen.dart",
+          "symbol": "EventRecapReadyBody"
+        },
+        "currentOwner": "EventRecapReadyBody",
+        "targetOwner": "EventRecapReadyBody",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "populated_attendees",
+          "picked_and_rated"
+        ],
+        "migration": "The organizer's next event and Follow {organizer}."
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-EVENT-RECAP-001",
+      "status": "closed",
+      "nextAction": "Closed by Event Recap Widgetbook route states covering loading, view-model error, missing event, populated attendees, empty roster, partial profile fallback, selected vibe tile, closed/open catch-window copy, text scale, reduced motion, and dark theme."
+    },
+    {
+      "id": "DS-EVENT-RECAP-002",
+      "status": "closed",
+      "nextAction": "Closed by deterministic Event Recap captures for loading, error, missing event, empty roster, partial profile fallback, selected tiles, text scale, reduced motion, and paired light/dark output. Keyboard/safe-area has no dedicated recap input state."
+    },
+    {
+      "id": "DS-EVENT-RECAP-003",
+      "status": "closed",
+      "nextAction": "Closed by EventRecapScreenState owning async branch mapping, attendee/profile rows, selected ids, hero/window copy, retry intents, and open-deck intent data while EventRecapScreen retains route-edge side effects."
+    },
+    {
+      "id": "DS-EVENT-RECAP-004",
+      "status": "blocked",
+      "nextAction": "Canonical Event Recap reference export is blocked until design provides a standalone recap/attendee-selection source; the current bundle only covers Catches/Event Deck and post-run catch-window references."
+    },
+    {
+      "id": "DS-EVENT-RECAP-005",
+      "status": "closed",
+      "nextAction": "Closed. EventRecapScreenState preserves batched profile loading, failure, and resolved absence separately; the route shows a grid skeleton while loading, branded inline retry on failure, and Guest only for a genuinely absent resolved profile, with focused state and recovery tests."
+    }
+  ]
+}

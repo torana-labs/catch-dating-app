@@ -1,0 +1,9 @@
+{
+  "routeId": "eventChatScreen",
+  "status": "captured",
+  "priority": "P2",
+  "reason": "The guest's event chat the morning after, from the Mumbai marketing story; the production-widget tests cover keyboard, reply, reaction and large text.",
+  "captureIds": [
+    "guest_group_chat"
+  ]
+}

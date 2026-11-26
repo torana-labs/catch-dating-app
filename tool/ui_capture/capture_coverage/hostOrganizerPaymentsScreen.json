@@ -1,0 +1,9 @@
+{
+  "routeId": "hostOrganizerPaymentsScreen",
+  "status": "captured",
+  "priority": "P2",
+  "reason": "The rebuilt Payments and billing screen is captured at phone with Razorpay connected, the current bill against its cap, the plan and the bill rows.",
+  "captureIds": [
+    "host_organizer_payments_phone"
+  ]
+}

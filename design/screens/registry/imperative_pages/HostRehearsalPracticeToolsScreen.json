@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/hosts/events/rehearsal_practice_tools_screen.dart",
+      "symbol": "HostRehearsalPracticeToolsScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "The practice console pushes practice tools as a system pushed screen."
+}

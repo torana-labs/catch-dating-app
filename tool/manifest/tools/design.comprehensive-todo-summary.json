@@ -19,7 +19,10 @@
     ]
   },
   "impactPaths": [
+    "tool/lib/split_registry.mjs",
+    "tool/design/lib/screen_registries.mjs",
     "docs/design_parity/comprehensive_todo.md",
-    "design/screens/catch.screens.json"
+    "design/screens/catch.screens.json",
+    "design/screens/registry/**"
   ]
 }

@@ -1,0 +1,32 @@
+{
+  "routeId": "eventDetailScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "event_detail_member",
+    "event_detail_member_ticket",
+    "event_detail_member_spotlight",
+    "event_detail_loading",
+    "event_detail_not_found",
+    "event_detail_error",
+    "event_detail_guest",
+    "event_detail_offline",
+    "event_detail_text_scale_2",
+    "event_detail_reduced_motion",
+    "event_detail_booking_signed_up",
+    "event_detail_booking_pending",
+    "event_detail_booking_success_snackbar",
+    "event_detail_booking_failure",
+    "event_detail_cancel_pending",
+    "event_detail_cancel_success_snackbar",
+    "event_detail_cancel_failure",
+    "event_detail_booking_waitlist",
+    "event_detail_booking_waitlist_offer",
+    "event_detail_booking_full",
+    "event_detail_booking_attended",
+    "event_detail_booking_past",
+    "event_detail_booking_cancelled",
+    "guest_book_sheet"
+  ],
+  "reason": "Canonical event detail captured across standard, ticket, spotlight, loading, missing, error, guest, offline, accessibility, settled booking-state variants, and booking/cancel mutation pending, success snackbar, and failure feedback; reused by calendar, saved, and dashboard aliases."
+}

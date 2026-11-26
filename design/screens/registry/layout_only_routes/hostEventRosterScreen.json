@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostEventRosterScreen"
+      ],
+      "file": "lib/hosts/door/door_screen.dart",
+      "symbol": "_DoorScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "Host management and operator routes are governed pushed routes across route-state and loaded owners."
+}

@@ -1,0 +1,27 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "file": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
+      "symbol": "EditHostedEventRouteScreen",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    },
+    {
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "symbol": "_EditHostedEventScreenState",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Edit Event keeps route-state and loaded editing on canonical pushed-route owners."
+}
