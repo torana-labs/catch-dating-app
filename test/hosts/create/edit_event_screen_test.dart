@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_public_details.dart';
 import 'package:catch_dating_app/hosts/create/edit_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
-import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -17,6 +17,7 @@ void main() {
 
   Event event({int? bookedCount}) => buildEvent(
     id: 'hosted-event',
+    name: 'Seafront social run',
     startTime: start,
     endTime: start.add(const Duration(hours: 1)),
     meetingPoint: 'Old gate',
@@ -26,7 +27,11 @@ void main() {
     bookedCount: bookedCount,
   );
 
-  Future<FakeEventRepository> pump(WidgetTester tester, Event event) async {
+  Future<FakeEventRepository> pump(
+    WidgetTester tester,
+    Event event, {
+    String? inviteCode,
+  }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(430, 2400);
     addTearDown(tester.view.resetPhysicalSize);
@@ -41,8 +46,24 @@ void main() {
         enableNetworkTiles: false,
       ),
       signedInUid: 'host-1',
-      overrides: [eventRepositoryProvider.overrideWith((ref) => repository)],
+      overrides: [
+        eventRepositoryProvider.overrideWith((ref) => repository),
+        watchEventPrivateAccessProvider(event.id).overrideWith(
+          (ref) => Stream.value(
+            inviteCode == null
+                ? null
+                : EventPrivateAccess(
+                    id: 'access-1',
+                    eventId: event.id,
+                    organizerId: event.organizerId,
+                    inviteCode: inviteCode,
+                    createdAt: start,
+                  ),
+          ),
+        ),
+      ],
     );
+    await tester.pump();
     return repository;
   }
 
@@ -113,25 +134,26 @@ void main() {
     expect(repository.updatedEventIncludePolicy, isTrue);
   });
 
-  testWidgets('invite-only admission asks for a code before saving', (
+  testWidgets('an invite-only event keeps its code and needs one to save', (
     tester,
   ) async {
-    final repository = await pump(tester, event());
-
-    final invite = find.text(
-      EventAdmissionPreset.inviteOnly.title(AppLocalizationsEn()),
-      skipOffstage: false,
+    final inviteOnly = event().copyWith(
+      eventPolicy: EventPolicyBundle.inviteOnlyEvent(
+        capacityLimit: 20,
+        basePriceInPaise: 0,
+      ),
     );
-    await tester.ensureVisible(invite);
-    await tester.tap(invite);
-    await tester.pump();
+    final repository = await pump(tester, inviteOnly, inviteCode: 'SOCIAL2026');
+
+    expect(find.text('SOCIAL2026', skipOffstage: false), findsOneWidget);
+    await enter(tester, const ValueKey('edit-invite-code-1'), 'ab');
     await save(tester);
     expect(repository.updatedEvent, isNull);
 
-    await enter(tester, CreateEventFormKeys.inviteCode, 'SOCIAL2026');
+    await enter(tester, const ValueKey('edit-invite-code-1'), 'SEAFACE');
     await save(tester);
 
-    expect(repository.updatedEventInviteCode, 'SOCIAL2026');
+    expect(repository.updatedEventInviteCode, 'SEAFACE');
     expect(
       repository.updatedEvent!.effectiveEventPolicy.usesInviteOnly,
       isTrue,

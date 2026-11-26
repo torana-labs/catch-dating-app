@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_public_details.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_public_details.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
@@ -111,7 +111,7 @@ void main() {
     expect(draft.meetingPoint, 'Old gate');
     expect(draft.startingPointLat, 19.076);
     expect(draft.capacity, '24');
-    expect(draft.price, '499.5');
+    expect(draft.price, '499.50');
     expect(draft.description, 'Old description');
     expect(editAdmissionPreset(draft), EventAdmissionPreset.openCapacity);
     expect(editStartOf(draft), start);
@@ -291,6 +291,7 @@ void main() {
     final start = DateTime(2026, 5, 22, 7);
     final now = start.subtract(const Duration(days: 1));
     final event = buildEvent(
+      name: 'Seafront social run',
       startTime: start,
       endTime: start.add(const Duration(hours: 1)),
       startingPointLat: 19.076,
