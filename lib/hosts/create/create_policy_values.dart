@@ -1,0 +1,142 @@
+import 'package:catch_dating_app/contexts/events/data/private_event_setup_models.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_policy_defaults.dart';
+import 'package:catch_dating_app/hosts/create/create_draft_values.dart';
+import 'package:catch_dating_app/hosts/create/create_tickets_body.dart';
+import 'package:catch_dating_app/hosts/create/edit_event_values.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
+import 'package:collection/collection.dart';
+
+// The create flow's admission values: the organizer's policy defaults a
+// fresh draft starts from, the terms the tickets step sends, and the
+// preferences saved beside them. Pure values; the create controller and
+// tests share them.
+
+/// A new event is priced in rupees.
+const createCurrency = 'INR';
+
+/// A fresh draft filled from the organizer's event policy defaults: the
+/// admission format, the age range, cohort caps, demand pricing and the
+/// cancellation policy of a paid event.
+EventDraft createDraftWithPolicyDefaults(
+  EventDraft draft,
+  EventPolicyDefaults defaults,
+) {
+  String rupees(int? paise) => CreateEventPolicyState.minorUnitsText(
+    paise,
+    currencyCode: createCurrency,
+  );
+  final caps =
+      defaults.admissionPreset == EventAdmissionDefaultPreset.fixedCohortCaps;
+  final balanced =
+      defaults.admissionPreset == EventAdmissionDefaultPreset.balancedSingles;
+  return draft.copyWith(
+    admissionPreset: defaults.admissionPreset.name,
+    minAge: defaults.minAge == 0 ? '' : '${defaults.minAge}',
+    maxAge: defaults.maxAge == 99 ? '' : '${defaults.maxAge}',
+    maxMen: caps ? defaults.maxMen?.toString() : null,
+    maxWomen: caps ? defaults.maxWomen?.toString() : null,
+    dynamicPricingEnabled: balanced && defaults.dynamicPricingEnabled,
+    dynamicPricingStep: balanced
+        ? rupees(defaults.dynamicPricingStepInPaise)
+        : null,
+    dynamicPricingMax: balanced
+        ? rupees(defaults.dynamicPricingMaxInPaise)
+        : null,
+    cancellationPolicy: defaults.cancellationPolicyId.isApplicable
+        ? defaults.cancellationPolicyId.name
+        : null,
+  );
+}
+
+/// The cancellation policy [draft] sends: not applicable when free, else
+/// the host's choice, else [refundPolicy] (the organizer's default).
+EventCancellationPolicyId createCancellationPolicy(
+  EventDraft draft, {
+  required String refundPolicy,
+}) {
+  if (createPricePaise(draft.price) == 0) {
+    return EventCancellationPolicyId.notApplicable;
+  }
+  EventCancellationPolicyId? applicable(String? name) =>
+      EventCancellationPolicyId.values.firstWhereOrNull(
+        (id) => id.name == name && id.isApplicable,
+      );
+  return applicable(draft.cancellationPolicy) ??
+      applicable(refundPolicy) ??
+      EventCancellationPolicyId.standard;
+}
+
+/// The terms the tickets step sends for [draft]: the places, the price in
+/// paise and the cancellation policy. With [includePolicy] they also carry
+/// the event policy, the age and cohort limits and an invite-only event's
+/// code, built from the admission fields as an edit builds them; without
+/// it the event keeps the ones it has.
+PrivateEventAdmissionTerms createAdmissionTerms(
+  EventDraft draft, {
+  required String refundPolicy,
+  required bool includePolicy,
+}) {
+  final price = createPricePaise(draft.price)!;
+  final capacity = int.tryParse(draft.capacity ?? '') ?? createDefaultPlaces;
+  final cancellation = createCancellationPolicy(
+    draft,
+    refundPolicy: refundPolicy,
+  );
+  if (!includePolicy) {
+    return PrivateEventAdmissionTerms(
+      capacityLimit: capacity,
+      priceInPaise: price,
+      currency: createCurrency,
+      cancellationPolicyId: cancellation.name,
+    );
+  }
+  final terms = editPolicyTermsOfDraft(
+    draft,
+    currencyCode: createCurrency,
+    capacityLimit: capacity,
+    basePriceInPaise: price,
+    cancellationPolicyId: cancellation,
+    crossPathsPairCapacity: draft.crossPathsPairInventoryEnabled
+        ? int.tryParse(draft.crossPathsPairCapacity ?? '') ?? 0
+        : 0,
+  );
+  final invite = (draft.inviteCode ?? '').trim();
+  return PrivateEventAdmissionTerms(
+    capacityLimit: capacity,
+    priceInPaise: price,
+    currency: createCurrency,
+    cancellationPolicyId: cancellation.name,
+    eventPolicy: Map<String, Object?>.from(terms.eventPolicy.toJson()),
+    constraints: Map<String, Object?>.from(terms.constraints.toJson()),
+    inviteCode:
+        editAdmissionPreset(draft) == EventAdmissionPreset.inviteOnly &&
+            invite.isNotEmpty
+        ? invite
+        : null,
+  );
+}
+
+/// The admission preset the preferences command stores for [draft]: one of
+/// open capacity, invite only, balanced singles and fixed cohort caps. A
+/// request-to-join format is open capacity that asks the host first.
+String createPreferencePreset(EventDraft draft) {
+  if (editCohortCapsEnabled(draft)) return editFixedCohortCapsPreset;
+  return switch (editAdmissionPreset(draft)) {
+    EventAdmissionPreset.inviteOnly => EventAdmissionPreset.inviteOnly.name,
+    EventAdmissionPreset.balancedSingles =>
+      EventAdmissionPreset.balancedSingles.name,
+    EventAdmissionPreset.openCapacity ||
+    EventAdmissionPreset.requestToJoin ||
+    EventAdmissionPreset.requestToJoinMembersExempt =>
+      EventAdmissionPreset.openCapacity.name,
+  };
+}
+
+/// Whether bookings ask the host first. Publishing applies the booking
+/// preference to the policy, so a request-to-join format must ask, or
+/// publishing would open it.
+bool createAsksFirst(EventDraft draft, {required bool approveEach}) =>
+    approveEach ||
+    (!draft.externalBookingMode && editAdmissionPreset(draft).requiresReview);

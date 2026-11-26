@@ -60,20 +60,6 @@ enum CreateFormat {
   }
 }
 
-/// Who can book: the two admission presets the setup command takes here.
-enum CreateAdmission {
-  open('openCapacity'),
-  invite('inviteOnly');
-
-  const CreateAdmission(this.preset);
-
-  /// The preference value the preferences command stores.
-  final String preset;
-
-  static CreateAdmission fromPreset(String? preset) =>
-      preset == invite.preset ? invite : open;
-}
-
 /// What the create command has not been sent yet, why a step cannot move,
 /// or what an edit cannot be saved without.
 enum CreateProblem {
@@ -97,13 +83,13 @@ enum CreateProblem {
   /// Editing: the places are not at least one.
   capacity,
 
-  /// Editing: an invite-only event's code is missing or the wrong length.
+  /// An invite-only event's code is missing or the wrong length.
   inviteCode,
 
-  /// Editing: a cohort cap is not a whole number above zero.
+  /// A cohort cap is not a whole number above zero.
   cohortCaps,
 
-  /// Editing: demand pricing's step or maximum is missing.
+  /// Demand pricing's step or maximum is missing.
   demandPricing,
 }
 
@@ -226,8 +212,6 @@ class CreateFlowState {
   bool get canChange => !working && !(edit?.cancelled ?? false);
 
   CreateFormat? get format => CreateFormat.fromActivityKind(draft.activityKind);
-  CreateAdmission get admission =>
-      CreateAdmission.fromPreset(draft.admissionPreset);
   List<EventItineraryItem> get plan => draft.itinerary;
 
   /// The steps the rail and Still to set name as not yet done.

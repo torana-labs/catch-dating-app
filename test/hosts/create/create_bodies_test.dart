@@ -3,10 +3,15 @@ import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/hosts/create/create_basics_body.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_plan_body.dart';
+import 'package:catch_dating_app/hosts/create/create_policy_handlers.dart';
 import 'package:catch_dating_app/hosts/create/create_share_body.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_body.dart';
 import 'package:catch_dating_app/hosts/create/create_when_body.dart';
+import 'package:catch_dating_app/hosts/create/edit_event_values.dart';
 import 'package:catch_dating_app/hosts/create/widgets/create_editor_rail.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
+import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:catch_kernel/brand.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -35,6 +40,20 @@ CreateFlowState _state({
   canAddPhotos: canAddPhotos,
   published: published,
   step: step,
+);
+
+/// Policy callbacks that note the format chosen and the code typed.
+CreatePolicyHandlers _policy([List<Object>? calls]) => CreatePolicyHandlers(
+  onAdmission: (value) => calls?.add(value),
+  onInviteCode: (value) => calls?.add('invite:$value'),
+  onCohortCaps: (_) {},
+  onMaxMen: (_) {},
+  onMaxWomen: (_) {},
+  onDemandPricing: (_) {},
+  onDemandStep: (_) {},
+  onDemandMax: (_) {},
+  onAgeRange: (_, _) {},
+  onCancellationPolicy: (_) {},
 );
 
 final _trivia = EventDraft(
@@ -105,6 +124,43 @@ void main() {
         find.text(l10n.hostCreateFormatLabel(format: CreateFormat.run.name)),
       );
       expect(calls, [CreateFormat.run]);
+    });
+
+    testWidgets('adds what is included and accessibility when asked', (
+      tester,
+    ) async {
+      final calls = <Object>[];
+      await _pump(
+        tester,
+        CreateBasicsBody(
+          state: _state(draft: _trivia.copyWith(included: 'One drink')),
+          onName: (_) {},
+          onFormat: (_) {},
+          onDescription: (_) {},
+          onDistance: (_) {},
+          onPace: (_) {},
+          onAddPhoto: () {},
+          onIncluded: (value) => calls.add('included:$value'),
+          onAccessibility: (value) => calls.add('access:$value'),
+        ),
+      );
+      expect(find.text(l10n.hostsEventGuestDetailsTitle), findsOneWidget);
+      expect(find.text('One drink'), findsOneWidget);
+      await tester.enterText(
+        find.descendant(
+          of: find.byKey(CreateEventFormKeys.accessibility),
+          matching: find.byType(EditableText),
+        ),
+        'Step-free entrance',
+      );
+      expect(calls, ['access:Step-free entrance']);
+    });
+
+    testWidgets('leaves the guest details off without their callbacks', (
+      tester,
+    ) async {
+      await _pump(tester, body(_state(draft: _trivia)));
+      expect(find.byKey(CreateEventFormKeys.included), findsNothing);
     });
 
     testWidgets('a social run adds distance and pace', (tester) async {
@@ -185,27 +241,116 @@ void main() {
   });
 
   group('tickets', () {
-    Widget body(CreateFlowState state) => CreateTicketsBody(
-      state: state,
-      onSellElsewhere: (_) {},
-      onPrice: (_) {},
-      onPlaces: (_) {},
-      onAdmission: (_) {},
-    );
+    Widget body(CreateFlowState state, {List<Object>? calls}) =>
+        CreateTicketsBody(
+          state: state,
+          onSellElsewhere: (_) {},
+          onPrice: (_) {},
+          onPlaces: (_) {},
+          policy: _policy(calls),
+        );
 
-    testWidgets('selling on Catch shows price, places and payouts', (
+    testWidgets('selling on Catch shows price, places, terms and payouts', (
       tester,
     ) async {
-      await _pump(tester, body(_state(draft: _trivia)));
+      final calls = <Object>[];
+      await _pump(tester, body(_state(draft: _trivia), calls: calls));
       expect(find.text(l10n.hostCreatePricePerPlace), findsOneWidget);
       expect(find.text(l10n.hostCreatePlaces), findsOneWidget);
       expect(find.text(l10n.hostCreatePayoutNotice), findsOneWidget);
-      for (final admission in CreateAdmission.values) {
-        expect(
-          find.text(l10n.hostCreateAdmissionTitle(admission: admission.name)),
-          findsOneWidget,
-        );
+      // A paid event chooses its cancellation policy.
+      expect(
+        find.text(l10n.hostsEditHostedEventScreenLabelCancellationPolicy),
+        findsOneWidget,
+      );
+      expect(find.byKey(CreateEventFormKeys.cohortCapsToggle), findsOneWidget);
+      expect(find.byKey(CreateEventFormKeys.minAge), findsOneWidget);
+      // Every admission format, not just open and invite only.
+      await tester.tap(
+        find.text(l10n.hostsEditHostedEventScreenLabelAdmissionFormat),
+      );
+      await tester.pumpAndSettle();
+      for (final preset in EventAdmissionPreset.values) {
+        expect(find.text(preset.title(l10n)), findsWidgets);
       }
+      await tester.tap(
+        find.text(EventAdmissionPreset.balancedSingles.title(l10n)),
+      );
+      expect(calls, [EventAdmissionPreset.balancedSingles]);
+    });
+
+    testWidgets('a free event has no cancellation policy to choose', (
+      tester,
+    ) async {
+      await _pump(tester, body(_state(draft: _trivia.copyWith(price: '0'))));
+      expect(
+        find.text(l10n.hostsEditHostedEventScreenLabelCancellationPolicy),
+        findsNothing,
+      );
+    });
+
+    testWidgets('invite only asks for the code and names a bad one', (
+      tester,
+    ) async {
+      final calls = <Object>[];
+      await _pump(
+        tester,
+        body(
+          _state(
+            draft: _trivia.copyWith(
+              admissionPreset: EventAdmissionPreset.inviteOnly.name,
+              inviteCode: 'AB',
+            ),
+            problems: {CreateProblem.inviteCode},
+          ),
+          calls: calls,
+        ),
+      );
+      final field = find.byKey(const ValueKey<String>('create-invite-code'));
+      expect(field, findsOneWidget);
+      expect(find.text(inviteCodeValidator('AB', l10n)!), findsOneWidget);
+      await tester.enterText(
+        find.descendant(of: field, matching: find.byType(EditableText)),
+        'LANTERN',
+      );
+      expect(calls, ['invite:LANTERN']);
+    });
+
+    testWidgets('cohort caps and demand pricing open their fields', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        body(
+          _state(
+            draft: _trivia.copyWith(
+              admissionPreset: editFixedCohortCapsPreset,
+              maxMen: '12',
+            ),
+          ),
+        ),
+      );
+      expect(find.byKey(CreateEventFormKeys.maxMen), findsOneWidget);
+      expect(find.byKey(CreateEventFormKeys.maxWomen), findsOneWidget);
+
+      await _pump(
+        tester,
+        body(
+          _state(
+            draft: _trivia.copyWith(
+              admissionPreset: EventAdmissionPreset.balancedSingles.name,
+              dynamicPricingEnabled: true,
+              dynamicPricingStep: '250',
+              dynamicPricingMax: '1500',
+            ),
+          ),
+        ),
+      );
+      expect(
+        find.byKey(CreateEventFormKeys.dynamicPricingStep),
+        findsOneWidget,
+      );
+      expect(find.byKey(CreateEventFormKeys.dynamicPricingMax), findsOneWidget);
     });
 
     testWidgets('the waitlist and approval switches report their change', (
@@ -220,7 +365,7 @@ void main() {
           onSellElsewhere: (_) {},
           onPrice: (_) {},
           onPlaces: (_) {},
-          onAdmission: (_) {},
+          policy: _policy(),
           onWaitlist: waitlist.add,
           onApproveEach: approve.add,
         ),
@@ -234,14 +379,42 @@ void main() {
       expect(approve, [true]);
     });
 
-    testWidgets('selling elsewhere keeps price and places off', (tester) async {
+    testWidgets('request to join always asks, so its switch gives way', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        body(
+          _state(
+            draft: _trivia.copyWith(
+              admissionPreset: EventAdmissionPreset.requestToJoin.name,
+            ),
+          ),
+        ),
+      );
+      expect(
+        find.byKey(const ValueKey<String>('create-approve-each')),
+        findsNothing,
+      );
+      expect(
+        find.text(l10n.hostsEditHostedEventScreenTextRequestsAppearInHost),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('selling elsewhere keeps price, places and terms off', (
+      tester,
+    ) async {
       await _pump(
         tester,
         body(_state(draft: _trivia.copyWith(externalBookingMode: true))),
       );
       expect(find.text(l10n.hostCreatePricePerPlace), findsNothing);
       expect(find.text(l10n.hostCreatePayoutNotice), findsNothing);
-      expect(find.text(l10n.hostCreateWhoCanCome), findsOneWidget);
+      expect(
+        find.text(l10n.hostsEditHostedEventScreenLabelAdmissionFormat),
+        findsNothing,
+      );
     });
   });
 

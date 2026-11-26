@@ -127,6 +127,7 @@ import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_handlers.dart';
 import 'package:catch_dating_app/hosts/create/create_plan_body.dart';
 import 'package:catch_dating_app/hosts/create/create_plan_screen.dart';
+import 'package:catch_dating_app/hosts/create/create_policy_handlers.dart';
 import 'package:catch_dating_app/hosts/create/create_route_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_share_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_screen.dart';
@@ -2360,6 +2361,8 @@ CreateFlowState _createState(CreateStep step, {EventDraft? draft}) =>
 
 void _ignore(Object? _) {}
 
+void _ignoreAges(int _, int _) {}
+
 final _createHandlers = CreateHandlers(
   onBack: () {},
   onNext: () {},
@@ -2380,7 +2383,18 @@ final _createHandlers = CreateHandlers(
   onSellElsewhere: _ignore,
   onPrice: _ignore,
   onPlaces: _ignore,
-  onAdmission: _ignore,
+  policy: const CreatePolicyHandlers(
+    onAdmission: _ignore,
+    onInviteCode: _ignore,
+    onCohortCaps: _ignore,
+    onMaxMen: _ignore,
+    onMaxWomen: _ignore,
+    onDemandPricing: _ignore,
+    onDemandStep: _ignore,
+    onDemandMax: _ignore,
+    onAgeRange: _ignoreAges,
+    onCancellationPolicy: _ignore,
+  ),
   onTemplate: () {},
   onBlank: () {},
   onEditStep: _ignore,

@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/events/data/private_event_setup_reposi
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_public_details.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 
@@ -11,7 +12,8 @@ import 'package:catch_kernel/activity_taxonomy.dart';
 // conversions between them.
 
 /// The draft refilled from a saved event's basics, keeping what the saved
-/// event does not say.
+/// event does not say. A paid event's cancellation policy comes back; its
+/// admission policy, limits and invite code are not in the setup view.
 EventDraft createDraftFromSaved(
   EventDraft draft,
   PrivateEventBasicSummary event,
@@ -32,6 +34,13 @@ EventDraft createDraftFromSaved(
     itinerary: details.itinerary.isEmpty ? draft.itinerary : details.itinerary,
     capacity: terms?.capacityLimit.toString() ?? draft.capacity,
     price: terms == null ? draft.price : (terms.priceInPaise ~/ 100).toString(),
+    cancellationPolicy:
+        terms == null || terms.cancellationPolicyId == 'notApplicable'
+        ? draft.cancellationPolicy
+        : terms.cancellationPolicyId,
+    accessibility:
+        details.eventFormat?.accessibilityNotes ?? draft.accessibility,
+    included: details.eventFormat?.includedNotes ?? draft.included,
     meetingPoint: place?.name ?? draft.meetingPoint,
     meetingLocationAddress: place?.address ?? draft.meetingLocationAddress,
     meetingLocationPlaceId: place?.placeId ?? draft.meetingLocationPlaceId,
@@ -46,8 +55,8 @@ EventDraft createDraftFromSaved(
   );
 }
 
-/// The details patch the draft's basics become; [includeWhere] adds the
-/// duration and meeting place.
+/// The details patch the draft's basics become, the guest details in the
+/// format; [includeWhere] adds the duration and meeting place.
 PrivateEventDetailsPatch createBasicsPatch(
   EventDraft draft,
   CreateFormat? format, {
@@ -58,10 +67,16 @@ PrivateEventDetailsPatch createBasicsPatch(
   final lat = draft.startingPointLat;
   final lng = draft.startingPointLng;
   return PrivateEventDetailsPatch(
+    // What is included and how accessible it is ride on the format.
     eventFormat: format == null
         ? null
         : EventSetupValue.set(
-            EventFormatSnapshot.fromActivityKind(format.activityKind),
+            EventFormatSnapshot.fromActivityKind(
+              format.activityKind,
+            ).withPublicDetails(
+              accessibility: draft.accessibility,
+              included: draft.included,
+            ),
           ),
     description: description.isEmpty ? null : description,
     distanceKm: format == CreateFormat.run ? distance : null,

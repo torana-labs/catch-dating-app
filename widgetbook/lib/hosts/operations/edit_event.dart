@@ -9,6 +9,7 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/create/create_edit_handlers.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_handlers.dart';
+import 'package:catch_dating_app/hosts/create/create_policy_handlers.dart';
 import 'package:catch_dating_app/hosts/create/create_route_path_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_step_form.dart';
 import 'package:catch_dating_app/hosts/create/edit_event_body.dart';
@@ -360,7 +361,7 @@ Widget editEventPolicySectionCatalogStates(BuildContext context) {
     final state = _editState(widgetbookEditableEvent);
     return EditEventPolicySection(
       state: state.copyWith(draft: change(state.draft)),
-      handlers: _editHandlers,
+      handlers: _policyHandlers,
     );
   }
 
@@ -423,7 +424,27 @@ Widget editEventPolicySectionCatalogStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: EditEventPolicySection(
             state: _editState(widgetbookPrivateEvent),
-            handlers: _editHandlers,
+            handlers: _policyHandlers,
+          ),
+        ),
+      ),
+      WidgetbookPageStateCard(
+        label: 'new event, invite only',
+        child: WidgetbookHostDeviceFrame(
+          child: EditEventPolicySection(
+            state: CreateFlowState(
+              organizer: widgetbookOrganizer,
+              draft: EventDraft(
+                id: 'design-create-policy',
+                organizerId: widgetbookOrganizer.id,
+                savedAt: HostOperationsFixtures.now,
+                price: '499',
+                capacity: '30',
+                admissionPreset: EventAdmissionPreset.inviteOnly.name,
+                cancellationPolicy: 'flexible',
+              ),
+            ),
+            handlers: _policyHandlers,
           ),
         ),
       ),
@@ -613,7 +634,9 @@ final _createHandlers = CreateHandlers(
   onSellElsewhere: _ignore,
   onPrice: _ignore,
   onPlaces: _ignore,
-  onAdmission: _ignore,
+  policy: _policyHandlers,
+  onIncluded: _ignore,
+  onAccessibility: _ignore,
   onTemplate: _ignore,
   onBlank: _ignore,
   onEditStep: _ignore,
@@ -628,9 +651,10 @@ final _createHandlers = CreateHandlers(
 const _editHandlers = CreateEditHandlers(
   onSave: _ignore,
   onPlaceName: _ignore,
-  onIncluded: _ignore,
-  onAccessibility: _ignore,
   onRoutePlan: _ignore,
+);
+
+const _policyHandlers = CreatePolicyHandlers(
   onAdmission: _ignore,
   onInviteCode: _ignore,
   onCohortCaps: _ignore,

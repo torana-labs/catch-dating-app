@@ -13,6 +13,9 @@ import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.d
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/create/create_draft_values.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
+import 'package:catch_dating_app/hosts/create/create_policy_fields.dart';
+import 'package:catch_dating_app/hosts/create/create_policy_values.dart';
+import 'package:catch_dating_app/hosts/create/edit_event_values.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
@@ -55,7 +58,7 @@ class CreateFlowArgs {
 /// setup controllers, which follow their listeners; nothing here polls.
 // provider-graph: high-fan-out:createControllerProvider accepted -- The nine dependencies form one create flow: the local draft and the organizer's saved drafts, the setup defaults and their view, the details, preferences and publication step controllers it drives, Firebase Functions for the series callable and the error logger.
 @riverpod
-class CreateController extends _$CreateController {
+class CreateController extends _$CreateController with CreatePolicyFields {
   late String _requestId;
   String? _submittedSignature;
   bool _hydrated = false;
@@ -72,7 +75,7 @@ class CreateController extends _$CreateController {
       }
     });
     final starting = args.initialDraft ?? args.initialPrefill?.values;
-    final draft =
+    var draft =
         (starting ??
                 EventDraft(
                   id: newPrivateEventRequestId(),
@@ -84,6 +87,12 @@ class CreateController extends _$CreateController {
               externalBookingMode:
                   starting?.externalBookingMode ?? args.externalBookingMode,
             );
+    if (starting == null && args.initialSavedEventId == null) {
+      draft = createDraftWithPolicyDefaults(
+        draft,
+        args.organizer.hostDefaults.eventPolicy,
+      );
+    }
     _requestId = draft.eventCreateRequestId ?? newPrivateEventRequestId();
     _submittedSignature = draft.eventCreatePayloadSignature;
     final eventId = args.initialSavedEventId ?? draft.eventCreateReceiptEventId;
@@ -101,7 +110,8 @@ class CreateController extends _$CreateController {
   }
 
   /// The organizer's event defaults fill an untouched price and places, and
-  /// set the refund policy a paid event starts with. They are a convenience:
+  /// set the refund policy a paid event starts with; a fresh draft took the
+  /// organizer's event policy defaults in [build]. They are a convenience:
   /// without the defaults view the flow keeps its own starting values.
   Future<void> _prefillFromDefaults({required bool fresh}) =>
       // Future.sync still turns a synchronous read failure into an error the
@@ -123,10 +133,14 @@ class CreateController extends _$CreateController {
         );
         final draft = state.draft;
         final price = defaults.startingPriceMinor;
+        final refund = defaults.refundPolicy;
         state = state.copyWith(
           draft: draft.copyWith(
             price: draft.price ?? (price == null ? null : '${price ~/ 100}'),
             capacity: draft.capacity ?? defaults.places?.toString(),
+            cancellationPolicy: refund == null || policyTouched
+                ? draft.cancellationPolicy
+                : refund,
           ),
         );
       }, onError: (Object _) {});
@@ -136,6 +150,7 @@ class CreateController extends _$CreateController {
 
   // ---- the form ----
 
+  @override
   void edit(EventDraft Function(EventDraft draft) change) {
     state = state.copyWith(
       draft: change(state.draft),
@@ -199,6 +214,10 @@ class CreateController extends _$CreateController {
       ),
     ),
   );
+
+  /// A saved event's setup view has no policy, limits or invite code, so
+  /// resuming one sends them only once the host changes an admission field.
+  bool get _sendsPolicy => args.initialSavedEventId == null || policyTouched;
 
   void setWaitlist(bool on) => state = state.copyWith(waitlist: on);
 
@@ -333,8 +352,14 @@ class CreateController extends _$CreateController {
         if (draft.eventLocalStartTime == null) CreateProblem.start,
       },
       CreateStep.tickets => {
-        if (!draft.externalBookingMode && createPricePaise(draft.price) == null)
-          CreateProblem.price,
+        if (!draft.externalBookingMode) ...{
+          if (createPricePaise(draft.price) == null) CreateProblem.price,
+          if (_sendsPolicy)
+            ...editPolicyProblems(
+              draft,
+              savedInviteCode: args.initialSavedEventId != null,
+            ),
+        },
       },
       CreateStep.plan || CreateStep.share => const {},
     };
@@ -487,14 +512,12 @@ class CreateController extends _$CreateController {
     final draft = state.draft;
     await _saveExternalBooking(draft);
     if (!draft.externalBookingMode) {
-      final price = createPricePaise(draft.price)!;
       await _saveDetails(
         PrivateEventDetailsPatch(
-          admissionTerms: PrivateEventAdmissionTerms(
-            capacityLimit: int.tryParse(draft.capacity ?? '') ?? 30,
-            priceInPaise: price,
-            currency: 'INR',
-            cancellationPolicyId: price == 0 ? 'notApplicable' : _refundPolicy,
+          admissionTerms: createAdmissionTerms(
+            draft,
+            refundPolicy: _refundPolicy,
+            includePolicy: _sendsPolicy,
           ),
         ),
       );
@@ -508,14 +531,16 @@ class CreateController extends _$CreateController {
     if (current.error != null) throw current.error!;
     final intents = current.intents;
     final resolved = current.resolvedValues;
-    final booking = state.approveEach ? 'askFirst' : 'anyone';
+    final asksFirst = createAsksFirst(draft, approveEach: state.approveEach);
+    final booking = asksFirst ? 'askFirst' : 'anyone';
+    final preset = createPreferencePreset(draft);
     final bookingSaved =
         resolved['bookingMode'] == booking ||
-        (!state.approveEach && resolved['bookingMode'] == null);
+        (!asksFirst && resolved['bookingMode'] == null);
     final waitlistSaved =
         resolved['waitlistEnabled'] == state.waitlist ||
         (state.waitlist && resolved['waitlistEnabled'] == null);
-    if (intents.admissionPreset.value == state.admission.preset &&
+    if (intents.admissionPreset.value == preset &&
         bookingSaved &&
         waitlistSaved) {
       return;
@@ -534,7 +559,7 @@ class CreateController extends _$CreateController {
             offerMessageTemplate: intents.offerMessageTemplate,
             paymentInstructions: intents.paymentInstructions,
             reusablePaymentPage: intents.reusablePaymentPage,
-            admissionPreset: EventSetupValue.set(state.admission.preset),
+            admissionPreset: EventSetupValue.set(preset),
             expectedAmountMinor: intents.expectedAmountMinor,
             bookingMode: EventSetupValue.set(booking),
             waitlistEnabled: EventSetupValue.set(state.waitlist),
@@ -728,54 +753,30 @@ class CreateController extends _$CreateController {
   Future<PrivateEventDetailsState> _untilDetails(
     String eventId,
     bool Function(PrivateEventDetailsState) ready,
-  ) => _until(
-    (listener) => ref.listen(
-      privateEventDetailsControllerProvider(_scope(eventId)),
-      listener,
-      fireImmediately: true,
-    ),
-    ready,
-  );
+  ) => _until(privateEventDetailsControllerProvider(_scope(eventId)), ready);
 
   /// The first preferences state of [eventId] that [ready] accepts.
   Future<EventPreferencesEditorState> _untilPreferences(
     String eventId,
     bool Function(EventPreferencesEditorState) ready,
-  ) => _until(
-    (listener) => ref.listen(
-      privateEventPreferencesControllerProvider(_scope(eventId)),
-      listener,
-      fireImmediately: true,
-    ),
-    ready,
-  );
+  ) =>
+      _until(privateEventPreferencesControllerProvider(_scope(eventId)), ready);
 
   /// The first publication state of [eventId] that [ready] accepts.
   Future<EventPublicationState> _untilPublication(
     String eventId,
     bool Function(EventPublicationState) ready,
-  ) => _until(
-    (listener) => ref.listen(
-      eventPublicationControllerProvider(_scope(eventId)),
-      listener,
-      fireImmediately: true,
-    ),
-    ready,
-  );
+  ) => _until(eventPublicationControllerProvider(_scope(eventId)), ready);
 
-  /// The first value that [ready] accepts from the subscription [listen]
-  /// opens; it closes once answered.
-  Future<T> _until<T>(
-    ProviderSubscription<T> Function(void Function(T?, T) listener) listen,
-    bool Function(T) ready,
-  ) {
+  /// The first value of [provider] that [ready] accepts; the subscription
+  /// closes once answered.
+  Future<T> _until<T>(ProviderListenable<T> provider, bool Function(T) ready) {
     final done = Completer<T>();
-    ProviderSubscription<T>? subscription;
-    subscription = listen((_, next) {
+    final subscription = ref.listen<T>(provider, (_, next) {
       if (!done.isCompleted && ready(next)) done.complete(next);
-    });
+    }, fireImmediately: true);
     // Close once answered; the first value may already have answered.
-    unawaited(done.future.whenComplete(() => subscription?.close()));
+    unawaited(done.future.whenComplete(subscription.close));
     return done.future;
   }
 }
