@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/events/parts/event_catch_format.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/image_upload_job.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/foundation.dart';
@@ -223,6 +224,7 @@ class OrganizerPageEditState {
     this.saving = false,
     this.mediaPending = false,
     this.pageLink,
+    this.uploads = const <PageEditUpload>[],
   });
 
   final Organizer organizer;
@@ -240,6 +242,10 @@ class OrganizerPageEditState {
   /// The page address for the top bar, without its scheme.
   final String? pageLink;
 
+  /// Photos picked but not yet on the page: uploading, or failed and
+  /// waiting for Retry.
+  final List<PageEditUpload> uploads;
+
   bool get dirty => draft != PageEditDraft.of(organizer);
 
   List<String> get photoUrls => [
@@ -248,4 +254,15 @@ class OrganizerPageEditState {
     ]..sort((a, b) => a.position.compareTo(b.position)))
       photo.url,
   ];
+}
+
+/// One picked photo on its way to the page.
+@immutable
+class PageEditUpload {
+  const PageEditUpload({required this.id, required this.job});
+
+  final String id;
+  final ImageUploadJobState job;
+
+  bool get failed => job.canRetry;
 }

@@ -31,6 +31,8 @@ class OrganizerPageEditBody extends StatelessWidget {
     required this.onChangeLogo,
     required this.onAddPhotos,
     required this.onPhoto,
+    required this.onRetryUpload,
+    required this.onDropUpload,
     this.onRemoveLogo,
   });
 
@@ -50,6 +52,12 @@ class OrganizerPageEditBody extends StatelessWidget {
 
   /// The photo at this place on the page, to move or remove.
   final ValueChanged<int> onPhoto;
+
+  /// Sends a failed upload again, by its id.
+  final ValueChanged<String> onRetryUpload;
+
+  /// Lets a failed upload go, by its id.
+  final ValueChanged<String> onDropUpload;
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +81,53 @@ class OrganizerPageEditBody extends StatelessWidget {
             aspect: 1,
             corner: CatchNetworkImageSize.md,
             placeholder: _placeholders[index % _placeholders.length],
+          ),
+        ),
+      for (final upload in state.uploads)
+        CatchSurface(
+          key: ValueKey<String>('page-edit-upload-${upload.id}'),
+          block: CatchSurfaceBlock.plain,
+          child: CatchStack(
+            gap: CatchStackGap.g8,
+            align: CatchStackAlign.center,
+            children: [
+              CatchText(
+                upload.failed
+                    ? l10n.coreOrderedPhotoPickerStatusUploadFailed
+                    : l10n.coreOrderedPhotoPickerStatusUploadingProgress(
+                        percent: (upload.job.progress * 100).round(),
+                      ),
+                variant: CatchTextVariant.bodySmall,
+                tone: upload.failed
+                    ? CatchTextTone.danger
+                    : CatchTextTone.secondary,
+                align: TextAlign.center,
+              ),
+              if (upload.failed) ...[
+                CatchButton(
+                  key: ValueKey<String>('page-edit-retry-${upload.id}'),
+                  label: l10n.coreOrderedPhotoPickerActionRetry,
+                  variant: CatchButtonVariant.secondary,
+                  size: CatchButtonSize.sm,
+                  onPressed: state.mediaPending
+                      ? null
+                      : () => onRetryUpload(upload.id),
+                ),
+                CatchButton(
+                  key: ValueKey<String>('page-edit-drop-${upload.id}'),
+                  label: l10n.coreOrderedPhotoPickerActionRemove,
+                  variant: CatchButtonVariant.quiet,
+                  size: CatchButtonSize.sm,
+                  onPressed: state.mediaPending
+                      ? null
+                      : () => onDropUpload(upload.id),
+                ),
+              ] else
+                CatchMeter(
+                  value: (upload.job.progress * 100).round(),
+                  label: l10n.coreOrderedPhotoPickerStatusUploading,
+                ),
+            ],
           ),
         ),
       CatchChoiceTile(
