@@ -7,7 +7,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
 /// Rooms as a list beside its detail. The list: the pane header, three
-/// numbers, the hotels, and the guests waiting for a room. The detail: the
+/// numbers, the hotels, the guests waiting for a room, and the stay
+/// planner for those allowed to plan room sharing. The detail: the
 /// hotel with Suggest for all, the block meter, each room block as a grid
 /// of rooms, and the suggestion notice.
 class HostProgrammeRoomsBody extends StatelessWidget {
@@ -23,8 +24,12 @@ class HostProgrammeRoomsBody extends StatelessWidget {
     required this.onHotelDetails,
     required this.onOpenGuest,
     required this.onRetry,
+    this.onPlanStays,
     this.busy = false,
   });
+
+  /// Opens the stay planner; null hides it (the account cannot plan stays).
+  final VoidCallback? onPlanStays;
 
   /// Opens a placed guest's household.
   final ValueChanged<String> onOpenGuest;
@@ -142,6 +147,21 @@ class HostProgrammeRoomsBody extends StatelessWidget {
                 body: l10n.hostProgrammeRoomsHowTo,
               ),
             ],
+            if (onPlanStays case final plan?)
+              CatchSection(
+                children: [
+                  CatchIndexRow(
+                    key: const ValueKey<String>(
+                      'host-programme-rooms-stay-planner',
+                    ),
+                    icon: CatchIcons.hotel,
+                    title: l10n.hostProgrammeLodgingTitle,
+                    subtitle: l10n.hostProgrammeLodgingSubtitle,
+                    chevron: true,
+                    onTap: plan,
+                  ),
+                ],
+              ),
           ],
         ),
       ),

@@ -309,6 +309,8 @@ import 'package:widgetbook_workspace/hosts/organizer_moments_use_cases.dart'
     as _widgetbook_workspace_hosts_organizer_moments_use_cases;
 import 'package:widgetbook_workspace/hosts/people_duplicates_use_cases.dart'
     as _widgetbook_workspace_hosts_people_duplicates_use_cases;
+import 'package:widgetbook_workspace/hosts/programmes/lodging/host_programme_lodging_use_cases.dart'
+    as _widgetbook_workspace_hosts_programmes_lodging_host_programme_lodging_use_cases;
 import 'package:widgetbook_workspace/hosts/unified_event_setup_use_cases.dart'
     as _widgetbook_workspace_hosts_unified_event_setup_use_cases;
 import 'package:widgetbook_workspace/layout/host_workspace_use_cases.dart'
@@ -10003,6 +10005,66 @@ final directories = <_widgetbook.WidgetbookNode>[
                         builder:
                             _widgetbook_workspace_hosts_host_system_parts_use_cases
                                 .staffOperationsNoticeListUseCase,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookFolder(
+                name: 'Stay planner',
+                children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostProgrammeLodgingBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Proposal and room board',
+                        builder:
+                            _widgetbook_workspace_hosts_programmes_lodging_host_programme_lodging_use_cases
+                                .hostProgrammeLodgingBodyUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostProgrammeLodgingGrid',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'One floor with a room the party can take',
+                        builder:
+                            _widgetbook_workspace_hosts_programmes_lodging_host_programme_lodging_use_cases
+                                .hostProgrammeLodgingGridUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostProgrammeLodgingMembershipBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'A guest with a suggested group',
+                        builder:
+                            _widgetbook_workspace_hosts_programmes_lodging_host_programme_lodging_use_cases
+                                .hostProgrammeLodgingMembershipBodyUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostProgrammeLodgingScreen',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'A proposal with one party waiting',
+                        builder:
+                            _widgetbook_workspace_hosts_programmes_lodging_host_programme_lodging_use_cases
+                                .hostProgrammeLodgingScreenUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostProgrammeLodgingSetupBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'A new lodging setup',
+                        builder:
+                            _widgetbook_workspace_hosts_programmes_lodging_host_programme_lodging_use_cases
+                                .hostProgrammeLodgingSetupBodyUseCase,
                       ),
                     ],
                   ),
