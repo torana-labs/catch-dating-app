@@ -10377,11 +10377,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                         _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostEmptyStateStates,
                   ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by host home route states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostHomeRouteStates,
-                  ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
@@ -10391,6 +10386,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Shared Audience header',
                     builder: _widgetbook_workspace_hosts_operations_audiences
                         .hostAudienceHeaderStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostLoadingScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Covered by host home route states',
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostHomeRouteStates,
                   ),
                 ],
               ),
