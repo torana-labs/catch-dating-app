@@ -26,8 +26,12 @@ class HostManualSendSheet extends StatefulWidget {
   final HostManualSendTask task;
 
   /// Checks the number, opens WhatsApp and records it; resolves the task
-  /// as it now stands.
-  final Future<HostManualSendTask> Function(HostManualSendTask task)
+  /// as it now stands. [stillOpen] says whether the sheet is still showing
+  /// once the number is checked: WhatsApp opens only if it is.
+  final Future<HostManualSendTask> Function(
+    HostManualSendTask task, {
+    required bool Function() stillOpen,
+  })
   onOpenWhatsapp;
 
   /// Records the host's mark (sent or skipped).
@@ -100,7 +104,10 @@ class _HostManualSendSheetState extends State<HostManualSendSheet> {
     setState(() => _busy = true);
     try {
       // provider-graph: ownership-widget-async-callback:_HostManualSendSheetState._openWhatsapp:await:widget.onOpenWhatsapp watch CAT156 -- Sends owns the commands (check the number, open WhatsApp, record it); the sheet holds only its busy flag and the task it shows.
-      final updated = await widget.onOpenWhatsapp(_task);
+      final updated = await widget.onOpenWhatsapp(
+        _task,
+        stillOpen: () => mounted,
+      );
       if (mounted) setState(() => _task = updated);
     } on Object catch (error) {
       if (mounted) {
