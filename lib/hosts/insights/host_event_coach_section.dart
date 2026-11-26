@@ -41,12 +41,28 @@ class HostEventCoachSection extends StatelessWidget {
       );
     }
     final scorecard = brief.scorecard;
-    HostAnalyticsMetricTile tile(String label, double rate) =>
-        HostAnalyticsMetricTile(
-          label: label,
-          value: (rate * 100).round(),
-          figure: HostAnalyticsFigure.percent,
-        );
+    final rates = [
+      (
+        l10n.eventSuccessEventSuccessFeatureBlocksLabelCheckIn16e104,
+        scorecard.checkInRate,
+      ),
+      (
+        l10n.eventSuccessEventSuccessFeatureBlocksLabelIntroCoverage,
+        scorecard.introCoverageRate,
+      ),
+      (
+        l10n.eventSuccessEventSuccessFeatureBlocksLabelCaughtSomeone,
+        scorecard.caughtSomeoneRate,
+      ),
+      (
+        l10n.eventSuccessEventSuccessFeatureBlocksLabelChatStart,
+        scorecard.chatStartRate,
+      ),
+      (
+        l10n.eventSuccessEventSuccessFeatureBlocksLabelHostHelp,
+        scorecard.wingmanRequestRate,
+      ),
+    ];
     return CatchStack(
       key: const ValueKey<String>('host-event-coach'),
       gap: CatchStackGap.section,
@@ -60,45 +76,20 @@ class HostEventCoachSection extends StatelessWidget {
               ),
               tone: CatchBadgeTone.brand,
             ),
-            CatchStack(
-              direction: CatchStackDirection.row,
-              equal: true,
-              children: [
-                tile(
-                  l10n.eventSuccessEventSuccessFeatureBlocksLabelCheckIn16e104,
-                  scorecard.checkInRate,
-                ),
-                tile(
-                  l10n.eventSuccessEventSuccessFeatureBlocksLabelIntroCoverage,
-                  scorecard.introCoverageRate,
-                ),
-              ],
-            ),
-            CatchStack(
-              direction: CatchStackDirection.row,
-              equal: true,
-              children: [
-                tile(
-                  l10n.eventSuccessEventSuccessFeatureBlocksLabelCaughtSomeone,
-                  scorecard.caughtSomeoneRate,
-                ),
-                tile(
-                  l10n.eventSuccessEventSuccessFeatureBlocksLabelChatStart,
-                  scorecard.chatStartRate,
-                ),
-              ],
-            ),
-            CatchStack(
-              direction: CatchStackDirection.row,
-              equal: true,
-              children: [
-                tile(
-                  l10n.eventSuccessEventSuccessFeatureBlocksLabelHostHelp,
-                  scorecard.wingmanRequestRate,
-                ),
-                const CatchStack(children: []),
-              ],
-            ),
+            for (var start = 0; start < rates.length; start += 2)
+              CatchStack(
+                direction: CatchStackDirection.row,
+                equal: true,
+                children: [
+                  for (final (label, rate) in rates.skip(start).take(2))
+                    HostAnalyticsMetricTile(
+                      label: label,
+                      value: (rate * 100).round(),
+                      figure: HostAnalyticsFigure.percent,
+                    ),
+                  if (start + 1 >= rates.length) const CatchStack(children: []),
+                ],
+              ),
           ],
         ),
         if (brief.strengths.isNotEmpty)
