@@ -306,8 +306,8 @@ trigger could follow.
 reviews computed before a commit and checked again by it.
 
 **Read path decision (Nov 2026): server-trust, private source data.**
-`listEventSmsPreferences`, `listEventWhatsappPreferences` and
-`listEventRcsPreferences` are the discovery step of the consent review, over
+`listEventMessagePreferences` (one callable for SMS, WhatsApp and RCS since
+issue #2494 step 2) is the discovery step of the consent review, over
 private permission history. `getOrganizerMessagingSetup` reads server-only
 sender connections. `getOrganizerBillingStatus` moved to
 `hostOrganizerBillingViews` (#2306): the trigger copies only the trial length

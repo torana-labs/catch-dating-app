@@ -1,8 +1,7 @@
 import * as admin from "firebase-admin";
-import {CallableRequest, HttpsError, onCall} from
+import {CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../../shared/auth";
-import {appCheckCallableOptions} from "../../shared/callableOptions";
 import {checkRateLimit} from "../../shared/rateLimit";
 import {validateCallableWithAjv} from "../../shared/validation";
 import {validateGetEventAssistanceSmsPreferenceCallablePayload} from
@@ -65,12 +64,3 @@ export async function setEventAssistanceSmsPreferenceHandler(
   }
   return result;
 }
-
-export const getEventAssistanceSmsPreference = onCall(
-  appCheckCallableOptions,
-  (request) => getEventAssistanceSmsPreferenceHandler(request)
-);
-export const setEventAssistanceSmsPreference = onCall(
-  appCheckCallableOptions,
-  (request) => setEventAssistanceSmsPreferenceHandler(request)
-);
