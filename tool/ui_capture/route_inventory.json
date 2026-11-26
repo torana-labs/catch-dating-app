@@ -7,7 +7,7 @@
       "lib/routing/consumer_router.dart",
       "lib/routing/host_router.dart"
     ],
-    "routeContractSha256": "d210e1abc5512e7b2935290755a4661d30babc3e92ce04e6dcf9d029cb64431d",
+    "routeContractSha256": "7ae983ff649a31d5990a034f43624ebc308464521c57281a4e504161b4baa9b6",
     "goRouteCount": 138,
     "shellBranchCount": 8,
     "enumRouteCount": 115,
@@ -1181,8 +1181,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostWorkEventScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventOperatorScreen(eventId:state.pathParameters['eventId']!)",
-      "presentationTarget": "HostEventOperatorScreen",
+      "presentationExpression": "(context,state)=>StaffEventScreen(eventId:state.pathParameters['eventId']!)",
+      "presentationTarget": "StaffEventScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
