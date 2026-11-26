@@ -1,8 +1,7 @@
 import * as admin from "firebase-admin";
-import {CallableRequest, HttpsError, onCall} from
+import {CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../../shared/auth";
-import {appCheckCallableOptions} from "../../shared/callableOptions";
 import {checkRateLimit} from "../../shared/rateLimit";
 import {validateCallableWithAjv} from "../../shared/validation";
 import {validateGetEventRcsPreferenceCallablePayload} from
@@ -64,8 +63,3 @@ export async function setEventRcsPreferenceHandler(
   }
   return result;
 }
-
-export const getEventRcsPreference = onCall(appCheckCallableOptions,
-  (request) => getEventRcsPreferenceHandler(request));
-export const setEventRcsPreference = onCall(appCheckCallableOptions,
-  (request) => setEventRcsPreferenceHandler(request));

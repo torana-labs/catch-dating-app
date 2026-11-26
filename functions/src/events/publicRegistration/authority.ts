@@ -12,6 +12,8 @@ import {
 } from "../../shared/eventOrganizers";
 import {requireDoc} from "../../shared/validation";
 import {normalizeRosterPhone} from "../eventAttendees";
+import {readEventWithCohortCounts} from
+  "../../domain/events/eventCohortCounts";
 
 /** Recheck Admin Auth on transaction retries, including webhook fulfillment.
  * Public OTP guests need no Consumer profile, but deleted accounts are denied.
@@ -74,10 +76,11 @@ export async function readPublicEventSource(input: {
   eventId: string;
 }) {
   const {db, tx, eventId} = input;
-  const event = requireDoc<EventDocument>(
-    await tx.get(db.collection("events").doc(eventId)),
-    "EventDocument",
-  );
+  const event = await readEventWithCohortCounts(tx, db, eventId,
+    requireDoc<EventDocument>(
+      await tx.get(db.collection("events").doc(eventId)),
+      "EventDocument",
+    ));
   const organizer = requireEventOrganizer(
     await tx.get(eventOrganizerRef(db, event)),
     event,

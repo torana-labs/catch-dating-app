@@ -206,6 +206,14 @@ const fastGateCheckoutClosure = [
   "/integration_test/",
 ];
 
+/** One top-level job of a workflow, up to the next job. */
+function jobBlock(source, id) {
+  const start = source.indexOf(`\n  ${id}:\n`);
+  assert.notEqual(start, -1, `Missing job ${id}`);
+  const next = source.slice(start + 1).search(/\n  [a-z][\w-]*:\n/u);
+  return next === -1 ? source.slice(start + 1) : source.slice(start + 1, start + 1 + next + 1);
+}
+
 function namedStep(source, name) {
   const marker = `      - name: ${name}`;
   const start = source.indexOf(marker);
@@ -364,7 +372,7 @@ test("Flutter analysis covers every pubspec and empty test selections fail close
   // Visibility-only: pull requests and queue groups don't spend a runner turn on it.
   assert.match(coverageJob, /if: \$\{\{ github.event_name != 'pull_request' && github.event_name != 'merge_group' \}\}/u);
   // The aggregate accepts a skipped coverage job only where coverage is meant to skip.
-  const coverageAggregate = flutter.slice(flutter.indexOf("  analyze-and-test:"));
+  const coverageAggregate = jobBlock(flutter, "analyze-and-test");
   assert.match(coverageAggregate, /\[\[ "\$\{COVERAGE_RESULT\}" == "skipped" && \( "\$\{EVENT_NAME\}" == "pull_request" \|\| "\$\{EVENT_NAME\}" == "merge_group" \) \]\]/u);
   assert.match(coverageAggregate, /"\$\{coverage_ok\}" != "true"/u);
   assert.doesNotMatch(coverageJob, /flutter test|setup-flutter/u);
@@ -438,7 +446,7 @@ test("Flutter CI runs every package suite and Widgetbook in one job without mask
   assert.match(table, /\| Build Widgetbook web app \| not run: its setup or an earlier step failed \|/u);
 
   assert.match(flutter, /needs:\n(?:      - .*\n)*      - app-package-tests/u);
-  const aggregateJob = flutter.slice(flutter.indexOf("  analyze-and-test:"));
+  const aggregateJob = jobBlock(flutter, "analyze-and-test");
   assert.doesNotMatch(aggregateJob, /widgetbook|WIDGETBOOK/u);
   const aggregate = extractSteps(flutter)
     .find((step) => step.name === "Check Flutter CI results");
@@ -987,16 +995,13 @@ test("tools fanout selects exactly one affected or full execution path", () => {
     tools,
     /strategy:\s*\n\s+fail-fast:\s+false\s*\n\s+matrix:/,
   );
-  for (const bucket of [
-    "core-audit",
-    "lint-scanners",
-    "contracts-data",
-    "platform-env",
-    "marketing-design",
-    "organizer-intake",
-  ]) {
-    assert.match(tools, new RegExp(`name: ${bucket}`));
+  // The full matrix runs computed, time-balanced buckets (tool/ci/tool_buckets.mjs).
+  for (let bucket = 1; bucket <= 6; bucket += 1) {
+    assert.match(tools, new RegExp(`- \\{name: bucket-${bucket}, bucket: ${bucket}\\}`));
   }
+  assert.match(tools, /node tool\/ci\/tool_buckets\.mjs ids --bucket "\$BUCKET"/u);
+  assert.match(tools, /node tool\/run\.mjs check "\$\{tool_ids\[@\]\}" "\$\{shared_flags\[@\]\}"/u);
+  assert.doesNotMatch(tools, /--category "\$category"/u);
 });
 
 test("fast structural ratchets block dependency-heavy full tool buckets", () => {
@@ -1041,10 +1046,9 @@ test("fast structural ratchets block dependency-heavy full tool buckets", () => 
   assert.ok(fullBuckets, "tool-buckets job must remain present");
   assert.match(fullBuckets, /- preflight\s*\n\s+- fast-gates/u);
   assert.match(fullBuckets, /needs\.fast-gates\.result == 'success'/u);
-  assert.match(
-    fullBuckets,
-    /timeout-minutes: \$\{\{ \(matrix\.name == 'lint-scanners' \|\| matrix\.name == 'marketing-design'\) && 45 \|\| 30 \}\}/u,
-  );
+  assert.match(fullBuckets, /timeout-minutes: 45/u);
+  assert.match(fullBuckets,
+    /if: \$\{\{ contains\(fromJSON\(steps\.bucket\.outputs\.setup\), 'playwright'\) \}\}\n\s+run: npx playwright install chromium/u);
   assert.doesNotMatch(fullBuckets, /playwright install --with-deps/u);
   assert.match(fullBuckets, /uses: \.\/\.github\/actions\/install-ripgrep/u);
   assert.doesNotMatch(fullBuckets, /apt-get/u);
@@ -1088,8 +1092,8 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   assert.equal(tools.match(/MARKETING_CHECKS_IN_REACT: \$\{\{ inputs.marketing_checks_in_react \}\}/gu)?.length, 3);
   assert.match(namedStep(tools, "Check affected tools"), /--check "\$\{shared_flags\[@\]\}"/u);
   const bucket = namedStep(tools, "Check tool categories");
-  assert.match(bucket, /category_flags\+=\(--category "\$category"\)/u);
-  assert.match(bucket, /node tool\/run\.mjs check "\$\{category_flags\[@\]\}" "\$\{shared_flags\[@\]\}"/u);
+  assert.match(bucket, /mapfile -t tool_ids < "\$RUNNER_TEMP\/bucket-tools\.txt"/u);
+  assert.match(bucket, /node tool\/run\.mjs check "\$\{tool_ids\[@\]\}" "\$\{shared_flags\[@\]\}"/u);
   assert.equal(bucket.match(/node tool\/run\.mjs check/gu)?.length, 1);
   for (const [name, command] of [
     ["Build marketing website", "npm run web:marketing:build"],
@@ -1124,10 +1128,10 @@ test("Tools reuses only marketing builds and browser checks owned by the require
     assert.doesNotMatch(step, /merge_group|!=/u, name);
   }
   assert.match(react, /visual_report:\n\s+description:[^\n]+\n\s+required: false\n\s+type: boolean\n\s+default: false/u);
-  // CI asks for the reports on its nightly only: scheduled, or re-run by the
-  // Scheduled run watchdog as a full dispatch when the schedule is missed.
-  // The website deploy workflows never pass it.
-  const nightly = "github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.full)";
+  // CI asks for the reports on its nightly, which ci-nightly.yml dispatches
+  // with `nightly` (26 Nov 2026), and on a full dispatch, as the Scheduled run
+  // watchdog's backfill of a missed night. The website deploy workflows never pass it.
+  const nightly = "github.event_name == 'workflow_dispatch' && (inputs.nightly || inputs.full)";
   for (const surface of ["admin", "marketing", "tools"]) {
     const call = ci.slice(ci.indexOf(`\n  ${surface}:\n`) + 1).split(/\n  [a-z-]+:\n/u)[0];
     assert.ok(call.includes(`      visual_report: \${{ ${nightly} }}\n`), surface);
@@ -1135,13 +1139,13 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   for (const file of ["marketing-website.yml", "admin-website.yml"]) {
     assert.doesNotMatch(workflow(file), /visual_report/u, file);
   }
-  const runsReport = (event, full) => vm.runInNewContext(nightly.replaceAll("==", "===")
-    .replaceAll("github.event_name", "event").replaceAll("inputs.full", "full"), {event, full});
-  assert.equal(runsReport("schedule", null), true);
-  assert.equal(runsReport("workflow_dispatch", true), true, "the watchdog's full dispatch");
-  for (const [event, full] of [["workflow_dispatch", false], ["merge_group", null], ["pull_request", null], ["push", null]]) {
-    assert.equal(runsReport(event, full), false, event);
-  }
+  const runsReport = (event, inputs) => vm.runInNewContext(nightly.replaceAll("==", "===")
+    .replaceAll("github.event_name", "event").replaceAll("inputs.", "inputs?."), {event, inputs});
+  assert.equal(runsReport("workflow_dispatch", {nightly: true}), true);
+  assert.equal(runsReport("workflow_dispatch", {full: true}), true);
+  assert.equal(Boolean(runsReport("workflow_dispatch", {base_sha: "a".repeat(40)})), false);
+  for (const event of ["push", "merge_group", "pull_request"]) assert.equal(runsReport(event, {}), false, event);
+  assert.equal(Boolean(runsReport("workflow_dispatch", {nightly: false, full: false})), false, "a plain dispatch");
   // Tools defers the same report outside the nightly (#2426): every check shell
   // passes --defer-visual-report unless the caller set visual_report. On the
   // nightly the report then runs exactly once: in the React lane when the plan
@@ -1153,19 +1157,19 @@ test("Tools reuses only marketing builds and browser checks owned by the require
     assert.match(step, /VISUAL_REPORT: \$\{\{ inputs\.visual_report \}\}/u, name);
     assert.match(step, /if \[\[ "\$\{VISUAL_REPORT:-\}" != "true" \]\]; then\n\s+shared_flags\+=\(--defer-visual-report\)/u, name);
   }
-  const reportRuns = ({event, full, marketing}) => {
-    const visualReport = runsReport(event, full);
+  const reportRuns = ({event, inputs, marketing}) => {
+    const visualReport = Boolean(runsReport(event, inputs));
     return {react: visualReport && marketing, tools: visualReport && !marketing};
   };
-  for (const event of ["schedule", "workflow_dispatch", "merge_group", "pull_request", "push"]) {
+  for (const [event, inputs] of [["workflow_dispatch", {nightly: true}], ["workflow_dispatch", {full: true}],
+    ["merge_group", {}], ["pull_request", {}], ["push", {}]]) {
     for (const marketing of [true, false]) {
-      const full = event === "workflow_dispatch" ? true : null;
-      const runs = reportRuns({event, full, marketing});
+      const runs = reportRuns({event, inputs, marketing});
       const count = Number(runs.react) + Number(runs.tools);
-      assert.equal(count, runsReport(event, full) ? 1 : 0, `${event}, marketing ${marketing}`);
+      assert.equal(count, runsReport(event, inputs) ? 1 : 0, `${event} ${JSON.stringify(inputs)}, marketing ${marketing}`);
     }
   }
-  assert.deepEqual(reportRuns({event: "workflow_dispatch", full: false, marketing: false}), {react: false, tools: false});
+  assert.deepEqual(reportRuns({event: "workflow_dispatch", inputs: {full: false}, marketing: false}), {react: false, tools: false});
   // The accessibility gates render every story, so they keep a broken story out
   // of the queue: they run for their surface on every event, merge_group included.
   for (const [name, surface] of [["Run marketing Storybook accessibility gate", "marketing"],
@@ -1542,19 +1546,23 @@ test("every ready PR validates in parallel and main runs are never cancelled onc
 });
 
 test("CI run names preserve main delivery identity and name every PR run", () => {
-  const expression = workflow("ci.yml").match(/^run-name: >-\n  \$\{\{ (.+) \}\}$/mu)?.[1];
+  const expression = workflow("ci.yml").match(/^run-name: >-\n  \$\{\{ ([\s\S]+?) \}\}$/mu)?.[1].replaceAll("\n  ", " ");
   assert.ok(expression, "missing run-name expression");
   // GitHub exposes an explicit run-name as REST run.name as well as
   // display_title. Main delivery consumers require the stable name CI.
-  const runName = (eventName, action = "", label = "") => vm.runInNewContext(expression, {
-    github: {event_name: eventName, event: {action, label: {name: label}, pull_request: {number: 42}}},
+  const runName = (eventName, action = "", label = "", inputs = {}) => vm.runInNewContext(expression, {
+    github: {event_name: eventName, event: {action, label: {name: label}, pull_request: {number: 42}}}, inputs,
     fromJSON: JSON.parse,
     contains: (values, item) => values.includes(item),
     format: (template, value) => template.replace("{0}", String(value)),
   });
-  for (const event of ["push", "merge_group", "schedule", "workflow_dispatch"]) {
+  for (const event of ["push", "merge_group", "workflow_dispatch"]) {
     assert.equal(runName(event), "CI", event);
   }
+  // Only the nightly (ci-nightly.yml's dispatch) is titled otherwise; main
+  // delivery consumers accept that one name for it (tool/ci/ci_nightly.mjs).
+  assert.equal(runName("workflow_dispatch", "", "", {nightly: true}), "CI nightly");
+  assert.equal(runName("workflow_dispatch", "", "", {full: true}), "CI");
   for (const action of ["opened", "synchronize", "reopened", "ready_for_review", "converted_to_draft"]) {
     assert.equal(runName("pull_request", action), "CI PR #42", action);
   }
@@ -1709,8 +1717,9 @@ test("native app-shell smoke runs only on the nightly schedule and manual dispat
   const jobIf = (name) => source.split(`  ${name}:\n`)[1].split(/\n  [a-z-]+:\n/u)[0].match(/^    if: (.*)$/gmu);
   assert.deepEqual(jobIf("headless-journeys"), ["    if: ${{ !inputs.macos_only }}"]);
   assert.deepEqual(jobIf("goldens"), ["    if: ${{ github.event_name != 'merge_group' }}"]);
-  // Both schedule and dispatch still reach the called workflow.
-  assert.match(workflow("ci.yml"), /^  schedule:\n/mu);
+  // The nightly reaches the called workflow as a dispatch of ci.yml (ci-nightly.yml, 26 Nov 2026).
+  assert.doesNotMatch(workflow("ci.yml"), /^  schedule:\n/mu);
+  assert.match(workflow("ci.yml"), /^  workflow_dispatch:\n    inputs:\n      nightly:\n/mu);
   assert.match(source, /^  workflow_dispatch:\n/mu);
 });
 
@@ -1971,6 +1980,7 @@ test("Tools check shells request inventory producer proofs and no capture proof"
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "capture-tool-flags-"));
   context.after(() => fs.rmSync(root, {recursive: true, force: true}));
   fs.writeFileSync(path.join(root, "node"), `#!${process.execPath}\nconsole.log(JSON.stringify({args:process.argv.slice(2),binding:process.env.CAPTURE_BINDING}));\n`, {mode: 0o755});
+  fs.writeFileSync(path.join(root, "bucket-tools.txt"), "design:parity-gate\nmarketing:website-build\n");
   for (const name of ["Check affected tools", "Check tool categories"]) {
     const step = extractSteps(source).find(s => s.name === name);
     const declaration = namedStep(source, name);
@@ -1984,10 +1994,13 @@ test("Tools check shells request inventory producer proofs and no capture proof"
       const result = spawnSync("bash", ["-c", step.run], {encoding: "utf8", env: {
         ...process.env, PATH: `${root}${path.delimiter}${process.env.PATH}`,
         INVENTORY_MATERIALIZED: inventory, MARKETING_CHECKS_IN_REACT: "true", VISUAL_REPORT: "",
-        BASE_SHA: "base", SOURCE_SHA: "source", MODE: "pr", COMMIT_WINDOW: "false", CATEGORIES: "marketing ui-capture design",
+        BASE_SHA: "base", SOURCE_SHA: "source", MODE: "pr", COMMIT_WINDOW: "false", RUNNER_TEMP: root,
       }});
       assert.equal(result.status, 0, result.stderr);
       const actual = JSON.parse(result.stdout);
+      if (name === "Check tool categories") {
+        assert.deepEqual(actual.args.slice(0, 4), ["tool/run.mjs", "check", "design:parity-gate", "marketing:website-build"]);
+      }
       assert.equal(actual.args.includes("--generated-inventories-materialized"), inventory === "true");
       assert.ok(actual.args.includes("--marketing-checks-in-react"));
       // Outside the nightly (VISUAL_REPORT cleared here, since the nightly job
@@ -1998,7 +2011,7 @@ test("Tools check shells request inventory producer proofs and no capture proof"
       const result = spawnSync("bash", ["-c", step.run], {encoding: "utf8", env: {
         ...process.env, PATH: `${root}${path.delimiter}${process.env.PATH}`,
         INVENTORY_MATERIALIZED: "true", MARKETING_CHECKS_IN_REACT: "false", VISUAL_REPORT: visualReport,
-        BASE_SHA: "base", SOURCE_SHA: "source", MODE: "pr", COMMIT_WINDOW: "false", CATEGORIES: "marketing ui-capture design",
+        BASE_SHA: "base", SOURCE_SHA: "source", MODE: "pr", COMMIT_WINDOW: "false", RUNNER_TEMP: root,
       }});
       assert.equal(result.status, 0, result.stderr);
       assert.equal(JSON.parse(result.stdout).args.includes("--defer-visual-report"), deferred, `${name}: VISUAL_REPORT=${visualReport}`);
@@ -2196,4 +2209,29 @@ for (const job of ${JSON.stringify(jobs)}) console.log(JSON.stringify(job));
   assert.equal(decideWith({jobs: [...deferredJobs, deferredJobs[0]]}), "deferred=false", "two plan jobs");
   assert.equal(decideWith({binding: "{}"}), "deferred=false", "a binding exists: import it");
   assert.equal(decideWith({failApi: true}), "deferred=false", "the jobs API failed");
+});
+
+test("Flutter CI checks committed generated outputs on Linux, report-only until it is made blocking", () => {
+  const flutter = workflow("flutter-ci.yml");
+  const visual = workflow("visual-integration-ci.yml");
+  const job = jobBlock(flutter, "generated-outputs");
+  assert.match(job, /^  generated-outputs:\n(?:    #.*\n)*    name: Committed Flutter generated outputs are current\n/mu);
+  assert.match(job, /\n    runs-on: ubuntu-latest\n/u);
+  // Every event that runs the Flutter lane runs it: pull requests and queue groups included.
+  assert.doesNotMatch(job, /\n    if:/u);
+  // Report-only (owner decision, 26 Nov 2026): a failure leaves the lane's
+  // workflow_call result, and so Required CI, green; the aggregate never waits on it.
+  assert.match(job, /\n    continue-on-error: true\n/u);
+  assert.doesNotMatch(jobBlock(flutter, "analyze-and-test"), /generated-outputs/u);
+  // The same generation and verification the macOS goldens job runs on main.
+  // The step's run script, without the comments that lead into the next step.
+  const runOf = (step) => step.slice(step.indexOf("        run:")).replace(/\n\s*(?:#.*)?$/gmu, "").trimEnd();
+  for (const name of ["Generate Flutter source outputs", "Resolve Widgetbook dependencies",
+    "Generate Widgetbook directories", "Verify committed Flutter outputs are current"]) {
+    assert.equal(runOf(namedStep(job, name)), runOf(namedStep(jobBlock(visual, "goldens"), name)), name);
+  }
+  // A stale output leaves a patch to apply.
+  assert.match(namedStep(job, "Upload generated output drift"),
+    /if: \$\{\{ failure\(\) && steps\.codegen-current\.outcome == 'failure' \}\}/u);
+  assert.match(job, /name: generated-flutter-drift-linux-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/u);
 });

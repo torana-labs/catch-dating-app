@@ -19,8 +19,8 @@ import {projectManagerEventSetupDefaults} from
 import {eventSetupDefaultsDependencies} from
   "../../organizers/eventSetupDefaults/dependencies";
 import {assertPrivateEventBasicsEditable} from "./commitments";
-import {eventListingTermsPatch, preparePrivateListingTerms} from
-  "./listingTerms";
+import {eventListingTermsPatch, preparePrivateListingTerms,
+  privateListingInviteCode} from "./listingTerms";
 import {authorizeSetupManager, hashRequest, receiptFor,
   requireRevision, ProgressiveSetupDependencies,
   ProgressiveSetupResult} from "./service";
@@ -186,6 +186,9 @@ export async function updatePrivateEventDetails(params: {
       set("photoUrl", photos[0]?.url ?? null);
     }
     const terms = command.details.admissionTerms;
+    const privateAccessRef = db.collection("eventPrivateAccess")
+      .doc(command.eventId);
+    const privateAccessSnap = terms ? await tx.get(privateAccessRef) : null;
     if (terms) {
       const termsPatch = eventListingTermsPatch(
         event as unknown as EventDocument, terms);
@@ -281,9 +284,24 @@ export async function updatePrivateEventDetails(params: {
     const ledger = terms ? await preparePrivateListingTerms({db, tx,
       eventId: command.eventId, before: event as unknown as EventDocument,
       after: next as unknown as EventDocument}) : null;
+    // The host-private invite code follows the admission policy, as the
+    // published update keeps it; checked before anything is written.
+    const inviteCode = terms && privateAccessSnap ? privateListingInviteCode({
+      eventPolicy: next.eventPolicy as EventDocument["eventPolicy"],
+      terms, savedCode: privateAccessSnap.data()?.inviteCode}) : null;
     if (ledger?.ledger) {
       tx.set(db.collection("eventSeatLedgers").doc(command.eventId),
         ledger.ledger);
+    }
+    if (terms && privateAccessSnap) {
+      if (inviteCode) {
+        tx.set(privateAccessRef, {eventId: command.eventId,
+          organizerId: command.organizerId, inviteCode,
+          createdAt: privateAccessSnap.data()?.createdAt ??
+            deps.serverTimestamp()}, {merge: true});
+      } else if (privateAccessSnap.exists) {
+        tx.delete(privateAccessRef);
+      }
     }
     tx.update(eventRef, {...patch, setupRevision: revision + 1,
       updatedAt: deps.serverTimestamp()});

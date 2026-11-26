@@ -141,9 +141,17 @@ describe("useOrganizerPageController", () => {
     expect(result.current.share.copyState).toBe("failed");
   });
 
-  it("hides the review form until review submission lands, then checks a review before posting it", async () => {
-    expect(renderController(generatedOrganizerPage).result.current.review).toBeNull();
-    const submitReview = vi.fn(async () => undefined);
+  it("offers the review form only on an unclaimed page with a past event", () => {
+    const submitReview = vi.fn(async () => "published" as const);
+    expect(renderController(generatedOrganizerPage, {followByPhone: null, submitReview: null}).result.current.review).toBeNull();
+    expect(renderController(claimedOrganizerPage, {followByPhone: null, submitReview}).result.current.review).toBeNull();
+    expect(renderController({...generatedOrganizerPage, pastMoments: []}, {followByPhone: null, submitReview}).result.current.review)
+      .toBeNull();
+    expect(renderController(generatedOrganizerPage, {followByPhone: null, submitReview}).result.current.review).not.toBeNull();
+  });
+
+  it("checks a review before posting it, then says it is waiting for moderation", async () => {
+    const submitReview = vi.fn(async () => "pending" as const);
     const {listing, result} = renderController(generatedOrganizerPage, {followByPhone: null, submitReview});
     act(() => result.current.review!.submit());
     expect(result.current.review!.error).toBe("Choose a star rating");
@@ -151,14 +159,18 @@ describe("useOrganizerPageController", () => {
     act(() => result.current.review!.setText("Too short"));
     act(() => result.current.review!.submit());
     expect(result.current.review!.error).toBe("Write at least 20 characters");
+    act(() => result.current.review!.setText("x".repeat(1001)));
+    act(() => result.current.review!.submit());
+    expect(result.current.review!.error).toBe("Keep it under 1,000 characters");
     act(() => result.current.review!.setText("A friendly crowd and a well paced loop."));
     act(() => result.current.review!.submit());
     expect(result.current.review!.error).toBe("Add your first name");
     act(() => result.current.review!.setName(" Asha "));
     await act(async () => result.current.review!.submit());
     expect(submitReview).toHaveBeenCalledWith({organizerId: listing.id, rating: 5,
-      comment: "A friendly crowd and a well paced loop.", reviewerName: "Asha"});
-    expect(result.current.review!.done).toBe(true);
+      comment: "A friendly crowd and a well paced loop.", reviewerName: "Asha", submittedFromPath: generatedOrganizerPage.path});
+    expect(result.current.review!.done).toBe("pending");
+    expect(result.current.review!.error).toBe("");
   });
 
   it("sends link, event and claim clicks as organiser analytics", () => {

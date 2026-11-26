@@ -3079,6 +3079,23 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // A booking cohort encodes the guest's gender and who they are interested
+    // in (their sexual orientation). Organisers read eventBookings and
+    // eventWaitlistOffers, so the cohort lives here, where no client and no
+    // organiser can read it (#2493).
+    match /eventBookingPrivateFacts/{bookingId} {
+      allow read, write: if false;
+    }
+
+    // Booking totals by cohort for one event. On a small event a per-cohort
+    // total can point to one guest's orientation, and organisers read
+    // events/{eventId}, so the totals the admission policy needs live here,
+    // where no client and no organiser can read them (#2493). Gender totals
+    // stay on the event.
+    match /eventCohortCounts/{eventId} {
+      allow read, write: if false;
+    }
+
     // TRANSITIONAL legacy mirror of eventBookings for released app builds,
     // written only by onEventBookingMirroredToLegacy. Same readers as
     // eventBookings; phase 2 of the rename removes this block.
@@ -3898,9 +3915,12 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // FIX-12: scorecards hold event-level catch, match and chat counts.
+    // Hosts get no direct read until an event-level stats screen applies
+    // the group-size floor (config/guestDataVisibility); the server still
+    // computes them.
     match /eventSuccessScorecards/{eventId} {
-      allow read: if isAuthed() && isOrganizerHostForEvent(eventId);
-      allow write: if false;
+      allow read, write: if false;
     }
 
     // ── Participant success / marketplace metrics ───────────────────────────

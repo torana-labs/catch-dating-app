@@ -355,6 +355,8 @@
     "GetEventChatProfileCallablePayload",
     "GetEventChatProfileSharingCallablePayload",
     "GetEventInviteLinkTokenCallablePayload",
+    "GetEventMessagePreferenceCallablePayload",
+    "GetEventMessageWithdrawalCallablePayload",
     "GetEventRcsPreferenceCallablePayload",
     "GetEventRcsWithdrawalCallablePayload",
     "GetEventRehearsalBootstrapCallablePayload",
@@ -424,6 +426,7 @@
     "ListEventChatMessagesCallablePayload",
     "ListEventChatParticipantsCallablePayload",
     "ListEventHostPhotosCallablePayload",
+    "ListEventMessagePreferencesCallablePayload",
     "ListEventRcsPreferencesCallablePayload",
     "ListEventRcsPreferencesCallableResponse",
     "ListEventSmsPreferencesCallablePayload",
@@ -679,6 +682,7 @@
     "SetEventChatTypingCallablePayload",
     "SetEventCloseOutCallablePayload",
     "SetEventCloseOutCallableResponse",
+    "SetEventMessagePreferenceCallablePayload",
     "SetEventPublicationCallablePayload",
     "SetEventRcsPreferenceCallablePayload",
     "SetEventSuccessAccountabilityResolutionCallablePayload",
@@ -752,6 +756,7 @@
     "ValidateOrganizerManualSendTaskLaunchCallablePayload",
     "WebsiteHostListingProjection",
     "WithdrawEventAssistanceSmsCallablePayload",
+    "WithdrawEventMessageCallablePayload",
     "WithdrawEventRcsCallablePayload",
     "WithdrawEventWhatsappCallablePayload",
     "WithdrawOrganizerFormResponseCallablePayload",
@@ -789,7 +794,8 @@
     "EventSeatIdentityAliasDocument",
     "EventSeatLedgerDocument",
     "EventSeatReservationDocument",
-    "EventSeatVerifiedPhoneDocument"
+    "EventSeatVerifiedPhoneDocument",
+    "EventCohortCountsDocument"
   ],
   "types": [
     "ActOnEventChatMessageCallableResponse",

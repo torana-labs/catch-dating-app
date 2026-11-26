@@ -622,7 +622,7 @@ It grants no recipient, spending or dispatch authority. See
 
 `event_assistance_rcs_consent.schema.json` owns independent RCS permission,
 exact consent receipts and preference views. The two App-Check-protected
-`getEventRcsPreference` / `setEventRcsPreference` callables require the roster's
+`getEventMessagePreference` / `setEventMessagePreference` (channel `rcs`) callables require the roster's
 linked UID; a grant additionally verifies its signed phone claim. The reviewed
 hash binds sender identity, event name and captured window, subject and phone,
 attendee and Firestore source generations, and latest STOP. Caller-selected
@@ -681,7 +681,7 @@ closed `messageLink` revoke-only receipt variant with a null actor. Private
 `eventAssistanceWithdrawalGrants` (channel `rcs`) binds the original source generations,
 subject, endpoint and agent. Transactional preparation verifies the persisted
 guest grant and exact permission/receipt before staging immutable issuance. The
-App-Check-protected bearer callables `getEventRcsWithdrawal` / `withdrawEventRcs`
+App-Check-protected bearer callables `getEventMessageWithdrawal` / `withdrawEventMessage` (channel `rcs`)
 expose only recorded preference and lifetime; revision checks and immutable
 receipts fence old requests. Withdrawal works after instructions expire without
 restoring read/reply access, and does not depend on current event/roster/sender
@@ -3284,6 +3284,33 @@ decisions. It also removes the chats that exist only because of a deck-era
 like, and the signal facts and counters derived from them. Its runbook is in
 `docs/release_operations.md`.
 
+### Booking cohorts stay server-only
+
+A booking cohort (`menInterestedInWomen`, `womenInterestedInMen`,
+`queerOrOpen`, `nonBinaryOrOther`) encodes the guest's gender and who they
+are interested in: their sexual orientation. Organiser managers read
+`eventBookings`, its legacy mirror `eventParticipations` and
+`eventWaitlistOffers`, so none of them stores a cohort (#2493). The cohort a
+booking was counted under (`cohortAtSignup`) and the cohort a live waitlist
+offer reserves (`cohortAtOffer`) live in the server-only
+`eventBookingPrivateFacts/{eventId}_{uid}`, written by
+`functions/src/shared/bookingPrivateFacts.ts` beside the booking or offer in
+the same transaction and deleted at account deletion. The event's totals
+by cohort (`cohortCounts`, `waitlistedCohortCounts`,
+`crossPathsPairHeldCohortCounts`) can point to one guest on a small event, so
+they live in the server-only `eventCohortCounts/{eventId}`, never on
+`events/{eventId}`: `updateEventBookingCounters` and
+`updateEventPairHoldCounters` write each map there and remove the event's
+copy in the same write, and admission logic reads them through
+`functions/src/domain/events/eventCohortCounts.ts`. Organisers keep only what
+the admission policy needs: gender totals stay on the event. Every booking write
+removes a cohort an older write left on the booking, and every offer write
+removes one left on the offer. `tool/data/move_booking_cohorts.mjs` and
+`tool/data/move_event_cohort_counts.mjs` move the copies older writes left. The Host ops CSV has no cohort column, and an
+organiser's hosts in an event chat never receive a guest's sensitive
+mini-profile answers (gender, age, relationship goal, drinking, smoking,
+children), even when the guest shared them with the other guests.
+
 ### Standalone Host Operational Attendees
 
 `eventAttendees` is the Host operations roster. It complements rather than
@@ -4154,7 +4181,7 @@ to private-profile fields or another organizer's records.
 | Canonical organizer | `organizers/{organizerId}` | Readable only by the organizer's hosts, owner and active `organizerTeamMemberships` members (#1221). Lists return only the reader's own organizers. Never a guest read path. |
 | Public organizer projection | `publicOrganizers/{organizerId}` | Server-derived allowlist of `organizers/{organizerId}` (#1221). Guest-facing reads use it: anyone may get one by id, and lists return only discoverable rows. Organizers whose website page is published have one too, with `publicPagePath`, which the website account page reads for names and links. The apps fall back to it when a canonical read is denied. Contact details, host defaults, provenance, intake, admin search, ownership and claim stay on the canonical document. |
 | Portable application prefill | `participantIntakeProfiles/{uid}` | Participant-private, reviewed values for lower-friction future applications. It neither overwrites `users` nor becomes organizer-visible merely by existing. |
-| Organizer application snapshot | `organizerApplicationResponses/{responseId}` plus `participantOrganizerDataGrants/{grantId}` | Exact questions answered for one application and the exact question/field grant receipt. This is the only application-field slice available to that organizer. |
+| Organizer application snapshot | `organizerApplicationResponses/{responseId}` for imported applications; the submitted `organizerFormResponses/{responseId}` and its immutable `organizerFormVersions` for generic forms | The exact questions answered for one application and the per-question consent recorded with them. This is the only application-field slice available to that organizer. No separate grant document exists: the participant application flow that wrote `participantOrganizerDataGrants` was retired in #1679. |
 | Organizer CRM/customer history | `organizerContacts` and its organizer-scoped event, note, trait, campaign, and commerce projections | Facts the organizer acquired through its own events and workflows. It must not be hydrated from private `users` fields merely because an identity link exists. |
 | Platform reconciliation | Server-side joins across the preceding stores | Catch may resolve the same authenticated person across organizers, but employee-facing reads must remain purpose-scoped, role-gated, masked where possible, and audited. There is no universal raw-PII client projection. |
 
@@ -5880,8 +5907,8 @@ reviewed again before every submission. Authentication proves ownership of the
 private suggestions; it grants the organizer nothing. Portable intake is
 separate from `users/{uid}` and cannot overwrite an existing Consumer profile.
 An organizer receives only the exact
-fields and purpose recorded by
-`participantOrganizerDataGrants/{grantId}` for that application/response; a
+fields and purpose recorded with that application's response (the snapshot
+and its per-question consent; there is no separate grant document); a
 global phone or email
 identity never implies cross-organizer visibility. Organizer-proprietary
 questions such as a preferred cocktail remain in that organizer's application
@@ -7413,8 +7440,8 @@ Event Assistance grant. The receipt union distinguishes verified-participant
 decisions from revocation-only message-link decisions with a null actor UID.
 Authenticated endpoint STOP evidence also suppresses the saved preference.
 
-The App-Check-protected `getEventWhatsappPreference` and
-`setEventWhatsappPreference` callables require the roster's linked UID. Scope
+The App-Check-protected `getEventMessagePreference` and
+`setEventMessagePreference` (channel `whatsapp`) callables require the roster's linked UID. Scope
 includes the exact sender ID; most-recently-updated connection selection cannot
 silently switch consent. Grants additionally require the matching signed phone
 claim, an admitted participant, eligible event, reviewed sender policy and
@@ -7467,7 +7494,7 @@ the immutable guest grant hash. A changed identity or longer consent lifetime
 requires a new link for dispatch; an existing link cannot silently acquire that
 authority. The grant exposes no secret or recipient phone number.
 
-`getEventWhatsappWithdrawal` and `withdrawEventWhatsapp` are App-Check-protected,
+`getEventMessageWithdrawal` and `withdrawEventMessage` (channel `whatsapp`) are App-Check-protected,
 network- and credential-rate-limited bearer callables. They return only the
 permission state, revision and validity. Withdrawal has the original consent
 lifetime and needs no current event, roster, sender or instruction availability.
@@ -7747,7 +7774,7 @@ keeps uncertain writes frozen and displays current replay/conflict state.
 The native Event messages sheet mounts the shared per-channel sender controller
 through verified attendee identity. Deployed enrollment remains unverified.
 
-`listEventSmsPreferences` selects the saved `catchEventSms` runtime route and
+`listEventMessagePreferences` (channel `sms`) selects the saved `catchEventSms` runtime route and
 returns participant-owned historical sender IDs from the private permission
 collection. The composite index binds live mode, organizer, event, attendee,
 consent subject UID and document-ID order. Each page scans at most 51 rows and
@@ -7832,7 +7859,7 @@ expire this narrowly scoped ability to withdraw; it grants no event read/reply
 access. A revoked guest grant invalidates both uses. Reusing a link for a new
 recipient or a longer consent lifetime requires a fresh grant before dispatch.
 
-`getEventAssistanceSmsWithdrawal` and `withdrawEventAssistanceSms` require that
+`getEventMessageWithdrawal` and `withdrawEventMessage` (channel `sms`) require that
 bearer capability, App Check and network/credential rate limits. They need no
 current event, roster or sender status, so cancellation cannot obstruct opt-out.
 They expose only text status, revision and validity, with no name, phone or event

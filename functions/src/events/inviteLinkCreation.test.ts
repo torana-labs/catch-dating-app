@@ -47,7 +47,7 @@ test("a host channel link stores the link and its secret with every counter at z
     issuanceChannel: "hostApp", destinationKind: "catchEvent", tokenVersion: 2, attributionWindowEndsAt: null,
     openCount: 0, likelyHumanOpenCount: 0, shareIntentCount: 0, verifiedRegistrationCount: 0,
     referredRegistrationCount: 0, referredCheckedInCount: 0, requestCount: 0, confirmedCount: 0, paidCount: 0,
-    checkedInCount: 0, catcherCount: 0, matchCount: 0, chatStartedCount: 0, disabledAt: null,
+    checkedInCount: 0, disabledAt: null,
     createdAt: SERVER_TIME, updatedAt: SERVER_TIME,
   });
   assert.deepEqual(db.read(`eventInviteLinkSecrets/${created.inviteLinkId}`), {

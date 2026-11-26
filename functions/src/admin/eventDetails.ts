@@ -52,6 +52,8 @@ import {HOST_PILOT_REVIEWS, HOST_ACTIVATIONS, nextPilotReview} from
   "../acquisition/pilotActivation";
 import type {HostPilotEventReviewDocument} from
   "../shared/generated/hostPilotEventReviewDocument";
+import {readEventWithCohortCounts} from
+  "../domain/events/eventCohortCounts";
 
 const eventDetailsRoles = ["admin", "adminOwner", "support"] as const;
 type EventListTimeWindow = "upcoming" | "past" | "all";
@@ -356,8 +358,9 @@ export async function adminUpdateEventDetailsHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
-    const before = requireAdminRichEvent(
-      requireDoc<EventDocument>(eventSnap, "EventDocument"));
+    const before = await readEventWithCohortCounts(tx, db, data.eventId,
+      requireAdminRichEvent(
+        requireDoc<EventDocument>(eventSnap, "EventDocument")));
     if (before.status === "cancelled") {
       throw new HttpsError(
         "failed-precondition",

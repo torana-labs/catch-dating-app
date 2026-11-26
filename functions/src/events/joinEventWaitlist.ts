@@ -26,6 +26,8 @@ import {
   eventParticipationPatch,
   eventBookingsByStatusInTransaction,
 } from "../shared/relationshipDocuments";
+import {readBookingCohort, writeBookingCohort} from
+  "../shared/bookingPrivateFacts";
 import {checkRateLimit} from "../shared/rateLimit";
 import {
   claimUserEventScheduleInTransaction,
@@ -56,6 +58,8 @@ import {
   InviteAttribution,
 } from "./inviteLinks";
 import {updateEventBookingCounters} from "../domain/events/eventDocumentWrites";
+import {readEventWithCohortCounts} from
+  "../domain/events/eventCohortCounts";
 
 interface WaitlistDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -134,7 +138,8 @@ export async function joinEventWaitlistHandler(
       eventSnap.data()?.organizerId ?? null, Date.now());
     await requireEventSeatLedger({db, tx, eventId});
 
-    const event = eventSnap.data() as EventDocument;
+    const event = await readEventWithCohortCounts(tx, db, eventId,
+      eventSnap.data() as EventDocument);
     const user = userSnap.data() as UserProfileDocument;
     if (event.status === "cancelled") {
       throw new HttpsError(
@@ -225,11 +230,11 @@ export async function joinEventWaitlistHandler(
         uid: userId,
         status: "waitlisted",
         genderAtSignup: user.gender,
-        cohortAtSignup,
       }),
       ...inviteAttributionWriteFields(inviteAttribution),
     };
     tx.set(participationRef, waitlisting, {merge: true});
+    writeBookingCohort({db, tx, eventId, uid: userId, cohortAtSignup});
     incrementInviteLinkCounterInTransaction({
       tx,
       db,
@@ -315,7 +320,8 @@ export async function leaveEventWaitlistHandler(
     }
     await requireEventSeatLedger({db, tx, eventId});
 
-    const event = eventSnap.data() as EventDocument;
+    const event = await readEventWithCohortCounts(tx, db, eventId,
+      eventSnap.data() as EventDocument);
     const existingParticipation = participationSnap.exists ?
       participationSnap.data() as {status?: string} :
       null;
@@ -326,9 +332,8 @@ export async function leaveEventWaitlistHandler(
     }
     const scheduledEvent = requireEventTimeRange(event);
 
-    const cohortAtSignup =
-      (existingParticipation as {cohortAtSignup?: string} | null)
-        ?.cohortAtSignup;
+    const cohortAtSignup = await readBookingCohort({db, tx, eventId,
+      uid: userId, booking: existingParticipation});
     const currentWaitlistedCount =
       event.waitlistedCount ?? 1;
     const rosterSlot = await readCatchBookingRoster({db, tx, eventId,

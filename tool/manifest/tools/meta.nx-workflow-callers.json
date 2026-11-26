@@ -12,6 +12,7 @@
   ],
   "impactPaths": [
     "tool/nx/workflow_callers.test.mjs",
+    "tool/nx/lanes.mjs",
     "tool/nx/shadow_plan.mjs",
     "tool/harness/component_graph.json",
     "tool/harness/lib/component_graph.mjs",

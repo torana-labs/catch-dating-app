@@ -21,6 +21,12 @@ rules:
       # only reads artifacts.
       - test-read-map.yml
       - proof-reuse-daily.yml
+      # Wakes only after main's own push CI runs (same repository, branch
+      # main) and on its cron, checks out main's tool/ci only, reads nothing
+      # from the triggering run beyond its event, repository and branch, and
+      # its one write is the dispatch job's fixed `gh workflow run ci.yml
+      # --ref main -f nightly=true` (owner decision, 26 Nov 2026).
+      - ci-nightly.yml
   unpinned-uses:
     ignore:
       # Open work owns these files: codex/deploy-one-cli-run (backend deploy,

@@ -479,7 +479,6 @@ test("createEventHandler creates a server-owned event for the club host",
       bookedCount: 0,
       crossPathsPairHeldCount: 0,
       crossPathsPairConfirmedCount: 0,
-      crossPathsPairHeldCohortCounts: {},
       checkedInCount: 0,
       waitlistedCount: 0,
       status: "active",
@@ -517,8 +516,6 @@ test("createEventHandler creates a server-owned event for the club host",
         settlement: {hostPayoutTiming: "afterEventCompletion"},
       },
       genderCounts: {},
-      cohortCounts: {},
-      waitlistedCohortCounts: {},
     });
   }
 );

@@ -82,7 +82,6 @@ export interface EventSuccessCatchAggregates {
   catchSentCount: number;
   attendeesWhoCaughtSomeone: number;
   catchRecipientCount: number;
-  catcherUids?: string[];
 }
 
 export interface EventHostFunnelMetrics {
@@ -180,8 +179,7 @@ export async function refreshEventSuccessScorecard(
   // Host inquiries may carry event provenance, but they are support threads,
   // not attendee-to-attendee connections. Keep legacy dating matches whose
   // conversationType predates the discriminator while excluding every
-  // organizerHostInquiry before the shared scorecard, funnel, and
-  // invite-link paths.
+  // organizerHostInquiry before the shared scorecard and funnel paths.
   const matches = matchesSnap.docs
     .map((doc) => doc.data() as MatchDocument)
     .filter(isDatingMatch);
@@ -241,14 +239,6 @@ export async function refreshEventSuccessScorecard(
     .collection(eventSuccessScorecardsCollection)
     .doc(eventId)
     .set(scorecard, {merge: true});
-  await updateInviteLinkConnectionCounters({
-    db,
-    eventId,
-    participations,
-    matches,
-    catchAggregates,
-    updatedAt: deps.serverTimestamp(),
-  });
 }
 
 /**
@@ -743,93 +733,7 @@ async function loadCatchAggregates(params: {
     catchSentCount: decisionKeys.size,
     attendeesWhoCaughtSomeone: senderUids.size,
     catchRecipientCount: recipientUids.size,
-    catcherUids: [...senderUids],
   };
-}
-
-/**
- * Refreshes per-link connection counters from canonical match and swipe data.
- * @param {object} params Event data needed for invite-link counter updates.
- * @return {Promise<void>} Resolves once link documents have been updated.
- */
-async function updateInviteLinkConnectionCounters(params: {
-  db: FirebaseFirestore.Firestore;
-  eventId: string;
-  participations: EventBookingDocument[];
-  matches: MatchDocument[];
-  catchAggregates: EventSuccessCatchAggregates;
-  updatedAt: FirebaseFirestore.FieldValue;
-}): Promise<void> {
-  const linksSnap = await params.db
-    .collection("eventInviteLinks")
-    .where("eventId", "==", params.eventId)
-    .get();
-  if (linksSnap.empty) return;
-
-  const inviteLinkByUid = new Map<string, string>();
-  for (const participation of params.participations) {
-    if (
-      participation.status !== "attended" ||
-      typeof participation.uid !== "string" ||
-      typeof participation.inviteLinkId !== "string" ||
-      participation.inviteLinkId.length === 0
-    ) {
-      continue;
-    }
-    inviteLinkByUid.set(participation.uid, participation.inviteLinkId);
-  }
-
-  const aggregates = new Map<string, {
-    catcherUids: Set<string>;
-    matchIds: Set<string>;
-    chatStartedMatchIds: Set<string>;
-  }>();
-  const aggregateFor = (inviteLinkId: string) => {
-    let aggregate = aggregates.get(inviteLinkId);
-    if (!aggregate) {
-      aggregate = {
-        catcherUids: new Set<string>(),
-        matchIds: new Set<string>(),
-        chatStartedMatchIds: new Set<string>(),
-      };
-      aggregates.set(inviteLinkId, aggregate);
-    }
-    return aggregate;
-  };
-
-  for (const uid of params.catchAggregates.catcherUids ?? []) {
-    const inviteLinkId = inviteLinkByUid.get(uid);
-    if (!inviteLinkId) continue;
-    aggregateFor(inviteLinkId).catcherUids.add(uid);
-  }
-
-  params.matches
-    .filter((match) => isDatingMatch(match) && match.status === "active")
-    .forEach((match, index) => {
-      const matchKey = inviteMetricMatchKey(match, index);
-      const participantIds = participantIdsForMatch(match);
-      for (const uid of participantIds) {
-        const inviteLinkId = inviteLinkByUid.get(uid);
-        if (!inviteLinkId) continue;
-        const aggregate = aggregateFor(inviteLinkId);
-        aggregate.matchIds.add(matchKey);
-        if (match.lastMessageAt != null) {
-          aggregate.chatStartedMatchIds.add(matchKey);
-        }
-      }
-    });
-
-  const batch = params.db.batch();
-  for (const doc of linksSnap.docs) {
-    const aggregate = aggregates.get(doc.id);
-    batch.set(doc.ref, {
-      catcherCount: aggregate?.catcherUids.size ?? 0,
-      matchCount: aggregate?.matchIds.size ?? 0,
-      chatStartedCount: aggregate?.chatStartedMatchIds.size ?? 0,
-      updatedAt: params.updatedAt,
-    }, {merge: true});
-  }
-  await batch.commit();
 }
 
 /**
@@ -888,7 +792,6 @@ function emptyCatchAggregates(): EventSuccessCatchAggregates {
     catchSentCount: 0,
     attendeesWhoCaughtSomeone: 0,
     catchRecipientCount: 0,
-    catcherUids: [],
   };
 }
 
@@ -1054,34 +957,6 @@ function shouldRefreshForInviteLinkChange(
     before[field as keyof EventInviteLinkDocument] !==
     after[field as keyof EventInviteLinkDocument]
   );
-}
-
-/**
- * Returns the unique participant ids represented by a match document.
- * @param {MatchDocument} match Match document payload.
- * @return {string[]} Unique participant ids.
- */
-function participantIdsForMatch(match: MatchDocument): string[] {
-  const participantIds = Array.isArray(match.participantIds) ?
-    match.participantIds.filter((uid): uid is string =>
-      typeof uid === "string" && uid.length > 0
-    ) :
-    [];
-  if (participantIds.length > 0) return [...new Set(participantIds)];
-  return [...new Set([match.user1Id, match.user2Id].filter(
-    (uid): uid is string => typeof uid === "string" && uid.length > 0
-  ))];
-}
-
-/**
- * Builds a stable dedupe key for per-invite match attribution.
- * @param {MatchDocument} match Match document payload.
- * @param {number} index Match index used as a fallback key.
- * @return {string} Stable match metric key.
- */
-function inviteMetricMatchKey(match: MatchDocument, index: number): string {
-  const pairKey = participantIdsForMatch(match).sort().join("__");
-  return pairKey.length > 0 ? pairKey : `match_${index}`;
 }
 
 /**

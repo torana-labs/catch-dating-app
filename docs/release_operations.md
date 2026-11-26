@@ -341,7 +341,10 @@ path, and invokes reusable validation workflows only for affected targets.
 Pull requests, merge queues, main pushes, and nightly full validation use the
 explicit `pr`, `merge_group`, `main`, and `nightly` graph modes respectively.
 For `pr`, `merge_group` and `main`, `tool/nx/select_lanes.mjs` runs the lanes
-`nx affected` selects, and only those (design A; main from 22 Nov 2026). The planner's selection is a
+`nx affected` selects, and only those (design A; main from 22 Nov 2026). The
+lane list, the Nx project-to-lane map and the per-mode rules (capture freshness
+for app inputs in the queue only, iOS only for a native or build input, the slow
+lanes left to the queue) are `selectNxLanes` in `tool/nx/lanes.mjs`. The planner's selection is a
 shadow. The plan summary lists each lane the planner would also run, with the
 `shadow_plan.mjs` rule that explains it, or UNEXPLAINED. The count of
 unexplained lanes is the `planner_unexplained` output and is also stored in the
@@ -367,7 +370,7 @@ the Nx query (about 10 s) to a run that executes lanes for about 20 minutes.
 On main the native app builds (`flutter_build_android`, `_ios`, `_web`) run
 only for a native build input (owner decision, 22 Nov 2026): native project
 folders, pubspec files and lockfiles, Gradle, CocoaPods and Xcode files, and
-native plugin code (`nativeBuildInputGlobs` in `shadow_plan.mjs`). A Dart-only
+native plugin code (`nativeBuildInputGlobs` in `tool/nx/lanes.mjs`). A Dart-only
 app change relies on the merge queue's web smoke and the nightly full builds,
 so main runs neither; a build lane the CI caller graph selects (its workflow, a
 script it runs, a selector) still runs (`mainBuildLanes`). Main's builds upload
@@ -675,6 +678,33 @@ decision, 22 Nov 2026; evidence in
 
 The job takes no plan selection, and uploads `semantic-timings-<run>-<attempt>` for the budget report.
 
+### Tool buckets
+
+The full Tools matrix (control-plane changes, the nightly, a full dispatch)
+runs every active tool in six jobs, `Tool checks (bucket-1)` to
+`(bucket-6)`. `tool/ci/tool_buckets.mjs` (manifest `ci:tool-buckets`) assigns
+each tool to exactly one bucket by longest-first balancing over the measured
+seconds in `tool/ci/tool_bucket_timings.json`. Tools that share a check command
+or the shared Functions build are placed together, so the runner still runs
+each shared command once. A tool the file does not list
+yet counts as its `defaultSeconds`. Each bucket installs the browser only when
+the CI requirements of its tools need it, by the same projection the affected
+job uses.
+
+- See the split: `node tool/ci/tool_buckets.mjs plan`.
+- One bucket's tools or setup: `ids --bucket <n>`, `setup --bucket <n>`.
+- Refresh the timings after the buckets drift (the test fails when bucket
+  loads differ by more than a minute): save each bucket job's log from a recent
+  full-matrix run as `<run-id>-<job>.log`, then run
+  `node tool/ci/tool_buckets.mjs regenerate --runs <run-id,...> <log>...`.
+  GitHub returns only a log's last lines, so a long bucket log can start
+  partway; add `--fallback tool/ci/tool_bucket_timings.json` to keep the
+  current seconds for tools the new logs do not cover.
+  Logs from several runs are averaged per tool.
+
+Bucket names carry no meaning: no ruleset, Required CI need or test pins a
+tool to a named bucket, so a regenerated split changes only which job runs it.
+
 ### Selected Check Contracts
 
 The graph selects obligations; selection is not execution evidence. Selector-control
@@ -767,8 +797,9 @@ Local `node tool/harness/verify_local.mjs --base origin/main --list` resolves
 Tools checks through the same affected-tool planner and registered runner as CI,
 including full fallback. Literal package working directories are preserved;
 commands with unresolved environment or Actions context remain explicit gaps.
-Each Tools category bucket uses one runner invocation, so identical registered
-commands execute once across its categories in their declared order. Repeated
+Each Tools bucket uses one runner invocation, so identical registered commands
+execute once across its tools in manifest order; tools that share a command are
+always assigned to the same bucket (see Tool buckets). Repeated
 `--category` arguments retain that behavior locally; every category must exist
 before any check executes. Local checks
 stop on shell pipeline failures and incomplete ownership cannot report success.
@@ -815,7 +846,7 @@ pack. Failure or cancellation of the owning Tools lane still fails Required CI.
 
 Design parity source checks are explicit commands in the tools manifest (`tool/manifest/tools/`),
 shared by the local umbrella and the tool runner. Identical scanner commands run
-once within the Marketing/design tool bucket. Whole-product similarity and
+once: their tools always share one tool bucket. Whole-product similarity and
 advisory migration reports remain explicit `--reports` output. These prove
 source contracts, never live visual parity; generated reports do not replace UI
 journeys, renderer tests or ownership checks.
@@ -2588,7 +2619,7 @@ commit on main touched the workflow file by that cron time, the check reads
 |---|---|---|---|
 | Firestore Data Validation (`data-validation.yml`) | 20:13 | Not dispatched: it uses prod, though read-only | "Scheduled run missed" |
 | Deploy backend (`backend-deploy.yml`) | 21:13 | Dispatched once for dev; prod is never dispatched | "Scheduled run missed" |
-| CI nightly (`ci.yml`) | 02:23 | Dispatched once with `full`; the night counts as unknown | "Main CI is red" |
+| CI nightly (`ci.yml`, started by `ci-nightly.yml`) | 02:23 (also after main push CI, once a day from 02:00); only a run titled "CI nightly" counts | Backfilled once with a `full` dispatch; the night counts as unknown | "Main CI is red" |
 | Test read map (`test-read-map.yml`) | 03:41 (also after main push CI, once a day from 00:00) | Not dispatched: report-only shadow job | "Scheduled run missed" |
 | Proof reuse daily (`proof-reuse-daily.yml`) | 05:17 (also after main push CI, once a day from 02:00) | Not dispatched: report-only; dispatch it with that day's `date` | "Scheduled run missed" |
 
@@ -2730,6 +2761,28 @@ A dispatch always runs. Every other wake that day finds the artifact and skips,
 and each workflow's concurrency group keeps two wakes from working at once.
 The Scheduled run watchdog counts a run of either workflow from that first
 working hour of the day, so a wake before the cron time is not a miss.
+
+The CI nightly works the same way (owner decision, 26 Nov 2026), except that
+the day's work is a dispatch. `ci.yml` has no cron of its own any more.
+`.github/workflows/ci-nightly.yml` wakes after main's push CI and on its
+fallback cron (02:23 UTC), and its gate (`tool/ci/ci_nightly.mjs`) lets the
+first wake from 02:00 UTC dispatch `ci.yml` on `main` with `nightly: true`.
+That run is titled "CI nightly" and runs every lane in full. The dispatch job
+then uploads the marker `ci-nightly-<today>` (kept 3 days). A later wake that
+day skips when it finds the marker or a "CI nightly" run created today, so the
+nightly runs at most once per UTC day even if a marker upload fails.
+
+- Only the dispatch job holds `actions: write`, and its command is fixed:
+  `gh workflow run ci.yml --ref main -f nightly=true`. No other workflow may
+  dispatch the nightly. To run one by hand, dispatch `ci.yml` with `nightly`.
+- Everything nightly-only keys on that, not on a schedule event: the visual
+  reports, the full plan, the semantic gates' blocking and timings, the capture
+  native probe, and, through `isNightlyRun` (a dispatch titled "CI nightly", or
+  a scheduled run from before 26 Nov 2026), the Main CI alert, the golden
+  policy, the selection miss report, the semantic budget and CI metrics.
+- The Scheduled run watchdog counts only a "CI nightly" run from 02:00. A
+  missed night is still backfilled with one `full` dispatch, which is not
+  titled "CI nightly".
 
 ### Semantic check replay
 

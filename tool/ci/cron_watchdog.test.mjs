@@ -21,8 +21,11 @@ const only = (id) => [target(id)];
 test("every watched cron matches its workflow's own schedule, and each has workflow_dispatch", () => {
   for (const entry of TARGETS) {
     const source = fs.readFileSync(new URL(`../../.github/workflows/${entry.workflow}`, import.meta.url), "utf8");
-    const crons = [...source.matchAll(/- cron:\s*['"]([^'"]+)['"]/gu)].map((match) => match[1]);
-    assert.deepEqual(crons, [entry.cron], entry.workflow);
+    const scheduled = fs.readFileSync(new URL(`../../.github/workflows/${entry.scheduleIn ?? entry.workflow}`, import.meta.url), "utf8");
+    const crons = [...scheduled.matchAll(/- cron:\s*['"]([^'"]+)['"]/gu)].map((match) => match[1]);
+    assert.deepEqual(crons, [entry.cron], entry.scheduleIn ?? entry.workflow);
+    // The workflow that holds the cron is not also scheduled elsewhere.
+    if (entry.scheduleIn) assert.doesNotMatch(source, /^\s+schedule:/mu, entry.workflow);
     assert.match(source, /^\s+workflow_dispatch:/mu, entry.workflow);
     for (const name of Object.keys({...entry.dispatch, ...entry.ask})) {
       assert.match(source, new RegExp(`^\\s{6}${name}:`, "mu"), `${entry.workflow} has input ${name}`);
@@ -234,7 +237,7 @@ test("a once-a-day target counts a push-CI wake from its first hour, even before
 });
 
 test("the once-a-day targets match their workflows: push-CI wake, gate and concurrency", () => {
-  for (const entry of TARGETS.filter((item) => item.dailyFrom !== undefined)) {
+  for (const entry of TARGETS.filter((item) => item.dailyFrom !== undefined && !item.scheduleIn)) {
     const source = fs.readFileSync(new URL(`../../.github/workflows/${entry.workflow}`, import.meta.url), "utf8");
     assert.match(source, /workflow_run:\n\s+workflows: \[CI\]\n\s+types: \[completed\]\n\s+branches: \[main\]/u, entry.workflow);
     assert.match(source, /github\.event\.workflow_run\.event == 'push' &&\n\s+github\.event\.workflow_run\.head_repository\.full_name == github\.repository &&\n\s+github\.event\.workflow_run\.head_branch == 'main'/u, entry.workflow);
@@ -243,4 +246,24 @@ test("the once-a-day targets match their workflows: push-CI wake, gate and concu
     assert.match(source, /^concurrency:\n\s+group: /mu, entry.workflow);
     assert.match(source, /needs\.gate\.outputs\.run == 'true'/u, entry.workflow);
   }
+});
+
+
+test("the nightly counts only the dispatched or scheduled nightly, from 02:00, and its trigger is ci-nightly.yml", () => {
+  const nightly = target("nightly-ci");
+  assert.equal(nightly.scheduleIn, "ci-nightly.yml");
+  const trigger = fs.readFileSync(new URL("../../.github/workflows/ci-nightly.yml", import.meta.url), "utf8");
+  assert.match(trigger, /workflow_run:\n\s+workflows: \[CI\]\n\s+types: \[completed\]\n\s+branches: \[main\]/u);
+  assert.match(trigger, /run: node tool\/ci\/ci_nightly\.mjs\n/u);
+  const now = at("2026-11-27T06:00:00Z");
+  const check = (runs) => decide({now, graceHours: 3, repository, runs: {"nightly-ci": runs}, records: new Set(),
+    targets: only("nightly-ci")}).checks[0].status;
+  // A scheduled nightly from before the switch still counts.
+  assert.equal(check([{created_at: "2026-11-27T02:30:00Z", event: "schedule", display_title: "CI"}]), "started");
+  // ci-nightly.yml dispatched it at 02:05, after a main push and before the 02:23 cron time.
+  assert.equal(check([{created_at: "2026-11-27T02:05:00Z", event: "workflow_dispatch", display_title: "CI nightly"}]), "started");
+  // A push run, a full dispatch by hand or a nightly from the day before is not today's nightly.
+  assert.equal(check([{created_at: "2026-11-27T03:00:00Z", event: "push", display_title: "CI"},
+    {created_at: "2026-11-27T03:10:00Z", event: "workflow_dispatch", display_title: "CI"},
+    {created_at: "2026-11-26T02:30:00Z", event: "workflow_dispatch", display_title: "CI nightly"}]), "unknown");
 });

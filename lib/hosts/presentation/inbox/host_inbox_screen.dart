@@ -9,14 +9,11 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_pages_controller.dart';
+import 'package:catch_dating_app/hosts/people/conversation/conversation_programme_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_catch_pages_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_person_page_body.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_program_audience_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_scope_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_page_body.dart';
 import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/pages/inbox/widgets/chats_empty_state.dart';
@@ -86,7 +83,6 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
   bool _campaignBusy = false;
   String? _accountId;
   String? _selectedThreadId;
-  final _threadDrafts = HostReplyDrafts();
 
   @override
   void initState() {
@@ -116,12 +112,6 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
   }
 
   @override
-  void dispose() {
-    _threadDrafts.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final now = widget.now ?? DateTime.now();
@@ -129,7 +119,6 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     final uid = uidState.value;
     if (_accountId != null && _accountId != uid && !uidState.isLoading) {
-      _threadDrafts.clear();
       _selectedThreadId = null;
     }
     if (!uidState.isLoading) _accountId = uid;
@@ -257,21 +246,12 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
         ),
       );
     }
-    final detail = selectedThreadId == null || selectedOrganizer == null
-        ? CatchEmptyState(
-            icon: CatchIcons.chat,
-            title: context.l10n.hostInboxSelectConversationTitle,
-            message: context.l10n.hostInboxSelectConversationBody,
-          )
-        : HostInboxPersonPageBody(
-            organizerId: selectedOrganizer.id,
-            selection: selectedThreadId,
-            scope: _requestedScope,
-            now: now,
-            segment: _segment,
-            drafts: _threadDrafts,
-            onBack: _closePerson,
-          );
+    // A conversation opens on Messages; the inbox keeps only Sends.
+    final detail = CatchEmptyState(
+      icon: CatchIcons.chat,
+      title: context.l10n.hostInboxSelectConversationTitle,
+      message: context.l10n.hostInboxSelectConversationBody,
+    );
 
     return CatchScaffold.workspace(
       backgroundColor: t.bg,

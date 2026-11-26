@@ -43,6 +43,8 @@ import {
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
 import {readConsumerPushToken} from "../shared/consumerPushToken";
+import {readBookingCohort, writeBookingCohort} from
+  "../shared/bookingPrivateFacts";
 import {
   prepareUserEventScheduleClaimInTransaction,
   releaseUserEventScheduleInTransaction,
@@ -82,6 +84,8 @@ import {processLegacyCancellationRefund} from
 import {NativeCancellationRefundProvider} from
   "../payments/legacyRefunds/provider";
 import {updateEventBookingCounters} from "../domain/events/eventDocumentWrites";
+import {readEventWithCohortCounts} from
+  "../domain/events/eventCohortCounts";
 
 interface PromotionPush {
   token: string;
@@ -200,19 +204,14 @@ export async function cancelEventSignUpHandler(
       throw new HttpsError("not-found", "User profile not found.");
     }
 
-    const event = requireDoc<EventDocument>(
-
-      eventSnap,
-
-      "EventDocument"
-
-    );
+    const event = await readEventWithCohortCounts(tx, db, eventId,
+      requireDoc<EventDocument>(eventSnap, "EventDocument"));
     const user = requireDoc<UserProfileDocument>(
       userSnap,
       "UserProfileDocument"
     );
     const participation = participationSnap.exists ?
-        participationSnap.data() as {status?: string; cohortAtSignup?: string;
+        participationSnap.data() as {status?: string;
           paymentId?: string | null} :
       null;
     // An organizer-routed paid booking is refunded from the organizer's
@@ -251,8 +250,8 @@ export async function cancelEventSignUpHandler(
     const scheduledEvent = requireEventTimeRange(event);
 
     const cancellerGender = user.gender;
-    const cancellerCohort =
-        participation?.cohortAtSignup ?? cohortIdForUser(user);
+    const cancellerCohort = await readBookingCohort({db, tx, eventId,
+      uid: userId, booking: participation}) ?? cohortIdForUser(user);
     const policy = eventPolicyFromEvent(event);
     const refundIntent = payment ? planLegacyCancellationRefund({payment,
       reason: event.status === "cancelled" ?
@@ -334,6 +333,7 @@ export async function cancelEventSignUpHandler(
         {uid: string; token?: string; title: string; body: string} | null =
         null;
     let promotedUid: string | null = null;
+    let promotedCohort: string | null = null;
     let promotedScheduleClaim: {apply: () => void} | null = null;
 
     // Revalidate current profile and policy before promoting a waitlist user.
@@ -362,7 +362,8 @@ export async function cancelEventSignUpHandler(
           eventAgeEligibility(event, waitlistUser,
             new Date(deps.nowMillis()))?.eligible === false) continue;
       const wGender = waitlistUser.gender;
-      const wCohort = waitlistedParticipation.data.cohortAtSignup ??
+      const wCohort = await readBookingCohort({db, tx, eventId,
+        uid: waitlistUserId, booking: waitlistedParticipation.data}) ??
           cohortIdForUser(waitlistUser);
       const nextRoster = {
         ...rosterFromEvent({...event, cohortCounts: newCohortCounts}),
@@ -405,6 +406,7 @@ export async function cancelEventSignUpHandler(
 
       // Promote this user.
       promotedUid = waitlistUserId;
+      promotedCohort = wCohort;
       const promotedOfferId = eventWaitlistOfferId(eventId, waitlistUserId);
       const promotionTimestamp =
           admin.firestore.Timestamp.fromMillis(deps.nowMillis());
@@ -428,7 +430,6 @@ export async function cancelEventSignUpHandler(
         uid: waitlistUserId,
         status: "signedUp",
         genderAtSignup: wGender,
-        cohortAtSignup: wCohort,
       });
       promotedParticipationPatch.waitlistOfferStatus = "accepted";
       promotedParticipationPatch.waitlistOfferedAt = promotionTimestamp;
@@ -442,7 +443,8 @@ export async function cancelEventSignUpHandler(
         eventId,
         organizerId: event.organizerId,
         uid: waitlistUserId,
-        cohortAtOffer: wCohort,
+        // The reserved cohort lives in eventBookingPrivateFacts (#2493).
+        cohortAtOffer: admin.firestore.FieldValue.delete(),
         status: "accepted",
         source: "cancellation",
         offeredBy: null,
@@ -546,7 +548,6 @@ export async function cancelEventSignUpHandler(
       uid: userId,
       status: "cancelled",
       genderAtSignup: cancellerGender,
-      cohortAtSignup: cancellerCohort,
     });
     tx.set(participationRef, cancellation, {merge: true});
     const rosterNow = admin.firestore.Timestamp.now();
@@ -563,6 +564,10 @@ export async function cancelEventSignUpHandler(
       tx.set(promotedParticipationRef, promotedParticipationPatch, {
         merge: true,
       });
+      if (promotedUid && promotedCohort) {
+        writeBookingCohort({db, tx, eventId, uid: promotedUid,
+          cohortAtSignup: promotedCohort, cohortAtOffer: promotedCohort});
+      }
       if (promotedRoster) {
         writeCatchBookingRoster({db, tx, slot: promotedRoster,
           booking: participationAfterPatch(promotedBefore ?? undefined,

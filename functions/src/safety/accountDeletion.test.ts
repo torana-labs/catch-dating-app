@@ -870,8 +870,12 @@ function readySeatSeed(options: {host?: boolean; catchMirror?: boolean;
 }
 
 test("ready account deletion releases the last seat exactly once", async () => {
-  const h = createAccountDeletionHarness({seed: readySeatSeed({
-    catchMirror: true, status: "attended"}), now: {kind: "serverTimestamp"}});
+  const seed = readySeatSeed({catchMirror: true, status: "attended"});
+  // The booking cohort (sexual orientation) goes with the account (#2493).
+  seed["eventBookingPrivateFacts/event1_runner1"] = {eventId: "event1",
+    uid: "runner1", cohortAtSignup: "queerOrOpen"};
+  const h = createAccountDeletionHarness({seed,
+    now: {kind: "serverTimestamp"}});
   const command = {db: h.deps.firestore(), uid: "runner1",
     now: admin.firestore.FieldValue.serverTimestamp(),
     nowMillis: 1000};
@@ -889,6 +893,7 @@ test("ready account deletion releases the last seat exactly once", async () => {
     "event1", "runner1")}`].state, "revoked");
   assert.equal(h.rows["eventBookings/event1_runner1"].status,
     "deleted");
+  assert.equal(h.rows["eventBookingPrivateFacts/event1_runner1"], undefined);
   assert.equal(Object.keys(h.rows).filter((path) =>
     path.startsWith("eventSeatRequestReceipts/")).length, 1);
   await deleteAccountEventParticipations(command);

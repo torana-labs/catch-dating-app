@@ -24,6 +24,8 @@
 //
 // Usage: node tool/ci/proof_reuse_report.mjs [--date YYYY-MM-DD] --out <dir>
 //   (GH_TOKEN, GITHUB_REPOSITORY set; the date defaults to yesterday in UTC)
+//   Each API read is tried up to 3 times when GitHub answers 5xx (2 s, then 4 s
+//   apart; PROOF_REUSE_RETRY_BASE_MS overrides the 2 s); writes are never repeated.
 import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
 import fs from "node:fs";
@@ -164,8 +166,34 @@ export function summaryMarkdown(daily) {
   ].join("\n");
 }
 
+/** Attempts per API read; the 24 Nov roll-up died on one HTTP 502 (run 45646680534). */
+export const GH_ATTEMPTS = 3;
+
+/** A failed `gh api` call worth repeating: GitHub answered with a 5xx. */
+export const transientGhFailure = (stderr) => /\bHTTP 5\d\d\b/u.test(String(stderr ?? ""));
+
+const sleepSync = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+
+/**
+ * Runs `call` (a spawnSync-style result producer) until it succeeds, up to
+ * `attempts` times, waiting baseMs, then 2 x baseMs, between attempts. Only a
+ * 5xx is retried; any other failure is returned at once.
+ */
+export function withRetry(call, {attempts = GH_ATTEMPTS, baseMs = 2000, sleep = sleepSync} = {}) {
+  let result;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    result = call();
+    if (result.status === 0 || !transientGhFailure(result.stderr) || attempt === attempts) return result;
+    sleep(baseMs * 2 ** (attempt - 1));
+  }
+  return result;
+}
+
+// Reads only: a POST is never repeated, so a miss is never posted twice.
 function gh(args, {binary = false} = {}) {
-  const result = spawnSync("gh", args, {encoding: binary ? undefined : "utf8", maxBuffer: 64 * 1024 * 1024});
+  const baseMs = Number(process.env.PROOF_REUSE_RETRY_BASE_MS ?? 2000);
+  const result = withRetry(() => spawnSync("gh", args, {encoding: binary ? undefined : "utf8", maxBuffer: 64 * 1024 * 1024}),
+    {baseMs});
   assert.equal(result.status, 0, `gh ${args.at(-1)}: ${String(result.stderr).trim().split("\n")[0]}`);
   return binary ? result.stdout : JSON.parse(result.stdout);
 }

@@ -2480,7 +2480,7 @@ and event/sender-day budgets in the same transaction as dispatch authority.
 A permission must use the Catch event-service copy and verified subject;
 existing organizer marketing opt-ins cannot grant this purpose. Verified guest
 registration and the no-download runtime now offer optional event text controls
-through `getEventAssistanceSmsPreference` and `setEventAssistanceSmsPreference`.
+through `getEventMessagePreference` and `setEventMessagePreference` (channel `sms`).
 The server records exact consent receipts with the current permission and
 requires their matching hash before dispatch. Repeat requests are idempotent;
 withdrawal fences old grants. Each preference view includes a review hash.
@@ -2543,7 +2543,7 @@ revision. Dispatch, sender-history discovery and native WhatsApp/RCS replies use
 the same source binding. Native reply records retain the binding and an endpoint
 hash, without copying the raw phone into callback records or the roster.
 
-`listEventSmsPreferences` now resolves the saved `catchEventSms` runtime sender
+`listEventMessagePreferences` (channel `sms`) now resolves the saved `catchEventSms` runtime sender
 and earlier permissions for the verified attendee. It shares the bounded,
 read-only discovery rules used by WhatsApp and RCS: paused execution retains its
 selection, changed source facts withhold it, and historical rows require the
@@ -2831,7 +2831,7 @@ adapters and acceptance; they are not conferred by these type definitions.
 
 ### Verified WhatsApp sender discovery
 
-`listEventWhatsappPreferences` is an App-Check-protected, authenticated,
+`listEventMessagePreferences` (channel `whatsapp`) is an App-Check-protected, authenticated,
 rate-limited read for one participant's event and attendee. It shares canonical
 participant and saved-runtime selection with RCS through
 `readMessagePreferenceDiscovery`, then selects only `organizerEventWhatsapp`.
@@ -2851,9 +2851,9 @@ Cursors advance by scanned records, including filtered ones, and survive a
 deleted cursor document. No contact, provider account/phone ID, credential,
 consent evidence or other attendee data appears in the response.
 
-The guest client must load the existing `getEventWhatsappPreference` for the
+The guest client must load the existing `getEventMessagePreference` (channel `whatsapp`) for the
 selected sender and review its name, displayed sender number, consent text and
-phone suffix before an explicit grant. `setEventWhatsappPreference` binds the
+phone suffix before an explicit grant. `setEventMessagePreference` (channel `whatsapp`) binds the
 displayed sender and STOP hashes plus the required server `reviewHash`. The
 latter pins the full recipient, source generations, event title and consent
 expiry, selected sender, STOP evidence and consent copy. A changed phone with
@@ -3023,7 +3023,7 @@ No provider sender or network worker is activated by this projection.
 
 ### RCS event consent
 
-`getEventRcsPreference` and `setEventRcsPreference` are App-Check-protected
+`getEventMessagePreference` and `setEventMessagePreference` (channel `rcs`) are App-Check-protected
 callables for the event attendee's linked Firebase UID. A grant requires the
 signed phone claim to match the roster, an admitted attendee, an eligible event
 and a ready, approved Catch sender covering the recipient prefix. The caller
@@ -3063,7 +3063,7 @@ tampering, withdrawal, concurrent retries and a STOP racing a grant. Audited pro
 open.
 No live sender is activated by these callables.
 
-`listEventRcsPreferences` discovers the saved RCS sender for a verified
+`listEventMessagePreferences` (channel `rcs`) discovers the saved RCS sender for a verified
 participant's event and earlier preferences owned by that participant. It
 requires App Check and sign-in, checks the current roster UID before private
 reads, and returns only event/attendee scope, server time, the configured sender
@@ -3074,8 +3074,8 @@ budgets or other roster members.
 The configured sender comes from the canonical saved runtime configuration.
 A paused execution retains its selection; a mismatched event source does not.
 Selection is independent of sender readiness, consent, policy enablement and
-actual delivery. Each guest-facing card must still load `getEventRcsPreference`
-and submit its exact review hash through `setEventRcsPreference`.
+actual delivery. Each guest-facing card must still load `getEventMessagePreference` (channel `rcs`)
+and submit its exact review hash through `setEventMessagePreference` (channel `rcs`).
 
 Previous preferences are queried by live organizer/event, attendee and signed
 UID with a composite index and a 51-row lookahead. Source-generation or phone
@@ -3112,7 +3112,7 @@ and activation remain separate work.
 
 ### RCS message-link withdrawal
 
-`getEventRcsWithdrawal` and `withdrawEventRcs` are App-Check-protected bearer
+`getEventMessageWithdrawal` and `withdrawEventMessage` (channel `rcs`) are App-Check-protected bearer
 callables with network and credential rate limits. They accept only the original
 message link and secret; withdrawal additionally requires a revision and request
 ID. They do not require sign-in or authorize opt-in. The response contains only
@@ -3722,7 +3722,7 @@ rather than embedded in event-type logic.
 | `eventSuccessUnitOutcomes/{eventId}` | Server-owned complete round facts for completion, score, or rank outcomes. Hosts may get the event document; attendee reads, list access, and every direct write are denied. |
 | `eventSuccessStandings/{eventId}` | Server-owned score/rank snapshots through each recorded round. Authorized Hosts, active participants, and ready external runtime identities may get the event document; list and direct writes are denied. |
 | `organizerEventSuccessLayouts/{organizerId_layoutId}` | Reusable organizer-owned parametric room-layout assets. Organizer managers may read their assets; all writes use the validated callable. Participants receive only the selected layout's timestamp-free projection through an authorized callable/runtime bootstrap. |
-| `eventSuccessScorecards/{eventId}` | Server-owned aggregate coaching scorecard. Host-readable through event-success policy. |
+| `eventSuccessScorecards/{eventId}` | Server-owned aggregate coaching scorecard, server-only: it holds event-level catch, match and chat counts, so hosts get no direct read (FIX-12) until an event-level stats screen applies the group-size floor (`config/guestDataVisibility`). |
 
 Schemas live under `contracts/firestore/` and generated outputs under
 `functions/src/shared/generated/`, `packages/platform/lib/schema_contracts/generated/`, and

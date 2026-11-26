@@ -217,7 +217,8 @@ test("imported listings stay out of search and never show intake prose",
     assert.ok(claimed);
     assert.equal(claimed.indexing, "index, follow");
     assert.equal(claimed.description, "Operator summary for owner review.");
-    assert.deepEqual(claimed.fitNotes, []);
+    assert.equal("fitNotes" in claimed, false);
+    assert.equal("missingEvidence" in claimed, false);
   });
 
 test("an approved listing with no description still reaches the site " +

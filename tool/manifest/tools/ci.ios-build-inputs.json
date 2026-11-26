@@ -16,6 +16,7 @@
     "tool/ci/ios_build_inputs.mjs",
     "tool/ci/ios_build_inputs.test.mjs",
     "nx.json",
+    "tool/nx/lanes.mjs",
     "tool/nx/shadow_plan.mjs",
     "tool/harness/lib/component_graph.mjs",
     ".github/workflows/app-build-matrix.yml"

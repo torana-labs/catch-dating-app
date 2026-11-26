@@ -5,7 +5,7 @@
   "command": "node tool/ci/check_tool_category_coverage.mjs",
   "surface": "local-read",
   "status": "active",
-  "description": "Requires every active tool-manifest category to be scheduled by Tools CI and rejects unknown workflow categories.",
+  "description": "Requires every active tool-manifest category to be scheduled by Tools CI and rejects unknown workflow categories. When Tools CI runs computed buckets (tool/ci/tool_buckets.mjs), it instead requires every active tool with checks in exactly one bucket and every bucket 1 to 6 scheduled.",
   "checks": [
     "node --check tool/ci/check_tool_category_coverage.mjs",
     "node --test tool/ci/check_tool_category_coverage.test.mjs",
