@@ -10073,11 +10073,11 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostOrganizerAvatar"
+              "HostOrganizerSwitcherSheet"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/widgets/host_organizer_switcher_sheet.dart",
-              "symbol": "HostOrganizerAvatar"
+              "symbol": "HostOrganizerSwitcherSheet"
             },
             "currentOwner": "HostTodayHeader + HostEventsOrganizerSection + HostShellScreen",
             "targetOwner": "direct destination titles plus shell-owned organizer identity",
@@ -10096,7 +10096,7 @@
             "migration": "HostTodayHeader renders Today, organizer identity, and a capable-width date without a creation action. HostEventsOrganizerSection renders the direct Events title and New event action. HostShellScreen shows the selected organizer as the rail and sidebar header and opens HostOrganizerSwitcherSheet with haptic feedback from that header or a long press on the Organizer destination when multiple organizers are available.",
             "previewIds": [
               "hostHomeRouteStates",
-              "HostOrganizerAvatar/Navigation identity states"
+              "HostOrganizerSwitcherSheet/Long-press switcher states"
             ]
           },
           {
