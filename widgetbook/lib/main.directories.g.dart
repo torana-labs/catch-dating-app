@@ -203,6 +203,8 @@ import 'package:widgetbook_workspace/hosts/host_conversation_use_cases.dart'
     as _widgetbook_workspace_hosts_host_conversation_use_cases;
 import 'package:widgetbook_workspace/hosts/host_door_poster_use_cases.dart'
     as _widgetbook_workspace_hosts_host_door_poster_use_cases;
+import 'package:widgetbook_workspace/hosts/host_event_coach_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_event_coach_use_cases;
 import 'package:widgetbook_workspace/hosts/host_event_gaps_use_cases.dart'
     as _widgetbook_workspace_hosts_host_event_gaps_use_cases;
 import 'package:widgetbook_workspace/hosts/host_event_offer_use_cases.dart'
@@ -8862,28 +8864,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                   ),
                 ],
               ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessRecommendationTile',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessRecommendationTile',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_feature_blocks
-                            .eventSuccessStrictEventSuccessRecommendationTile,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessReportSectionList',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessReportSectionList',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_feature_blocks
-                            .eventSuccessStrictEventSuccessPostEventReport,
-                  ),
-                ],
-              ),
             ],
           ),
           _widgetbook.WidgetbookFolder(
@@ -9506,6 +9486,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Event-scoped states',
                     builder: _widgetbook_workspace_hosts_host_inbox_use_cases
                         .hostInboxEventScopedStates,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Insights',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventCoachSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Coach figures',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_coach_use_cases
+                            .hostEventCoachSectionUseCase,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Withheld below the floor',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_coach_use_cases
+                            .hostEventCoachSectionWithheldUseCase,
                   ),
                 ],
               ),
