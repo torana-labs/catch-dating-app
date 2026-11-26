@@ -687,14 +687,18 @@ each tool to exactly one bucket by longest-first balancing over the measured
 seconds in `tool/ci/tool_bucket_timings.json`. Tools that share a check command
 or the shared Functions build are placed together, so the runner still runs
 each shared command once. A tool the file does not list
-yet counts as its `defaultSeconds`. Each bucket installs the browser only when
-the CI requirements of its tools need it, by the same projection the affected
-job uses.
+yet counts as its `defaultSeconds`. Each bucket installs only the setup its
+tools' CI requirements need (Flutter, `pub get`, ripgrep, root and Functions npm,
+the browser), by the same projection the affected job uses, and the balancing
+counts that setup (`SETUP_SECONDS`), so tools with the same needs gather. A tool
+that declares no `ciRequirements` needs the full setup, so declaring them lets
+more buckets skip it. Checkouts keep full history: ratchets compare with
+`origin/main`.
 
 - See the split: `node tool/ci/tool_buckets.mjs plan`.
 - One bucket's tools or setup: `ids --bucket <n>`, `setup --bucket <n>`.
 - Refresh the timings after the buckets drift (the test fails when bucket
-  loads differ by more than a minute): save each bucket job's log from a recent
+  finishes, setup included, differ by more than a minute): save each bucket job's log from a recent
   full-matrix run as `<run-id>-<job>.log`, then run
   `node tool/ci/tool_buckets.mjs regenerate --runs <run-id,...> <log>...`.
   GitHub returns only a log's last lines, so a long bucket log can start
