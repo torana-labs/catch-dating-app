@@ -6443,9 +6443,10 @@ other way get a channel from provenance (`came_to_us` for user-created, else
 The `onOrganizerGrowth*` triggers set the dated steps (`listedAt`,
 `claimRequestedAt`, `claimedAt`, `firstEventAt`, `firstPaidBookingAt`), each to
 the earliest time observed, and stream them, with paid bookings and refunds, to
-BigQuery `catch_analytics.organizer_growth_events`. The triggers are not retried
-on failure (a retrying trigger needs a forced deploy); `reconcileOrganizerGrowthDaily`
-recomputes the steps nightly from organizers, claim requests, booked events and
+BigQuery `catch_analytics.organizer_growth_events`. The triggers retry on
+failure; a retry changes nothing that already landed, because each step keeps the
+earliest time and each BigQuery row has an insert id. `reconcileOrganizerGrowthDaily`
+still recomputes the steps nightly from organizers, claim requests, booked events and
 captured checkouts and records any that were missed. The same job creates the
 table if it is missing and sends whatever BigQuery lacks, including form payments
 under their own event names (`analytics/sql/README.md`).
