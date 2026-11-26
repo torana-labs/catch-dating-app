@@ -12,9 +12,7 @@
   "writerContext": "bookings",
   "read": "server only; exact replay receipt returned through manager callable",
   "write": "server only; atomically created with canonical roster import",
-  "exportedFunctions": [
-    "manageHostRosterIntake"
-  ],
+  "exportedFunctions": [],
   "migrationNotes": [
     "Separate bounded receipt avoids duplicating the reviewed payload into the session document."
   ]

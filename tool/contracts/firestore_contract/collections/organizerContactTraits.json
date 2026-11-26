@@ -11,9 +11,7 @@
   "exportedFunctions": [
     "onEventAttendeeAudienceProjected",
     "onContactPermissionAudienceProjected",
-    "onOrganizerContactEventEdgeInviteAttributed",
-    "listOrganizerContacts",
-    "getOrganizerContactDetail"
+    "onOrganizerContactEventEdgeInviteAttributed"
   ],
   "migrationNotes": [
     "Traits are rebuildable and exclude Event Success compatibility, safety, dating and demographic inputs."

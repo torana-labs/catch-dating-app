@@ -12,9 +12,7 @@
   "writerContext": "bookings",
   "read": "server only; manager receives bounded callable review projection",
   "write": "server only; authority and revision checked transactionally",
-  "exportedFunctions": [
-    "manageHostRosterIntake"
-  ],
+  "exportedFunctions": [],
   "operations": [
     {
       "id": "manage_host_roster_intake",

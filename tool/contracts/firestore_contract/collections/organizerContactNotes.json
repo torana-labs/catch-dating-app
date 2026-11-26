@@ -11,8 +11,7 @@
   "write": "server only",
   "exportedFunctions": [
     "createOrganizerContactNote",
-    "mutateOrganizerContactNote",
-    "getOrganizerContactDetail"
+    "mutateOrganizerContactNote"
   ],
   "migrationNotes": [
     "Notes are organizer-scoped operational memory, author-stamped, and excluded from exportOrganizerContacts without an opt-in path.",

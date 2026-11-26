@@ -10,8 +10,7 @@
   "read": "server only; bounded manager access is embedded in contact detail",
   "write": "server only",
   "exportedFunctions": [
-    "recordOrganizerContactOutreach",
-    "getOrganizerContactDetail"
+    "recordOrganizerContactOutreach"
   ],
   "migrationNotes": [
     "Outreach records are organizer-scoped, author-stamped activity facts excluded from exportOrganizerContacts without an opt-in path.",
