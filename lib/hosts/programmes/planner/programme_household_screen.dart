@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_guest_commands.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_household_body.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_answers_sheet.dart';
 import 'package:catch_dating_app/programs/presentation/program_workspace_controller.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -79,65 +79,26 @@ class _HostProgrammeHouseholdScreenState
           onRetry: () => refreshHostProgramme(ref, widget.programId),
           onEditMember: household == null || archived
               ? null
-              : (member) =>
-                    unawaited(_editAnswers(state, member, household.label)),
+              : (member) => unawaited(
+                  editHostProgrammeAnswers(
+                    context,
+                    ref,
+                    programId: widget.programId,
+                    guest: member,
+                    household: household.label,
+                    answers: [
+                      for (final function in state.functions)
+                        HostProgrammeAnswer(
+                          functionId: function.functionId,
+                          name: function.name,
+                          reply: state.reply(member, function),
+                        ),
+                    ],
+                  ),
+                ),
         ),
       ),
     );
-  }
-
-  Future<void> _editAnswers(
-    HostProgrammeState state,
-    ProgramGuestRow member,
-    String household,
-  ) => showCatchBottomSheet<void>(
-    context: context,
-    builder: (_) => HostProgrammeAnswersSheet(
-      guestName: member.displayName,
-      household: household,
-      answers: [
-        for (final function in state.functions)
-          HostProgrammeAnswer(
-            functionId: function.functionId,
-            name: function.name,
-            reply: state.reply(member, function),
-          ),
-      ],
-      onAnswer: (functionId, reply) =>
-          _recordAnswer(member.guestId, functionId, reply),
-    ),
-  );
-
-  Future<bool> _recordAnswer(
-    String guestId,
-    String functionId,
-    HostProgrammeReply reply,
-  ) async {
-    final logger = ref.read(errorLoggerProvider);
-    final container = ProviderScope.containerOf(context, listen: false);
-    try {
-      await ref
-          .read(programWorkspaceControllerProvider.notifier)
-          .recordFunctionRsvp(
-            programId: widget.programId,
-            functionId: functionId,
-            guestId: guestId,
-            rsvpStatus: hostProgrammeRsvpStatus(reply),
-            allowUninvited: true,
-          );
-      refreshHostProgrammeIn(container, widget.programId);
-      return true;
-    } on Object catch (error, stackTrace) {
-      logger.logError(error, stackTrace, reason: 'record a guest answer');
-      if (mounted) {
-        showCatchNoticeError(
-          context,
-          error,
-          errorContext: AppErrorContext.event,
-        );
-      }
-      return false;
-    }
   }
 
   Future<void> _sendLink(String label) async {
@@ -148,7 +109,6 @@ class _HostProgrammeHouseholdScreenState
     final origin = box == null
         ? null
         : box.localToGlobal(Offset.zero) & box.size;
-    final logger = ref.read(errorLoggerProvider);
     setState(() => _sending = true);
     try {
       // provider-graph: ownership-widget-async:_HostProgrammeHouseholdScreenState._sendLink:await:programWorkspaceControllerProvider.issueHouseholdRsvpLink watch CAT156 -- The workspace controller issues the RSVP link and owns its error; the widget holds a local sending flag while the share sheet opens. Move the flag into the controller in the CAT156 migration.
@@ -161,14 +121,14 @@ class _HostProgrammeHouseholdScreenState
       final url = AppConfig.publicSiteUrl.resolve(
         '/rsvp/${Uri.encodeComponent(link.token)}',
       );
-      // The share sheet belongs to this screen; skip it once it is gone.
-      if (!mounted) return;
       // provider-graph: ownership-widget-async:_HostProgrammeHouseholdScreenState._sendLink:await:externalShareControllerProvider.shareText watch CAT156 -- Sharing the issued link through the platform share controller; mechanical share-sheet feedback under the same local sending flag.
       await ref
           .read(externalShareControllerProvider)
           .shareText(text: url.toString(), subject: subject, origin: origin);
     } on Object catch (error, stackTrace) {
-      logger.logError(error, stackTrace, reason: 'send a household RSVP link');
+      ref
+          .read(errorLoggerProvider)
+          .logError(error, stackTrace, reason: 'send a household RSVP link');
       if (mounted) {
         showCatchNoticeError(
           context,

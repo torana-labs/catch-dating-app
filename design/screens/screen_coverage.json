@@ -548,10 +548,9 @@
     },
     {
       "routeId": "hostWorkGuestsScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "screenId": "screen.programs.guests",
-      "reason": "Covered by screen.programs.guests as the least-privilege guestRelations variant of the household and function RSVP matrix; guest and group mutations stay hidden unless the actor also holds programCoordinator."
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostWorkImportScreen",
