@@ -28280,4 +28280,64 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostLiveTools => 'Night tools';
+
+  @override
+  String get hostRehearsalLateJoinTitle => 'Late joiners';
+
+  @override
+  String get hostRehearsalLateJoinBody =>
+      'Send a made-up guest joining directions, or set up automatic updates for them. Practice sends nothing to real guests.';
+
+  @override
+  String get hostRehearsalLateJoinAutomatic => 'Automatic updates on';
+
+  @override
+  String hostRehearsalLateJoinOutcomesLeft({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count practice outcomes left',
+      one: '1 practice outcome left',
+      zero: 'No practice outcomes left',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostRehearsalLateJoinLaterChoices =>
+      'Places they can choose later';
+
+  @override
+  String get hostRehearsalLateJoinPreview => 'What they will be told';
+
+  @override
+  String get hostRehearsalLateJoinAwaitingDeparture =>
+      'The group has not left yet. You can publish directions once its departure is recorded; automatic updates wait for it.';
+
+  @override
+  String hostRehearsalLateJoinOutsidePolicy({required String place}) {
+    return 'The group is heading to $place, which this late arrival rule does not allow for joining.';
+  }
+
+  @override
+  String get hostRehearsalLateJoinEntryClosed =>
+      'Late entry is closed at this place, so these directions cannot be published.';
+
+  @override
+  String get hostRehearsalLateJoinPublish => 'Publish directions';
+
+  @override
+  String get hostRehearsalLateJoinPublishNeedsAutomatic =>
+      'Choose Send automatically to publish directions.';
+
+  @override
+  String get hostRehearsalLateJoinResume => 'Resume automatic updates';
+
+  @override
+  String get hostRehearsalLateJoinLatest => 'Latest directions';
+
+  @override
+  String hostRehearsalLateJoinReplied({required String choice}) {
+    return 'Replied: $choice';
+  }
 }
