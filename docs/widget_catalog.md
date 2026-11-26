@@ -102,7 +102,7 @@ and candidate discussions; this document has no parallel status ledger.
 
 1326 public production Widgets. Source discovery determines membership; the component registry supplies reviewed identity and ladder metadata.
 
-Purpose comes from the first class documentation paragraph, then the registry summary. 599 declarations have neither and remain visible as undocumented. Unreviewed feature Widgets use the existing screen-name boundary for L5/L6; that source classification is not a semantic conformance verdict.
+Purpose comes from the first class documentation paragraph, then the registry summary. 598 declarations have neither and remain visible as undocumented. Unreviewed feature Widgets use the existing screen-name boundary for L5/L6; that source classification is not a semantic conformance verdict.
 
 ### L1 (2)
 
@@ -324,7 +324,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchLocalizedSliverErrorState</code> | <code>packages/platform/lib/riverpod_ui/catch_localized_sliver_error_state.dart</code> | <code>ErrorState</code> | <code>catch.error_state</code> | Resolves app errors and inherited-locale copy for [CatchSliverErrorState]. |
 | <code>CatchNoticeOverlay</code> | <code>packages/platform/lib/riverpod_ui/catch_notice_overlay.dart</code> | <code>Overlay</code> | <code>catch.notice</code> | One MyApp-owned safe-area overlay above the router, with a real overlay ancestor for tooltips. Owns entry motion, gesture/keyboard dismissal, F6 focus transfer and interaction-aware timers for every notice; persistent context remains with CatchBanner.statuses below tabs. |
 
-### L5 (939)
+### L5 (940)
 
 | Widget | Source | Role | Canonical concept | Purpose |
 |---|---|---|---|---|
@@ -930,9 +930,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostProgrammeCreateForm</code> | <code>lib/hosts/programmes/planner/programme_create_screen.dart</code> | — | — | The form over one create transaction: it keeps the title field and the day sheets, shows [view] and sends every change through [onEdit]. |
 | <code>HostProgrammeFunctionBody</code> | <code>lib/hosts/programmes/planner/programme_function_body.dart</code> | — | — | One function in board order: the spotlight with its replies, the replies meter, who is invited, what to wear, the door, where, and Cancel this function. |
 | <code>HostProgrammeGuestFilterTabBar</code> | <code>lib/hosts/programmes/planner/programme_guests_body.dart</code> | — | — | All and No reply, each with its count. |
-| <code>HostProgrammeGuestsBody</code> | <code>lib/hosts/programmes/planner/programme_guests_body.dart</code> | — | — | The guest list on a phone in board order: how many households, Import a list, the filters, the reply key and the household by function grid. |
+| <code>HostProgrammeGuestsBody</code> | <code>lib/hosts/programmes/planner/programme_guests_body.dart</code> | — | — | The guest list on a phone in board order: how many households, Import a list, Choose phone contacts when the planner may import them, the filters, the reply key and the household by function grid. |
 | <code>HostProgrammeGuestsDesktopBody</code> | <code>lib/hosts/programmes/planner/programme_guests_desktop_body.dart</code> | — | — | The guest list on an expanded window: the views and filters over the household table (household, guests, one badge column per function, side and groups), the reply key and how many are shown. |
-| <code>HostProgrammeHouseholdBody</code> | <code>lib/hosts/programmes/planner/programme_household_body.dart</code> | — | — | One household in board order: its side, groups, size and whether it has replied, the person to call, each member's answer for each function, and Send their link again. |
+| <code>HostProgrammeHouseholdBody</code> | <code>lib/hosts/programmes/planner/programme_household_body.dart</code> | — | — | One household in board order: its side, groups, size and whether it has replied, the person to call, each member's answer for each function (tap a member to change their answers), and Send their link again. |
 | <code>HostProgrammeIdTrackerBody</code> | <code>lib/hosts/programmes/planner/programme_id_tracker_body.dart</code> | — | — | IDs for the hotels (RbProgIdTracker) as a list beside its detail. The list: the pane header with Send to the hotels, four numbers, Remind, the hotels, the filters and one row per staying guest. The detail: the guest with Accept and Ask for a clearer photo, the masked number, the checks, who has seen it and the privacy note. |
 | <code>HostProgrammeImportBody</code> | <code>lib/hosts/programmes/planner/programme_import_body.dart</code> | — | — | Adding the guest list in board order: the file with Change, how many guests and households the check found, what each column is, and the rows that need a look. |
 | <code>HostProgrammeLiveBoardBody</code> | <code>lib/hosts/programmes/planner/programme_live_board_body.dart</code> | — | — | The live board (RbProgLiveBoard): the function on now with its door count, travel at a glance, tonight's schedule and the alerts that need someone. |
@@ -950,6 +950,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostProgrammeTripsBody</code> | <code>lib/hosts/programmes/planner/programme_trips_body.dart</code> | — | — | The trip ledger in board order: four numbers, the filters with Export for the vendors, and the trips as a table. |
 | <code>HostProgrammesHomeBody</code> | <code>lib/hosts/programmes/planner/programmes_home_body.dart</code> | — | — | The planner home (RbProgHome): totals across the organiser's programmes and one row per programme with its replies bar. |
 | <code>HostProgrammesHomeRow</code> | <code>lib/hosts/programmes/planner/programmes_home_body.dart</code> | — | — | One programme: its date, name, guests and flights, how soon it is, and how many guests replied. |
+| <code>HostProgrammeAnswersSheet</code> | <code>lib/hosts/programmes/planner/widgets/programme_answers_sheet.dart</code> | — | — | One guest's answer for every function, each changeable: Yes, Maybe, No or No reply. A change goes to [onAnswer] at once, which records it with `recordProgramFunctionRsvp`; a function the guest was not invited to takes an answer too, the way the old guest list allowed. |
 | <code>HostProgrammeFunctionSheet</code> | <code>lib/hosts/programmes/planner/widgets/programme_function_sheet.dart</code> | — | — | Adds or edits a function: its name, venue, day and times. The day is one of the programme's days and the times are half-hour slots. |
 | <code>HostProgrammeInviteSheet</code> | <code>lib/hosts/programmes/planner/widgets/programme_invite_sheet.dart</code> | — | — | Invites one person to the team with one job. |
 | <code>HostProgrammeStateBody</code> | <code>lib/hosts/programmes/planner/widgets/programme_state_body.dart</code> | — | — | The programme while it loads, or when its read failed, with Try again. |
@@ -1167,7 +1168,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramGuestEditDialog</code> | <code>lib/programs/presentation/program_guest_edit_dialog.dart</code> | — | — | Edits one guest's contact details, household, and group selections. |
 | <code>ProgramGuestGroupEditDialog</code> | <code>lib/programs/presentation/program_guest_group_edit_dialog.dart</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramGuestsFunctionRow</code> | <code>lib/programs/presentation/program_guests_screen.dart</code> | — | — | One guest row: per-function status chips for the whole program plus the RSVP editor for the currently selected function. |
-| <code>ProgramGuestsPageBody</code> | <code>lib/programs/presentation/program_guests_screen.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramGuestsPageBody</code> | <code>lib/programs/presentation/program_guests_screen.dart</code> | — | — | The guest desk body (`ProgramGuestDeskScreen`, for `guestRelations` staff and managers on the work shell): the household by function RSVP grid with each member's join state and an RSVP editor that writes through `recordProgramFunctionRsvp`, household RSVP links, Add guest, and the guest groups with their hotels. Guest, household and group writes stay hidden unless the actor also holds `programCoordinator` or is a manager. |
 | <code>ProgramRoomBlockRow</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart</code> | — | — | A reserved room block with live capacity — read-only on the desk board. |
 | <code>ProgramStayRow</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart</code> | — | — | One stay row: guest, room, block, lifecycle status; tap to manage. |
 | <code>ProgramStaySheet</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart</code> | — | — | Assign or manage one guest's stay: block, room label, lifecycle status, and the desk's room-ready / guest-arrived marks. |
@@ -1268,7 +1269,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>OrderedPhotoTile</code> | <code>packages/platform/lib/media/ordered_photo_picker.dart</code> | — | — | No class documentation or registry summary. |
 | <code>StartupAnimationScope</code> | <code>packages/platform/lib/startup/startup_animation_scope.dart</code> | — | — | Session-scoped startup state shared with route-owned welcome surfaces. |
 
-### L6 (192)
+### L6 (191)
 
 | Widget | Source | Role | Canonical concept | Purpose |
 |---|---|---|---|---|
@@ -1448,7 +1449,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PaymentConfirmationScreen</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentHistoryScreen</code> | <code>lib/payments/presentation/payment_history_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramGuestDeskScreen</code> | <code>lib/programs/presentation/program_guest_desk_screen.dart</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramGuestsScreen</code> | <code>lib/programs/presentation/program_guests_screen.dart</code> | — | — | Household × function RSVP grid for the organizer workspace. One function is selected at a time; each household card lists members with their join state and a segmented RSVP editor that writes through `recordProgramFunctionRsvp`. |
 | <code>ProgramHotelRoomsScreen</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart</code> | — | — | The hotel desk's room board for one property: routed guests still needing a room, every stay with its block/room/status, and the reserved blocks with live capacity, read through a listener. Mutations go through `upsertProgramStay` with the stay revision the board carries; the server re-counts block occupancy inside the transaction, so a stale board can never overbook, and the board shows the result when its view is rewritten. |
 | <code>PublicProfileScreen</code> | <code>lib/public_profile/presentation/public_profile_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewsHistoryScreen</code> | <code>lib/reviews/presentation/reviews_history_screen.dart</code> | — | — | No class documentation or registry summary. |
