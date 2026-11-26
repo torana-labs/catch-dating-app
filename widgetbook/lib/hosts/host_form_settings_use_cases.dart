@@ -95,11 +95,11 @@ Widget hostFormSettingsScreenPreview(BuildContext context) => _scope(
 
 @widgetbook.UseCase(
   name: 'Settings menu',
-  type: HostFormSettingsMenu,
+  type: HostFormLifecycleMenu,
   path: _path,
 )
 Widget hostFormSettingsMenuPreview(BuildContext context) => _frame(
-  HostFormSettingsMenu(
+  HostFormLifecycleMenu(
     status: hostFormPreviewState.editor.form.status,
     published: false,
     onSelected: (_) {},
@@ -264,11 +264,11 @@ Widget hostFormSettingsPaymentSectionPreview(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Payment setup',
-  type: HostFormPaymentSetupSection,
+  type: HostFormFeeSection,
   path: _path,
 )
 Widget hostFormPaymentSetupSectionPreview(BuildContext context) => _frame(
-  HostFormPaymentSetupSection(
+  HostFormFeeSection(
     state: const HostFormPaymentSetupState(
       setup: HostFormPaymentSetup(available: true, connections: []),
     ),

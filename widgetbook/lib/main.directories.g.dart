@@ -10662,6 +10662,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormFeeSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Payment setup',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormPaymentSetupSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormFeeSheet',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10680,6 +10691,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_editor_use_cases
                             .hostFormInspectorSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormLifecycleMenu',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Settings menu',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_settings_use_cases
+                            .hostFormSettingsMenuPreview,
                   ),
                 ],
               ),
@@ -10785,12 +10807,6 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookComponent(
                 name: 'HostFormPaymentSetupSection',
                 useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Payment setup',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_settings_use_cases
-                            .hostFormPaymentSetupSectionPreview,
-                  ),
                   _widgetbook.WidgetbookUseCase(
                     name: 'Unconfigured and connected account',
                     builder:
@@ -10982,12 +10998,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Settings and respondent preview links',
                     builder:
                         _widgetbook_workspace_hosts_host_form_editor_use_cases
-                            .hostFormSettingsMenuPreview,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Settings menu',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_settings_use_cases
                             .hostFormSettingsMenuPreview,
                   ),
                 ],

@@ -109,7 +109,7 @@ class HostFormSettingsScreen extends ConsumerWidget {
               ),
             ],
             if (editor != null)
-              HostFormSettingsMenu(
+              HostFormLifecycleMenu(
                 status: editor.editor.form.status,
                 published: editor.editor.form.activeVersionId != null,
                 onSelected: (action) => unawaited(actions.run(action)),
@@ -137,8 +137,8 @@ class HostFormSettingsScreen extends ConsumerWidget {
 
 /// The settings menu: preview and share the form, and pause, resume or
 /// archive it as its status allows.
-class HostFormSettingsMenu extends StatelessWidget {
-  const HostFormSettingsMenu({
+class HostFormLifecycleMenu extends StatelessWidget {
+  const HostFormLifecycleMenu({
     super.key,
     required this.status,
     required this.published,
