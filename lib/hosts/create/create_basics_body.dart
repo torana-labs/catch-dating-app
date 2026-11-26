@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
@@ -8,11 +9,13 @@ import 'package:flutter/widgets.dart';
 
 /// Step one in board order: the photo with two add cards, the name, the
 /// format chips with the chosen format's note, and what it is like. A
-/// social run adds distance and pace, as its note says.
+/// social run adds distance and pace, as its note says. With [onIncluded]
+/// and [onAccessibility] it adds the guest details shown on the event: what
+/// is included and how accessible it is.
 ///
 /// Editing a saved event keeps its format and photos as they are, checks
 /// the distance of a moving event, and adds [trailing] fields under the
-/// description.
+/// guest details.
 class CreateBasicsBody extends StatelessWidget {
   const CreateBasicsBody({
     super.key,
@@ -23,6 +26,8 @@ class CreateBasicsBody extends StatelessWidget {
     required this.onDistance,
     required this.onPace,
     required this.onAddPhoto,
+    this.onIncluded,
+    this.onAccessibility,
     this.showTitle = false,
     this.trailing = const <Widget>[],
   });
@@ -34,6 +39,8 @@ class CreateBasicsBody extends StatelessWidget {
   final ValueChanged<String> onDistance;
   final ValueChanged<String> onPace;
   final VoidCallback onAddPhoto;
+  final ValueChanged<String>? onIncluded;
+  final ValueChanged<String>? onAccessibility;
 
   /// The desktop editor names the step above the form.
   final bool showTitle;
@@ -226,6 +233,49 @@ class CreateBasicsBody extends StatelessWidget {
             maxLength: 2000,
           ),
         ),
+        if (onIncluded != null && onAccessibility != null) ...[
+          CatchText(
+            context.l10n.hostsEventGuestDetailsTitle,
+            variant: CatchTextVariant.labelAction,
+          ),
+          CatchFieldLanes.single(
+            child: CatchField.input(
+              key: CreateEventFormKeys.included,
+              copy: copy,
+              title: context.l10n.hostsEventIncludedTitle,
+              helperText: context.l10n.hostsEventGuestDetailsVisibility,
+              placeholder: context.l10n.hostsEventIncludedHint,
+              contract: CatchContractConstraints
+                  .createEventCallablePayloadEventFormatActivityDetailsPublicDetailsIncluded,
+              labelMode: CatchFieldLabelTextMode.optional,
+              initialValue: draft.included ?? '',
+              states: states,
+              minLines: 2,
+              maxLines: 4,
+              keyboardType: TextInputType.multiline,
+              textCapitalization: TextCapitalization.sentences,
+              onChanged: onIncluded!,
+            ),
+          ),
+          CatchFieldLanes.single(
+            child: CatchField.input(
+              key: CreateEventFormKeys.accessibility,
+              copy: copy,
+              title: context.l10n.hostsEventAccessibilityTitle,
+              placeholder: context.l10n.hostsEventAccessibilityHint,
+              contract: CatchContractConstraints
+                  .createEventCallablePayloadEventFormatActivityDetailsPublicDetailsAccessibility,
+              labelMode: CatchFieldLabelTextMode.optional,
+              initialValue: draft.accessibility ?? '',
+              states: states,
+              minLines: 2,
+              maxLines: 4,
+              keyboardType: TextInputType.multiline,
+              textCapitalization: TextCapitalization.sentences,
+              onChanged: onAccessibility!,
+            ),
+          ),
+        ],
         ...trailing,
       ],
     );

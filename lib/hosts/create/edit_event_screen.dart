@@ -288,7 +288,11 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
       onPrice: (value) => controller.edit((d) => d.copyWith(price: value)),
       onPlaces: (value) =>
           controller.edit((d) => d.copyWith(capacity: '$value')),
-      onAdmission: ignore,
+      policy: controller.policyHandlers,
+      onIncluded: (value) =>
+          controller.edit((d) => d.copyWith(included: value)),
+      onAccessibility: (value) =>
+          controller.edit((d) => d.copyWith(accessibility: value)),
       onTemplate: () => controller.useTemplate(
         createPlanTemplate(
           context.l10n,
@@ -328,25 +332,7 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
       onSave: () => unawaited(_save()),
       onPlaceName: (value) =>
           controller.edit((d) => d.copyWith(meetingPoint: value)),
-      onIncluded: (value) =>
-          controller.edit((d) => d.copyWith(included: value)),
-      onAccessibility: (value) =>
-          controller.edit((d) => d.copyWith(accessibility: value)),
       onRoutePlan: controller.setRoutePlan,
-      onAdmission: controller.setAdmission,
-      onInviteCode: (value) =>
-          controller.edit((d) => d.copyWith(inviteCode: value)),
-      onCohortCaps: controller.setCohortCaps,
-      onMaxMen: (value) => controller.edit((d) => d.copyWith(maxMen: value)),
-      onMaxWomen: (value) =>
-          controller.edit((d) => d.copyWith(maxWomen: value)),
-      onDemandPricing: controller.setDemandPricing,
-      onDemandStep: (value) =>
-          controller.edit((d) => d.copyWith(dynamicPricingStep: value)),
-      onDemandMax: (value) =>
-          controller.edit((d) => d.copyWith(dynamicPricingMax: value)),
-      onAgeRange: controller.setAgeRange,
-      onCancellationPolicy: controller.setCancellationPolicy,
     );
   }
 

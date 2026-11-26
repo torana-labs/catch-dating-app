@@ -120,6 +120,94 @@ final class WatchEventFamily extends $Family
   String toString() => r'watchEventProvider';
 }
 
+/// A private event's saved admission policy; resuming setup reads it.
+
+@ProviderFor(watchPrivateEventPolicy)
+final watchPrivateEventPolicyProvider = WatchPrivateEventPolicyFamily._();
+
+/// A private event's saved admission policy; resuming setup reads it.
+
+final class WatchPrivateEventPolicyProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<PrivateEventSavedPolicy?>,
+          PrivateEventSavedPolicy?,
+          Stream<PrivateEventSavedPolicy?>
+        >
+    with
+        $FutureModifier<PrivateEventSavedPolicy?>,
+        $StreamProvider<PrivateEventSavedPolicy?> {
+  /// A private event's saved admission policy; resuming setup reads it.
+  WatchPrivateEventPolicyProvider._({
+    required WatchPrivateEventPolicyFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchPrivateEventPolicyProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchPrivateEventPolicyHash();
+
+  @override
+  String toString() {
+    return r'watchPrivateEventPolicyProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<PrivateEventSavedPolicy?> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<PrivateEventSavedPolicy?> create(Ref ref) {
+    final argument = this.argument as String;
+    return watchPrivateEventPolicy(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchPrivateEventPolicyProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchPrivateEventPolicyHash() =>
+    r'e453d1dc250948d280b0305b4db01ff81f1be420';
+
+/// A private event's saved admission policy; resuming setup reads it.
+
+final class WatchPrivateEventPolicyFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<PrivateEventSavedPolicy?>, String> {
+  WatchPrivateEventPolicyFamily._()
+    : super(
+        retry: null,
+        name: r'watchPrivateEventPolicyProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// A private event's saved admission policy; resuming setup reads it.
+
+  WatchPrivateEventPolicyProvider call(String eventId) =>
+      WatchPrivateEventPolicyProvider._(argument: eventId, from: this);
+
+  @override
+  String toString() => r'watchPrivateEventPolicyProvider';
+}
+
 @ProviderFor(watchEventPrivateAccess)
 final watchEventPrivateAccessProvider = WatchEventPrivateAccessFamily._();
 

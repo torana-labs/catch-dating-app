@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
-import 'package:catch_dating_app/hosts/create/create_edit_handlers.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
+import 'package:catch_dating_app/hosts/create/create_policy_handlers.dart';
 import 'package:catch_dating_app/hosts/create/edit_event_values.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
@@ -12,17 +12,19 @@ import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-/// Who can come to a saved event and on what terms: the admission format,
-/// the invite code, cohort caps, demand pricing, the age range and the
-/// cancellation policy of a paid event. Once bookings lock the policy it
-/// shows capacity, price, admission and cancellation read-only.
+/// Who can come and on what terms: the admission format, the invite code,
+/// cohort caps, demand pricing, the age range and the cancellation policy
+/// of a paid event. Creating shows it on the tickets step in rupees; editing
+/// a saved event shows it in the event's currency, and once bookings lock
+/// the policy it shows capacity, price, admission and cancellation
+/// read-only.
 ///
-/// It reads the edit's draft and writes through [handlers]; nothing here
-/// saves.
+/// It reads the draft and writes through [handlers]; nothing here saves.
 class EditEventPolicySection extends StatefulWidget {
   const EditEventPolicySection({
     super.key,
@@ -31,7 +33,7 @@ class EditEventPolicySection extends StatefulWidget {
   });
 
   final CreateFlowState state;
-  final CreateEditHandlers handlers;
+  final CreatePolicyHandlers handlers;
 
   @override
   State<EditEventPolicySection> createState() => _EditEventPolicySectionState();
@@ -58,10 +60,10 @@ class _EditEventPolicySectionState extends State<EditEventPolicySection> {
   Widget build(BuildContext context) {
     final state = widget.state;
     final handlers = widget.handlers;
-    final edit = state.edit!;
+    final edit = state.edit;
     final l10n = context.l10n;
     final copy = catchFieldCopy(l10n);
-    if (edit.policyLocked) {
+    if (edit != null && edit.policyLocked) {
       // Guests have booked: what the policy is, and that it is locked.
       final event = edit.event;
       final policy = event.effectiveEventPolicy;
@@ -120,7 +122,8 @@ class _EditEventPolicySectionState extends State<EditEventPolicySection> {
       );
     }
     final draft = state.draft;
-    final currency = edit.currencyCode;
+    // A new event is priced in rupees.
+    final currency = edit?.currencyCode ?? 'INR';
     final preset = editAdmissionPreset(draft);
     final cohortCaps = editCohortCapsEnabled(draft);
     final frozen = !state.canChange;
@@ -161,15 +164,19 @@ class _EditEventPolicySectionState extends State<EditEventPolicySection> {
         ),
         if (preset == EventAdmissionPreset.inviteOnly)
           CatchField.input(
-            // The current code arrives after the first frame.
-            key: ValueKey<String>('edit-invite-code-${edit.inviteCodeSeed}'),
+            // An edit's current code arrives after the first frame.
+            key: ValueKey<String>(
+              edit == null
+                  ? 'create-invite-code'
+                  : 'edit-invite-code-${edit.inviteCodeSeed}',
+            ),
             copy: copy,
             title: l10n.hostsEditHostedEventScreenTitleInviteCode,
             contract: CatchContractConstraints
                 .updateEventCallablePayloadFieldsPrivateAccessInviteCode,
             initialValue: draft.inviteCode ?? '',
             placeholder: l10n.hostsEditHostedEventScreenPlaceholderCatchDelhi,
-            helperText: edit.inviteCodeLoading
+            helperText: edit?.inviteCodeLoading ?? false
                 ? l10n.hostsEditHostedEventScreenTextLoadingCurrentInviteCode
                 : null,
             icon: CatchIcons.locked,
@@ -185,16 +192,36 @@ class _EditEventPolicySectionState extends State<EditEventPolicySection> {
                 : null,
           ),
         if (preset == EventAdmissionPreset.openCapacity) ...[
-          CatchField.toggle(
-            copy: copy,
-            key: CreateEventFormKeys.cohortCapsToggle,
-            title: l10n.hostsEditHostedEventScreenTitleCohortCaps,
-            contract:
-                CatchContractConstraints.mobileFormStateEventCohortCapsEnabled,
-            body: l10n.hostsEditHostedEventScreenBodyOptionallyCapStraightMen,
-            bodyMaxLines: 5,
-            value: cohortCaps,
-            onChanged: frozen ? null : handlers.onCohortCaps,
+          // The explanation is several lines: the text comes first and the
+          // switch sits on its own row under it, on the same left edge.
+          Padding(
+            key: const ValueKey<String>('policy-cohort-caps'),
+            padding: const EdgeInsets.symmetric(
+              vertical: CatchFieldTokens.rowVerticalPadding,
+            ),
+            child: CatchStack(
+              gap: CatchStackGap.g8,
+              align: CatchStackAlign.start,
+              children: [
+                CatchText(
+                  l10n.hostsEditHostedEventScreenTitleCohortCaps,
+                  variant: CatchTextVariant.labelAction,
+                ),
+                CatchText(
+                  l10n.hostsEditHostedEventScreenBodyOptionallyCapStraightMen,
+                  variant: CatchTextVariant.bodySmall,
+                  tone: CatchTextTone.secondary,
+                ),
+                CatchToggleInput(
+                  key: CreateEventFormKeys.cohortCapsToggle,
+                  value: cohortCaps,
+                  contract: CatchContractConstraints
+                      .mobileFormStateEventCohortCapsEnabled,
+                  semanticLabel: l10n.hostsEditHostedEventScreenTitleCohortCaps,
+                  onChanged: frozen ? null : handlers.onCohortCaps,
+                ),
+              ],
+            ),
           ),
           if (cohortCaps)
             CatchSection.containedFieldRows(
