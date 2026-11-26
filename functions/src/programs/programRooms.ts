@@ -89,8 +89,6 @@ import {
 // reads the full set in one shot with a hard safety cap.
 const roomsReadCap = 2000;
 const roomsCallableLimits = {timeoutSeconds: 60, maxInstances: 20};
-const readLimits = {timeoutSeconds: 60, maxInstances: 40};
-
 export async function getProgramHotelRoomsHandler(
   request: CallableRequest<unknown>,
   deps: ProgramDataDeps = defaultProgramDataDeps
@@ -648,10 +646,6 @@ function normalizePayload(value: unknown): unknown {
   return trimmed;
 }
 
-export const getProgramHotelRooms = onCall(
-  appCheckCallableOptionsWithLimits(readLimits),
-  (request) => getProgramHotelRoomsHandler(request)
-);
 export const upsertProgramStay = onCall(
   appCheckCallableOptionsWithLimits(roomsCallableLimits),
   (request) => upsertProgramStayHandler(request)

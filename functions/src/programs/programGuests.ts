@@ -612,10 +612,6 @@ export const upsertProgramGuest = onCall(
   appCheckCallableOptionsWithLimits(guestCallableLimits),
   (request) => upsertProgramGuestHandler(request)
 );
-export const listProgramGuests = onCall(
-  appCheckCallableOptionsWithLimits(guestCallableLimits),
-  (request) => listProgramGuestsHandler(request)
-);
 export const upsertProgramHousehold = onCall(
   appCheckCallableOptionsWithLimits(guestCallableLimits),
   (request) => upsertProgramHouseholdHandler(request)
