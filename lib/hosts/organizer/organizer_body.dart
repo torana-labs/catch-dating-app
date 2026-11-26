@@ -46,6 +46,14 @@ class OrganizerBody extends StatelessWidget {
           ),
           dividers: CatchSectionPlacement.none,
           children: [
+            CatchIndexRow(
+              key: const ValueKey<String>('organizer-row-audience'),
+              title: l10n.hostsHostOrganizerCrmTitle,
+              subtitle: l10n.hostsHostAnalyticsLabelAllTime,
+              density: CatchIndexRowSize.regular,
+              chevron: true,
+              onTap: () => onAction(OrganizerAction.audience),
+            ),
             if (state.statsPending)
               const CatchSkeleton.content(child: _OrganizerStatGrid.loading())
             else

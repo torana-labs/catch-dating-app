@@ -29,6 +29,7 @@ enum OrganizerAction {
   viewPage,
   sharePage,
   insights,
+  audience,
   payments,
   team,
   memberships,

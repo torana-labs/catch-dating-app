@@ -77,6 +77,7 @@ void main() {
     await tester.tap(find.text('View page'));
     await tester.tap(find.byKey(const ValueKey('organizer-page-share')));
     await tester.tap(find.text('All insights'));
+    await tester.tap(find.byKey(const ValueKey('organizer-row-audience')));
     await tester.tap(find.text('Payments and billing'));
     await tester.tap(find.text('Team'));
     await tester.tap(find.text('Memberships'));
@@ -92,6 +93,7 @@ void main() {
       OrganizerAction.viewPage,
       OrganizerAction.sharePage,
       OrganizerAction.insights,
+      OrganizerAction.audience,
       OrganizerAction.payments,
       OrganizerAction.team,
       OrganizerAction.memberships,

@@ -1,4 +1,7 @@
 import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
+import 'package:catch_dating_app/hosts/organizer/audience_body.dart';
+import 'package:catch_dating_app/hosts/organizer/audience_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/audience_state.dart';
 import 'package:catch_dating_app/hosts/organizer/live_guide_body.dart';
 import 'package:catch_dating_app/hosts/organizer/live_guide_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/profile_preview_sheet.dart';
@@ -64,3 +67,27 @@ Widget hostProfilePreviewSheetUseCase(BuildContext context) =>
       ),
       organizers: [_organizer],
     );
+
+@widgetbook.UseCase(
+  name: 'Audience unavailable',
+  type: OrganizerAudienceBody,
+  path: _path,
+)
+Widget organizerAudienceBodyUseCase(BuildContext context) =>
+    OrganizerAudienceBody(
+      state: OrganizerAudienceState(
+        organizer: _organizer,
+        eventCount: 12,
+        upcomingCount: 3,
+        audienceStatus: OrganizerAudienceStatus.unavailable,
+      ),
+      onRetry: () {},
+    );
+
+@widgetbook.UseCase(
+  name: 'Before the organizer loads',
+  type: OrganizerAudienceScreen,
+  path: _path,
+)
+Widget organizerAudienceScreenUseCase(BuildContext context) =>
+    ProviderScope(child: OrganizerAudienceScreen(organizerId: _organizer.id));

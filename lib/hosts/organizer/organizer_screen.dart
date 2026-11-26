@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/hosts/organizer/audience_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/live_guide_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_body.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_controller.dart';
@@ -141,6 +142,12 @@ class OrganizerScreen extends ConsumerWidget {
         context.goNamed(
           Routes.hostOrganizerScreen.name,
           queryParameters: {...query, 'tab': 'insights'},
+        );
+      case OrganizerAction.audience:
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(
+            builder: (_) => OrganizerAudienceScreen(organizerId: organizer.id),
+          ),
         );
       case OrganizerAction.payments:
         await context.pushNamed<void>(
