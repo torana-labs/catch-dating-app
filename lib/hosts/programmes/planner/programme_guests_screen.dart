@@ -1,15 +1,20 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/programmes/data/program_planner_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/phone_import_access.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_guest_commands.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_desktop_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_planner_commands_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_routes.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_answers_sheet.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/cache/app_clock.dart';
@@ -33,7 +38,10 @@ import 'package:go_router/go_router.dart';
 /// sheet. For a live wedding it also reads the planner's work access
 /// (`getProgramWorkAccess`) and, when a fresh read says this manager may
 /// import phone contacts, offers Choose phone contacts, which opens the
-/// guarded phone import route.
+/// guarded phone import route. Add a guest, the guest groups (New group,
+/// change or delete one, with its hotel) and the answers of a guest with no
+/// household write through the shared guest commands; an archived
+/// programme reads only.
 class HostProgrammeGuestsScreen extends ConsumerStatefulWidget {
   const HostProgrammeGuestsScreen({
     super.key,
@@ -145,6 +153,50 @@ class _HostProgrammeGuestsScreenState
             Routes.hostWorkPhoneImportScreen.name,
             pathParameters: {'programId': programId},
           );
+          final page = state.guests;
+          final groups =
+              ref.watch(programGuestGroupListProvider(programId)).value ??
+              page?.groups ??
+              const <ProgramGuestGroupRow>[];
+          final households =
+              ref.watch(programHouseholdListProvider(programId)).value ??
+              page?.households ??
+              const <ProgramHouseholdRow>[];
+          final archived = program?.status == ProgramStatus.archived;
+          void addGuest() => unawaited(
+            addHostProgrammeGuest(
+              context,
+              ref,
+              programId: programId,
+              households: households,
+              groups: groups,
+            ),
+          );
+          void editGroup(ProgramGuestGroupRow? group) => unawaited(
+            editHostProgrammeGroup(
+              context,
+              ref,
+              programId: programId,
+              hotels: state.detail?.hotels ?? const <ProgramHotel>[],
+              group: group,
+            ),
+          );
+          void editGuest(ProgramGuestRow guest) => unawaited(
+            editHostProgrammeAnswers(
+              context,
+              ref,
+              programId: programId,
+              guest: guest,
+              answers: [
+                for (final function in state.functions)
+                  HostProgrammeAnswer(
+                    functionId: function.functionId,
+                    name: function.name,
+                    reply: state.reply(guest, function),
+                  ),
+              ],
+            ),
+          );
           void retry() {
             refreshHostProgramme(ref, programId);
             if (wedding) retryAccess();
@@ -167,6 +219,13 @@ class _HostProgrammeGuestsScreenState
                       ].join(' · '),
                 title: program?.title,
                 actions: [
+                  if (!archived)
+                    CatchButton(
+                      key: const ValueKey<String>('host-programme-guests-add'),
+                      label: l10n.programsGuestsAddGuest,
+                      variant: CatchButtonVariant.secondary,
+                      onPressed: addGuest,
+                    ),
                   if (phoneImport)
                     CatchButton(
                       key: const ValueKey<String>(
@@ -195,6 +254,9 @@ class _HostProgrammeGuestsScreenState
                 onFilter: (filter) => setState(() => _filter = filter),
                 onOpenHousehold: openHousehold,
                 onRetry: retry,
+                groups: groups,
+                onEditGuest: archived ? null : editGuest,
+                onEditGroup: archived ? null : editGroup,
               ),
             );
           }
@@ -216,6 +278,10 @@ class _HostProgrammeGuestsScreenState
               onPhoneImport: phoneImport ? importContacts : null,
               phoneImportFailure: phoneImportError,
               onRetryPhoneImport: retryAccess,
+              groups: groups,
+              onAddGuest: archived ? null : addGuest,
+              onEditGuest: archived ? null : editGuest,
+              onEditGroup: archived ? null : editGroup,
             ),
           );
         },

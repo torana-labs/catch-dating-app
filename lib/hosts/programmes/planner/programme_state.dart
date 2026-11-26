@@ -251,6 +251,19 @@ class HostProgrammeState {
     return households;
   }
 
+  /// Guests who belong to no household, by name.
+  List<ProgramGuestRow> get unaffiliated {
+    final page = guests;
+    if (page == null) return const [];
+    final housed = {
+      for (final household in page.households) ...household.memberGuestIds,
+    };
+    return [
+      for (final guest in page.guests)
+        if (guest.householdId == null && !housed.contains(guest.guestId)) guest,
+    ]..sort((a, b) => a.displayName.compareTo(b.displayName));
+  }
+
   HostProgrammeHousehold? household(String householdId) =>
       households.where((h) => h.id == householdId).firstOrNull;
 
