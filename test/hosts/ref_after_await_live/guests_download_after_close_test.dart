@@ -104,7 +104,7 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(logger.reasons, ['share the guest list']);
-    await tester.pump(const Duration(minutes: 1));
+    await pumpFeatureUiFor(tester, const Duration(minutes: 1));
   });
 }
 
