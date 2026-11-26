@@ -14,6 +14,8 @@ import {
 } from "../lib/flutter_source_roots.mjs";
 import {repoRoot} from "../lib/repo_paths.mjs";
 import {
+  buildMethodBodies,
+  maskDartComments,
   scanFile,
   scanMutationErrorSurfaces,
 } from "./check_mutation_error_surfaces.mjs";
@@ -411,4 +413,89 @@ test("subscription named argument order does not change matching", () => {
     }`,
   });
   assert.deepEqual(findings, []);
+});
+
+test("a hasError mention in a comment does not cover a pending mutation", () => {
+  const findings = scanFile({
+    relativePath: "lib/events/presentation/event_editor.dart",
+    source: [
+      "class EventEditor extends ConsumerWidget {",
+      "  Widget build(BuildContext context, WidgetRef ref) {",
+      "    final save = ref.watch(EventController.saveMutation);",
+      "    // TODO: branch on save.hasError and mutationErrorMessage(save).",
+      "    /* listenToCatchMutationErrors(context, ref, mutations: [EventController.saveMutation]); */",
+      "    return Text(save.isPending ? 'Saving' : 'Ready');",
+      "  }",
+      "}",
+    ].join("\n"),
+  });
+  assert.deepEqual(findings.map((finding) => [finding.line, finding.variableName]), [[6, "save"]]);
+  assert.equal(findings[0].text, "return Text(save.isPending ? 'Saving' : 'Ready');");
+});
+
+test("a sibling build method's hasError does not cover another build method", () => {
+  const findings = scanFile({
+    relativePath: "lib/events/presentation/event_editor.dart",
+    source: [
+      "class SaveButton extends ConsumerWidget {",
+      "  Widget build(BuildContext context, WidgetRef ref) {",
+      "    final save = ref.watch(EventController.saveMutation);",
+      "    if (save.hasError) return const Text('Failed');",
+      "    return Text(save.isPending ? 'Saving' : 'Ready');",
+      "  }",
+      "}",
+      "class SaveLabel extends ConsumerWidget {",
+      "  Widget build(BuildContext context, WidgetRef ref) {",
+      "    final save = ref.watch(EventController.saveMutation);",
+      "    return Text(save.isPending ? 'Saving' : 'Ready');",
+      "  }",
+      "}",
+    ].join("\n"),
+  });
+  assert.deepEqual(findings.map((finding) => finding.line), [11]);
+});
+
+test("a non-build helper's error surface does not cover a build method", () => {
+  const findings = scanFile({
+    relativePath: "lib/events/presentation/event_editor.dart",
+    source: [
+      "class EventEditor extends ConsumerWidget {",
+      "  Widget build(BuildContext context, WidgetRef ref) {",
+      "    final save = ref.watch(EventController.saveMutation);",
+      "    return Text(save.isPending ? 'Saving' : 'Ready');",
+      "  }",
+      "  Widget _error(MutationState<void> save) => Text(save.hasError ? 'Failed' : '');",
+      "}",
+    ].join("\n"),
+  });
+  assert.deepEqual(findings.map((finding) => finding.line), [4]);
+});
+
+test("comment markers inside strings and arrow-bodied builds are read as code", () => {
+  const source = [
+    "class EventEditor extends ConsumerWidget {",
+    "  Widget build(BuildContext context, WidgetRef ref) => _body(",
+    "    ref.watch(EventController.saveMutation),",
+    "    'https://events.example/{id}',",
+    "  );",
+    "}",
+    "class EventLink extends ConsumerWidget {",
+    "  Widget build(BuildContext context, WidgetRef ref) {",
+    "    final link = 'https://events.example/a?b={c}';",
+    "    final save = ref.watch(EventController.saveMutation);",
+    "    if (save.hasError) return Text('$link ${save.error}');",
+    "    return Text(save.isPending ? r'\\Saving' : '''Ready /* not a comment */''');",
+    "  }",
+    "}",
+  ].join("\n");
+  assert.deepEqual(scanFile({relativePath: "lib/events/presentation/link.dart", source}), []);
+
+  const {code, stringMask} = maskDartComments(source);
+  assert.equal(code.length, source.length);
+  assert.match(code, /https:\/\/events\.example\/a\?b=\{c\}/u);
+  assert.match(code, /not a comment/u);
+  const bodies = buildMethodBodies(code, stringMask).map((body) => code.slice(body.start, body.end));
+  assert.equal(bodies.length, 2);
+  assert.match(bodies[0], /^=> _body\([\s\S]*\);$/u);
+  assert.match(bodies[1], /^\{[\s\S]*save\.isPending[\s\S]*\}$/u);
 });
