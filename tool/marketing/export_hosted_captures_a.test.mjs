@@ -449,10 +449,11 @@ sys.stdout.buffer.write(output.getvalue())`, f.options.outputDir], {maxBuffer: 6
   assert.equal(consumer.verifyCaptureFiles({files, binding}).receipt.captures.length, 12);
   assert.notEqual(binding.runHeadSha, binding.sourceSha, "GitHub's API head is distinct from the tested merge source");
   const catalog = fs.readFileSync(path.join(f.root, "docs/widget_catalog.md"), "utf8");
-  f.write("docs/widget_catalog.md", catalog.replace("Authored guidance", "Changed policy"));
-  assert.throws(() => consumer.verifyCaptureFiles({files, binding}), /Authored catalog guidance/);
-  f.write("docs/widget_catalog.md", catalog.replace("old rows", "fresh generated rows"));
-  assert.doesNotThrow(() => consumer.verifyCaptureFiles({files, binding}));
+  // The catalog doc is authored only; no generated region is exempt any more.
+  for (const edit of [["Authored guidance", "Changed policy"], ["old rows", "fresh generated rows"]]) {
+    f.write("docs/widget_catalog.md", catalog.replace(...edit));
+    assert.throws(() => consumer.verifyCaptureFiles({files, binding}), /authored source differs/);
+  }
   f.write("docs/widget_catalog.md", catalog);
   f.git("update-index", "--assume-unchanged", "test/goldens/baseline.png");
   assert.throws(() => consumer.verifyCaptureFiles({files, binding}), /assume-unchanged/);

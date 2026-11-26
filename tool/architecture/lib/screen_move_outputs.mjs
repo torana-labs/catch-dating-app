@@ -12,7 +12,6 @@ import {
   scanLibrary,
 } from "../../design/check_library_shims.mjs";
 
-export const inventoryOutputs = ["tool/ui_capture/route_inventory.json", "docs/widget_catalog.md"];
 const hostFeaturesPath = "design/features/host_feature_responsibilities.json";
 
 // The host-destination READMEs build_host_feature_responsibilities.mjs
@@ -34,15 +33,14 @@ export function hostFeatureReadmes(contractSource) {
 // Every file a move must leave to a generator, before and after the move.
 export function regeneratedOutputs({readBefore, readAfter}) {
   return new Set([
-    ...inventoryOutputs,
     ...hostFeatureReadmes(readBefore(hostFeaturesPath)),
     ...hostFeatureReadmes(readAfter(hostFeaturesPath)),
   ]);
 }
 
-// The generator steps, in the order --apply runs them. The inventories need
-// the exact committed source, so they run after the move commit and are
-// folded into it.
+// The generator steps, in the order --apply runs them. The route inventory
+// and the widget catalog inventory are derived from live source by the
+// checks that read them, so a move regenerates neither.
 export function regenerationSteps() {
   return [
     {
@@ -55,21 +53,15 @@ export function regenerationSteps() {
       id: "l10n",
       when: "before-commit",
       command: ["node", "tool/harness/lib/check_flutter_l10n_generated.mjs", "--check"],
-      outputs: "none (confirms the generated localizations still match the ARB)",
-    },
-    {
-      id: "inventories",
-      when: "after-commit",
-      command: ["node", "tool/ci/generated_inventories.mjs", "--source-sha", "<HEAD>"],
-      outputs: inventoryOutputs.join(", "),
+      outputs: "none (confirms the ARB still generates localizations)",
     },
   ];
 }
 
-export function runRegeneration(root, when, {sourceSha = null} = {}) {
+export function runRegeneration(root, when) {
   const ran = [];
   for (const step of regenerationSteps().filter((candidate) => candidate.when === when)) {
-    const command = step.command.map((part) => (part === "<HEAD>" ? sourceSha : part));
+    const {command} = step;
     const result = spawnSync(command[0], command.slice(1), {
       cwd: root,
       encoding: "utf8",

@@ -195,10 +195,6 @@ jobs:
             package-lock.json
             functions/package-lock.json
 
-      - name: Derive exact-source route and widget inventories
-        if: ${{ needs.preflight.outputs.repository_view != 'index' }}
-        run: node tool/ci/generated_inventories.mjs --source-sha "$GITHUB_SHA"
-
       - uses: ./.github/actions/setup-flutter
         if: ${{ contains(fromJSON(needs.preflight.outputs.setup_requirements), 'flutter') }}
 
@@ -235,7 +231,6 @@ jobs:
           MODE: ${{ inputs.mode }}
           MARKETING_CHECKS_IN_REACT: ${{ inputs.marketing_checks_in_react }}
           VISUAL_REPORT: ${{ inputs.visual_report }}
-          INVENTORY_MATERIALIZED: ${{ needs.preflight.outputs.repository_view != 'index' }}
         run: |
           set -euo pipefail
           shared_flags=()
@@ -245,9 +240,6 @@ jobs:
           # The visual report only reports; it runs in the CI nightly alone (#2426).
           if [[ "${VISUAL_REPORT:-}" != "true" ]]; then
             shared_flags+=(--defer-visual-report)
-          fi
-          if [[ "$INVENTORY_MATERIALIZED" == "true" ]]; then
-            shared_flags+=(--generated-inventories-materialized)
           fi
           window_flag=()
           if [[ "$COMMIT_WINDOW" == "true" ]]; then
@@ -360,9 +352,6 @@ jobs:
           test -s "$RUNNER_TEMP/bucket-tools.txt"
           echo "setup=$(node tool/ci/tool_buckets.mjs setup --bucket "$BUCKET")" >> "$GITHUB_OUTPUT"
 
-      - name: Derive exact-source route and widget inventories
-        run: node tool/ci/generated_inventories.mjs --source-sha "$GITHUB_SHA"
-
       - uses: ./.github/actions/setup-flutter
         if: ${{ contains(fromJSON(steps.bucket.outputs.setup), 'flutter') }}
 
@@ -392,7 +381,6 @@ jobs:
         env:
           MARKETING_CHECKS_IN_REACT: ${{ inputs.marketing_checks_in_react }}
           VISUAL_REPORT: ${{ inputs.visual_report }}
-          INVENTORY_MATERIALIZED: "true"
         run: |
           set -euo pipefail
           shared_flags=()
@@ -402,9 +390,6 @@ jobs:
           # The visual report only reports; it runs in the CI nightly alone (#2426).
           if [[ "${VISUAL_REPORT:-}" != "true" ]]; then
             shared_flags+=(--defer-visual-report)
-          fi
-          if [[ "$INVENTORY_MATERIALIZED" == "true" ]]; then
-            shared_flags+=(--generated-inventories-materialized)
           fi
           mapfile -t tool_ids < "$RUNNER_TEMP/bucket-tools.txt"
           (( ${#tool_ids[@]} > 0 ))

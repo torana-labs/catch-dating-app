@@ -67,10 +67,11 @@ inventory commit.
 When `lib/routing/consumer_router.dart` or `lib/routing/host_router.dart` changes, update the route-derived design
 ledgers in the same PR:
 
-1. Regenerate the route inventory:
+1. Check that the route inventory still derives. Nothing commits it; every
+   check that reads it derives it from the routers (`--list` prints the routes):
 
    ```bash
-   node tool/ui_capture/check_route_inventory.mjs --update
+   node tool/ui_capture/check_route_inventory.mjs --check
    ```
 
 2. Add or update the route in `design/screens/screen_coverage.json`. Although

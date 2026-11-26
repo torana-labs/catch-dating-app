@@ -277,7 +277,7 @@ test("pull requests and the merge queue narrow CI configuration edits the same w
     "visual_integration"];
   const edits = [".github/workflows/flutter-ci.yml", ".github/workflows/app-build-matrix.yml",
     ".github/actions/cache-cocoapods/action.yml", ".github/actions/install-ripgrep/action.yml",
-    ".github/workflows/react-surface-validation.yml", "tool/ci/generated_inventories.mjs", "tool/nx/select_lanes.mjs"];
+    ".github/workflows/react-surface-validation.yml", "tool/ci/delivery_core.mjs", "tool/nx/select_lanes.mjs"];
   for (const file of edits) {
     const select = (mode) => nxSelection({nxTasks: [], changedFiles: [file], mode, graph: realGraph});
     const queue = select("merge_group");

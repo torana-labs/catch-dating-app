@@ -79,7 +79,6 @@
     "ci:flutter-workspace-analysis": 0.4,
     "ci:functions-drift-report": 0.1,
     "ci:generate-contracts-cache": 0.2,
-    "ci:generated-inventories": 3.3,
     "ci:golden-policy": 0.6,
     "ci:ios-build-inputs": 2.3,
     "ci:listing-cohort-withdraw-workflow": 0.3,

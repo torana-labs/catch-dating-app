@@ -703,6 +703,28 @@ void main() {
       );
     },
   );
+  test(
+    'untracked generated localizations are a leaf with or without rendered contracts',
+    () {
+      final files = {
+        ...probed,
+        'packages/l10n/pubspec.yaml': 'name: catch_l10n\n',
+        'lib/uses_l10n.dart':
+            "import 'package:catch_l10n/generated/app_localizations.dart'; const usesL10n = 1;",
+        'test/l_test.dart': "import '../lib/uses_l10n.dart'; void main() {}",
+      };
+      for (final rendered in [null, const <String, String>{}]) {
+        final result = selectFlutterTests(
+          before: files,
+          after: files,
+          changed: {'lib/uses_l10n.dart'},
+          generatedBefore: rendered,
+          generatedAfter: rendered,
+        );
+        expect(selected(result), ['test/l_test.dart', 'test/probe_test.dart']);
+      }
+    },
+  );
   test('a root test importing a package-owned test helper still needs it', () {
     final files = {
       ...probed,

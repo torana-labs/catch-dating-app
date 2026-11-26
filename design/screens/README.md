@@ -24,8 +24,9 @@ or an unregistered named or imperative full-screen presentation. Named
 GoRoutes bind through `layoutContracts` or `layoutOnlyRoutes`. Analyzer
 discovery covers every full-screen `PageRoute` construction form, but the
 imperative inventory and `imperativePageContracts` support only direct
-`MaterialPageRoute` construction, with every call site generated into
-`tool/ui_capture/route_inventory.json`. Aliases, constructor tear-offs,
+`MaterialPageRoute` construction, with every call site in the route inventory
+that `tool/ui_capture/check_route_inventory.mjs` derives from live source on
+each check. Aliases, constructor tear-offs,
 factories/wrappers, `CupertinoPageRoute`, `PageRouteBuilder`, and subclasses
 fail closed rather than bypassing the inventory. New screen contracts must add
 all three enforcement columns in the same change.
