@@ -92,8 +92,7 @@ test("a lane only Nx selects is flagged as a planner gap", () => {
 // site, but the task graph also held @catch/web-ui:build, which the marketing
 // build depends on. Mapping that dependency ran Admin on every website PR.
 test("the lane plan asks Nx for affected tasks without their dependencies", () => {
-  assert.match(fs.readFileSync(new URL("./shadow_plan.mjs", import.meta.url), "utf8"),
-    /"nx", "affected", "-t", \.\.\.targets, [^\n]*"--excludeTaskDependencies"/u);
+  // nxAffected (lanes.mjs) passes --excludeTaskDependencies; lanes.test.mjs pins it.
   const nxTasks = ["catch-marketing:build", "catch-marketing:typecheck", "lane-capture-freshness:lane"];
   const result = compare({plannerLanes: ["capture_freshness", "marketing"], mode: "pr", nxTasks});
   assert.deepEqual(result.nxLanes, ["capture_freshness", "marketing"]);
