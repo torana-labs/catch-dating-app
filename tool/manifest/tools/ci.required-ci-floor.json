@@ -5,6 +5,12 @@
   "command": "node --test tool/ci/required_ci_floor.test.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "impactPaths": [
     ".github/workflows/ci.yml",
     "tool/ci/required_ci_floor.mjs",

@@ -6,6 +6,12 @@
   "surface": "remote-write",
   "guard": "apply-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "role": "operator",
   "description": "Rebuilds one named host read model (contact summaries, group progress views, accountability views and others) for every environment under the clean-schema rule. Dry run unless --apply.",
   "checks": [

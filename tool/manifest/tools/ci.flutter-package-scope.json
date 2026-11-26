@@ -5,6 +5,12 @@
   "command": "node tool/ci/flutter_package_scope.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "impactPaths": [
     ".github/workflows/flutter-ci.yml",
     "tool/ci/flutter_package_scope.mjs",

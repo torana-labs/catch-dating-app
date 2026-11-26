@@ -7,6 +7,13 @@
   "guard": "none",
   "guardReason": "Opens, comments on and closes the golden and capture issues, and dispatches the dispatch-only baseline workflows, with gh; meant to run only from main-red-alert.yml.",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
   "impactPaths": [
     ".github/workflows/main-red-alert.yml",
     ".github/workflows/marketing-captures.yml",

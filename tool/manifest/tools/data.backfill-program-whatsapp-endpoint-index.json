@@ -6,6 +6,12 @@
   "surface": "remote-write",
   "guard": "apply-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "role": "operator",
   "description": "Seeds programWhatsappEndpointIndex for one programme's households and guests that predate the endpoint-index trigger. Dry run unless --apply; it only adds or updates index documents.",
   "checks": [

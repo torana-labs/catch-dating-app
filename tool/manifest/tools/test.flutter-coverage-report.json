@@ -5,6 +5,12 @@
   "command": "node tool/test/flutter_coverage_report.mjs",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Turns Flutter LCOV into a visibility-only handwritten-code and feature-level report without imposing an aggregate percentage threshold.",
   "checks": [
     "node --check tool/test/flutter_coverage_report.mjs",

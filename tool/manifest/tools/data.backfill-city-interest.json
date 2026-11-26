@@ -6,6 +6,12 @@
   "surface": "remote-write",
   "guard": "apply-and-prod-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Maps existing launch-notice cities to market catalog ids where one city matches, counts each person once per city in cityInterest, and reports the rest.",
   "checks": [
     "node --check tool/data/backfill_city_interest.mjs",

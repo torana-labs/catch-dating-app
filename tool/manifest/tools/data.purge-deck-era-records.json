@@ -6,6 +6,12 @@
   "surface": "remote-destructive",
   "guard": "apply-and-prod-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "One-off purge of the retired swipe deck's likes, passes, comments and the chats and signal facts derived from them; dry run by default.",
   "checks": [
     "node --check tool/data/purge_deck_era_records.mjs",

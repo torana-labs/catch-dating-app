@@ -5,6 +5,12 @@
   "command": "node tool/contracts/generate_business_rules.mjs",
   "surface": "local-writes-repo",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Generates shared Flutter and Functions business constants.",
   "checks": [
     "node --check tool/contracts/generate_business_rules.mjs",

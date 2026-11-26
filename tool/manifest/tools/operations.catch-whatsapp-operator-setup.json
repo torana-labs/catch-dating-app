@@ -7,6 +7,12 @@
   "guard": "none",
   "guardReason": "Only apply and reconcile write, and each needs --plan-id naming a plan produced and reviewed earlier by plan/inspect-plan, run inside the delegated operator's protected runtime.",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "role": "operator",
   "alsoEnforces": [
     "OPERATIONS-PLATFORM-001"

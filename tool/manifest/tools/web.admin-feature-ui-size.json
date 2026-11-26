@@ -5,6 +5,12 @@
   "command": "node tool/web/check_admin_feature_ui_size.mjs --check",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Keeps admin feature route/workspace entries and private panel modules below reviewed line ceilings after the large-screen decomposition pass.",
   "checks": [
     "node --check tool/web/check_admin_feature_ui_size.mjs",

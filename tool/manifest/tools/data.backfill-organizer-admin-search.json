@@ -6,6 +6,12 @@
   "surface": "remote-write",
   "guard": "apply-and-prod-flag",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Backfills organizer adminSearch projections for the admin Organizers canonical directory.",
   "checks": [
     "node --check tool/data/backfill_organizer_admin_search.mjs",

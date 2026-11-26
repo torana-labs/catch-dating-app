@@ -5,6 +5,12 @@
   "command": "node tool/contracts/check_storage_contract.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Checks Storage contract metadata against storage rules and tests.",
   "checks": [
     "node --check tool/contracts/check_storage_contract.mjs"

@@ -5,6 +5,12 @@
   "command": "node website/scripts/checkStorybookA11yDebt.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Ratchets Storybook accessibility todo annotations against the exact reasoned WEB-A11Y-001 registry.",
   "checks": [
     "node --check website/scripts/checkStorybookA11yDebt.mjs",

@@ -5,6 +5,12 @@
   "command": "node tool/contracts/check_firestore_read_limits.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Rejects numeric repository read limits and unbounded Firestore collection reads outside the canonical ReadLimitPolicy and reviewed-exception contracts.",
   "checks": [
     "node --check tool/contracts/check_firestore_read_limits.mjs",

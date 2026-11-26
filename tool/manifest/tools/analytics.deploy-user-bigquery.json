@@ -7,6 +7,12 @@
   "guard": "none",
   "guardReason": "Runs the DDL and refresh against BigQuery by default; --dry-run is the opt-in preview. Run it only as the runbook says.",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Applies user analytics BigQuery DDL and mart refresh SQL.",
   "checks": [
     "bash -n tool/analytics/deploy_user_analytics_bigquery.sh"

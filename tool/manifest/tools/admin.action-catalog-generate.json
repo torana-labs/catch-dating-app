@@ -5,6 +5,12 @@
   "command": "node tool/admin/generate_admin_action_catalog.mjs",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "role": "generator",
   "alsoEnforces": [
     "OPERATIONS-PLATFORM-001"

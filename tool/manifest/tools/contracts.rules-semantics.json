@@ -5,6 +5,12 @@
   "command": "node tool/contracts/check_firestore_rules_semantics.mjs",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Checks Firestore rule semantics against schema-owned paths.",
   "checks": [
     "node --check tool/contracts/check_firestore_rules_semantics.mjs"

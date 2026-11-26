@@ -5,6 +5,12 @@
   "command": "node tool/design/check_host_event_field_contracts.mjs --check",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Enforces collapsed event create/edit disclosures and activity-palette accents on ActivityKind, EventInteractionModel, and PaceLevel Host choice fields.",
   "checks": [
     "node --check tool/design/check_host_event_field_contracts.mjs",

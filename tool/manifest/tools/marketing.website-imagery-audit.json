@@ -5,6 +5,12 @@
   "command": "node tool/marketing/audit_website_imagery.mjs --base-url <url>",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Opens every public website route on a running dev server at 390px and 1440px and flags large colour, pattern or empty blocks with no real media and little text, with a cropped screenshot of each, in ignored build/website-imagery-audit output. Reports only; it never edits the site or makes images.",
   "checks": [
     "node --check tool/marketing/audit_website_imagery.mjs",

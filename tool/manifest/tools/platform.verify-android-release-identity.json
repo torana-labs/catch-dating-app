@@ -5,6 +5,12 @@
   "command": "node tool/platform/verify_android_release_bundle.mjs --help",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Uses pinned bundletool plus signer-certificate inspection to verify a signed Android App Bundle's role, target, Firebase, Maps, debug, package, version, and upload-certificate identity, then emits a release receipt.",
   "checks": [
     "node --check tool/platform/verify_android_release_bundle.mjs",

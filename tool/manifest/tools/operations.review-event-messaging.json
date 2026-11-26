@@ -5,6 +5,12 @@
   "command": "npm --prefix functions run operations:review-event-messaging --",
   "surface": "remote-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "role": "operator",
   "alsoEnforces": [
     "OPERATIONS-PLATFORM-001"

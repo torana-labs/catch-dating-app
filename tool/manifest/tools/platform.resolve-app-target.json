@@ -5,6 +5,12 @@
   "command": "node tool/platform/resolve_app_target.mjs --role consumer --environment dev",
   "surface": "local-read",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
   "description": "Resolves one explicit Consumer or Host target from the canonical six-target manifest for shell scripts and CI.",
   "checks": [
     "node --check tool/platform/resolve_app_target.mjs",

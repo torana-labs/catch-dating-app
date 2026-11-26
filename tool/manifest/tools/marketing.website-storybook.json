@@ -5,6 +5,13 @@
   "command": "npm --workspace catch-marketing run build:storybook",
   "surface": "local-writes-scratch",
   "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
   "description": "Builds the Storybook workbench for route-linked marketing website component and page-state review.",
   "checks": [
     "npm --workspace catch-marketing run check:storybook-config",
