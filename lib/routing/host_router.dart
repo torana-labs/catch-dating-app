@@ -49,7 +49,6 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customer_edit
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_route_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
@@ -378,9 +377,10 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     audienceView: HostAudienceView.forms,
     path: Routes.hostResponseQueryOfferScreen.path,
     name: Routes.hostResponseQueryOfferScreen.name,
-    builder: (context, state) => HostResponseOfferScreen.query(
+    builder: (context, state) => HostOfferScreen.query(
       organizerId: _routeOrganizerQueryId(state)!,
-      queryController: state.extra is HostResponseQueryController
+      formId: state.pathParameters['formId']!,
+      query: state.extra is HostResponseQueryController
           ? state.extra! as HostResponseQueryController
           : null,
     ),

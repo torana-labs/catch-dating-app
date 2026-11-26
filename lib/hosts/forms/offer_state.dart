@@ -28,6 +28,9 @@ enum HostOfferStage {
   selected,
 }
 
+/// What the offer is getting ready while it loads.
+enum HostOfferProgress { events, preparing, existing, message }
+
 /// Where the admission of an offered person stands.
 enum HostOfferAdmissionPhase { check, ready, keep, saved, again, done }
 
@@ -95,6 +98,7 @@ class HostOfferAdmission {
     this.blocker,
     this.failed = false,
     this.busy = false,
+    this.error,
   });
 
   final HostOfferAdmissionPhase phase;
@@ -103,6 +107,9 @@ class HostOfferAdmission {
   final String? blocker;
   final bool failed;
   final bool busy;
+
+  /// What went wrong with the last check or confirm, in the host's words.
+  final String? error;
 }
 
 /// The open offer.
@@ -160,6 +167,13 @@ class HostOfferState {
     this.failed = false,
     this.stale = false,
     this.canRetry = false,
+    this.recipientCount = 1,
+    this.progress,
+    this.previewed = false,
+    this.issued = false,
+    this.canChangeEvent = false,
+    this.creatingEvent = false,
+    this.canCloseExisting = false,
   });
 
   final HostOfferStage stage;
@@ -197,4 +211,26 @@ class HostOfferState {
   /// The answers changed under the offer; it starts again.
   final bool stale;
   final bool canRetry;
+
+  /// How many people the offer is for; more than one for a selection.
+  final int recipientCount;
+
+  /// What is loading, while something is.
+  final HostOfferProgress? progress;
+
+  /// The ready offer was checked with the server and can now be sent.
+  final bool previewed;
+
+  /// Offers were recorded for this event; sending and letting in are
+  /// separate steps.
+  final bool issued;
+
+  /// The chosen event can be cleared to choose another.
+  final bool canChangeEvent;
+
+  /// A new event is being made to offer.
+  final bool creatingEvent;
+
+  /// An open offer can go back to every offer made, for a selection.
+  final bool canCloseExisting;
 }

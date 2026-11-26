@@ -26,9 +26,10 @@ String hostOfferStatusText(AppLocalizations l10n, HostOfferStatus? status) =>
 /// The longest reference or note the payment check records.
 const hostOfferReferenceLimit = 240;
 
-/// Offering a place in board order: which event, then what the offer needs
-/// (people added to People, the event's terms, payment links), the ready
-/// offer, and an offer already made with its WhatsApp message, payment
+/// Offering a place in board order: which event (or a new one), then what
+/// the offer needs (people added to People, the event's terms, payment
+/// links), the ready offer with what it does not do, the offers made with
+/// Refresh, and an offer already made with its WhatsApp message, payment
 /// check and admission.
 class HostOfferBody extends StatelessWidget {
   const HostOfferBody({
@@ -49,6 +50,10 @@ class HostOfferBody extends StatelessWidget {
     required this.onBankChecked,
     required this.onAdmit,
     required this.onRetry,
+    this.onChangeEvent,
+    this.onCreateEvent,
+    this.onRefreshOffers,
+    this.onCloseExisting,
   });
 
   final HostOfferState state;
@@ -70,6 +75,18 @@ class HostOfferBody extends StatelessWidget {
   final VoidCallback onAdmit;
   final VoidCallback onRetry;
 
+  /// Clears the chosen event to choose another.
+  final VoidCallback? onChangeEvent;
+
+  /// Makes a new event and offers it; null hides Create event.
+  final VoidCallback? onCreateEvent;
+
+  /// Reads the offers made for this event again.
+  final VoidCallback? onRefreshOffers;
+
+  /// Goes back from an open offer to every offer made.
+  final VoidCallback? onCloseExisting;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -86,6 +103,14 @@ class HostOfferBody extends StatelessWidget {
               l10n.hostFormsOfferWhichEvent,
               variant: CatchTextVariant.labelAction,
             ),
+            if (state.canChangeEvent && event != null && onChangeEvent != null)
+              CatchButton(
+                key: const ValueKey<String>('host-offer-change-event'),
+                label: l10n.hostEventOfferChangeEvent,
+                variant: CatchButtonVariant.quiet,
+                size: CatchButtonSize.sm,
+                onPressed: state.busy ? null : onChangeEvent,
+              ),
             if (state.events.isEmpty && state.stage == HostOfferStage.loading)
               CatchSkeleton.content(
                 child: CatchChoiceTile(
@@ -124,6 +149,20 @@ class HostOfferBody extends StatelessWidget {
                 variant: CatchButtonVariant.quiet,
                 size: CatchButtonSize.sm,
                 onPressed: state.busy ? null : onLoadMoreEvents,
+              ),
+            if (onCreateEvent != null && event == null)
+              CatchButton(
+                key: const ValueKey<String>('host-offer-create-event'),
+                label: l10n.hostsHostEventsListLabelNewEvent,
+                variant: CatchButtonVariant.secondary,
+                size: CatchButtonSize.sm,
+                leading: CatchIcon(CatchIcons.add),
+                status: state.creatingEvent
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
+                onPressed: state.busy || state.creatingEvent
+                    ? null
+                    : onCreateEvent,
               ),
           ],
         ),
@@ -177,9 +216,24 @@ class HostOfferBody extends StatelessWidget {
           ),
         if (state.stage == HostOfferStage.review)
           _HostOfferReview(state: state),
+        if (state.issued &&
+            (state.stage == HostOfferStage.existing ||
+                state.stage == HostOfferStage.review))
+          CatchText(
+            key: const ValueKey<String>('host-offer-issued'),
+            l10n.hostEventOfferIssued,
+            variant: CatchTextVariant.bodySmall,
+            tone: CatchTextTone.secondary,
+          ),
         if (state.stage == HostOfferStage.existing)
           CatchSection(
             title: l10n.hostFormsOfferExistingTitle,
+            action: onRefreshOffers == null
+                ? null
+                : CatchSectionAction(
+                    label: l10n.hostEventOfferRefresh,
+                    onPressed: state.busy ? null : onRefreshOffers,
+                  ),
             children: [
               for (final offer in state.existing)
                 CatchIndexRow(
@@ -194,6 +248,18 @@ class HostOfferBody extends StatelessWidget {
                 ),
             ],
           ),
+        if (state.stage == HostOfferStage.selected &&
+            selected != null &&
+            state.canCloseExisting &&
+            onCloseExisting != null)
+          CatchButton(
+            key: const ValueKey<String>('host-offer-close-existing'),
+            label: l10n.hostEventOfferExisting,
+            variant: CatchButtonVariant.quiet,
+            size: CatchButtonSize.sm,
+            leading: CatchIcon(CatchIcons.back),
+            onPressed: state.busy ? null : onCloseExisting,
+          ),
         if (state.stage == HostOfferStage.selected && selected != null)
           _HostOfferSelected(
             selected: selected,
@@ -207,7 +273,19 @@ class HostOfferBody extends StatelessWidget {
             onBankChecked: onBankChecked,
             onAdmit: onAdmit,
           ),
-        if (state.stage == HostOfferStage.loading && event != null)
+        if (state.progress case final progress?)
+          CatchText(
+            key: const ValueKey<String>('host-offer-progress'),
+            switch (progress) {
+              HostOfferProgress.events => l10n.hostEventOfferLoadingEvents,
+              HostOfferProgress.preparing => l10n.hostEventOfferPreparing,
+              HostOfferProgress.existing => l10n.hostEventOfferLoadingExisting,
+              HostOfferProgress.message => l10n.hostEventOfferPreparingMessage,
+            },
+            variant: CatchTextVariant.bodyMeta,
+            tone: CatchTextTone.secondary,
+          )
+        else if (state.stage == HostOfferStage.loading && event != null)
           CatchText(
             l10n.hostFormsOfferLoading,
             variant: CatchTextVariant.bodyMeta,
@@ -272,6 +350,12 @@ class _HostOfferReview extends StatelessWidget {
               amount == null
                   ? l10n.hostFormsOfferCostUnknown
                   : l10n.hostFormsOfferCost(amount: amount),
+              variant: CatchTextVariant.bodyMeta,
+              tone: CatchTextTone.secondary,
+            ),
+            CatchText(
+              key: const ValueKey<String>('host-offer-no-reservation'),
+              l10n.hostEventOfferNoReservation,
               variant: CatchTextVariant.bodyMeta,
               tone: CatchTextTone.secondary,
             ),
@@ -342,6 +426,12 @@ class _HostOfferSelected extends StatelessWidget {
               CatchText(
                 l10n.hostFormsOfferOnWhatsapp(name: name),
                 variant: CatchTextVariant.labelKicker,
+                tone: CatchTextTone.secondary,
+              ),
+              CatchText(
+                key: const ValueKey<String>('host-offer-handoff-disclosure'),
+                l10n.hostEventOfferHandoffDisclosure,
+                variant: CatchTextVariant.bodyMeta,
                 tone: CatchTextTone.secondary,
               ),
               if (message != null) ...[
@@ -485,6 +575,13 @@ class _HostOfferManual extends StatelessWidget {
             ),
           ],
         },
+        if (manual.status == HostManualPaymentStatus.none ||
+            manual.status == HostManualPaymentStatus.evidenceSubmitted)
+          CatchText(
+            l10n.hostEventOfferNoReservation,
+            variant: CatchTextVariant.bodyMeta,
+            tone: CatchTextTone.secondary,
+          ),
         if (manual.failed)
           CatchNotice.inline(
             body: l10n.hostFormsOfferFailed,
@@ -521,7 +618,8 @@ class _HostOfferAdmission extends StatelessWidget {
           CatchNotice.inline(body: blocker, tone: CatchNoticeTone.danger),
         if (admission.failed)
           CatchNotice.inline(
-            body: l10n.hostFormsOfferFailed,
+            key: const ValueKey<String>('host-offer-admission-error'),
+            body: admission.error ?? l10n.hostFormsOfferFailed,
             tone: CatchNoticeTone.danger,
           ),
         if (admission.phase != HostOfferAdmissionPhase.done)
