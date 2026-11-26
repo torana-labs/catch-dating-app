@@ -38,7 +38,6 @@ export {
   registerPublicEvent,
   setEventAttendeeAttendance,
 } from "./eventAttendees";
-export {manageHostRosterIntake} from "./hostRosterIntakeApply";
 export {grantEventStaff, revokeEventStaff} from "./eventStaff";
 export {heartbeatEventStaffPresence} from "./eventStaffPresence";
 export {
@@ -62,7 +61,6 @@ export {sendEventBroadcast} from "./sendEventBroadcast";
 export {upsertOrganizerEventVenue} from "./organizerEventVenues";
 export {getEventAttendanceDisposition, recordEventNoShow} from
   "./attendanceDispositionHandlers";
-export {getEventAttendanceReport} from "./attendanceReportHandlers";
 export {
   addEventHostPhoto,
   deleteEventHostPhoto,
@@ -72,9 +70,12 @@ export {
   cleanUpStagedHostPhotosDaily,
 } from "./eventHostPhotoStagingCleanup";
 export {
-  createPrivateEventSetup, createPrivateEventSeries, updatePrivateEventBasics,
-  updatePrivateEventPreferences, updatePrivateEventDetails, setEventPublication,
-  reconcilePrivateEventSeats,
+  createPrivateEventSetup,
+  createPrivateEventSeries,
+  updatePrivateEventBasics,
+  updatePrivateEventPreferences,
+  updatePrivateEventDetails,
+  setEventPublication,
 } from "./progressiveSetup/callables";
 export {configureEventRegistration, managePublicEventCheckout} from
   "./publicRegistration/callables";
