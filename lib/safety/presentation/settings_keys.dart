@@ -5,6 +5,13 @@ abstract final class SettingsKeys {
     'settings.showInCrossPaths.switch',
   );
   static const showOnMapSwitch = ValueKey('settings.showOnMap.switch');
+  static const showReligionSwitch = ValueKey('settings.showReligion.switch');
+  static const showRelationshipGoalSwitch = ValueKey(
+    'settings.showRelationshipGoal.switch',
+  );
+  static const showDrinkingSwitch = ValueKey('settings.showDrinking.switch');
+  static const showSmokingSwitch = ValueKey('settings.showSmoking.switch');
+  static const showChildrenSwitch = ValueKey('settings.showChildren.switch');
   static const newCatchesSwitch = ValueKey('settings.newCatches.switch');
   static const crossPathsInvitationsSwitch = ValueKey(
     'settings.crossPathsInvitations.switch',

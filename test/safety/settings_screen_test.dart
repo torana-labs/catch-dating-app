@@ -253,6 +253,26 @@ void main() {
     expect(userRepository.updatedFields, {'prefsWeeklyDigest': true});
   });
 
+  testWidgets('profile answer switches write the hide fields', (tester) async {
+    final userRepository = _FakeSettingsUserProfileRepository();
+    final container = _settingsContainer(
+      user: buildUser(),
+      userRepository: userRepository,
+      blockedUsers: const [],
+    );
+    addTearDown(container.dispose);
+
+    await _pumpSettings(tester, container);
+    await tester.scrollUntilVisible(
+      find.byKey(SettingsKeys.showDrinkingSwitch),
+      200,
+    );
+    await tester.tap(find.byKey(SettingsKeys.showDrinkingSwitch));
+    await pumpFeatureUi(tester);
+
+    expect(userRepository.updatedFields, {'prefsHideDrinking': true});
+  });
+
   testWidgets('failed preference writes roll back optimistic switch state', (
     tester,
   ) async {

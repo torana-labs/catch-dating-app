@@ -6773,6 +6773,55 @@
     "x-owner": "product",
     "x-surface": "safety.presentation.settings_screen"
   },
+  "safetySettingsScreenTitleProfileAnswers": "Profile answers guests see",
+  "@safetySettingsScreenTitleProfileAnswers": {
+    "description": "Title of the settings section with a switch per sensitive profile answer (#2493).",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "safety.presentation.settings_screen"
+  },
+  "safetySettingsScreenBodyProfileAnswers": "Turn an answer off and no other guest sees it. Organisers never see these answers. Religion stays hidden until you turn it on.",
+  "@safetySettingsScreenBodyProfileAnswers": {
+    "description": "Explains the profile answer switches: off hides the answer from other guests; organisers never see them; religion is hidden by default.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "safety.presentation.settings_screen"
+  },
+  "safetySettingsScreenTitleProfileAnswerReligion": "Religion",
+  "@safetySettingsScreenTitleProfileAnswerReligion": {
+    "description": "Switch that shows the guest's religion to other guests.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "safety.presentation.settings_screen"
+  },
+  "safetySettingsScreenTitleProfileAnswerRelationshipGoal": "Relationship goal",
+  "@safetySettingsScreenTitleProfileAnswerRelationshipGoal": {
+    "description": "Switch that shows the guest's relationship goal to other guests.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "safety.presentation.settings_screen"
+  },
+  "safetySettingsScreenTitleProfileAnswerDrinking": "Drinking",
+  "@safetySettingsScreenTitleProfileAnswerDrinking": {
+    "description": "Switch that shows the guest's drinking answer to other guests.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "safety.presentation.settings_screen"
+  },
+  "safetySettingsScreenTitleProfileAnswerSmoking": "Smoking",
+  "@safetySettingsScreenTitleProfileAnswerSmoking": {
+    "description": "Switch that shows the guest's smoking answer to other guests.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "safety.presentation.settings_screen"
+  },
+  "safetySettingsScreenTitleProfileAnswerChildren": "Children",
+  "@safetySettingsScreenTitleProfileAnswerChildren": {
+    "description": "Switch that shows the guest's answer about children to other guests.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "safety.presentation.settings_screen"
+  },
   "safetySettingsScreenTitlePrivacyPolicy": "Privacy policy",
   "@safetySettingsScreenTitlePrivacyPolicy": {
     "description": "Product copy used by lib/safety/presentation/settings_screen.dart (title).",

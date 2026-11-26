@@ -65,6 +65,23 @@ void main() {
     expect(updated.showInCrossPaths, preferences.showInCrossPaths);
   });
 
+  test('profile answers show unless hidden; religion is hidden by default', () {
+    const defaults = SettingsPreferenceValues.defaults();
+    expect(defaults.showReligion, isFalse);
+    expect(defaults.showDrinking, isTrue);
+
+    final fromProfile = SettingsPreferenceValues.fromProfile(
+      buildUser().copyWith(prefsHideSmoking: true),
+    );
+    expect(fromProfile.showReligion, isFalse);
+    expect(fromProfile.showSmoking, isFalse);
+    expect(fromProfile.showChildren, isTrue);
+    expect(
+      fromProfile.valueFor(SettingsPreference.showRelationshipGoal),
+      isTrue,
+    );
+  });
+
   test(
     'Cross Paths consent defaults off and maps only explicit profile opt-in',
     () {

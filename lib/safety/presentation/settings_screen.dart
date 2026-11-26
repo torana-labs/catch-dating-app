@@ -31,6 +31,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 part 'blocked_account_tile.dart';
+part 'settings_preference_section.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -371,135 +372,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                 ],
               ),
-              CatchSection.fieldRows(
-                title: context.l10n.safetySettingsScreenTitleNotifications,
-                children: [
-                  CatchField.nav(
-                    copy: catchFieldCopy(context.l10n),
-                    title: context.l10n.messagingPermissionsTitle,
-                    body: context.l10n.messagingPermissionsSettingsHelp,
-                    bodyMaxLines: 4,
-                    onTap: operationPending
-                        ? null
-                        : () => context.pushNamed(
-                            Routes.messagingPermissionsScreen.name,
-                          ),
-                  ),
-                  CatchField.toggle(
-                    copy: catchFieldCopy(context.l10n),
-                    key: SettingsKeys.newCatchesSwitch,
-                    contract: CatchContractConstraints
-                        .updateUserProfilePatchPrefsNewCatches,
-                    title:
-                        context.l10n.safetySettingsScreenTitlePushNotifications,
-                    icon: CatchIcons.like,
-                    value: state.preferences.newCatches,
-                    onChanged: preferenceChangesBlocked
-                        ? null
-                        : (value) => _savePref(
-                            preference: SettingsPreference.newCatches,
-                            value: value,
-                          ),
-                  ),
-                  CatchField.toggle(
-                    copy: catchFieldCopy(context.l10n),
-                    key: SettingsKeys.crossPathsInvitationsSwitch,
-                    contract: CatchContractConstraints
-                        .updateUserProfilePatchPrefsCrossPathsInvitations,
-                    title: context
-                        .l10n
-                        .safetySettingsScreenTitleCrossPathsInvitations,
-                    icon: CatchIcons.findPerson,
-                    value: state.preferences.crossPathsInvitations,
-                    onChanged: preferenceChangesBlocked
-                        ? null
-                        : (value) => _savePref(
-                            preference:
-                                SettingsPreference.crossPathsInvitations,
-                            value: value,
-                          ),
-                  ),
-                  CatchField.toggle(
-                    copy: catchFieldCopy(context.l10n),
-                    key: SettingsKeys.messagesSwitch,
-                    contract: CatchContractConstraints
-                        .updateUserProfilePatchPrefsMessages,
-                    title: context.l10n.safetySettingsScreenTitleMessages,
-                    icon: CatchIcons.chat,
-                    value: state.preferences.messages,
-                    onChanged: preferenceChangesBlocked
-                        ? null
-                        : (value) => _savePref(
-                            preference: SettingsPreference.messages,
-                            value: value,
-                          ),
-                  ),
-                  CatchField.toggle(
-                    copy: catchFieldCopy(context.l10n),
-                    key: SettingsKeys.eventRemindersSwitch,
-                    contract: CatchContractConstraints
-                        .updateUserProfilePatchPrefsEventReminders,
-                    title: context.l10n.safetySettingsScreenTitleEventReminders,
-                    icon: CatchIcons.activity,
-                    value: state.preferences.eventReminders,
-                    onChanged: preferenceChangesBlocked
-                        ? null
-                        : (value) => _savePref(
-                            preference: SettingsPreference.eventReminders,
-                            value: value,
-                          ),
-                  ),
-                  CatchField.toggle(
-                    copy: catchFieldCopy(context.l10n),
-                    key: SettingsKeys.eventStatusUpdatesSwitch,
-                    contract: CatchContractConstraints
-                        .updateUserProfilePatchPrefsRunStatusUpdates,
-                    title: context
-                        .l10n
-                        .safetySettingsScreenTitleEventChangesAndCancellations,
-                    icon: CatchIcons.recurring,
-                    value: state.preferences.eventStatusUpdates,
-                    onChanged: preferenceChangesBlocked
-                        ? null
-                        : (value) => _savePref(
-                            preference: SettingsPreference.eventStatusUpdates,
-                            value: value,
-                          ),
-                  ),
-                  CatchField.toggle(
-                    copy: catchFieldCopy(context.l10n),
-                    key: SettingsKeys.organizerUpdatesSwitch,
-                    contract: CatchContractConstraints
-                        .updateUserProfilePatchPrefsOrganizerUpdates,
-                    title: context
-                        .l10n
-                        .safetySettingsScreenTitleOrganizerAnnouncements,
-                    icon: CatchIcons.notificationsOn,
-                    value: state.preferences.organizerUpdates,
-                    onChanged: preferenceChangesBlocked
-                        ? null
-                        : (value) => _savePref(
-                            preference: SettingsPreference.organizerUpdates,
-                            value: value,
-                          ),
-                  ),
-                  CatchField.toggle(
-                    copy: catchFieldCopy(context.l10n),
-                    key: SettingsKeys.weeklyDigestSwitch,
-                    contract: CatchContractConstraints
-                        .updateUserProfilePatchPrefsWeeklyDigest,
-                    title: context.l10n.safetySettingsScreenTitleEmailUpdates,
-                    icon: CatchIcons.emailRead,
-                    value: state.preferences.weeklyDigest,
-                    onChanged: preferenceChangesBlocked
-                        ? null
-                        : (value) => _savePref(
-                            preference: SettingsPreference.weeklyDigest,
-                            value: value,
-                          ),
-                  ),
-                ],
+              SettingsNotificationsSection(
+                state: state,
+                operationPending: operationPending,
+                preferenceChangesBlocked: preferenceChangesBlocked,
+                onSave: _savePref,
               ),
+              if (!AppConfig.appRole.isHost)
+                SettingsProfileAnswersSection(
+                  state: state,
+                  preferenceChangesBlocked: preferenceChangesBlocked,
+                  onSave: _savePref,
+                ),
               CatchSection.fieldRows(
                 title: context.l10n.safetySettingsScreenTitlePrivacySafety,
                 footer: BlockedAccountsSection(
