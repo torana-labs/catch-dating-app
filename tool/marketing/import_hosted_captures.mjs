@@ -11,7 +11,6 @@ import {canonicalInventory, readProvenance} from "./export_hosted_captures.mjs";
 import {validateCaptureBytes} from "./lib/capture_provenance.mjs";
 import {buildReplacedListings} from "./lib/web_capture_inputs.mjs";
 import {buildWebsiteManifest} from "./sync_website_media.mjs";
-import {replaceCatalogInventory} from "../design/generate_widget_catalog.mjs";
 
 const manifestPath = "tool/marketing/capture_manifest.json";
 const designPath = "tool/marketing/app_screenshots_design_context.json";
@@ -181,13 +180,9 @@ function verifyFiles({files, binding}, {built = false, toolChecks = false} = {})
   assert.equal(execute("git", ["rev-parse", "HEAD"]).trim(), binding.sourceSha, "Capture source differs from consumer checkout.");
   assert.ok(!execute("git", ["ls-files", "-v", "-z"]).split("\0").some(entry => /^[a-zS] /u.test(entry)),
     "Capture consumption requires complete source without skip-worktree or assume-unchanged flags.");
-  const allowedChanges = new Set([...(built ? buildListingOutputs : []), ...context.generated, "docs/widget_catalog.md", "tool/ui_capture/route_inventory.json"]);
+  const allowedChanges = new Set([...(built ? buildListingOutputs : []), ...context.generated]);
   const changed = execute("git", ["diff", "HEAD", "--name-only", "-z"]).split("\0").filter(Boolean);
   assert.deepEqual(changed.filter(file => !allowedChanges.has(file)), [], "Capture consumer authored source differs from its commit.");
-  if (changed.includes("docs/widget_catalog.md")) {
-    assert.equal(replaceCatalogInventory(fs.readFileSync(fromRepo("docs/widget_catalog.md"), "utf8"), ""),
-      replaceCatalogInventory(execute("git", ["show", "HEAD:docs/widget_catalog.md"]), ""), "Authored catalog guidance changed.");
-  }
   const sourceRoots = ["lib", "website/src", "website/public", "admin/src", "tool", "test", "design", "contracts", "docs", "assets",
     ":(glob)apps/*/lib/**", ":(glob)packages/*/lib/**", ":(glob)packages/*/src/**"];
   const untracked = execute("git", ["ls-files", "--others", "-z", "--", ...sourceRoots, ...regeneratedOutputExclusions()])

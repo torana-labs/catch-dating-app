@@ -32,7 +32,7 @@ const _hostWorkspaceDestinationLibrary =
     'package:catch_dating_app/routing/host_router.dart';
 const _registryPath = 'design/screens/catch.screens.json';
 const _screenCoveragePath = 'design/screens/screen_coverage.json';
-const _routeInventoryPath = 'tool/ui_capture/route_inventory.json';
+const _routeInventoryScript = 'tool/ui_capture/check_route_inventory.mjs';
 const _topBarRegistryPath = 'tool/design/screen_top_bar_contracts.json';
 const _canonicalScaffoldPath =
     'packages/catch_ui/lib/src/patterns/catch_scaffold.dart';
@@ -194,7 +194,7 @@ Future<void> main(List<String> arguments) async {
   final root = Directory.current.absolute.path;
   final registry = _readJson(_fromRoot(root, _registryPath));
   final screenCoverage = _readJson(_fromRoot(root, _screenCoveragePath));
-  final routeInventory = _readJson(_fromRoot(root, _routeInventoryPath));
+  final routeInventory = _deriveRouteInventory(root);
   final topBarRegistry = _readJson(_fromRoot(root, _topBarRegistryPath));
   final screens = (registry['screens'] as List<Object?>)
       .cast<Map<String, Object?>>();
@@ -3090,6 +3090,21 @@ void _validateMediaHeroes(
       );
     }
   }
+}
+
+/// The route inventory is derived from the live routers on every run; no
+/// committed copy exists to go stale.
+Map<String, Object?> _deriveRouteInventory(String root) {
+  final result = Process.runSync('node', [
+    _fromRoot(root, _routeInventoryScript),
+    '--json',
+  ], workingDirectory: root);
+  if (result.exitCode != 0) {
+    throw StateError(
+      'Cannot derive the route inventory (${result.exitCode}): ${result.stderr}',
+    );
+  }
+  return (jsonDecode(result.stdout as String) as Map).cast<String, Object?>();
 }
 
 Map<String, Object?> _readJson(String path) =>

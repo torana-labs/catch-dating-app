@@ -411,10 +411,6 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
-      - name: Derive exact-source route and widget inventories
-        env:
-          SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
-        run: node tool/ci/generated_inventories.mjs --source-sha "$SOURCE_SHA"
       - run: npm ci
       - uses: ./.github/actions/setup-flutter
       - run: flutter pub get --enforce-lockfile

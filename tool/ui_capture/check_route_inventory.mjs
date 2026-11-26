@@ -18,7 +18,10 @@ export const canonicalRouterFiles = [
   "lib/routing/host_router.dart",
 ];
 const routeContractPath = fromRepo("packages/platform/lib/routing/route_contract.dart");
-const inventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
+// The inventory is derived from live source on every read; nothing commits it.
+// --update writes this ignored copy for people, agents and non-Node readers.
+export const routeInventoryOutputPath = "build/generated/route_inventory.json";
+const inventoryPath = fromRepo(routeInventoryOutputPath);
 const productionDartRoots = ["lib", "packages/platform/lib", "apps/consumer/lib", "apps/host/lib"];
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
@@ -35,6 +38,8 @@ function runCli() {
     updateInventory();
   } else if (command === "--check" || command === "check") {
     checkInventory();
+  } else if (command === "--json") {
+    process.stdout.write(stableJson(buildInventory()));
   } else if (command === "--locations") {
     for (const route of extractImperativePageRouteInventory()) {
       console.log(`${route.siteId} ${route.sourcePath}:${route.line}`);
@@ -55,24 +60,17 @@ function updateInventory() {
   console.log(`Updated ${relativeToRepo(inventoryPath)}.`);
 }
 
+// Building the inventory enforces the route rules: one GoRouter per canonical
+// router file, GoRoute only there, every runtime route in the route contract
+// and every contract route mounted. No stored copy is compared.
 function checkInventory() {
-  if (!fs.existsSync(inventoryPath)) {
-    fail([
-      `${relativeToRepo(inventoryPath)} is missing.`,
-      "Run node tool/ui_capture/check_route_inventory.mjs --update.",
-    ]);
+  let inventory;
+  try {
+    inventory = buildInventory();
+  } catch (error) {
+    fail([error.message]);
   }
-
-  const expected = stableJson(buildInventory());
-  const actual = fs.readFileSync(inventoryPath, "utf8");
-  if (actual !== expected) {
-    fail([
-      `${relativeToRepo(inventoryPath)} is stale for ${canonicalRouterFiles.join(", ")}.`,
-      "Run node tool/ui_capture/check_route_inventory.mjs --update and review the route/capture inventory impact.",
-    ]);
-  }
-
-  console.log("UI capture route inventory is in sync.");
+  console.log(`UI capture route inventory derives cleanly (${inventory.routes.length} routes).`);
 }
 
 function listInventory() {
@@ -1188,8 +1186,9 @@ function printHelp() {
   console.log(`Usage: node tool/ui_capture/check_route_inventory.mjs <command>
 
 Commands:
-  --update  Regenerate tool/ui_capture/route_inventory.json from the route contract and the canonical router files.
-  --check   Fail if the route inventory is stale.
+  --update  Write ${routeInventoryOutputPath} (ignored) from the route contract and the canonical router files.
+  --check   Fail if the route contract and the canonical routers break an inventory rule.
+  --json    Print the inventory derived from live source.
   --list    Print the current route ids and paths.
   --locations Print live imperative route source locations (not stored in the inventory).
 `);

@@ -3,8 +3,8 @@ import fs from "node:fs";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 import {extractCallBlocks} from "../lib/dart_call_blocks.mjs";
 import {readCaptureCatalogSource} from "./lib/capture_catalog_sources.mjs";
+import {buildInventory} from "./check_route_inventory.mjs";
 
-const routeInventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
 const coveragePath = fromRepo("tool/ui_capture/capture_coverage.json");
 const marketingManifestPath = fromRepo("tool/marketing/capture_manifest.json");
 const args = process.argv.slice(2);
@@ -25,7 +25,7 @@ if (command === "--help" || command === "-h" || command === "help") {
 }
 
 function checkCoverage({summary = false} = {}) {
-  const routeInventory = readJson(routeInventoryPath);
+  const routeInventory = buildInventory();
   const coverage = readJson(coveragePath);
   const catalog = parseCaptureCatalog(readCaptureCatalogSource());
   const marketingManifest = readJson(marketingManifestPath);
@@ -53,7 +53,7 @@ function validateCoverage({
 }) {
   const errors = [];
   if (!Array.isArray(routeInventory.routes)) {
-    errors.push(`${relativeToRepo(routeInventoryPath)} must contain routes.`);
+    errors.push(`The derived route inventory must contain routes.`);
     return errors;
   }
   if (!Array.isArray(coverage.routes)) {

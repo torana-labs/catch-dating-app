@@ -199,9 +199,10 @@ test("design authority ledgers select their exact consuming checks", () => {
       ["architecture:ui-composition-contracts", "ui-capture:route-inventory"],
     ],
     [
-      "tool/ui_capture/route_inventory.json",
+      "lib/routing/host_router.dart",
       [
         "architecture:ui-composition-contracts",
+        "design:host-shell-coverage",
         "design:screen-contracts",
         "design:screen-coverage",
         "ui-capture:coverage",

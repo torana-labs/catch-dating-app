@@ -9,7 +9,6 @@ import test from "node:test";
 import vm from "node:vm";
 // Keep the actual Required CI policy exercised by the registered Harness suite.
 import "../ci/required_ci_policy.test.mjs";
-import "../ci/generated_inventories.test.mjs";
 import {planAffectedToolChecks, toolsOwnUiLintSmoke, toolsOwnDesignChecks, uniqueToolChecks} from "../lib/tool_impact.mjs";
 import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
@@ -116,28 +115,14 @@ for (const position of ["root", "ancestor", "directory", "file"]) {
   });
 }
 
-test("complete CI consumers derive source inventories before their semantic checks", () => {
-  const selectedJob = (file, job) => {
-    const source = workflow(file);
-    const start = source.indexOf(`\n  ${job}:\n`);
-    assert.ok(start >= 0, `${file} has ${job}`);
-    const remaining = source.slice(start + 1);
-    const next = remaining.slice(1).search(/\n  [a-zA-Z0-9_-]+:\n/u);
-    return next < 0 ? remaining : remaining.slice(0, next + 1);
-  };
-  for (const [file, job, check] of [
-    ["ci.yml", "source-preflight", "Execute complete source and generation preflight"],
-    ["flutter-ci.yml", "analysis-gates", "Catch UI resolved composition contracts"],
-    ["tools-ci.yml", "affected-tools", "Check affected tools"],
-    ["tools-ci.yml", "tool-buckets", "Check tool categories"],
-  ]) {
-    const source = selectedJob(file, job);
-    const steps = extractSteps(`jobs:\n${source}`);
-    const generate = steps.findIndex(step => step.name === "Derive exact-source route and widget inventories");
-    const validate = steps.findIndex(step => step.name === check);
-    assert.ok(generate >= 0 && validate > generate, `${file}/${job} derives before ${check}`);
-    assert.match(steps[generate].run, /node tool\/ci\/generated_inventories\.mjs --source-sha "\$(?:SOURCE_SHA|GITHUB_SHA)"/u);
-    assert.doesNotMatch(steps[generate].run, /\|\| true|--allow|git (?:add|commit|push)/u);
+test("no workflow materializes the route or widget catalog inventory into the checkout", () => {
+  // Their checks derive both from live source; a materialized copy would let a
+  // check read something other than the source it judges.
+  const files = repositorySnapshot.listFiles({prefix: ".github/workflows/"}).filter(file => /\.ya?ml$/u.test(file));
+  assert.ok(files.length > 0);
+  for (const file of files) {
+    assert.doesNotMatch(repositorySnapshot.readText(file, {required: true}),
+      /generated_inventories|generated-inventories-materialized|INVENTORY_MATERIALIZED/u, file);
   }
 });
 const retiredUiWrapperNames = [
@@ -554,7 +539,6 @@ test("resolved composition gate owns its authorities and both split suites", () 
     "design/screens/catch.screens.schema.json",
     "design/screens/screen_coverage.json",
     "tool/ui_capture/check_route_inventory.mjs",
-    "tool/ui_capture/route_inventory.json",
     "tool/design/screen_top_bar_contracts.json",
     "lib/routing/consumer_router.dart",
     "lib/routing/host_router.dart",
@@ -1975,7 +1959,7 @@ test("complete source preflight runs beside the lanes and Required CI demands it
   assert.match(required, /\[\[ "\$preflight" == success \|\| \( -n "\$\{QUEUE_RUN:-\}" && "\$preflight" == skipped \) \]\]/u);
 });
 
-test("Tools check shells request inventory producer proofs and no capture proof", context => {
+test("Tools check shells request no capture proof", context => {
   const source = workflow("tools-ci.yml");
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "capture-tool-flags-"));
   context.after(() => fs.rmSync(root, {recursive: true, force: true}));
@@ -1984,16 +1968,11 @@ test("Tools check shells request inventory producer proofs and no capture proof"
   for (const name of ["Check affected tools", "Check tool categories"]) {
     const step = extractSteps(source).find(s => s.name === name);
     const declaration = namedStep(source, name);
-    assert.doesNotMatch(declaration, /CAPTURE_/u);
-    if (name === "Check tool categories") {
-      assert.match(declaration, /INVENTORY_MATERIALIZED: "true"/u);
-    } else {
-      assert.match(declaration, /INVENTORY_MATERIALIZED: \$\{\{ needs.preflight.outputs.repository_view != 'index' \}\}/u);
-    }
-    for (const inventory of ["true", "false"]) {
+    assert.doesNotMatch(declaration, /CAPTURE_|INVENTORY_/u);
+    {
       const result = spawnSync("bash", ["-c", step.run], {encoding: "utf8", env: {
         ...process.env, PATH: `${root}${path.delimiter}${process.env.PATH}`,
-        INVENTORY_MATERIALIZED: inventory, MARKETING_CHECKS_IN_REACT: "true", VISUAL_REPORT: "",
+        MARKETING_CHECKS_IN_REACT: "true", VISUAL_REPORT: "",
         BASE_SHA: "base", SOURCE_SHA: "source", MODE: "pr", COMMIT_WINDOW: "false", RUNNER_TEMP: root,
       }});
       assert.equal(result.status, 0, result.stderr);
@@ -2001,7 +1980,6 @@ test("Tools check shells request inventory producer proofs and no capture proof"
       if (name === "Check tool categories") {
         assert.deepEqual(actual.args.slice(0, 4), ["tool/run.mjs", "check", "design:parity-gate", "marketing:website-build"]);
       }
-      assert.equal(actual.args.includes("--generated-inventories-materialized"), inventory === "true");
       assert.ok(actual.args.includes("--marketing-checks-in-react"));
       // Outside the nightly (VISUAL_REPORT cleared here, since the nightly job
       // running this test sets it) the visual report is deferred.
@@ -2010,14 +1988,13 @@ test("Tools check shells request inventory producer proofs and no capture proof"
     for (const [visualReport, deferred] of [["true", false], ["false", true]]) {
       const result = spawnSync("bash", ["-c", step.run], {encoding: "utf8", env: {
         ...process.env, PATH: `${root}${path.delimiter}${process.env.PATH}`,
-        INVENTORY_MATERIALIZED: "true", MARKETING_CHECKS_IN_REACT: "false", VISUAL_REPORT: visualReport,
+        MARKETING_CHECKS_IN_REACT: "false", VISUAL_REPORT: visualReport,
         BASE_SHA: "base", SOURCE_SHA: "source", MODE: "pr", COMMIT_WINDOW: "false", RUNNER_TEMP: root,
       }});
       assert.equal(result.status, 0, result.stderr);
       assert.equal(JSON.parse(result.stdout).args.includes("--defer-visual-report"), deferred, `${name}: VISUAL_REPORT=${visualReport}`);
     }
   }
-  assert.doesNotMatch(extractSteps(source).find(step => step.name === "Resolve affected tool checks").run, /--generated-inventories-materialized/u);
 });
 
 
