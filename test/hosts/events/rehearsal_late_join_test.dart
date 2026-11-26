@@ -182,9 +182,14 @@ void main() {
           onPause: () => calls.add('pause'),
         ),
       );
-      expect(find.text('Automatic updates on'), findsOneWidget);
-      expect(find.text('2 practice outcomes left'), findsOneWidget);
-      expect(find.text('Replied: On my way'), findsOneWidget);
+      expect(
+        find.text('Automatic updates on · 2 practice outcomes left'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Join us at Stop one.\nReplied: On my way'),
+        findsOneWidget,
+      );
       expect(find.text('Join us at Practice venue.'), findsOneWidget);
       final second = movement.destinations[1].alternativeId;
       Future<void> tap(String key) async {

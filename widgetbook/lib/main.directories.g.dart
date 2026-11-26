@@ -10158,6 +10158,28 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Rehearsal practice',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'HostRehearsalLateJoinForm',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Directions for one late joiner',
+                    builder:
+                        _widgetbook_workspace_hosts_host_rehearsal_practice_use_cases
+                            .hostRehearsalLateJoinFormUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostRehearsalLateJoinSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Late joiners in practice tools',
+                    builder:
+                        _widgetbook_workspace_hosts_host_rehearsal_practice_use_cases
+                            .hostRehearsalLateJoinSectionUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostRehearsalPracticeScoresScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
