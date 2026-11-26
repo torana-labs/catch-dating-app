@@ -10,21 +10,36 @@ name: Dependabot auto-merge
 # causes, and this merge must start main's workflows like any other. A workflow
 # Dependabot triggers can read only Dependabot secrets, so the app's ID and key
 # live there. Setup: docs/release_operations.md, "Dependency maintenance".
+#
+# Required CI leaves the reporting lanes (tools, operations, docs-policy,
+# app-builds) out under the sprint floor, so a person reads them before
+# merging. Nobody reads them for a Dependabot update, and #2553 (lucide-react)
+# merged with the icon-catalog check failing in the tools lane. So this job
+# waits for the pull request's CI run to finish and turns auto-merge on only
+# when every job in it passed or was skipped; otherwise the update waits for a
+# person.
 
 on:
   pull_request:
     types: [opened, reopened, synchronize]
 
 permissions:
+  actions: read
   contents: read
   pull-requests: read
+
+concurrency:
+  group: dependabot-auto-merge-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   enable:
     name: Queue Dependabot update
     if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    # CI's slowest lanes take about 45 minutes; waiting is free on a public
+    # repository's hosted runners.
+    timeout-minutes: 120
     steps:
       - id: metadata
         name: Read the update type
@@ -41,8 +56,41 @@ jobs:
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
-      - id: token
+      - id: lanes
+        name: Require every CI lane, reporting lanes included
         if: ${{ steps.app.outputs.ready == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          deadline=$((SECONDS + 110 * 60))
+          run_id=""
+          while :; do
+            run_id="$(gh api "repos/$REPO/actions/workflows/ci.yml/runs?head_sha=$HEAD_SHA&event=pull_request&per_page=1" \
+              --jq '.workflow_runs[0].id // empty' || true)"
+            if [[ -n "$run_id" && "$(gh api "repos/$REPO/actions/runs/$run_id" --jq .status || true)" == completed ]]; then
+              break
+            fi
+            if (( SECONDS > deadline )); then
+              echo "::notice::CI on $HEAD_SHA did not finish in time; leaving this update for a manual merge."
+              echo "ready=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 60
+          done
+          failed="$(gh api --paginate "repos/$REPO/actions/runs/$run_id/jobs?per_page=100" \
+            --jq '.jobs[] | select(.conclusion != "success" and .conclusion != "skipped" and .conclusion != "neutral") | .name')"
+          if [[ -n "$failed" ]]; then
+            echo "::warning::CI jobs did not pass, so this update waits for a person:"
+            printf '%s\n' "$failed"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - id: token
+        if: ${{ steps.lanes.outputs.ready == 'true' }}
         uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2.2.2
         with:
           app-id: ${{ secrets.AUTOMERGE_APP_ID }}
@@ -51,7 +99,7 @@ jobs:
           permission-contents: write
           permission-pull-requests: write
       - name: Turn on auto-merge
-        if: ${{ steps.app.outputs.ready == 'true' }}
+        if: ${{ steps.lanes.outputs.ready == 'true' }}
         env:
           GH_TOKEN: ${{ steps.token.outputs.token }}
           PR_URL: ${{ github.event.pull_request.html_url }}
