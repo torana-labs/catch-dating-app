@@ -20,7 +20,6 @@ import 'package:catch_dating_app/contexts/payments/data/host_payment_account_rep
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/pages/organizer/organizer_detail_view_model.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
@@ -160,9 +159,6 @@ class WidgetbookHostShellScope extends StatelessWidget {
       ),
       hostOrganizerEditControllerProvider.overrideWithValue(
         const _NoopHostOrganizerEditActions(),
-      ),
-      hostPaymentAccountControllerProvider.overrideWithValue(
-        const _NoopHostPaymentAccountActions(),
       ),
       hostAnalyticsRepositoryProvider.overrideWithValue(analyticsRepository),
       hostTrackingSettingsRepositoryProvider.overrideWithValue(
@@ -346,22 +342,6 @@ final class _NoopHostOrganizerEditActions implements HostOrganizerEditActions {
   Future<void> discardOrganizerMedia({
     required List<HostOrganizerMediaInput> photoInputs,
     HostPickedOrganizerLogo? logo,
-  }) async {}
-}
-
-final class _NoopHostPaymentAccountActions
-    implements HostPaymentAccountActions {
-  const _NoopHostPaymentAccountActions();
-
-  @override
-  Future<void> refreshStatus(HostPaymentProvider provider) async {}
-
-  @override
-  Future<void> startOnboarding({
-    required HostPaymentProvider provider,
-    required String country,
-    required String defaultCurrency,
-    RazorpayHostOnboardingDetails? razorpayDetails,
   }) async {}
 }
 

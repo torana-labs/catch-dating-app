@@ -4,7 +4,6 @@ import 'package:catch_dating_app/host_memberships/presentation/host_membership_s
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/hosted_event_membership_rules_section.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_membership_plan_editor_sheet.dart';
-import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_section.dart';
 import 'package:catch_dating_app/pages/memberships/host_membership_plan_sheet.dart';
 import 'package:catch_dating_app/pages/memberships/host_membership_plans_section.dart';
 import 'package:catch_dating_app/pages/memberships/host_membership_upsell_banner.dart';
@@ -29,8 +28,6 @@ void main() {
     (myMembershipsListStates, MyMembershipsList, 2),
     (myMembershipsBodyStates, MyMembershipsList, 1),
     (myMembershipsScreenStates, MyMembershipsScreen, 3),
-    (hostMembershipsSectionStates, HostMembershipsSection, 4),
-    (hostMembershipsCardStates, HostMembershipsSection, 1),
     (hostMembershipPlanEditorSheetStates, HostMembershipPlanEditorSheet, 2),
     (
       hostedEventMembershipRulesEditorStates,

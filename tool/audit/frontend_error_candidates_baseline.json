@@ -33,11 +33,6 @@
       "rule": "bare_catch",
       "path": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
       "snippet": "} catch (_) {"
-    },
-    {
-      "rule": "named_catch",
-      "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "snippet": "} catch (error) {"
     }
   ]
 }

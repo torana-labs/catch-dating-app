@@ -2747,20 +2747,6 @@
     "x-owner": "product",
     "x-surface": "organizers.presentation.discovery.widgets.organizer_discover_list"
   },
-  "organizersOrganizerIdentityAtomsLabelOwner": "Owner",
-  "@organizersOrganizerIdentityAtomsLabelOwner": {
-    "description": "Product copy used by lib/pages/organizer/club_identity_atoms.dart (label).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "organizers.shared.organizer_identity_atoms"
-  },
-  "organizersOrganizerIdentityAtomsLabelHost": "Host",
-  "@organizersOrganizerIdentityAtomsLabelHost": {
-    "description": "Product copy used by lib/pages/organizer/club_identity_atoms.dart (label).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "organizers.shared.organizer_identity_atoms"
-  },
   "coreCatchAdaptivePickerTextCancel": "Cancel",
   "@coreCatchAdaptivePickerTextCancel": {
     "description": "Product copy used by lib/core/widgets/catch_adaptive_picker.dart (Text).",
@@ -4690,55 +4676,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
-  "hostsCreateOrganizerPhotosPickerTextDragToReorderThe": "Add as many as you need. The first photo is the cover.",
-  "@hostsCreateOrganizerPhotosPickerTextDragToReorderThe": {
-    "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
-  },
-  "hostsCreateOrganizerPhotosPickerTextASquareLogoShown": "A square logo shown on your organizer profile and events. It stays separate from your gallery.",
-  "@hostsCreateOrganizerPhotosPickerTextASquareLogoShown": {
-    "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
-  },
-  "hostsCreateOrganizerPhotosPickerLabelChangeOrganizerProfileImage": "Change organizer logo",
-  "@hostsCreateOrganizerPhotosPickerLabelChangeOrganizerProfileImage": {
-    "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
-  },
-  "hostsCreateOrganizerPhotosPickerLabelAddOrganizerProfileImage": "Add organizer logo",
-  "@hostsCreateOrganizerPhotosPickerLabelAddOrganizerProfileImage": {
-    "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
-  },
-  "hostsCreateOrganizerPhotosPickerTextAddImage": "Add image",
-  "@hostsCreateOrganizerPhotosPickerTextAddImage": {
-    "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
-  },
-  "hostsCreateOrganizerPhotosPickerActionAddLogo": "Add logo",
-  "@hostsCreateOrganizerPhotosPickerActionAddLogo": {
-    "description": "Adds the organizer logo, separate from gallery media.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
-  },
-  "hostsCreateOrganizerPhotosPickerActionReplaceLogo": "Replace",
-  "@hostsCreateOrganizerPhotosPickerActionReplaceLogo": {
-    "description": "Replaces the organizer logo.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
-  },
   "hostsCreateOrganizerPhotosPickerActionRemoveLogo": "Remove",
   "@hostsCreateOrganizerPhotosPickerActionRemoveLogo": {
     "description": "Removes the organizer logo without affecting gallery photos.",
@@ -5082,120 +5019,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_inbox_screen"
   },
-  "hostsHostPaymentAccountCardTitleSetUpPayouts": "Set up payouts",
-  "@hostsHostPaymentAccountCardTitleSetUpPayouts": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardSubtitlePoweredByStripe": "Powered by Stripe",
-  "@hostsHostPaymentAccountCardSubtitlePoweredByStripe": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (subtitle).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardLabelContinueToStripe": "Continue to Stripe",
-  "@hostsHostPaymentAccountCardLabelContinueToStripe": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardTextCatchPaysHostsThrough": "Catch pays hosts through Stripe. Finish a short verification on Stripe, then come back here before paid non-INR events can take checkout.",
-  "@hostsHostPaymentAccountCardTextCatchPaysHostsThrough": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardTitleCountry": "Country",
-  "@hostsHostPaymentAccountCardTitleCountry": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardTitleDefaultCurrency": "Default currency",
-  "@hostsHostPaymentAccountCardTitleDefaultCurrency": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardTextWeWillRefreshYour": "We will refresh your payout status when you return.",
-  "@hostsHostPaymentAccountCardTextWeWillRefreshYour": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardLabelRefresh": "Refresh",
-  "@hostsHostPaymentAccountCardLabelRefresh": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardSubtitlePoweredByRazorpay": "Powered by Razorpay Route",
-  "@hostsHostPaymentAccountCardSubtitlePoweredByRazorpay": {"description": "Razorpay Route provider subtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardLabelContinueToRazorpay": "Set up Razorpay",
-  "@hostsHostPaymentAccountCardLabelContinueToRazorpay": {"description": "Starts Razorpay Route setup.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTextCatchPaysIndiaHostsThrough": "Catch uses Razorpay Route for INR payouts. Provide the legal, stakeholder, and bank details Razorpay needs to review your linked account.",
-  "@hostsHostPaymentAccountCardTextCatchPaysIndiaHostsThrough": {"description": "Explains Razorpay Route setup.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardLabelRecommended": "Recommended",
-  "@hostsHostPaymentAccountCardLabelRecommended": {"description": "Marks the recommended payout provider.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleRazorpay": "Razorpay",
-  "@hostsHostPaymentAccountCardTitleRazorpay": {"description": "Razorpay provider name.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleRazorpayPayoutAccountReady": "Razorpay payout account is ready",
-  "@hostsHostPaymentAccountCardTitleRazorpayPayoutAccountReady": {"description": "Confirms provider-side Razorpay Route account activation without claiming settlement release.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleStripe": "Stripe",
-  "@hostsHostPaymentAccountCardTitleStripe": {"description": "Stripe provider name.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardBodyRazorpayInr": "Razorpay Route account setup for INR payouts in India.",
-  "@hostsHostPaymentAccountCardBodyRazorpayInr": {"description": "Razorpay provider summary.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardBodyStripeInternational": "Non-INR checkout and international payouts.",
-  "@hostsHostPaymentAccountCardBodyStripeInternational": {"description": "Stripe provider summary.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleLegalBusinessName": "Legal business name",
-  "@hostsHostPaymentAccountCardTitleLegalBusinessName": {"description": "Razorpay legal business name field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleBusinessType": "Business type",
-  "@hostsHostPaymentAccountCardTitleBusinessType": {"description": "Razorpay business type field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleContactName": "Contact name",
-  "@hostsHostPaymentAccountCardTitleContactName": {"description": "Razorpay contact name field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleEmail": "Business email",
-  "@hostsHostPaymentAccountCardTitleEmail": {"description": "Razorpay business email field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitlePhone": "Business phone",
-  "@hostsHostPaymentAccountCardTitlePhone": {"description": "Razorpay business phone field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleBusinessModel": "Business description",
-  "@hostsHostPaymentAccountCardTitleBusinessModel": {"description": "Razorpay business description field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleBusinessPan": "Business PAN",
-  "@hostsHostPaymentAccountCardTitleBusinessPan": {"description": "Razorpay business PAN field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleBankAccountNumber": "Bank account number",
-  "@hostsHostPaymentAccountCardTitleBankAccountNumber": {"description": "Razorpay settlement account field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleIfscCode": "IFSC code",
-  "@hostsHostPaymentAccountCardTitleIfscCode": {"description": "Razorpay IFSC field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleBeneficiaryName": "Beneficiary name",
-  "@hostsHostPaymentAccountCardTitleBeneficiaryName": {"description": "Razorpay beneficiary field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleStakeholderName": "Stakeholder name",
-  "@hostsHostPaymentAccountCardTitleStakeholderName": {"description": "Razorpay stakeholder name field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleStakeholderEmail": "Stakeholder email",
-  "@hostsHostPaymentAccountCardTitleStakeholderEmail": {"description": "Razorpay stakeholder email field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleStakeholderPhone": "Stakeholder phone",
-  "@hostsHostPaymentAccountCardTitleStakeholderPhone": {"description": "Razorpay stakeholder phone field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleStakeholderPan": "Stakeholder PAN",
-  "@hostsHostPaymentAccountCardTitleStakeholderPan": {"description": "Razorpay stakeholder PAN field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleOwnershipPercent": "Ownership percentage",
-  "@hostsHostPaymentAccountCardTitleOwnershipPercent": {"description": "Razorpay ownership percentage field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleStakeholderDirector": "This stakeholder is a director",
-  "@hostsHostPaymentAccountCardTitleStakeholderDirector": {"description": "Razorpay stakeholder director toggle.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleStakeholderExecutive": "This stakeholder is an executive",
-  "@hostsHostPaymentAccountCardTitleStakeholderExecutive": {"description": "Razorpay stakeholder executive toggle.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardTitleAcceptRazorpayTerms": "Accept Razorpay Route terms",
-  "@hostsHostPaymentAccountCardTitleAcceptRazorpayTerms": {"description": "Razorpay terms acceptance toggle.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardBodyRazorpayTerms": "You confirm these details are accurate and authorize Catch to submit them to Razorpay for linked-account review.",
-  "@hostsHostPaymentAccountCardBodyRazorpayTerms": {"description": "Razorpay terms explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsHostPaymentAccountCardLabelSubmitRazorpay": "Submit to Razorpay",
-  "@hostsHostPaymentAccountCardLabelSubmitRazorpay": {"description": "Submits Razorpay setup details.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
   "hostsHostOrganizerToolsLabelPostUpdate": "Post update",
   "@hostsHostOrganizerToolsLabelPostUpdate": {
     "description": "Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).",
@@ -5289,69 +5112,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.widgets.host_event_attendance_panel"
-  },
-  "hostsHostTeamManagementSectionTitleHostTeam": "Host team",
-  "@hostsHostTeamManagementSectionTitleHostTeam": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionTextNoHostTeamMembers": "No host team members yet.",
-  "@hostsHostTeamManagementSectionTextNoHostTeamMembers": {
-    "description": "Empty roster copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionTooltipHostActions": "Host actions",
-  "@hostsHostTeamManagementSectionTooltipHostActions": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (tooltip).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionLabelTransferOwnership": "Transfer ownership",
-  "@hostsHostTeamManagementSectionLabelTransferOwnership": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionLabelRemoveHost": "Remove host",
-  "@hostsHostTeamManagementSectionLabelRemoveHost": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionTitleAddHost": "Add host",
-  "@hostsHostTeamManagementSectionTitleAddHost": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionSubtitleEnterThePhoneNumber": "Enter the phone number on their Catch profile.",
-  "@hostsHostTeamManagementSectionSubtitleEnterThePhoneNumber": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (subtitle).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionLabelAddHost": "Add host",
-  "@hostsHostTeamManagementSectionLabelAddHost": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionTitlePhoneNumber": "Phone number",
-  "@hostsHostTeamManagementSectionTitlePhoneNumber": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
   },
   "imageUploadsProfilePhotoEditorScreenTitleDeletePhoto": "Delete photo?",
   "@imageUploadsProfilePhotoEditorScreenTitleDeletePhoto": {
@@ -7134,20 +6894,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
-  },
-  "hostsCreateOrganizerPhotosPickerLabelOrganizerPhotos": "Gallery & cover",
-  "@hostsCreateOrganizerPhotosPickerLabelOrganizerPhotos": {
-    "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
-  },
-  "hostsCreateOrganizerPhotosPickerLabelOrganizerProfileImage": "Organizer logo",
-  "@hostsCreateOrganizerPhotosPickerLabelOrganizerProfileImage": {
-    "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
   },
   "hostsEditHostedEventScreenTitleEditEvent": "Edit event",
   "@hostsEditHostedEventScreenTitleEditEvent": {
@@ -12075,62 +11821,6 @@
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.event_focus_rail"
   },
-  "hostsHostPaymentAccountCardTitleSetUpInternationalPayouts": "Set up international payouts",
-  "@hostsHostPaymentAccountCardTitleSetUpInternationalPayouts": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardBodyRequiredBeforePaidNon": "Required before paid non-INR events can accept checkout through Stripe.",
-  "@hostsHostPaymentAccountCardBodyRequiredBeforePaidNon": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardTitleInternationalCheckoutIsReady": "International checkout is ready",
-  "@hostsHostPaymentAccountCardTitleInternationalCheckoutIsReady": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardBodyNonInrPaidBookings": "Non-INR paid bookings can route through Stripe for this host account.",
-  "@hostsHostPaymentAccountCardBodyNonInrPaidBookings": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardTitleStripeNeedsMoreInformation": "Stripe needs more information",
-  "@hostsHostPaymentAccountCardTitleStripeNeedsMoreInformation": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardBodyFinishTheOutstandingStripe": "Finish the outstanding Stripe requirements to accept payments.",
-  "@hostsHostPaymentAccountCardBodyFinishTheOutstandingStripe": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardTitleStripeOnboardingIsIn": "Stripe onboarding is in progress",
-  "@hostsHostPaymentAccountCardTitleStripeOnboardingIsIn": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardBodyRefreshAfterCompletingStripe": "Refresh after completing Stripe onboarding to update checkout readiness.",
-  "@hostsHostPaymentAccountCardBodyRefreshAfterCompletingStripe": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
   "hostsCreateEventPolicyStateLabelOpen": "OPEN",
   "@hostsCreateEventPolicyStateLabelOpen": {
     "description": "Product copy used by lib/hosts/presentation/event_management/create/create_event_policy_state.dart (label).",
@@ -12242,81 +11932,6 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.dashboard_empty"
-  },
-  "hostsHostTeamManagementSectionTitleRemoveHost": "Remove host?",
-  "@hostsHostTeamManagementSectionTitleRemoveHost": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionTitleTransferOwnership": "Transfer ownership?",
-  "@hostsHostTeamManagementSectionTitleTransferOwnership": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionMessageDisplaynameWillStayA": "{displayName} will stay an organizer follower but will lose host tools.",
-  "@hostsHostTeamManagementSectionMessageDisplaynameWillStayA": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (message).",
-    "placeholders": {
-      "displayName": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionMessageDisplaynameWillBecomeThe": "{displayName} will become the organizer owner. You will remain a host.",
-  "@hostsHostTeamManagementSectionMessageDisplaynameWillBecomeThe": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (message).",
-    "placeholders": {
-      "displayName": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionLabelCancel": "Cancel",
-  "@hostsHostTeamManagementSectionLabelCancel": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionLabelRemove": "Remove",
-  "@hostsHostTeamManagementSectionLabelRemove": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionLabelTransfer": "Transfer",
-  "@hostsHostTeamManagementSectionLabelTransfer": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionSuccessmessageDisplaynameRemoved": "{displayName} removed.",
-  "@hostsHostTeamManagementSectionSuccessmessageDisplaynameRemoved": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (successMessage).",
-    "placeholders": {
-      "displayName": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionSuccessmessageOwnershipTransferredToDisplayname": "Ownership transferred to {displayName}.",
-  "@hostsHostTeamManagementSectionSuccessmessageOwnershipTransferredToDisplayname": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (successMessage).",
-    "placeholders": {
-      "displayName": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
   },
   "eventSuccessEventSuccessCompanionSharedLabelPostEventFollowUp": "Post-event follow-up opens after attendance is confirmed.",
   "@eventSuccessEventSuccessCompanionSharedLabelPostEventFollowUp": {
@@ -14748,20 +14363,6 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_event_rows"
   },
-  "hostsCreateOrganizerPhotosPickerVisiblecopyAddPhotos": "Add photos",
-  "@hostsCreateOrganizerPhotosPickerVisiblecopyAddPhotos": {
-    "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
-  },
-  "hostsCreateOrganizerPhotosPickerVisiblecopyAddOrganizerPhotos": "Add organizer photos",
-  "@hostsCreateOrganizerPhotosPickerVisiblecopyAddOrganizerPhotos": {
-    "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
-  },
   "hostsEditHostedEventScreenVisiblecopyDD": "^\\d*\\.?\\d*",
   "@hostsEditHostedEventScreenVisiblecopyDD": {
     "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (visibleCopy).",
@@ -14864,69 +14465,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardVisiblecopyActionNeeded": "Action needed",
-  "@hostsHostPaymentAccountCardVisiblecopyActionNeeded": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountCardVisiblecopyPending": "Pending",
-  "@hostsHostPaymentAccountCardVisiblecopyPending": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
-  "hostsHostPaymentAccountControllerCardVisiblecopyHostpaymentaccountcontrollercardStartonboardingFailed": "HostPaymentAccountControllerCard.startOnboarding failed",
-  "@hostsHostPaymentAccountControllerCardVisiblecopyHostpaymentaccountcontrollercardStartonboardingFailed": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_controller_card.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_controller_card"
-  },
-  "hostsHostPaymentAccountControllerCardVisiblecopyHostpaymentaccountcontrollercardRefreshFailed": "HostPaymentAccountControllerCard.refresh failed",
-  "@hostsHostPaymentAccountControllerCardVisiblecopyHostpaymentaccountcontrollercardRefreshFailed": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_controller_card.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_controller_card"
-  },
-  "hostsHostTeamManagementSectionVisiblecopyHostteammanagementsectionShowaddhostsheetFailed": "HostTeamManagementSection._showAddHostSheet failed",
-  "@hostsHostTeamManagementSectionVisiblecopyHostteammanagementsectionShowaddhostsheetFailed": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionVisiblecopyHostAdded": "Host added.",
-  "@hostsHostTeamManagementSectionVisiblecopyHostAdded": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionVisiblecopyHostteammanagementsectionConfirmhostactionFailed": "HostTeamManagementSection._confirmHostAction failed",
-  "@hostsHostTeamManagementSectionVisiblecopyHostteammanagementsectionConfirmhostactionFailed": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionVisiblecopyTransfer": "transfer",
-  "@hostsHostTeamManagementSectionVisiblecopyTransfer": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
-  },
-  "hostsHostTeamManagementSectionVisiblecopyRemove": "remove",
-  "@hostsHostTeamManagementSectionVisiblecopyRemove": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_team_management_section"
   },
   "imageUploadsProfilePhotoEditorScreenVisiblecopyDelete": "Delete",
   "@imageUploadsProfilePhotoEditorScreenVisiblecopyDelete": {
@@ -18755,10 +18293,6 @@
   "@hostCustomersFilters": {"description": "Opens the grouped customer filter sheet.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersClearFilter": "Clear",
   "@hostCustomersClearFilter": {"description": "Clears the active customer segment filter.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersViewPeople": "People",
-  "@hostCustomersViewPeople": {"description": "Customers workspace tab for individual CRM contacts.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersViewAudiences": "Groups",
-  "@hostCustomersViewAudiences": {"description": "Customers workspace tab for reusable named customer groups.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostSavedAudiencesEmptyTitle": "No groups yet",
   "@hostSavedAudiencesEmptyTitle": {"description": "Empty saved-audience directory or campaign picker title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostSavedAudiencesEmptyBody": "Create a group to keep the right people together. Use it in Inbox when you are ready to send.",
@@ -18779,8 +18313,6 @@
   "@hostCustomersSort": {"description": "Customers directory sort menu group label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersSortControl": "Sort: {label}",
   "@hostCustomersSortControl": {"description": "Visible Customers directory sort control with its current ordering.", "placeholders": {"label": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersMoreActions": "More audience actions",
-  "@hostCustomersMoreActions": {"description": "Accessible label for the Customers header overflow commands.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "eventSuccessAccountabilityTitle": "Return sweep",
   "@eventSuccessAccountabilityTitle": {"description": "Host accountability sweep heading.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
   "eventSuccessAccountabilitySubtitle": "Mark each checked-in guest as returned or departed. People may leave quietly; this is a safety aid, not a checkout requirement.",
@@ -26071,8 +25603,6 @@
   "@hostMembershipsProgramTestMode": {"description": "Program badge in Razorpay test mode.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.memberships"},
   "hostMembershipsProgramLive": "Live",
   "@hostMembershipsProgramLive": {"description": "Program badge in live mode.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.memberships"},
-  "hostMembershipsIntroTitle": "Sell monthly or annual memberships",
-  "@hostMembershipsIntroTitle": {"description": "Host memberships intro title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.memberships"},
   "hostMembershipsIntroBody": "Members renew automatically through UPI Autopay, card or bank mandates. Catch applies member prices, early access and members-only events at checkout; you deliver any perks in person. Each renewal pays out to your Razorpay account minus Catch’s fee.",
   "@hostMembershipsIntroBody": {"description": "Host memberships intro body.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.memberships"},
   "hostMembershipsPayoutTitle": "Payouts",
@@ -26117,8 +25647,6 @@
   "@hostMembershipsBillingResuming": {"description": "Billing resume in progress.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.memberships"},
   "hostMembershipsPlansTitle": "Plans",
   "@hostMembershipsPlansTitle": {"description": "Plans section title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.memberships"},
-  "hostMembershipsPlanRowBody": "{status} · {members, plural, =1{1 member} other{{members} members}}",
-  "@hostMembershipsPlanRowBody": {"description": "Plan row status and member count.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.memberships", "placeholders": {"status": {"type": "String"}, "members": {"type": "int"}}},
   "hostMembershipsPlanDraft": "Draft",
   "@hostMembershipsPlanDraft": {"description": "Plan status draft.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.memberships"},
   "hostMembershipsPlanPublished": "On sale",

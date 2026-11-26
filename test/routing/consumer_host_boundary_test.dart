@@ -79,9 +79,7 @@ void main() {
       isTrue,
     );
     expect(
-      repoFile(
-        'lib/hosts/presentation/payments/host_payment_account_card.dart',
-      ).existsSync(),
+      repoFile('lib/hosts/organizer/payments_screen.dart').existsSync(),
       isTrue,
     );
   });
