@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/foundation.dart';
@@ -27,6 +28,8 @@ class HostEventReportState {
     this.rating,
     this.ratingCount = 0,
     this.stayInTouch,
+    this.coach,
+    this.coachWithheld,
     this.people = const <String>[],
     this.reviews = const <Review>[],
     this.reviewCount = 0,
@@ -63,6 +66,14 @@ class HostEventReportState {
   /// Pairs of guests who matched with each other after the event; null
   /// when the report does not carry any.
   final int? stayInTouch;
+
+  /// The post-event coach from the event's scorecard; null until the report
+  /// carries one.
+  final EventSuccessBrief? coach;
+
+  /// Why the coach is withheld (fewer guests checked in than the
+  /// group-size floor), in the server's words; null otherwise.
+  final String? coachWithheld;
 
   /// The first names on the roster, for the faces.
   final List<String> people;

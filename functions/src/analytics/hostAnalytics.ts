@@ -26,6 +26,7 @@ import {
   validateHostAnalyticsQueryCallablePayload,
 } from "../shared/generated/validators/hostAnalyticsQueryInput";
 import {isOrganizerManager} from "../shared/organizerHosts";
+import {loadHostEventCoach} from "./hostEventCoach";
 import {loadHostRegistrationAnalytics} from "./hostRegistrationAnalytics";
 import {
   DEFAULT_GROUP_SIZE_FLOOR,
@@ -623,6 +624,11 @@ async function loadHostAnalytics(
   );
   response.summaryCards.push(...registrationAnalytics.summaryCards);
   response.dataQuality.push(...registrationAnalytics.dataQuality);
+  if (payload.eventId) {
+    // The event report's coach block, floored like the dating counts.
+    response.eventCoach = await loadHostEventCoach(db, payload.eventId,
+      groupSizeFloor);
+  }
   if (scope === "host") {
     await writeHostAnalyticsSnapshot(db, snapshotId, uid, response, now, deps);
   }
