@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/hosts/forms/form_share_body.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_forms_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/clipboard.dart';
 import 'package:catch_platform/device/external_links.dart';

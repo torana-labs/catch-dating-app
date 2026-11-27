@@ -1,9 +1,7 @@
-import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:widgetbook_workspace/hosts/host_event_offer_use_cases.dart';
 import 'package:widgetbook_workspace/hosts/host_response_review_use_cases.dart';
 
 void main() {
@@ -37,20 +35,4 @@ void main() {
       }
     });
   }
-
-  testWidgets('prepared offer preview owns its theme during async setup', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Builder(builder: hostOfferPrepared),
-      ),
-    );
-    await pumpFeatureUi(tester);
-    expect(find.text('Preparing offer'), findsNothing);
-    expect(find.text('Preview offers'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
 }

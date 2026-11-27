@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/forms/data/host_application_repository.dart';
+import 'package:catch_dating_app/hosts/forms/host_response_review_detail.dart';
 import 'package:catch_dating_app/hosts/forms/response_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_review_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

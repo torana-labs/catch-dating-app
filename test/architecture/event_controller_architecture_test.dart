@@ -7,16 +7,16 @@ void main() {
     'event flow owners use generated Riverpod providers instead of ChangeNotifier',
     () {
       const controllers = [
-        'event_management/create/private_event_details_controller',
-        'event_management/create/private_event_preferences_controller',
-        'event_management/create/event_offer_preferences_controller',
-        'event_management/create/event_publication_controller',
+        'presentation/event_management/create/private_event_details_controller',
+        'presentation/event_management/create/private_event_preferences_controller',
+        'presentation/event_management/create/event_offer_preferences_controller',
+        'presentation/event_management/create/event_publication_controller',
         'forms/host_event_offer_controller',
         'forms/host_event_offer_workspace_controller',
         'forms/host_form_admission_controller',
       ];
       for (final controller in controllers) {
-        final path = 'lib/hosts/presentation/$controller.dart';
+        final path = 'lib/hosts/$controller.dart';
         final source = repoFile(path).readAsStringSync();
         expect(source, isNot(contains('extends ChangeNotifier')), reason: path);
         expect(source, isNot(contains('notifyListeners(')), reason: path);
@@ -26,7 +26,7 @@ void main() {
           reason: path,
         );
         expect(
-          repoFile('lib/hosts/presentation/$controller.g.dart').existsSync(),
+          repoFile('lib/hosts/$controller.g.dart').existsSync(),
           isTrue,
           reason: path,
         );

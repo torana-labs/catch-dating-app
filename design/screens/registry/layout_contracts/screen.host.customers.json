@@ -48,12 +48,12 @@
       "routes": [
         "hostFormBuilderScreen"
       ],
-      "file": "lib/hosts/presentation/forms/host_form_builder_screen.dart",
-      "symbol": "_HostFormBuilderScreenState",
+      "file": "lib/hosts/forms/form_screen.dart",
+      "symbol": "_HostFormScreenState",
       "family": "pushed-route",
-      "expression": "CatchRouteScaffold",
-      "bodyGeometry": "mixed",
-      "topEdge": "route-chrome"
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
     },
     {
       "routes": [
