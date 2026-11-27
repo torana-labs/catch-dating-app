@@ -5,7 +5,6 @@ import {
   checkComponentEnforcementCoverage,
   extractCheckerCodes,
   extractPluginCodes,
-  extractWidgetbookNames,
 } from "./check_component_enforcement_coverage.mjs";
 
 test("extracts plugin and checker diagnostic declarations only", () => {
@@ -16,10 +15,6 @@ test("extracts plugin and checker diagnostic declarations only", () => {
   assert.deepEqual(
     [...extractCheckerCodes("const code = 'catch_b'; // catch_noise")],
     ["catch_b"],
-  );
-  assert.deepEqual(
-    [...extractWidgetbookNames("WidgetbookComponent(name: 'CatchOne')")],
-    ["CatchOne"],
   );
 });
 

@@ -53,9 +53,7 @@ declare("lib/host_memberships/presentation/host_membership_profile_section.dart"
 // that call them; the Phase 4 router split (#2373) moved them out of
 // go_router.dart.
 declare("lib/routing/host_router.dart", "lib/routing/host_router.dart", null,
-  ["hostOrganizerScreenForUri"], ["HostOrganizersScreen"]);
-declare("lib/routing/host_router.dart", "lib/routing/host_router.dart", null,
-  ["hostFormScreenForUri", "hostAudienceScreenForUri"], ["Widget"]);
+  ["hostFormScreenForUri", "hostAudienceScreenForUri", "hostOrganizerScreenForUri"], ["Widget"]);
 declare("lib/routing/host_router.dart", "lib/routing/host_router.dart", null,
   ["_eventDetailScreen"], ["EventDetailScreen"]);
 declare("lib/routing/detail_route_pages.dart", "lib/routing/consumer_router.dart", null,

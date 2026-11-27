@@ -413,6 +413,17 @@ test("a staged Dart deletion stays deleted and a reintroduced file is preserved"
   f.refusesWithoutWrites();
 });
 
+test("an untracked generated file's ignored copy neither blocks its deletion nor is staged back", t => {
+  const f = gitFixture(t);
+  f.write(".gitignore", "*.ignored\n/lib/example.dart\n");
+  f.git("add", "--", ".gitignore");
+  f.git("rm", "--cached", "-q", "--", "lib/example.dart");
+  assert.deepEqual(f.run().formattedDartPaths, []);
+  assert.equal(f.git("diff", "--cached", "--name-status", "--", "lib/example.dart").stdout.toString().trim(),
+    "D\tlib/example.dart");
+  assert.equal(fs.readFileSync(path.join(f.root, "lib/example.dart"), "utf8"), "original");
+});
+
 test("NUL-delimited names with spaces and newlines retain partial staging protection", t => {
   const f = gitFixture(t);
   f.stage("lib/space and\nnewline.dart", "staged");

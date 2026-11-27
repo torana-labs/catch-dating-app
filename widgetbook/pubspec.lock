@@ -237,7 +237,7 @@ packages:
       path: "../apps/host"
       relative: true
     source: path
-    version: "1.0.5+7"
+    version: "1.0.6+8"
   catch_kernel:
     dependency: "direct main"
     description:

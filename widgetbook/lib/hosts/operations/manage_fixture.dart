@@ -15,7 +15,7 @@ import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_route_screen.dart';
+import 'package:catch_dating_app/hosts/events/event_route_screen.dart';
 import 'package:catch_dating_app/pages/event/widgets/who_is_going_section.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';

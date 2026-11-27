@@ -6,7 +6,6 @@ import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_banner.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -84,7 +83,7 @@ class HostPublicRegistrationField extends StatelessWidget {
               ),
             ),
             gapH8,
-            CatchLegacyText(
+            CatchText(
               !supportsStandaloneRegistration
                   ? context.l10n.hostsHostPublicRegistrationBodyUnsupported
                   : organizerPublished
@@ -92,8 +91,8 @@ class HostPublicRegistrationField extends StatelessWidget {
                         ? context.l10n.hostsHostPublicRegistrationBodyPaid
                         : context.l10n.hostsHostPublicRegistrationBodyPublished
                   : context.l10n.hostsHostPublicRegistrationBodyNeedsPage,
-              variant: CatchLegacyTextVariant.supporting,
-              color: CatchTokens.of(context).ink2,
+              variant: CatchTextVariant.bodySmall,
+              tone: CatchTextTone.secondary,
             ),
             gapH12,
             CatchButton(

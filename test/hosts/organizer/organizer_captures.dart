@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/account/data/force_update_provider.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
@@ -18,6 +20,7 @@ import 'package:catch_kernel/brand.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod/misc.dart' show Override;
 
 import 'organizer_fixtures.dart';
@@ -96,13 +99,33 @@ final OrganizerState _tab = OrganizerState(
 );
 
 class _CapturePaymentSetup extends HostFormPaymentController {
+  _CapturePaymentSetup(this._value);
+
+  final AsyncValue<HostFormPaymentSetupState> _value;
+
   @override
-  Future<HostFormPaymentSetupState> build(String organizerId) async =>
-      HostFormPaymentSetupState(setup: razorpaySetup());
+  Future<HostFormPaymentSetupState> build(String organizerId) =>
+      switch (_value) {
+        AsyncData(:final value) => Future.value(value),
+        AsyncError(:final error, :final stackTrace) => Future.error(
+          error,
+          stackTrace,
+        ),
+        _ => Completer<HostFormPaymentSetupState>().future,
+      };
 }
 
-/// The organizer screens' reads answered with the fixture organizer.
-List<Override> organizerCaptureOverrides() => [
+/// The Razorpay connection connected and ready.
+final organizerCapturePaymentReady = AsyncData(
+  HostFormPaymentSetupState(setup: razorpaySetup()),
+);
+
+/// The organizer screens' reads answered with the fixture organizer. The
+/// Razorpay connection answers [payment], connected and ready by default:
+/// still loading, failed, or mid-connect for the payout state captures.
+List<Override> organizerCaptureOverrides({
+  AsyncValue<HostFormPaymentSetupState>? payment,
+}) => [
   organizerTabControllerProvider(
     OrganizerTabRequest(
       organizer: organizerCaptureOrganizer,
@@ -110,7 +133,7 @@ List<Override> organizerCaptureOverrides() => [
     ),
   ).overrideWithValue(_tab),
   hostFormPaymentControllerProvider.overrideWith2(
-    (_) => _CapturePaymentSetup(),
+    (_) => _CapturePaymentSetup(payment ?? organizerCapturePaymentReady),
   ),
   hostOrganizerBillsProvider.overrideWith(
     (ref, organizerId) => Stream.value(_bills),
@@ -146,3 +169,9 @@ Widget organizerTeamCapture() =>
 
 Widget organizerSettingsCapture() =>
     OrganizerSettingsScreen(initialOrganizerId: organizerCaptureOrganizer.id);
+
+/// The page editor for an organizer the host runs but does not own: read-only
+/// details, with the logo and photos still theirs to change.
+Widget organizerManagerPageEditCapture() => OrganizerPageEditScreen(
+  initialOrganizerId: HostOperationsFixtures.coHostedOrganizer.id,
+);

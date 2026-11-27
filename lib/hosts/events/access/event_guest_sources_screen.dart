@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/hosts/events/access/check_in_qr_section.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_check_in_qr_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_manage_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_section.dart';
 import 'package:catch_l10n/l10n.dart';
