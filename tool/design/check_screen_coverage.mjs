@@ -2,10 +2,9 @@
 import fs from "node:fs";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 import {buildInventory} from "../ui_capture/check_route_inventory.mjs";
+import {readCaptureCoverage, readScreenRegistry} from "./lib/screen_registries.mjs";
 
 const coveragePath = fromRepo("design/screens/screen_coverage.json");
-const screenContractsPath = fromRepo("design/screens/catch.screens.json");
-const captureCoveragePath = fromRepo("tool/ui_capture/capture_coverage.json");
 
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
@@ -29,8 +28,8 @@ if (command === "--help" || command === "-h" || command === "help") {
 function checkCoverage({summary = false} = {}) {
   const coverage = readJson(coveragePath);
   const routeInventory = buildInventory();
-  const screenContracts = readJson(screenContractsPath);
-  const captureCoverage = readJson(captureCoveragePath);
+  const screenContracts = readScreenRegistry();
+  const captureCoverage = readCaptureCoverage();
 
   const errors = validateCoverage({
     coverage,
@@ -193,7 +192,7 @@ function validateEntry(
     }
     const binding = screenRouteBindings.get(entry.routeId);
     if (!binding) {
-      errors.push(`${label}: contracted route must be listed in ${relativeToRepo(screenContractsPath)}.`);
+      errors.push(`${label}: contracted route must be listed in design/screens/registry/.`);
     }
   }
 

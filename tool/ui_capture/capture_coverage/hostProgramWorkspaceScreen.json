@@ -1,0 +1,23 @@
+{
+  "routeId": "hostProgramWorkspaceScreen",
+  "status": "captured",
+  "priority": "P1",
+  "reason": "P5.7a planner screens on the system render from deterministic planner fixtures.",
+  "captureIds": [
+    "host_programme_phone",
+    "host_programme_function_phone",
+    "host_programme_household_phone",
+    "host_programme_travel_phone",
+    "host_programme_messages_phone",
+    "host_programme_message_phone",
+    "host_programme_live_board_phone",
+    "host_programme_live_board_desktop",
+    "host_programme_branding_phone",
+    "host_programme_id_tracker_desktop",
+    "host_programme_reconcile_desktop",
+    "host_programme_photos_phone",
+    "host_programme_inbox_desktop",
+    "host_programme_inbox_phone",
+    "host_programme_assistant_phone"
+  ]
+}

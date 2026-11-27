@@ -1,0 +1,311 @@
+{
+  "id": "screen.launch_access.application",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The pushed Consumer route uses CatchRouteScaffold so route chrome, scroll-under behavior, and surface ownership remain canonical."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchLegacyTopBar",
+    "owner": "CatchRouteScaffold",
+    "reason": "The city-access application is a compact Settings spoke with canonical back navigation and a scroll-derived divider."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "offline",
+      "permission"
+    ],
+    "owner": "LaunchAccessApplicationScreen, LaunchAccessController, and CatchAsyncBoundary"
+  },
+  "name": "Launch Access Application",
+  "owner": "launch_access",
+  "priority": "P2",
+  "status": "ready",
+  "routes": [
+    {
+      "id": "launchAccessScreen",
+      "path": "/settings/launch-access",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+    "symbol": "LaunchAccessApplicationScreen"
+  },
+  "stateController": {
+    "primary": "LaunchAccessApplicationScreen resolves current-user and application provider waves; LaunchAccessController owns one typed draft and submit mutation.",
+    "files": [
+      {
+        "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+        "symbol": "LaunchAccessApplicationScreen"
+      },
+      {
+        "file": "lib/launch_access/presentation/launch_access_controller.dart",
+        "symbol": "LaunchAccessController"
+      },
+      {
+        "file": "lib/contexts/account/data/launch_access_repository.dart",
+        "symbol": "LaunchAccessRepository"
+      },
+      {
+        "file": "lib/contexts/account/domain/launch_access_application.dart",
+        "symbol": "LaunchAccessApplication"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/launch_access/presentation/launch_access_controller.dart",
+        "symbol": "LaunchAccessController"
+      },
+      {
+        "file": "lib/contexts/account/data/launch_access_repository.dart",
+        "symbol": "LaunchAccessRepository"
+      }
+    ],
+    "notes": "The route is available from normal Consumer Settings. Firestore remains authoritative for the current user's application, status locking, submission count, and server timestamps; the form never writes local JSON or a client-only launch gate."
+  },
+  "designRefs": [
+    {
+      "id": "repo.launch-access-screen-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/launch_access/launch_access_application_screen_test.dart",
+      "notes": "Focused widget tests prove the form-shaped loading state and canonical CatchField host-interest control."
+    },
+    {
+      "id": "repo.launch-access-controller-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/launch_access/launch_access_controller_test.dart",
+      "notes": "Controller tests prove draft editing, current-user submission, and route-lifecycle reset."
+    },
+    {
+      "id": "repo.launch-access-repository-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/launch_access/launch_access_repository_test.dart",
+      "notes": "Repository tests prove creation, editable updates, locked-status rejection, and Firebase provider ownership."
+    }
+  ],
+  "captures": [
+    {
+      "id": "launch_access_application",
+      "status": "captured",
+      "notes": "Editable city-access application with the normal empty draft."
+    },
+    {
+      "id": "launch_access_loading",
+      "status": "captured",
+      "notes": "Application provider loading with the form-shaped skeleton."
+    },
+    {
+      "id": "launch_access_submit_pending",
+      "status": "captured",
+      "notes": "Editable application with the submit mutation pending and the primary action disabled."
+    },
+    {
+      "id": "launch_access_signed_out",
+      "status": "captured",
+      "notes": "Signed-out permission state requiring phone verification."
+    },
+    {
+      "id": "launch_access_error",
+      "status": "captured",
+      "notes": "Application provider failure on the shared retry surface."
+    },
+    {
+      "id": "launch_access_offline",
+      "status": "captured",
+      "notes": "Application provider offline state with shared offline recovery copy."
+    },
+    {
+      "id": "launch_access_approved",
+      "status": "captured",
+      "notes": "Locked approved status showing that profile creation is available."
+    },
+    {
+      "id": "launch_access_text_scale_2",
+      "status": "captured",
+      "notes": "Editable application rendered at text scale 2.0."
+    },
+    {
+      "id": "launch_access_reduced_motion",
+      "status": "captured",
+      "notes": "Editable application rendered with animations disabled."
+    }
+  ],
+  "states": [
+    {
+      "id": "editable_application",
+      "kind": "empty",
+      "status": "captured",
+      "source": "A signed-in member with no application receives the complete editable application form.",
+      "captureIds": [
+        "launch_access_application"
+      ],
+      "previewIds": [
+        "LaunchAccessApplicationScreen/Screen states"
+      ],
+      "tests": [
+        "test/launch_access/launch_access_application_screen_test.dart",
+        "test/ui_captures/capture_runner_test.dart"
+      ],
+      "nextAction": "Keep the form contract aligned with the live Firestore application schema."
+    },
+    {
+      "id": "application_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "LaunchAccessLoadingBody mirrors the form structure while the current application stream resolves.",
+      "captureIds": [
+        "launch_access_loading"
+      ],
+      "previewIds": [
+        "LaunchAccessApplicationScreen/Screen states"
+      ],
+      "tests": [
+        "test/launch_access/launch_access_application_screen_test.dart",
+        "test/ui_captures/capture_runner_test.dart"
+      ],
+      "nextAction": "Keep skeleton lanes synchronized with form-section changes."
+    },
+    {
+      "id": "signed_out",
+      "kind": "permission",
+      "status": "captured",
+      "source": "A missing current uid shows the phone-verification requirement without exposing the application.",
+      "captureIds": [
+        "launch_access_signed_out"
+      ],
+      "previewIds": [
+        "LaunchAccessApplicationScreen/Screen states"
+      ],
+      "tests": [
+        "test/ui_captures/capture_runner_test.dart"
+      ],
+      "nextAction": "Preserve the normal router authentication guard and this defensive in-screen fallback."
+    },
+    {
+      "id": "provider_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "Application stream failures render through CatchAsyncBoundary with an exact provider retry.",
+      "captureIds": [
+        "launch_access_error"
+      ],
+      "previewIds": [
+        "LaunchAccessApplicationScreen/Screen states"
+      ],
+      "tests": [
+        "test/ui_captures/capture_runner_test.dart"
+      ],
+      "nextAction": "Keep provider failures on the shared branded error surface."
+    },
+    {
+      "id": "provider_offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Offline application reads use the shared offline recovery state and exact retry owner.",
+      "captureIds": [
+        "launch_access_offline"
+      ],
+      "previewIds": [
+        "LaunchAccessApplicationScreen/Screen states"
+      ],
+      "tests": [
+        "test/ui_captures/capture_runner_test.dart"
+      ],
+      "nextAction": "Keep offline classification centralized in CatchAsyncBoundary."
+    },
+    {
+      "id": "locked_status",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Non-editable application statuses replace the form with an explicit review or approval result.",
+      "captureIds": [
+        "launch_access_approved"
+      ],
+      "previewIds": [
+        "LaunchAccessApplicationScreen/Screen states"
+      ],
+      "tests": [
+        "test/launch_access/launch_access_repository_test.dart",
+        "test/ui_captures/capture_runner_test.dart"
+      ],
+      "nextAction": "Keep status labels and editability derived from LaunchAccessApplicationStatus."
+    },
+    {
+      "id": "submit_application",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "LaunchAccessController.submitMutation validates the draft and delegates one current-user transaction to LaunchAccessRepository.",
+      "captureIds": [
+        "launch_access_submit_pending"
+      ],
+      "tests": [
+        "test/launch_access/launch_access_controller_test.dart",
+        "test/launch_access/launch_access_repository_test.dart"
+      ],
+      "previewIds": [
+        "LaunchAccessApplicationScreen/Screen states",
+        "LaunchAccessApplicationForm/Form states"
+      ],
+      "nextAction": "Preserve transaction-owned status locking and duplicate-submit exclusion."
+    },
+    {
+      "id": "accessibility",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "The editable form has deterministic text-scale and reduced-motion capture witnesses.",
+      "captureIds": [
+        "launch_access_text_scale_2",
+        "launch_access_reduced_motion"
+      ],
+      "previewIds": [
+        "LaunchAccessApplicationScreen/Screen states",
+        "LaunchAccessApplicationForm/Form states"
+      ],
+      "tests": [
+        "test/ui_captures/capture_runner_test.dart"
+      ],
+      "nextAction": "Keep long labels and choice groups overflow-free as application options evolve."
+    }
+  ],
+  "composition": {
+    "currentLayout": "CatchRouteScaffold with one provider-aware route adapter and a scrollable CatchFieldLanes application form.",
+    "targetLayout": "The current layout is canonical: route ownership stays at the screen, while the form remains a reusable typed section driven by LaunchAccessController state.",
+    "sections": [
+      {
+        "id": "section.launch_access.application_form",
+        "name": "Launch access application form",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [],
+        "flutter": {
+          "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+          "symbol": "LaunchAccessApplicationForm"
+        },
+        "currentOwner": "LaunchAccessApplicationForm + LaunchAccessController",
+        "targetOwner": "LaunchAccessApplicationForm + LaunchAccessController",
+        "dependencies": [
+          "catch.button",
+          "catch.field",
+          "catch.chip.field"
+        ],
+        "states": [
+          "editable_application",
+          "submit_application",
+          "accessibility"
+        ],
+        "migration": "Keep the form on shared CatchField and CatchChoiceInput.form primitives; do not reintroduce a client-only launch gate or local snapshot authority."
+      }
+    ]
+  },
+  "openGaps": []
+}

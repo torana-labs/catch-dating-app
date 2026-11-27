@@ -1,0 +1,368 @@
+{
+  "id": "screen.saved_events.list",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchLegacyTopBar",
+    "owner": "CatchLegacyTopBar",
+    "reason": "The source owns canonical compact route chrome."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Saved Events List",
+  "owner": "events",
+  "priority": "P2",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "savedEventsScreen",
+      "path": "/saved-events",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/events/presentation/saved_events_screen.dart",
+    "symbol": "SavedEventsScreen"
+  },
+  "stateController": {
+    "primary": "SavedEventsScreen + uidProvider + watchSavedEventCardsProvider + SavedEventsListState + organizerNameLookupProvider",
+    "files": [
+      {
+        "file": "lib/events/presentation/saved_events_screen.dart",
+        "symbol": "SavedEventsScreen"
+      },
+      {
+        "file": "lib/events/presentation/saved_events_state.dart",
+        "symbol": "SavedEventsListState"
+      },
+      {
+        "file": "lib/contexts/bookings/data/guest_event_cards_repository.dart",
+        "symbol": "watchSavedEventCards"
+      },
+      {
+        "file": "lib/contexts/organizers/data/organizer_name_lookup.dart",
+        "symbol": "OrganizerNameLookupQuery"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/contexts/discovery/data/saved_event_repository.dart",
+        "symbol": "SavedEventRepository"
+      }
+    ],
+    "notes": "SavedEventsScreen watches the current uid, streams saved event details, owns CatchRouteScaffold chrome, retry invalidation, club-name lookup, and saved-event detail navigation. SavedEventsListState owns event ordering, saved/past badge labels, tile statuses, today, and club-id lookup input. SavedEventsAgendaList, SavedEventsLoading, SavedEventsError, SavedEventsOrganizerNamesErrorState, and SavedEventsMessage own provider-free agenda, loading, error, lookup-error, and empty surfaces; the duplicate body headline was removed."
+  },
+  "designRefs": [
+    {
+      "id": "repo.saved-events-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/events/saved_events_screen_test.dart",
+      "notes": "Saved events tests cover empty, ordering, and detail navigation."
+    },
+    {
+      "id": "claude.saved-events-list",
+      "kind": "claude",
+      "status": "blocked",
+      "notes": "Blocked on canonical Saved Events screen source/export. The local Claude bundle exposes dashboard quick-action entry points but no standalone Saved Events List screen template."
+    }
+  ],
+  "captures": [
+    {
+      "id": "saved_events_list",
+      "status": "captured",
+      "notes": "Saved events list fixture with deterministic club lookup."
+    },
+    {
+      "id": "saved_events_uid_missing",
+      "status": "captured",
+      "notes": "Signed-out Saved Events route fallback with an empty event stream."
+    },
+    {
+      "id": "saved_events_loading",
+      "status": "captured",
+      "notes": "Saved-event stream loading skeleton with route top bar and agenda placeholders."
+    },
+    {
+      "id": "saved_events_error",
+      "status": "captured",
+      "notes": "Saved-event stream error branch with event retry copy."
+    },
+    {
+      "id": "saved_events_empty",
+      "status": "captured",
+      "notes": "Empty saved-events state, including the deleted-doc fallback after missing event documents are omitted by the repository stream."
+    },
+    {
+      "id": "saved_events_club_names_loading",
+      "status": "captured",
+      "notes": "Agenda skeleton while club-name lookup resolves after saved events load."
+    },
+    {
+      "id": "saved_events_club_names_error",
+      "status": "captured",
+      "notes": "Club-name lookup error branch inside the saved-events agenda section."
+    },
+    {
+      "id": "saved_events_past_only",
+      "status": "captured",
+      "notes": "Saved-events list with only past rows and PAST tile treatment."
+    },
+    {
+      "id": "saved_events_text_scale_2",
+      "status": "captured",
+      "notes": "Text scale 2.0 route capture for top bar, header, agenda rows, and state surfaces."
+    },
+    {
+      "id": "saved_events_light_dark",
+      "status": "captured",
+      "notes": "Explicit populated baseline for paired light/dark output."
+    }
+  ],
+  "states": [
+    {
+      "id": "uid_missing",
+      "kind": "permission",
+      "status": "captured",
+      "source": "When uid is unavailable, SavedEventsScreen renders an empty event stream instead of querying saved events.",
+      "previewIds": [
+        "SavedEventsScreen/Saved states"
+      ],
+      "captureIds": [
+        "saved_events_uid_missing"
+      ],
+      "nextAction": "saved_events_uid_missing captures the signed-out empty-stream fallback; decide whether signed-out saved events should show branded access copy only if product policy changes."
+    },
+    {
+      "id": "saved_events_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "watchSavedEventCardsProvider loading renders the Saved Events agenda/date-rail skeleton through _SavedEventsLoading.",
+      "previewIds": [
+        "SavedEventsScreen/Saved states"
+      ],
+      "captureIds": [
+        "saved_events_loading"
+      ],
+      "tests": [
+        "test/events/saved_events_screen_test.dart"
+      ],
+      "nextAction": "Compare loading skeleton hierarchy against a future Saved Events reference if design adds one."
+    },
+    {
+      "id": "saved_events_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "Saved-event stream errors render CatchLocalizedErrorState with AppErrorContext.event and retry invalidation.",
+      "previewIds": [
+        "SavedEventsScreen/Saved states"
+      ],
+      "captureIds": [
+        "saved_events_error"
+      ],
+      "nextAction": "Compare error copy against a future Saved Events error reference if design adds one."
+    },
+    {
+      "id": "empty_saved_events",
+      "kind": "empty",
+      "status": "captured",
+      "source": "An empty saved-event list renders No saved events yet copy through _SavedEventsMessage; repository tests prove deleted/missing event docs are omitted before this empty branch.",
+      "previewIds": [
+        "SavedEventsScreen/Saved states"
+      ],
+      "captureIds": [
+        "saved_events_empty"
+      ],
+      "tests": [
+        "test/events/saved_events_screen_test.dart"
+      ],
+      "nextAction": "Compare empty copy against a future Saved Events reference if design adds one."
+    },
+    {
+      "id": "populated_saved_events",
+      "kind": "populated",
+      "status": "captured",
+      "source": "saved_events_list renders upcoming and past saved events using EventAgendaSliverList and SAVED/PAST status.",
+      "previewIds": [
+        "SavedEventsScreen/Saved states"
+      ],
+      "captureIds": [
+        "saved_events_list",
+        "saved_events_past_only",
+        "saved_events_light_dark"
+      ],
+      "tests": [
+        "test/events/saved_events_screen_test.dart"
+      ],
+      "nextAction": "Compare row hierarchy and section header against exported design references."
+    },
+    {
+      "id": "club_names_loading_error",
+      "kind": "loading",
+      "status": "captured",
+      "source": "Saved event rows wait on organizerNameLookupProvider and render loading/error before the agenda list when club names are unavailable.",
+      "previewIds": [
+        "SavedEventsScreen/Saved states"
+      ],
+      "captureIds": [
+        "saved_events_club_names_loading",
+        "saved_events_club_names_error"
+      ],
+      "nextAction": "Compare secondary lookup states against future references if design adds them."
+    },
+    {
+      "id": "detail_navigation",
+      "kind": "populated",
+      "status": "tested",
+      "source": "Selecting a saved event pushes the saved Event Detail alias route with event extra.",
+      "previewIds": [
+        "SavedEventsScreen/Saved states"
+      ],
+      "tests": [
+        "test/events/saved_events_screen_test.dart"
+      ],
+      "nextAction": "Keep route test coverage while future passes add reference-specific visual variants."
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Saved Events text scale 2.0 capture covers top bar, header, agenda rows, and state surfaces.",
+      "previewIds": [
+        "SavedEventsScreen/Saved states"
+      ],
+      "captureIds": [
+        "saved_events_text_scale_2"
+      ],
+      "nextAction": "Compare text-scale layout against a future Saved Events accessibility reference if design adds one."
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "Saved Events populated route capture is registered for paired light/dark output.",
+      "previewIds": [
+        "SavedEventsScreen/Saved states"
+      ],
+      "captureIds": [
+        "saved_events_light_dark"
+      ],
+      "nextAction": "Compare theme treatment against a future Saved Events reference if design adds one."
+    }
+  ],
+  "composition": {
+    "currentLayout": "SavedEventsScreen owns uid/provider orchestration, CatchRouteScaffold chrome, club-name lookup, retry invalidation, and event-detail navigation, then resolves SavedEventsListState before passing typed data into provider-free SavedEventsAgendaList, SavedEventsLoading, SavedEventsError, SavedEventsOrganizerNamesErrorState, and SavedEventsMessage sections.",
+    "targetLayout": "Saved Events should keep providers at the route boundary, one compact route title in CatchRouteScaffold, SavedEventsListState as the ordered-row adapter, and public section widgets as the owner of agenda, loading/error, lookup-error, and empty surfaces.",
+    "sections": [
+      {
+        "id": "section.saved_events.list_adapter",
+        "name": "Saved events route state adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "SavedEventsListState"
+        ],
+        "flutter": {
+          "file": "lib/events/presentation/saved_events_screen.dart",
+          "symbol": "SavedEventsScreen"
+        },
+        "currentOwner": "SavedEventsScreen + SavedEventsListState",
+        "targetOwner": "SavedEventsScreen + SavedEventsListState",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "uid_missing",
+          "saved_events_loading",
+          "saved_events_error",
+          "populated_saved_events"
+        ],
+        "migration": "SavedEventsListState now owns event ordering, saved/past badge labels, tile statuses, today, and club-id lookup input; route-owned provider waves, retry intents, club-name lookup, and navigation callbacks stay at the screen boundary."
+      },
+      {
+        "id": "section.saved_events.agenda",
+        "name": "Saved events agenda list",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "SavedEventsAgenda"
+        ],
+        "flutter": {
+          "file": "lib/events/presentation/saved_events_screen.dart",
+          "symbol": "SavedEventsAgendaList"
+        },
+        "currentOwner": "SavedEventsAgendaList + SavedEventsListState",
+        "targetOwner": "SavedEventsAgendaList + SavedEventsListState",
+        "dependencies": [
+          "catch.badge",
+          "catch.surface"
+        ],
+        "states": [
+          "populated_saved_events",
+          "club_names_loading_error",
+          "detail_navigation"
+        ],
+        "migration": "SavedEventsAgendaList reuses EventAgendaSliverList while SavedEventsListState supplies ordering, badge labels, tile statuses, and today; the route supplies club names and navigation callbacks."
+      },
+      {
+        "id": "section.saved_events.empty_error",
+        "name": "Saved events empty and error states",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "SavedEventsStateSurfaces"
+        ],
+        "flutter": {
+          "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
+          "symbol": "CatchEmptyState"
+        },
+        "currentOwner": "SavedEventsLoading + SavedEventsError + SavedEventsOrganizerNamesErrorState + SavedEventsMessage",
+        "targetOwner": "SavedEventsLoading + SavedEventsError + SavedEventsOrganizerNamesErrorState + SavedEventsMessage",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "empty_saved_events",
+          "saved_events_loading",
+          "saved_events_error",
+          "club_names_loading_error"
+        ],
+        "migration": "Saved Events route state surfaces are named provider-free widgets; the screen only supplies retry callbacks and provider values."
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-SAVED-EVENTS-001",
+      "status": "closed",
+      "nextAction": "Closed by Saved Events Widgetbook states for populated rows, empty, loading, stream error, club-name loading/error, past/saved row statuses, text scale, and dark theme variants."
+    },
+    {
+      "id": "DS-SAVED-EVENTS-002",
+      "status": "closed",
+      "nextAction": "Closed by deterministic Saved Events captures for uid-missing fallback, empty/deleted-doc fallback, loading, error, club-name loading/error, past-only, text scale, and paired light/dark output."
+    },
+    {
+      "id": "DS-SAVED-EVENTS-003",
+      "status": "closed",
+      "nextAction": "Closed by one CatchRouteScaffold title plus SavedEventsAgendaList, SavedEventsLoading, SavedEventsError, SavedEventsOrganizerNamesErrorState, SavedEventsMessage, and SavedEventsListState provider-free section boundaries."
+    },
+    {
+      "id": "DS-SAVED-EVENTS-004",
+      "status": "blocked",
+      "nextAction": "Canonical Saved Events List reference export is blocked until design provides a standalone Saved Events screen source; the current Claude bundle only exposes dashboard entry points."
+    }
+  ]
+}

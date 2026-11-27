@@ -9,6 +9,7 @@
         "website/src/features/**",
         "admin/src/features/**",
         "design/screens/catch.screens.json",
+        "design/screens/registry/**",
         "test/**"
       ],
       "instruction": "Every pending user operation must declare one integrity policy. Frozen snapshots disable request-defining inputs, conflicting actions, mutation-reset callbacks, and unsafe route exits until settlement. Versioned snapshots require immutable generations plus stale-result rejection or cancellation and tests. Independently keyed concurrency requires distinct typed scope keys and separate pending/error surfaces. A loading button alone is not sufficient; controllers must also deduplicate duplicate dispatches or use an equivalent idempotency boundary."

@@ -1,0 +1,513 @@
+{
+  "id": "screen.notifications.list",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchLegacyTopBar",
+    "owner": "CatchLegacyTopBar",
+    "reason": "The pushed Activity route owns canonical compact route chrome."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Notifications List",
+  "owner": "dashboard",
+  "priority": "P3",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "notificationsScreen",
+      "path": "/notifications",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/dashboard/presentation/activity_screen.dart",
+    "symbol": "ActivityScreen"
+  },
+  "stateController": {
+    "primary": "ActivityScreen + uidProvider + watchActivityNotificationsProvider + ActivityController.markAllRead",
+    "files": [
+      {
+        "file": "lib/dashboard/presentation/activity_screen.dart",
+        "symbol": "ActivityScreen"
+      },
+      {
+        "file": "lib/dashboard/presentation/activity_controller.dart",
+        "symbol": "ActivityController"
+      },
+      {
+        "file": "lib/dashboard/presentation/notifications_list_state.dart",
+        "symbol": "NotificationsListState"
+      },
+      {
+        "file": "lib/dashboard/presentation/widgets/activity_section.dart",
+        "symbol": "ActivitySection"
+      },
+      {
+        "file": "lib/contexts/messaging/data/activity_notification_repository.dart",
+        "symbol": "watchActivityNotifications"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/dashboard/presentation/activity_controller.dart",
+        "symbol": "ActivityController"
+      },
+      {
+        "file": "lib/contexts/messaging/data/activity_notification_repository.dart",
+        "symbol": "ActivityNotificationRepository"
+      }
+    ],
+    "notes": "notificationsScreen is the ActivityScreen nested under the Dashboard shell route. It watches uidProvider and activity notifications at the route edge, resolves a NotificationsListState with injected clock/grouping, delegates provider-free body rendering to ActivitySection.fromState, and keeps mark-all-read plus route-opening side effects in the route/controller boundary."
+  },
+  "designRefs": [
+    {
+      "id": "repo.dashboard-activity-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/dashboard/dashboard_screen_test.dart",
+      "notes": "Dashboard tests cover notifications Activity route grouping and manual Mark all read behavior."
+    },
+    {
+      "id": "claude.notifications-list",
+      "kind": "claude",
+      "status": "available",
+      "notes": "Canonical Notifications Activity Claude template exported, masked, manifest-registered, and wired to the notifications_activity capture for advisory comparison.",
+      "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-notifications/Notifications.dc.html"
+    },
+    {
+      "id": "generated.notifications-activity-reference",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/screen.notifications.list/notifications_activity.png",
+      "notes": "390x812 Notifications List notifications_activity PNG reference exported from the Claude template."
+    },
+    {
+      "id": "generated.notifications-list-reference-manifest",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/manifest.json",
+      "notes": "Reference-screen manifest wiring Notifications List notifications_activity to notifications_activity for advisory pixel comparison."
+    }
+  ],
+  "captures": [
+    {
+      "id": "notifications_activity",
+      "status": "captured",
+      "notes": "Activity notifications fixture with unread/read rows and event context."
+    },
+    {
+      "id": "notifications_uid_loading",
+      "status": "captured",
+      "notes": "Activity route capture for uidProvider loading under the Activity top bar."
+    },
+    {
+      "id": "notifications_uid_error",
+      "status": "captured",
+      "notes": "Activity route capture for uidProvider failure with explicit auth-context retry."
+    },
+    {
+      "id": "notifications_signed_out",
+      "status": "captured",
+      "notes": "Activity route capture for signed-out or missing uid state."
+    },
+    {
+      "id": "notifications_activity_loading",
+      "status": "captured",
+      "notes": "Activity route capture for notification stream loading row."
+    },
+    {
+      "id": "notifications_activity_error",
+      "status": "captured",
+      "notes": "Activity route capture for notification stream error retry surface."
+    },
+    {
+      "id": "notifications_empty",
+      "status": "captured",
+      "notes": "Activity route capture for empty visible activity."
+    },
+    {
+      "id": "notifications_text_scale_2",
+      "status": "captured",
+      "notes": "Activity route capture for text scale 2.0 review."
+    },
+    {
+      "id": "notifications_reduced_motion",
+      "status": "captured",
+      "notes": "Activity route capture for reduced-motion review."
+    },
+    {
+      "id": "notifications_mark_all_read_pending",
+      "status": "captured",
+      "notes": "Activity route capture with ActivityController.markAllReadMutation pending and the top-bar action disabled."
+    },
+    {
+      "id": "notifications_mark_all_read_error",
+      "status": "captured",
+      "notes": "Activity route capture with mark-all-read mutation failure surfaced through branded snackbar feedback."
+    },
+    {
+      "id": "notifications_deep_link_error",
+      "status": "captured",
+      "notes": "Activity route capture with notification deep-link failure surfaced through branded snackbar feedback."
+    }
+  ],
+  "states": [
+    {
+      "id": "uid_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "uidProvider loading renders the Activity route's notification-row skeleton through _ActivityScreenLoading.",
+      "captureIds": [
+        "notifications_uid_loading"
+      ],
+      "nextAction": "Review loading capture before strict visual comparison.",
+      "previewIds": [
+        "ActivityScreen/Screen states"
+      ]
+    },
+    {
+      "id": "uid_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "uidProvider failure renders CatchErrorState with AppErrorContext.auth and an identity retry instead of ActivitySignedOutEmptyState.",
+      "captureIds": [
+        "notifications_uid_error"
+      ],
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Keep identity failure visually distinct from the successfully resolved signed-out state.",
+      "previewIds": [
+        "ActivityScreen/Screen states"
+      ]
+    },
+    {
+      "id": "signed_out",
+      "kind": "permission",
+      "status": "captured",
+      "source": "A successfully resolved null uid alone renders ActivitySignedOutEmptyState; uidProvider failures use the separate uid_error state.",
+      "captureIds": [
+        "notifications_signed_out"
+      ],
+      "nextAction": "Separately confirm whether a real signed-out session should redirect through the shell.",
+      "previewIds": [
+        "ActivityScreen/Screen states"
+      ]
+    },
+    {
+      "id": "activity_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "ActivitySection renders a compact CatchSurface loading row while watchActivityNotificationsProvider is loading.",
+      "captureIds": [
+        "notifications_activity_loading"
+      ],
+      "nextAction": "Review loading row capture before strict visual comparison.",
+      "previewIds": [
+        "ActivityScreen/Screen states",
+        "ActivitySection/Section states"
+      ]
+    },
+    {
+      "id": "activity_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "ActivitySection renders CatchErrorState (inline/compact mode) with retry invalidation when notification loading fails.",
+      "captureIds": [
+        "notifications_activity_error"
+      ],
+      "nextAction": "Define offline-specific copy if generic Activity unavailable copy is not enough.",
+      "previewIds": [
+        "ActivityScreen/Screen states",
+        "ActivitySection/Section states"
+      ]
+    },
+    {
+      "id": "empty_activity",
+      "kind": "empty",
+      "status": "captured",
+      "source": "No visible notifications render No new activity through CatchEmptyState.",
+      "captureIds": [
+        "notifications_empty"
+      ],
+      "nextAction": "Review empty capture before strict visual comparison.",
+      "previewIds": [
+        "ActivitySection/Section states"
+      ]
+    },
+    {
+      "id": "notifications_activity",
+      "kind": "populated",
+      "status": "captured",
+      "source": "notifications_activity renders grouped backend-owned notifications with Today, Yesterday, and This week headings.",
+      "captureIds": [
+        "notifications_activity"
+      ],
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Notifications Activity now has a manifest-registered design reference, deterministic populated/mutation/deep-link capture set, and route-state adapter.",
+      "previewIds": [
+        "ActivityScreen/Screen states",
+        "ActivitySection/Section states"
+      ]
+    },
+    {
+      "id": "read_unread_rows",
+      "kind": "populated",
+      "status": "tested",
+      "source": "NotificationRow changes title/time color for unread rows and removes legacy dashboard event sections from Activity.",
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Add Widgetbook row states for unread/read, long copy, divider, and each notification type.",
+      "previewIds": [
+        "ActivitySection/Section states",
+        "NotificationRow/Row states"
+      ]
+    },
+    {
+      "id": "mark_all_read",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "NotificationsListState exposes unread notifications, top-bar action visibility, and pending label state while ActivityController marks only unread notifications as read.",
+      "captureIds": [
+        "notifications_mark_all_read_pending",
+        "notifications_mark_all_read_error"
+      ],
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Keep mutation lifecycle captures current while visual parity edits continue.",
+      "previewIds": [
+        "ActivityScreen/Screen states"
+      ]
+    },
+    {
+      "id": "row_navigation_targets",
+      "kind": "populated",
+      "status": "tested",
+      "source": "NotificationsListState derives chat, event detail, or club detail paths from matchId, eventId+organizerId, or organizerId before ActivitySection renders provider-free rows.",
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Add more malformed/deleted route-target variants only if product wants disabled rows instead of snackbar fallback.",
+      "previewIds": [
+        "NotificationRow/Row states"
+      ]
+    },
+    {
+      "id": "deep_link_failures",
+      "kind": "error",
+      "status": "captured",
+      "source": "ActivityScreen owns row route side effects; failed notification routes are caught and surfaced through branded snackbar feedback instead of disappearing silently.",
+      "captureIds": [
+        "notifications_deep_link_error"
+      ],
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Keep failure feedback capture current while visual parity edits continue.",
+      "previewIds": [
+        "NotificationRow/Row states"
+      ]
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Text scale 2.0 Notifications capture covers group headings, row title/body/time, and the top-bar action.",
+      "captureIds": [
+        "notifications_text_scale_2"
+      ],
+      "nextAction": "Review text-scale capture before strict visual comparison.",
+      "previewIds": [
+        "ActivityScreen/Screen states",
+        "ActivitySection/Section states",
+        "NotificationRow/Row states"
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Reduced-motion Notifications capture disables route/body animations for review.",
+      "captureIds": [
+        "notifications_reduced_motion"
+      ],
+      "nextAction": "Review reduced-motion capture before strict visual comparison.",
+      "previewIds": [
+        "ActivityScreen/Screen states",
+        "ActivitySection/Section states",
+        "NotificationRow/Row states"
+      ]
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "Notifications rows use token colors and the capture runner emits paired light/dark outputs for the populated activity fixture.",
+      "captureIds": [
+        "notifications_activity"
+      ],
+      "nextAction": "Keep paired light/dark outputs stable before strict visual comparison.",
+      "previewIds": [
+        "ActivityScreen/Screen states",
+        "ActivitySection/Section states",
+        "NotificationRow/Row states"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "ActivityScreen watches uid/activity providers at the route edge, builds NotificationsListState with an injected clock, owns mark-all-read and row-route side effects, and composes ActivitySection.fromState for provider-free body rendering.",
+    "targetLayout": "Continue using NotificationsListState as the route adapter while future visual parity edits adjust only provider-free sections, rows, and references.",
+    "sections": [
+      {
+        "id": "section.notifications.adapter",
+        "name": "Notifications route adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "NotificationsListState"
+        ],
+        "flutter": {
+          "file": "lib/dashboard/presentation/notifications_list_state.dart",
+          "symbol": "NotificationsListState"
+        },
+        "currentOwner": "NotificationsListState",
+        "targetOwner": "NotificationsListState adapter",
+        "dependencies": [
+          "catch.top_bar"
+        ],
+        "states": [
+          "uid_loading",
+          "signed_out",
+          "notifications_activity",
+          "mark_all_read"
+        ],
+        "migration": "Closed: NotificationsListState owns uid/provider waves, unread derivation, injected-clock grouping, mark-all-read display state, retry targets, and row route intents.",
+        "previewIds": [
+          "ActivityScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.notifications.activity_body",
+        "name": "Activity body state section",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ActivitySection"
+        ],
+        "flutter": {
+          "file": "lib/dashboard/presentation/widgets/activity_section.dart",
+          "symbol": "ActivitySection"
+        },
+        "currentOwner": "ActivitySection.fromState",
+        "targetOwner": "provider-free activity body state section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "activity_loading",
+          "activity_error",
+          "empty_activity",
+          "notifications_activity"
+        ],
+        "migration": "Closed for the route path: ActivitySection.fromState receives adapter state, retry callbacks, and route callbacks. The legacy uid constructor remains for existing Widgetbook/lab call sites.",
+        "previewIds": [
+          "ActivitySection/Section states"
+        ]
+      },
+      {
+        "id": "section.notifications.day_groups",
+        "name": "Notification day groups",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "NotificationDayList"
+        ],
+        "flutter": {
+          "file": "lib/dashboard/presentation/widgets/activity_section.dart",
+          "symbol": "NotificationDayList"
+        },
+        "currentOwner": "NotificationsListState + _NotificationDayGroups",
+        "targetOwner": "provider-free notification day groups",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "notifications_activity",
+          "read_unread_rows",
+          "text_scale_2"
+        ],
+        "migration": "Closed: grouping labels and relative time are derived from an injected clock before provider-free day groups render.",
+        "previewIds": [
+          "ActivitySection/Section states"
+        ]
+      },
+      {
+        "id": "section.notifications.row",
+        "name": "Notification row",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "NotificationRow"
+        ],
+        "flutter": {
+          "file": "lib/dashboard/presentation/widgets/activity_section.dart",
+          "symbol": "NotificationRow"
+        },
+        "currentOwner": "NotificationRow",
+        "targetOwner": "provider-free notification row",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "read_unread_rows",
+          "row_navigation_targets",
+          "deep_link_failures"
+        ],
+        "migration": "Closed: NotificationRow receives display rows with type, copy, unread state, divider, and route intent from NotificationsListState.",
+        "previewIds": [
+          "NotificationRow/Row states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DP-NOTIFICATIONS-001",
+      "status": "closed",
+      "nextAction": "Widgetbook now covers ActivityScreen, ActivitySection, and NotificationRow loading, empty, error, read/unread, long-copy, row-route, and addon-driven text scale, reduced motion, and light/dark states."
+    },
+    {
+      "id": "DP-NOTIFICATIONS-002",
+      "status": "closed",
+      "nextAction": "Closed by deterministic captures for mark-all-read pending/error UI and notification deep-link failure feedback, alongside the existing loading, empty, error, signed-out, text scale, reduced-motion, and paired light/dark captures."
+    },
+    {
+      "id": "DP-NOTIFICATIONS-003",
+      "status": "closed",
+      "nextAction": "Closed by NotificationsListState adapter with injected clock/grouping, explicit unread action lifecycle, row route intents, and provider-free ActivitySection.fromState composition."
+    },
+    {
+      "id": "DP-NOTIFICATIONS-004",
+      "status": "closed",
+      "nextAction": "Closed. Activity preserves uidProvider failure as a branded auth error with retry, keeps resolved null uid as the distinct signed-out state, and has focused screen proof that identity failure never renders No activity yet."
+    }
+  ]
+}

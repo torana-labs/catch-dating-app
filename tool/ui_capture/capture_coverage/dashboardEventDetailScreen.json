@@ -1,0 +1,7 @@
+{
+  "routeId": "dashboardEventDetailScreen",
+  "status": "alias",
+  "priority": "P1",
+  "canonicalRouteId": "eventDetailScreen",
+  "reason": "Same event detail surface reached from the dashboard."
+}

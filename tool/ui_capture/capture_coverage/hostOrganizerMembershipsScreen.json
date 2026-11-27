@@ -1,0 +1,9 @@
+{
+  "routeId": "hostOrganizerMembershipsScreen",
+  "status": "captured",
+  "priority": "P2",
+  "reason": "A live memberships programme with a monthly and a capped founding plan, through the production screen with a fixed controller.",
+  "captureIds": [
+    "host_organizer_memberships"
+  ]
+}

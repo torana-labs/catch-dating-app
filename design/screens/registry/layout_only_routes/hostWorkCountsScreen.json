@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostWorkCountsScreen"
+      ],
+      "file": "lib/hosts/programmes/planner/programme_share_screen.dart",
+      "symbol": "HostProgrammeShareScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
+}

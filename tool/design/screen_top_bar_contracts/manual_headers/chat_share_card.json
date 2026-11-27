@@ -1,0 +1,7 @@
+{
+  "path": "lib/pages/chat/widgets/chat_share_card.dart",
+  "symbol": "ShareCardHeader",
+  "role": "content",
+  "owner": "CatchTextStyles.titleL",
+  "reason": "Share-card identity copy is content inside a message card, not route navigation chrome."
+}

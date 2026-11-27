@@ -1,0 +1,23 @@
+{
+  "routeId": "publicProfileScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "public_profile_member",
+    "public_profile_loading",
+    "public_profile_initial_fallback_loading",
+    "public_profile_error",
+    "public_profile_offline",
+    "public_profile_unavailable",
+    "public_profile_own_profile",
+    "public_profile_block_pending",
+    "public_profile_report_pending",
+    "public_profile_report_success_snackbar",
+    "public_profile_report_failure_snackbar",
+    "public_profile_report_sheet",
+    "public_profile_block_confirmation",
+    "public_profile_text_scale_2",
+    "public_profile_reduced_motion"
+  ],
+  "reason": "Public-profile captures now cover loaded member profile plus deterministic loading, initial-profile fallback, error, offline, unavailable, own-profile, block pending overlay, report pending overlay, report success/failure snackbars, report sheet, block confirmation, text scale, reduced motion, and paired light/dark variants."
+}

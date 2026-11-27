@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/pages/celebration/celebration_screen.dart",
+      "symbol": "_CatchCelebrationScreenState",
+      "family": "standalone",
+      "expression": "CatchScaffold.standalone",
+      "bodyGeometry": "full-bleed",
+      "topEdge": "body-owned"
+    }
+  ],
+  "reason": "The no-payment join completion pushes the canonical standalone celebration surface."
+}

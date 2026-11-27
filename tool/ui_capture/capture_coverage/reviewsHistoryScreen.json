@@ -1,0 +1,18 @@
+{
+  "routeId": "reviewsHistoryScreen",
+  "status": "captured",
+  "priority": "P3",
+  "captureIds": [
+    "reviews_history_signed_out",
+    "reviews_history_profile_loading",
+    "reviews_history_profile_error",
+    "reviews_history_reviews_loading",
+    "reviews_history_reviews_error",
+    "reviews_history_empty",
+    "reviews_history_list",
+    "reviews_history_missing_event_context",
+    "reviews_history_text_scale_2",
+    "reviews_history_reduced_motion"
+  ],
+  "reason": "Reviews History captures now cover signed-out, profile loading/error, reviews loading/error, empty, populated rows, missing event-context fallback, text scale 2.0, reduced motion, and paired light/dark output from the populated fixture."
+}

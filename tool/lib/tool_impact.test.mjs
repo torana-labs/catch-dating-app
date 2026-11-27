@@ -187,6 +187,16 @@ test("design authority ledgers select their exact consuming checks", () => {
       ],
     ],
     [
+      // One file per screen: an entry selects the same checks as the index.
+      "design/screens/registry/screens/screen.club.detail.json",
+      [
+        "architecture:ui-composition-contracts",
+        "design:screen-contracts",
+        "design:screen-coverage",
+        "design:widgetbook-contract-refs",
+      ],
+    ],
+    [
       "design/screens/catch.screens.schema.json",
       ["architecture:ui-composition-contracts", "design:screen-contracts"],
     ],
@@ -212,8 +222,21 @@ test("design authority ledgers select their exact consuming checks", () => {
       ["architecture:ui-composition-contracts"],
     ],
     [
+      "tool/design/screen_top_bar_contracts/contracts/activity_screen.json",
+      ["architecture:ui-composition-contracts", "design:screen-top-bar-contracts"],
+    ],
+    [
       "tool/ui_capture/capture_coverage.json",
       ["design:screen-coverage", "ui-capture:coverage"],
+    ],
+    [
+      "tool/ui_capture/capture_coverage/hostTodayScreen.json",
+      ["design:screen-coverage", "ui-capture:coverage", "design:host-shell-coverage"],
+    ],
+    [
+      "tool/design/lib/screen_registries.mjs",
+      ["architecture:ui-composition-contracts", "design:screen-contracts", "design:screen-coverage",
+        "design:screen-top-bar-contracts", "ui-capture:coverage"],
     ],
   ]);
 

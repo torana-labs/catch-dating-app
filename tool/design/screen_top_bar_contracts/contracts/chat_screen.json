@@ -1,0 +1,8 @@
+{
+  "path": "lib/pages/chat/chat_screen.dart",
+  "role": "identity",
+  "expression": "CatchLegacyTopBar.identity",
+  "owner": "CatchLegacyTopBar",
+  "surface": "CatchRouteScaffold",
+  "leading": "backUnlessEmbedded"
+}

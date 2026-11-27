@@ -1,0 +1,6 @@
+{
+  "path": "lib/launch_access/presentation/launch_access_application_screen.dart",
+  "role": "compact",
+  "expression": "CatchLegacyTopBar.route",
+  "owner": "CatchLegacyTopBar"
+}

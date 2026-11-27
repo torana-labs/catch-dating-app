@@ -28,7 +28,7 @@ previews, and drift-prevention checks.
 | `tool/design/check_widgetbook_contract_refs.mjs` | Validates component contracts and contract preview ids against generated Widgetbook directories. |
 | `tool/design/check_widgetbook_coverage.mjs` | Computes role-derived Widgetbook coverage directly from current Dart, Widgetbook, classification, and decision sources. `--check` is authoritative; `--json` or `--write` is for ephemeral review output, never a tracked report. |
 | `tool/design/check_screen_contract_hygiene.mjs` | Advisory scanner for raw Material controls and hand-rolled visual values in contracted screen implementation files. Masks comments/string literals, ignores `Colors.transparent`, and prints sample line refs so findings are reviewable before promotion to lints. |
-| `tool/design/screen_top_bar_contracts.json` | Exhaustive role classification for every Flutter `Scaffold.appBar`, every consumer/Host root-screen header surface, compact title policy, canonical zero-inset geometry, and reviewed raw media-hero exceptions. New app bars and shell branches are unregistered by default and fail the gate. |
+| `tool/design/screen_top_bar_contracts.json` and `tool/design/screen_top_bar_contracts/` (one file per root header, contract and manual header) | Exhaustive role classification for every Flutter `Scaffold.appBar`, every consumer/Host root-screen header surface, compact title policy, canonical zero-inset geometry, and reviewed raw media-hero exceptions. New app bars and shell branches are unregistered by default and fail the gate. |
 | `tool/design/check_screen_top_bar_contracts.mjs` | Blocking screen-chrome gate. Rejects unregistered/raw/wrong app-bar owners, incomplete root-screen coverage, compact/workspace custom-title, retired typography/geometry overrides, root headers that bypass `CatchTopBar.screen`/`CatchTopBar.primaryRail`, local geometry/text-scaling overrides, and a nonzero canonical post-safe-area inset. |
 | `tool/design/check_screen_gutters.mjs` | Advisory inventory for `EdgeInsets` constructors across `lib/**/presentation/**/*.dart`, `apps/*/lib/**/*.dart` and contracted screen implementation files. Classifies likely screen-gutter candidates separately from lower-confidence local spacing so manual UI reviews have broad evidence instead of a narrow lint. |
 | `design/reference_screens/manifest.json` | Exported design-reference PNG manifest used for advisory pixel comparison. |
@@ -78,12 +78,13 @@ ledgers in the same PR:
    `planned` remains a design-parity lifecycle value, it cannot land through the
    zero-debt composition gate. A rendered route must be `contracted` or
    `excluded`; a redirect-only route must be `alias`.
-3. Add or update the route in `tool/ui_capture/capture_coverage.json` with one
-   of the explicit capture decisions: `captured`, `alias`, `planned`, or
-   `excluded`.
-4. For a rendered `builder` or `pageBuilder` route, add typed owners in
-   `design/screens/catch.screens.json`: use `layoutContracts` for a contracted
-   product screen or `layoutOnlyRoutes` for a rendered design-parity exclusion.
+3. Add or update the route's file, `tool/ui_capture/capture_coverage/<routeId>.json`,
+   with one of the explicit capture decisions: `captured`, `alias`, `planned`,
+   or `excluded`.
+4. For a rendered `builder` or `pageBuilder` route, add a typed owner file
+   under `design/screens/registry/`: `layout_contracts/<routeId>.json` for a
+   contracted product screen or `layout_only_routes/<routeId>.json` for a
+   rendered design-parity exclusion.
    Every registered owner declaration must be statically reachable from the
    generated presentation target, and every statically reachable
    widget-producing build/return terminal must resolve to the registered layout

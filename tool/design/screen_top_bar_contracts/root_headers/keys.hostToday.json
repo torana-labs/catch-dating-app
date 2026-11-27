@@ -1,0 +1,11 @@
+{
+  "branchKey": "keys.hostToday",
+  "routeName": "Routes.hostTodayScreen.name",
+  "surfaces": [
+    {
+      "path": "lib/hosts/today/host_today_screen.dart",
+      "symbol": "_HostTodayScreenState",
+      "owner": "CatchTopBar"
+    }
+  ]
+}

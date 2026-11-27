@@ -4,6 +4,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 import {repoRoot} from "../lib/repo_paths.mjs";
+import {readScreenRegistry, screenRegistrySpec} from "./lib/screen_registries.mjs";
 
 const defaultMatrixPath = "design/public_surface_behavior.json";
 const defaultSchemaPath = "design/public_surface_behavior.schema.json";
@@ -34,6 +35,18 @@ export function validatePublicSurfaceBehavior({
 
   const textFor = (repoPath, label) => {
     if (textCache.has(repoPath)) return textCache.get(repoPath);
+    // The screen registry is one file per entry. Its index stands for the
+    // whole registry, read merged, so evidence and screen ids see every entry.
+    if (repoPath === screenRegistrySpec.index) {
+      try {
+        const source = JSON.stringify(readScreenRegistry(root), null, 2);
+        textCache.set(repoPath, source);
+        return source;
+      } catch (error) {
+        errors.push(`${label}: ${repoPath}: ${error.message}`);
+        return null;
+      }
+    }
     const absolutePath = safeRepoPath(root, repoPath);
     if (!absolutePath) {
       errors.push(`${label}: invalid repo-relative path ${repoPath}.`);

@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "messagingPermissionsScreen"
+      ],
+      "file": "lib/safety/presentation/messaging_permissions_screen.dart",
+      "symbol": "MessagingPermissionsScreen",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Private account consent management uses canonical pushed-route chrome and one constrained body, with focused withdrawal, pagination and large-text tests."
+}

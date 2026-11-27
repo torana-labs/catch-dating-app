@@ -1,0 +1,13 @@
+{
+  "routeId": "hostCreateOrganizerScreen",
+  "status": "captured",
+  "priority": "P2",
+  "captureIds": [
+    "host_onboarding_start_page",
+    "host_onboarding_details",
+    "host_onboarding_payments",
+    "host_onboarding_done",
+    "host_media_gallery_manager"
+  ],
+  "reason": "Host app create-club route now has deterministic captures for basics, basics validation errors, separate logo and picked gallery media, the shared 24-photo scalable gallery manager, restored draft, details, host defaults, Event Success defaults, save-draft pending/error, submit pending/error, offline submit error, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are reference-specific variants."
+}

@@ -1,0 +1,11 @@
+{
+  "branchKey": "keys.explore",
+  "routeName": "Routes.exploreScreen.name",
+  "surfaces": [
+    {
+      "path": "lib/explore/presentation/widgets/explore_header.dart",
+      "symbol": "_ExploreDiscoveryTopBar",
+      "owner": "CatchLegacyTopBar.screen"
+    }
+  ]
+}

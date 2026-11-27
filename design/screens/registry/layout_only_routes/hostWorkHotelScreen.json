@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostWorkHotelScreen"
+      ],
+      "file": "lib/hosts/programmes/staff/staff_hotel_desk_screen.dart",
+      "symbol": "_StaffHotelDeskScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
+}

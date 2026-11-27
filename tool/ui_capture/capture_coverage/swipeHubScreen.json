@@ -1,0 +1,7 @@
+{
+  "routeId": "swipeHubScreen",
+  "status": "alias",
+  "priority": "P1",
+  "canonicalRouteId": "dashboardScreen",
+  "reason": "Retired Catches hub path now redirects to Dashboard Home after the Catches tab removal; hub captures remain historical/preview evidence until the Home+Catches absorption pass removes them."
+}

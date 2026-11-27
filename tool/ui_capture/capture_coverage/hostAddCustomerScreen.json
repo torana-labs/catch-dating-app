@@ -1,0 +1,10 @@
+{
+  "routeId": "hostAddCustomerScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "host_customer_add",
+    "host_add_person"
+  ],
+  "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts."
+}

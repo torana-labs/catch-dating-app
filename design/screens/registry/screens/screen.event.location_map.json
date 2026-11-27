@@ -1,0 +1,437 @@
+{
+  "id": "screen.event.location_map",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "shell",
+    "expression": "shell-owned",
+    "owner": "AdaptiveTabScaffold",
+    "reason": "The route body relies on shell chrome or a registered nested composition owner."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Event Location Map",
+  "owner": "events",
+  "priority": "P3",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "eventLocationMapScreen",
+      "path": "/events/:eventId/location",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/events/presentation/event_location_map_screen.dart",
+    "symbol": "EventLocationMapRouteScreen"
+  },
+  "stateController": {
+    "primary": "EventLocationMapRouteScreen + eventDetailViewModelProvider + EventLocationMapState + EventLocationMapScreen + externalLinkControllerProvider",
+    "files": [
+      {
+        "file": "lib/events/presentation/event_location_map_screen.dart",
+        "symbol": "EventLocationMapRouteScreen"
+      },
+      {
+        "file": "lib/events/presentation/event_location_map_state.dart",
+        "symbol": "EventLocationMapState"
+      },
+      {
+        "file": "lib/pages/event/event_detail_view_model.dart",
+        "symbol": "EventDetailViewModel"
+      },
+      {
+        "file": "lib/events/presentation/widgets/event_pins_map.dart",
+        "symbol": "EventPinsMap"
+      },
+      {
+        "file": "packages/platform/lib/device/external_links.dart",
+        "symbol": "ExternalLinkController"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "packages/platform/lib/device/external_links.dart",
+        "symbol": "ExternalLinkController"
+      }
+    ],
+    "notes": "EventLocationMapRouteScreen resolves the event by id through the Event Detail view-model seam, renders chromeless loading/error/not-found states, rejects events without exact starting coordinates, resolves EventLocationMapState, owns the external directions side effect, and delegates provider-free pinned map rendering to EventLocationMapScreen."
+  },
+  "designRefs": [
+    {
+      "id": "repo.event-location-map-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/events/events_widgets_test.dart",
+      "notes": "Event widget tests cover the pinned map body, exact-location label, floating back control, route-owned unavailable-coordinate branch, provider-free state adapter, and directions launch action."
+    },
+    {
+      "id": "claude.event-location-map",
+      "kind": "claude",
+      "status": "blocked",
+      "notes": "Blocked on canonical Event Location Map route source/export. The local Claude bundle has MapCard, MapPicker, and MapPin primitives, but no standalone full-screen event-location map design source."
+    }
+  ],
+  "captures": [
+    {
+      "id": "event_location_map",
+      "status": "captured",
+      "notes": "Deterministic no-network map fixture for one pinned event."
+    },
+    {
+      "id": "event_location_map_loading",
+      "status": "captured",
+      "notes": "Route-wrapper loading state with chromeless map scaffold and floating map controls."
+    },
+    {
+      "id": "event_location_map_error",
+      "status": "captured",
+      "notes": "Route-wrapper data-load error state using CatchLocalizedErrorState and retry copy."
+    },
+    {
+      "id": "event_location_map_not_found",
+      "status": "captured",
+      "notes": "Route-wrapper missing/deleted event state."
+    },
+    {
+      "id": "event_location_map_no_coordinate",
+      "status": "captured",
+      "notes": "No exact coordinate state with branded Location unavailable copy."
+    },
+    {
+      "id": "event_location_map_directions_pending",
+      "status": "captured",
+      "notes": "Pinned map with the singleton directions launch held pending and its CTA showing progress."
+    },
+    {
+      "id": "event_location_map_directions_failure",
+      "status": "captured",
+      "notes": "Pinned map with a failed platform directions launch and honest visible snackbar feedback."
+    },
+    {
+      "id": "event_location_map_text_scale_2",
+      "status": "captured",
+      "notes": "Pinned map summary and directions action under 2.0 text scale."
+    },
+    {
+      "id": "event_location_map_reduced_motion",
+      "status": "captured",
+      "notes": "Pinned map fixture with reduced-motion media query enabled."
+    }
+  ],
+  "states": [
+    {
+      "id": "route_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "eventDetailViewModelProvider loading renders EventLocationMapLoadingBody inside _ChromelessMapScaffold with floating map controls, a map-shaped skeleton, and a directions-card placeholder.",
+      "tests": [
+        "test/events/events_widgets_test.dart"
+      ],
+      "nextAction": "Keep the route loading capture current while later map-reference masks are added.",
+      "previewIds": [
+        "EventLocationMapRouteScreen/Route states"
+      ],
+      "captureIds": [
+        "event_location_map_loading"
+      ]
+    },
+    {
+      "id": "route_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "Event view-model errors render CatchLocalizedErrorState with AppErrorContext.event and retry invalidation.",
+      "nextAction": "Keep the branded route error capture current and reuse the retry branch in the future route adapter.",
+      "previewIds": [
+        "EventLocationMapRouteScreen/Route states"
+      ],
+      "captureIds": [
+        "event_location_map_error"
+      ]
+    },
+    {
+      "id": "event_not_found",
+      "kind": "empty",
+      "status": "captured",
+      "source": "A null EventDetailViewModel event renders Event not found copy inside _ChromelessMapScaffold.",
+      "nextAction": "Keep the missing/deleted event capture current while route-state branching moves into an adapter.",
+      "previewIds": [
+        "EventLocationMapRouteScreen/Route states"
+      ],
+      "captureIds": [
+        "event_location_map_not_found"
+      ]
+    },
+    {
+      "id": "no_exact_coordinate",
+      "kind": "empty",
+      "status": "captured",
+      "source": "EventLocationMapRouteScreen gates unavailable coordinates from EventLocationMapState; direct EventLocationMapScreen fixture mode renders the same Location unavailable copy.",
+      "nextAction": "Keep no-coordinate copy aligned with future map reference masks.",
+      "previewIds": [
+        "EventLocationMapScreen/Map states"
+      ],
+      "captureIds": [
+        "event_location_map_no_coordinate"
+      ],
+      "tests": [
+        "test/events/events_widgets_test.dart"
+      ]
+    },
+    {
+      "id": "pinned_location",
+      "kind": "populated",
+      "status": "captured",
+      "source": "event_location_map renders EventPinsMap centered on the exact starting point with bottom location summary copy.",
+      "captureIds": [
+        "event_location_map"
+      ],
+      "tests": [
+        "test/events/events_widgets_test.dart"
+      ],
+      "nextAction": "Compare pinned map layout and summary card against exported references.",
+      "previewIds": [
+        "EventLocationMapRouteScreen/Route states",
+        "EventLocationMapScreen/Map states"
+      ]
+    },
+    {
+      "id": "directions_action",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Get directions invokes a route-owned singleton launch for the current directions URI; EventLocationMapRouteScreen shows button progress and rejects duplicate taps while pending, then restores the action and reports false or thrown launcher failures.",
+      "captureIds": [
+        "event_location_map_directions_pending",
+        "event_location_map_directions_failure"
+      ],
+      "tests": [
+        "test/events/events_widgets_test.dart"
+      ],
+      "nextAction": "Keep success, false, thrown-error, pending, and duplicate-tap tests current with the deterministic pending/failure captures.",
+      "previewIds": [
+        "EventLocationMapScreen/Map states"
+      ]
+    },
+    {
+      "id": "network_tiles_disabled_capture",
+      "kind": "populated",
+      "status": "captured",
+      "source": "The capture fixture passes enableNetworkTiles: false so EventPinsMap uses the deterministic placeholder map fallback.",
+      "captureIds": [
+        "event_location_map"
+      ],
+      "nextAction": "Keep map network tiles disabled in captures and add pixel masks for any dynamic map areas.",
+      "previewIds": [
+        "EventLocationMapScreen/Map states"
+      ]
+    },
+    {
+      "id": "map_masking",
+      "kind": "populated",
+      "status": "planned",
+      "source": "Pixel comparison has no exported reference mask for map tiles, marker animation, or platform map chrome yet.",
+      "nextAction": "Create design/reference_screens mask metadata for map canvas, status bar, marker info windows, and safe-area variance.",
+      "previewIds": [
+        "EventLocationMapScreen/Map states"
+      ]
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "event_location_map_text_scale_2 captures the Event Location Map route at TextScaler 2.0.",
+      "nextAction": "Review text-scale capture before strict visual comparison.",
+      "previewIds": [
+        "EventLocationMapRouteScreen/Route states",
+        "EventLocationMapScreen/Map states"
+      ],
+      "captureIds": [
+        "event_location_map_text_scale_2"
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Map camera/marker behavior and route transition have not been reviewed under reduced motion.",
+      "nextAction": "Review reduced-motion capture before strict visual comparison.",
+      "previewIds": [
+        "EventLocationMapRouteScreen/Route states",
+        "EventLocationMapScreen/Map states"
+      ],
+      "captureIds": [
+        "event_location_map_reduced_motion"
+      ]
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "The map body and location summary use Catch tokens but no paired light/dark captures exist.",
+      "nextAction": "The capture runner emits paired light and dark outputs for the pinned map fixture; keep both outputs stable before strict comparison.",
+      "previewIds": [
+        "EventLocationMapRouteScreen/Route states",
+        "EventLocationMapScreen/Map states"
+      ],
+      "captureIds": [
+        "event_location_map"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "EventLocationMapRouteScreen owns route event loading, error handling, coordinate gate, chromeless scaffold/floating controls, EventLocationMapState creation, and external directions intent before composing provider-free map chrome and bottom summary content.",
+    "targetLayout": "Event Location Map should keep EventLocationMapState as the provider-free adapter for coordinate availability, map fixture mode, summary rows, and directions intent while future visual parity work adds exported map masks and reference comparisons.",
+    "sections": [
+      {
+        "id": "section.event_location_map.adapter",
+        "name": "Event location map route adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "EventLocationMapState"
+        ],
+        "flutter": {
+          "file": "lib/events/presentation/event_location_map_screen.dart",
+          "symbol": "EventLocationMapRouteScreen"
+        },
+        "currentOwner": "EventLocationMapRouteScreen + eventDetailViewModelProvider",
+        "targetOwner": "EventLocationMapRouteScreen + EventLocationMapState",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "route_loading",
+          "route_error",
+          "event_not_found",
+          "pinned_location"
+        ],
+        "migration": "Route event lookup, coordinate availability, fixture mode, and directions callback are now behind the route/state boundary; keep future visual work provider-free.",
+        "previewIds": [
+          "EventLocationMapRouteScreen/Route states"
+        ]
+      },
+      {
+        "id": "section.event_location_map.canvas",
+        "name": "Pinned event map canvas",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "EventPinsMap"
+        ],
+        "flutter": {
+          "file": "lib/events/presentation/widgets/event_pins_map.dart",
+          "symbol": "EventPinsMap"
+        },
+        "currentOwner": "EventLocationMapScreen + EventPinsMap",
+        "targetOwner": "provider-free pinned event map canvas",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "pinned_location",
+          "network_tiles_disabled_capture",
+          "map_masking"
+        ],
+        "migration": "Keep EventPinsMap as the reusable map canvas while route-specific pin selection and masks live in the adapter.",
+        "previewIds": [
+          "EventLocationMapScreen/Map states"
+        ]
+      },
+      {
+        "id": "section.event_location_map.summary_card",
+        "name": "Location summary card",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "EventLocationSummaryCard"
+        ],
+        "flutter": {
+          "file": "lib/events/presentation/event_location_map_screen.dart",
+          "symbol": "EventLocationMapScreen"
+        },
+        "currentOwner": "EventLocationMapScreen",
+        "targetOwner": "provider-free location summary card",
+        "dependencies": [
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "pinned_location",
+          "directions_action",
+          "text_scale_2"
+        ],
+        "migration": "Location name, notes, coordinate availability, and directions URI now come from EventLocationMapState; visual edits should keep summary rendering provider-free.",
+        "previewIds": [
+          "EventLocationMapScreen/Map states"
+        ]
+      },
+      {
+        "id": "section.event_location_map.overlay_controls",
+        "name": "Floating map controls",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "MapOverlayTopBar"
+        ],
+        "flutter": {
+          "file": "lib/events/presentation/widgets/map_overlay_top_bar.dart",
+          "symbol": "MapOverlayTopBar"
+        },
+        "currentOwner": "MapOverlayTopBar",
+        "targetOwner": "provider-free floating map controls",
+        "dependencies": [
+          "catch.icon_button",
+          "catch.top_bar"
+        ],
+        "states": [
+          "route_loading",
+          "pinned_location",
+          "reduced_motion"
+        ],
+        "migration": "Keep floating back/trailing controls shared with map surfaces while route-specific behavior stays at the route boundary.",
+        "previewIds": [
+          "EventLocationMapRouteScreen/Route states",
+          "EventLocationMapScreen/Map states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DP-EVENT-MAP-001",
+      "status": "closed",
+      "nextAction": "Widgetbook now covers route loading/error/not-found, no coordinate, pinned map, summary card, disabled network tiles, and addon-driven text scale, reduced motion, and light/dark review states."
+    },
+    {
+      "id": "DP-EVENT-MAP-002",
+      "status": "closed",
+      "nextAction": "Closed by deterministic captures for route loading, route error, event not found, no coordinate, text scale, reduced motion, and paired light/dark output."
+    },
+    {
+      "id": "DP-EVENT-MAP-003",
+      "status": "blocked",
+      "nextAction": "Blocked/reference-only: EventLocationMapState is implemented and route/state captures exist, but exported map masks depend on a canonical standalone full-screen map reference. See DP-EVENT-MAP-004."
+    },
+    {
+      "id": "DP-EVENT-MAP-004",
+      "status": "blocked",
+      "nextAction": "Canonical Event Location Map reference export is blocked until design provides a standalone full-screen map route source; current Claude sources only provide MapCard, MapPicker, and MapPin primitives."
+    },
+    {
+      "id": "DP-EVENT-MAP-005",
+      "status": "closed",
+      "nextAction": "Closed. EventLocationMapRouteScreen awaits ExternalLinkController.openExternal, renders Get directions loading while the request is pending, rejects duplicate taps, restores the action afterward, and shows route-owned feedback for both false launcher results and thrown failures; focused widget tests prove success, false, error, and pending paths."
+    }
+  ]
+}

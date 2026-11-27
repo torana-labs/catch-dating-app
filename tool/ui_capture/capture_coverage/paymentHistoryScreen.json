@@ -1,0 +1,25 @@
+{
+  "routeId": "paymentHistoryScreen",
+  "status": "captured",
+  "priority": "P3",
+  "captureIds": [
+    "payment_history_uid_loading",
+    "payment_history_signed_out",
+    "payment_history_uid_error",
+    "payment_history_uid_offline",
+    "payment_history_loading",
+    "payment_history_error",
+    "payment_history_payments_offline",
+    "payment_history_empty",
+    "payment_history_populated",
+    "payment_history_receipt_sheet",
+    "payment_history_failed_signup_receipt_sheet",
+    "payment_history_support_snackbar",
+    "payment_history_missing_event_title",
+    "payment_history_event_title_loading",
+    "payment_history_event_title_error",
+    "payment_history_text_scale_2",
+    "payment_history_reduced_motion"
+  ],
+  "reason": "Payment History captures now cover uid loading/error/offline, signed-out, payments loading/error/offline, empty, populated mixed-status rows, receipt sheet, failed sign-up help sheet, support snackbar, event-title loading/error/missing states, text scale 2.0, reduced motion, and paired light/dark output from the populated fixture."
+}

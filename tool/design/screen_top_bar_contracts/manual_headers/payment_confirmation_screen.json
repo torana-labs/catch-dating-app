@@ -1,0 +1,7 @@
+{
+  "path": "lib/payments/presentation/payment_confirmation_screen.dart",
+  "symbol": "PaymentCheckoutHeader",
+  "role": "legacy",
+  "owner": "CatchTextStyles.headline",
+  "reason": "Checkout hero: event identity on the activity backdrop above the payment body; it owns no navigation. Named a Header in Phase 7b.2, which exposed headline typography that the content role does not allow; move it to titleL or a registered hero recipe."
+}

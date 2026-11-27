@@ -1,0 +1,17 @@
+{
+  "routeId": "eventLocationMapScreen",
+  "status": "captured",
+  "priority": "P3",
+  "captureIds": [
+    "event_location_map",
+    "event_location_map_loading",
+    "event_location_map_error",
+    "event_location_map_not_found",
+    "event_location_map_no_coordinate",
+    "event_location_map_directions_pending",
+    "event_location_map_directions_failure",
+    "event_location_map_text_scale_2",
+    "event_location_map_reduced_motion"
+  ],
+  "reason": "Event location map captures cover the required pinned map, route loading, route error, event not found, missing exact coordinates, directions pending, visible directions-launch failure, text scale, reduced motion, and paired light/dark output with network tiles disabled."
+}

@@ -1,0 +1,11 @@
+{
+  "branchKey": "keys.chats",
+  "routeName": "Routes.matchesListScreen.name",
+  "surfaces": [
+    {
+      "path": "lib/pages/inbox/widgets/chats_sliver_header.dart",
+      "symbol": "ChatsBrowseHeader",
+      "owner": "CatchLegacyTopBar.primaryRail"
+    }
+  ]
+}

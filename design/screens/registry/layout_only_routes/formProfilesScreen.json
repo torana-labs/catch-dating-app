@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "formProfilesScreen"
+      ],
+      "file": "lib/user_profile/presentation/form_profiles_screen.dart",
+      "symbol": "FormProfilesScreen",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Authenticated participant form-profile review uses canonical pushed-route chrome and a single constrained body. Focused review tests cover selection, identity gating and large text."
+}

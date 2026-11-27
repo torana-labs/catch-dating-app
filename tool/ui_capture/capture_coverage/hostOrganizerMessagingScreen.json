@@ -1,0 +1,6 @@
+{
+  "routeId": "hostOrganizerMessagingScreen",
+  "status": "planned",
+  "priority": "P1",
+  "reason": "The dedicated organizer WhatsApp setup route reuses the production setup pane moved from Messaging. Its deterministic sender states remain planned rather than refreshing unrelated historical Inbox captures during the route migration."
+}

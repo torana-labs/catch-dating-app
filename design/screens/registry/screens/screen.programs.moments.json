@@ -1,0 +1,165 @@
+{
+  "id": "screen.programs.moments",
+  "name": "Program moments",
+  "owner": "programs",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "hostProgramMomentsScreen",
+      "path": "/host/programs/:programId/moments",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/hosts/events/presentation/moments/organizer_moments_screen.dart",
+    "symbol": "OrganizerMomentsScreen"
+  },
+  "shell": {
+    "owner": "host",
+    "nestedScaffoldAllowed": false,
+    "reason": "The Host adaptive shell owns root navigation; the moments workspace is a pushed route with canonical back chrome."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchLegacyTopBar",
+    "owner": "CatchRouteScaffold",
+    "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading"
+    ],
+    "owner": "organizerMomentsControllerProvider, OrganizerMomentsRepository and CatchAsyncBoundary"
+  },
+  "stateController": {
+    "primary": "organizerMomentsControllerProvider",
+    "files": [
+      {
+        "file": "lib/hosts/events/presentation/moments/organizer_moments_screen.dart",
+        "symbol": "OrganizerMomentsScreen"
+      },
+      {
+        "file": "lib/hosts/events/presentation/moments/organizer_moments_controller.dart",
+        "symbol": "OrganizerMomentsController"
+      },
+      {
+        "file": "lib/contexts/events/data/organizer_moments_repository.dart",
+        "symbol": "organizerMomentsRepository"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/hosts/events/presentation/moments/organizer_moments_controller.dart",
+        "symbol": "OrganizerMomentsController"
+      }
+    ],
+    "notes": "The screen renders the program scope the server returns; lifecycle transitions (arm, pause, resume, run) and edits stay controller-owned. Program scope reuses the same unified moments engine as the event route."
+  },
+  "designRefs": [
+    {
+      "id": "repo.program-rollout",
+      "kind": "repo",
+      "status": "available",
+      "path": "docs/plans/program_operations_rollout_spec.md",
+      "notes": "R4 program-scope moments route on the unified organizer moments surface."
+    }
+  ],
+  "captures": [],
+  "states": [
+    {
+      "id": "moments_loading",
+      "kind": "loading",
+      "status": "implemented",
+      "source": "OrganizerMomentsScreen renders the canonical loading viewport while organizerMomentsControllerProvider resolves the program scope.",
+      "nextAction": "Review against program design references when they land."
+    },
+    {
+      "id": "moments_error",
+      "kind": "error",
+      "status": "implemented",
+      "source": "Backend and authorization failures render CatchLocalizedErrorState with scope-scoped retry.",
+      "nextAction": "Review against program design references when they land."
+    },
+    {
+      "id": "moments_empty",
+      "kind": "empty",
+      "status": "implemented",
+      "source": "A program scope with no moments renders the empty state and the create affordance.",
+      "nextAction": "Review against program design references when they land."
+    },
+    {
+      "id": "moments_list",
+      "kind": "populated",
+      "status": "implemented",
+      "source": "The list renders each moment with lifecycle status, initiation, audience, and action summaries plus lifecycle and manual-run actions.",
+      "nextAction": "Review against program design references when they land."
+    },
+    {
+      "id": "moment_editor",
+      "kind": "populated",
+      "status": "implemented",
+      "source": "Create and edit swap the list for the inline moment editor covering initiation, sense, audience, and action fields.",
+      "nextAction": "Review against program design references when they land."
+    },
+    {
+      "id": "moment_mutation",
+      "kind": "mutation",
+      "status": "implemented",
+      "source": "Arm, pause, resume, run, and save mark the affected moment busy and surface localized failures.",
+      "nextAction": "Review against program design references when they land."
+    }
+  ],
+  "composition": {
+    "currentLayout": "OrganizerMomentsScreen resolves the program scope once and composes the moment list, lifecycle actions, and the inline create/edit editor.",
+    "targetLayout": "Moments continues pushing scope and lifecycle resolution into typed display data.",
+    "sections": [
+      {
+        "id": "section.program_moments.adapter",
+        "name": "Program moments route adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "OrganizerMomentsScreen",
+          "OrganizerMomentEditScreen"
+        ],
+        "flutter": {
+          "file": "lib/hosts/events/presentation/moments/organizer_moments_screen.dart",
+          "symbol": "OrganizerMomentsScreen"
+        },
+        "currentOwner": "OrganizerMomentsScreen + organizerMomentsControllerProvider",
+        "targetOwner": "provider-free moments body",
+        "dependencies": [
+          "catch.top_bar",
+          "catch.section",
+          "catch.badge",
+          "catch.field",
+          "catch.button",
+          "catch.menu",
+          "catch.error_state",
+          "catch.skeleton",
+          "catch.surface"
+        ],
+        "states": [
+          "moments_loading",
+          "moments_error",
+          "moments_empty",
+          "moments_list",
+          "moment_editor",
+          "moment_mutation"
+        ],
+        "migration": "Keep list and editor composition provider-free once the moments payload is resolved."
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DP-PROGRAMS-MOMENTS-001",
+      "status": "open",
+      "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+    }
+  ]
+}

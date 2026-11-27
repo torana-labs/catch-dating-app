@@ -1,0 +1,107 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostAppEventManageScreen",
+        "hostAppAttendanceSheet",
+        "hostAppEventSuccessScreen"
+      ],
+      "file": "lib/hosts/events/event_route_screen.dart",
+      "symbol": "HostEventManageRouteScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostWorkEventScreen"
+      ],
+      "file": "lib/hosts/programmes/staff/staff_event_screen.dart",
+      "symbol": "StaffEventScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    },
+    {
+      "routes": [
+        "hostAppEventManageScreen",
+        "hostAppAttendanceSheet",
+        "hostAppEventSuccessScreen"
+      ],
+      "file": "lib/hosts/live/live_screen.dart",
+      "symbol": "_HostLiveScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostAppEventManageScreen",
+        "hostAppAttendanceSheet",
+        "hostAppEventSuccessScreen"
+      ],
+      "file": "lib/hosts/insights/host_event_report_screen.dart",
+      "symbol": "HostEventReportScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostAppEventManageScreen",
+        "hostAppAttendanceSheet",
+        "hostAppEventSuccessScreen"
+      ],
+      "file": "lib/hosts/events/event_workspace_screen.dart",
+      "symbol": "HostEventWorkspaceScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostAppEventManageScreen",
+        "hostAppAttendanceSheet",
+        "hostAppEventSuccessScreen"
+      ],
+      "file": "lib/hosts/events/event_guests_screen.dart",
+      "symbol": "_HostEventGuestsScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostAppEventManageScreen",
+        "hostAppAttendanceSheet",
+        "hostAppEventSuccessScreen"
+      ],
+      "file": "lib/hosts/live/formats/formats_run_screen.dart",
+      "symbol": "_HostFormatsRunScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostAppEventManageScreen",
+        "hostAppAttendanceSheet",
+        "hostAppEventSuccessScreen"
+      ],
+      "file": "lib/hosts/live/formats/formats_crawl_screen.dart",
+      "symbol": "_HostFormatsCrawlScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "Host management and operator routes are governed pushed routes across route-state and loaded owners."
+}

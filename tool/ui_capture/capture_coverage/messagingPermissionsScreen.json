@@ -1,0 +1,6 @@
+{
+  "routeId": "messagingPermissionsScreen",
+  "status": "planned",
+  "priority": "P2",
+  "reason": "Own-account WhatsApp consent and withdrawal have focused controller/widget coverage; canonical marketing capture registration remains planned."
+}
