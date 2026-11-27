@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/hosts/events/access/event_door_screen.dart",
+      "symbol": "HostEventDoorScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "The event workspace pushes the event's door access as a system pushed screen."
+}

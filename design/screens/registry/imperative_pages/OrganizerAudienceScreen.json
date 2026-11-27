@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/hosts/organizer/audience_screen.dart",
+      "symbol": "OrganizerAudienceScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "The Organiser tab pushes the organizer's all-time numbers and audience summary as a system pushed screen."
+}

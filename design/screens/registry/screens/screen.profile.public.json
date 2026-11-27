@@ -1,0 +1,609 @@
+{
+  "id": "screen.profile.public",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchLegacyTopBar",
+    "owner": "CatchLegacyTopBar",
+    "reason": "The source owns canonical compact route chrome."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "offline"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Public Profile",
+  "owner": "public_profile",
+  "priority": "P1",
+  "status": "ready",
+  "routes": [
+    {
+      "id": "publicProfileScreen",
+      "path": "/profiles/:uid",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/public_profile/presentation/public_profile_screen.dart",
+    "symbol": "PublicProfileScreen"
+  },
+  "stateController": {
+    "primary": "PublicProfileScreenState + watchPublicProfileProvider + PublicProfileController",
+    "files": [
+      {
+        "file": "lib/public_profile/presentation/public_profile_screen.dart",
+        "symbol": "PublicProfileScreen"
+      },
+      {
+        "file": "lib/public_profile/presentation/public_profile_screen_state.dart",
+        "symbol": "PublicProfileScreenState"
+      },
+      {
+        "file": "lib/contexts/profiles/data/public_profile_repository.dart",
+        "symbol": "watchPublicProfile"
+      },
+      {
+        "file": "lib/public_profile/presentation/public_profile_controller.dart",
+        "symbol": "PublicProfileController"
+      },
+      {
+        "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
+        "symbol": "ProfileSurface"
+      },
+      {
+        "file": "lib/contexts/profiles/data/user_profile_repository.dart",
+        "symbol": "watchUserProfile"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/public_profile/presentation/public_profile_controller.dart",
+        "symbol": "PublicProfileController"
+      },
+      {
+        "file": "lib/contexts/safety/data/safety_repository.dart",
+        "symbol": "SafetyRepository"
+      }
+    ],
+    "notes": "PublicProfileScreenState resolves target-profile loading/error/unavailable/ready branches, initialProfile fallback, viewer context for ProfileSurface, safety action availability, retry intent, and report/block mutation mode. PublicProfileScreen still owns report/block dialog execution and mutation success listeners while writes route through PublicProfileController."
+  },
+  "designRefs": [
+    {
+      "id": "repo.public-profile-captures",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/ui_captures/catalog/screen_capture_catalog.dart",
+      "notes": "Public-profile captures now include loaded member, loading, initial fallback, error/offline/unavailable, own-profile, pending overlay, report sheet, block confirmation, text-scale, reduced-motion, and paired light/dark variants."
+    },
+    {
+      "id": "claude.profile-public",
+      "kind": "claude",
+      "status": "available",
+      "notes": "Canonical Claude Design source for public-profile references.",
+      "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-profile/Profile.dc.html"
+    },
+    {
+      "id": "repo.profile-public-reference-screens",
+      "kind": "repo",
+      "status": "available",
+      "path": "design/reference_screens/manifest.json",
+      "notes": "Public-profile PNG reference is regenerated from the current Profile · other Claude panel, masked, registered, and within advisory threshold against public_profile_member on the claude-phone-390x812 capture device."
+    }
+  ],
+  "captures": [
+    {
+      "id": "public_profile_member",
+      "status": "captured",
+      "notes": "Public member profile fixture backed by deterministic Aanya persona data, a bundled portrait fixture, viewer context, and shared-event context for advisory public-profile reference comparison."
+    },
+    {
+      "id": "public_profile_loading",
+      "status": "captured",
+      "notes": "Deterministic PublicProfileScreen or public-profile section capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "public_profile_initial_fallback_loading",
+      "status": "captured",
+      "notes": "Deterministic PublicProfileScreen or public-profile section capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "public_profile_error",
+      "status": "captured",
+      "notes": "Deterministic PublicProfileScreen or public-profile section capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "public_profile_offline",
+      "status": "captured",
+      "notes": "Deterministic PublicProfileScreen or public-profile section capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "public_profile_unavailable",
+      "status": "captured",
+      "notes": "Deterministic PublicProfileScreen or public-profile section capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "public_profile_own_profile",
+      "status": "captured",
+      "notes": "Deterministic PublicProfileScreen or public-profile section capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "public_profile_block_pending",
+      "status": "captured",
+      "notes": "Deterministic PublicProfileScreen or public-profile section capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "public_profile_report_pending",
+      "status": "captured",
+      "notes": "Deterministic PublicProfileScreen report mutation pending capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "public_profile_report_success_snackbar",
+      "status": "captured",
+      "notes": "Deterministic PublicProfileScreen report mutation success snackbar capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "public_profile_report_failure_snackbar",
+      "status": "captured",
+      "notes": "Deterministic PublicProfileScreen report mutation failure snackbar capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "public_profile_report_sheet",
+      "status": "captured",
+      "notes": "Deterministic PublicProfileScreen or public-profile section capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "public_profile_block_confirmation",
+      "status": "captured",
+      "notes": "Deterministic PublicProfileScreen or public-profile section capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "public_profile_text_scale_2",
+      "status": "captured",
+      "notes": "Deterministic PublicProfileScreen or public-profile section capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "public_profile_reduced_motion",
+      "status": "captured",
+      "notes": "Deterministic PublicProfileScreen or public-profile section capture registered in screen_capture_catalog.dart."
+    }
+  ],
+  "states": [
+    {
+      "id": "loading_without_initial_profile",
+      "kind": "loading",
+      "status": "captured",
+      "source": "watchPublicProfileProvider loading with no initialProfile renders ProfileSurfaceSkeleton under CatchLegacyTopBar.",
+      "previewIds": [
+        "PublicProfileScreen/Route states"
+      ],
+      "captureIds": [
+        "public_profile_loading"
+      ],
+      "nextAction": "Cold loading route is captured; next compare top-bar/loading placement with exported public-profile references."
+    },
+    {
+      "id": "loading_with_initial_profile",
+      "kind": "loading",
+      "status": "captured",
+      "source": "watchPublicProfileProvider loading with initialProfile renders the profile body while the stream resolves.",
+      "previewIds": [
+        "PublicProfileScreen/Route states"
+      ],
+      "captureIds": [
+        "public_profile_initial_fallback_loading"
+      ],
+      "nextAction": "Initial-profile fallback is captured; next move initial-vs-loaded state into PublicProfileScreenState."
+    },
+    {
+      "id": "load_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "watchPublicProfileProvider AsyncError renders CatchLocalizedErrorState with AppErrorContext.profile and retry invalidation.",
+      "tests": [
+        "test/public_profile/public_profile_screen_test.dart"
+      ],
+      "previewIds": [
+        "PublicProfileScreen/Route states"
+      ],
+      "captureIds": [
+        "public_profile_error"
+      ],
+      "nextAction": "Load error route is captured; next compare retry placement with exported references and adapter-owned retry intent."
+    },
+    {
+      "id": "profile_unavailable",
+      "kind": "empty",
+      "status": "captured",
+      "source": "AsyncData(null) renders CatchEmptyState with Profile unavailable copy.",
+      "tests": [
+        "test/public_profile/public_profile_screen_test.dart"
+      ],
+      "previewIds": [
+        "PublicProfileScreen/Route states"
+      ],
+      "captureIds": [
+        "public_profile_unavailable"
+      ],
+      "nextAction": "Unavailable public profile route is captured; next decide whether deleted, private, blocked, and missing profiles need distinct copy."
+    },
+    {
+      "id": "public_profile",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Loaded PublicProfile renders ProfileSurface in publicProfile mode with no Catches reaction affordances. The public_profile_member capture uses a deterministic bundled portrait fixture, shared Sundowner 5K context, a poppable route stack, and the claude-phone-390x812 capture device for advisory reference comparison.",
+      "captureIds": [
+        "public_profile_member"
+      ],
+      "tests": [
+        "test/public_profile/public_profile_screen_test.dart",
+        "test/swipes/profile_card_widget_test.dart"
+      ],
+      "nextAction": "Advisory comparison is within threshold after refreshing the stale reference from the current Profile · other handoff, using a poppable route capture, adding the claude-phone-390x812 capture device, and extending the hero-media mask: 13.40% mismatch / 17.15 meanDelta, maxDelta 240, masked 221520.",
+      "previewIds": [
+        "PublicProfileScreen/Route states"
+      ]
+    },
+    {
+      "id": "viewer_context",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Viewer profile is passed to ProfileSurface unless viewing own profile, enabling compatibility/shared-context rendering without exposing exact location. The public_profile_member fixture also passes shared-event context so the surface can render event-aware profile insight labels.",
+      "tests": [
+        "test/swipes/profile_card_content_test.dart",
+        "test/user_profile/user_profile_domain_test.dart"
+      ],
+      "previewIds": [
+        "PublicProfileScreen/Route states"
+      ],
+      "captureIds": [
+        "public_profile_member",
+        "public_profile_own_profile"
+      ],
+      "nextAction": "Viewer, own-profile, and shared-event context are covered by deterministic captures; next add no-viewer and alternate-event variants only if design references require them."
+    },
+    {
+      "id": "report_sheet",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Profile overflow Report action opens a CatchSheet with shared CatchSettingsRow reason choices.",
+      "tests": [
+        "test/public_profile/public_profile_screen_test.dart"
+      ],
+      "previewIds": [
+        "PublicProfileScreen/Safety action states"
+      ],
+      "captureIds": [
+        "public_profile_report_sheet"
+      ],
+      "nextAction": "Report sheet is captured through PublicProfileReportSheet; next add selected-reason pending/success/failure interaction proof."
+    },
+    {
+      "id": "block_confirmation",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Profile overflow Block action opens showBlockUserDialog before running blockUserMutation.",
+      "previewIds": [
+        "PublicProfileScreen/Safety action states"
+      ],
+      "captureIds": [
+        "public_profile_block_confirmation"
+      ],
+      "nextAction": "Block confirmation dialog is captured; next add interaction proof for confirm/cancel paths and mutation feedback."
+    },
+    {
+      "id": "report_mutation",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "PublicProfileController.reportUser delegates to SafetyRepository.reportUser; PublicProfileScreenState exposes report pending, and PublicProfileScreen shows shared success/error snackbar feedback through mutation listeners.",
+      "tests": [
+        "test/public_profile/public_profile_controller_test.dart",
+        "test/public_profile/public_profile_screen_test.dart"
+      ],
+      "nextAction": "Report selected-reason, pending, success snackbar, and failure snackbar proof is closed; continue only visual parity or additional product-policy variants.",
+      "previewIds": [
+        "PublicProfileScreen/Safety action states"
+      ],
+      "captureIds": [
+        "public_profile_report_pending",
+        "public_profile_report_success_snackbar",
+        "public_profile_report_failure_snackbar"
+      ]
+    },
+    {
+      "id": "block_mutation",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "PublicProfileController.blockUser delegates to SafetyRepository.blockUser; PublicProfileScreen overlays loading while pending, shows shared Catch snackbar success feedback, and pops on success.",
+      "tests": [
+        "test/public_profile/public_profile_controller_test.dart"
+      ],
+      "previewIds": [
+        "PublicProfileScreen/Route states",
+        "PublicProfileScreen/Safety action states"
+      ],
+      "captureIds": [
+        "public_profile_block_pending"
+      ],
+      "nextAction": "Pending overlay is captured; add interaction-driven success pop and failure snackbar proof."
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Public-profile provider errors currently use generic profile error copy.",
+      "previewIds": [
+        "PublicProfileScreen/Route states"
+      ],
+      "captureIds": [
+        "public_profile_offline"
+      ],
+      "nextAction": "Offline public-profile error is captured; next decide whether offline copy needs a distinct product state beyond mapped profile error copy."
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "public_profile_text_scale_2 captures the full public profile route at TextScaler 2.0.",
+      "previewIds": [
+        "PublicProfileScreen/Route states"
+      ],
+      "captureIds": [
+        "public_profile_text_scale_2"
+      ],
+      "nextAction": "Large-text public route is captured; next add focused text-scale captures for menu and sheet variants if those layouts change."
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "public_profile_reduced_motion captures the full public profile route with MediaQuery.disableAnimations enabled.",
+      "previewIds": [
+        "PublicProfileScreen/Route states"
+      ],
+      "captureIds": [
+        "public_profile_reduced_motion"
+      ],
+      "nextAction": "Reduced-motion public route is captured; next add focused sheet/menu motion review if interaction captures are added."
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "The capture harness emits paired light/dark artifacts for the public profile route and safety-action captures.",
+      "previewIds": [
+        "PublicProfileScreen/Route states"
+      ],
+      "captureIds": [
+        "public_profile_member",
+        "public_profile_own_profile",
+        "public_profile_report_pending",
+        "public_profile_report_success_snackbar",
+        "public_profile_report_failure_snackbar",
+        "public_profile_report_sheet",
+        "public_profile_block_confirmation"
+      ],
+      "nextAction": "Paired light/dark public route and safety-action captures are registered; next compare them against exported references."
+    }
+  ],
+  "composition": {
+    "currentLayout": "PublicProfileScreenState resolves target profile, initial fallback, viewer profile projection, safety action availability, retry intent, and report/block mutation mode. PublicProfileScreen composes the top bar/body from that state and still owns report sheet, block dialog, and snackbar listeners.",
+    "targetLayout": "PublicProfileScreen should resolve target load state, initial-profile fallback, viewer context, safety actions, mutation modes, and retry intents into PublicProfileScreenState, then compose provider-free top bar, profile surface, safety action sheet/dialog, overlay, and state sections.",
+    "sections": [
+      {
+        "id": "section.profile.public_screen_adapter",
+        "name": "Public profile route state adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "PublicProfileScreenState"
+        ],
+        "flutter": {
+          "file": "lib/public_profile/presentation/public_profile_screen_state.dart",
+          "symbol": "PublicProfileScreenState"
+        },
+        "currentOwner": "PublicProfileScreen",
+        "targetOwner": "PublicProfileScreenState provider/controller adapter",
+        "dependencies": [
+          "catch.top_bar",
+          "catch.surface"
+        ],
+        "states": [
+          "loading",
+          "initial_profile",
+          "error",
+          "unavailable",
+          "loaded",
+          "mutation_pending"
+        ],
+        "migration": "PublicProfileScreenState now owns target-profile, viewer-context, initial-profile fallback, retry, report/block availability, and mutation overlay state.",
+        "previewIds": [
+          "PublicProfileScreen/Route states"
+        ]
+      },
+      {
+        "id": "section.profile.public_top_bar",
+        "name": "Public profile top bar and actions",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "PublicProfileTopBar",
+          "ProfileActionsMenu"
+        ],
+        "flutter": {
+          "file": "lib/public_profile/presentation/public_profile_screen.dart",
+          "symbol": "PublicProfileScreen"
+        },
+        "currentOwner": "PublicProfileScreen",
+        "targetOwner": "provider-free public-profile top bar section",
+        "dependencies": [
+          "catch.icon_button",
+          "catch.top_bar"
+        ],
+        "states": [
+          "loading_title",
+          "loaded_title",
+          "report_action",
+          "block_action",
+          "submitting_disabled"
+        ],
+        "migration": "Action availability and disabled submitting state now come from PublicProfileScreenState; remaining work is focused previews for long-name states.",
+        "previewIds": [
+          "PublicProfileScreen/Route states",
+          "PublicProfileScreen/Safety action states"
+        ]
+      },
+      {
+        "id": "section.profile.public_surface",
+        "name": "Public profile surface",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ProfileSurface",
+          "PublicProfileBody"
+        ],
+        "flutter": {
+          "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
+          "symbol": "ProfileSurface"
+        },
+        "currentOwner": "PublicProfileScreen",
+        "targetOwner": "shared provider-free profile surface section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "default",
+          "viewer_context",
+          "own_profile",
+          "long_content",
+          "no_prompts",
+          "light_dark"
+        ],
+        "migration": "Keep ProfileSurface shared across Catches, self preview, and public profile; add state previews with stable persona fixtures and no reaction affordances.",
+        "previewIds": [
+          "PublicProfileScreen/Route states"
+        ]
+      },
+      {
+        "id": "section.profile.public_safety_actions",
+        "name": "Public profile safety actions",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [
+          "ReportSheet",
+          "BlockDialog"
+        ],
+        "flutter": {
+          "file": "lib/public_profile/presentation/public_profile_screen.dart",
+          "symbol": "PublicProfileReportSheet"
+        },
+        "currentOwner": "PublicProfileScreen",
+        "targetOwner": "provider-free public-profile safety action compound",
+        "dependencies": [
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "report_menu",
+          "report_sheet",
+          "block_confirmation",
+          "pending",
+          "failure",
+          "success"
+        ],
+        "migration": "Keep mutations in PublicProfileController and add Widgetbook/capture states for report and block flows before visual parity edits.",
+        "previewIds": [
+          "PublicProfileScreen/Safety action states"
+        ]
+      },
+      {
+        "id": "section.profile.public_loading_overlay",
+        "name": "Public profile mutation overlay",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "MutationLoadingOverlay"
+        ],
+        "flutter": {
+          "file": "lib/public_profile/presentation/public_profile_screen.dart",
+          "symbol": "PublicProfileBody"
+        },
+        "currentOwner": "PublicProfileScreen",
+        "targetOwner": "provider-free loading overlay placement",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "none",
+          "report_pending",
+          "block_pending"
+        ],
+        "migration": "Overlay visibility now uses PublicProfileScreenState mutation mode; remaining work is contrast/light-dark preview hardening.",
+        "previewIds": [
+          "PublicProfileScreen/Route states",
+          "PublicProfileScreen/Safety action states"
+        ]
+      },
+      {
+        "id": "section.profile.public_empty_error",
+        "name": "Public profile empty and error states",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ProfileUnavailableState",
+          "ProfileErrorState"
+        ],
+        "flutter": {
+          "file": "lib/public_profile/presentation/public_profile_screen.dart",
+          "symbol": "PublicProfileScreen"
+        },
+        "currentOwner": "PublicProfileScreen",
+        "targetOwner": "provider-free public-profile state section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "unavailable",
+          "offline"
+        ],
+        "migration": "Add route captures for loading/error/unavailable/offline and decide whether private, blocked, deleted, and missing user need distinct copy.",
+        "previewIds": [
+          "PublicProfileScreen/Route states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-PROFILE-PUBLIC-001",
+      "status": "closed",
+      "nextAction": "Add Widgetbook states for top bar/actions, profile surface, report sheet, block dialog, pending overlay, loading, error, unavailable, offline, text scale, reduced motion, and light/dark."
+    },
+    {
+      "id": "DS-PROFILE-PUBLIC-002",
+      "status": "closed",
+      "nextAction": "Closed. Deterministic captures cover loading, initial-profile fallback, error, offline, unavailable, own-profile context, shared-event context, pending overlay, report sheet, block confirmation, text scale, reduced motion, and paired light/dark. Focused widget tests prove selected report reason, report success snackbar, and block failure snackbar. The refreshed public-profile reference now compares within advisory threshold against public_profile_member at 13.40% mismatch / 17.15 meanDelta, maxDelta 240, masked 221520."
+    },
+    {
+      "id": "DS-PROFILE-PUBLIC-003",
+      "status": "closed",
+      "nextAction": "Closed by PublicProfileScreenState, which owns target profile branches, initial-profile fallback, viewer context projection, safety action availability, retry intent, and report/block mutation mode."
+    },
+    {
+      "id": "DS-PROFILE-PUBLIC-004",
+      "status": "closed",
+      "nextAction": "Closed by exported public-profile reference plus masks in design/reference_screens/screen.profile.public and manifest wiring for advisory pixel comparison."
+    }
+  ]
+}

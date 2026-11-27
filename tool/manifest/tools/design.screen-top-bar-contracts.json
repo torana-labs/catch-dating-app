@@ -12,7 +12,11 @@
     "node tool/design/check_screen_top_bar_contracts.mjs --check"
   ],
   "impactPaths": [
+    "tool/lib/split_registry.mjs",
+    "tool/design/lib/screen_registries.mjs",
     "tool/design/check_screen_top_bar_contracts.test.mjs",
+    "tool/design/screen_top_bar_contracts.json",
+    "tool/design/screen_top_bar_contracts/**",
     "tool/design/root_screen_composition_contracts.json"
   ],
   "role": "gate",
@@ -24,7 +28,8 @@
         "lib/**/*.dart",
         "apps/*/lib/**/*.dart",
         "tool/design/check_screen_top_bar_contracts.mjs",
-        "tool/design/screen_top_bar_contracts.json"
+        "tool/design/screen_top_bar_contracts.json",
+        "tool/design/screen_top_bar_contracts/**"
       ],
       "instruction": "Every handwritten Scaffold appBar must have an exact reviewed role in the screen-top-bar manifest: root or root-like screen voice uses CatchLegacyTopBar.screen, compact detail/edit/utility navigation uses CatchLegacyTopBar.route, and identity navigation uses CatchLegacyTopBar.identity; a screen framed by CatchScreen takes a CatchTopBar variant and needs no entry. Pushed routes that require an exit declare leading back and must configure an explicit back affordance. Raw Material or Cupertino navigation bars require an exact durable media-hero exception. Feature-owned Header and TopBar classes must be classified by symbol and owner, and full-screen editors that cover shell chrome must present through the root navigator. Broad file allowlists and unrelated canonical calls elsewhere in a file do not satisfy the contract."
     }

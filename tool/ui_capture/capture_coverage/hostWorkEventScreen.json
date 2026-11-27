@@ -1,0 +1,7 @@
+{
+  "routeId": "hostWorkEventScreen",
+  "status": "alias",
+  "priority": "P1",
+  "canonicalRouteId": "hostEventRosterScreen",
+  "reason": "The staff work list event route opens the door (StaffEventScreen over DoorScreen) limited to the grant: it reuses the door captures, and widget tests cover the staff-only access line and the hidden manager actions."
+}

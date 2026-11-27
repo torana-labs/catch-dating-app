@@ -1,0 +1,38 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "file": "lib/event_success/presentation/event_success_companion_screen.dart",
+      "symbol": "CompanionScaffold",
+      "family": "immersive",
+      "expression": "CatchScaffold.workspace",
+      "bodyGeometry": "mixed",
+      "topEdge": "route-chrome"
+    },
+    {
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart",
+      "symbol": "CompanionStageScaffold",
+      "family": "immersive",
+      "expression": "CatchScaffold.workspace",
+      "bodyGeometry": "full-bleed",
+      "topEdge": "body-owned"
+    },
+    {
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_paper_section.dart",
+      "symbol": "CompanionPaperScaffold",
+      "family": "immersive",
+      "expression": "CatchScaffold.workspace",
+      "bodyGeometry": "mixed",
+      "topEdge": "body-owned"
+    }
+  ],
+  "reason": "Companion success deliberately switches among registered immersive stage and paper compositions."
+}

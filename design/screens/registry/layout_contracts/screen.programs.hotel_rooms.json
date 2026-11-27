@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostWorkHotelRoomsScreen"
+      ],
+      "file": "lib/programs/presentation/program_hotel_rooms_screen.dart",
+      "symbol": "ProgramHotelRoomsScreen",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "The screen renders loading, error, and populated route compositions through CatchRouteScaffold."
+}

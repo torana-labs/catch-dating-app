@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "organizerDetailScreen"
+      ],
+      "file": "lib/pages/organizer/organizer_detail_screen.dart",
+      "symbol": "OrganizerDetailScreen",
+      "family": "media-hero",
+      "expression": "CatchScaffold.workspace",
+      "bodyGeometry": "mixed",
+      "topEdge": "body-owned"
+    }
+  ],
+  "reason": "Club Detail owns a collapsing media hero and mixed edge-to-edge content."
+}

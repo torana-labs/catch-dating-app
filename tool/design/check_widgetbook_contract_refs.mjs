@@ -5,10 +5,10 @@ import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {extractCallBlocks} from "../lib/dart_call_blocks.mjs";
 import {isPlannedWithoutDart} from "./component_concepts.mjs";
+import {readScreenRegistry} from "./lib/screen_registries.mjs";
 import {readWidgetbookUseCases} from "./lib/widgetbook_use_cases.mjs";
 
 const componentRegistryPath = fromRepo("design/components/catch.components.json");
-const screenContractsPath = fromRepo("design/screens/catch.screens.json");
 const widgetbookPrimitiveContractsPath = fromRepo("widgetbook/lib/primitives/contracts");
 const requiredFoundationSpecimens = [
   {
@@ -104,7 +104,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
 
 function checkRefs({summary = false} = {}) {
   const componentRegistry = readJson(componentRegistryPath);
-  const screenContracts = readJson(screenContractsPath);
+  const screenContracts = readScreenRegistry();
   // build_runner's main.directories.g.dart isn't committed. The use cases come
   // from the annotations; node tool/design/lib/widgetbook_use_cases.mjs
   // --verify-generated proves they match the generator wherever it runs.

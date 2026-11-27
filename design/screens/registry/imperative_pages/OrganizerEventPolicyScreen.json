@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/hosts/organizer/event_policy_screen.dart",
+      "symbol": "OrganizerEventPolicyScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "Event defaults push the organizer's event policy (activity, admission, ages and cancellation) as a system pushed screen."
+}

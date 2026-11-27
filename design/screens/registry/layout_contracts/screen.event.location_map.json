@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "eventLocationMapScreen"
+      ],
+      "file": "lib/events/presentation/event_location_map_screen.dart",
+      "symbol": "ChromelessMapScaffold",
+      "family": "immersive",
+      "expression": "CatchScaffold.workspace",
+      "bodyGeometry": "full-bleed",
+      "topEdge": "body-owned"
+    }
+  ],
+  "reason": "The exact-location map is an intentional chromeless immersive surface."
+}

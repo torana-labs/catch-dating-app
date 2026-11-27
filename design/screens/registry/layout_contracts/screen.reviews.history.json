@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "reviewsHistoryScreen"
+      ],
+      "file": "lib/reviews/presentation/reviews_history_screen.dart",
+      "symbol": "ReviewsHistoryScreen",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Review History is a conventional pushed list route."
+}

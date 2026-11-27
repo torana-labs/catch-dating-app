@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "calendarScreen"
+      ],
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "symbol": "_CalendarScreenState",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "mixed",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Calendar is a pushed agenda route with canonical chrome and mixed sliver geometry."
+}

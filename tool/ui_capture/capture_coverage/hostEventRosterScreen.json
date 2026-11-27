@@ -1,0 +1,15 @@
+{
+  "routeId": "hostEventRosterScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "host_door_arriving",
+    "host_door_arriving_new_guest_fragment",
+    "host_door_arriving_regular_fragment",
+    "host_door_in",
+    "host_door_asked",
+    "host_door_scan_checked_in",
+    "host_door_tablet_landscape"
+  ],
+  "reason": "The door, always night: arriving, in and asked on a phone, a scan that checked a guest in, and the operations layout on a landscape tablet."
+}

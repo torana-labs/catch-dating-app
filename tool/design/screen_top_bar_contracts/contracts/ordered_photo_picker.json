@@ -1,0 +1,6 @@
+{
+  "path": "packages/platform/lib/media/ordered_photo_picker.dart",
+  "role": "compact",
+  "expression": "CatchLegacyTopBar.route",
+  "owner": "CatchLegacyTopBar"
+}

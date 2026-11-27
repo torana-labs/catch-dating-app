@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/hosts/events/event_defaults_details_screen.dart",
+      "symbol": "HostEventDefaultsDetailsScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "Event defaults push the text and number defaults editor as a system pushed screen."
+}

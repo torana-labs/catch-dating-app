@@ -1,0 +1,6 @@
+{
+  "routeId": "myMembershipsScreen",
+  "status": "planned",
+  "priority": "P3",
+  "reason": "My memberships is new with the host memberships MVP; widget tests cover the provider-free list. Add routed empty, active-with-savings, host-paused and signed-out captures once memberships leave test mode."
+}

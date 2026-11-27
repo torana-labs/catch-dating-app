@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/hosts/live/formats/formats_mix_screen.dart",
+      "symbol": "_HostFormatsMixScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "The live console pushes the mix board as a system pushed screen."
+}

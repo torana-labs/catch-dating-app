@@ -1,0 +1,9 @@
+{
+  "routeId": "hostApplicationDetailScreen",
+  "status": "captured",
+  "priority": "P1",
+  "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
+  "captureIds": [
+    "host_application_detail"
+  ]
+}

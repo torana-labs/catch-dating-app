@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 import fs from "node:fs";
-import path from "node:path";
-import {fromRepo, relativeToRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
-
-const screenContractsPath = fromRepo("design/screens/catch.screens.json");
+import {readScreenRegistry} from "./lib/screen_registries.mjs";
 
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
@@ -105,7 +103,7 @@ function printSummary() {
 
 function collectContractFiles() {
   const files = new Set();
-  const screenContracts = readJson(screenContractsPath);
+  const screenContracts = readScreenRegistry();
 
   for (const screen of screenContracts.screens ?? []) {
     addBinding(files, screen.source);
@@ -282,15 +280,6 @@ function formatSampleList(samples) {
 
 function sum(values, key) {
   return values.reduce((total, value) => total + value[key], 0);
-}
-
-function readJson(file) {
-  try {
-    return JSON.parse(fs.readFileSync(file, "utf8"));
-  } catch (error) {
-    console.error(`Failed to parse ${path.relative(repoRoot, file)}: ${error.message}`);
-    process.exit(1);
-  }
 }
 
 function valueAfter(values, flag) {

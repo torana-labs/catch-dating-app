@@ -1,0 +1,25 @@
+{
+  "routeId": "hostInboxScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "host_messages_phone",
+    "host_inbox_uid_loading",
+    "host_inbox_loading",
+    "host_inbox_error",
+    "host_inbox_offline",
+    "host_inbox_empty",
+    "host_inbox_queries",
+    "host_messaging_campaigns",
+    "host_inbox_prospective",
+    "host_inbox_general",
+    "host_inbox_roster_no_threads",
+    "host_inbox_broadcast_composer",
+    "host_inbox_broadcast_pending",
+    "host_inbox_broadcast_error",
+    "host_inbox_text_scale_2",
+    "host_inbox_reduced_motion",
+    "host_inbox_light_dark"
+  ],
+  "reason": "The Host Messages route (the redesigned inbox) has deterministic captures for Messages on the People fixtures: the organizer and data loading, generic and offline errors, empty, an event scope with Booked and Prospective, General inquiries, an event roster nobody has written about yet, Sends (workspace=campaigns), the event announcement compose screen ready, sending and failed, text scale 2.0, reduced motion, and paired light/dark output."
+}

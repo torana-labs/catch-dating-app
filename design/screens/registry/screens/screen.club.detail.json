@@ -1,0 +1,664 @@
+{
+  "id": "screen.club.detail",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "media-hero",
+    "expression": "SliverAppBar",
+    "owner": "registered media-hero",
+    "reason": "The registered collapsing media hero owns route chrome."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "offline",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Club Detail",
+  "owner": "clubs",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "organizerDetailScreen",
+      "path": "/organizers/:organizerId",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/pages/organizer/organizer_detail_screen.dart",
+    "symbol": "OrganizerDetailScreen"
+  },
+  "stateController": {
+    "primary": "organizerDetailViewModelProvider",
+    "files": [
+      {
+        "file": "lib/pages/organizer/organizer_detail_screen_state.dart",
+        "symbol": "HostOrganizerDetailScreenState"
+      },
+      {
+        "file": "lib/pages/organizer/organizer_detail_view_model.dart",
+        "symbol": "organizerDetailViewModel"
+      },
+      {
+        "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
+        "symbol": "OrganizerDetailBody"
+      },
+      {
+        "file": "lib/pages/organizer/widgets/organizer_detail_dock.dart",
+        "symbol": "OrganizerMembershipDock"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/contexts/organizers/actions/organizer_follow_controller.dart",
+        "symbol": "OrganizerFollowController"
+      },
+      {
+        "file": "lib/pages/organizer/organizer_host_contact_controller.dart",
+        "symbol": "OrganizerHostContactController"
+      }
+    ],
+    "notes": "The route screen translates provider output and initial route fallback through HostOrganizerDetailScreenState, then maps mutation flags into OrganizerDetailBodyState. OrganizerDetailBody receives provider-free next-event, contact-action, host-message eligibility, event-route target, review visibility, and dock state. The consumer membership dock stays screen-local/provider-backed because Host Club Detail suppresses it and no second host/member action-dock contract exists."
+  },
+  "designRefs": [
+    {
+      "id": "claude.catch-club-detail",
+      "kind": "claude",
+      "status": "available",
+      "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-club-detail/ClubDetailV2.dc.html",
+      "notes": "Claude Design Club Detail V2 template; export canonical PNG refs before enforcing pixel comparison."
+    },
+    {
+      "id": "screen.club.detail",
+      "kind": "repo",
+      "status": "available",
+      "path": "design/screens/catch.screens.json",
+      "notes": "Screen composition registry entry with route, state, and section migration map."
+    },
+    {
+      "id": "repo.club-detail-reference-screens",
+      "kind": "repo",
+      "status": "available",
+      "path": "design/reference_screens/manifest.json",
+      "notes": "Club Detail member-default PNG reference plus masks is registered for advisory pixel comparison."
+    }
+  ],
+  "captures": [
+    {
+      "id": "club_detail_member",
+      "status": "captured",
+      "capturedAt": "2026-07-18",
+      "notes": "Authenticated member-state capture with upcoming events and reviews."
+    },
+    {
+      "id": "club_detail_visitor",
+      "status": "captured",
+      "notes": "Authenticated non-member capture with Join club dock."
+    },
+    {
+      "id": "club_detail_guest",
+      "status": "captured",
+      "notes": "Signed-out capture with Sign in to join dock and hidden reviews."
+    },
+    {
+      "id": "club_detail_host_public",
+      "status": "captured",
+      "notes": "Host-role public capture with host app role and no consumer membership dock."
+    },
+    {
+      "id": "club_detail_loading",
+      "status": "captured",
+      "notes": "Pure route loading capture without initial club fallback."
+    },
+    {
+      "id": "club_detail_initial_loading",
+      "status": "captured",
+      "notes": "Initial-club fallback capture while live detail data is still loading."
+    },
+    {
+      "id": "club_detail_empty_schedule",
+      "status": "captured",
+      "notes": "Member-state capture with no upcoming club events."
+    },
+    {
+      "id": "club_detail_missing",
+      "status": "captured",
+      "notes": "Null club data capture for the Club not found state."
+    },
+    {
+      "id": "club_detail_error",
+      "status": "captured",
+      "notes": "Aggregate view-model error capture for fatal data-load failures."
+    },
+    {
+      "id": "club_detail_join_pending",
+      "status": "captured",
+      "notes": "Provider-free body/dock capture for join mutation pending."
+    },
+    {
+      "id": "club_detail_mutation_error",
+      "status": "captured",
+      "notes": "Provider-free body/dock capture for persistent mutation error feedback."
+    },
+    {
+      "id": "club_detail_offline",
+      "status": "captured",
+      "notes": "Current generic offline-looking data-load fallback capture."
+    },
+    {
+      "id": "club_detail_text_scale_2",
+      "status": "captured",
+      "notes": "Member-state capture with catalog-declared text scale 2.0."
+    },
+    {
+      "id": "club_detail_reduced_motion",
+      "status": "captured",
+      "notes": "Member-state capture with catalog-declared disabled animations."
+    }
+  ],
+  "states": [
+    {
+      "id": "loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "AsyncLoading from organizerDetailViewModelProvider renders OrganizerDetailLoadingBody with hero, stats, host, about, tag, and upcoming-section skeletons unless initialOrganizer is available.",
+      "captureIds": [
+        "club_detail_loading",
+        "club_detail_initial_loading"
+      ],
+      "previewIds": [
+        "OrganizerDetailScreen/Screen states"
+      ],
+      "tests": [
+        "test/organizers/organizers_controllers_test.dart",
+        "test/organizers/organizers_flow_test.dart"
+      ],
+      "nextAction": "Use club_detail_loading and club_detail_initial_loading as the pure loading and initial-fallback baselines."
+    },
+    {
+      "id": "not_found",
+      "kind": "empty",
+      "status": "captured",
+      "source": "AsyncData(null) renders Club not found copy through CatchErrorState.",
+      "captureIds": [
+        "club_detail_missing"
+      ],
+      "previewIds": [
+        "OrganizerDetailScreen/Screen states"
+      ],
+      "tests": [
+        "test/organizers/organizers_controllers_test.dart"
+      ],
+      "nextAction": "Add a not-found screen capture and decide if this remains a branded error state or a club-specific empty surface."
+    },
+    {
+      "id": "fatal_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "AsyncError from club/events/auth dependencies renders CatchLocalizedErrorState for AppErrorContext.club with retry invalidation.",
+      "captureIds": [
+        "club_detail_error"
+      ],
+      "previewIds": [
+        "OrganizerDetailScreen/Screen states"
+      ],
+      "tests": [
+        "test/organizers/organizers_controllers_test.dart"
+      ],
+      "nextAction": "Add route capture coverage for fatal error retry and offline-looking failures."
+    },
+    {
+      "id": "member_default",
+      "kind": "populated",
+      "status": "captured",
+      "source": "OrganizerDetailScreen composes OrganizerDetailBody and OrganizerMembershipDock with active membership state.",
+      "captureIds": [
+        "club_detail_member"
+      ],
+      "previewIds": [
+        "OrganizerDetailScreen/Screen states"
+      ],
+      "tests": [
+        "test/organizers/organizers_flow_test.dart",
+        "test/organizers/organizers_controllers_test.dart"
+      ],
+      "nextAction": "Compare the member capture against the Claude Club Detail V2 reference and record section-level divergence."
+    },
+    {
+      "id": "visitor_not_member",
+      "kind": "permission",
+      "status": "captured",
+      "source": "Authenticated non-member state renders Join club in OrganizerMembershipDock.",
+      "captureIds": [
+        "club_detail_visitor"
+      ],
+      "previewIds": [
+        "OrganizerDetailScreen/Screen states"
+      ],
+      "tests": [
+        "test/organizers/organizers_flow_test.dart"
+      ],
+      "nextAction": "Add route capture for visitor join CTA and long member-count copy."
+    },
+    {
+      "id": "guest_join",
+      "kind": "permission",
+      "status": "captured",
+      "source": "Anonymous state renders Sign in to join and routes to auth with /clubs/:organizerId as the from parameter.",
+      "captureIds": [
+        "club_detail_guest"
+      ],
+      "previewIds": [
+        "OrganizerDetailScreen/Screen states"
+      ],
+      "tests": [
+        "test/organizers/organizers_flow_test.dart"
+      ],
+      "nextAction": "Add route capture for guest dock, hidden reviews, and auth redirect copy."
+    },
+    {
+      "id": "host_public_view",
+      "kind": "permission",
+      "status": "captured",
+      "source": "Host app role can derive isHost from club ownership; consumer route suppresses owner dock via app role.",
+      "captureIds": [
+        "club_detail_host_public"
+      ],
+      "previewIds": [
+        "OrganizerDetailDock/Dock states"
+      ],
+      "tests": [
+        "test/organizers/organizers_controllers_test.dart"
+      ],
+      "nextAction": "Decide whether host public view remains part of Club Detail or moves under the host club detail contract."
+    },
+    {
+      "id": "empty_schedule",
+      "kind": "empty",
+      "status": "captured",
+      "source": "OrganizerScheduleSection renders CatchEmptyState when upcomingEvents is empty.",
+      "captureIds": [
+        "club_detail_empty_schedule"
+      ],
+      "previewIds": [
+        "OrganizerScheduleSection/Schedule states"
+      ],
+      "nextAction": "Use club_detail_empty_schedule as the consumer no-upcoming-events baseline; host-specific empty copy is covered by host_club_detail_empty_schedule."
+    },
+    {
+      "id": "join_leave_pending",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "OrganizerMembershipDock receives join/leave pending state from Mutation and renders loading CTA state.",
+      "captureIds": [
+        "club_detail_join_pending"
+      ],
+      "previewIds": [
+        "OrganizerDetailDock/Dock states"
+      ],
+      "tests": [
+        "test/organizers/organizers_controllers_test.dart"
+      ],
+      "nextAction": "Add route captures for join pending, leave pending, and push notification pending."
+    },
+    {
+      "id": "join_leave_failed",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "listenToCatchMutationErrors subscribes to join, leave, push-notification, and start-conversation mutations in the owning build branch.",
+      "captureIds": [
+        "club_detail_mutation_error"
+      ],
+      "previewIds": [
+        "OrganizerDetailScreen/Screen states"
+      ],
+      "nextAction": "Add mutation failure tests or captures proving branded error feedback for each action."
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "No explicit offline copy or retry behavior is defined for Club Detail yet.",
+      "captureIds": [
+        "club_detail_offline"
+      ],
+      "previewIds": [
+        "OrganizerDetailScreen/Screen states"
+      ],
+      "nextAction": "Define offline copy and retry behavior, then add an offline capture."
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "OrganizerDetailScreen Widgetbook state applies MediaQuery textScaler 2.0 across hero, host rows, reviews, and dock.",
+      "captureIds": [
+        "club_detail_text_scale_2"
+      ],
+      "previewIds": [
+        "OrganizerDetailScreen/Screen states"
+      ],
+      "nextAction": "Add tall-device route capture after section adapters reduce layout drift."
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "OrganizerDetailScreen Widgetbook state applies MediaQuery.disableAnimations for reduced-motion review.",
+      "captureIds": [
+        "club_detail_reduced_motion"
+      ],
+      "previewIds": [
+        "OrganizerDetailScreen/Screen states"
+      ],
+      "nextAction": "Add reduced-motion route capture for hero transition and navigation entry."
+    }
+  ],
+  "composition": {
+    "currentLayout": "OrganizerDetailScreen reads organizerDetailViewModelProvider plus membership/profile streams, maps route/provider branches through HostOrganizerDetailScreenState, maps body policy through OrganizerDetailBodyState, then composes hero, stats, host/about/tag/photo/contact sections, schedule, reviews, and a consumer membership dock.",
+    "targetLayout": "OrganizerDetailScreen should keep route/provider/mutation policy in screen-state adapters and compose registered sections: hero, stats, host identity, about/tags, photo strip, contact, schedule, reviews, and the screen-local consumer membership dock.",
+    "sections": [
+      {
+        "id": "section.club.hero",
+        "name": "Club hero",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "OrganizerHero"
+        ],
+        "flutter": {
+          "file": "lib/pages/organizer/widgets/organizer_hero_top_bar.dart",
+          "symbol": "OrganizerHeroTopBar"
+        },
+        "currentOwner": "OrganizerDetailBody",
+        "targetOwner": "registered Club Detail hero section with view data and user intents",
+        "dependencies": [
+          "catch.icon_button",
+          "catch.surface",
+          "catch.top_bar"
+        ],
+        "states": [
+          "cover_photo",
+          "no_cover",
+          "share",
+          "collapsed_title",
+          "host_badge"
+        ],
+        "previewIds": [
+          "OrganizerHeroTopBar/Hero states"
+        ],
+        "migration": "Move share handling and host badge visibility into a section adapter, then add Widgetbook states for cover/no-cover/collapsed variants."
+      },
+      {
+        "id": "section.club.stats",
+        "name": "Club stats strip",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [
+          "MetricStrip"
+        ],
+        "flutter": {
+          "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
+          "symbol": "CatchMetricSection"
+        },
+        "currentOwner": "OrganizerDetailBody",
+        "targetOwner": "screen-local section.club.stats until another product screen proves reuse",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "members",
+          "upcoming",
+          "rating",
+          "empty_rating"
+        ],
+        "previewIds": [
+          "CatchMetricSection/Contract states"
+        ],
+        "migration": "Keep screen-local for now; promote only if host club detail or another product screen reuses the same club metrics contract."
+      },
+      {
+        "id": "section.club.hosts",
+        "name": "Host identity",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "HostCard"
+        ],
+        "flutter": {
+          "file": "lib/pages/organizer/widgets/organizer_host_section.dart",
+          "symbol": "OrganizerHostSection"
+        },
+        "currentOwner": "OrganizerHostSection",
+        "targetOwner": "registered host identity section plus host-card compound",
+        "dependencies": [
+          "catch.icon_button",
+          "catch.surface"
+        ],
+        "states": [
+          "owner",
+          "multiple_hosts",
+          "message_available",
+          "message_pending",
+          "profile_locked"
+        ],
+        "previewIds": [
+          "OrganizerHostSection/Host section states",
+          "OrganizerHostRow/Host row states"
+        ],
+        "migration": "Provider-free section receives profile visibility, message pending state, and precomputed messageable host ids from OrganizerDetailBodyState."
+      },
+      {
+        "id": "section.club.overview",
+        "name": "About and tags",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "Section",
+          "TagList"
+        ],
+        "flutter": {
+          "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
+          "symbol": "OrganizerDetailBody"
+        },
+        "currentOwner": "OrganizerDetailBody",
+        "targetOwner": "registered club overview section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "description",
+          "tags",
+          "long_copy",
+          "no_tags"
+        ],
+        "previewIds": [
+          "OrganizerDetailBody/Body composition"
+        ],
+        "migration": "Extract about/tag rendering into a provider-free section with explicit long-copy and no-tags states."
+      },
+      {
+        "id": "section.club.photos",
+        "name": "Club photo strip",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [
+          "PhotoStrip"
+        ],
+        "flutter": {
+          "file": "lib/pages/organizer/widgets/organizer_photo_rail.dart",
+          "symbol": "OrganizerPhotoRail"
+        },
+        "currentOwner": "OrganizerPhotoRail",
+        "targetOwner": "registered club photo strip compound",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "one_photo",
+          "three_photos",
+          "broken_image",
+          "many_photos"
+        ],
+        "previewIds": [
+          "OrganizerPhotoRail/Photo strip states"
+        ],
+        "migration": "Provider-free photo strip has direct Widgetbook states for one-photo and three-photo variants; keep broken-image and many-photo edge cases as future visual variants if needed."
+      },
+      {
+        "id": "section.club.contact",
+        "name": "Club contact",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ContactList"
+        ],
+        "flutter": {
+          "file": "lib/pages/organizer/widgets/organizer_contact_section.dart",
+          "symbol": "OrganizerContactSection"
+        },
+        "currentOwner": "OrganizerContactSection",
+        "targetOwner": "registered contact section with external-link intents",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "instagram",
+          "phone",
+          "email",
+          "empty_hidden"
+        ],
+        "previewIds": [
+          "OrganizerContactSection/Contact section states"
+        ],
+        "migration": "Provider-free contact section receives typed OrganizerContactAction rows from OrganizerDetailBodyState; URL launching stays behind ExternalLinkController in the route callback."
+      },
+      {
+        "id": "section.club.schedule",
+        "name": "Upcoming schedule",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ScheduleList",
+          "EventTicket"
+        ],
+        "flutter": {
+          "file": "lib/pages/organizer/widgets/organizer_schedule_section.dart",
+          "symbol": "OrganizerScheduleSection"
+        },
+        "currentOwner": "OrganizerDetailBody",
+        "targetOwner": "screen-local section.club.schedule until host club detail proves reuse",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "upcoming_events",
+          "empty_member",
+          "empty_host",
+          "long_event_copy"
+        ],
+        "previewIds": [
+          "OrganizerScheduleSection/Schedule states"
+        ],
+        "migration": "Move route-name selection and event row view data into an adapter; keep the section screen-local until host club detail reuses the same schedule contract."
+      },
+      {
+        "id": "section.club.reviews",
+        "name": "Club reviews",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ReviewList"
+        ],
+        "flutter": {
+          "file": "lib/pages/reviews/reviews_section.dart",
+          "symbol": "OrganizerReviewsSection"
+        },
+        "currentOwner": "OrganizerDetailBody",
+        "targetOwner": "screen-local section.club.reviews until host/public club reuse is proven",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "authenticated_reviews",
+          "empty_reviews",
+          "guest_hidden",
+          "long_review_copy"
+        ],
+        "previewIds": [
+          "OrganizerReviewsSection/Review states"
+        ],
+        "migration": "Make review visibility and empty-copy selection explicit screen state instead of branching directly in OrganizerDetailBody; promote after another club-facing screen reuses the same read-only review contract."
+      },
+      {
+        "id": "section.club.membership_dock",
+        "name": "Membership dock",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "OrganizerDock"
+        ],
+        "flutter": {
+          "file": "lib/pages/organizer/widgets/organizer_detail_dock.dart",
+          "symbol": "OrganizerMembershipDock"
+        },
+        "currentOwner": "OrganizerDetailScreen",
+        "targetOwner": "screen-local membership dock adapter over provider-free CatchOrganizerDock",
+        "dependencies": [
+          "catch.button",
+          "catch.icon_button"
+        ],
+        "states": [
+          "guest",
+          "visitor",
+          "member",
+          "join_pending",
+          "leave_pending",
+          "push_pending",
+          "owner_host_app"
+        ],
+        "previewIds": [
+          "OrganizerDetailDock/Dock states"
+        ],
+        "migration": "Decision closed: keep provider-backed OrganizerMembershipDock screen-local and consumer-only. Host Club Detail suppresses this dock, so provider-free CatchOrganizerDock promotion is intentionally deferred until another host/member surface proves the same action dock contract."
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-CLUB-DETAIL-001",
+      "status": "closed",
+      "nextAction": "Closed by the consumer-only dock decision: Host Club Detail reuses the shared public club profile body and suppresses the membership dock, so provider-backed OrganizerMembershipDock remains screen-local and CatchOrganizerDock promotion is deferred until another host/member action-dock contract exists."
+    },
+    {
+      "id": "DS-CLUB-DETAIL-002",
+      "status": "closed",
+      "nextAction": "Closed by OrganizerDetailBodyState: route async/loading/error/not-found, initial-club fallback, next-event selection, host-message eligibility, contact actions, event-route target, review visibility, and membership dock state are derived outside visual sections."
+    },
+    {
+      "id": "DS-CLUB-DETAIL-003",
+      "status": "closed",
+      "nextAction": "Closed by provider-free OrganizerHostSection, OrganizerHostRow, OrganizerContactSection, and OrganizerPhotoRail files plus direct Widgetbook states and widget catalog entries."
+    },
+    {
+      "id": "DS-CLUB-DETAIL-004",
+      "status": "closed",
+      "nextAction": "Closed by club_detail_loading, club_detail_initial_loading, and club_detail_empty_schedule route captures plus the existing exported/masked club_detail_member reference comparison."
+    },
+    {
+      "id": "DS-CLUB-DETAIL-005",
+      "status": "closed",
+      "nextAction": "Closed by advisory comparison of club_detail_member against the Claude Club Detail V2 member-default reference. Baseline: 31.35% mismatch / 49.79 mean delta. Section-level divergence is concentrated in hero media/chrome, next-event/stat-strip treatment, and below-fold schedule/dock composition."
+    }
+  ]
+}

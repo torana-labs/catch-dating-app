@@ -1,0 +1,6 @@
+{
+  "routeId": "loadingScreen",
+  "status": "excluded",
+  "priority": "P3",
+  "reason": "Transient startup state; capture only when launch UX work needs it."
+}

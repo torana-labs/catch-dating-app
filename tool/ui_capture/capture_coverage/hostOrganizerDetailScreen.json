@@ -1,0 +1,20 @@
+{
+  "routeId": "hostOrganizerDetailScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "host_club_detail_public",
+    "host_club_detail_initial_loading",
+    "host_club_detail_loading",
+    "host_club_detail_error",
+    "host_club_detail_offline",
+    "host_club_detail_not_found",
+    "host_club_detail_signed_out",
+    "host_club_detail_non_host_preview",
+    "host_club_detail_empty_schedule",
+    "host_club_detail_text_scale_2",
+    "host_club_detail_reduced_motion",
+    "host_club_detail_light_dark"
+  ],
+  "reason": "Host-mode club detail now has deterministic captures for public preview, initial fallback loading, full loading, generic error, offline error, not-found, signed-out preview, non-host public preview, empty schedule, text scale 2.0, reduced motion, and paired light/dark output. Remaining work is policy for embedded host controls, deeper schedule/share/contact/review variants, additional Claude references, and pixel comparison."
+}

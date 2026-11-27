@@ -1,0 +1,18 @@
+{
+  "routeId": "savedEventsScreen",
+  "status": "captured",
+  "priority": "P2",
+  "captureIds": [
+    "saved_events_list",
+    "saved_events_uid_missing",
+    "saved_events_loading",
+    "saved_events_error",
+    "saved_events_empty",
+    "saved_events_club_names_loading",
+    "saved_events_club_names_error",
+    "saved_events_past_only",
+    "saved_events_text_scale_2",
+    "saved_events_light_dark"
+  ],
+  "reason": "Saved Events captures now cover populated rows, signed-out uid fallback, loading, stream error, empty/deleted-doc fallback, club-name loading/error, past-only rows, text scale 2.0, and paired light/dark output."
+}

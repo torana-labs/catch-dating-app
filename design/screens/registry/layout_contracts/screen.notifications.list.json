@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "notificationsScreen"
+      ],
+      "file": "lib/dashboard/presentation/activity_screen.dart",
+      "symbol": "_ActivityScreenState",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Activity is a canonical pushed route rather than a root-shell exception."
+}

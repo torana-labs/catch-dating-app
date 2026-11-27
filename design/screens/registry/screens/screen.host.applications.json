@@ -1,0 +1,156 @@
+{
+  "id": "screen.host.applications",
+  "shell": {
+    "owner": "host",
+    "nestedScaffoldAllowed": true,
+    "reason": "Application detail covers the Host shell on the root navigator and owns its route scaffold."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchTopBar",
+    "owner": "HostResponseScreen",
+    "reason": "Saved application URLs open the system response screen and its back action."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "error",
+      "loading",
+      "mutation",
+      "offline",
+      "permission"
+    ],
+    "owner": "hostResponseReviewDetailProvider and HostApplicationsController"
+  },
+  "name": "Host Application Detail",
+  "owner": "hosts",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "hostApplicationDetailScreen",
+      "path": "/host/audience/applications/:applicationId",
+      "role": "host"
+    }
+  ],
+  "source": {
+    "file": "lib/hosts/forms/response_screen.dart",
+    "symbol": "HostResponseScreen"
+  },
+  "stateController": {
+    "primary": "hostResponseReviewDetailProvider + hostApplicationsControllerProvider",
+    "files": [
+      {
+        "file": "lib/hosts/forms/host_response_review_detail.dart",
+        "symbol": "hostResponseReviewDetail"
+      },
+      {
+        "file": "lib/contexts/forms/data/host_application_repository.dart",
+        "symbol": "hostApplicationDetail"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/hosts/forms/host_applications_controller.dart",
+        "symbol": "HostApplicationsController"
+      }
+    ],
+    "notes": "The presentation layer never reaches the repository directly; review mutations cross the controller boundary. Unified listing and import belong to Audience Responses."
+  },
+  "designRefs": [],
+  "captures": [],
+  "states": [
+    {
+      "id": "host_applications_loading",
+      "kind": "loading",
+      "status": "implemented",
+      "source": "HostFormResponseDetailScreen typed async loading branch",
+      "nextAction": "Add a deterministic full-route capture."
+    },
+    {
+      "id": "host_application_detail",
+      "kind": "populated",
+      "status": "implemented",
+      "source": "HostFormResponseDetailScreen immutable answers and review controls",
+      "captureIds": [
+        "host_application_detail"
+      ],
+      "nextAction": "Maintain the deterministic detail capture while lifecycle list coverage belongs to Audience Responses."
+    },
+    {
+      "id": "host_applications_error",
+      "kind": "error",
+      "status": "implemented",
+      "source": "HostFormResponseDetailScreen typed async error branch",
+      "nextAction": "Add deterministic callable-error capture."
+    },
+    {
+      "id": "host_application_review",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "Atomic accept-to-People with response/person links and inaccessible-source denial",
+      "nextAction": "Capture the accepted application during the deferred visual pass.",
+      "tests": [
+        "test/hosts/applications/host_application_intake_test.dart"
+      ]
+    },
+    {
+      "id": "host_applications_offline",
+      "kind": "offline",
+      "status": "implemented",
+      "source": "CatchErrorState AppException mapping",
+      "nextAction": "Add deterministic offline capture."
+    },
+    {
+      "id": "host_applications_permission",
+      "kind": "permission",
+      "status": "implemented",
+      "source": "Manager-authorized callable failures",
+      "nextAction": "Add deterministic permission capture."
+    }
+  ],
+  "composition": {
+    "currentLayout": "A canonical detail route presents immutable answers, validated outreach actions, a private note, and explicit review states. The unified queue, lifecycle filters, and import action live in Audience Responses.",
+    "targetLayout": "Keep one response review workflow with detailed submitted answers and server-authorized review actions.",
+    "sections": [
+      {
+        "id": "section.host.applications.response",
+        "name": "Application answers, outreach, and review",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [],
+        "flutter": {
+          "file": "lib/hosts/forms/response_screen.dart",
+          "symbol": "HostResponseScreen"
+        },
+        "currentOwner": "hosts.forms",
+        "targetOwner": "hosts.forms",
+        "dependencies": [
+          "catch.top_bar",
+          "catch.section",
+          "catch.field",
+          "catch.button"
+        ],
+        "states": [
+          "host_applications_loading",
+          "host_applications_error",
+          "host_application_review",
+          "host_applications_permission"
+        ],
+        "migration": "The system response screen draws the application answers, contact actions and review; the legacy detail retired."
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "HOST-APPLICATIONS-001",
+      "status": "open",
+      "nextAction": "Build the participant-facing Flutter form over the authenticated reviewed-prefill, submission, exact organizer grant, and revocation callables."
+    },
+    {
+      "id": "HOST-APPLICATIONS-002",
+      "status": "open",
+      "nextAction": "Add API connectors only for providers whose stable APIs and authorization scopes justify them; all connectors must emit the same mapping/import contract as CSV/XLSX."
+    }
+  ]
+}

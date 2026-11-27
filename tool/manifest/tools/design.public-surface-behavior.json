@@ -3,6 +3,8 @@
   "category": "design",
   "path": "tool/design/check_public_surface_behavior.mjs",
   "impactPaths": [
+    "tool/lib/split_registry.mjs",
+    "tool/design/lib/screen_registries.mjs",
     "tool/design/check_public_surface_behavior.test.mjs",
     "design/public_surface_behavior.json",
     "design/public_surface_behavior.schema.json"
@@ -32,6 +34,7 @@
         "design/public_surface_behavior.json",
         "design/public_surface_behavior.schema.json",
         "design/screens/catch.screens.json",
+        "design/screens/registry/**",
         "contracts/firestore/organizers.schema.json",
         "contracts/public/website_host_listing_projection.schema.json",
         "lib/routing/**",

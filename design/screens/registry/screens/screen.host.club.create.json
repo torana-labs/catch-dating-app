@@ -1,0 +1,247 @@
+{
+  "id": "screen.host.club.create",
+  "shell": {
+    "owner": "host",
+    "nestedScaffoldAllowed": false,
+    "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "shell",
+    "expression": "shell-owned",
+    "owner": "AdaptiveTabScaffold",
+    "reason": "The route body relies on shell chrome or a registered nested composition owner."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "error",
+      "mutation",
+      "offline",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Host Create Club",
+  "owner": "hosts",
+  "priority": "P2",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "hostCreateOrganizerScreen",
+      "path": "/host/organizers/create-organizer",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/hosts/presentation/organizer_management/host_create_organizer_screen.dart",
+    "symbol": "HostCreateOrganizerScreen"
+  },
+  "stateController": {
+    "primary": "HostCreateOrganizerScreen + CreateOrganizerScreen + CreateOrganizerController + CreateOrganizerDraftController",
+    "files": [
+      {
+        "file": "lib/hosts/presentation/organizer_management/host_create_organizer_screen.dart",
+        "symbol": "HostCreateOrganizerScreen"
+      },
+      {
+        "file": "packages/catch_ui/lib/src/components/catch_legacy_dock.dart",
+        "symbol": "CatchLegacyDock"
+      },
+      {
+        "file": "lib/hosts/presentation/organizer_management/create/create_organizer_controller.dart",
+        "symbol": "CreateOrganizerController"
+      },
+      {
+        "file": "lib/hosts/presentation/organizer_management/create/create_organizer_draft_controller.dart",
+        "symbol": "CreateOrganizerDraftController"
+      },
+      {
+        "file": "lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart",
+        "symbol": "OrganizerPolicyDefaultsCard"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/hosts/presentation/organizer_management/create/create_organizer_controller.dart",
+        "symbol": "CreateOrganizerController"
+      },
+      {
+        "file": "lib/hosts/presentation/organizer_management/create/create_organizer_draft_controller.dart",
+        "symbol": "CreateOrganizerDraftController"
+      },
+      {
+        "file": "lib/contexts/organizers/data/organizers_repository.dart",
+        "symbol": "OrganizersRepository"
+      },
+      {
+        "file": "lib/contexts/profiles/data/image_upload_repository.dart",
+        "symbol": "ImageUploadRepository"
+      }
+    ],
+    "notes": "HostCreateOrganizerScreen is the route-facing wrapper for the create-only CreateOrganizerScreen. CreateOrganizerScreen owns PageController step state, form controllers, draft restoration/saving, cover/profile photo picking, host defaults, Event Success defaults, submit mutation execution, and the actual Navigator pop side effect. HostOrganizerCreateState owns the visible step title, footer labels/enabled state, media enabled state, media display values, field/city display state, mutation error copy, draft-load retry state, and typed primary/save-draft/draft-restore intents; HostOrganizerCreateRouteIntent owns route callback dispatch; HostOrganizerCreateDraftRequest and HostOrganizerCreateSubmitRequest own draft/submit request construction; HostOrganizerSubmitOutcomeState owns the submit-success close-route decision."
+  },
+  "designRefs": [
+    {
+      "id": "repo.create-club-widget-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/explore/explore_widgets_test.dart",
+      "notes": "Create club widget tests cover photo picking, inline mutation errors, validation, and successful submit/pop behavior."
+    },
+    {
+      "id": "repo.create-club-controller-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/organizers/organizers_controllers_test.dart",
+      "notes": "CreateOrganizerController tests cover repository writes, photo upload ordering, signed-in requirements, and edit/create ownership behavior."
+    },
+    {
+      "id": "claude.host-club-create",
+      "kind": "claude",
+      "status": "available",
+      "notes": "Canonical Host Create Club basics reference exported, masked, manifest-registered, and wired to the create_club_basics capture for advisory comparison. Remaining wizard steps and mutation/success variants still need canonical references.",
+      "path": "design/source_packs/host-v2/templates/hosts-create-club/HostCreateClub.dc.html"
+    },
+    {
+      "id": "generated.host-club-create-basics-reference",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/screen.host.club.create/basics_default.png",
+      "notes": "390x812 Host Create Club basics_default PNG reference exported from the Claude template."
+    },
+    {
+      "id": "generated.host-club-create-reference-manifest",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/manifest.json",
+      "notes": "Reference-screen manifest wiring Host Create Club basics_default to create_club_basics for advisory pixel comparison."
+    }
+  ],
+  "captures": [],
+  "states": [
+    {
+      "id": "route_entry",
+      "kind": "populated",
+      "status": "implemented",
+      "source": "HostCreateOrganizerScreen delegates directly to CreateOrganizerScreen for the create route.",
+      "previewIds": [
+        "HostCreateOrganizerScreen/Route and wizard states"
+      ],
+      "nextAction": "Add a route/navigation test proving the host shell opens this route from Host Home and Host Clubs."
+    },
+    {
+      "id": "club_photos",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Organizer logo and ordered cover/gallery media remain separate, and the shared Host gallery manager has no product-level photo cap.",
+      "previewIds": [
+        "HostCreateOrganizerScreen/Route and wizard states"
+      ],
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Compare the captured wizard and 24-photo gallery manager layouts against canonical design references once exported.",
+      "captureIds": [
+        "host_media_gallery_manager"
+      ]
+    },
+    {
+      "id": "success_pop",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "Successful create deletes the draft, then HostOrganizerSubmitOutcomeState maps the pending-to-success transition to close-route before CreateOrganizerScreen performs the Navigator pop.",
+      "previewIds": [
+        "HostCreateOrganizerScreen/Route and wizard states"
+      ],
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Close-route policy is adapter-owned; add route/navigation test for host shell return destination after success."
+    },
+    {
+      "id": "uid_missing_submit",
+      "kind": "permission",
+      "status": "implemented",
+      "source": "The form can render without uid, but submit/draft mutations require signed-in uid and surface failure through mutation feedback.",
+      "previewIds": [
+        "HostCreateOrganizerScreen/Route and wizard states"
+      ],
+      "nextAction": "Decide whether the route should render explicit signed-out access copy before the form."
+    },
+    {
+      "id": "basics_validation",
+      "kind": "error",
+      "status": "implemented",
+      "source": "Missing required basics block Next and show field-level validation errors.",
+      "previewIds": [
+        "HostCreateOrganizerScreen/Route and wizard states"
+      ],
+      "nextAction": "Register a capture of the system screen for this state."
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "implemented",
+      "source": "Offline-looking create submit failures surface through shared mutation error copy.",
+      "previewIds": [
+        "HostCreateOrganizerScreen/Route and wizard states"
+      ],
+      "nextAction": "Register a capture of the system screen for this state."
+    }
+  ],
+  "composition": {
+    "currentLayout": "HostCreateOrganizerScreen delegates to the create-only CreateOrganizerScreen, where route-level form state, draft persistence, form validation, media value ownership, and Navigator side effects still live beside visual sections; HostOrganizerCreateState owns step title, footer action state, media enabled state, mutation error copy, and primary/save-draft intents. HostOrganizerSubmitOutcomeState owns the submit-success close-route decision.",
+    "targetLayout": "Host Create Club has route, wizard, mutation, accessibility, and theme coverage. Continue only state-specific reference export/pixel work unless product changes the wizard behavior.",
+    "sections": [
+      {
+        "id": "section.host.club_create.defaults_steps",
+        "name": "Create club defaults steps",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "OrganizerHostDefaultsStep",
+          "OrganizerEventSuccessDefaultsStep"
+        ],
+        "flutter": {
+          "file": "lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart",
+          "symbol": "OrganizerPolicyDefaultsCard"
+        },
+        "currentOwner": "CreateOrganizerScreen",
+        "targetOwner": "provider-free host defaults sections",
+        "dependencies": [
+          "catch.chip",
+          "catch.field"
+        ],
+        "states": [],
+        "migration": "Share defaults display data with create/edit event policy surfaces before consolidating controls."
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-HOST-CLUB-CREATE-001",
+      "status": "closed",
+      "nextAction": "Closed: Widgetbook covers route entry, basics validation, picked media, restored draft, all wizard steps, save-draft pending/error, submit pending/error, offline submit failure, text scale, reduced motion, and dark theme. Additional variants are reference-specific and blocked by DS-HOST-CLUB-CREATE-004 until design exports them."
+    },
+    {
+      "id": "DS-HOST-CLUB-CREATE-002",
+      "status": "closed",
+      "nextAction": "Closed: deterministic captures cover basics, validation, picked media, restored draft, details, host defaults, Event Success defaults, save-draft pending/error, submit pending/error/offline, text scale, reduced motion, and light/dark. Additional captures should be added only with new state-specific references."
+    },
+    {
+      "id": "DS-HOST-CLUB-CREATE-003",
+      "status": "closed",
+      "nextAction": "HostOrganizerCreateState now owns footer action labels/enabled state, media enabled state, media display values, field/city display state, mutation error copy, draft-load retry state, and typed primary/save-draft/draft-restore intents; HostOrganizerCreateRouteIntent owns route callback dispatch; HostOrganizerCreateDraftRequest and HostOrganizerCreateSubmitRequest own draft/submit request construction; HostOrganizerSubmitOutcomeState owns submit-success close-route policy."
+    },
+    {
+      "id": "DS-HOST-CLUB-CREATE-004",
+      "status": "blocked",
+      "nextAction": "Blocked: Host Create Club basics reference is exported and wired. Additional wizard, mutation, accessibility, and theme pixel comparisons need canonical state-specific Claude/Figma references before app-code work resumes."
+    },
+    {
+      "id": "DS-HOST-CLUB-CREATE-005",
+      "status": "closed",
+      "nextAction": "Closed: organizer submit, draft save, and initial draft restore use frozen route snapshots. Header/gesture dismissal, step movement, media, all form/default decisions, and footer actions are disabled while pending; submit and draft controllers deduplicate direct duplicate calls, with focused controller/state/widget proof."
+    }
+  ]
+}

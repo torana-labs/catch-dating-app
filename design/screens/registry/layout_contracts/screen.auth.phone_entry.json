@@ -1,0 +1,27 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "authScreen"
+      ],
+      "file": "lib/auth/presentation/auth_screen.dart",
+      "symbol": "AuthScreen",
+      "family": "standalone",
+      "expression": "CatchScaffold.standalone",
+      "bodyGeometry": "intrinsic",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "authScreen"
+      ],
+      "file": "lib/auth/presentation/auth_screen.dart",
+      "symbol": "HostAuthScaffold",
+      "family": "standalone",
+      "expression": "CatchScaffold.standalone",
+      "bodyGeometry": "intrinsic",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "Consumer and Host auth frames share the explicit standalone family."
+}

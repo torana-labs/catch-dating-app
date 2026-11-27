@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "profileScreen"
+      ],
+      "file": "lib/user_profile/presentation/profile_screen.dart",
+      "symbol": "_ProfileScreenState",
+      "family": "root",
+      "expression": "CatchRootScreenScaffold.withPrimaryRail",
+      "bodyGeometry": "mixed",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "Self Profile is a primary-rail root whose page owners declare standard or full-bleed bodies."
+}

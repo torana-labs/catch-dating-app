@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/hosts/insights/host_event_reviews_screen.dart",
+      "symbol": "HostEventReviewsScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "The event report pushes every review of the event as a system pushed screen."
+}

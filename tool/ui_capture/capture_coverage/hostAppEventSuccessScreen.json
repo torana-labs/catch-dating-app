@@ -1,0 +1,7 @@
+{
+  "routeId": "hostAppEventSuccessScreen",
+  "status": "alias",
+  "priority": "P2",
+  "canonicalRouteId": "hostAppEventManageScreen",
+  "reason": "Host app Event Success route enters the canonical host event management surface."
+}

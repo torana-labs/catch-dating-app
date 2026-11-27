@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "eventChatScreen"
+      ],
+      "file": "lib/pages/chat/event_chat_screen.dart",
+      "symbol": "_EventChatScreenState",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "full-bleed",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Shared admitted event conversation with explicit profile review and join, canonical route chrome, and keyboard-aware message composer. Focused widget tests cover light, dark, large text and touch targets."
+}

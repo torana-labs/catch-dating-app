@@ -1,0 +1,13 @@
+{
+  "routeId": "hostAudienceScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "host_people_desktop",
+    "host_people_phone",
+    "host_people_regular_fragment",
+    "host_people_drifting_fragment",
+    "host_forms_phone"
+  ],
+  "reason": "The Audience destination has deterministic full-shell captures for People, Groups, Forms and Responses; large-text/theme captures use these same production entries."
+}

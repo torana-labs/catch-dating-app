@@ -3,13 +3,17 @@
   "category": "design",
   "path": "tool/design/check_screen_coverage.mjs",
   "impactPaths": [
+    "tool/lib/split_registry.mjs",
+    "tool/design/lib/screen_registries.mjs",
     "design/screens/screen_coverage.json",
     "tool/ui_capture/check_route_inventory.mjs",
     "packages/platform/lib/routing/route_contract.dart",
     "lib/routing/consumer_router.dart",
     "lib/routing/host_router.dart",
     "design/screens/catch.screens.json",
-    "tool/ui_capture/capture_coverage.json"
+    "design/screens/registry/**",
+    "tool/ui_capture/capture_coverage.json",
+    "tool/ui_capture/capture_coverage/**"
   ],
   "ciRequirements": {
     "repositoryView": "full",
