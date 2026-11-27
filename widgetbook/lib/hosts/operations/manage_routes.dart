@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_route_screen.dart';
+import 'package:catch_dating_app/hosts/events/event_route_screen.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:flutter/material.dart';

@@ -49,10 +49,9 @@ class HostDoorPoster extends StatelessWidget {
   final Uri joinLink;
 
   @override
-  Widget build(BuildContext context) => CatchLegacySurface(
-    radius: CatchRadius.sm,
-    backgroundColor: CatchTokens.editorialWhite,
-    padding: CatchInsets.iconChipContent,
+  Widget build(BuildContext context) => CatchSurface(
+    block: CatchSurfaceBlock.floating,
+    padding: CatchSurfacePadding.lg,
     child: CatchStack(
       align: CatchStackAlign.center,
       children: [

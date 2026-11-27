@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/presentation/widgets/host_door_poster_sheet.dart';
+import 'package:catch_dating_app/hosts/events/access/door_poster_sheet.dart';
 import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';

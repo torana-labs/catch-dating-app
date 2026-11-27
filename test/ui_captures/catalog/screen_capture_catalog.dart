@@ -129,6 +129,7 @@ import 'package:catch_dating_app/hosts/create/edit_event_screen.dart';
 import 'package:catch_dating_app/hosts/create/widgets/create_calendar_sheet.dart';
 import 'package:catch_dating_app/hosts/door/door_scan_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
+import 'package:catch_dating_app/hosts/events/event_route_screen.dart';
 import 'package:catch_dating_app/hosts/events/events_controller.dart'
     show HostEventsRequest, hostEventsControllerProvider;
 import 'package:catch_dating_app/hosts/events/events_screen.dart'
@@ -159,7 +160,6 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_cont
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_route_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_draft_controller.dart';
