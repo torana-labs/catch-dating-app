@@ -25,7 +25,6 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/today/host_today_controller.dart';
 import 'package:catch_dating_app/pages/organizer/organizer_detail_view_model.dart';
 import 'package:catch_dating_app/routing/shell/host_shell_screen.dart';
@@ -231,9 +230,6 @@ List<Object> hostOperationsProviderOverrides({
     hostOrganizerEditControllerProvider.overrideWithValue(
       const CaptureNoopHostOrganizerEditActions(),
     ),
-    hostPaymentAccountControllerProvider.overrideWithValue(
-      const CaptureNoopHostPaymentAccountActions(),
-    ),
     hostAnalyticsRepositoryProvider.overrideWithValue(analyticsRepository),
     for (final organizerId in eventOrganizerIds)
       organizerEventDraftsProvider(
@@ -377,21 +373,5 @@ final class CaptureNoopHostOrganizerEditActions
   Future<void> discardOrganizerMedia({
     required List<HostOrganizerMediaInput> photoInputs,
     HostPickedOrganizerLogo? logo,
-  }) async {}
-}
-
-final class CaptureNoopHostPaymentAccountActions
-    implements HostPaymentAccountActions {
-  const CaptureNoopHostPaymentAccountActions();
-
-  @override
-  Future<void> refreshStatus(HostPaymentProvider provider) async {}
-
-  @override
-  Future<void> startOnboarding({
-    required HostPaymentProvider provider,
-    required String country,
-    required String defaultCurrency,
-    RazorpayHostOnboardingDetails? razorpayDetails,
   }) async {}
 }

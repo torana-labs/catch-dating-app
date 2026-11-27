@@ -2,10 +2,6 @@ import 'package:catch_dating_app/contexts/payments/domain/host_membership_admin.
 import 'package:catch_dating_app/hosts/presentation/hosted_event_membership_rules_section.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_event_membership_rules_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_membership_plan_editor_sheet.dart';
-import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_section.dart';
-import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_state.dart';
-import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/host_memberships/fixtures.dart';
@@ -15,70 +11,6 @@ import 'package:widgetbook_workspace/utility/preview.dart';
 
 const _path = '[P2 host surfaces]/Memberships';
 const _previewEventId = 'event-preview';
-
-@widgetbook.UseCase(
-  name: 'Off, payouts blocked, live and billing paused',
-  type: HostMembershipsSection,
-  path: _path,
-)
-Widget hostMembershipsSectionStates(BuildContext context) =>
-    WidgetbookFixtureScope(
-      overrides: const [],
-      child: WidgetbookScrollCatalogFrame(
-        title: 'Memberships settings',
-        catalogId: 'host.memberships.section',
-        children: [
-          for (final (label, state) in [
-            ('program off', widgetbookHostMembershipsState(enabled: false)),
-            (
-              'payout account not ready',
-              widgetbookHostMembershipsState(enabled: false, routeReady: false),
-            ),
-            ('enabled with plans', widgetbookHostMembershipsState()),
-            (
-              'billing paused',
-              widgetbookHostMembershipsState(billingPauseState: 'paused'),
-            ),
-          ])
-            WidgetbookPageStateCard(
-              label: label,
-              child: WidgetbookContentFrame(
-                child: HostMembershipsSection(
-                  state: state,
-                  onProgramCommand: (_) {},
-                  onOpenPlan: (_) {},
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-
-@widgetbook.UseCase(
-  name: 'Owner loaded',
-  type: HostMembershipsCard,
-  path: _path,
-)
-Widget hostMembershipsCardStates(BuildContext context) =>
-    WidgetbookFixtureScope(
-      overrides: [
-        hostMembershipsControllerProvider(
-          HostOperationsFixtures.primaryOrganizer.id,
-        ).overrideWith(_PreviewMembershipsController.new),
-      ],
-      child: WidgetbookScrollCatalogFrame(
-        title: 'Memberships card',
-        catalogId: 'host.memberships.card',
-        children: [
-          WidgetbookContentFrame(
-            child: HostMembershipsCard(
-              organizer: HostOperationsFixtures.primaryOrganizer,
-              isOwner: true,
-            ),
-          ),
-        ],
-      ),
-    );
 
 @widgetbook.UseCase(
   name: 'New and existing plan',
@@ -161,12 +93,6 @@ Widget hostedEventMembershipRulesSectionStates(BuildContext context) =>
         ],
       ),
     );
-
-class _PreviewMembershipsController extends HostMembershipsController {
-  @override
-  Future<HostMembershipsState> build(String organizerId) async =>
-      widgetbookHostMembershipsState();
-}
 
 class _PreviewEventRulesController extends HostEventMembershipRulesController {
   @override

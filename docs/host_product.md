@@ -1331,13 +1331,12 @@ a route with six independent dimensions: **transport**, **sender identity**,
 whether the Host must complete the final Send action, and whether Catch can see
 delivery or replies. It must never use one undifferentiated “Message” action.
 
-The source registries are
-`lib/contexts/messaging/domain/communication_route.dart` and
+The source registry is
 `functions/src/platform/delivery/communicationRoutes.ts`. `adapterKey` selects the
 provider implementation. A future LINE, WeChat, KakaoTalk, SMS, or regional
 adapter adds a new route or replaces an adapter behind the same exact contract;
 it does not inherit WhatsApp permission merely because the delivery mode is
-similar. Both registries encode the audience scope, reply support and scheduling
+similar. The registry encodes the audience scope, reply support and scheduling
 support explicitly so backend authorization and UI affordances cannot infer
 them from the transport.
 

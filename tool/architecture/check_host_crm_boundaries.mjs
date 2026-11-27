@@ -332,9 +332,10 @@ export function audienceWorkspacePresentationFindings({
 }) {
   const findings = [];
   for (const anchor of [
+    // The redesigned People screen reads the view from links; the old
+    // Audience tab rail is gone.
     "enum HostAudienceView { people, audiences, forms, responses, requests }",
-    "class HostAudienceTabRail",
-    "ValueKey<String>('host-audience-view-tabs')",
+    "HostAudienceView hostAudienceViewFromName(",
   ]) {
     if (!audienceViewSource.includes(anchor)) findings.push({
       path: audienceViewPath,
