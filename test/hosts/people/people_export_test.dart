@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
+import 'package:catch_dating_app/hosts/people/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/people/people_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';

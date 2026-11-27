@@ -14,7 +14,6 @@ Own the organizer as an operating entity: profile and media, publication readine
 Current implementation roots:
 
 - `lib/hosts/organizer`
-- `lib/hosts/presentation/organizer_management`
 - `lib/hosts/presentation/payments`
 - `lib/hosts/insights`
 
@@ -57,9 +56,9 @@ Typed handoffs:
 | `OrganizerScreen` | `lib/hosts/organizer/organizer_screen.dart` | Actions: sign_in, retry_organizer_workspace, switch_organizer, open_organizer_setting. |
 | `OrganizerPageEditScreen` | `lib/hosts/organizer/page_edit_screen.dart` | Actions: update_organizer, update_organizer_media. |
 | `OrganizerSettingsScreen` | `lib/hosts/organizer/settings_screen.dart` | Actions: save_host_profile, open_legal_link, request_account_deletion, sign_out. |
-| `HostOrganizerEditController` | `lib/hosts/presentation/organizer_management/host_organizer_edit_controller.dart` | Actions: update_organizer, update_organizer_media. |
+| `HostOrganizerEditController` | `lib/hosts/organizer/edit/host_organizer_edit_controller.dart` | Actions: update_organizer, update_organizer_media. |
 | `watchHostOrganizerScope` | `lib/hosts/organizer/organizer_controller.dart` | Actions: retry_organizer_setting. |
-| `HostOrganizerDefaultsSaver` | `lib/hosts/presentation/organizer_management/host_organizer_defaults_saver.dart` | Actions: save_event_defaults. |
+| `HostOrganizerDefaultsSaver` | `lib/hosts/organizer/edit/host_organizer_defaults_saver.dart` | Actions: save_event_defaults. |
 | `HostInsightsScreen` | `lib/hosts/insights/host_insights_screen.dart` | Actions: retry_insights, select_insights_range, open_insights_event_report. |
 | `HostEventReportScreen` | `lib/hosts/insights/host_event_report_screen.dart` | Actions: share_event_report, open_event_reviews, invite_event_guests, choose_event_guests, download_event_csv. |
 | `OrganizerTeamScreen` | `lib/hosts/organizer/team_screen.dart` | Actions: add_host, remove_host, transfer_organizer_ownership. |
@@ -68,8 +67,8 @@ Typed handoffs:
 | `HostEventDefaultsDetailsScreen` | `lib/hosts/events/event_defaults_details_screen.dart` | Structural owner. |
 | `OrganizerEventPolicyScreen` | `lib/hosts/organizer/event_policy_screen.dart` | Actions: save_event_defaults. |
 | `OrganizerLiveGuideScreen` | `lib/hosts/organizer/live_guide_screen.dart` | Actions: save_event_defaults. |
-| `HostTeamManagementController` | `lib/hosts/presentation/organizer_management/host_team_management_controller.dart` | Actions: add_host, remove_host, transfer_organizer_ownership. |
-| `HostProfileController` | `lib/hosts/presentation/host_profile_controller.dart` | Actions: create_host_profile, save_host_profile. |
+| `HostTeamManagementController` | `lib/hosts/organizer/team/host_team_management_controller.dart` | Actions: add_host, remove_host, transfer_organizer_ownership. |
+| `HostProfileController` | `lib/hosts/organizer/host_profile_controller.dart` | Actions: create_host_profile, save_host_profile. |
 | `AuthSessionController` | `lib/pages/account/auth_session_controller.dart` | Actions: sign_out. |
 | `HostShellScreen` | `lib/routing/shell/host_shell_screen.dart` | Actions: switch_organizer. |
 

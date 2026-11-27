@@ -3,7 +3,7 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_reposi
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/hosts/organizer/messaging_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
+import 'package:catch_dating_app/hosts/people/host_audience_controller.dart';
 import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/theme/app_theme.dart';

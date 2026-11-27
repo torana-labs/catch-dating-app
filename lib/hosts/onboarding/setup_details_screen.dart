@@ -1,7 +1,7 @@
+import 'package:catch_dating_app/hosts/onboarding/create_organizer_controller.dart';
 import 'package:catch_dating_app/hosts/onboarding/onboarding_controller.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_details_body.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
-import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_ui/catch_ui.dart';

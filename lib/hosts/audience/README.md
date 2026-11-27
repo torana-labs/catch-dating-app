@@ -61,7 +61,7 @@ These are schema declarations, not independent proof of runtime limits.
 
 **What does Audience do?**
 
-- Source: [lib/hosts/presentation/host_audience_view.dart](../presentation/host_audience_view.dart)
+- Source: [lib/hosts/people/host_audience_view.dart](../people/host_audience_view.dart)
 - Source: [lib/hosts/people/people_screen.dart](../people/people_screen.dart)
 - Source: [lib/hosts/forms/forms_screen.dart](../forms/forms_screen.dart)
 - Source: [lib/routing/host_router.dart](../../routing/host_router.dart)
@@ -69,7 +69,7 @@ These are schema declarations, not independent proof of runtime limits.
 
 **What can a host do with People?**
 
-- Source: [lib/hosts/presentation/customers](../presentation/customers)
+- Source: [lib/hosts/people/host_customers_controller.dart](../people/host_customers_controller.dart)
 - Source: [functions/src/organizers/organizerContacts.ts](../../../functions/src/organizers/organizerContacts.ts)
 - Source: [contracts/callables/create_organizer_contact_payload.schema.json](../../../contracts/callables/create_organizer_contact_payload.schema.json)
 - Source: [functions/src/shared/organizerContactOrigins.ts](../../../functions/src/shared/organizerContactOrigins.ts)
@@ -106,7 +106,7 @@ These are schema declarations, not independent proof of runtime limits.
 
 - Source: [functions/src/organizers/organizerSavedAudiences.ts](../../../functions/src/organizers/organizerSavedAudiences.ts)
 - Source: [functions/src/shared/contactPermissions.ts](../../../functions/src/shared/contactPermissions.ts)
-- Source: [lib/hosts/presentation/customers/host_customers_screen_state.dart](../presentation/customers/host_customers_screen_state.dart)
+- Source: [lib/hosts/people/host_customers_screen_state.dart](../people/host_customers_screen_state.dart)
 - Source: [lib/hosts/people/people_screen.dart](../people/people_screen.dart)
 - Source: [tool/architecture/check_host_crm_boundaries.mjs](../../../tool/architecture/check_host_crm_boundaries.mjs)
 - Example: [functions/src/organizers/organizerSavedAudienceMembership.test.ts](../../../functions/src/organizers/organizerSavedAudienceMembership.test.ts) — selected resolution authorizes and hides missing data
@@ -124,7 +124,6 @@ These are schema declarations, not independent proof of runtime limits.
 
 Current implementation roots:
 
-- `lib/hosts/presentation/customers`
 - `lib/hosts/forms`
 
 ## This feature owns
@@ -174,12 +173,12 @@ Typed handoffs:
 | `HostPeopleScreen` | `lib/hosts/people/people_screen.dart` | Actions: switch_customers_view, open_saved_audience_create, retry_directory, switch_organizer, search_customers, open_customer_filters, filter_customers, sort_customers, message_filtered_customers, review_whatsapp_sender_setup, open_customer, review_duplicate_customers. |
 | `HostSavedGroupScreen` | `lib/hosts/people/saved_group_screen.dart` | Actions: search_saved_audiences, open_saved_audience_detail. |
 | `HostAddPersonScreen` | `lib/hosts/people/add_person_screen.dart` | Structural owner. |
-| `HostCustomersDirectoryController` | `lib/hosts/presentation/customers/host_customers_controller.dart` | Actions: load_more. |
-| `HostCustomersController` | `lib/hosts/presentation/customers/host_customers_controller.dart` | Actions: export_customers, create_customer, manage_customer, start_conversation. |
+| `HostCustomersDirectoryController` | `lib/hosts/people/host_customers_controller.dart` | Actions: load_more. |
+| `HostCustomersController` | `lib/hosts/people/host_customers_controller.dart` | Actions: export_customers, create_customer, manage_customer, start_conversation. |
 | `HostPersonScreen` | `lib/hosts/people/person_screen.dart` | Actions: open_customer_event, undo_customer_merge, retry_customer_detail, open_personal_whatsapp_handoff. |
 | `HostPeopleDuplicatesScreen` | `lib/hosts/people/duplicates/duplicates_screen.dart` | Actions: review_duplicate_customers, merge_customers, mark_different_people, reopen_duplicate, undo_customer_merge. |
 | `HostDuplicateCommands` | `lib/hosts/people/duplicates/duplicates_controller.dart` | Actions: merge_customers, mark_different_people, reopen_duplicate, undo_customer_merge. |
-| `HostAudienceView` | `lib/hosts/presentation/host_audience_view.dart` | Closed peer-mode vocabulary for People, Audiences, Forms, and Responses. |
+| `HostAudienceView` | `lib/hosts/people/host_audience_view.dart` | Closed peer-mode vocabulary for People, Audiences, Forms, and Responses. |
 | `HostFormsScreen` | `lib/hosts/forms/forms_screen.dart` | The Forms tab inside People; one form, its questions, responses, one answer and offers live beside it under lib/hosts/forms. |
 | `HostFormsDirectoryController` | `lib/hosts/forms/host_forms_directory_controller.dart` | Organizer form inventory state. |
 | `HostFormEditorController` | `lib/hosts/forms/host_forms_controller.dart` | Draft/editor state and publication actions. |

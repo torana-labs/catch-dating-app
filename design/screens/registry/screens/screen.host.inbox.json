@@ -96,11 +96,11 @@
         "symbol": "HostComposeCommands"
       },
       {
-        "file": "lib/hosts/presentation/host_audience_controller.dart",
+        "file": "lib/hosts/people/host_audience_controller.dart",
         "symbol": "HostAudienceController"
       },
       {
-        "file": "lib/hosts/presentation/host_organizer_post_controller.dart",
+        "file": "lib/hosts/people/sends/host_organizer_post_controller.dart",
         "symbol": "HostOrganizerPostController"
       }
     ],

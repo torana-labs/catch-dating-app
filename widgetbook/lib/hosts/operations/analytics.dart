@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/organizers/data/host_tracking_settings_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_section.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_tracking_settings_input_section.dart';
+import 'package:catch_dating_app/hosts/organizer/tracking/host_tracking_settings_input_section.dart';
+import 'package:catch_dating_app/hosts/organizer/tracking/host_tracking_settings_section.dart';
 import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

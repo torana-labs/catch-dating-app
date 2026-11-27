@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/organizers/domain/claimable_organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_draft.dart';
+import 'package:catch_dating_app/hosts/onboarding/create_organizer_controller.dart';
+import 'package:catch_dating_app/hosts/onboarding/create_organizer_draft_controller.dart';
 import 'package:catch_dating_app/hosts/onboarding/onboarding_controller.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_details_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_done_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_find_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_payments_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
-import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_draft_controller.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_error_context.dart' as app_ops;

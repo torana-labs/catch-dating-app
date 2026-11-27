@@ -3,7 +3,7 @@ import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
 import 'package:catch_dating_app/hosts/create/edit_event_state.dart';
-import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
+import 'package:catch_dating_app/hosts/organizer/edit/host_organizer_edit_controller.dart';
 import 'package:catch_dating_app/pages/organizer/organizer_detail_view_model.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/catch_async_state.dart';

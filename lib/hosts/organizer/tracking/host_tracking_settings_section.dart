@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_tracking_settings_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_tracking_settings_input_section.dart';
+import 'package:catch_dating_app/hosts/organizer/tracking/host_tracking_settings_controller.dart';
+import 'package:catch_dating_app/hosts/organizer/tracking/host_tracking_settings_input_section.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/errors/app_exception.dart';

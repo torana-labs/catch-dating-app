@@ -3,7 +3,7 @@ import 'package:catch_dating_app/contexts/payments/domain/host_membership_admin.
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_event_facts.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_plan.dart';
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_state.dart';
-import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_state.dart';
+import 'package:catch_dating_app/hosts/organizer/memberships/host_memberships_state.dart';
 
 /// Offline host-membership fixtures parsed through the strict domain readers,
 /// so previews break when the server document shape changes.

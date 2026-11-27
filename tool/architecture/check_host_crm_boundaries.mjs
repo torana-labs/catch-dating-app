@@ -12,7 +12,7 @@ const isCli = process.argv[1] && path.resolve(process.argv[1]) === toolPath;
 // consumers; People reads intent plans, so no presentation file selects one.
 const customerRouteConsumers = new Set();
 const savedAudienceMutationOwners = new Set([
-  "lib/hosts/presentation/host_audience_controller.dart",
+  "lib/hosts/people/host_audience_controller.dart",
   // People's saved group screen is the redesigned Customers saved-audience
   // editor: it renames and deletes the group it shows.
   "lib/hosts/people/saved_group_controller.dart",
@@ -408,7 +408,7 @@ function scanApplicationRouteOwnership(root) {
 
 function scanAudienceWorkspacePresentation(root) {
   const audienceViewPath =
-    "lib/hosts/presentation/host_audience_view.dart";
+    "lib/hosts/people/host_audience_view.dart";
   const routeContractPath = "packages/platform/lib/routing/route_contract.dart";
   const paths = [audienceViewPath, routeContractPath];
   const missing = paths.filter((item) => !fs.existsSync(path.join(root, item)));

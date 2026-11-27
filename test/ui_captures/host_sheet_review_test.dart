@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
+import 'package:catch_dating_app/hosts/organizer/selection/host_organizer_switcher_sheet.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
