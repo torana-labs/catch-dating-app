@@ -13,6 +13,7 @@ import {
   isProductionWidgetDartPath,
   productionWidgetGlobs,
 } from "./lib/production_widget_roots.mjs";
+import {widgetbookComponentNames} from "./lib/widgetbook_use_cases.mjs";
 
 const widgetKeys = [
   "name", "file", "classKind", "baseClass", "visibility", "role",
@@ -463,14 +464,10 @@ function readJson(file) {
 }
 
 function readWidgetbookNames() {
-  const file = fromRepo("widgetbook/lib/main.directories.g.dart");
-  if (!fs.existsSync(file)) return new Set();
   const names = new Set();
-  for (const match of fs.readFileSync(file, "utf8").matchAll(
-    /WidgetbookComponent\(\s*name: '([^']+)'/gu,
-  )) {
-    names.add(match[1]);
-    names.add(match[1].replace(/<.*>$/u, ""));
+  for (const name of widgetbookComponentNames(repoRoot)) {
+    names.add(name);
+    names.add(name.replace(/<.*>$/u, ""));
   }
   return names;
 }

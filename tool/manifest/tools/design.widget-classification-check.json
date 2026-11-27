@@ -14,7 +14,8 @@
     "design/components/catch.components.json",
     "packages/catch_ui/lib/**",
     "packages/platform/lib/riverpod_ui/**",
-    "widgetbook/lib/main.directories.g.dart",
+    "widgetbook/lib/**",
+    "tool/design/lib/widgetbook_use_cases.mjs",
     "tool/design/check_widget_classification.mjs"
   ],
   "command": "node tool/design/check_widget_classification.mjs",

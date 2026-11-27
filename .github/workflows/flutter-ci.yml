@@ -584,11 +584,23 @@ jobs:
         working-directory: widgetbook
         run: flutter pub get
 
+      # main.directories.g.dart isn't committed. Generate it, then prove the
+      # annotations the Node checks read match what build_runner wrote.
+      - name: Generate Widgetbook directories
+        id: widgetbook_codegen
+        if: ${{ !cancelled() && steps.widgetbook_pub.outcome == 'success' && steps.scope.outputs.widgetbook == 'true' }}
+        working-directory: widgetbook
+        run: dart run build_runner build
+
+      - name: Widgetbook annotations match the generated directories
+        if: ${{ !cancelled() && steps.widgetbook_codegen.outcome == 'success' }}
+        run: node tool/design/lib/widgetbook_use_cases.mjs --verify-generated
+
       # The golden inventory check renders nothing, so pull requests run it
       # here on Linux instead of waiting for the merge queue's macOS goldens.
       - name: Check the Widgetbook golden inventory
         id: widgetbook_inventory
-        if: ${{ !cancelled() && steps.widgetbook_pub.outcome == 'success' && steps.scope.outputs.widgetbook == 'true' }}
+        if: ${{ !cancelled() && steps.widgetbook_codegen.outcome == 'success' && steps.scope.outputs.widgetbook == 'true' }}
         working-directory: widgetbook
         run: >-
           flutter test test/primitive_goldens_test.dart
@@ -596,7 +608,7 @@ jobs:
 
       - name: Build Widgetbook web app
         id: widgetbook_build
-        if: ${{ !cancelled() && steps.widgetbook_pub.outcome == 'success' && steps.scope.outputs.widgetbook == 'true' }}
+        if: ${{ !cancelled() && steps.widgetbook_codegen.outcome == 'success' && steps.scope.outputs.widgetbook == 'true' }}
         working-directory: widgetbook
         run: flutter build web --release
 
@@ -752,7 +764,7 @@ jobs:
           {
             echo '### Committed generated outputs are stale'
             echo
-            echo 'Run build_runner in the root, apps/host, apps/consumer and widgetbook and commit the result,'
+            echo 'Run build_runner in the root, apps/host and apps/consumer and commit the result,'
             echo 'or apply the generated-flutter-drift-linux patch from this run.'
             echo
             echo '~~~'

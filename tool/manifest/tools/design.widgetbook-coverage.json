@@ -12,7 +12,8 @@
     "node tool/design/check_widgetbook_coverage.mjs --check"
   ],
   "impactPaths": [
-    "widgetbook/lib/main.directories.g.dart"
+    "widgetbook/lib/**",
+    "tool/design/lib/widgetbook_use_cases.mjs"
   ],
   "role": "gate",
   "ciRequirements": {

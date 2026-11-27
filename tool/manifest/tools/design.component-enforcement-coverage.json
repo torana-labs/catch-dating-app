@@ -13,7 +13,8 @@
   "impactPaths": [
     "tool/design/check_component_enforcement_coverage.test.mjs",
     "tool/design/generated/enforcement_expectations.json",
-    "widgetbook/lib/main.directories.g.dart"
+    "widgetbook/lib/**",
+    "tool/design/lib/widgetbook_use_cases.mjs"
   ],
   "role": "gate",
   "alsoEnforces": [
