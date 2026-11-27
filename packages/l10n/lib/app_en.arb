@@ -18843,8 +18843,6 @@
   "@hostsDraftExitDiscardAndExit": {"description": "Leaves a dirty Host creation wizard without saving its latest changes.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_draft_exit_dialog"},
   "hostsDraftExitSaveAndExit": "Save draft & exit",
   "@hostsDraftExitSaveAndExit": {"description": "Saves a Host creation draft and exits only after the save succeeds.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_draft_exit_dialog"},
-  "hostsWizardStepOverviewSemantics": "Step {step} of {total}. Open section overview.",
-  "@hostsWizardStepOverviewSemantics": {"description": "Accessible label for the interactive wizard step counter.", "placeholders": {"step": {"type": "int"}, "total": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "core.widgets.catch_step_header"},
   "hostEventRehearsalTitle": "Dress rehearsal",
   "@hostEventRehearsalTitle": {"description": "Event rehearsal route title.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostEventRehearsalBadge": "Rehearsal",

@@ -3945,41 +3945,6 @@
       ]
     },
     {
-      "id": "host-wizard-header-adapters",
-      "title": "One Host wizard step-header adapter",
-      "intent": "Share localized step numbering and review-mode mapping across Club and Event creation.",
-      "priority": "P1",
-      "status": "implemented",
-      "targetContract": "catch.step_header",
-      "qualityReference": "HostWizardStepHeader",
-      "decisionSource": "owner-approved:2026-09-24 beyond-fields audit; preserve existing rendering and behavior",
-      "acceptedVisualDelta": [
-        "None. Preserve CatchStepHeader rendering, zero-based input conversion, nullable subtitle, close action, overview action and review-mode semantics."
-      ],
-      "members": [
-        {
-          "symbol": "HostWizardStepHeader",
-          "disposition": "canonical",
-          "preview": "required",
-          "rationale": "One feature adapter over the existing CatchStepHeader; no new primitive concept."
-        },
-        {
-          "symbol": "CreateOrganizerStepHeader",
-          "disposition": "unify",
-          "target": "HostWizardStepHeader",
-          "preview": "not-applicable",
-          "rationale": "The two domain adapters duplicate the same localized mapping; callers now supply subtitle directly."
-        },
-        {
-          "symbol": "CreateEventStepHeader",
-          "disposition": "unify",
-          "target": "HostWizardStepHeader",
-          "preview": "not-applicable",
-          "rationale": "The two domain adapters duplicate the same localized mapping; callers now supply subtitle directly."
-        }
-      ]
-    },
-    {
       "id": "host-operational-section-composition",
       "title": "One Host operational section anatomy",
       "intent": "Use the approved Public visibility and Import phone contacts anatomy for Host task, collection and report sections.",
