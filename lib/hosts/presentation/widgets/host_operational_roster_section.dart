@@ -562,8 +562,7 @@ class HostRosterInsightRail extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       switch (insightsAsync) {
-        // A view the server has not written, or one it could not evaluate,
-        // shows the unavailable state; check-in never depends on it.
+        // An unwritten or unevaluated view shows as unavailable.
         AsyncData(:final value)
             when value.sourceCoverage == HostRosterInsightCoverage.missing ||
                 value.sourceCoverage ==
