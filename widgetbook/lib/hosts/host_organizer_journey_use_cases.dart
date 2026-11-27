@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/organizers/data/organizer_journey_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_journey.dart';
-import 'package:catch_dating_app/hosts/presentation/organizer_journey/host_organizer_journey_section.dart';
+import 'package:catch_dating_app/hosts/organizer/host_organizer_journey_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

@@ -4,8 +4,8 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_reposi
 import 'package:catch_dating_app/contexts/audience/data/read_models/host_contact_summary_reads.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
+import 'package:catch_dating_app/hosts/people/host_customers_controller.dart';
+import 'package:catch_dating_app/hosts/people/host_customers_screen_state.dart';
 import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:catch_platform/firebase/scoped_read_models.dart';

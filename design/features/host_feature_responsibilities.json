@@ -272,7 +272,7 @@
             ],
             "answer": "Audience is the Host workspace for understanding and organizing an organizer’s relationships with people. Its four peer modes are People (the contact directory), Audiences (reusable groups), Forms (intake design and publication), and Responses (submitted answers and review). Organizer applications belong to this intake workflow. Hosts select the organizer whose records they want to work with; event operations remain in Events and communication delivery moves to Inbox. The implementation still lives across the listed customers, forms, and applications folders; this README is the entry point for the whole destination.",
             "sourcePaths": [
-              "lib/hosts/presentation/host_audience_view.dart",
+              "lib/hosts/people/host_audience_view.dart",
               "lib/hosts/people/people_screen.dart",
               "lib/hosts/forms/forms_screen.dart",
               "lib/routing/host_router.dart",
@@ -389,7 +389,7 @@
             "sourcePaths": [
               "functions/src/organizers/organizerSavedAudiences.ts",
               "functions/src/shared/contactPermissions.ts",
-              "lib/hosts/presentation/customers/host_customers_screen_state.dart",
+              "lib/hosts/people/host_customers_screen_state.dart",
               "lib/hosts/people/people_screen.dart",
               "tool/architecture/check_host_crm_boundaries.mjs"
             ],
@@ -476,13 +476,13 @@
         },
         {
           "id": "customers_directory",
-          "file": "lib/hosts/presentation/customers/host_customers_controller.dart",
+          "file": "lib/hosts/people/host_customers_controller.dart",
           "symbol": "HostCustomersDirectoryController",
           "role": "Actions: load_more."
         },
         {
           "id": "customers_mutations",
-          "file": "lib/hosts/presentation/customers/host_customers_controller.dart",
+          "file": "lib/hosts/people/host_customers_controller.dart",
           "symbol": "HostCustomersController",
           "role": "Actions: export_customers, create_customer, manage_customer, start_conversation."
         },
@@ -506,7 +506,7 @@
         },
         {
           "id": "audience_view",
-          "file": "lib/hosts/presentation/host_audience_view.dart",
+          "file": "lib/hosts/people/host_audience_view.dart",
           "symbol": "HostAudienceView",
           "role": "Closed peer-mode vocabulary for People, Audiences, Forms, and Responses."
         },
@@ -699,7 +699,7 @@
         },
         {
           "id": "campaign_controller",
-          "file": "lib/hosts/presentation/host_audience_controller.dart",
+          "file": "lib/hosts/people/host_audience_controller.dart",
           "symbol": "HostAudienceController",
           "role": "Actions: manage_campaign."
         }
@@ -743,7 +743,7 @@
           "reason": "Shared inquiry list/search presentation remains a cross-role chat implementation seam."
         },
         {
-          "path": "lib/hosts/presentation/host_audience_controller.dart",
+          "path": "lib/hosts/people/host_audience_controller.dart",
           "reason": "Legacy campaign orchestration is relocated by A4; the responsibility remains Inbox-owned now."
         },
         {
@@ -818,7 +818,7 @@
         },
         {
           "id": "edit_controller",
-          "file": "lib/hosts/presentation/organizer_management/host_organizer_edit_controller.dart",
+          "file": "lib/hosts/organizer/edit/host_organizer_edit_controller.dart",
           "symbol": "HostOrganizerEditController",
           "role": "Actions: update_organizer, update_organizer_media."
         },
@@ -830,7 +830,7 @@
         },
         {
           "id": "defaults_saver",
-          "file": "lib/hosts/presentation/organizer_management/host_organizer_defaults_saver.dart",
+          "file": "lib/hosts/organizer/edit/host_organizer_defaults_saver.dart",
           "symbol": "HostOrganizerDefaultsSaver",
           "role": "Actions: save_event_defaults."
         },
@@ -884,13 +884,13 @@
         },
         {
           "id": "team_controller",
-          "file": "lib/hosts/presentation/organizer_management/host_team_management_controller.dart",
+          "file": "lib/hosts/organizer/team/host_team_management_controller.dart",
           "symbol": "HostTeamManagementController",
           "role": "Actions: add_host, remove_host, transfer_organizer_ownership."
         },
         {
           "id": "profile_controller",
-          "file": "lib/hosts/presentation/host_profile_controller.dart",
+          "file": "lib/hosts/organizer/host_profile_controller.dart",
           "symbol": "HostProfileController",
           "role": "Actions: create_host_profile, save_host_profile."
         },

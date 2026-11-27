@@ -34,9 +34,7 @@ void main() {
     );
     expect(
       router,
-      contains(
-        'hosts/presentation/organizer_management/host_create_organizer_screen.dart',
-      ),
+      contains('hosts/onboarding/host_create_organizer_screen.dart'),
     );
     expect(router, contains('hosts/create/create_route_screen.dart'));
   });
@@ -74,7 +72,7 @@ void main() {
     );
     expect(
       repoFile(
-        'lib/hosts/presentation/organizer_management/host_team_management_controller.dart',
+        'lib/hosts/organizer/team/host_team_management_controller.dart',
       ).existsSync(),
       isTrue,
     );

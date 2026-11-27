@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_admin.dart';
 import 'package:catch_dating_app/host_memberships/host_memberships.dart';
-import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_controller.dart';
+import 'package:catch_dating_app/hosts/organizer/memberships/host_memberships_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';

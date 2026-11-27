@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
-import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_defaults_saver.dart';
+import 'package:catch_dating_app/hosts/organizer/edit/host_organizer_defaults_saver.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -6,8 +6,8 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_set
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/hosts/people/host_audience_controller.dart';
 import 'package:catch_dating_app/hosts/people/sends/sends_detail_body.dart';
-import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/errors/app_error_message.dart';

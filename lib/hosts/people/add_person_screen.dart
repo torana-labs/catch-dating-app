@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/hosts/people/add_person_body.dart';
 import 'package:catch_dating_app/hosts/people/add_person_state.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
+import 'package:catch_dating_app/hosts/people/host_customers_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';

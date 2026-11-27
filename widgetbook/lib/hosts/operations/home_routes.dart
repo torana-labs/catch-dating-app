@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
+import 'package:catch_dating_app/hosts/organizer/selection/host_organizer_switcher_sheet.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';

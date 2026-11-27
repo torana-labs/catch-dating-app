@@ -107,11 +107,11 @@
     "primary": "hostCustomersDirectoryControllerProvider + hostAllSavedAudiencesProvider + hostContactSummaryRowProvider + hostContactDetailFactsProvider + hostContactNotesProvider + hostDuplicateReviewPagesProvider + hostOrganizerSelectionProvider",
     "files": [
       {
-        "file": "lib/hosts/presentation/customers/host_customers_controller.dart",
+        "file": "lib/hosts/people/host_customers_controller.dart",
         "symbol": "HostCustomersDirectoryController"
       },
       {
-        "file": "lib/hosts/presentation/customers/host_customers_screen_state.dart",
+        "file": "lib/hosts/people/host_customers_screen_state.dart",
         "symbol": "HostCustomersDirectoryState"
       },
       {
@@ -119,7 +119,7 @@
         "symbol": "hostContactDetailFacts"
       },
       {
-        "file": "lib/hosts/presentation/host_organizer_selection_controller.dart",
+        "file": "lib/hosts/organizer/selection/host_organizer_selection_controller.dart",
         "symbol": "HostOrganizerSelection"
       },
       {
@@ -129,7 +129,7 @@
     ],
     "mutationOwners": [
       {
-        "file": "lib/hosts/presentation/customers/host_customers_controller.dart",
+        "file": "lib/hosts/people/host_customers_controller.dart",
         "symbol": "HostCustomersController"
       },
       {
@@ -137,7 +137,7 @@
         "symbol": "HostDuplicateCommands"
       },
       {
-        "file": "lib/hosts/presentation/host_audience_controller.dart",
+        "file": "lib/hosts/people/host_audience_controller.dart",
         "symbol": "HostAudienceController"
       }
     ],

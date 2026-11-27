@@ -28,7 +28,7 @@
       "appliesTo": [
         "lib/hosts/presentation/customers/**",
         "lib/hosts/people/**",
-        "lib/hosts/presentation/host_audience_controller.dart",
+        "lib/hosts/people/host_audience_controller.dart",
         "packages/l10n/lib/app_en.arb",
         "lib/routing/host_router.dart",
         "packages/platform/lib/routing/route_contract.dart",

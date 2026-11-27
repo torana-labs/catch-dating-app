@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_manual_send_task.dart';
+import 'package:catch_dating_app/hosts/people/host_audience_controller.dart';
 import 'package:catch_dating_app/hosts/people/sends/sends_screen.dart';
 import 'package:catch_dating_app/hosts/people/sends/sends_sheets_body.dart';
-import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/theme/app_theme.dart';

@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
+import 'package:catch_dating_app/hosts/organizer/edit/host_organizer_defaults_saver.dart';
+import 'package:catch_dating_app/hosts/organizer/edit/host_organizer_edit_controller.dart';
 import 'package:catch_dating_app/hosts/organizer/live_guide_body.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_controller.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_defaults_saver.dart';
-import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_ui/catch_ui.dart';

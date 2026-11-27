@@ -55,7 +55,7 @@
       "path": "/host/audience",
       "label": "People",
       "widget": "HostPeopleScreen + HostFormsScreen",
-      "source": "lib/hosts/presentation/host_audience_view.dart",
+      "source": "lib/hosts/people/host_audience_view.dart",
       "captureId": "host_people_phone",
       "otherIndexRouteIds": [
         "hostInboxScreen"

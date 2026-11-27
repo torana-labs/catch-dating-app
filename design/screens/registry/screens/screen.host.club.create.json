@@ -33,14 +33,14 @@
     }
   ],
   "source": {
-    "file": "lib/hosts/presentation/organizer_management/host_create_organizer_screen.dart",
+    "file": "lib/hosts/onboarding/host_create_organizer_screen.dart",
     "symbol": "HostCreateOrganizerScreen"
   },
   "stateController": {
     "primary": "HostCreateOrganizerScreen + CreateOrganizerScreen + CreateOrganizerController + CreateOrganizerDraftController",
     "files": [
       {
-        "file": "lib/hosts/presentation/organizer_management/host_create_organizer_screen.dart",
+        "file": "lib/hosts/onboarding/host_create_organizer_screen.dart",
         "symbol": "HostCreateOrganizerScreen"
       },
       {
@@ -48,25 +48,25 @@
         "symbol": "CatchLegacyDock"
       },
       {
-        "file": "lib/hosts/presentation/organizer_management/create/create_organizer_controller.dart",
+        "file": "lib/hosts/onboarding/create_organizer_controller.dart",
         "symbol": "CreateOrganizerController"
       },
       {
-        "file": "lib/hosts/presentation/organizer_management/create/create_organizer_draft_controller.dart",
+        "file": "lib/hosts/onboarding/create_organizer_draft_controller.dart",
         "symbol": "CreateOrganizerDraftController"
       },
       {
-        "file": "lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart",
+        "file": "lib/hosts/organizer/edit/organizer_host_defaults_step.dart",
         "symbol": "OrganizerPolicyDefaultsCard"
       }
     ],
     "mutationOwners": [
       {
-        "file": "lib/hosts/presentation/organizer_management/create/create_organizer_controller.dart",
+        "file": "lib/hosts/onboarding/create_organizer_controller.dart",
         "symbol": "CreateOrganizerController"
       },
       {
-        "file": "lib/hosts/presentation/organizer_management/create/create_organizer_draft_controller.dart",
+        "file": "lib/hosts/onboarding/create_organizer_draft_controller.dart",
         "symbol": "CreateOrganizerDraftController"
       },
       {
@@ -203,7 +203,7 @@
           "OrganizerEventSuccessDefaultsStep"
         ],
         "flutter": {
-          "file": "lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart",
+          "file": "lib/hosts/organizer/edit/organizer_host_defaults_step.dart",
           "symbol": "OrganizerPolicyDefaultsCard"
         },
         "currentOwner": "CreateOrganizerScreen",

@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_body.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_controller.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
+import 'package:catch_dating_app/hosts/organizer/selection/host_organizer_selection_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
