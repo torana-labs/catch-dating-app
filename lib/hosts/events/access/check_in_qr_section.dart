@@ -105,7 +105,7 @@ class _HostEventCheckInQrSectionState
         if (runtimeLink != null) ...[
           CatchButton(
             label: context.l10n.hostsHostEventAttendancePanelRuntimeShareLabel,
-            leading: Icon(CatchIcons.share),
+            leading: CatchIcon(CatchIcons.share),
             size: CatchButtonSize.md,
             variant: CatchButtonVariant.secondary,
             status: _sharing
@@ -116,7 +116,7 @@ class _HostEventCheckInQrSectionState
           CatchButton(
             key: const ValueKey('host_event_door_poster'),
             label: context.l10n.hostsDoorPosterAction,
-            leading: Icon(CatchIcons.qrCode),
+            leading: CatchIcon(CatchIcons.qrCode),
             size: CatchButtonSize.md,
             variant: CatchButtonVariant.secondary,
             onPressed: () => unawaited(
