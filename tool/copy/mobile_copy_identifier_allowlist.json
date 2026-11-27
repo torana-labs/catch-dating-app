@@ -49,6 +49,8 @@
   "hostsHostTodayVisiblecopyMorning",
   "hostsHostTodayVisiblecopyAfternoon",
   "hostsHostTodayVisiblecopyEvening",
+  "hostsHostTeamManagementSectionVisiblecopyTransfer",
+  "hostsHostTeamManagementSectionVisiblecopyRemove",
   "onboardingWelcomePageVisiblecopyReducedMotion",
   "onboardingWelcomePageVisiblecopyDirect",
   "onboardingWelcomePageVisiblecopyAnimated",
