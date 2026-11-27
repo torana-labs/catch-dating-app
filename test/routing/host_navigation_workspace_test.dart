@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
+import 'package:catch_dating_app/hosts/people/host_audience_view.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_dating_app/routing/host_router.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';

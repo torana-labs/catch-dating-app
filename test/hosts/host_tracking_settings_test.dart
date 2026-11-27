@@ -6,9 +6,9 @@ import 'package:catch_dating_app/contexts/organizers/data/host_tracking_settings
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
-import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_section.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_tracking_settings_input_section.dart';
+import 'package:catch_dating_app/hosts/organizer/tracking/host_tracking_settings_controller.dart';
+import 'package:catch_dating_app/hosts/organizer/tracking/host_tracking_settings_input_section.dart';
+import 'package:catch_dating_app/hosts/organizer/tracking/host_tracking_settings_section.dart';
 import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';

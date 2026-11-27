@@ -524,7 +524,7 @@
           "HostOrganizerSwitcherSheet"
         ],
         "flutter": {
-          "file": "lib/hosts/presentation/widgets/host_organizer_switcher_sheet.dart",
+          "file": "lib/hosts/organizer/selection/host_organizer_switcher_sheet.dart",
           "symbol": "HostOrganizerSwitcherSheet"
         },
         "currentOwner": "HostTodayHeader + HostEventsOrganizerSection + HostShellScreen",

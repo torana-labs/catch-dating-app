@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/organizers/data/organizer_journey_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_journey.dart';
-import 'package:catch_dating_app/hosts/presentation/organizer_journey/host_organizer_journey_section.dart';
+import 'package:catch_dating_app/hosts/organizer/host_organizer_journey_section.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';

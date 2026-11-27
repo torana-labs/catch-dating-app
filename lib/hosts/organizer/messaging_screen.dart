@@ -7,7 +7,7 @@ import 'package:catch_dating_app/hosts/organizer/messaging_body.dart';
 import 'package:catch_dating_app/hosts/organizer/messaging_state.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_controller.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
+import 'package:catch_dating_app/hosts/people/host_audience_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/errors/app_error_message.dart';

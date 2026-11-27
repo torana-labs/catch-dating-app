@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
-import 'package:catch_dating_app/hosts/presentation/host_organizer_publication_state.dart';
+import 'package:catch_dating_app/hosts/organizer/edit/host_organizer_publication_state.dart';
 import 'package:catch_test_support/organizers_test_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
 

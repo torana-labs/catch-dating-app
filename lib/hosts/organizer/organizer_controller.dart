@@ -7,7 +7,7 @@ import 'package:catch_dating_app/contexts/payments/data/host_organizer_bills_rep
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
+import 'package:catch_dating_app/hosts/organizer/selection/host_organizer_selection_controller.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';

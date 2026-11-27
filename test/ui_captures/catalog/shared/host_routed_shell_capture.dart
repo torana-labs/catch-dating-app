@@ -24,7 +24,7 @@ import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.d
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
+import 'package:catch_dating_app/hosts/organizer/edit/host_organizer_edit_controller.dart';
 import 'package:catch_dating_app/hosts/today/host_today_controller.dart';
 import 'package:catch_dating_app/pages/organizer/organizer_detail_view_model.dart';
 import 'package:catch_dating_app/routing/shell/host_shell_screen.dart';

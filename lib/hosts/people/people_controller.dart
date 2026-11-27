@@ -4,8 +4,8 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/hosts/organizer/selection/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/people/people_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';

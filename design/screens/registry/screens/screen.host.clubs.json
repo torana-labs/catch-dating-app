@@ -132,7 +132,7 @@
         "symbol": "HostInsightsScreen"
       },
       {
-        "file": "lib/hosts/presentation/organizer_management/host_organizer_defaults_saver.dart",
+        "file": "lib/hosts/organizer/edit/host_organizer_defaults_saver.dart",
         "symbol": "HostOrganizerDefaultsSaver"
       },
       {
@@ -142,11 +142,11 @@
     ],
     "mutationOwners": [
       {
-        "file": "lib/hosts/presentation/organizer_management/host_organizer_edit_controller.dart",
+        "file": "lib/hosts/organizer/edit/host_organizer_edit_controller.dart",
         "symbol": "HostOrganizerEditController"
       },
       {
-        "file": "lib/hosts/presentation/organizer_management/host_team_management_controller.dart",
+        "file": "lib/hosts/organizer/team/host_team_management_controller.dart",
         "symbol": "HostTeamManagementController"
       },
       {
@@ -158,7 +158,7 @@
         "symbol": "HostEventCommands"
       },
       {
-        "file": "lib/hosts/presentation/host_profile_controller.dart",
+        "file": "lib/hosts/organizer/host_profile_controller.dart",
         "symbol": "HostProfileController"
       }
     ],

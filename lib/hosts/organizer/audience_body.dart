@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/hosts/organizer/audience_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_count_formatters.dart';
+import 'package:catch_dating_app/hosts/organizer/host_count_formatters.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';

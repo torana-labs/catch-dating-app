@@ -19,7 +19,7 @@ import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_pat
 import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
+import 'package:catch_dating_app/hosts/organizer/edit/host_organizer_edit_controller.dart';
 import 'package:catch_dating_app/pages/organizer/organizer_detail_view_model.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';

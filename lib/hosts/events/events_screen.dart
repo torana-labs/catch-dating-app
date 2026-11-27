@@ -8,7 +8,7 @@ import 'package:catch_dating_app/hosts/create/create_route_screen.dart';
 import 'package:catch_dating_app/hosts/events/events_body.dart';
 import 'package:catch_dating_app/hosts/events/events_controller.dart';
 import 'package:catch_dating_app/hosts/events/events_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
+import 'package:catch_dating_app/hosts/organizer/selection/host_organizer_selection_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/errors/app_error_message.dart';

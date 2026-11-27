@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/hosts/people/add_person_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
+import 'package:catch_dating_app/hosts/people/host_customers_controller.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/errors/provider_retry_policy.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';

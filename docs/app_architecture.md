@@ -4302,7 +4302,7 @@ exception:
 
 ```dart
 // ignore: catch_ui_lints/catch_arch_cross_feature_presentation_import -- CAT156 actor fence
-import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
+import 'package:catch_dating_app/hosts/organizer/selection/host_organizer_selection_controller.dart';
 ```
 
 Two rules hold everywhere, take no `// ignore:` and report as errors:

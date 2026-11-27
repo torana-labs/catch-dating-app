@@ -52,12 +52,12 @@ Typed handoffs:
 | `HostManualSendSheet` | `lib/hosts/people/sends/sends_sheets_body.dart` | Actions: open_manual_send_task, open_manual_handoff, mark_manual_send_task, replan_manual_send_tasks. |
 | `showHostFollowerUpdateSheet` | `lib/hosts/people/sends/sends_sheets_body.dart` | Actions: send_follower_update. |
 | `HostCampaignScreen` | `lib/hosts/people/sends/campaign_screen.dart` | Structural owner. |
-| `HostAudienceController` | `lib/hosts/presentation/host_audience_controller.dart` | Actions: manage_campaign. |
+| `HostAudienceController` | `lib/hosts/people/host_audience_controller.dart` | Actions: manage_campaign. |
 
 ## Shared dependencies
 
 - `lib/chats/presentation/inbox` — Shared inquiry list/search presentation remains a cross-role chat implementation seam.
-- `lib/hosts/presentation/host_audience_controller.dart` — Legacy campaign orchestration is relocated by A4; the responsibility remains Inbox-owned now.
+- `lib/hosts/people/host_audience_controller.dart` — Legacy campaign orchestration is relocated by A4; the responsibility remains Inbox-owned now.
 - `lib/routing/shell/host_shell_screen.dart` — The shell owns global destination navigation and organizer scope.
 
 ## Data contracts

@@ -8,7 +8,7 @@ import 'package:catch_dating_app/contexts/programmes/data/program_inventory_repo
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/organizer_program_views.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
+import 'package:catch_dating_app/hosts/organizer/selection/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
 import 'package:catch_dating_app/programs/presentation/program_timezone_providers.dart';
 import 'package:catch_platform/errors/app_exception.dart';
@@ -332,7 +332,6 @@ typedef ProgramEventsScope = ({String accountId, String organizerId});
 ProgramCreateJournal programCreateJournal(Ref ref) =>
     const ProgramCreateJournal();
 
-// provider-graph: cross-feature-presentation:programCreateProvider->hostOrganizerSelectionProvider planned CAT156 -- Program creation currently watches the Host organizer selection to invalidate an in-flight account/organizer command when the actor changes. CAT156 will replace this presentation-to-presentation edge with an injected or feature-neutral actor fence while preserving draft retention, idempotency, and override contracts.
 /// The programme create transaction for one account and organizer: the
 /// draft, its validation, the request id and the journal that recovers a
 /// lost response. Screens read the immutable [ProgramCreateView] and call
