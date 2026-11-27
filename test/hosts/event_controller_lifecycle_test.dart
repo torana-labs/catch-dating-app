@@ -9,14 +9,13 @@ import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_rep
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_defaults_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'event_publication_test.dart' show publicationEvent;
 
-enum _Kind { privatePreferences, offerPreferences, publication, defaults }
+enum _Kind { privatePreferences, offerPreferences, publication }
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
@@ -158,10 +157,7 @@ _Probe _probe(_Kind kind, {Stream<String?>? accounts}) {
         ),
       ),
       managerEventSetupDefaultsViewProvider('org1').overrideWith(
-        (ref) => gated(
-          kind == _Kind.defaults,
-          ManagerEventSetupDefaultsView.complete(defaults),
-        ),
+        (ref) => gated(false, ManagerEventSetupDefaultsView.complete(defaults)),
       ),
       privateEventPreferencesDependenciesProvider.overrideWithValue(
         PrivateEventPreferencesDependencies(
@@ -175,11 +171,6 @@ _Probe _probe(_Kind kind, {Stream<String?>? accounts}) {
       ),
       eventPublicationDependenciesProvider.overrideWithValue(
         EventPublicationDependencies(
-          write: (_) async => throw StateError('Unexpected write'),
-        ),
-      ),
-      hostManagerEventSetupDefaultsDependenciesProvider.overrideWithValue(
-        HostManagerEventSetupDefaultsDependencies(
           write: (_) async => throw StateError('Unexpected write'),
         ),
       ),
@@ -238,28 +229,6 @@ _Probe _probe(_Kind kind, {Stream<String?>? accounts}) {
       container: container,
       load: container.read(provider.notifier).load,
       loaded: () => container.read(provider).event != null,
-      actorAvailable: () => container.read(provider).actorAvailable,
-      otherLoading: () => container.read(other).loading,
-      gate: gate,
-      started: started,
-      readCount: () => reads,
-    );
-  }
-  if (kind == _Kind.defaults) {
-    final provider = hostManagerEventSetupDefaultsControllerProvider((
-      userId: 'host',
-      organizerId: 'org1',
-    ));
-    container.listen(provider, (_, _) {});
-    final other = hostManagerEventSetupDefaultsControllerProvider((
-      userId: 'host',
-      organizerId: 'org2',
-    ));
-    container.listen(other, (_, _) {});
-    return _Probe(
-      container: container,
-      load: container.read(provider.notifier).load,
-      loaded: () => container.read(provider).current != null,
       actorAvailable: () => container.read(provider).actorAvailable,
       otherLoading: () => container.read(other).loading,
       gate: gate,

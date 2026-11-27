@@ -133,7 +133,7 @@ as source authority.
 | Events | `/host/events` | `HostEventsScreen` | `host_home_events_list` | `lib/hosts/events/presentation/host_events_screen.dart` |
 | Audience | `/host/audience` | `HostCustomersScreen` / `HostFormsScreen` | `host_customers_populated`, `host_forms_populated` | `lib/hosts/presentation/host_audience_view.dart` |
 | Inbox | `/host/inbox` | `HostMessagesScreen` | `host_inbox_queries` | `lib/hosts/people/messages_screen.dart` |
-| Organizer | `/host/organizer` | `HostOrganizersScreen` | `host_clubs_management` | `lib/hosts/presentation/host_operations/host_organizers_scaffold.dart` |
+| Organizer | `/host/organizer` | `OrganizerScreen` | `host_clubs_management` | `lib/hosts/organizer/organizer_screen.dart` |
 
 Reproducible capture contexts:
 

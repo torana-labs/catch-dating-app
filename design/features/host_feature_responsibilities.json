@@ -106,8 +106,7 @@
         "test/hosts/today/host_attention_item_test.dart",
         "test/hosts/today/host_today_controller_test.dart",
         "test/hosts/today/host_today_body_test.dart",
-        "test/hosts/today/host_today_parts_test.dart",
-        "test/hosts/host_operations_screen_test.dart"
+        "test/hosts/today/host_today_parts_test.dart"
       ]
     },
     {
@@ -228,7 +227,6 @@
         "test/hosts/events/events_bodies_test.dart",
         "test/hosts/events/events_controllers_test.dart",
         "test/hosts/host_events_timeline_controller_test.dart",
-        "test/hosts/host_operations_screen_test.dart",
         "test/programs/program_create_controller_test.dart",
         "test/programs/program_create_provider_test.dart"
       ]
@@ -625,8 +623,7 @@
         "test/hosts/people/duplicates/duplicates_body_test.dart",
         "test/hosts/people/duplicates/duplicates_flow_test.dart",
         "test/hosts/forms/forms_body_test.dart",
-        "test/hosts/forms/host_form_builder_screen_test.dart",
-        "test/hosts/host_operations_screen_test.dart"
+        "test/hosts/forms/host_form_builder_screen_test.dart"
       ]
     },
     {
@@ -657,8 +654,7 @@
         "The shared Consumer/Host chat message implementation when a dedicated chat route owns it."
       ],
       "currentRoots": [
-        "lib/hosts/people",
-        "lib/hosts/presentation/inbox"
+        "lib/hosts/people"
       ],
       "additionalCodeOwners": [
         {
@@ -696,18 +692,6 @@
           "file": "lib/hosts/people/sends/sends_sheets_body.dart",
           "symbol": "showHostFollowerUpdateSheet",
           "role": "Actions: send_follower_update."
-        },
-        {
-          "id": "messaging_setup_screen",
-          "file": "lib/hosts/presentation/inbox/host_messaging_setup_screen.dart",
-          "symbol": "HostMessagingSetupScreen",
-          "role": "Structural owner."
-        },
-        {
-          "id": "whatsapp_setup",
-          "file": "lib/hosts/organizer/whatsapp_setup_section.dart",
-          "symbol": "HostWhatsappSetupSection",
-          "role": "Actions: manage_whatsapp_sender."
         },
         {
           "id": "campaign_composer",
@@ -773,8 +757,7 @@
         "test/hosts/people/conversation/messages_scope_test.dart",
         "test/hosts/people/sends/sends_body_test.dart",
         "test/hosts/people/compose_request_id_test.dart",
-        "test/hosts/people/conversation/conversation_people_test.dart",
-        "test/hosts/host_operations_screen_test.dart"
+        "test/hosts/people/conversation/conversation_people_test.dart"
       ]
     },
     {
@@ -811,7 +794,7 @@
         "Provider-hosted onboarding internals, analytics computation, or backend authorization rules."
       ],
       "currentRoots": [
-        "lib/hosts/presentation/host_operations",
+        "lib/hosts/organizer",
         "lib/hosts/presentation/organizer_management",
         "lib/hosts/presentation/payments",
         "lib/hosts/insights"
@@ -819,21 +802,21 @@
       "additionalCodeOwners": [
         {
           "id": "route_screen",
-          "file": "lib/hosts/presentation/host_operations/host_organizers_screen.dart",
-          "symbol": "HostOrganizersScreen",
-          "role": "Actions: sign_in, retry_organizer_workspace."
+          "file": "lib/hosts/organizer/organizer_screen.dart",
+          "symbol": "OrganizerScreen",
+          "role": "Actions: sign_in, retry_organizer_workspace, switch_organizer, open_organizer_setting."
         },
         {
-          "id": "workspace",
-          "file": "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart",
-          "symbol": "HostOrganizersScaffold",
-          "role": "Actions: create_organizer, select_workspace_tab."
+          "id": "page_edit",
+          "file": "lib/hosts/organizer/page_edit_screen.dart",
+          "symbol": "OrganizerPageEditScreen",
+          "role": "Actions: update_organizer, update_organizer_media."
         },
         {
-          "id": "edit_tab",
-          "file": "lib/hosts/presentation/host_operations/host_organizer_edit_body.dart",
-          "symbol": "HostOrganizerEditBody",
-          "role": "Actions: open_organizer_setting."
+          "id": "settings",
+          "file": "lib/hosts/organizer/settings_screen.dart",
+          "symbol": "OrganizerSettingsScreen",
+          "role": "Actions: save_host_profile, open_legal_link, request_account_deletion, sign_out."
         },
         {
           "id": "edit_controller",
@@ -842,9 +825,9 @@
           "role": "Actions: update_organizer, update_organizer_media."
         },
         {
-          "id": "spoke_resolver",
-          "file": "lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart",
-          "symbol": "HostOrganizerSpokeAsyncBoundary",
+          "id": "organizer_scope",
+          "file": "lib/hosts/organizer/organizer_controller.dart",
+          "symbol": "watchHostOrganizerScope",
           "role": "Actions: retry_organizer_setting."
         },
         {
@@ -866,22 +849,40 @@
           "role": "Actions: share_event_report, open_event_reviews, invite_event_guests, choose_event_guests, download_event_csv."
         },
         {
-          "id": "payout_adapter",
-          "file": "lib/hosts/presentation/payments/host_payment_account_controller_card.dart",
-          "symbol": "HostPaymentAccountControllerCard",
-          "role": "Actions: retry_payout_account."
-        },
-        {
-          "id": "payout_controller",
-          "file": "lib/hosts/presentation/payments/host_payment_account_controller.dart",
-          "symbol": "HostPaymentAccountController",
-          "role": "Actions: start_payout_onboarding, refresh_payout_status."
-        },
-        {
           "id": "team_screen",
-          "file": "lib/hosts/presentation/host_operations/host_organizer_team_screen.dart",
-          "symbol": "HostOrganizerTeamScreen",
-          "role": "Actions: retry_host_profile, retry_hosted_organizers, open_hosted_organizer, select_team_tab, leave_team_workspace."
+          "file": "lib/hosts/organizer/team_screen.dart",
+          "symbol": "OrganizerTeamScreen",
+          "role": "Actions: add_host, remove_host, transfer_organizer_ownership."
+        },
+        {
+          "id": "payments_screen",
+          "file": "lib/hosts/organizer/payments_screen.dart",
+          "symbol": "OrganizerPaymentsScreen",
+          "role": "Actions: connect_razorpay, refresh_razorpay, disconnect_razorpay, pay_bill."
+        },
+        {
+          "id": "event_defaults",
+          "file": "lib/hosts/events/event_defaults_screen.dart",
+          "symbol": "HostEventDefaultsScreen",
+          "role": "Actions: save_event_defaults, retry_event_defaults_save."
+        },
+        {
+          "id": "event_defaults_details",
+          "file": "lib/hosts/events/event_defaults_details_screen.dart",
+          "symbol": "HostEventDefaultsDetailsScreen",
+          "role": "Structural owner."
+        },
+        {
+          "id": "event_policy",
+          "file": "lib/hosts/organizer/event_policy_screen.dart",
+          "symbol": "OrganizerEventPolicyScreen",
+          "role": "Actions: save_event_defaults."
+        },
+        {
+          "id": "live_guide",
+          "file": "lib/hosts/organizer/live_guide_screen.dart",
+          "symbol": "OrganizerLiveGuideScreen",
+          "role": "Actions: save_event_defaults."
         },
         {
           "id": "team_section",
@@ -955,10 +956,16 @@
         "test/hosts/host_team_management_controller_test.dart",
         "test/hosts/host_team_management_section_test.dart",
         "test/payments/host_payment_account_test.dart",
-        "test/hosts/host_operations_screen_test.dart",
         "test/hosts/insights/host_insights_body_test.dart",
         "test/hosts/insights/host_event_report_body_test.dart",
-        "test/hosts/insights/host_insights_controller_test.dart"
+        "test/hosts/insights/host_insights_controller_test.dart",
+        "test/hosts/organizer/organizer_screen_test.dart",
+        "test/hosts/organizer/page_edit_test.dart",
+        "test/hosts/organizer/settings_screen_test.dart",
+        "test/hosts/organizer/team_settings_memberships_test.dart",
+        "test/hosts/organizer/payments_body_test.dart",
+        "test/hosts/events/event_defaults_details_test.dart",
+        "test/hosts/events/event_defaults_retry_test.dart"
       ]
     }
   ]
