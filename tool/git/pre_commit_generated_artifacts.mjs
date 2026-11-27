@@ -8,8 +8,12 @@ import {matchesCodegenInput} from "../harness/lib/component_graph.mjs";
 
 export class PreCommitGeneratedArtifactError extends Error {}
 
-export function planPreCommitActions({graph, stagedPaths}) {
+export function planPreCommitActions({graph, stagedPaths, deletedPaths = []}) {
   const paths = [...new Set(stagedPaths)].sort();
+  // A staged deletion has nothing to format. Untracking a generated file
+  // (git rm --cached) leaves its ignored copy on disk, which must not be
+  // formatted or staged back.
+  const deleted = new Set(deletedPaths);
   const generators = Array.isArray(graph?.compileCodegen) ? graph.compileCodegen : [];
   const triggeredGenerators = generators.filter((generator) => {
     if (
@@ -27,7 +31,7 @@ export function planPreCommitActions({graph, stagedPaths}) {
     // them again would invalidate the freshness check that runs in this same
     // hook. Tracked localization outputs are written by this hook and stay
     // formatted; untracked ones are never staged, only deleted once.
-    dartPaths: paths.filter((candidate) => candidate.endsWith(".dart") &&
+    dartPaths: paths.filter((candidate) => candidate.endsWith(".dart") && !deleted.has(candidate) &&
       !generators.some((generator) =>
         (generator.id !== "flutter.l10n" || generator.tracked === false) &&
         (generator.outputs ?? []).some((pattern) => matchesGlobPath(candidate, pattern)))),
@@ -50,6 +54,7 @@ export function runPreCommitGeneratedArtifacts({
   repoRoot,
   runCommand = defaultRunCommand,
   stagedPaths: injectedStagedPaths,
+  stagedDeletions: injectedStagedDeletions,
   unstagedPaths: injectedUnstagedPaths,
 } = {}) {
   const resolvedRoot = path.resolve(repoRoot ?? defaultRepoRoot());
@@ -70,9 +75,26 @@ export function runPreCommitGeneratedArtifacts({
     }
   }
 
-  let plan = planPreCommitActions({graph: sourceGraph, stagedPaths});
+  const deletedPaths = injectedStagedDeletions ?? (injectedStagedPaths != null ? [] : readGitPaths({
+    args: ["diff", "--cached", "--name-only", "--no-renames", "--diff-filter=D", "-z", "--"],
+    repoRoot: resolvedRoot,
+    runCommand,
+  }));
+  // A file written again at a staged Dart deletion is unreviewed work, so the
+  // commit stops. An ignored copy (a generated file just untracked) is not.
+  const deletedDart = deletedPaths.filter(candidate => candidate.endsWith(".dart"));
+  const reintroduced = deletedDart.length === 0 ? [] : readGitPaths({repoRoot: resolvedRoot, runCommand,
+    args: ["ls-files", "--others", "--exclude-standard", "-z", "--",
+      ...deletedDart.map(candidate => `:(literal)${candidate}`)]});
+  if (reintroduced.length > 0) {
+    throw new PreCommitGeneratedArtifactError(
+      "Refusing to commit a Dart deletion while an untracked file exists at its path:\n" +
+      reintroduced.sort().map(candidate => `  ${JSON.stringify(candidate)}`).join("\n"),
+    );
+  }
+  let plan = planPreCommitActions({graph: sourceGraph, stagedPaths, deletedPaths});
   // Generation can select downstream freshness checks through its outputs.
-  const preflightPlan = planPreCommitActions({graph: sourceGraph, stagedPaths:
+  const preflightPlan = planPreCommitActions({graph: sourceGraph, deletedPaths, stagedPaths:
     plan.l10nInputChanged && plan.l10nTracked ? [...stagedPaths, ...plan.l10nOutputs] : stagedPaths});
   if (indexedGraph != null && (preflightPlan.dartPaths.length > 0 ||
     preflightPlan.triggeredGenerators.length > 0)) {
@@ -108,7 +130,7 @@ export function runPreCommitGeneratedArtifacts({
     });
     generated.push("flutter.l10n");
     stagedPaths = [...new Set([...stagedPaths, ...outputs])].sort();
-    plan = planPreCommitActions({graph: sourceGraph, stagedPaths});
+    plan = planPreCommitActions({graph: sourceGraph, stagedPaths, deletedPaths});
   }
 
   const formattedDartPaths = plan.dartPaths.filter((relativePath) =>

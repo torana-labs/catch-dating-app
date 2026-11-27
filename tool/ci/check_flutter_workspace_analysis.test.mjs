@@ -55,6 +55,16 @@ test("workspace plan discovers every pubspec and resolves workspace members once
   });
 });
 
+test("Widgetbook generates its untracked directories after pub get and before analysis", () => {
+  const plan = buildWorkspaceAnalysisPlan(snapshot(repositoryPubspecs));
+  const index = (phase) => plan.steps.findIndex((step) => step.directory === "widgetbook" && step.phase === phase);
+  assert.deepEqual(plan.steps[index("generate")], {
+    phase: "generate", directory: "widgetbook", command: "dart", args: ["run", "build_runner", "build"],
+  });
+  assert.ok(index("resolve") < index("generate") && index("generate") < index("analyze"));
+  assert.deepEqual(plan.steps.filter((step) => step.phase === "generate").map((step) => step.directory), ["widgetbook"]);
+});
+
 test("workspace plan fails closed without the root package", () => {
   assert.throws(
     () => buildWorkspaceAnalysisPlan(snapshot({"nested/pubspec.yaml": "name: nested\n"})),

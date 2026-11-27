@@ -5,6 +5,7 @@ import test from "node:test";
 import {fileURLToPath} from "node:url";
 
 import {validateWidgetClassification} from "./check_widget_classification.mjs";
+import {widgetbookComponentNames} from "./lib/widgetbook_use_cases.mjs";
 import {publicWidgetNamingProblems} from "./component_concepts.mjs";
 import {featureWidgetNamingIssues} from "./lib/component_naming.mjs";
 import {
@@ -274,15 +275,12 @@ function validate(value) {
   });
 }
 
+// The use-case annotations, named as widgetbook_generator names components.
 function readWidgetbookNames() {
-  const source = fs.readFileSync(
-    path.join(repoRoot, "widgetbook/lib/main.directories.g.dart"),
-    "utf8",
-  );
   const names = new Set();
-  for (const match of source.matchAll(/WidgetbookComponent\(\s*name: '([^']+)'/gu)) {
-    names.add(match[1]);
-    names.add(match[1].replace(/<.*>$/u, ""));
+  for (const name of widgetbookComponentNames(repoRoot)) {
+    names.add(name);
+    names.add(name.replace(/<.*>$/u, ""));
   }
   return names;
 }
