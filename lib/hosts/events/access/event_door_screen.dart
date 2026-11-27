@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/hosts/events/access/host_event_staff_section.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_staff_section.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';

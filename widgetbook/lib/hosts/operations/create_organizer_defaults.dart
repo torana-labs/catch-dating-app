@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/hosts/organizer/edit/organizer_host_defaults_step.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_wizard_step_header.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -24,33 +23,6 @@ Widget organizerPolicyDefaultsCardCatalogStates(BuildContext context) {
         label: 'editable',
         child: WidgetbookHostDeviceFrame(
           child: _OrganizerPolicyDefaultsCardFrame(),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Header states',
-  type: HostWizardStepHeader,
-  path: '[P1 product surfaces]/Host create club',
-)
-Widget createOrganizerStepHeaderCatalogStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'CreateOrganizerStepHeader',
-    contractId: 'component.host.club.step_header',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'step 1',
-        child: WidgetbookHostDeviceFrame(
-          child: HostWizardStepHeader(
-            title: 'Club basics',
-            subtitle: 'Add your club identity and media',
-            currentStep: 0,
-            totalSteps: 4,
-            onClose: () {},
-            onStepOverview: () {},
-          ),
         ),
       ),
     ],

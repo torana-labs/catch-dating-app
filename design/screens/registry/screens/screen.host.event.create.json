@@ -364,34 +364,6 @@
         "previewIds": [
           "CreateRouteScreen/Route and wizard states"
         ]
-      },
-      {
-        "id": "section.host.event_create_step_header",
-        "name": "Create event step header",
-        "status": "implemented_local",
-        "layer": "section",
-        "claudeComponents": [
-          "HostWizardStepHeader"
-        ],
-        "flutter": {
-          "file": "lib/hosts/presentation/widgets/host_wizard_step_header.dart",
-          "symbol": "HostWizardStepHeader"
-        },
-        "currentOwner": "CreateEventScreen",
-        "targetOwner": "shared provider-free Host wizard step header",
-        "dependencies": [
-          "catch.top_bar"
-        ],
-        "states": [
-          "first_step",
-          "middle_step",
-          "last_step",
-          "long_club_name"
-        ],
-        "migration": "Feed title, club name, step count, and back intent from wizard state; add text-scale previews.",
-        "previewIds": [
-          "CreateRouteScreen/Route and wizard states"
-        ]
       }
     ]
   },

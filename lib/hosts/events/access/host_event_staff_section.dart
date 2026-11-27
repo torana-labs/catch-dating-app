@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/organizers/data/host_event_staff_repository.dart';
 import 'package:catch_dating_app/hosts/events/access/host_event_staff_controller.dart';
+import 'package:catch_dating_app/hosts/events/access/host_event_staff_grant_sheet.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/clipboard.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
@@ -10,12 +11,15 @@ import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/routing/app_deep_links.dart';
-import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// Temporary event staff on the event's door screen: the host grants a phone
+/// number door access for a set window, copies the operator workspace link,
+/// and revokes active access. The list loads when the field opens, through
+/// [hostEventStaffControllerProvider]; the server owns every grant.
 class HostEventStaffSection extends ConsumerStatefulWidget {
   const HostEventStaffSection({
     super.key,
@@ -61,7 +65,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
               children: [
                 CatchButton(
                   label: context.l10n.hostsEventStaffAdd,
-                  leading: Icon(CatchIcons.personAddAlt1Outlined),
+                  leading: CatchIcon(CatchIcons.personAddAlt1Outlined),
                   variant: CatchButtonVariant.secondary,
                   onPressed: _mutationPending
                       ? null
@@ -69,7 +73,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
                 ),
                 CatchButton(
                   label: context.l10n.hostsEventStaffCopyLink,
-                  leading: Icon(CatchIcons.linkRounded),
+                  leading: CatchIcon(CatchIcons.linkRounded),
                   variant: CatchButtonVariant.quiet,
                   onPressed: () => unawaited(_copyLink()),
                 ),
@@ -165,9 +169,9 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
   }
 
   Future<void> _grant() async {
-    final request = await showCatchBottomSheet<_StaffGrantInput>(
+    final request = await showCatchBottomSheet<HostEventStaffGrantInput>(
       context: context,
-      builder: (context) => const _HostEventStaffGrantSheet(),
+      builder: (context) => const HostEventStaffGrantSheet(),
     );
     if (request == null || !mounted) return;
     setState(() {
@@ -239,105 +243,6 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
     }
   }
 }
-
-class _StaffGrantInput {
-  const _StaffGrantInput({required this.phoneNumber, required this.window});
-
-  final String phoneNumber;
-  final HostEventStaffGrantWindow window;
-}
-
-class _HostEventStaffGrantSheet extends StatefulWidget {
-  const _HostEventStaffGrantSheet();
-
-  @override
-  State<_HostEventStaffGrantSheet> createState() =>
-      _HostEventStaffGrantSheetState();
-}
-
-class _HostEventStaffGrantSheetState extends State<_HostEventStaffGrantSheet> {
-  final _phoneController = TextEditingController();
-  var _window = HostEventStaffGrantWindow.twelveHours;
-  var _showPhoneError = false;
-
-  @override
-  void dispose() {
-    _phoneController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchSheet.standard(
-      title: context.l10n.hostsEventStaffGrantTitle,
-      subtitle: context.l10n.hostsEventStaffGrantSubtitle,
-      footer: CatchButton.sheet(
-        role: CatchButtonEmphasis.commit,
-        label: context.l10n.hostsEventStaffGrantAction,
-
-        onPressed: _submit,
-      ),
-      child: CatchFieldLanes.divided(
-        children: [
-          CatchField.input(
-            copy: catchFieldCopy(context.l10n),
-            title: context.l10n.hostsEventStaffPhone,
-            contract: CatchContractConstraints
-                .grantEventStaffCallablePayloadPhoneNumber,
-            controller: _phoneController,
-            keyboardType: TextInputType.phone,
-            errorText: _showPhoneError
-                ? context.l10n.hostsEventStaffPhoneRequired
-                : null,
-          ),
-          CatchMenu<HostEventStaffGrantWindow>.anchored(
-            items: [
-              for (final window in HostEventStaffGrantWindow.values)
-                CatchMenuItem<HostEventStaffGrantWindow>(
-                  value: window,
-                  label: _windowLabel(context, window),
-                  selected: window == _window,
-                  variant: CatchMenuItemVariant.choice,
-                ),
-            ],
-            onSelected: (window, _) => setState(() => _window = window),
-            builder: (context, controller, _) => CatchFieldLanes.single(
-              child: CatchField.nav(
-                copy: catchFieldCopy(context.l10n),
-                title: context.l10n.hostsEventStaffAccessDuration,
-                valueText: _windowLabel(context, _window),
-                onTap: controller.isOpen ? controller.close : controller.open,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _submit() {
-    final phone = _phoneController.text.trim();
-    if (phone.length < 8) {
-      setState(() => _showPhoneError = true);
-      return;
-    }
-    Navigator.of(
-      context,
-    ).pop(_StaffGrantInput(phoneNumber: phone, window: _window));
-  }
-}
-
-String _windowLabel(BuildContext context, HostEventStaffGrantWindow window) =>
-    switch (window) {
-      HostEventStaffGrantWindow.fourHours =>
-        context.l10n.hostsEventStaffDurationFourHours,
-      HostEventStaffGrantWindow.twelveHours =>
-        context.l10n.hostsEventStaffDurationTwelveHours,
-      HostEventStaffGrantWindow.oneDay =>
-        context.l10n.hostsEventStaffDurationOneDay,
-      HostEventStaffGrantWindow.sevenDays =>
-        context.l10n.hostsEventStaffDurationSevenDays,
-    };
 
 String _statusLabel(BuildContext context, HostEventStaffStatus status) =>
     switch (status) {
