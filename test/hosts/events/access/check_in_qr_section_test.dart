@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_venue_session.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_check_in_qr_section.dart';
+import 'package:catch_dating_app/hosts/events/access/check_in_qr_section.dart';
 import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
