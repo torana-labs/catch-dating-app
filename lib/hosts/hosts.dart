@@ -34,9 +34,6 @@ export 'presentation/organizer_management/create/create_organizer_draft_controll
 export 'presentation/organizer_management/host_create_organizer_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/organizer_management/host_organizer_edit_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/organizer_management/host_team_management_controller.dart'; // public-api: command seam for route-owned actions
-export 'presentation/payments/host_payment_account_card.dart'; // public-api: shared presentation component used outside this feature
-export 'presentation/payments/host_payment_account_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/validators.dart'; // public-api: presentation value/helper API used across feature boundaries
 export 'presentation/widgets/host_organizer_switcher_sheet.dart'; // public-api: shared Host-shell identity component
-export 'presentation/widgets/host_team_management_section.dart'; // public-api: shared presentation component used outside this feature
 export 'today/host_today_screen.dart'; // public-api: route entry point exposed to app routing

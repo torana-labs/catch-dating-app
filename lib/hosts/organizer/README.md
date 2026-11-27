@@ -68,7 +68,6 @@ Typed handoffs:
 | `HostEventDefaultsDetailsScreen` | `lib/hosts/events/event_defaults_details_screen.dart` | Structural owner. |
 | `OrganizerEventPolicyScreen` | `lib/hosts/organizer/event_policy_screen.dart` | Actions: save_event_defaults. |
 | `OrganizerLiveGuideScreen` | `lib/hosts/organizer/live_guide_screen.dart` | Actions: save_event_defaults. |
-| `HostTeamManagementSection` | `lib/hosts/presentation/widgets/host_team_management_section.dart` | Structural owner. |
 | `HostTeamManagementController` | `lib/hosts/presentation/organizer_management/host_team_management_controller.dart` | Actions: add_host, remove_host, transfer_organizer_ownership. |
 | `HostProfileController` | `lib/hosts/presentation/host_profile_controller.dart` | Actions: create_host_profile, save_host_profile. |
 | `AuthSessionController` | `lib/pages/account/auth_session_controller.dart` | Actions: sign_out. |
@@ -107,7 +106,7 @@ Typed handoffs:
 - `test/hosts/host_organizer_defaults_saver_test.dart`
 - `test/hosts/host_organizer_identity_switcher_test.dart`
 - `test/hosts/host_team_management_controller_test.dart`
-- `test/hosts/host_team_management_section_test.dart`
+- `test/hosts/organizer/team_screen_test.dart`
 - `test/payments/host_payment_account_test.dart`
 - `test/hosts/insights/host_insights_body_test.dart`
 - `test/hosts/insights/host_event_report_body_test.dart`
