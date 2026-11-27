@@ -17,6 +17,7 @@ flutter run -d chrome
 
 ```bash
 cd widgetbook
+dart run build_runner build
 flutter analyze
 flutter build web --release
 ```
@@ -35,8 +36,10 @@ source error and rerun the same command before changing Widgetbook setup.
 - Annotate each builder with `@widgetbook.UseCase`.
 - Keep previews aligned to `design/components/catch.components.json` state
   contracts.
-- Re-run `dart run build_runner build` whenever annotations change so
-  `lib/main.directories.g.dart` stays current.
+- Run `dart run build_runner build` after a pull and whenever annotations
+  change. `lib/main.directories.g.dart` is build_runner output and isn't
+  committed; Node checks read the `@widgetbook.UseCase` annotations instead
+  (`tool/design/lib/widgetbook_use_cases.mjs`), and CI proves the two match.
 - Keep broad catalog previews aligned with `docs/widget_catalog.md`. Prefer the
   live Dart class name when the catalog contains an older handoff alias.
 

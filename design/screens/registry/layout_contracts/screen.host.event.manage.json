@@ -6,12 +6,12 @@
         "hostAppAttendanceSheet",
         "hostAppEventSuccessScreen"
       ],
-      "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
+      "file": "lib/hosts/events/event_route_screen.dart",
       "symbol": "HostEventManageRouteScreen",
       "family": "pushed-route",
-      "expression": "CatchRouteScaffold",
+      "expression": "CatchScreen",
       "bodyGeometry": "standard",
-      "topEdge": "route-chrome"
+      "topEdge": "safe-area"
     },
     {
       "routes": [

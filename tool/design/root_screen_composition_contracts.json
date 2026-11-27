@@ -176,14 +176,6 @@
       ]
     },
     {
-      "path": "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart",
-      "requires": [
-        {
-          "text": "HostEditorWorkspace("
-        }
-      ]
-    },
-    {
       "path": "lib/routing/host_workspace_destination.dart",
       "requires": [
         {

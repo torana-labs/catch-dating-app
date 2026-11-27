@@ -43,7 +43,7 @@ an environment through `tool/firebase_with_env.sh`; see [firebase/README.md](fir
 | Marketing website | `website/` | `npm run web:marketing:dev` |
 | Admin console | `admin/` | `npm run web:admin:dev` |
 | Cloud Functions | `functions/` | `npm --prefix functions run serve` |
-| Widgetbook | `widgetbook/` | `cd widgetbook && flutter run -d chrome` |
+| Widgetbook | `widgetbook/` | `cd widgetbook && dart run build_runner build && flutter run -d chrome` |
 
 The folders separate runtime code from its contracts and tooling:
 

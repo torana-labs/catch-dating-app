@@ -590,19 +590,16 @@
         "layer": "section",
         "claudeComponents": [],
         "flutter": {
-          "file": "lib/hosts/organizer/whatsapp_setup_section.dart",
-          "symbol": "HostWhatsappSetupSection"
+          "file": "lib/hosts/organizer/messaging_screen.dart",
+          "symbol": "OrganizerMessagingScreen"
         },
-        "currentOwner": "HostWhatsappSetupSection",
-        "targetOwner": "HostWhatsappSetupSection",
+        "currentOwner": "OrganizerMessagingScreen",
+        "targetOwner": "OrganizerMessagingScreen",
         "dependencies": [],
         "states": [
           "communication_intent_picker"
         ],
-        "migration": "On the organizer messaging route.",
-        "previewIds": [
-          "HostWhatsappSetupSection/Sender setup states"
-        ]
+        "migration": "On the organizer messaging route."
       },
       {
         "id": "section.host.messaging_campaign_composer",

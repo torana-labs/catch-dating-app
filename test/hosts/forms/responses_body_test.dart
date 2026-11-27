@@ -89,7 +89,7 @@ void main() {
       expect(filters, [HostResponsesFilter.offered]);
     });
 
-    testWidgets('a form nobody reviews has no filter, and none says so', (
+    testWidgets('with no filter bar and no answers it says none came yet', (
       tester,
     ) async {
       await _pumpResponses(
@@ -98,7 +98,7 @@ void main() {
       );
 
       expect(find.text('Reviewing'), findsNothing);
-      expect(find.text('Nothing here.'), findsOneWidget);
+      expect(find.text('No responses yet'), findsOneWidget);
     });
 
     testWidgets('Results counts each question', (tester) async {

@@ -92,33 +92,39 @@ class CreateTicketsBody extends StatelessWidget {
             CatchStack(
               direction: CatchStackDirection.row,
               gap: CatchStackGap.g16,
-              equal: true,
+              // As when creating: the stepper keeps its own width.
               align: CatchStackAlign.baseline,
               children: [
-                CatchFieldLanes.single(
-                  child: CatchField.input(
-                    key: CreateEventFormKeys.price,
-                    copy: copy,
-                    title: context.l10n.hostCreatePricePerPlace,
-                    contract: CatchContractConstraints
-                        .updateEventCallablePayloadFieldsPriceInPaise,
-                    initialValue: draft.price ?? '',
-                    prefixText: symbol,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                        RegExp(
-                          context.l10n.hostsEditHostedEventScreenVisiblecopyDD,
-                        ),
+                Expanded(
+                  child: CatchFieldLanes.single(
+                    child: CatchField.input(
+                      key: CreateEventFormKeys.price,
+                      copy: copy,
+                      title: context.l10n.hostCreatePricePerPlace,
+                      // Large text wraps the label instead of cutting it.
+                      titleMaxLines: 2,
+                      contract: CatchContractConstraints
+                          .updateEventCallablePayloadFieldsPriceInPaise,
+                      initialValue: draft.price ?? '',
+                      prefixText: symbol,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
                       ),
-                    ],
-                    states: {if (frozen) WidgetState.disabled},
-                    onChanged: onPrice,
-                    errorText: state.problems.contains(CreateProblem.price)
-                        ? context.l10n.hostCreatePriceNeeded
-                        : null,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(
+                            context
+                                .l10n
+                                .hostsEditHostedEventScreenVisiblecopyDD,
+                          ),
+                        ),
+                      ],
+                      states: {if (frozen) WidgetState.disabled},
+                      onChanged: onPrice,
+                      errorText: state.problems.contains(CreateProblem.price)
+                          ? context.l10n.hostCreatePriceNeeded
+                          : null,
+                    ),
                   ),
                 ),
                 CatchStack(
@@ -200,25 +206,30 @@ class CreateTicketsBody extends StatelessWidget {
           CatchStack(
             direction: CatchStackDirection.row,
             gap: CatchStackGap.g16,
-            equal: true,
-            // The two labels share a line, whatever sits under them.
+            // The two labels share a line, whatever sits under them. The
+            // stepper keeps the width its buttons and number need, at any
+            // text size; the price takes the rest.
             align: CatchStackAlign.baseline,
             children: [
-              CatchFieldLanes.single(
-                child: CatchField.input(
-                  key: const ValueKey<String>('create-price'),
-                  copy: copy,
-                  title: context.l10n.hostCreatePricePerPlace,
-                  contract: CatchContractConstraints
-                      .updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsPriceInPaise,
-                  initialValue: draft.price ?? '',
-                  prefixText: '₹',
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  onChanged: onPrice,
-                  errorText: state.problems.contains(CreateProblem.price)
-                      ? context.l10n.hostCreatePriceNeeded
-                      : null,
+              Expanded(
+                child: CatchFieldLanes.single(
+                  child: CatchField.input(
+                    key: const ValueKey<String>('create-price'),
+                    copy: copy,
+                    title: context.l10n.hostCreatePricePerPlace,
+                    // Large text wraps the label instead of cutting it.
+                    titleMaxLines: 2,
+                    contract: CatchContractConstraints
+                        .updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsPriceInPaise,
+                    initialValue: draft.price ?? '',
+                    prefixText: '₹',
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    onChanged: onPrice,
+                    errorText: state.problems.contains(CreateProblem.price)
+                        ? context.l10n.hostCreatePriceNeeded
+                        : null,
+                  ),
                 ),
               ),
               CatchStack(

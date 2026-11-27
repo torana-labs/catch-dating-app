@@ -10,6 +10,7 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.da
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_admission.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_response_query.dart';
+import 'package:catch_dating_app/hosts/forms/offer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_controller.dart';
@@ -49,6 +50,7 @@ part 'host_offer_preparation_cases.dart';
 @Dependencies([HostEventOfferWorkspaceController])
 void main() {
   _preparationRegressionTests();
+  _newOfferScreenTests();
   testWidgets('route footer follows event choice and clears on account loss', (
     tester,
   ) async {

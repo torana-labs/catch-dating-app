@@ -53,7 +53,7 @@ test("split geometry specimens retain exact type, path, and generated registrati
     assert.match(validateGeometrySpecimens({generatedUseCaseKeys}, {useCaseByKey: missing}).join("\n"), /missing required Widgetbook geometry use case/);
     const unregistered = new Set(generatedUseCaseKeys);
     unregistered.delete(key);
-    assert.match(validateGeometrySpecimens({generatedUseCaseKeys: unregistered}, {useCaseByKey}).join("\n"), /missing from generated Widgetbook directories/);
+    assert.match(validateGeometrySpecimens({generatedUseCaseKeys: unregistered}, {useCaseByKey}).join("\n"), /missing from the Widgetbook use-case annotations/);
     for (const bad of [{...specimen, type: "WrongComponent"}, {...specimen, path: "[Elsewhere]"}]) {
       const altered = new Map(useCaseByKey).set(key, bad);
       assert.match(validateGeometrySpecimens({generatedUseCaseKeys}, {useCaseByKey: altered}).join("\n"), /expected @UseCase/);

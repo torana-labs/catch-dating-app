@@ -22,6 +22,7 @@ test("widgets a recorded screen move carried leave the gate; an unrecorded move 
     "tool/design/lib/new_widget_inventory_declarations.mjs",
     "tool/design/lib/owned_composition_renderers.mjs",
     "tool/design/lib/production_widget_roots.mjs",
+    "tool/design/lib/widgetbook_use_cases.mjs",
   ]) {
     fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
     fs.copyFileSync(path.join(repoRoot, file), path.join(root, file));
@@ -45,7 +46,6 @@ test("widgets a recorded screen move carried leave the gate; an unrecorded move 
     "",
   ].join("\n");
   write(legacy, source);
-  write("widgetbook/lib/main.directories.g.dart", "");
   write("design/components/catch.components.json", JSON.stringify({components: []}));
   git("init", "--quiet");
   git("add", "-A");

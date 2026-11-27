@@ -1,9 +1,0 @@
-{
-  "path": "lib/hosts/presentation/host_operations/host_organizer_team_screen.dart",
-  "role": "compact",
-  "expression": "CatchLegacyTopBar.route",
-  "owner": "CatchLegacyTopBar",
-  "surface": "CatchRouteScaffold",
-  "leading": "back",
-  "occurrences": 5
-}

@@ -1,8 +1,0 @@
-{
-  "path": "lib/hosts/presentation/inbox/host_messaging_setup_screen.dart",
-  "role": "compact",
-  "expression": "CatchLegacyTopBar.route",
-  "owner": "CatchLegacyTopBar",
-  "surface": "CatchRouteScaffold",
-  "leading": "back"
-}

@@ -255,13 +255,21 @@ test("Flutter package suites and Widgetbook run only for changes their closure r
     ["Kernel package tests", "pub", "kernel"],
     ["Catch UI package tests", "pub", "catch_ui"],
     ["Resolve Widgetbook dependencies", "pub", "widgetbook"],
-    ["Check the Widgetbook golden inventory", "widgetbook_pub", "widgetbook"],
-    ["Build Widgetbook web app", "widgetbook_pub", "widgetbook"],
+    ["Generate Widgetbook directories", "widgetbook_pub", "widgetbook"],
+    // Widgetbook compiles from build_runner output that isn't committed.
+    ["Check the Widgetbook golden inventory", "widgetbook_codegen", "widgetbook"],
+    ["Build Widgetbook web app", "widgetbook_codegen", "widgetbook"],
   ]) {
     assert.match(namedStep(flutter, step), new RegExp(
       `if: \\$\\{\\{ !cancelled\\(\\) && steps\\.${setup}\\.outcome == 'success' && steps\\.scope\\.outputs\\.${output} == 'true' \\}\\}`,
       "u"), step);
   }
+  // The Node checks read the annotations; this proves they name every use case
+  // exactly as build_runner's output does.
+  const parity = namedStep(flutter, "Widgetbook annotations match the generated directories");
+  assert.match(parity, /steps\.widgetbook_codegen\.outcome == 'success'/u);
+  assert.match(parity, /node tool\/design\/lib\/widgetbook_use_cases\.mjs --verify-generated/u);
+  assert.match(namedStep(flutter, "Generate Widgetbook directories"), /id: widgetbook_codegen[\s\S]*dart run build_runner build/u);
 });
 
 test("Flutter selection keeps full validation and bounds matrix outputs", () => {

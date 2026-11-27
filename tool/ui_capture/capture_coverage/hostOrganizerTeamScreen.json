@@ -17,6 +17,9 @@
     "host_team_save_profile_offline",
     "host_team_sign_out_error",
     "host_team_sign_out_offline",
-    "host_organizer_team_phone"
+    "host_organizer_team_phone",
+    "host_clubs_team_pending",
+    "host_clubs_team_error",
+    "host_clubs_team_offline"
   ]
 }

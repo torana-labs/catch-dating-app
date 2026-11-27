@@ -49,6 +49,34 @@ void main() {
     expect(label.style?.color, CatchTokens.light.ink);
   });
 
+  testWidgets('an optional label fits a narrow lane at double text', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: Align(
+            alignment: AlignmentDirectional.topStart,
+            child: SizedBox(
+              width: 143,
+              child: CatchField.input(
+                copy: _copy,
+                title: 'Price per place',
+                titleMaxLines: 2,
+                labelMode: CatchFieldLabelTextMode.optional,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // The name keeps its room; the qualifier shortens instead of overflowing.
+    expect(tester.takeException(), isNull);
+    expect(find.text('Price per place'), findsOneWidget);
+  });
+
   testWidgets('focus draws the border in ink and an error in danger', (
     tester,
   ) async {

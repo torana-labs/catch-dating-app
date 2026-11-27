@@ -1,6 +1,6 @@
 import {cleanup, fireEvent, render} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
-import {CatchAvatar, catchAvatarInitialsOf} from "./CatchAvatar";
+import {CatchAvatar, catchAvatarColorOf, catchAvatarColorPalette, catchAvatarInitialsOf} from "./CatchAvatar";
 import {CatchAvatarRow} from "./CatchAvatarRow";
 
 afterEach(cleanup);
@@ -42,6 +42,51 @@ describe("CatchAvatar", () => {
     cleanup();
     const activity = render(<CatchAvatar colors={colors} name="Run club" obscured size={56} />);
     expect(activity.container.querySelector("[data-obscured]")).toBeNull();
+  });
+
+  it("marks a checked-in guest with the green corner dot, and an away person with the yellow one", () => {
+    const checkedIn = render(<CatchAvatar name="Tara Iyer" size={48} status="checkedIn" />);
+    const dot = checkedIn.container.querySelector("[data-status]") as HTMLElement;
+    expect(dot.dataset.status).toBe("checkedIn");
+    expect(dot.parentElement).toBe(root(checkedIn.container));
+    expect(root(checkedIn.container).getAttribute("aria-hidden")).toBe("true");
+    expect(checkedIn.container.textContent).toBe("");
+    cleanup();
+    const away = render(<CatchAvatar name="Tara Iyer" size={48} status="away" />);
+    expect((away.container.querySelector("[data-status]") as HTMLElement).dataset.status).toBe("away");
+    cleanup();
+    const none = render(<CatchAvatar name="Tara Iyer" size={48} />);
+    expect(none.container.querySelector("[data-status]")).toBeNull();
+  });
+
+  it("draws a system avatar at a token size on a colour picked from the name", () => {
+    const {container} = render(<CatchAvatar name="Rhea Kapoor" recipe="system" size="md" status="checkedIn" />);
+    expect(root(container).dataset).toMatchObject({recipe: "system", size: "md"});
+    expect(root(container).getAttribute("style")).toBeNull();
+    expect(surface(container).dataset).toMatchObject({color: catchAvatarColorOf("Rhea Kapoor"), initials: "RK"});
+    expect(surface(container).dataset.display).toBeUndefined();
+    expect(container.querySelector("[data-status]")).toBeTruthy();
+    cleanup();
+    const logo = render(<CatchAvatar color="games" initials="LL" name="Lantern Lane" recipe="system" size="xl" variant="square" />);
+    expect(surface(logo.container).dataset).toMatchObject({color: "games", display: "true", initials: "LL"});
+    expect(logo.container.querySelector("[data-variant]")!.getAttribute("data-variant")).toBe("square");
+  });
+
+  it("picks a system colour by Flutter's name hash", () => {
+    // Flutter: fold the runes from 7 with (h * 31 + c) & 0x7fffffff, exactly.
+    const flutter = (name: string) => {
+      const hash = [...name].reduce((h, c) => (h * 31n + BigInt(c.codePointAt(0)!)) & 0x7fffffffn, 7n);
+      return catchAvatarColorPalette[Number(hash % BigInt(catchAvatarColorPalette.length))];
+    };
+    for (const name of ["", "Rhea Kapoor", "Lantern Lane", "Aarav Joshi the Third of Many Names", "Zoë 🌙"]) {
+      expect(catchAvatarColorOf(name)).toBe(flutter(name));
+    }
+  });
+
+  it("falls back from a failed system photo to its initials", () => {
+    const {container} = render(<CatchAvatar color="ink" imageUrl="https://example.invalid/b.jpg" name="Rhea Kapoor" recipe="system" size="lg" />);
+    fireEvent.error(container.querySelector("img")!);
+    expect(surface(container).dataset).toMatchObject({color: "ink", initials: "RK"});
   });
 
   it("formats counts, veils slots and keeps the circle for them", () => {

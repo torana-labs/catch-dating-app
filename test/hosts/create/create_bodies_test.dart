@@ -263,6 +263,33 @@ void main() {
           policy: _policy(calls),
         );
 
+    testWidgets('the price and places fit a phone at double text, new or '
+        'saved', (tester) async {
+      final event = buildEvent(priceInPaise: 49900);
+      final saved = _state(draft: editDraftFromEvent(event, savedAt: _today))
+          .copyWith(
+            edit: CreateEditFacts(
+              event: event,
+              scheduleLocked: false,
+              policyLocked: false,
+            ),
+          );
+      for (final state in [_state(draft: _trivia), saved]) {
+        await _pump(
+          tester,
+          body(state),
+          size: const Size(375, 4000),
+          textScale: 2,
+        );
+        expect(tester.takeException(), isNull);
+        final price = tester.getRect(find.text(l10n.hostCreatePricePerPlace));
+        final stepper = tester.getRect(find.byType(CatchStepper));
+        // Both stay on the screen, the stepper whole.
+        expect(price.left, greaterThanOrEqualTo(0));
+        expect(stepper.right, lessThanOrEqualTo(375));
+      }
+    });
+
     testWidgets('selling on Catch shows price, places, terms and payouts', (
       tester,
     ) async {

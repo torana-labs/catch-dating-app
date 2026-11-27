@@ -40,7 +40,7 @@ class PageEditDraft {
     city: organizer.location,
     about: organizer.description,
     area: organizer.area,
-    instagram: organizer.instagramHandle ?? '',
+    instagram: (organizer.instagramHandle ?? '').replaceFirst(RegExp('^@'), ''),
     phone: organizer.phoneNumber ?? '',
     email: organizer.email ?? '',
     formats: pageEditFormatsOf(organizer),

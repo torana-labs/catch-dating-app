@@ -79,7 +79,7 @@
       "id": "repo.host-operations-tests",
       "kind": "repo",
       "status": "available",
-      "path": "test/hosts/host_operations_screen_test.dart",
+      "path": "test/hosts/organizer/organizer_screen_test.dart",
       "notes": "Host operations tests cover operational spotlight/task routing, paginated schedule/history rendering and recovery, owned club and co-host switching, event actions, and opening lifecycle-aware Host Event Manage sections."
     },
     {
@@ -234,7 +234,7 @@
       "status": "captured",
       "source": "A single owned organizer lets HostTodayScreen compose its live-or-next spotlight and seven-day needs-you queue from HostTodayState, while the separate Events route renders the durable lifecycle inventory.",
       "tests": [
-        "test/hosts/host_operations_screen_test.dart"
+        "test/hosts/organizer/organizer_screen_test.dart"
       ],
       "nextAction": "Add single-owned-club-only capture if it diverges from the existing owned baseline.",
       "previewIds": [
@@ -250,7 +250,7 @@
       "status": "captured",
       "source": "Multiple owned or hosted organizers use the shell-owned organizer switcher; changing selection updates the independent Today command centre, Events inventory, and other organizer-scoped destinations.",
       "tests": [
-        "test/hosts/host_operations_screen_test.dart"
+        "test/hosts/organizer/organizer_screen_test.dart"
       ],
       "nextAction": "Captured by host_home_switcher_cohost and host_home_long_club_names; remaining switcher work is future menu-open or pixel-reference variants if design requires them.",
       "previewIds": [
@@ -267,7 +267,7 @@
       "status": "captured",
       "source": "Co-hosted clubs show HOST TEAM role badge and keep operations scoped to the selected hosted club.",
       "tests": [
-        "test/hosts/host_operations_screen_test.dart"
+        "test/hosts/organizer/organizer_screen_test.dart"
       ],
       "nextAction": "Confirm create/manage affordances match ownership rules as Host Event Create/Manage callbacks are typed.",
       "previewIds": [
@@ -319,7 +319,7 @@
       "status": "captured",
       "source": "HostEventsWorkspaceState excludes cancelled events, groups Upcoming by day and Past by month/year, and feeds HostEventLifecycleRow. CatchRootScreenScaffold owns the sticky Upcoming/Past rail; CatchRecordRow owns natural-height activity-led rows and semantic facts.",
       "tests": [
-        "test/hosts/host_operations_screen_test.dart"
+        "test/hosts/organizer/organizer_screen_test.dart"
       ],
       "nextAction": "Re-baseline the deliberately consolidated Events composition through an approved design-parity change, then remove the applicable visual-drift debt. Pending approval, offer, draft, and guest-inquiry sources remain future truthful attention inputs rather than fabricated UI.",
       "previewIds": [
@@ -336,7 +336,7 @@
       "source": "HostEventsTimelineController.loadMoreActive preserves visible schedule and history rows, disables duplicate requests, and appends an event-id-de-duplicated page.",
       "tests": [
         "test/hosts/host_events_timeline_controller_test.dart",
-        "test/hosts/host_operations_screen_test.dart"
+        "test/hosts/organizer/organizer_screen_test.dart"
       ],
       "nextAction": "Add a deterministic load-more-schedule capture only if the loading treatment becomes visually distinct."
     },
@@ -347,7 +347,7 @@
       "source": "HostEventsTimelineController.loadMorePast preserves visible schedule and history rows, disables duplicate requests, and appends an event-id-de-duplicated history page.",
       "tests": [
         "test/hosts/host_events_timeline_controller_test.dart",
-        "test/hosts/host_operations_screen_test.dart"
+        "test/hosts/organizer/organizer_screen_test.dart"
       ],
       "nextAction": "Add a deterministic load-more-history capture only if the loading treatment becomes visually distinct."
     },
@@ -358,7 +358,7 @@
       "source": "A history-page failure preserves the loaded schedule and history, renders a scoped inline error, and retries through HostEventsTimelineController.retryPast.",
       "tests": [
         "test/hosts/host_events_timeline_controller_test.dart",
-        "test/hosts/host_operations_screen_test.dart"
+        "test/hosts/organizer/organizer_screen_test.dart"
       ],
       "nextAction": "Add a deterministic partial-history-error capture if this branch needs standalone visual evidence."
     },
@@ -381,7 +381,7 @@
       "status": "tested",
       "source": "HostEventsRouteScaffold owns the typed Add event callback and pushes hostCreateEventScreen with selected organizer id plus organizer extra.",
       "tests": [
-        "test/hosts/host_operations_screen_test.dart"
+        "test/hosts/organizer/organizer_screen_test.dart"
       ],
       "nextAction": "Coordinate this callback contract with screen.host.event.create once the create flow gets a fuller route-state adapter.",
       "previewIds": [
@@ -394,7 +394,7 @@
       "status": "tested",
       "source": "HostTodayScreen and HostEventsRouteScaffold each own lifecycle-aware event callbacks at their independent route edges and push hostAppEventManageScreen with organizer id, event id, event extra, and live/setup/report section; provider-free Today and Events widgets pass taps through instead of reading GoRouter.",
       "tests": [
-        "test/hosts/host_operations_screen_test.dart"
+        "test/hosts/organizer/organizer_screen_test.dart"
       ],
       "nextAction": "Keep this callback contract aligned with screen.host.event.manage as the host manage adapter is expanded.",
       "previewIds": [
@@ -407,7 +407,7 @@
       "status": "tested",
       "source": "A dress-rehearsal attention item pushes hostEventRehearsalStartScreen with the selected organizer id. HostEventEntrySheet does not expose rehearsal as an event-creation intent.",
       "tests": [
-        "test/hosts/host_operations_screen_test.dart"
+        "test/hosts/organizer/organizer_screen_test.dart"
       ],
       "nextAction": "Keep rehearsal entry in Today when the combined Today and Events screen authority is split during the Events vertical-slice migration.",
       "previewIds": [

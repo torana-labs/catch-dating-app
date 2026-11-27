@@ -1,15 +1,15 @@
 {
   "owners": [
     {
-      "file": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
-      "symbol": "_HostResponseOfferScreenState",
-      "family": "pushed-route",
-      "expression": "CatchRouteScaffold",
-      "bodyGeometry": "standard",
-      "topEdge": "route-chrome",
       "routes": [
         "hostResponseQueryOfferScreen"
-      ]
+      ],
+      "file": "lib/hosts/forms/offer_screen.dart",
+      "symbol": "_HostOfferScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
     }
   ],
   "reason": "Named Host workspace continuation reuses the existing content owner; route metadata supplies its ancestors and preserves push results."

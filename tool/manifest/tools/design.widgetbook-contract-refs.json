@@ -5,10 +5,11 @@
   "command": "node tool/design/check_widgetbook_contract_refs.mjs",
   "surface": "local-read",
   "status": "active",
-  "description": "Validates component contracts, primitive contract-state previews, and screen preview ids against generated Widgetbook directories.",
+  "description": "Validates component contracts, primitive contract-state previews, and screen preview ids against the Widgetbook directories derived from the @widgetbook.UseCase annotations (tool/design/lib/widgetbook_use_cases.mjs, which CI proves match build_runner output).",
   "checks": [
     "node --check tool/design/check_widgetbook_contract_refs.mjs",
     "node --test tool/design/check_widgetbook_contract_refs.test.mjs",
+    "node --test tool/design/lib/widgetbook_use_cases.test.mjs",
     "node tool/design/check_widgetbook_contract_refs.mjs --check"
   ],
   "impactPaths": [
@@ -17,6 +18,8 @@
     "design/screens/registry/**",
     "tool/design/lib/screen_registries.mjs",
     "tool/lib/split_registry.mjs",
+    "tool/design/lib/widgetbook_use_cases.mjs",
+    "tool/design/lib/widgetbook_use_cases.test.mjs",
     "widgetbook/lib/**"
   ],
   "role": "finder",

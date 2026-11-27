@@ -3,9 +3,10 @@ import type {ReactNode} from "react";
 import {expect, userEvent, within} from "storybook/test";
 import {StoryPage} from "../stories/websiteV2Story";
 import {CatchBand} from "./CatchBand";
+import {CatchButton} from "./CatchButton";
 import {CatchGap} from "./CatchGap";
 import {CatchGrid} from "./CatchGrid";
-import {CatchNotice, type CatchNoticeData} from "./CatchNotice";
+import {CatchNotice, type CatchNoticeData, type CatchNoticeFloatingProps, type CatchNoticeInlineProps} from "./CatchNotice";
 import {CatchNoticeRegion} from "./CatchNoticeRegion";
 import {CatchLegacyText} from "./CatchLegacyText";
 
@@ -13,10 +14,11 @@ const meta = {
   title: "Web UI/CatchNotice",
   component: CatchNotice,
   args: {dismissLabel: "Dismiss", notice: {id: "copied", title: "Link copied"}},
-} satisfies Meta<typeof CatchNotice>;
+} satisfies Meta<CatchNoticeFloatingProps>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+// The inline recipe has its own required props; the stories render both by hand.
+type Story = StoryObj<CatchNoticeFloatingProps>;
 
 const noop = () => undefined;
 
@@ -42,11 +44,37 @@ const notices: {label: string; notice: CatchNoticeData; dismiss?: boolean}[] = [
   {dismiss: true, label: "arrival-reduced-motion: no motion to reduce", notice: {id: "arrival-still", onOpen: noop, title: "Your run starts at 6:30", tone: "success"}},
 ];
 
+// Flutter `CatchNotice.inline`: the Widgetbook board states, in fictional copy.
+const inlineNotices: {label: string; notice: CatchNoticeInlineProps}[] = [
+  {label: "inline-info", notice: {body: "Guests pay into your own payout account. After 30 days free, Catch bills you 5% of ticket sales.", recipe: "inline"}},
+  {label: "inline-success", notice: {body: "Last scan · 7:41 PM · 1 place · paid", recipe: "inline", title: "Kabir Rao is in", tone: "success"}},
+  {label: "inline-neutral", notice: {body: "About 62 rupees to send, at messaging rates. It goes on your Catch bill.", recipe: "inline", tone: "neutral"}},
+  {label: "inline-action", notice: {action: {label: "Offer places", onPressed: noop}, body: "Pick several to offer places at once.", recipe: "inline", tone: "neutral"}},
+  {
+    label: "inline-footer",
+    notice: {
+      body: "Flight 214 is on the ground. No car is there yet.",
+      footer: (
+        <CatchGap direction="horizontal" size="inline" wrap>
+          <CatchButton label="Call them" onPressed={noop} size="sm" variant="secondary" />
+          <CatchButton label="Tell the planner" onPressed={noop} size="sm" variant="quiet" />
+        </CatchGap>
+      ),
+      recipe: "inline",
+      title: "Kabir landed early",
+      tone: "warning",
+    },
+  },
+];
+
 function States() {
   return (
     <CatchGrid columns={2} compactColumns={1}>
       {notices.map(({dismiss, label, notice}) => (
         <State key={label} label={label}><CatchNotice dismissLabel="Dismiss" notice={notice} onDismiss={dismiss ? noop : undefined} /></State>
+      ))}
+      {inlineNotices.map(({label, notice}) => (
+        <State key={label} label={label}><CatchNotice {...notice} /></State>
       ))}
     </CatchGrid>
   );
@@ -54,7 +82,8 @@ function States() {
 
 /**
  * catch.notice on the web: every tone, an action, dismissal and an arrival,
- * light and dark. Arrivals open as a whole; Escape dismisses them, standing in
+ * and the inline recipe (Flutter's `CatchNotice.inline`) with its info,
+ * success and neutral tints, a quiet action and a footer, light and dark. Arrivals open as a whole; Escape dismisses them, standing in
  * for the app's swipe, and they carry no motion to reduce. No board capture
  * shows a notice: the boards' toasts are the prototype's stand-in for
  * navigation.
@@ -71,6 +100,8 @@ export const Contract: Story = {
     const [arrival] = canvas.getAllByRole("button", {name: /Kabir sent the route/});
     await userEvent.click(arrival);
     await expect(canvas.getAllByRole("button", {name: "Dismiss"})).toHaveLength(2);
+    await expect(canvas.getAllByRole("button", {name: "Offer places"})).toHaveLength(2);
+    await expect(canvas.getAllByRole("button", {name: "Tell the planner"})).toHaveLength(2);
   },
 };
 

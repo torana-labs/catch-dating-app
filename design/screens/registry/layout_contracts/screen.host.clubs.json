@@ -4,50 +4,6 @@
       "routes": [
         "hostOrganizerScreen"
       ],
-      "file": "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart",
-      "symbol": "HostOrganizerStateScaffold",
-      "family": "root",
-      "expression": "CatchRootScreenScaffold.withPrimaryRail",
-      "bodyGeometry": "standard",
-      "topEdge": "safe-area"
-    },
-    {
-      "routes": [
-        "hostOrganizerScreen"
-      ],
-      "file": "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart",
-      "symbol": "_HostOrganizersScaffoldState",
-      "family": "root",
-      "expression": "CatchRootScreenScaffold.withPrimaryRail",
-      "bodyGeometry": "full-bleed",
-      "topEdge": "safe-area"
-    },
-    {
-      "routes": [
-        "hostOrganizerLiveGuideScreen"
-      ],
-      "file": "lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart",
-      "symbol": "HostOrganizerSpokeScaffold",
-      "family": "pushed-route",
-      "expression": "CatchRouteScaffold",
-      "bodyGeometry": "standard",
-      "topEdge": "route-chrome"
-    },
-    {
-      "routes": [
-        "hostOrganizerLiveGuideScreen"
-      ],
-      "file": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
-      "symbol": "HostLoadingScreen",
-      "family": "pushed-route",
-      "expression": "CatchRouteScaffold",
-      "bodyGeometry": "standard",
-      "topEdge": "route-chrome"
-    },
-    {
-      "routes": [
-        "hostOrganizerScreen"
-      ],
       "file": "lib/routing/host_navigation_workspace.dart",
       "symbol": "HostNavigationWorkspace",
       "family": "root",
@@ -94,6 +50,17 @@
       ],
       "file": "lib/hosts/organizer/memberships_screen.dart",
       "symbol": "OrganizerMembershipsScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostOrganizerLiveGuideScreen"
+      ],
+      "file": "lib/hosts/organizer/live_guide_screen.dart",
+      "symbol": "OrganizerLiveGuideScreen",
       "family": "pushed-route",
       "expression": "CatchScreen",
       "bodyGeometry": "standard",
