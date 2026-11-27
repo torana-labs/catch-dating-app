@@ -1,5 +1,7 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
+import 'package:catch_dating_app/hosts/people/add_person_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/errors/provider_retry_policy.dart';
@@ -15,8 +17,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod/misc.dart' show Override;
 
-/// The add-a-person route is still drawn by the legacy editor. Its form rules
-/// moved here from the retired organiser workspace test library.
+/// Add person, redrawn on the system: the old editor's form rules, kept.
 void main() {
   setUp(() => AppConfig.configureEntrypointRole(AppRole.host));
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
@@ -26,7 +27,7 @@ void main() {
   ) async {
     await _pumpAddCustomer(tester);
 
-    expect(find.byType(CatchRouteScaffold), findsOneWidget);
+    expect(find.byType(CatchScreen), findsOneWidget);
     expect(find.byType(CatchSheet), findsNothing);
     expect(
       find.byKey(const ValueKey('host-add-customer-details')),
@@ -43,10 +44,8 @@ void main() {
     expect(_fieldTitle(tester, 'host-add-customer-phone'), 'Mobile number');
     expect(_fieldTitle(tester, 'host-add-customer-email'), 'Email');
     await tester.ensureVisible(
-      find.byKey(const ValueKey('host-add-customer-memory')),
+      find.byKey(const ValueKey('host-add-customer-note')),
     );
-    await tester.tap(find.byKey(const ValueKey('host-add-customer-memory')));
-    await pumpFeatureUi(tester);
     expect(_fieldTitle(tester, 'host-add-customer-note'), 'Private note');
     expect(
       find.textContaining('does not grant permission to send messages'),
@@ -54,7 +53,7 @@ void main() {
     );
 
     await tester.enterText(_input('host-add-customer-name'), 'Name only');
-    await tester.tap(find.byKey(const ValueKey('host-add-customer-submit')));
+    await tester.tap(_add);
     await pumpFeatureUi(tester);
 
     expect(
@@ -79,9 +78,7 @@ void main() {
           _input('host-add-customer-$endpoint'),
           endpoint == 'phone' ? '+919876543210' : 'MAYA@Example.COM',
         );
-        await tester.tap(
-          find.byKey(const ValueKey('host-add-customer-submit')),
-        );
+        await tester.tap(_add);
         await pumpFeatureUi(tester);
         expect(
           controller.requests,
@@ -108,7 +105,73 @@ void main() {
       },
     );
   }
+
+  testWidgets('a person added returns to People, and the form freezes '
+      'while it is added', (tester) async {
+    final pending = Completer<HostCreatedCustomer>();
+    final controller = _CreatePersonProbe(result: pending.future);
+    Object? returned;
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, _) => TextButton(
+            onPressed: () async {
+              returned = await context.push<Object?>('/new');
+            },
+            child: const Text('Open'),
+          ),
+        ),
+        GoRoute(
+          path: '/new',
+          builder: (_, _) =>
+              const HostAddPersonScreen(organizerId: 'organizer-1'),
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          firebaseFirestoreProvider.overrideWithValue(FakeFirebaseFirestore()),
+          hostCustomersControllerProvider.overrideWithValue(controller),
+        ],
+        child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await pumpFeatureUi(tester);
+    await tester.enterText(_input('host-add-customer-name'), 'Maya Kapoor');
+    await tester.enterText(
+      _input('host-add-customer-email'),
+      'maya@example.com',
+    );
+    await tester.tap(_add);
+    await tester.pump();
+    expect(controller.requests, hasLength(1));
+    final name = tester.widget<CatchField>(
+      find.byKey(const ValueKey('host-add-customer-name')),
+    );
+    expect(name.states, contains(WidgetState.disabled));
+
+    pending.complete(
+      const HostCreatedCustomer(
+        organizerId: 'organizer-1',
+        contactId: 'contact-1',
+        displayName: 'Maya Kapoor',
+        revision: 1,
+      ),
+    );
+    await pumpFeatureUi(tester);
+    expect(returned, isA<HostCreatedCustomer>());
+    expect(find.byType(HostAddPersonScreen), findsNothing);
+  });
 }
+
+/// The dock's Add person; the title says the same.
+final _add = find.descendant(
+  of: find.byType(CatchDock),
+  matching: find.text('Add person'),
+);
 
 Finder _input(String key) => find.descendant(
   of: find.byKey(ValueKey(key)),
@@ -127,7 +190,7 @@ Future<void> _pumpAddCustomer(
       GoRoute(
         path: '/',
         builder: (_, _) =>
-            const HostAddCustomerScreen(organizerId: 'organizer-1'),
+            const HostAddPersonScreen(organizerId: 'organizer-1'),
       ),
     ],
   );
@@ -150,6 +213,10 @@ Future<void> _pumpAddCustomer(
 }
 
 class _CreatePersonProbe extends Fake implements HostCustomersController {
+  _CreatePersonProbe({this.result});
+
+  /// What the create answers; null fails it as a retryable save.
+  final Future<HostCreatedCustomer>? result;
   final requests = <Map<String, String?>>[];
 
   @override
@@ -166,6 +233,6 @@ class _CreatePersonProbe extends Fake implements HostCustomersController {
       'email': email,
       'note': initialNote,
     });
-    throw StateError('Simulated retryable save failure');
+    return result ?? (throw StateError('Simulated retryable save failure'));
   }
 }
