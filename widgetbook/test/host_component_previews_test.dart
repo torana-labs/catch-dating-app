@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_live_location_field.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_section.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_operational_roster_section.dart';
+import 'package:catch_dating_app/hosts/live/formats/host_event_live_location_field.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';

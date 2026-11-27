@@ -7,9 +7,9 @@ import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repositor
 import 'package:catch_dating_app/contexts/bookings/data/host_attendance_outbox.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_roster_insight_filter.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_section.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_operational_roster_controller.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_operational_roster_section.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_roster_insight_filter.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/connectivity_service.dart';

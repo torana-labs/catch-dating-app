@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/hosts/events/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_moving_night.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 
 /// Which screen an event link opens.
 ///

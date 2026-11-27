@@ -116,6 +116,7 @@ import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/featured_event_poster.dart';
 import 'package:catch_dating_app/hosts/create/create_basics_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_editor_screen.dart';
+import 'package:catch_dating_app/hosts/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_handlers.dart';
 import 'package:catch_dating_app/hosts/create/create_plan_body.dart';
@@ -134,6 +135,8 @@ import 'package:catch_dating_app/hosts/events/events_controller.dart'
     show HostEventsRequest, hostEventsControllerProvider;
 import 'package:catch_dating_app/hosts/events/events_screen.dart'
     show HostEventsTabScreen;
+import 'package:catch_dating_app/hosts/events/host_event_booking_controller.dart';
+import 'package:catch_dating_app/hosts/events/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_practice_screen.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_practice_tools_screen.dart';
 import 'package:catch_dating_app/hosts/forms/form_automations_screen.dart';
@@ -163,9 +166,6 @@ import 'package:catch_dating_app/hosts/people/conversation/conversation_people.d
 import 'package:catch_dating_app/hosts/people/messages_state.dart';
 import 'package:catch_dating_app/hosts/people/people_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';

@@ -8,8 +8,8 @@ import 'package:catch_dating_app/contexts/events/domain/event_policy_defaults.da
 import 'package:catch_dating_app/contexts/events/domain/event_public_details.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/hosts/create/create_draft_values.dart';
+import 'package:catch_dating_app/hosts/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/business_rules.dart';
 import 'package:catch_kernel/country_markets.dart';

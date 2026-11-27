@@ -9,7 +9,7 @@ import 'package:catch_dating_app/contexts/insights/domain/host_report_export.dar
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
+import 'package:catch_dating_app/hosts/events/host_event_booking_controller.dart';
 import 'package:catch_dating_app/pages/event/event_invite_share_copy.dart';
 import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_platform/cache/app_clock.dart';

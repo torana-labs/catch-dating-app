@@ -8,11 +8,11 @@ import 'package:catch_dating_app/contexts/events/domain/event_private_access.dar
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/create/create_draft_values.dart';
+import 'package:catch_dating_app/hosts/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_policy_fields.dart';
 import 'package:catch_dating_app/hosts/create/edit_event_values.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
+import 'package:catch_dating_app/hosts/events/host_event_booking_controller.dart';
 import 'package:catch_kernel/business_rules.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

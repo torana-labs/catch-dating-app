@@ -15,7 +15,7 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/hosts/door/door_controller.dart';
 import 'package:catch_dating_app/hosts/door/door_scan_state.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_operational_roster_controller.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:cloud_functions/cloud_functions.dart';

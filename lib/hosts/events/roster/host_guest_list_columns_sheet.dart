@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/audience/domain/guest_list_import_preview.dart';
 import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_mapping_field.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_roster_mapping_field.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';

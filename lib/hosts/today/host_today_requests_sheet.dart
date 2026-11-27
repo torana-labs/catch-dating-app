@@ -3,7 +3,7 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/contexts/bookings/data/host_requests_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/host_request.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
+import 'package:catch_dating_app/hosts/events/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/today/host_today_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/cache/app_clock.dart';

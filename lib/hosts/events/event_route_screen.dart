@@ -7,14 +7,14 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/events/event_guests_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_screen.dart';
+import 'package:catch_dating_app/hosts/events/host_event_manage_screen_state.dart';
+import 'package:catch_dating_app/hosts/events/host_event_route_destination.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_crawl_screen.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_moving_night.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_run_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_controller.dart';
 import 'package:catch_dating_app/hosts/live/live_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_route_destination.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
@@ -27,7 +27,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-export 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart'
+export 'package:catch_dating_app/hosts/events/host_event_manage_screen_state.dart'
     show HostEventManageSection;
 
 typedef _HostEventManageRouteData = ({

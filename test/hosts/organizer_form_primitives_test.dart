@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/events/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
+import 'package:catch_dating_app/hosts/create/widgets/event_age_range_field.dart';
 import 'package:catch_dating_app/hosts/organizer/edit/organizer_host_defaults_step.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

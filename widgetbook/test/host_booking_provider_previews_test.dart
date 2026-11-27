@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/hosts/presentation/widgets/host_booking_provider_section.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_luma_connection_sheet.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_booking_provider_section.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_luma_connection_sheet.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';

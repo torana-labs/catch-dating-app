@@ -1,3 +1,4 @@
+// size-exemption: the legacy roster section stays whole until its redraw splits it.
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
@@ -15,13 +16,13 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/data/event_runtime_claim_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_runtime_claim_request.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_roster_insight_filter.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_booking_provider_section.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_guest_list_columns_sheet.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_luma_connection_sheet.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_import_copy.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_intake_review_sheet.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_booking_provider_section.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_guest_list_columns_sheet.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_luma_connection_sheet.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_operational_roster_controller.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_roster_import_copy.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_roster_insight_filter.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_roster_intake_review_sheet.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/clipboard.dart';
@@ -137,7 +138,7 @@ class HostGuestIntakeSettingsField extends StatelessWidget {
                       ? CatchButtonStatus.loading
                       : CatchButtonStatus.idle,
                   variant: CatchButtonVariant.secondary,
-                  leading: Icon(CatchIcons.cloudUploadOutlined),
+                  leading: CatchIcon(CatchIcons.cloudUploadOutlined),
                 ),
                 if (onResume != null)
                   CatchButton(
@@ -145,13 +146,13 @@ class HostGuestIntakeSettingsField extends StatelessWidget {
                     label: context.l10n.hostsOperationalRosterIntakeResume,
                     onPressed: importing ? null : onResume,
                     variant: CatchButtonVariant.secondary,
-                    leading: Icon(CatchIcons.refreshRounded),
+                    leading: CatchIcon(CatchIcons.refreshRounded),
                   ),
                 CatchButton(
                   label: context.l10n.hostsOperationalRosterAddGuest,
                   onPressed: importing ? null : onAddGuest,
                   variant: CatchButtonVariant.quiet,
-                  leading: Icon(CatchIcons.personAddAlt1Outlined),
+                  leading: CatchIcon(CatchIcons.personAddAlt1Outlined),
                 ),
                 CatchButton(
                   label: context.l10n.hostsOperationalRosterForwardCsv,
@@ -160,7 +161,7 @@ class HostGuestIntakeSettingsField extends StatelessWidget {
                       ? CatchButtonStatus.loading
                       : CatchButtonStatus.idle,
                   variant: CatchButtonVariant.quiet,
-                  leading: Icon(CatchIcons.alternateEmailOutlined),
+                  leading: CatchIcon(CatchIcons.alternateEmailOutlined),
                 ),
               ],
             ),
@@ -374,7 +375,7 @@ class _HostOperationalRosterSectionState
                     ? CatchButtonStatus.loading
                     : CatchButtonStatus.idle,
                 variant: CatchButtonVariant.secondary,
-                leading: Icon(CatchIcons.personAddAlt1Outlined),
+                leading: CatchIcon(CatchIcons.personAddAlt1Outlined),
               ),
             ),
             gapH12,
@@ -640,9 +641,10 @@ class HostRosterInsightRail extends StatelessWidget {
               if (insights.spendCoverage ==
                   HostRosterSpendCoverage.catchPaymentsOnly) ...[
                 gapH8,
-                Text(
+                CatchText(
                   context.l10n.hostsOperationalRosterInsightsSpendFootnote,
-                  style: CatchTextStyles.meta(context),
+                  variant: CatchTextVariant.bodyMeta,
+                  tone: CatchTextTone.secondary,
                 ),
               ],
               if (insights.sourceCoverage ==
@@ -653,9 +655,10 @@ class HostRosterInsightRail extends StatelessWidget {
                   spacing: CatchSpacing.s2,
                   runSpacing: CatchSpacing.s2,
                   children: [
-                    Text(
+                    CatchText(
                       context.l10n.hostsOperationalRosterInsightsPreparing,
-                      style: CatchTextStyles.meta(context),
+                      variant: CatchTextVariant.bodyMeta,
+                      tone: CatchTextTone.secondary,
                     ),
                     CatchButton(
                       label: context.l10n.hostsOperationalRosterInsightsRetry,

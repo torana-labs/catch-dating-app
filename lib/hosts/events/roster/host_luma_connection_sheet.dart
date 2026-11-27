@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/audience/data/host_provider_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_operational_roster_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';

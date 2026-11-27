@@ -5,9 +5,9 @@ import 'package:catch_dating_app/contexts/events/data/private_event_setup_reposi
 import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_default_view_reads.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/create/create_controller.dart';
+import 'package:catch_dating_app/hosts/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_plan_body.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_test_support/organizers_test_helpers.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';

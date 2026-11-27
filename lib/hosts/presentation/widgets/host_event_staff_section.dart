@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/organizers/data/host_event_staff_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_staff_controller.dart';
+import 'package:catch_dating_app/hosts/events/access/host_event_staff_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/clipboard.dart';
 import 'package:catch_platform/errors/app_error_message.dart';

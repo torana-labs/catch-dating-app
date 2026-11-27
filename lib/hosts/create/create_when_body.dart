@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/hosts/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/pages/event/location/map_preview.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_l10n/l10n.dart';

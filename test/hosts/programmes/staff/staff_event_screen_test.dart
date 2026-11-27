@@ -9,7 +9,7 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_event_staff_repository.dart';
 import 'package:catch_dating_app/hosts/door/door_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_operational_roster_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_event_screen.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
