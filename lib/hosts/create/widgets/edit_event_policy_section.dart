@@ -1,13 +1,13 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
+import 'package:catch_dating_app/hosts/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_policy_handlers.dart';
 import 'package:catch_dating_app/hosts/create/edit_event_values.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
-import 'package:catch_dating_app/hosts/presentation/validators.dart';
+import 'package:catch_dating_app/hosts/create/validators.dart';
+import 'package:catch_dating_app/hosts/create/widgets/event_age_range_field.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';

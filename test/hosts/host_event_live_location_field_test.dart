@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/events/data/event_live_position_service.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_live_location_field.dart';
+import 'package:catch_dating_app/hosts/live/formats/host_event_live_location_field.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/device/device_location.dart';
 import 'package:catch_test_support/events_test_helpers.dart';

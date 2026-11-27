@@ -7,12 +7,12 @@ import 'package:catch_dating_app/contexts/events/data/read_model_follower.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_journal.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/event_preferences_editor.dart';
+import 'package:catch_dating_app/hosts/create/event_preferences_editor.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-export 'package:catch_dating_app/hosts/presentation/event_management/create/event_preferences_editor.dart';
+export 'package:catch_dating_app/hosts/create/event_preferences_editor.dart';
 
 part 'event_offer_preferences_controller.g.dart';
 

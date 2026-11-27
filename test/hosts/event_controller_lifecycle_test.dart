@@ -6,9 +6,9 @@ import 'package:catch_dating_app/contexts/events/data/private_event_setup_reposi
 import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
+import 'package:catch_dating_app/hosts/create/event_publication_controller.dart';
+import 'package:catch_dating_app/hosts/create/private_event_preferences_controller.dart';
+import 'package:catch_dating_app/hosts/forms/event_offer_preferences_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

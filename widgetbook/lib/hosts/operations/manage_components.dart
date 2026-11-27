@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/contexts/events/data/event_live_position_service.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/hosts/events/access/check_in_qr_section.dart';
+import 'package:catch_dating_app/hosts/events/access/host_event_manage_section.dart';
 import 'package:catch_dating_app/hosts/events/event_route_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_live_location_field.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_manage_section.dart';
+import 'package:catch_dating_app/hosts/events/host_event_booking_controller.dart';
+import 'package:catch_dating_app/hosts/live/formats/host_event_live_location_field.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_ui/catch_ui.dart';

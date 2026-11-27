@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_insights.dart';
-import 'package:catch_dating_app/hosts/presentation/host_roster_insight_filter.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_roster_insight_filter.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

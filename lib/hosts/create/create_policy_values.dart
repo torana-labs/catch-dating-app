@@ -5,9 +5,9 @@ import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/hosts/create/create_draft_values.dart';
+import 'package:catch_dating_app/hosts/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_body.dart';
 import 'package:catch_dating_app/hosts/create/edit_event_values.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:collection/collection.dart';
 
 // The create flow's admission values: the organizer's policy defaults a

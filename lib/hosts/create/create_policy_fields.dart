@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
+import 'package:catch_dating_app/hosts/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/create/create_policy_handlers.dart';
 import 'package:catch_dating_app/hosts/create/edit_event_values.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 
 /// The admission fields' changes, shared by the create and edit
 /// controllers: each edits the draft through [edit] and marks

@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy_defaults.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
+import 'package:catch_dating_app/hosts/create/create_event_policy_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

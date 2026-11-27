@@ -2671,7 +2671,7 @@ attendance, waitlist offers, join-request decisions, or any per-entity action
 rendered multiple times on one surface must key mutation state per target with
 `mutation(key)` family instances. Keys are typed Dart records with value
 equality, not concatenated strings. Use
-`lib/hosts/presentation/host_event_booking_controller.dart` as the reference
+`lib/hosts/events/host_event_booking_controller.dart` as the reference
 implementation.
 
 ### Exhibit ARCH-PENDING-SNAPSHOT-001: Pending Request Snapshot Integrity

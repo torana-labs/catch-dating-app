@@ -17,9 +17,9 @@ import 'package:catch_dating_app/contexts/insights/parts/host_analytics_source_m
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
+import 'package:catch_dating_app/hosts/events/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_state.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/catch_async_state.dart';

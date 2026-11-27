@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_default_view_reads.dart';
 import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_view_reads.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
+import 'package:catch_dating_app/hosts/create/private_event_details_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

@@ -15,10 +15,17 @@ export 'package:catch_dating_app/contexts/insights/domain/host_report_export.dar
 export 'package:catch_dating_app/contexts/organizers/data/host_profile_repository.dart';
 export 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
 
+export 'create/create_event_draft_controller.dart'; // public-api: command seam for route-owned actions
+export 'create/create_event_form_keys.dart'; // public-api: presentation value/helper API used across feature boundaries
+export 'create/create_event_policy_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'create/create_route_screen.dart'; // public-api: route entry point exposed to app routing
 export 'create/edit_event_screen.dart'; // public-api: route entry point exposed to app routing
+export 'create/validators.dart'; // public-api: presentation value/helper API used across feature boundaries
 export 'events/access/check_in_qr_section.dart'; // public-api: shared presentation component used outside this feature
 export 'events/event_route_screen.dart'; // public-api: route entry point exposed to app routing
+export 'events/host_event_booking_controller.dart'; // public-api: command seam for route-owned actions
+export 'events/host_event_manage_controller.dart'; // public-api: command seam for route-owned actions
+export 'events/host_event_manage_screen_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'onboarding/create_organizer_controller.dart'; // public-api: command seam for route-owned actions
 export 'onboarding/create_organizer_draft_controller.dart'; // public-api: command seam for route-owned actions
 export 'onboarding/host_create_organizer_screen.dart'; // public-api: route entry point exposed to app routing
@@ -28,12 +35,4 @@ export 'organizer/selection/host_organizer_selection_controller.dart'; // public
 export 'organizer/selection/host_organizer_switcher_sheet.dart'; // public-api: shared Host-shell identity component
 export 'organizer/team/host_team_management_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/event_management/create/create_event_controller.dart'; // public-api: command seam for route-owned actions
-export 'presentation/event_management/create/create_event_draft_controller.dart'; // public-api: command seam for route-owned actions
-export 'presentation/event_management/create/create_event_form_keys.dart'; // public-api: presentation value/helper API used across feature boundaries
-export 'presentation/event_management/create/create_event_policy_state.dart'; // public-api: provider-free display state reused by tests and routes
-export 'presentation/host_event_booking_controller.dart'; // public-api: command seam for route-owned actions
-export 'presentation/host_event_manage_controller.dart'; // public-api: command seam for route-owned actions
-export 'presentation/host_event_manage_screen_state.dart'; // public-api: provider-free display state reused by tests and routes
-export 'presentation/host_team_workspace_state.dart'; // public-api: provider-free display state reused by tests and routes
-export 'presentation/validators.dart'; // public-api: presentation value/helper API used across feature boundaries
 export 'today/host_today_screen.dart'; // public-api: route entry point exposed to app routing

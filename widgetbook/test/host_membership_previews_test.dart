@@ -2,8 +2,8 @@ import 'package:catch_dating_app/host_memberships/presentation/host_membership_b
 import 'package:catch_dating_app/host_memberships/presentation/host_membership_profile_section.dart';
 import 'package:catch_dating_app/host_memberships/presentation/host_membership_section.dart';
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_screen.dart';
+import 'package:catch_dating_app/hosts/create/hosted_event_membership_rules_section.dart';
 import 'package:catch_dating_app/hosts/organizer/memberships/host_membership_plan_editor_sheet.dart';
-import 'package:catch_dating_app/hosts/presentation/hosted_event_membership_rules_section.dart';
 import 'package:catch_dating_app/pages/memberships/host_membership_plan_sheet.dart';
 import 'package:catch_dating_app/pages/memberships/host_membership_plans_section.dart';
 import 'package:catch_dating_app/pages/memberships/host_membership_upsell_banner.dart';

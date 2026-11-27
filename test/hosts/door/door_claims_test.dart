@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event_runtime_claim_request.dart';
 import 'package:catch_dating_app/hosts/door/door_body.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_section.dart'
+import 'package:catch_dating_app/hosts/events/roster/host_operational_roster_section.dart'
     show HostRuntimeClaimList;
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';

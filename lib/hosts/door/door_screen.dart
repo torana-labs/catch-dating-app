@@ -13,7 +13,7 @@ import 'package:catch_dating_app/hosts/door/door_body.dart';
 import 'package:catch_dating_app/hosts/door/door_controller.dart';
 import 'package:catch_dating_app/hosts/door/door_scan_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_section.dart'
+import 'package:catch_dating_app/hosts/events/roster/host_operational_roster_section.dart'
     show HostManualAttendeeSheet, HostRuntimeClaimList;
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_l10n/l10n.dart';

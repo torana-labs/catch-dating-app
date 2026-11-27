@@ -124,7 +124,7 @@ class HostBookingProviderSection extends StatelessWidget {
                             ? CatchButtonStatus.loading
                             : CatchButtonStatus.idle,
                         size: CatchButtonSize.md,
-                        leading: Icon(CatchIcons.keyOutlined),
+                        leading: CatchIcon(CatchIcons.keyOutlined),
                       )
                     else
                       CatchButton(
@@ -135,7 +135,7 @@ class HostBookingProviderSection extends StatelessWidget {
                             ? CatchButtonStatus.loading
                             : CatchButtonStatus.idle,
                         size: CatchButtonSize.md,
-                        leading: Icon(CatchIcons.syncRounded),
+                        leading: CatchIcon(CatchIcons.syncRounded),
                       ),
                     CatchButton(
                       label:
@@ -191,7 +191,7 @@ class HostBookingProviderSection extends StatelessWidget {
                           ? CatchButtonStatus.loading
                           : CatchButtonStatus.idle,
                       size: CatchButtonSize.md,
-                      leading: Icon(CatchIcons.keyOutlined),
+                      leading: CatchIcon(CatchIcons.keyOutlined),
                     ),
                   if (entry.capabilities.fileImport)
                     CatchButton(
@@ -199,7 +199,7 @@ class HostBookingProviderSection extends StatelessWidget {
                       onPressed: mutationPending ? null : onImport,
                       size: CatchButtonSize.md,
                       variant: CatchButtonVariant.secondary,
-                      leading: Icon(CatchIcons.cloudUploadOutlined),
+                      leading: CatchIcon(CatchIcons.cloudUploadOutlined),
                     ),
                 ],
               ),

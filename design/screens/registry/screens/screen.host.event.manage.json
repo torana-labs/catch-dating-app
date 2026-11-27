@@ -59,11 +59,11 @@
         "symbol": "HostEventManageRouteScreen"
       },
       {
-        "file": "lib/hosts/presentation/host_event_route_destination.dart",
+        "file": "lib/hosts/events/host_event_route_destination.dart",
         "symbol": "hostEventRouteDestination"
       },
       {
-        "file": "lib/hosts/presentation/host_event_manage_screen_state.dart",
+        "file": "lib/hosts/events/host_event_manage_screen_state.dart",
         "symbol": "hostEventWorkspacePhaseFor"
       },
       {

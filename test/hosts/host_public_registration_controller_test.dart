@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
+import 'package:catch_dating_app/hosts/events/host_event_booking_controller.dart';
 import 'package:catch_test_support/events_test_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
 

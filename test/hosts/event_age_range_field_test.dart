@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
+import 'package:catch_dating_app/hosts/create/widgets/event_age_range_field.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';

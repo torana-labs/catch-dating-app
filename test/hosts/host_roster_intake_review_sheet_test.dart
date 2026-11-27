@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/audience/data/host_roster_intake_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_intake_review_sheet.dart';
+import 'package:catch_dating_app/hosts/events/roster/host_roster_intake_review_sheet.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';

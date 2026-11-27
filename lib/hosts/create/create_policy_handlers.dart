@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
+import 'package:catch_dating_app/hosts/create/create_event_policy_state.dart';
 import 'package:flutter/foundation.dart';
 
 /// What the admission fields do when the host changes them: the format, the
