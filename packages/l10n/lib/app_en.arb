@@ -11933,6 +11933,26 @@
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.dashboard_empty"
   },
+  "hostsHostTeamManagementSectionSuccessmessageDisplaynameRemoved": "{displayName} removed.",
+  "@hostsHostTeamManagementSectionSuccessmessageDisplaynameRemoved": {
+    "description": "Notice on the organizer team screen after the owner confirms this change.",
+    "placeholders": {
+      "displayName": {}
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.organizer.team_screen"
+  },
+  "hostsHostTeamManagementSectionSuccessmessageOwnershipTransferredToDisplayname": "Ownership transferred to {displayName}.",
+  "@hostsHostTeamManagementSectionSuccessmessageOwnershipTransferredToDisplayname": {
+    "description": "Notice on the organizer team screen after the owner confirms this change.",
+    "placeholders": {
+      "displayName": {}
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.organizer.team_screen"
+  },
   "eventSuccessEventSuccessCompanionSharedLabelPostEventFollowUp": "Post-event follow-up opens after attendance is confirmed.",
   "@eventSuccessEventSuccessCompanionSharedLabelPostEventFollowUp": {
     "description": "Product copy used by lib/event_success/presentation/companion_parts/event_success_companion_shared.dart (label).",
