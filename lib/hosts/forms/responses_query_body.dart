@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_export.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/parts/host_form_response_row.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_export_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_form_response_query_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_response_export_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';

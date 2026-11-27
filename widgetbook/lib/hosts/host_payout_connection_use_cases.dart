@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_organizer_bills_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_form_payment_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_organizer_bills_section.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_razorpay_connection_section.dart';
 import 'package:flutter/material.dart';

@@ -17,6 +17,7 @@ class HostResponseBody extends StatelessWidget {
     required this.note,
     required this.onOpenFile,
     this.onMembership,
+    this.onOpenPayment,
   });
 
   final HostResponseState state;
@@ -27,6 +28,9 @@ class HostResponseBody extends StatelessWidget {
 
   /// Runs the membership decision the state offers.
   final ValueChanged<HostCommunityMembershipAction>? onMembership;
+
+  /// Opens the payment's details: status, amounts, times and references.
+  final VoidCallback? onOpenPayment;
 
   @override
   Widget build(BuildContext context) {
@@ -129,9 +133,11 @@ class HostResponseBody extends StatelessWidget {
             title: l10n.hostFormsResponsePayment,
             children: [
               CatchIndexRow(
+                key: const ValueKey<String>('host-response-payment'),
                 title: payment,
-                onTap: null,
+                onTap: onOpenPayment,
                 density: CatchIndexRowSize.compact,
+                chevron: onOpenPayment != null,
               ),
             ],
           ),

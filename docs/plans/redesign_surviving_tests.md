@@ -2070,7 +2070,7 @@ Layout only, deleted with the screen:
 - `body` contact shortcuts remain reachable and answers precede review on mobile
 - `body` revoked application cannot expose review actions
 
-**`test/hosts/forms/cat83_responses_diagnostic_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_forms_screen.dart`, `lib/hosts/presentation/forms/host_form_operations_controller.dart` · decided by rules
+**`test/hosts/forms/cat83_responses_diagnostic_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_forms_screen.dart`, `lib/hosts/forms/host_form_operations_controller.dart` · decided by rules
 
 - `action` generated equal-request family shares one actual initial read
 - `parts` real cold Responses mount starts one unresolved read
@@ -2093,7 +2093,7 @@ Layout only, deleted with the screen:
 
 - `action` Host must preview event-specific offer before commit
 
-**`test/hosts/forms/host_event_offer_workspace_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/hosts/presentation/forms/host_event_offer_workspace_controller.dart` · decided by rules
+**`test/hosts/forms/host_event_offer_workspace_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/hosts/forms/host_event_offer_workspace_controller.dart` · decided by rules
 
 - `journey` route footer follows event choice and clears on account loss
 - `body` legacy response cache is hidden until the new manager read resolves
@@ -2123,19 +2123,19 @@ Layout only, deleted with the screen:
 - `action` approval reads are bounded to four and cancellation stops later batches
 - `body` recipient chooser orders existing events first and keeps preparation visible and cancellable
 
-**`test/hosts/forms/host_form_admission_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/hosts/presentation/forms/host_event_offer_controller.dart`, `lib/hosts/presentation/forms/host_event_offer_workspace_controller.dart` · decided by rules
+**`test/hosts/forms/host_form_admission_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/hosts/forms/host_event_offer_controller.dart`, `lib/hosts/forms/host_event_offer_workspace_controller.dart` · decided by rules
 
 - `action` uncertain commit survives recreation and retries the exact request
 - `action` definitively rejected command must be reviewed again before replacement
 - `action` late preview cannot render or admit after an account change
 - `action` admission is confirmed explicitly after preview
 
-**`test/hosts/forms/host_form_analytics_screen_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_forms_controller.dart` · decided by rules
+**`test/hosts/forms/host_form_analytics_screen_test.dart`** — behaviour · subject `lib/hosts/forms/host_forms_controller.dart` · decided by rules
 
 - `body` Results retains its version through export polling
 - `body` Results with no starts does not invent a completion rate
 
-**`test/hosts/forms/host_form_builder_screen_test.dart`** — mixed (3 layout cases go with the screen) · subject `lib/hosts/presentation/forms/host_form_workspace_state.dart` · decided by rules, 3 by hand
+**`test/hosts/forms/host_form_builder_screen_test.dart`** — mixed (3 layout cases go with the screen) · subject `lib/hosts/forms/host_form_workspace_state.dart` · decided by rules, 3 by hand
 
 - `body` settings offer separate unchecked WhatsApp choices
 - `body` question editor stays focused and settings remain directly reachable
@@ -2146,7 +2146,7 @@ Layout only, deleted with the screen:
 - `action` inline drag handle changes the persisted question order
 - `journey` Published form shares its workspace navigation at {size}
 
-**`test/hosts/forms/host_form_payment_controller_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_form_payment_controller.dart` · decided by rules
+**`test/hosts/forms/host_form_payment_controller_test.dart`** — behaviour · subject `lib/hosts/forms/host_form_payment_controller.dart` · decided by rules
 
 - `action` OAuth return refreshes authoritative setup without assuming success
 - `action` unconfigured setup cannot start OAuth and concurrent operations are fenced
@@ -2161,7 +2161,7 @@ Layout only, deleted with the screen:
 - `action` fee sheet requires refund policy and preserves exact amount and account
 - `body` fee settings offer one Razorpay connection, never a second
 
-**`test/hosts/forms/host_form_payments_controller_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_form_payments_controller.dart` · decided by rules
+**`test/hosts/forms/host_form_payments_controller_test.dart`** — behaviour · subject `lib/hosts/forms/host_form_payments_controller.dart` · decided by rules
 
 - `action` pagination is scoped, single flight, deduplicated and retryable
 - `action` refresh ignores a stale page completion
@@ -2186,7 +2186,7 @@ Layout only, deleted with the screen:
 - `body` withdrawn response keeps authorized answers without mutations
 - `action` Next after review removal loads the next filtered page, then Previous
 
-**`test/hosts/forms/host_form_response_filters_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_form_operations_controller.dart`, `lib/hosts/presentation/forms/host_form_responses_section.dart` · decided by rules
+**`test/hosts/forms/host_form_response_filters_test.dart`** — behaviour · subject `lib/hosts/forms/host_form_operations_controller.dart`, `lib/hosts/presentation/forms/host_form_responses_section.dart` · decided by rules
 
 - `body` published version is selected and switching clears answer filters
 - `body` city filters remain available during loading and empty scan pages
@@ -2194,14 +2194,14 @@ Layout only, deleted with the screen:
 - `body` all promoted questions are available with at most five active filters
 - `body` inline form and answer chips combine, reset and preserve selection at {scale}
 
-**`test/hosts/forms/host_form_responses_paging_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_form_operations_controller.dart` · decided by rules
+**`test/hosts/forms/host_form_responses_paging_test.dart`** — behaviour · subject `lib/hosts/forms/host_form_operations_controller.dart` · decided by rules
 
 - `action` pagination preserves request scope, retries and deduplicates rows
 - `action` refresh rejects stale continuation {variant}
 - `action` disposed continuation {variant} cannot poison reopened scope
 - `action` a different request family retains its own rows and cursor
 
-**`test/hosts/forms/host_form_target_binding_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_form_payment_controller.dart`, `lib/hosts/presentation/forms/host_forms_controller.dart` · decided by rules
+**`test/hosts/forms/host_form_target_binding_test.dart`** — behaviour · subject `lib/hosts/forms/host_form_payment_controller.dart`, `lib/hosts/forms/host_forms_controller.dart` · decided by rules
 
 - `action` pending target edit never saves under the next signed-in manager
 - `action` old manager save response cannot restore target after account switch
@@ -2246,7 +2246,7 @@ Layout only, deleted with the screen:
 - `body` old import failure/finally cannot release a new workspace picker
 - `action` current import acknowledgment refreshes and clears its filters
 
-**`test/hosts/forms/host_response_export_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_response_export_controller.dart` · decided by rules
+**`test/hosts/forms/host_response_export_test.dart`** — behaviour · subject `lib/hosts/forms/host_response_export_controller.dart` · decided by rules
 
 - `action` applied query, hashes and null cursor bind a complete export
 - `action` late receipt after query drift is never opened or attached
@@ -2257,7 +2257,7 @@ Layout only, deleted with the screen:
 - `journey` inline export action uses the reviewed query and opens once
 - `action` offer create action can select without a bulk review callback
 
-**`test/hosts/forms/host_response_lifecycle_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_form_response_detail_screen.dart`, `lib/hosts/presentation/forms/host_form_operations_controller.dart` · decided by rules
+**`test/hosts/forms/host_response_lifecycle_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_form_response_detail_screen.dart`, `lib/hosts/forms/host_form_operations_controller.dart` · decided by rules
 
 - `domain` response contact links normalize E.164 and restrict social hosts
 - `body` Responses app-bar import confirms in a sheet and refreshes unfiltered inbox
@@ -2280,21 +2280,21 @@ Layout only, deleted with the screen:
 - `journey` response contact row opens a prefilled WhatsApp handoff
 - `body` response contact row hides WhatsApp without a valid phone
 
-**`test/hosts/forms/host_response_workspace_test.dart`** — mixed (2 layout cases go with the screen) · subject `lib/hosts/presentation/forms/host_form_response_query_controller.dart` · decided by rules
+**`test/hosts/forms/host_response_workspace_test.dart`** — mixed (2 layout cases go with the screen) · subject `lib/hosts/forms/host_form_response_query_controller.dart` · decided by rules
 
 - `journey` opens response without selecting it
 - `journey` selection control does not open the response
 - `parts` pagination stays below rows and busy until the next page arrives
 - `parts` answer sorting uses value directions and clears stale selection
 
-**`test/hosts/host_automation_workflows_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_form_automations_screen.dart`, `lib/hosts/presentation/forms/host_form_operations_controller.dart` · decided by rules
+**`test/hosts/host_automation_workflows_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_form_automations_screen.dart`, `lib/hosts/forms/host_form_operations_controller.dart` · decided by rules
 
 - `action` global editor saves an enabled acceptance webhook and retries the same request
 - `body` editing preserves a configured secret and expected revision
 - `body` attendance message selection loads older drafts and pins the reviewed revision
 - `action` rule pause and history pagination preserve other run receipts
 
-**`test/hosts/host_event_offer_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_event_offer_controller.dart` · decided by rules
+**`test/hosts/host_event_offer_test.dart`** — behaviour · subject `lib/hosts/forms/host_event_offer_controller.dart` · decided by rules
 
 - `action` one response may feed event-specific offers, never a duplicate contact
 - `action` expiry and public HTTPS link are validated before review
@@ -2306,7 +2306,7 @@ Layout only, deleted with the screen:
 - `action` malformed batch receipt leaves saved operation for exact replay
 - `action` failed detail refresh never reissues acknowledged mutation
 
-**`test/hosts/host_manual_payment_review_controller_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_manual_payment_review_controller.dart` · decided by rules
+**`test/hosts/host_manual_payment_review_controller_test.dart`** — behaviour · subject `lib/hosts/forms/host_manual_payment_review_controller.dart` · decided by rules
 
 - `action` recovers the saved command and blocks a new reference until replay
 - `action` deduplicates an in-flight command and suppresses account-stale completion
@@ -2314,7 +2314,7 @@ Layout only, deleted with the screen:
 - `action` disposed review ignores a late recovery failure
 - `action` an already invalidated account cannot enter recovery
 
-**`test/hosts/host_response_query_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_form_response_query_controller.dart` · decided by rules
+**`test/hosts/host_response_query_test.dart`** — behaviour · subject `lib/hosts/forms/host_form_response_query_controller.dart` · decided by rules
 
 - `action` a changed page two clears selection and requires refresh
 - `action` offer review rechecks selected identities after event choice

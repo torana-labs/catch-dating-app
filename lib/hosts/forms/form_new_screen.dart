@@ -2,7 +2,7 @@ import 'package:catch_dating_app/contexts/forms/data/host_form_template_catalog.
 import 'package:catch_dating_app/hosts/forms/form_new_body.dart';
 import 'package:catch_dating_app/hosts/forms/form_new_state.dart';
 import 'package:catch_dating_app/hosts/forms/forms_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_forms_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';

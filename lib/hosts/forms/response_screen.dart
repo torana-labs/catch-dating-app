@@ -2,17 +2,19 @@ import 'package:catch_dating_app/contexts/forms/data/host_application_repository
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_conversion.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/parts/host_form_response_row.dart';
+import 'package:catch_dating_app/hosts/forms/form_payment_labels.dart';
+import 'package:catch_dating_app/hosts/forms/form_payment_sheet.dart';
 import 'package:catch_dating_app/hosts/forms/forms_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_applications_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_forms_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_response_review_detail.dart';
 import 'package:catch_dating_app/hosts/forms/response_body.dart';
 import 'package:catch_dating_app/hosts/forms/response_state.dart';
 import 'package:catch_dating_app/hosts/forms/responses_state.dart';
 import 'package:catch_dating_app/hosts/people/widgets/people_text_sheet.dart';
-import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_copy.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_review_detail.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/device/clipboard.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
@@ -123,6 +125,25 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
             onMembership: detail == null
                 ? null
                 : (action) => _decideMembership(detail, action),
+            onOpenPayment: switch (detail?.response?.payment) {
+              final payment? => () => showCatchBottomSheet<void>(
+                context: context,
+                builder: (sheetContext) => HostFormPaymentSheet(
+                  payment: payment,
+                  onOpenResponse: null,
+                  onCopy: (text) async {
+                    await ref.read(clipboardControllerProvider).copyText(text);
+                    if (sheetContext.mounted) {
+                      showCatchNotice(
+                        sheetContext,
+                        sheetContext.l10n.hostOnboardingDoneCopied,
+                      );
+                    }
+                  },
+                ),
+              ),
+              null => null,
+            },
           );
     final response = detail?.response?.response;
     final primary = state.primary;
@@ -356,8 +377,8 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
       payment: payment == null
           ? null
           : l10n.hostFormsResponsePaymentLine(
-              amount: hostFormPaymentAmount(payment.amountPaise),
-              status: hostFormPaymentStatusLabel(l10n, payment.status),
+              amount: hostFormPaymentAmountText(payment.amountPaise),
+              status: hostFormPaymentStatusText(l10n, payment.status),
             ),
       membership: switch (detail.communityMembership) {
         null => null,

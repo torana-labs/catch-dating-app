@@ -5,8 +5,8 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_logic.dar
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/forms/form_settings_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_form_payment_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_forms_controller.dart';
 import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';

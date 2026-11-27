@@ -19,6 +19,8 @@ class _FormCalls {
   int share = 0;
   int edit = 0;
   int publish = 0;
+  int results = 0;
+  int payments = 0;
 }
 
 Future<_FormCalls> _pumpForm(WidgetTester tester, HostFormState state) async {
@@ -35,6 +37,8 @@ Future<_FormCalls> _pumpForm(WidgetTester tester, HostFormState state) async {
       onShare: () => calls.share++,
       onEditQuestions: () => calls.edit++,
       onPublish: () => calls.publish++,
+      onResults: () => calls.results++,
+      onPayments: () => calls.payments++,
     ),
   );
   return calls;
@@ -42,6 +46,32 @@ Future<_FormCalls> _pumpForm(WidgetTester tester, HostFormState state) async {
 
 void main() {
   group('A form', () {
+    testWidgets('shows its version, the latest answer on a form nobody '
+        'reviews, and opens Results and Payments', (tester) async {
+      final latest = formEntry(id: 'mira', name: 'Mira Das', review: null);
+      final calls = await _pumpForm(
+        tester,
+        HostFormState(
+          status: HostFormStatus.content,
+          form: formSummary(),
+          versionLine: 'Form · Version 3',
+          latest: latest,
+        ),
+      );
+
+      expect(find.text('Form · Version 3'), findsOneWidget);
+      expect(find.text('Latest response'), findsOneWidget);
+      expect(find.text('Mira Das'), findsOneWidget);
+      await tester.tap(find.text('Mira Das'));
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('host-form-results')),
+      );
+      await tester.tap(find.byKey(const ValueKey('host-form-results')));
+      await tester.tap(find.byKey(const ValueKey('host-form-payments')));
+      expect(calls.opened.single.entryId, 'entry-mira');
+      expect([calls.results, calls.payments], [1, 1]);
+    });
+
     testWidgets('shows the status, questions, funnel, waiting answers and '
         'what happens next in board order', (tester) async {
       final calls = await _pumpForm(

@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_form_copy.dart';
+import 'package:catch_dating_app/hosts/forms/host_forms_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_ui/catch_ui.dart';

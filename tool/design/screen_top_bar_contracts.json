@@ -182,14 +182,6 @@
       "leading": "back"
     },
     {
-      "path": "lib/hosts/presentation/forms/host_form_builder_screen.dart",
-      "role": "compact",
-      "expression": "CatchLegacyTopBar.route",
-      "owner": "CatchLegacyTopBar",
-      "surface": "CatchRouteScaffold",
-      "leading": "back"
-    },
-    {
       "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
       "role": "compact",
       "expression": "CatchLegacyTopBar.route",
@@ -312,15 +304,6 @@
       "leading": "back"
     },
     {
-      "path": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
-      "role": "compact",
-      "expression": "CatchLegacyTopBar.route",
-      "owner": "CatchLegacyTopBar",
-      "surface": "CatchRouteScaffold",
-      "leading": "back",
-      "occurrences": 2
-    },
-    {
       "path": "lib/hosts/audience/phone_import/presentation/phone_import_review_screen.dart",
       "role": "compact",
       "expression": "CatchLegacyTopBar.route",
@@ -360,13 +343,6 @@
     }
   ],
   "manualHeaders": [
-    {
-      "path": "lib/hosts/presentation/forms/host_form_workspace_header.dart",
-      "symbol": "HostFormWorkspaceHeader",
-      "role": "content",
-      "owner": "CatchTextStyles.titleL",
-      "reason": "Form identity and its workspace tabs are content beneath the canonical compact Form route bar; route navigation remains in CatchLegacyTopBar."
-    },
     {
       "path": "lib/hosts/presentation/widgets/host_wizard_step_header.dart",
       "symbol": "HostWizardStepHeader",

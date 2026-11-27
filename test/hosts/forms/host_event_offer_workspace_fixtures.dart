@@ -15,144 +15,8 @@ class _SwitchingUser extends Fake implements User {
   final String uid;
 }
 
-class _UnusedFunctions extends Fake implements FirebaseFunctions {}
-
-class _SwitchingQuery implements HostResponseQueryGateway {
-  int calls = 0;
-  Completer<HostResponseQueryPage>? nextResponse;
-
-  @override
-  Future<HostResponseQueryPage> query(HostResponseQueryRequest request) {
-    calls++;
-    return nextResponse?.future ?? Future.value(page('Maya', 'response-one'));
-  }
-
-  static HostResponseQueryPage page(String name, String responseId) =>
-      HostResponseQueryPage(
-        form: const HostResponseQueryForm(
-          formId: 'form',
-          title: 'Form',
-          versionId: 'form_v1',
-          version: 1,
-        ),
-        items: [
-          HostResponseQueryRow.fromMap({
-            'responseId': responseId,
-            'formId': 'form',
-            'formTitle': 'Form',
-            'versionId': 'form_v1',
-            'version': 1,
-            'status': 'submitted',
-            'identityKind': 'phoneVerified',
-            'identity': {
-              'displayName': name,
-              'email': null,
-              'phoneE164': null,
-              'origin': 'respondentGranted',
-            },
-            'sourceLinkId': null,
-            'submittedAtMillis': 1790000000000,
-            'withdrawnAtMillis': null,
-          }),
-        ],
-        nextCursor: null,
-        total: 1,
-        selectedIds: {responseId},
-        queryHash: 'query',
-        resultHash: 'result-$responseId',
-        fieldCatalog: const [],
-      );
-}
-
 /// Scripted legacy reads shared by every request family. Riverpod gives each
 /// family element its own notifier, so tests must not reuse one instance.
-class _LegacyResponseScript {
-  Completer<HostFormResponsesState>? nextResponse;
-}
-
-class _SwitchingLegacyResponses extends HostFormResponsesController {
-  _SwitchingLegacyResponses([this._script]);
-
-  final _LegacyResponseScript? _script;
-
-  @override
-  Future<HostFormResponsesState> build(HostFormResponseListRequest request) =>
-      _script?.nextResponse?.future ??
-      Future.value(
-        HostFormResponsesState(
-          responses: [response('Maya', 'response-one')],
-          nextCursor: null,
-        ),
-      );
-
-  static HostFormResponseSummary response(String name, String id) =>
-      HostFormResponseSummary.fromMap({
-        'responseId': id,
-        'formId': 'form',
-        'formTitle': 'Form',
-        'versionId': 'form_v1',
-        'version': 1,
-        'status': 'submitted',
-        'identityKind': 'phoneVerified',
-        'identity': {
-          'displayName': name,
-          'email': null,
-          'phoneE164': null,
-          'origin': 'respondentGranted',
-        },
-        'sourceLinkId': null,
-        'sourceLabel': null,
-        'submittedAtMillis': 1790000000000,
-        'withdrawnAtMillis': null,
-        'highlights': const <Object>[],
-        'conversionKinds': const <Object>[],
-      });
-}
-
-class _PendingMutation implements HostOfferMutationOutbox {
-  bool unresolved = true;
-  int reads = 0;
-  int replays = 0;
-  int newMutations = 0;
-
-  @override
-  Future<HostOfferPendingMutation?> pendingMutation({
-    required String accountId,
-    required String organizerId,
-    required String eventId,
-  }) async {
-    reads++;
-    return unresolved
-        ? const HostOfferPendingMutation(
-            requestId: 'reference_saved',
-            contactId: 'contact-one',
-            kind: 'recordEvidence',
-            decision: null,
-          )
-        : null;
-  }
-
-  @override
-  Future<HostEventOffer> replayMutation({
-    required String accountId,
-    required String organizerId,
-    required String eventId,
-  }) async {
-    replays++;
-    unresolved = false;
-    return _existingOffer();
-  }
-
-  @override
-  Future<HostEventOffer> mutate({
-    required String accountId,
-    required HostEventOffer offer,
-    required Map<String, Object?> action,
-  }) async {
-    newMutations++;
-    return offer;
-  }
-}
 
 class _Query implements HostResponseQueryGateway {
   String hash = 'result';
@@ -196,8 +60,8 @@ class _Query implements HostResponseQueryGateway {
 }
 
 class _Targets implements HostOfferEventTargetsGateway {
-  _Targets({this.empty = false});
-  final bool empty;
+  _Targets();
+  final bool empty = false;
   int listCalls = 0;
   int configurationCalls = 0;
   int revision = 1;
@@ -323,65 +187,6 @@ class _Offers implements HostEventOfferGateway {
     required String requestId,
   }) => throw UnimplementedError();
 }
-
-final _copy = HostEventOfferWorkspaceCopy(
-  create: 'Create event offers',
-  selectEvent: 'Choose an event',
-  chooseForRecipient: (name) => 'Choose an event for $name',
-  chooseForRecipients: (count) => 'Choose an event for $count people',
-  loadingEvents: 'Loading events',
-  preparingOffer: 'Preparing offer',
-  loadingOffer: 'Loading offer',
-  preparingMessage: 'Preparing message',
-  cancelPreparation: 'Cancel preparation',
-  emptyEvents: 'No events',
-  untitledEvent: 'Untitled event',
-  loadMoreEvents: 'Load more events',
-  needsContact: 'Convert response first',
-  convertContact: 'Create CRM contact',
-  selectionChanged: 'Selection changed',
-  loadFailed: 'Load failed',
-  issued: 'Offers recorded',
-  refresh: 'Refresh',
-  existing: 'Existing offers',
-  noOffers: 'No offers',
-  configurePayment: 'Configure payment',
-  openSettings: 'Open settings',
-  statusDraft: 'Draft',
-  statusOffered: 'Offered',
-  statusWithdrawn: 'Withdrawn',
-  statusExpired: 'Expired',
-  personalPaymentLink: (name) => 'Personal payment link for $name',
-  openExisting: 'Review offer',
-  handoffPrepare: 'Prepare personal handoff',
-  handoffBlocked: 'Handoff unavailable',
-  handoffDisclosure: 'Review and send in WhatsApp; Catch cannot track it.',
-  openWhatsapp: 'Open WhatsApp',
-  copyMessage: 'Copy message',
-  messageCopied: 'Message copied. Sending is your choice.',
-  handoffOpenFailed: 'Could not open WhatsApp.',
-  review: HostEventOfferReviewCopy(
-    title: 'Event offer',
-    preview: 'Preview offers',
-    previewing: 'Checking',
-    review: 'Review offer details',
-    expires: (date) => 'Expires $date',
-    commit: 'Record offers',
-    committing: 'Recording',
-    committed: 'Recorded',
-    failed: 'Failed',
-    noReservation: 'No seat or admission',
-    paymentReference: 'Payment reference',
-    recordReference: 'Record',
-    evidenceSubmitted: 'Submitted',
-    bankReceiptChecked: 'Checked',
-    reviewNote: 'Note',
-    attestReceived: 'Attest',
-    rejectReference: 'Reject',
-    hostAttested: 'Attested',
-    rejected: 'Rejected',
-  ),
-);
 
 HostEventOffer _existingOffer({
   String? applicationId,

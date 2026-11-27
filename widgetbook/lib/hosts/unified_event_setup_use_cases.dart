@@ -1,16 +1,10 @@
-import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
-import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
-import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
-import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/forms/offer_settings_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_target_section.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -117,109 +111,4 @@ Widget hostEventOfferPreferencesScreenPreview(BuildContext context) {
       ),
     ],
   );
-}
-
-@widgetbook.UseCase(
-  name: 'Reusable or fixed event intake',
-  type: HostFormTargetSection,
-  path: '[P1 product surfaces]/Host operations/Forms',
-)
-Widget hostFormTargetSectionPreview(BuildContext context) =>
-    WidgetbookPageCatalogFrame(
-      title: 'HostFormTargetSection',
-      contractId: 'section.host.form.event-target',
-      children: [
-        for (final unavailable in [false, true])
-          WidgetbookPageStateCard(
-            label: unavailable
-                ? 'unavailable event retained'
-                : 'reusable intake',
-            child: WidgetbookHostDeviceFrame(
-              child: _FormTargetFixture(unavailable: unavailable),
-            ),
-          ),
-      ],
-    );
-
-class _FormTargetFixture extends StatefulWidget {
-  const _FormTargetFixture({required this.unavailable});
-  final bool unavailable;
-
-  @override
-  State<_FormTargetFixture> createState() => _FormTargetFixtureState();
-}
-
-class _FormTargetFixtureState extends State<_FormTargetFixture> {
-  late HostFormDefinition _definition = HostFormDefinition.fromMap({
-    'defaultTargetKind': widget.unavailable ? 'event' : 'organizer',
-    'defaultTargetId': widget.unavailable ? 'previous-event' : null,
-  });
-  late final _editor = _FormTargetPreviewEditor((kind, eventId) {
-    setState(
-      () => _definition = _definition.withTarget(kind: kind, eventId: eventId),
-    );
-  });
-  final _auth = _FormTargetPreviewAuth();
-
-  @override
-  Widget build(BuildContext context) => ProviderScope(
-    overrides: [
-      uidProvider.overrideWithValue(const AsyncData<String?>('preview-host')),
-      firebaseAuthProvider.overrideWithValue(_auth),
-    ],
-    child: Scaffold(
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: HostFormTargetSection(
-          organizerId: 'preview-organizer',
-          definition: _definition,
-          notifier: _editor,
-          accountId: 'preview-host',
-          enableEventTargetSettings: true,
-          hasPublishedVersion: true,
-        ),
-      ),
-    ),
-  );
-}
-
-class _FormTargetPreviewEditor extends HostFormEditorController {
-  _FormTargetPreviewEditor(this._changed);
-  final void Function(HostFormTargetKind, String?) _changed;
-
-  @override
-  Future<HostOfferEventTargetPage> listTargetEvents({String? cursor}) async =>
-      HostOfferEventTargetPage([
-        HostOfferEventTarget(
-          eventId: 'saturday-mixer',
-          name: 'Saturday mixer · Mumbai',
-          startTime: DateTime.utc(2026, 10, 3, 13, 30),
-          timezone: 'Asia/Kolkata',
-          publicationState: 'private',
-          setupRevision: 1,
-        ),
-      ], null);
-
-  @override
-  void updateTarget({
-    required HostFormTargetKind kind,
-    required String accountId,
-    String? eventId,
-  }) => _changed(kind, eventId);
-}
-
-class _FormTargetPreviewAuth implements FirebaseAuth {
-  @override
-  User get currentUser => _FormTargetPreviewUser();
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
-
-class _FormTargetPreviewUser implements User {
-  @override
-  String get uid => 'preview-host';
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

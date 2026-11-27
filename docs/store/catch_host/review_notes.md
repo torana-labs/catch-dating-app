@@ -38,8 +38,8 @@ post quota ("{remainingQuota} of {weeklyQuota} posts left this week" and
 | Flow | Source | What happens | Guideline position |
 | --- | --- | --- | --- |
 | Payout account | `lib/hosts/presentation/payments/host_payment_account_card.dart` | Razorpay Route KYC form in the app. Stripe onboarding opens Stripe's hosted page. | The host receives funds for in-person events. Not a purchase. |
-| Form-fee payment connection | `lib/hosts/presentation/forms/host_form_payment_section.dart` | OAuth to the organizer's own payment provider | The organizer collects fees from applicants. Not a purchase. |
-| Event offers | `lib/hosts/presentation/forms/host_response_offer_screen.dart` | Shares a guest payment link for an in-person event | 3.1.3(e): physical services paid outside IAP |
+| Form-fee payment connection | `lib/hosts/forms/form_settings_payment_section.dart` | OAuth to the organizer's own payment provider | The organizer collects fees from applicants. Not a purchase. |
+| Event offers | `lib/hosts/forms/offer_screen.dart` | Shares a guest payment link for an in-person event | 3.1.3(e): physical services paid outside IAP |
 | Paid event tickets | Guests on the web | Provider checkout on `catchdates.com` | 3.1.3(e) |
 
 ### Commercial model

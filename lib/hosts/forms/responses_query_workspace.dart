@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
 import 'package:catch_dating_app/contexts/forms/data/host_response_query_repository.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_response_query.dart';
+import 'package:catch_dating_app/hosts/forms/host_form_response_query_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_response_export_controller.dart';
 import 'package:catch_dating_app/hosts/forms/responses_query_body.dart';
 import 'package:catch_dating_app/hosts/forms/responses_query_editor.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_export_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
