@@ -415,12 +415,12 @@
             "hostAppAttendanceSheet",
             "hostAppEventSuccessScreen"
           ],
-          "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
+          "file": "lib/hosts/events/event_route_screen.dart",
           "symbol": "HostEventManageRouteScreen",
           "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
+          "expression": "CatchScreen",
           "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
+          "topEdge": "safe-area"
         },
         {
           "routes": [
@@ -12452,9 +12452,9 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchLegacyTopBar",
-        "owner": "CatchLegacyTopBar",
-        "reason": "The route shell shows compact back chrome only while it reads the event or refuses access; every loaded section renders a rebuilt screen with its own chrome."
+        "expression": "CatchTopBar",
+        "owner": "HostEventManageRouteScreen",
+        "reason": "The route shell shows the tool top bar with Back only while it reads the event or refuses access; every loaded section renders a rebuilt screen with its own chrome."
       },
       "statePolicy": {
         "requiredStates": [
@@ -12493,14 +12493,14 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
+        "file": "lib/hosts/events/event_route_screen.dart",
         "symbol": "HostEventManageRouteScreen"
       },
       "stateController": {
         "primary": "HostEventManageRouteScreen + hostEventRouteDestination",
         "files": [
           {
-            "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
+            "file": "lib/hosts/events/event_route_screen.dart",
             "symbol": "HostEventManageRouteScreen"
           },
           {
@@ -12644,7 +12644,7 @@
               "HostManageAccessState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
+              "file": "lib/hosts/events/event_route_screen.dart",
               "symbol": "HostEventManageRouteScreen"
             },
             "currentOwner": "HostEventManageRouteScreen",
