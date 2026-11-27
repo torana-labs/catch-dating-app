@@ -13,7 +13,8 @@
     "packages/platform/lib/**",
     "apps/consumer/lib/**",
     "apps/host/lib/**",
-    "widgetbook/lib/main.directories.g.dart",
+    "widgetbook/lib/**",
+    "tool/design/lib/widgetbook_use_cases.mjs",
     "design/components/catch.components.json",
     "tool/design/lib/owned_composition_renderers.mjs",
     "tool/architecture/screen_moves/**"

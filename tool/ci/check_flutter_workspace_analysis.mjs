@@ -8,6 +8,11 @@ import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 
+// Packages whose build_runner output is gitignored rather than committed. The
+// analyzer must see what the build produces, so these generate after pub get
+// and before analysis; skipping it would report the missing file instead.
+export const untrackedCodegenPackages = ["widgetbook"];
+
 export function buildWorkspaceAnalysisPlan(snapshot = createRepositorySnapshot()) {
   const pubspecPaths = snapshot.listFiles()
     .filter((relativePath) => relativePath === "pubspec.yaml" || relativePath.endsWith("/pubspec.yaml"))
@@ -34,6 +39,9 @@ export function buildWorkspaceAnalysisPlan(snapshot = createRepositorySnapshot()
       ...packages
         .filter((entry) => entry.directory === "" || !entry.workspaceMember)
         .map((entry) => ({phase: "resolve", directory: entry.directory, command: "flutter", args: ["pub", "get"]})),
+      ...packages
+        .filter((entry) => untrackedCodegenPackages.includes(entry.directory))
+        .map((entry) => ({phase: "generate", directory: entry.directory, command: "dart", args: ["run", "build_runner", "build"]})),
       ...packages.map((entry) => entry.directory === ""
         ? {
             phase: "analyze",

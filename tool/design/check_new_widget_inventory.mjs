@@ -21,6 +21,7 @@ import {
   isWidgetInventoryPath,
   productionWidgetRoots,
 } from "./lib/production_widget_roots.mjs";
+import {widgetbookComponentNames} from "./lib/widgetbook_use_cases.mjs";
 
 const args = process.argv.slice(2);
 
@@ -130,7 +131,7 @@ const report = {
   baseWarning: baseInput.warning,
   current: "working tree",
   sourceOfTruth: {
-    widgetbook: "widgetbook/lib/main.directories.g.dart",
+    widgetbook: "widgetbook/lib @widgetbook.UseCase annotations",
     registry: "design/components/catch.components.json",
     policy:
       "New or moved public widget classes need Widgetbook coverage (screens, bodies, states and widgets/ under apps/*/lib and lib/pages have captures and body render tests instead) and feature UI requires canonical role names/file suffixes; design-system homes also require a canonical Catch* name, app-coupled shared widgets and design-system widgets require exact source identity in the component registry, and no new widget may reuse a registered component's name or alias. New or moved private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public covered widgets. The catalog inventory is generated separately.",
@@ -402,10 +403,8 @@ function spawnGit(args, options = {}) {
 }
 
 function readWidgetbookNames() {
-  const source = fs.readFileSync(fromRepo("widgetbook/lib/main.directories.g.dart"), "utf8");
   const names = new Set();
-  for (const match of source.matchAll(/WidgetbookComponent\(\s*name:\s*'([^']+)'/gu)) {
-    const name = match[1];
+  for (const name of widgetbookComponentNames(fromRepo("."))) {
     names.add(name);
     names.add(name.replace(/<.*>$/u, ""));
   }

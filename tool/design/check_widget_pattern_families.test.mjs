@@ -63,6 +63,10 @@ function validRegistry() {
   };
 }
 
+function useCaseSource(type) {
+  return `@widgetbook.UseCase(name: 'States', type: ${type})\nWidget ${type[0].toLowerCase()}${type.slice(1)}States(BuildContext context) => const SizedBox();\n`;
+}
+
 function createFixture(t, {registry = validRegistry(), registryPath = defaultRegistryPath} = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-pattern-families-"));
   t.after(() => fs.rmSync(root, {recursive: true, force: true}));
@@ -72,18 +76,7 @@ function createFixture(t, {registry = validRegistry(), registryPath = defaultReg
     registryPath,
     `${JSON.stringify(registry, null, 2)}\n`,
   );
-  writeFile(
-    root,
-    "widgetbook/lib/main.directories.g.dart",
-    [
-      "final directories = [",
-      "  WidgetbookComponent(",
-      "    name: 'CatchChip',",
-      "    useCases: const [],",
-      "  ),",
-      "];",
-    ].join("\n"),
-  );
+  writeFile(root, "widgetbook/lib/chips.dart", useCaseSource("CatchChip"));
   writeFile(
     root,
     "lib/design/repair_chip.dart",
@@ -359,7 +352,7 @@ test("rejects a required preview missing from generated Widgetbook directories",
     errors.some(
       (error) =>
         error.includes("'MissingPreviewChip'") &&
-        error.includes("widgetbook/lib/main.directories.g.dart"),
+        error.includes("@widgetbook.UseCase annotations"),
     ),
   );
 });
@@ -441,21 +434,10 @@ test("CLI supports --check with custom --file and --repo-root", (t) => {
 
 test('generated type arguments retain the registered component identity', (t) => {
   const {root} = createFixture(t);
-  writeFile(root, 'widgetbook/lib/main.directories.g.dart', `
-    final directories = [
-      WidgetbookComponent(
-        name: 'CatchChip<Map<String, int>, dynamic>',
-        useCases: const [],
-      ),
-    ];
-  `);
+  writeFile(root, "lib/design/catch_chip.dart",
+    "class CatchChip<K extends Map<String, int>, V> extends StatelessWidget {}\n");
   assert.deepEqual(checkPatternFamilies({repoRoot: root}).errors, []);
-  writeFile(root, 'widgetbook/lib/main.directories.g.dart', `
-    final directories = [
-      WidgetbookComponent(name: 'AnotherChip<dynamic>', useCases: const []),
-      WidgetbookCategory(name: 'CatchChip', children: const []),
-    ];
-  `);
+  writeFile(root, "widgetbook/lib/chips.dart", useCaseSource("AnotherChip"));
   assert.ok(checkPatternFamilies({repoRoot: root}).errors.some((error) =>
     error.includes("'CatchChip' is missing")));
 });

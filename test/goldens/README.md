@@ -66,6 +66,7 @@ catalog, device, sheet, provider, and case scopes live in
 ```bash
 cd widgetbook
 flutter pub get
+dart run build_runner build
 flutter test test/primitive_goldens_test.dart
 flutter test test/primitive_goldens_test.dart # consecutive determinism check
 ```
