@@ -120,15 +120,21 @@ test("hotel projection exposes operational allocation only", () => {
   const h = setup();
   const desk: LodgingAuthority = {...h.authority, role: "hotelDesk",
     hotelIds: ["hotel"]};
+  const labels = {guests: {guest: "Asha Verma"}, rooms: {unit: "101"}};
   const projection = lodgingHotelProjection(h.snapshot, h.proposal,
-    desk, "hotel", 1);
+    desk, "hotel", 1, labels);
   assert.deepEqual(projection, [{partyId: "party", inventoryId: "unit",
     physicalRoomId: "room", zoneId: "wing", roomType: "standard",
-    guests: [{guestId: "guest", arrival: "2026-10-01",
-      departure: "2026-10-03"}]}]);
+    roomLabel: "101", guests: [{guestId: "guest", displayName: "Asha Verma",
+      arrival: "2026-10-01", departure: "2026-10-03"}]}]);
   for (const privateValue of ["privateAffinity", "stepFree", "memberships"]) {
     assert.equal(JSON.stringify(projection).includes(privateValue), false);
   }
   assert.throws(() => lodgingHotelProjection(h.snapshot, h.proposal,
-    desk, "other", 1), /duty/);
+    desk, "other", 1, labels), /duty/);
+  assert.throws(() => lodgingHotelProjection(h.snapshot, h.proposal,
+    desk, "hotel", 1, {guests: {}, rooms: {}}), /Missing guest name/);
+  const unreleased = lodgingHotelProjection(h.snapshot, h.proposal,
+    desk, "hotel", 1, {...labels, rooms: {}});
+  assert.equal(unreleased[0].roomLabel, null);
 });

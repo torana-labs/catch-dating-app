@@ -341,7 +341,7 @@ export async function manageProgramLodgingHandler(
         actorUid, data.command)};
       break;
     case "hotelBoard":
-      result = {kind: "hotelBoard", rows: await store.hotelBoard(data.programId,
+      result = {kind: "hotelBoard", ...await store.hotelBoard(data.programId,
         actorUid, data.hotelId)};
       break;
     }

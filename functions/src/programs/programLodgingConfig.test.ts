@@ -62,7 +62,10 @@ test("native config bridges preview approval publication and hotel board",
       command)).replayed, true);
     const board = await h.store.hotelBoard("program-1", "hotelier-1",
       "hotel-1");
-    assert.equal(board.length, 1);
+    assert.equal(board.hotelLabel, "Harbourview Palace");
+    assert.deepEqual(board.rows.map((row) => [row.roomLabel,
+      row.guests.map((guest) => guest.displayName)]),
+    [["101", ["Rohan Sharma", "Vikram Rao"]]]);
     assert.equal(h.fake.getDoc("programRoomBlocks/block")!.assignedCount, 1);
     const fence = h.fake.getDoc("programLodgingSourceVersions/program-1")!;
     assert.equal((fence.versions as Record<string, {revision: number}>)

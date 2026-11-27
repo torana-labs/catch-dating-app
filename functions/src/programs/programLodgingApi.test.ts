@@ -107,12 +107,94 @@ test("callable publication is idempotent and hotel output stays operational",
     assert.equal(board.rows.length, 1);
     const output = JSON.stringify(board);
     for (const privateValue of ["stepFree", "requiredFeatures", "configuration",
-      "labels", "memberships"]) {
+      "labels", "memberships", "phoneE164", "+919999900001", "email"]) {
       assert.equal(output.includes(privateValue), false);
     }
     await assert.rejects(h.call({action: "hotelBoard", hotelId: "hotel-2"},
       "hotelier-1"), /Hotel duty/);
   });
+
+/** Two hotels, one guest each: guest-1 in hotel-1 room 101 and guest-2 in
+ * hotel-2 room 201 (guest-1 needs the step-free room), approved by the
+ * manager. */
+async function twoHotelSetup() {
+  const h = setup();
+  const start = Date.parse("2026-10-01T00:00:00Z");
+  const end = Date.parse("2026-10-03T00:00:00Z");
+  h.fake.updateDoc("programLodgingConfigs/program-1", {
+    demand: [...h.config.demand, {...h.config.demand[0], guestId: "guest-2",
+      requiredFeatures: []}],
+    parties: [...h.config.parties, {...h.config.parties[0], id: "party-2",
+      guestIds: ["guest-2"]}],
+    rooms: [...h.config.rooms, {...h.config.rooms[0], id: "room-2",
+      hotelId: "hotel-2", resourceIds: ["room-2"], verifiedFeatures: []}],
+    inventory: [...h.config.inventory, {...h.config.inventory[0],
+      id: "unit-2", contractId: "block-2", physicalRoomId: "room-2"}],
+    labels: [...h.config.labels, {inventoryId: "unit-2", roomLabel: "201"}],
+  });
+  h.fake.setDoc("programRoomBlocks/block-2", {
+    ...h.fake.getDoc("programRoomBlocks/block"), hotelId: "hotel-2",
+    startsAt: Timestamp.fromMillis(start), endsAt: Timestamp.fromMillis(end)});
+  const {proposal} = await h.preview();
+  await h.call({action: "save", proposal});
+  await h.call({action: "transition", command: {proposalId: proposal.id,
+    operationId: "approve", expectedWorkflowRevision: 0,
+    action: "approve", hotelId: null}});
+  const board = async (hotelId: string, uid: string) => {
+    const result = await h.call({action: "hotelBoard", hotelId}, uid);
+    if (result.kind !== "hotelBoard") throw new Error("Wrong kind");
+    return result;
+  };
+  return {...h, board};
+}
+
+test("hotel desk reads names and rooms for its own hotel only", async () => {
+  const h = await twoHotelSetup();
+  const own = await h.board("hotel-1", "hotelier-1");
+  assert.equal(own.hotelLabel, "Harbourview Palace");
+  assert.deepEqual(own.rows.map((row) => ({room: row.roomLabel,
+    guests: row.guests.map((g) => [g.guestId, g.displayName])})),
+  [{room: "101", guests: [["guest-1", "Rohan Sharma"]]}]);
+  const output = JSON.stringify(own);
+  for (const foreign of ["guest-2", "Vikram Rao", "201", "party-2",
+    "phoneE164", "+919999900001", "householdId", "rsvpStatus"]) {
+    assert.equal(output.includes(foreign), false, foreign);
+  }
+  await assert.rejects(h.board("hotel-2", "hotelier-1"),
+    (error: unknown) => (error as {code?: string}).code ===
+      "permission-denied");
+});
+
+test("only desk, coordinator and manager duties read a hotel board",
+  async () => {
+    const h = await twoHotelSetup();
+    for (const uid of ["greeter-1", "dispatcher-1"]) {
+      await assert.rejects(h.board("hotel-1", uid), /Hotel duty/, uid);
+    }
+    await assert.rejects(h.board("hotel-1", "foreign"),
+      /active program access/);
+    const managed = await h.board("hotel-2", "manager-1");
+    assert.deepEqual(managed.rows.map((row) =>
+      [row.roomLabel, row.guests[0].displayName]), [["201", "Vikram Rao"]]);
+    h.fake.updateDoc("programStaffGrants/program-1__dispatcher-1", {
+      duties: [{duty: "programCoordinator",
+        expiresAtMillis: 1_800_086_400_000, pickupPointIds: [],
+        hotelIds: []}]});
+    const coordinated = await h.board("hotel-2", "dispatcher-1");
+    assert.equal(coordinated.hotelLabel, "Maple Court Hotel");
+    assert.equal(coordinated.rows.length, 1);
+  });
+
+test("hotel board is empty until an allocation is approved", async () => {
+  const h = setup();
+  h.fake.deleteDoc("programLodgingConfigs/program-1");
+  const result = await h.call({action: "hotelBoard", hotelId: "hotel-1"},
+    "hotelier-1");
+  assert.deepEqual(result, {kind: "hotelBoard",
+    hotelLabel: "Harbourview Palace", rows: []});
+  await assert.rejects(h.call({action: "hotelBoard", hotelId: "missing"},
+    "manager-1"), /Hotel not found/);
+});
 
 async function approvedManualSetup() {
   const h = setup();

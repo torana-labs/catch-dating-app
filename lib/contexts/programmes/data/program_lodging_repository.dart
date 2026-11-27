@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_board.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_hotel_board.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_review.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_setup.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
@@ -222,16 +223,15 @@ class ProgramLodgingRepository {
     }, (value) => lodgingJsonMap(_kind(value, 'transition')));
   }
 
-  Future<List<Map<String, Object?>>> hotelBoard(
+  /// One hotel's read-only room list: names and rooms for the caller's own
+  /// hotel. The server refuses any hotel the caller's duty does not cover.
+  Future<ProgramLodgingHotelBoard> hotelBoard(
     String programId,
     String hotelId,
-  ) => _call(
-    programId,
-    {'action': 'hotelBoard', 'hotelId': hotelId},
-    (value) => List.unmodifiable(
-      mapList(_kind(value, 'hotelBoard')['rows'], 'rows').map(lodgingJsonMap),
-    ),
-  );
+  ) => _call(programId, {
+    'action': 'hotelBoard',
+    'hotelId': hotelId,
+  }, (value) => ProgramLodgingHotelBoard.fromMap(_kind(value, 'hotelBoard')));
 
   Future<T> _call<T>(
     String programId,

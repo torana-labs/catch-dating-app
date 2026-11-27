@@ -139,11 +139,20 @@ function proposalHotels(snapshot: LodgingSnapshot,
   }));
 }
 
+/** Names a hotel desk reads beside the allocation: each guest's display
+ * name and each unit's room label (null until exact rooms are released). */
+export interface LodgingDeskLabels {
+  guests: Readonly<Record<string, string>>;
+  rooms: Readonly<Record<string, string | null>>;
+}
+
 /** Exact allowlisted operational projection. No affinity memberships,
- * accessibility requirements, private notes or source labels are exposed. */
+ * accessibility requirements, private notes, contact fields or group labels
+ * are exposed: only room facts, the room label, and each guest's name and
+ * dates. */
 export function lodgingHotelProjection(snapshot: LodgingSnapshot,
   proposal: LodgingProposal, authority: LodgingAuthority,
-  hotelId: string, nowMillis: number) {
+  hotelId: string, nowMillis: number, labels: LodgingDeskLabels) {
   requireAuthority(snapshot, authority, nowMillis, hotelId);
   if (proposal.scope.organizerId !== snapshot.scope.organizerId ||
       proposal.scope.programId !== snapshot.scope.programId) {
@@ -160,9 +169,14 @@ export function lodgingHotelProjection(snapshot: LodgingSnapshot,
     const party = snapshot.parties.find((p) => p.id === row.partyId)!;
     return [{partyId: party.id, inventoryId: unit.id,
       physicalRoomId: unit.physicalRoomId, zoneId: room.zoneId,
-      roomType: room.roomType, guests: party.guestIds.map((id) => {
+      roomType: room.roomType, roomLabel: labels.rooms[unit.id] ?? null,
+      guests: party.guestIds.map((id) => {
         const guest = snapshot.guests.find((g) => g.id === id)!;
-        return {guestId: id, arrival: guest.arrival,
+        const displayName = labels.guests[id];
+        if (typeof displayName !== "string" || !displayName) {
+          throw new Error("Missing guest name.");
+        }
+        return {guestId: id, displayName, arrival: guest.arrival,
           departure: guest.departure};
       })}];
   });
