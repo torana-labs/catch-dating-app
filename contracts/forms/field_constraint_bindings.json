@@ -120,26 +120,6 @@
     "createProgramWalkInCallablePayload": [
       "displayName"
     ],
-    "createRazorpayHostPaymentAccountCallablePayload": [
-      "bankAccountNumber",
-      "beneficiaryName",
-      "businessModel",
-      "businessPan",
-      "businessType",
-      "contactName",
-      "email",
-      "ifscCode",
-      "legalBusinessName",
-      "phone",
-      "stakeholderEmail",
-      "stakeholderIsDirector",
-      "stakeholderIsExecutive",
-      "stakeholderName",
-      "stakeholderOwnershipPercent",
-      "stakeholderPan",
-      "stakeholderPhone",
-      "termsAccepted"
-    ],
     "eventAssistanceLateJoinInput": [
       "policy.destination.lateEntry",
       "policy.destination.permittedCheckpointIds",
