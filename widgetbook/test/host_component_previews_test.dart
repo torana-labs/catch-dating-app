@@ -6,7 +6,6 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook_workspace/hosts/host_booking_provider_use_cases.dart';
-import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart';
 import 'package:widgetbook_workspace/hosts/operations/manage_components.dart';
 
 // Each case renders offline: stateful owners read only their preview overrides.
