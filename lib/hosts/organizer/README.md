@@ -14,7 +14,6 @@ Own the organizer as an operating entity: profile and media, publication readine
 Current implementation roots:
 
 - `lib/hosts/organizer`
-- `lib/hosts/presentation/organizer_management`
 - `lib/hosts/presentation/payments`
 - `lib/hosts/insights`
 

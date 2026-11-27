@@ -290,7 +290,7 @@
             ],
             "answer": "People provides organizer-scoped search, filters, sorting, and paginated contact browsing. A contact detail brings together identity, organizer tags and private notes, attendance and revenue context, and contact administration or duplicate review where available. Manual creation requires a name and at least one phone or email endpoint. Entering those details does not verify identity, create a Consumer profile, admit someone to an event, or grant marketing permission. Existing legacy name-only contacts can still be read. A contact is a relationship record; it is not the same thing as a verified account or a communication grant.",
             "sourcePaths": [
-              "lib/hosts/presentation/customers",
+              "lib/hosts/people/host_customers_controller.dart",
               "functions/src/organizers/organizerContacts.ts",
               "contracts/callables/create_organizer_contact_payload.schema.json",
               "functions/src/shared/organizerContactOrigins.ts"
@@ -452,7 +452,6 @@
         "Inferred marketing permission or claims of complete external-provider spending from CRM membership or canonical Catch payments."
       ],
       "currentRoots": [
-        "lib/hosts/presentation/customers",
         "lib/hosts/forms"
       ],
       "additionalCodeOwners": [
@@ -793,7 +792,6 @@
       ],
       "currentRoots": [
         "lib/hosts/organizer",
-        "lib/hosts/presentation/organizer_management",
         "lib/hosts/presentation/payments",
         "lib/hosts/insights"
       ],

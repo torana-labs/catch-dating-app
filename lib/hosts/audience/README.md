@@ -69,7 +69,7 @@ These are schema declarations, not independent proof of runtime limits.
 
 **What can a host do with People?**
 
-- Source: [lib/hosts/presentation/customers](../presentation/customers)
+- Source: [lib/hosts/people/host_customers_controller.dart](../people/host_customers_controller.dart)
 - Source: [functions/src/organizers/organizerContacts.ts](../../../functions/src/organizers/organizerContacts.ts)
 - Source: [contracts/callables/create_organizer_contact_payload.schema.json](../../../contracts/callables/create_organizer_contact_payload.schema.json)
 - Source: [functions/src/shared/organizerContactOrigins.ts](../../../functions/src/shared/organizerContactOrigins.ts)
@@ -124,7 +124,6 @@ These are schema declarations, not independent proof of runtime limits.
 
 Current implementation roots:
 
-- `lib/hosts/presentation/customers`
 - `lib/hosts/forms`
 
 ## This feature owns
