@@ -43,6 +43,7 @@ import 'package:catch_dating_app/hosts/organizer/page_edit_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/payments_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/settings_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/team_screen.dart';
+import 'package:catch_dating_app/hosts/people/add_person_screen.dart';
 import 'package:catch_dating_app/hosts/people/automations_screen.dart';
 import 'package:catch_dating_app/hosts/people/compose_screen.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_people.dart';
@@ -52,7 +53,6 @@ import 'package:catch_dating_app/hosts/people/people_screen.dart';
 import 'package:catch_dating_app/hosts/people/person_screen.dart';
 import 'package:catch_dating_app/hosts/people/saved_group_screen.dart';
 import 'package:catch_dating_app/hosts/people/sends/sends_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_create_organizer_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/programmes.dart';
@@ -836,7 +836,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     audienceView: HostAudienceView.people,
     path: Routes.hostAddCustomerScreen.path,
     name: Routes.hostAddCustomerScreen.name,
-    builder: (context, state) => HostAddCustomerScreen(
+    builder: (context, state) => HostAddPersonScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),

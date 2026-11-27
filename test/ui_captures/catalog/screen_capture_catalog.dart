@@ -153,10 +153,10 @@ import 'package:catch_dating_app/hosts/insights/host_insights_state.dart';
 import 'package:catch_dating_app/hosts/live/live_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
+import 'package:catch_dating_app/hosts/people/add_person_screen.dart';
 import 'package:catch_dating_app/hosts/people/conversation/conversation_people.dart';
 import 'package:catch_dating_app/hosts/people/messages_state.dart';
 import 'package:catch_dating_app/hosts/people/people_state.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
@@ -12029,7 +12029,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: hostShellCaptureOverrides(
       HostOperationsFixtures.hostUid,
     ),
-    builder: (context) => HostAddCustomerScreen(
+    builder: (context) => HostAddPersonScreen(
       organizerId: HostOperationsFixtures.primaryOrganizer.id,
     ),
   ),
@@ -12037,7 +12037,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_add_person',
     routeIds: const <String>['hostAddCustomerScreen'],
     device: CaptureDevice.iphone17Pro,
-    builder: (_) => const HostAddCustomerScreen(organizerId: 'org_1'),
+    builder: (_) => const HostAddPersonScreen(organizerId: 'org_1'),
     includeOverlays: true,
   ),
   ScreenCaptureEntry(

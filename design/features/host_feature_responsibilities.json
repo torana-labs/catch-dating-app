@@ -470,8 +470,8 @@
         },
         {
           "id": "customer_create",
-          "file": "lib/hosts/presentation/customers/host_customer_editor.dart",
-          "symbol": "HostAddCustomerScreen",
+          "file": "lib/hosts/people/add_person_screen.dart",
+          "symbol": "HostAddPersonScreen",
           "role": "Structural owner."
         },
         {

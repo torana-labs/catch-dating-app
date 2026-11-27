@@ -15,12 +15,12 @@
       "routes": [
         "hostAddCustomerScreen"
       ],
-      "file": "lib/hosts/presentation/customers/host_customer_editor.dart",
-      "symbol": "_HostAddCustomerScreenState",
+      "file": "lib/hosts/people/add_person_screen.dart",
+      "symbol": "_HostAddPersonScreenState",
       "family": "pushed-route",
-      "expression": "CatchRouteScaffold",
+      "expression": "CatchScreen",
       "bodyGeometry": "standard",
-      "topEdge": "route-chrome"
+      "topEdge": "safe-area"
     },
     {
       "routes": [

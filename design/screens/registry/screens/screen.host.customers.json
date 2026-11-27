@@ -8,7 +8,7 @@
   "topBar": {
     "role": "shell",
     "expression": "CatchLegacyTopBar.primaryRail + CatchScreenTopBar",
-    "owner": "HostCustomersScreen, HostFormsScreen, HostAddCustomerScreen, HostSavedAudienceEditorScreen, and HostCustomerDetailScreen",
+    "owner": "HostCustomersScreen, HostFormsScreen, HostAddPersonScreen, HostSavedAudienceEditorScreen, and HostCustomerDetailScreen",
     "reason": "Each pane owns its actions and peer tabs. Audience and person tab rows align; person selection and nested submissions remain in the root navigation path at every width."
   },
   "statePolicy": {
@@ -306,7 +306,7 @@
       "id": "manual_add_pending",
       "kind": "mutation",
       "status": "captured",
-      "source": "HostAddCustomerScreen submit lifecycle",
+      "source": "HostAddPersonScreen submit lifecycle",
       "captureIds": [
         "host_customer_add"
       ],

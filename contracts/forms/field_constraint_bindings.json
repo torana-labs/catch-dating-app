@@ -255,11 +255,6 @@
       "onboardingDateOfBirthText",
       "suvbotTesterPhoneNumber"
     ],
-    "mutateOrganizerContactCallablePayload": [
-      "displayNameOverride",
-      "email",
-      "phoneE164"
-    ],
     "onboardingDraftDocument": [
       "firstName",
       "gender",

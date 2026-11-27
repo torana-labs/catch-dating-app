@@ -173,7 +173,7 @@ Typed handoffs:
 |---|---|---|
 | `HostPeopleScreen` | `lib/hosts/people/people_screen.dart` | Actions: switch_customers_view, open_saved_audience_create, retry_directory, switch_organizer, search_customers, open_customer_filters, filter_customers, sort_customers, message_filtered_customers, review_whatsapp_sender_setup, open_customer, review_duplicate_customers. |
 | `HostSavedGroupScreen` | `lib/hosts/people/saved_group_screen.dart` | Actions: search_saved_audiences, open_saved_audience_detail. |
-| `HostAddCustomerScreen` | `lib/hosts/presentation/customers/host_customer_editor.dart` | Structural owner. |
+| `HostAddPersonScreen` | `lib/hosts/people/add_person_screen.dart` | Structural owner. |
 | `HostCustomersDirectoryController` | `lib/hosts/presentation/customers/host_customers_controller.dart` | Actions: load_more. |
 | `HostCustomersController` | `lib/hosts/presentation/customers/host_customers_controller.dart` | Actions: export_customers, create_customer, manage_customer, start_conversation. |
 | `HostPersonScreen` | `lib/hosts/people/person_screen.dart` | Actions: open_customer_event, undo_customer_merge, retry_customer_detail, open_personal_whatsapp_handoff. |
