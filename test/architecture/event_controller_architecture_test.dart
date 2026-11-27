@@ -7,10 +7,10 @@ void main() {
     'event flow owners use generated Riverpod providers instead of ChangeNotifier',
     () {
       const controllers = [
-        'presentation/event_management/create/private_event_details_controller',
-        'presentation/event_management/create/private_event_preferences_controller',
-        'presentation/event_management/create/event_offer_preferences_controller',
-        'presentation/event_management/create/event_publication_controller',
+        'create/private_event_details_controller',
+        'create/private_event_preferences_controller',
+        'forms/event_offer_preferences_controller',
+        'create/event_publication_controller',
         'forms/host_event_offer_controller',
         'forms/host_event_offer_workspace_controller',
         'forms/host_form_admission_controller',
@@ -31,10 +31,7 @@ void main() {
           reason: path,
         );
       }
-      for (final root in [
-        'lib/events',
-        'lib/hosts/presentation/event_management',
-      ]) {
+      for (final root in ['lib/events', 'lib/hosts/create']) {
         for (final file in repoDirectory(
           root,
         ).listSync(recursive: true).whereType<File>()) {
