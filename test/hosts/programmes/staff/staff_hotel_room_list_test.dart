@@ -5,6 +5,7 @@ import 'package:catch_dating_app/hosts/programmes/staff/staff_hotel_room_list_bo
 import 'package:catch_dating_app/hosts/programmes/staff/staff_hotel_room_list_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_test_support/catch_test_fonts.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -233,10 +234,9 @@ void main() {
           ],
         ),
       );
-      await tester.pumpAndSettle();
-      expect(find.text('The room list did not load'), findsOneWidget);
+      await pumpUntilFound(tester, find.text('The room list did not load'));
       await tester.tap(find.text('Try again'));
-      await tester.pumpAndSettle();
+      await pumpUntilFound(tester, find.text('Lakeview Haveli'));
       expect(reads, 2);
       expect(find.text('Lakeview Haveli'), findsOneWidget);
       expect(find.text('Room list'), findsOneWidget);

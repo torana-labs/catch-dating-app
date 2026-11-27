@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 
 /// One hotel's read-only room list from `manageProgramLodging`
 /// (`hotelBoard`): the hotel's name and every room the approved allocation
