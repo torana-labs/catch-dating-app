@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/hosts/live/formats/formats_courts_setup_screen.dart",
+      "symbol": "_HostFormatsCourtsSetupScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "The court board pushes its setup as a system pushed screen."
+}

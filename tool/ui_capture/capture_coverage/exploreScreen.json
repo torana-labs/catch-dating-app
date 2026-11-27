@@ -1,0 +1,25 @@
+{
+  "routeId": "exploreScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "member_event_discovery",
+    "explore_cover_contrast_floor",
+    "explore_loading",
+    "explore_club_source_error",
+    "explore_feed_error",
+    "explore_empty_city",
+    "explore_no_search_results",
+    "explore_no_filter_results",
+    "explore_offline",
+    "explore_search_query",
+    "explore_filters_active",
+    "explore_joined_clubs",
+    "explore_unclaimed_host_projection",
+    "explore_cross_paths_person",
+    "explore_cross_paths_profile_preview",
+    "explore_text_scale_2",
+    "explore_reduced_motion"
+  ],
+  "reason": "Explore discovery route captures now cover populated, signed-in joined clubs, worst-case bright cover contrast, loading, source error, feed error, offline, empty city, no-search, no-filter, active search, active filters, unclaimed host projection, Cross Paths person and profile-preview states, text-scale, and reduced-motion states."
+}

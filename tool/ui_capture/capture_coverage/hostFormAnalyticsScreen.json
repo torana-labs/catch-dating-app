@@ -1,0 +1,10 @@
+{
+  "routeId": "hostFormAnalyticsScreen",
+  "status": "captured",
+  "priority": "P2",
+  "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
+  "captureIds": [
+    "host_responses_phone",
+    "host_form_responses_new_fragment"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "routeId": "chatScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "match_chat_context",
+    "match_chat_messages_loading",
+    "match_chat_messages_error",
+    "match_chat_offline",
+    "match_chat_empty_thread",
+    "match_chat_event_context_fallback",
+    "match_chat_unavailable",
+    "match_chat_blocked",
+    "match_chat_image_thread",
+    "match_chat_suvbot_controls",
+    "match_chat_suvbot_action_error",
+    "match_chat_share_card",
+    "match_chat_composer_states",
+    "match_chat_keyboard_multiline",
+    "match_chat_send_failure_snackbar",
+    "match_chat_report_failure_snackbar",
+    "match_chat_block_confirm_dialog",
+    "match_chat_text_scale_2",
+    "match_chat_reduced_motion"
+  ],
+  "reason": "Consumer match chat captures now cover loading, error, offline, empty, unavailable, blocked, image, Suvbot, share-card, composer, keyboard-open multiline safe-area, send/report failure snackbars, block confirmation, text scale, reduced motion, paired light/dark populated thread, and populated thread states."
+}

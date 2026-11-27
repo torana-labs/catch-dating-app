@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostChatScreen"
+      ],
+      "file": "lib/pages/chat/chat_screen.dart",
+      "symbol": "_ChatScreenState",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "mixed",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Host one-to-one chat reuses the canonical pushed conversation owner."
+}

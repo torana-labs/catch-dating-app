@@ -1,0 +1,766 @@
+{
+  "id": "screen.settings.account",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchLegacyTopBar",
+    "owner": "CatchRouteScaffold",
+    "reason": "The pushed route uses canonical compact back chrome and a scroll-derived divider."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "offline"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Settings Account",
+  "owner": "safety",
+  "priority": "P3",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "settingsScreen",
+      "path": "/settings",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/safety/presentation/settings_screen.dart",
+    "symbol": "SettingsScreen"
+  },
+  "stateController": {
+    "primary": "SettingsScreen + SettingsAccountState + watchUserProfileProvider + watchBlockedUsersProvider + SettingsController + AuthSessionController",
+    "files": [
+      {
+        "file": "lib/safety/presentation/settings_screen.dart",
+        "symbol": "SettingsScreen"
+      },
+      {
+        "file": "lib/safety/presentation/settings_account_state.dart",
+        "symbol": "SettingsAccountState"
+      },
+      {
+        "file": "lib/pages/account/settings_controller.dart",
+        "symbol": "SettingsController"
+      },
+      {
+        "file": "lib/contexts/safety/data/safety_repository.dart",
+        "symbol": "SafetyRepository"
+      },
+      {
+        "file": "lib/contexts/profiles/data/user_profile_repository.dart",
+        "symbol": "UserProfileRepository"
+      },
+      {
+        "file": "lib/contexts/profiles/data/public_profiles_lookup.dart",
+        "symbol": "PublicProfilesQuery"
+      },
+      {
+        "file": "lib/pages/account/auth_session_controller.dart",
+        "symbol": "AuthSessionController"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/pages/account/settings_controller.dart",
+        "symbol": "SettingsController"
+      },
+      {
+        "file": "lib/pages/account/auth_session_controller.dart",
+        "symbol": "AuthSessionController"
+      },
+      {
+        "file": "packages/platform/lib/device/external_links.dart",
+        "symbol": "ExternalLinkController"
+      }
+    ],
+    "notes": "SettingsScreen reads provider/controller state at the route edge, seeds optimistic preference draft values from watchUserProfileProvider, delegates preference/deletion/unblock writes to SettingsController, owns sign-out through AuthSessionController, opens host app/support/legal external links through ExternalLinkController, and composes provider-free Account, Notifications, Privacy & safety, About, and Log out sections from SettingsAccountState display data."
+  },
+  "designRefs": [
+    {
+      "id": "repo.settings-screen-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/safety/settings_screen_test.dart",
+      "notes": "Settings tests cover profile-backed account rows, optimistic preference writes/rollback including the feature-gated default-off Cross Paths master preference, blocked user unblock, history rows, host-app handoff, sign-out, and delete-account confirmation."
+    },
+    {
+      "id": "claude.settings-account",
+      "kind": "claude",
+      "status": "available",
+      "notes": "Canonical Settings Account Claude template exported, masked, manifest-registered, and wired to the settings_account capture for advisory comparison.",
+      "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-settings/Settings.dc.html"
+    },
+    {
+      "id": "generated.settings-account-reference",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/screen.settings.account/profile_backed_account.png",
+      "notes": "390x812 Settings Account profile_backed_account PNG reference exported from the Claude template."
+    },
+    {
+      "id": "generated.settings-account-reference-manifest",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/manifest.json",
+      "notes": "Reference-screen manifest wiring Settings Account profile_backed_account to settings_account for advisory pixel comparison."
+    }
+  ],
+  "captures": [
+    {
+      "id": "settings_account",
+      "status": "captured",
+      "notes": "Account and safety settings fixture with current user data and empty blocked accounts."
+    },
+    {
+      "id": "settings_profile_loading",
+      "status": "captured",
+      "notes": "Settings Account fixture with profile provider loading values."
+    },
+    {
+      "id": "settings_profile_error",
+      "status": "captured",
+      "notes": "Settings Account fixture with profile provider error values and inline retry surface."
+    },
+    {
+      "id": "settings_profile_offline",
+      "status": "captured",
+      "notes": "Settings Account fixture with profile provider offline error values and shared offline retry copy."
+    },
+    {
+      "id": "settings_profile_missing",
+      "status": "captured",
+      "notes": "Settings Account fixture with missing profile fallback values and inline account-unavailable surface."
+    },
+    {
+      "id": "settings_blocked_loading",
+      "status": "captured",
+      "notes": "Settings Account fixture with blocked-account footer in loading state."
+    },
+    {
+      "id": "settings_blocked_error",
+      "status": "captured",
+      "notes": "Settings Account fixture with blocked-account footer retry/error state."
+    },
+    {
+      "id": "settings_blocked_offline",
+      "status": "captured",
+      "notes": "Settings Account fixture with blocked-account footer offline retry state."
+    },
+    {
+      "id": "settings_blocked_list",
+      "status": "captured",
+      "notes": "Settings Account fixture with resolved and fallback blocked-account rows."
+    },
+    {
+      "id": "settings_preference_pending",
+      "status": "captured",
+      "notes": "Settings Account fixture with notification preference mutation held pending."
+    },
+    {
+      "id": "settings_preference_error",
+      "status": "captured",
+      "notes": "Settings Account fixture with failed preference mutation feedback."
+    },
+    {
+      "id": "settings_preference_offline",
+      "status": "captured",
+      "notes": "Settings Account fixture with preference mutation using shared offline error feedback."
+    },
+    {
+      "id": "settings_delete_pending",
+      "status": "captured",
+      "notes": "Settings Account fixture with account deletion mutation held pending."
+    },
+    {
+      "id": "settings_delete_error",
+      "status": "captured",
+      "notes": "Settings Account fixture with failed account deletion mutation feedback."
+    },
+    {
+      "id": "settings_delete_offline",
+      "status": "captured",
+      "notes": "Settings Account fixture with account deletion mutation using shared offline error feedback."
+    },
+    {
+      "id": "settings_sign_out_pending",
+      "status": "captured",
+      "notes": "Settings Account fixture with sign-out mutation held pending."
+    },
+    {
+      "id": "settings_sign_out_error",
+      "status": "captured",
+      "notes": "Settings Account fixture with failed sign-out mutation feedback."
+    },
+    {
+      "id": "settings_sign_out_offline",
+      "status": "captured",
+      "notes": "Settings Account fixture with sign-out mutation using shared offline error feedback."
+    },
+    {
+      "id": "settings_unblock_pending",
+      "status": "captured",
+      "notes": "Settings Account fixture with blocked-account unblock mutation held pending."
+    },
+    {
+      "id": "settings_unblock_error",
+      "status": "captured",
+      "notes": "Settings Account fixture with failed blocked-account unblock mutation feedback."
+    },
+    {
+      "id": "settings_unblock_offline",
+      "status": "captured",
+      "notes": "Settings Account fixture with blocked-account unblock mutation using shared offline error feedback."
+    },
+    {
+      "id": "settings_external_link_pending",
+      "status": "captured",
+      "notes": "Settings Account fixture with Catch Host launch held pending, selected-row progress, and whole-surface exclusivity."
+    },
+    {
+      "id": "settings_external_link_failure",
+      "status": "captured",
+      "notes": "Settings Account fixture with a false external-launch result and honest visible feedback."
+    },
+    {
+      "id": "settings_text_scale_2",
+      "status": "captured",
+      "notes": "Settings Account fixture rendered at text scale 2.0 with blocked-account rows."
+    },
+    {
+      "id": "settings_reduced_motion",
+      "status": "captured",
+      "notes": "Settings Account fixture rendered with animations disabled."
+    }
+  ],
+  "states": [
+    {
+      "id": "profile_backed_account",
+      "kind": "populated",
+      "status": "captured",
+      "source": "settings_account renders phone/email/profile/history/host rows from current profile data.",
+      "captureIds": [
+        "settings_account"
+      ],
+      "tests": [
+        "test/safety/settings_screen_test.dart",
+        "test/safety/settings_account_state_test.dart"
+      ],
+      "nextAction": "Keep this as the profile-backed baseline while mutation lifecycle captures finish.",
+      "previewIds": [
+        "SettingsScreen/Screen states"
+      ]
+    },
+    {
+      "id": "profile_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "SettingsAccountState maps profile provider loading to explicit account row values instead of blank fallbacks.",
+      "captureIds": [
+        "settings_profile_loading"
+      ],
+      "tests": [
+        "test/safety/settings_account_state_test.dart",
+        "test/safety/settings_screen_test.dart"
+      ],
+      "nextAction": "Compare against the Settings Account reference once provider-free visual sections are polished.",
+      "previewIds": [
+        "SettingsScreen/Screen states"
+      ]
+    },
+    {
+      "id": "profile_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "SettingsAccountState maps profile provider errors to explicit unavailable row values and an inline retry surface.",
+      "captureIds": [
+        "settings_profile_error"
+      ],
+      "tests": [
+        "test/safety/settings_account_state_test.dart",
+        "test/safety/settings_screen_test.dart"
+      ],
+      "nextAction": "Keep profile-provider retry copy on the shared branded error surface.",
+      "previewIds": [
+        "SettingsScreen/Screen states"
+      ]
+    },
+    {
+      "id": "profile_missing",
+      "kind": "empty",
+      "status": "captured",
+      "source": "SettingsAccountState maps a signed-in but missing profile to unavailable row values and account-unavailable copy.",
+      "captureIds": [
+        "settings_profile_missing"
+      ],
+      "tests": [
+        "test/safety/settings_account_state_test.dart",
+        "test/safety/settings_screen_test.dart"
+      ],
+      "nextAction": "Decide whether missing profile should route to profile recovery or sign-out recovery.",
+      "previewIds": [
+        "SettingsScreen/Screen states"
+      ]
+    },
+    {
+      "id": "history_navigation_rows",
+      "kind": "populated",
+      "status": "tested",
+      "source": "Review history, Payment history, and Host app rows are stable semantic account actions.",
+      "tests": [
+        "test/safety/settings_screen_test.dart"
+      ],
+      "nextAction": "Add route-navigation tests for review/payment rows and keep host app external-link proof.",
+      "previewIds": [
+        "SettingsScreen/Screen states"
+      ]
+    },
+    {
+      "id": "external_link_outcomes",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Catch Host and configured privacy, support, and terms rows use one route-owned external-link operation. The selected row shows progress, the whole Settings surface freezes while pending, false and thrown failures show honest feedback, and actions restore afterward.",
+      "captureIds": [
+        "settings_external_link_pending",
+        "settings_external_link_failure"
+      ],
+      "tests": [
+        "test/safety/settings_screen_test.dart"
+      ],
+      "nextAction": "Keep the destination policy separate from launch integrity; whether Catch Host stays external or becomes an in-app role switch remains an owner decision.",
+      "previewIds": [
+        "SettingsScreen/Screen states"
+      ]
+    },
+    {
+      "id": "notification_preferences",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Preference toggles optimistically update local CatchToggleInput state and persist through SettingsController.savePreference; any settings mutation freezes every settings action plus route exit, while SettingsController deduplicates overlapping preference, unblock, and delete calls.",
+      "captureIds": [
+        "settings_preference_pending"
+      ],
+      "tests": [
+        "test/safety/settings_screen_test.dart",
+        "test/pages/account/settings_controller_test.dart",
+        "test/safety/settings_account_state_test.dart"
+      ],
+      "nextAction": "Keep whole-surface exclusivity intact while comparing the disabled-toggle pending affordance during visual polish.",
+      "previewIds": [
+        "SettingsScreen/Screen states",
+        "SettingsScreen/Mutation states"
+      ]
+    },
+    {
+      "id": "preference_save_error",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Failed preference writes roll back optimistic switch state and surface mutation error copy.",
+      "captureIds": [
+        "settings_preference_error"
+      ],
+      "tests": [
+        "test/safety/settings_screen_test.dart"
+      ],
+      "nextAction": "Compare preference error copy and placement against the Settings mutation contract during visual polish.",
+      "previewIds": [
+        "SettingsScreen/Mutation states"
+      ]
+    },
+    {
+      "id": "privacy_safety_defaults",
+      "kind": "populated",
+      "status": "captured",
+      "source": "settings_account captures privacy/safety rows including blocked users, visibility copy, map visibility toggle, privacy policy, and delete account.",
+      "captureIds": [
+        "settings_account",
+        "settings_blocked_list"
+      ],
+      "tests": [
+        "test/safety/settings_screen_test.dart"
+      ],
+      "nextAction": "Use the exported Settings Account reference to compare privacy/safety row hierarchy; add delete dialog and mutation lifecycle route captures.",
+      "previewIds": [
+        "SettingsScreen/Screen states"
+      ]
+    },
+    {
+      "id": "blocked_accounts_loading_error",
+      "kind": "loading",
+      "status": "captured",
+      "source": "Blocked accounts footer renders _BlockedAccountsSkeleton while loading and CatchLocalizedErrorState (inline/compact mode) with retry on failure.",
+      "captureIds": [
+        "settings_blocked_loading",
+        "settings_blocked_error"
+      ],
+      "nextAction": "Keep blocked-account provider retry copy on the shared branded error surface.",
+      "previewIds": [
+        "SettingsScreen/Screen states"
+      ]
+    },
+    {
+      "id": "blocked_accounts_empty",
+      "kind": "empty",
+      "status": "captured",
+      "source": "No blocked accounts renders the No blocked accounts CatchEmptyState.",
+      "captureIds": [
+        "settings_account"
+      ],
+      "tests": [
+        "test/safety/settings_screen_test.dart"
+      ],
+      "nextAction": "Use the exported Settings Account reference as the first settings baseline; keep empty footer covered when extracting settings sections.",
+      "previewIds": [
+        "SettingsScreen/Screen states"
+      ]
+    },
+    {
+      "id": "blocked_accounts_list",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Blocked accounts resolve public profiles in one batch and render PersonRow tiles with unblock buttons.",
+      "captureIds": [
+        "settings_blocked_list"
+      ],
+      "tests": [
+        "test/safety/settings_screen_test.dart"
+      ],
+      "nextAction": "Keep blocked-account row composition stable while comparing pending/error mutation affordances.",
+      "previewIds": [
+        "SettingsScreen/Screen states"
+      ]
+    },
+    {
+      "id": "unblock_mutation",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Unblock action routes through SettingsController.unblockUserMutation and shows shared Catch snackbar success feedback; pending unblock freezes every settings action and route exit, and the controller rejects overlapping settings writes.",
+      "captureIds": [
+        "settings_unblock_pending",
+        "settings_unblock_error"
+      ],
+      "tests": [
+        "test/safety/settings_screen_test.dart",
+        "test/pages/account/settings_controller_test.dart"
+      ],
+      "nextAction": "Compare unblock pending/error affordances during visual polish without weakening whole-surface exclusivity.",
+      "previewIds": [
+        "SettingsScreen/Mutation states"
+      ]
+    },
+    {
+      "id": "delete_account_flow",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Delete account row opens the confirm danger dialog and delegates confirmed deletion to SettingsController.requestAccountDeletion; the dialog rechecks global pending state, and delete pending freezes every settings action plus route exit.",
+      "captureIds": [
+        "settings_delete_pending",
+        "settings_delete_error"
+      ],
+      "tests": [
+        "test/safety/settings_screen_test.dart",
+        "test/pages/account/settings_controller_test.dart"
+      ],
+      "nextAction": "Add a dedicated confirm-dialog capture if destructive-dialog pixel parity becomes blocking.",
+      "previewIds": [
+        "CatchDialog/Contract states",
+        "SettingsScreen/Mutation states"
+      ]
+    },
+    {
+      "id": "sign_out_action",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Log out row delegates to AuthSessionController.signOutMutation and shows a pending spinner; sign-out pending freezes every settings action and route exit, while AuthSessionController returns the active session future to duplicate callers.",
+      "captureIds": [
+        "settings_sign_out_pending",
+        "settings_sign_out_error"
+      ],
+      "tests": [
+        "test/safety/settings_screen_test.dart",
+        "test/pages/sign_in/auth_controller_test.dart"
+      ],
+      "nextAction": "Compare sign-out pending/error affordances during visual polish without weakening whole-surface exclusivity.",
+      "previewIds": [
+        "SettingsScreen/Mutation states"
+      ]
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Settings Account uses the shared obviousOfflineException/appErrorDescriptor copy for provider retry surfaces and mutation feedback instead of a Settings-specific offline copy.",
+      "captureIds": [
+        "settings_profile_offline",
+        "settings_blocked_offline",
+        "settings_preference_offline",
+        "settings_delete_offline",
+        "settings_sign_out_offline",
+        "settings_unblock_offline"
+      ],
+      "nextAction": "Reopen only if product requires Settings-specific offline copy that diverges from the shared app error catalogue.",
+      "previewIds": [
+        "SettingsScreen/Screen states",
+        "SettingsScreen/Mutation states"
+      ]
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "settings_text_scale_2 captures account rows, toggles, blocked user rows, destructive rows, and footers at text scale 2.0.",
+      "captureIds": [
+        "settings_text_scale_2"
+      ],
+      "nextAction": "Repeat text-scale review after final Settings visual parity polish.",
+      "previewIds": [
+        "SettingsScreen/Screen states"
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "settings_reduced_motion captures the Settings Account route with animations disabled.",
+      "captureIds": [
+        "settings_reduced_motion"
+      ],
+      "nextAction": "Add reduced-motion proof for destructive confirmation and mutation feedback.",
+      "previewIds": [
+        "SettingsScreen/Screen states"
+      ]
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "The capture runner emits paired light/dark outputs for Settings Account blocked-list, text-scale, and reduced-motion fixtures.",
+      "captureIds": [
+        "settings_blocked_list"
+      ],
+      "nextAction": "Compare both themes after final Settings visual parity polish.",
+      "previewIds": [
+        "SettingsScreen/Screen states"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "SettingsScreen combines profile seeding, optimistic local preference state, SettingsController mutations, sign-out, external links, blocked-user provider waves, batched profile lookup, confirmation dialogs, and all row/section composition in one route widget.",
+    "targetLayout": "Settings Account should resolve a SettingsAccountState adapter for profile rows, preference draft/pending/error state, blocked-account rows, destructive/account actions, route callbacks, external links, retry intents, and mutation feedback before composing provider-free settings sections.",
+    "sections": [
+      {
+        "id": "section.settings_account.adapter",
+        "name": "Settings account route adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "SettingsAccountState"
+        ],
+        "flutter": {
+          "file": "lib/safety/presentation/settings_account_state.dart",
+          "symbol": "SettingsAccountState"
+        },
+        "currentOwner": "SettingsScreen provider reads + SettingsAccountState display adapter",
+        "targetOwner": "SettingsAccountState adapter",
+        "dependencies": [
+          "catch.top_bar"
+        ],
+        "states": [
+          "profile_backed_account",
+          "profile_loading",
+          "profile_error",
+          "profile_missing",
+          "notification_preferences",
+          "blocked_accounts_empty",
+          "delete_account_flow"
+        ],
+        "migration": "SettingsAccountState now owns profile provider waves, preference draft values, blocked-account rows, provider retry states, and mutation pending flags; SettingsScreen keeps route callbacks and controller calls at the edge.",
+        "previewIds": [
+          "SettingsScreen/Screen states",
+          "CatchDialog/Contract states",
+          "SettingsScreen/Mutation states"
+        ]
+      },
+      {
+        "id": "section.settings_account.account",
+        "name": "Settings account section",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "SettingsAccountSection"
+        ],
+        "flutter": {
+          "file": "packages/catch_ui/lib/src/components/catch_section.dart",
+          "symbol": "CatchSection"
+        },
+        "currentOwner": "_SettingsSection + CatchSettingsRow",
+        "targetOwner": "provider-free settings account section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "profile_backed_account",
+          "history_navigation_rows",
+          "external_link_outcomes"
+        ],
+        "migration": "Keep Account rows data-driven and route callbacks owned by the adapter.",
+        "previewIds": [
+          "SettingsScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.settings_account.notifications",
+        "name": "Settings notification preferences section",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "SettingsNotificationPreferences"
+        ],
+        "flutter": {
+          "file": "packages/catch_ui/lib/src/components/catch_section.dart",
+          "symbol": "CatchSection"
+        },
+        "currentOwner": "_SettingsSection + CatchToggleInput",
+        "targetOwner": "provider-free settings notification preferences section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "notification_preferences",
+          "preference_save_error"
+        ],
+        "migration": "Move preference values, disabled state, optimistic rollback, and error presentation into adapter-owned row state.",
+        "previewIds": [
+          "SettingsScreen/Screen states",
+          "SettingsScreen/Mutation states"
+        ]
+      },
+      {
+        "id": "section.settings_account.privacy",
+        "name": "Settings privacy and safety section",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "SettingsPrivacySafetySection"
+        ],
+        "flutter": {
+          "file": "packages/catch_ui/lib/src/components/catch_section.dart",
+          "symbol": "CatchSection"
+        },
+        "currentOwner": "_SettingsSection + SettingsController",
+        "targetOwner": "provider-free settings privacy and safety section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "privacy_safety_defaults",
+          "cross_paths_global_consent_hidden",
+          "cross_paths_global_consent_off",
+          "cross_paths_global_consent_on",
+          "blocked_accounts_loading_error",
+          "delete_account_flow"
+        ],
+        "migration": "Keep safety row layout reusable while SettingsController owns destructive and privacy mutations. The Cross Paths master row remains hidden unless the consent-controls rollout flag is enabled, and missing profile values resolve off.",
+        "previewIds": [
+          "SettingsScreen/Screen states",
+          "CatchDialog/Contract states",
+          "SettingsScreen/Mutation states"
+        ]
+      },
+      {
+        "id": "section.settings_account.blocked_accounts",
+        "name": "Blocked accounts footer",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "BlockedAccountsSection"
+        ],
+        "flutter": {
+          "file": "lib/safety/presentation/settings_screen.dart",
+          "symbol": "BlockedAccountsSection"
+        },
+        "currentOwner": "_BlockedAccountsSection + publicProfilesByIdsProvider",
+        "targetOwner": "provider-free blocked accounts footer",
+        "dependencies": [
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "blocked_accounts_loading_error",
+          "blocked_accounts_empty",
+          "blocked_accounts_list",
+          "unblock_mutation"
+        ],
+        "migration": "Move blocked-user display data, profile fallback, and unblock pending/error state into adapter fixtures before visual comparison.",
+        "previewIds": [
+          "SettingsScreen/Screen states",
+          "SettingsScreen/Mutation states"
+        ]
+      },
+      {
+        "id": "section.settings_account.about_signout",
+        "name": "Settings about and sign-out sections",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "SettingsAboutSection",
+          "SettingsSignOutSection"
+        ],
+        "flutter": {
+          "file": "packages/catch_ui/lib/src/components/catch_section.dart",
+          "symbol": "CatchSection"
+        },
+        "currentOwner": "_SettingsSection + AuthSessionController",
+        "targetOwner": "provider-free settings about and sign-out sections",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "sign_out_action",
+          "light_dark"
+        ],
+        "migration": "Keep legal/support/version and sign-out actions in adapter-owned row data.",
+        "previewIds": [
+          "SettingsScreen/Screen states",
+          "SettingsScreen/Mutation states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DP-SETTINGS-ACCOUNT-001",
+      "status": "closed",
+      "nextAction": "Widgetbook covers account rows, notification toggles, privacy/safety rows, blocked accounts loading/empty/error/list, destructive dialog variants, and Settings mutation pending/error fixtures."
+    },
+    {
+      "id": "DP-SETTINGS-ACCOUNT-002",
+      "status": "closed",
+      "nextAction": "Settings Account route captures now cover profile loading/error/offline/missing, blocked-user loading/error/offline/list, preference/delete/sign-out/unblock mutation pending/error/offline, text scale, reduced motion, and light/dark. Settings intentionally uses the shared offline provider/mutation error copy instead of Settings-specific copy."
+    },
+    {
+      "id": "DP-SETTINGS-ACCOUNT-003",
+      "status": "closed",
+      "nextAction": "SettingsAccountState now owns profile provider waves, preference draft values, blocked-account rows, provider retry states, and mutation pending flags before visual parity edits."
+    },
+    {
+      "id": "DP-SETTINGS-ACCOUNT-004",
+      "status": "closed",
+      "nextAction": "Closed by SettingsMutationState.operationPending, global action and route-exit freezing, confirmation rechecks, controller-level write deduplication, and focused state/controller/widget proof."
+    },
+    {
+      "id": "DP-SETTINGS-ACCOUNT-005",
+      "status": "closed",
+      "nextAction": "Closed. Host-app and configured privacy/support/terms launches now share a route-owned pending guard, disable every Settings action and route exit while pending, show a spinner on the selected row, restore the surface afterward, and present visible feedback for false and thrown launcher failures; focused widget tests prove duplicate-tap exclusion and both failure paths."
+    }
+  ]
+}

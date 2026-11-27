@@ -1,0 +1,6 @@
+{
+  "routeId": "hostPeopleDuplicatesScreen",
+  "status": "planned",
+  "priority": "P2",
+  "reason": "The People duplicate review has focused widget tests for its list, merge confirmation, merge and undo flow; a deterministic capture is planned."
+}

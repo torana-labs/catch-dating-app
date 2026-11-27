@@ -1,0 +1,12 @@
+{
+  "routeId": "startScreen",
+  "status": "captured",
+  "priority": "P2",
+  "captureIds": [
+    "start_welcome",
+    "start_welcome_animated_reel",
+    "start_welcome_reduced_motion",
+    "start_welcome_text_scale_2"
+  ],
+  "reason": "Start Welcome captures cover the landed state, deterministic animated-reel sample, reduced motion, and text scale 2.0; the route intentionally uses the fixed sunset dark landing palette."
+}

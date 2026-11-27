@@ -1,0 +1,800 @@
+{
+  "id": "screen.onboarding.flow",
+  "shell": {
+    "owner": "standalone",
+    "nestedScaffoldAllowed": true,
+    "reason": "The route is presented outside the tab shell."
+  },
+  "topBar": {
+    "role": "step-flow",
+    "expression": "CatchStepHeader",
+    "owner": "CatchStepHeader",
+    "reason": "The step flow owns progress and navigation through the canonical header."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "mutation"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Onboarding Flow",
+  "owner": "onboarding",
+  "priority": "P2",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "onboardingScreen",
+      "path": "/onboarding",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/onboarding/presentation/onboarding_screen.dart",
+    "symbol": "OnboardingScreen"
+  },
+  "stateController": {
+    "primary": "OnboardingScreen + OnboardingController + saveProfileMutation + completeMutation",
+    "files": [
+      {
+        "file": "lib/onboarding/presentation/onboarding_screen.dart",
+        "symbol": "OnboardingScreen"
+      },
+      {
+        "file": "lib/pages/onboarding/onboarding_controller.dart",
+        "symbol": "OnboardingController"
+      },
+      {
+        "file": "lib/pages/onboarding/onboarding_controller.dart",
+        "symbol": "OnboardingData"
+      },
+      {
+        "file": "lib/pages/onboarding/onboarding_step.dart",
+        "symbol": "OnboardingStep"
+      },
+      {
+        "file": "lib/onboarding/presentation/onboarding_flow_state.dart",
+        "symbol": "OnboardingFlowState"
+      },
+      {
+        "file": "lib/onboarding/presentation/onboarding_flow_state.dart",
+        "symbol": "OnboardingTopBarState"
+      },
+      {
+        "file": "lib/pages/start/onboarding_welcome_body.dart",
+        "symbol": "OnboardingWelcomeBody"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_name_dob_step.dart",
+        "symbol": "OnboardingNameDobBody"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_name_dob_step_state.dart",
+        "symbol": "OnboardingNameDobState"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_name_dob_step.dart",
+        "symbol": "OnboardingNameDobStep"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_gender_interest_step.dart",
+        "symbol": "OnboardingGenderInterestBody"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_gender_interest_step_state.dart",
+        "symbol": "OnboardingGenderInterestState"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_gender_interest_step.dart",
+        "symbol": "OnboardingGenderInterestStep"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_instagram_step.dart",
+        "symbol": "OnboardingInstagramBody"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_instagram_step_state.dart",
+        "symbol": "OnboardingInstagramState"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_instagram_step.dart",
+        "symbol": "OnboardingInstagramStep"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_photos_step.dart",
+        "symbol": "OnboardingPhotosBody"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_photos_step_state.dart",
+        "symbol": "OnboardingPhotosState"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_photos_step.dart",
+        "symbol": "OnboardingPhotosStep"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart",
+        "symbol": "OnboardingProfilePromptsBody"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_profile_prompts_step_state.dart",
+        "symbol": "OnboardingProfilePromptsState"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart",
+        "symbol": "OnboardingProfilePromptsStep"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_running_prefs_step.dart",
+        "symbol": "OnboardingRunningPrefsBody"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_running_prefs_step_state.dart",
+        "symbol": "OnboardingRunningPrefsState"
+      },
+      {
+        "file": "lib/onboarding/presentation/pages/onboarding_running_prefs_step.dart",
+        "symbol": "OnboardingRunningPrefsStep"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/pages/onboarding/onboarding_controller.dart",
+        "symbol": "OnboardingController"
+      },
+      {
+        "file": "lib/contexts/profiles/data/onboarding_draft_repository.dart",
+        "symbol": "OnboardingDraftRepository"
+      },
+      {
+        "file": "lib/contexts/profiles/data/user_profile_repository.dart",
+        "symbol": "UserProfileRepository"
+      }
+    ],
+    "notes": "OnboardingScreen owns initStep scheduling and visible step composition. OnboardingFlowState owns flow entry mode, current step, previous-step/back boundary, welcome-vs-progress shell, and OnboardingTopBarState header/progress copy. OnboardingController owns draft hydration, profile completion/run-preferences entry decisions, saveProfileMutation, completeMutation, and draft persistence. Onboarding step pages now wrap provider-free step state/section adapters for identity, Instagram, photos, prompts, and running preferences."
+  },
+  "designRefs": [
+    {
+      "id": "repo.onboarding-widget-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/onboarding/onboarding_widgets_test.dart",
+      "notes": "Onboarding widget tests cover welcome entry, required-field errors, saved draft behavior, photo gate behavior, and step UI composition."
+    },
+    {
+      "id": "repo.onboarding-controller-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/pages/onboarding/onboarding_controller_test.dart",
+      "notes": "Controller tests cover entry-step selection, draft resume, profile completion mode, run-preferences mode, saveProfile, and completion mutations."
+    },
+    {
+      "id": "onboarding-handoff",
+      "kind": "external",
+      "status": "available",
+      "notes": "Onboarding welcome plus primary name/DOB, gender/interest, Instagram filled, photos count-met, prompts partial, and running-preferences references are exported, masked, and manifest-registered from OnboardingV2.dc.html. Interaction-specific keyboard, picker, upload, validation, mutation, accessibility, and theme references remain future variants.",
+      "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html"
+    },
+    {
+      "id": "generated.onboarding-welcome-reference",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/screen.onboarding.flow/welcome_entry.png",
+      "notes": "390x812 Onboarding Flow welcome_entry PNG reference exported from the Claude template."
+    },
+    {
+      "id": "generated.onboarding-step-references",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/screen.onboarding.flow/",
+      "notes": "390x812 Onboarding Flow PNG references for welcome_entry, name_dob_step, gender_interest_step, instagram_step, photos_count_met, prompts_partial, and running_prefs_step exported from the Claude template."
+    },
+    {
+      "id": "repo.onboarding-reference-exporter",
+      "kind": "repo",
+      "status": "available",
+      "path": "tool/design/export_onboarding_references.mjs",
+      "notes": "Headless Chrome/CDP exporter that sets OnboardingV2 localStorage step state and clips the 390x812 phone viewport for steps 4-9."
+    },
+    {
+      "id": "generated.onboarding-flow-reference-manifest",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/manifest.json",
+      "notes": "Reference-screen manifest wiring Onboarding Flow welcome_entry to onboarding_welcome for advisory pixel comparison."
+    }
+  ],
+  "captures": [
+    {
+      "id": "onboarding_welcome",
+      "status": "captured",
+      "notes": "Baseline onboarding welcome capture."
+    },
+    {
+      "id": "onboarding_name_dob",
+      "status": "captured",
+      "notes": "Signed-in route capture for the name/DOB step with verified phone state."
+    },
+    {
+      "id": "onboarding_name_dob_validation_error",
+      "status": "captured",
+      "notes": "Name/DOB route capture after tapping Continue with required fields empty."
+    },
+    {
+      "id": "onboarding_gender_interest",
+      "status": "captured",
+      "notes": "Route capture for the gender/interest step seeded through OnboardingController."
+    },
+    {
+      "id": "onboarding_gender_interest_validation_error",
+      "status": "captured",
+      "notes": "Gender/interest route capture after tapping Continue with no selections."
+    },
+    {
+      "id": "onboarding_instagram",
+      "status": "captured",
+      "notes": "Route capture for the Instagram handle step seeded through OnboardingController."
+    },
+    {
+      "id": "onboarding_instagram_filled",
+      "status": "captured",
+      "notes": "Route capture for the Instagram handle step with a filled handle."
+    },
+    {
+      "id": "onboarding_instagram_skipped",
+      "status": "captured",
+      "notes": "Route capture for the Instagram handle step with a skipped/empty handle."
+    },
+    {
+      "id": "onboarding_photos_gate",
+      "status": "captured",
+      "notes": "Profile-completion route capture for the empty photo gate."
+    },
+    {
+      "id": "onboarding_photos_one_photo_disabled",
+      "status": "captured",
+      "notes": "Profile-completion photo gate capture with one photo and disabled Continue hint."
+    },
+    {
+      "id": "onboarding_photos_count_met",
+      "status": "captured",
+      "notes": "Profile-completion photo gate capture with the minimum count met."
+    },
+    {
+      "id": "onboarding_photos_upload_pending",
+      "status": "captured",
+      "notes": "Profile-completion photo gate capture with an upload in progress and disabled Continue hint."
+    },
+    {
+      "id": "onboarding_photos_upload_failure",
+      "status": "captured",
+      "notes": "Profile-completion photo gate capture with the production upload-failure snackbar visible."
+    },
+    {
+      "id": "onboarding_prompts_empty",
+      "status": "captured",
+      "notes": "Profile-completion route capture for empty prompt answers."
+    },
+    {
+      "id": "onboarding_prompts_partial",
+      "status": "captured",
+      "notes": "Profile-completion route capture with one prompt answer seeded."
+    },
+    {
+      "id": "onboarding_prompts_complete",
+      "status": "captured",
+      "notes": "Profile-completion route capture with all prompt answers seeded."
+    },
+    {
+      "id": "onboarding_prompts_long_answer",
+      "status": "captured",
+      "notes": "Profile-completion route capture with long prompt answers seeded."
+    },
+    {
+      "id": "onboarding_running_prefs",
+      "status": "captured",
+      "notes": "Run-preferences-only route capture."
+    },
+    {
+      "id": "onboarding_save_profile_pending",
+      "status": "captured",
+      "notes": "Gender/interest route capture with saveProfileMutation pending."
+    },
+    {
+      "id": "onboarding_save_profile_error",
+      "status": "captured",
+      "notes": "Gender/interest route capture with saveProfileMutation error banner visible."
+    },
+    {
+      "id": "onboarding_complete_run_prefs_pending",
+      "status": "captured",
+      "notes": "Run-preferences route capture with completeMutation pending."
+    },
+    {
+      "id": "onboarding_complete_run_prefs_error",
+      "status": "captured",
+      "notes": "Run-preferences route capture with completeMutation error banner visible."
+    },
+    {
+      "id": "onboarding_saved_draft",
+      "status": "captured",
+      "notes": "Route capture for a resumed saved draft at the gender/interest step."
+    },
+    {
+      "id": "onboarding_name_dob_text_scale_2",
+      "status": "captured",
+      "notes": "Name/DOB route capture at text scale 2.0."
+    },
+    {
+      "id": "onboarding_photos_text_scale_2",
+      "status": "captured",
+      "notes": "Photos route capture at text scale 2.0."
+    },
+    {
+      "id": "onboarding_prompts_text_scale_2",
+      "status": "captured",
+      "notes": "Prompts route capture at text scale 2.0."
+    },
+    {
+      "id": "onboarding_running_prefs_text_scale_2",
+      "status": "captured",
+      "notes": "Running preferences route capture at text scale 2.0."
+    },
+    {
+      "id": "onboarding_gender_interest_reduced_motion",
+      "status": "captured",
+      "notes": "Gender/interest route capture with animations disabled."
+    }
+  ],
+  "states": [
+    {
+      "id": "welcome_entry",
+      "kind": "populated",
+      "status": "captured",
+      "source": "OnboardingScreen starts at OnboardingStep.welcome when no signed-in profile/draft entry is available and renders OnboardingWelcomeBody.",
+      "previewIds": [
+        "OnboardingScreen/Route states",
+        "OnboardingWelcomeBody/Splash states"
+      ],
+      "captureIds": [
+        "onboarding_welcome"
+      ],
+      "tests": [
+        "test/onboarding/onboarding_widgets_test.dart"
+      ],
+      "nextAction": "Onboarding welcome and the primary step references are now manifest-registered. Remaining reference work is interaction-specific: keyboard, date picker, photo picker/upload, prompt picker/copy variants, mutation feedback, accessibility, and theme variants."
+    },
+    {
+      "id": "name_dob_step",
+      "kind": "populated",
+      "status": "captured",
+      "source": "OnboardingNameDobBody owns the route/provider edge while OnboardingNameDobState and OnboardingNameDobStep own first name, last name, DOB, verified phone display, date policy, validation, and typed submit/date callbacks inside the shared step frame.",
+      "previewIds": [
+        "OnboardingScreen/Route states",
+        "OnboardingNameDobBody/Identity form"
+      ],
+      "captureIds": [
+        "onboarding_name_dob",
+        "onboarding_name_dob_validation_error",
+        "onboarding_name_dob_text_scale_2"
+      ],
+      "tests": [
+        "test/onboarding/onboarding_widgets_test.dart"
+      ],
+      "nextAction": "Provider-free step adapter coverage validates draft display, date bounds, age suffix, trimmed submit intent, date callback, and continue callback. Deterministic route captures cover default, required-field validation, and text scale 2.0; the main Claude name/DOB reference is exported and masked. Add date-picker-open and validation-specific references only if strict comparison needs them."
+    },
+    {
+      "id": "gender_interest_step",
+      "kind": "populated",
+      "status": "captured",
+      "source": "OnboardingGenderInterestBody owns the route/provider edge while OnboardingGenderInterestState and OnboardingGenderInterestStep own selected-chip display, validation copy, save pending/error display, typed submit intent, and typed chip callbacks.",
+      "previewIds": [
+        "OnboardingScreen/Route states",
+        "OnboardingGenderInterestBody/Gender and interest form"
+      ],
+      "captureIds": [
+        "onboarding_gender_interest",
+        "onboarding_gender_interest_validation_error",
+        "onboarding_gender_interest_reduced_motion"
+      ],
+      "tests": [
+        "test/onboarding/onboarding_widgets_test.dart"
+      ],
+      "nextAction": "Provider-free step adapter coverage validates selected-chip display, required-selection validation, save error display, save pending flag, typed chip callbacks, and submit intent. Deterministic route captures cover default, required-selection validation, and reduced-motion samples; the main Claude gender/interest reference is exported and masked. Add validation, long-option, and accessibility references only if strict comparison needs them."
+    },
+    {
+      "id": "instagram_step",
+      "kind": "populated",
+      "status": "captured",
+      "source": "OnboardingInstagramBody owns the route/provider edge while OnboardingInstagramState and OnboardingInstagramStep own optional handle seed text, trimmed continue intent, skip intent, and typed callbacks.",
+      "previewIds": [
+        "OnboardingScreen/Route states",
+        "OnboardingInstagramBody/Instagram form"
+      ],
+      "captureIds": [
+        "onboarding_instagram",
+        "onboarding_instagram_filled",
+        "onboarding_instagram_skipped"
+      ],
+      "nextAction": "Provider-free step adapter coverage validates optional-handle trimming, empty-handle normalization, skip clearing, continue callback, and skip callback. Deterministic route captures cover default, filled, and skipped handle states; the filled-handle Claude reference is exported and masked. Add skipped/empty or invalid-handle references only if product validation or strict comparison needs them."
+    },
+    {
+      "id": "photos_photo_gate",
+      "kind": "empty",
+      "status": "captured",
+      "source": "OnboardingPhotosBody enforces the required photo gate before profile completion, adapts copy for profileCompletionOnly mode, and routes upload-failure feedback through the shared Catch snackbar helper.",
+      "previewIds": [
+        "OnboardingScreen/Route states",
+        "OnboardingPhotosBody/Photo grid states"
+      ],
+      "captureIds": [
+        "onboarding_photos_gate",
+        "onboarding_photos_one_photo_disabled",
+        "onboarding_photos_count_met",
+        "onboarding_photos_upload_pending",
+        "onboarding_photos_upload_failure"
+      ],
+      "tests": [
+        "test/onboarding/onboarding_widgets_test.dart"
+      ],
+      "nextAction": "Deterministic route captures cover empty gate, one-photo disabled CTA, count-met CTA, upload-pending disabled CTA, and upload-failure snackbar; the production upload-failure path is covered by a focused widget test. The count-met Claude reference is exported and masked. Add picker, upload-pending, upload-failure, and disabled-count references when canonical interaction sources exist."
+    },
+    {
+      "id": "prompts_step",
+      "kind": "populated",
+      "status": "captured",
+      "source": "OnboardingProfilePromptsBody owns the route/provider edge while OnboardingProfilePromptsState and OnboardingProfilePromptsStep own prompt selection normalization, available prompt options, answer projection, footer progress, completion gating, mutation error display, and typed callbacks.",
+      "previewIds": [
+        "OnboardingScreen/Route states",
+        "OnboardingProfilePromptsBody/Prompt form"
+      ],
+      "captureIds": [
+        "onboarding_prompts_empty",
+        "onboarding_prompts_partial",
+        "onboarding_prompts_complete",
+        "onboarding_prompts_long_answer"
+      ],
+      "nextAction": "Provider-free step adapter coverage validates prompt progress, available prompt filtering, submit gating, error display, and continue callback. Deterministic route captures cover empty, partial, complete, and long-answer prompt states; the partial-prompts Claude reference is exported and masked. Add prompt-picker, keyboard, complete, and long-answer references when canonical interaction sources exist."
+    },
+    {
+      "id": "running_prefs_step",
+      "kind": "populated",
+      "status": "captured",
+      "source": "OnboardingRunningPrefsBody owns the route/provider edge while OnboardingRunningPrefsState and OnboardingRunningPrefsStep own pace labels, run-preference chip selections, mode-specific footer/reason/time labels, mutation error display, and typed complete-run-preferences submit intent.",
+      "previewIds": [
+        "OnboardingScreen/Route states",
+        "OnboardingRunningPrefsBody/Run preferences form"
+      ],
+      "captureIds": [
+        "onboarding_running_prefs"
+      ],
+      "tests": [
+        "test/pages/onboarding/onboarding_controller_test.dart",
+        "test/onboarding/onboarding_widgets_test.dart"
+      ],
+      "nextAction": "Provider-free step adapter coverage validates pace label display, mode-specific copy, pending/error display, typed submit payload, and continue callback. Deterministic route captures cover run-preferences-only entry, completion pending/error, and text scale 2.0; the main Claude running-preferences reference is exported and masked. Add profile-completion, mutation, and accessibility references only if strict comparison needs them."
+    },
+    {
+      "id": "required_field_errors",
+      "kind": "error",
+      "status": "captured",
+      "source": "Step pages validate required fields before advancing or completing the flow.",
+      "previewIds": [
+        "OnboardingScreen/Route states",
+        "OnboardingNameDobBody/Identity form",
+        "OnboardingGenderInterestBody/Gender and interest form"
+      ],
+      "captureIds": [
+        "onboarding_name_dob_validation_error",
+        "onboarding_gender_interest_validation_error"
+      ],
+      "tests": [
+        "test/onboarding/onboarding_widgets_test.dart"
+      ],
+      "nextAction": "Name/DOB and gender/interest validation-error captures are registered. Add validation captures for future required prompt/photo editor states if those forms become required."
+    },
+    {
+      "id": "saved_draft",
+      "kind": "populated",
+      "status": "captured",
+      "source": "OnboardingController fetches and migrates OnboardingDraft records to resume the correct step and prefill profile draft data.",
+      "previewIds": [
+        "OnboardingScreen/Route states"
+      ],
+      "captureIds": [
+        "onboarding_saved_draft"
+      ],
+      "tests": [
+        "test/pages/onboarding/onboarding_controller_test.dart",
+        "test/onboarding/onboarding_widgets_test.dart"
+      ],
+      "nextAction": "Deterministic route capture covers gender-interest draft resume. Add deeper draft-step/reference variants only where the resume UI diverges."
+    },
+    {
+      "id": "save_profile_mutation",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "OnboardingController.saveProfileMutation owns profile-save operations while step pages render pending/error feedback.",
+      "previewIds": [
+        "OnboardingScreen/Route states",
+        "OnboardingGenderInterestBody/Gender and interest form"
+      ],
+      "captureIds": [
+        "onboarding_save_profile_pending",
+        "onboarding_save_profile_error"
+      ],
+      "tests": [
+        "test/pages/onboarding/onboarding_controller_test.dart"
+      ],
+      "nextAction": "Save pending and visible save failure captures are registered for the gender/interest step."
+    },
+    {
+      "id": "complete_mutation",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "OnboardingController.completeMutation owns final completion and controller invalidation once onboarding is done.",
+      "previewIds": [
+        "OnboardingScreen/Route states",
+        "OnboardingProfilePromptsBody/Prompt form",
+        "OnboardingRunningPrefsBody/Run preferences form"
+      ],
+      "captureIds": [
+        "onboarding_complete_run_prefs_pending",
+        "onboarding_complete_run_prefs_error"
+      ],
+      "tests": [
+        "test/pages/onboarding/onboarding_controller_test.dart"
+      ],
+      "nextAction": "Run-preferences completion pending and visible failure captures are registered; add success-exit route assertions only if redirect behavior changes."
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Step-specific text-scale 2.0 captures cover name/DOB, photos, prompts, and running preferences layouts.",
+      "previewIds": [
+        "OnboardingScreen/Route states"
+      ],
+      "captureIds": [
+        "onboarding_name_dob_text_scale_2",
+        "onboarding_photos_text_scale_2",
+        "onboarding_prompts_text_scale_2",
+        "onboarding_running_prefs_text_scale_2"
+      ],
+      "nextAction": "Add more text-scale variants only where future layouts diverge from the captured step families."
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Gender/interest reduced-motion capture covers the step frame with route animations disabled.",
+      "previewIds": [
+        "OnboardingScreen/Route states"
+      ],
+      "captureIds": [
+        "onboarding_gender_interest_reduced_motion"
+      ],
+      "nextAction": "Add welcome/photo-upload/completion reduced-motion variants where behavior diverges."
+    }
+  ],
+  "composition": {
+    "currentLayout": "OnboardingScreen watches OnboardingController state, schedules initStep, builds OnboardingFlowState for route shell/back/progress/header policy, renders OnboardingTopBar from OnboardingTopBarState for non-welcome steps, and delegates visible forms to step pages that adapt provider state into provider-free step state plus typed callbacks.",
+    "targetLayout": "Onboarding should keep route-shell policy in OnboardingFlowState and keep step-specific display data, validation, mutation state, and typed callbacks in provider-free state adapters before composing shared step frames.",
+    "sections": [
+      {
+        "id": "section.onboarding.flow_adapter",
+        "name": "Onboarding route state adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "OnboardingFlowState"
+        ],
+        "flutter": {
+          "file": "lib/onboarding/presentation/onboarding_flow_state.dart",
+          "symbol": "OnboardingFlowState"
+        },
+        "currentOwner": "OnboardingFlowState + OnboardingController",
+        "targetOwner": "OnboardingFlowState adapter backed by OnboardingController",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "welcome_entry",
+          "saved_draft",
+          "running_prefs_step",
+          "save_profile_mutation",
+          "complete_mutation"
+        ],
+        "migration": "Route-shell entry-mode derivation, progress/back bounds, current-step identity, and header display data now live in OnboardingFlowState. Step pages now adapt identity, Instagram, photo, prompt, and running-preference display state into provider-free step states while keeping provider watches and controller side effects at the route edge."
+      },
+      {
+        "id": "section.onboarding.step_header",
+        "name": "Onboarding step header",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "OnboardingStepHeader"
+        ],
+        "flutter": {
+          "file": "lib/onboarding/presentation/onboarding_screen.dart",
+          "symbol": "OnboardingTopBar"
+        },
+        "currentOwner": "OnboardingTopBar over OnboardingTopBarState",
+        "targetOwner": "provider-free onboarding step header section",
+        "dependencies": [
+          "catch.top_bar"
+        ],
+        "states": [
+          "name_dob_step",
+          "gender_interest_step",
+          "photos_photo_gate",
+          "running_prefs_step",
+          "text_scale_2"
+        ],
+        "migration": "OnboardingTopBar now receives OnboardingTopBarState so copy, progress, and back availability are adapter-owned while CatchStepFlowHeader remains the visual primitive."
+      },
+      {
+        "id": "section.onboarding.welcome_step",
+        "name": "Onboarding welcome step",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "OnboardingWelcomeStep"
+        ],
+        "flutter": {
+          "file": "lib/pages/start/onboarding_welcome_body.dart",
+          "symbol": "OnboardingWelcomeBody"
+        },
+        "currentOwner": "OnboardingWelcomeBody",
+        "targetOwner": "shared welcome/start step section",
+        "dependencies": [
+          "catch.button"
+        ],
+        "states": [
+          "welcome_entry",
+          "reduced_motion"
+        ],
+        "migration": "Decide whether onboarding welcome aliases screen.start.welcome or keeps its own route-state fixtures."
+      },
+      {
+        "id": "section.onboarding.identity_steps",
+        "name": "Onboarding identity steps",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "OnboardingIdentitySteps"
+        ],
+        "flutter": {
+          "file": "lib/onboarding/presentation/pages/onboarding_name_dob_step.dart",
+          "symbol": "OnboardingNameDobBody"
+        },
+        "currentOwner": "OnboardingNameDobBody adapter over OnboardingNameDobState + OnboardingNameDobStep; OnboardingGenderInterestBody adapter over OnboardingGenderInterestState + OnboardingGenderInterestStep; OnboardingInstagramBody adapter over OnboardingInstagramState + OnboardingInstagramStep",
+        "targetOwner": "provider-free identity step sections",
+        "dependencies": [
+          "catch.field",
+          "catch.field",
+          "catch.chip",
+          "catch.button"
+        ],
+        "states": [
+          "name_dob_step",
+          "gender_interest_step",
+          "instagram_step",
+          "required_field_errors",
+          "save_profile_mutation"
+        ],
+        "migration": "Identity-step field display data, date policy, selected-chip display, validation, optional-handle normalization, save display state, and typed continue/skip/submit callbacks now live in provider-free adapter state."
+      },
+      {
+        "id": "section.onboarding.photos_step",
+        "name": "Onboarding photos step",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "OnboardingPhotosStep"
+        ],
+        "flutter": {
+          "file": "lib/onboarding/presentation/pages/onboarding_photos_step.dart",
+          "symbol": "OnboardingPhotosStep"
+        },
+        "currentOwner": "OnboardingPhotosBody adapter over OnboardingPhotosState + OnboardingPhotosStep",
+        "targetOwner": "provider-free photos step section plus upload controller seam",
+        "dependencies": [
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "photos_photo_gate",
+          "save_profile_mutation",
+          "text_scale_2"
+        ],
+        "migration": "OnboardingPhotosState owns uploaded photo count, upload pending/error display state, continue availability/hints, supporting copy, and typed slot intents. OnboardingPhotosStep is provider-free and receives typed callbacks while OnboardingPhotosBody retains provider watches, upload/editor side effects, and controller navigation."
+      },
+      {
+        "id": "section.onboarding.prompts_step",
+        "name": "Onboarding prompts step",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "OnboardingPromptsStep"
+        ],
+        "flutter": {
+          "file": "lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart",
+          "symbol": "OnboardingProfilePromptsBody"
+        },
+        "currentOwner": "OnboardingProfilePromptsBody adapter over OnboardingProfilePromptsState + OnboardingProfilePromptsStep",
+        "targetOwner": "provider-free prompts step section",
+        "dependencies": [
+          "catch.field",
+          "catch.button"
+        ],
+        "states": [
+          "prompts_step",
+          "required_field_errors",
+          "save_profile_mutation"
+        ],
+        "migration": "OnboardingProfilePromptsState owns prompt selection normalization, available prompt filtering, answer projection, footer progress, completion gating, pending/error display, and typed submit intent while OnboardingProfilePromptsBody retains provider reads, controller listeners, and completion mutation execution."
+      },
+      {
+        "id": "section.onboarding.running_prefs_step",
+        "name": "Onboarding running preferences step",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "OnboardingRunningPrefsStep"
+        ],
+        "flutter": {
+          "file": "lib/onboarding/presentation/pages/onboarding_running_prefs_step.dart",
+          "symbol": "OnboardingRunningPrefsStep"
+        },
+        "currentOwner": "OnboardingRunningPrefsBody adapter over OnboardingRunningPrefsState + OnboardingRunningPrefsStep",
+        "targetOwner": "provider-free running preferences step section",
+        "dependencies": [
+          "catch.chip",
+          "catch.field",
+          "catch.button"
+        ],
+        "states": [
+          "running_prefs_step",
+          "complete_mutation",
+          "text_scale_2"
+        ],
+        "migration": "OnboardingRunningPrefsState owns pace label display, selected run-preference chips, run-preferences-only copy variants, completion pending/error display, and typed complete-run-preferences submit intent while OnboardingRunningPrefsBody retains profile seeding, provider watches, controller mutation execution, and route side effects."
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-ONBOARDING-001",
+      "status": "closed",
+      "nextAction": "Closed by deterministic Onboarding Widgetbook scope and state fixtures covering route entry modes, prefilled name/DOB, selected gender/interest, Instagram filled/skipped, photo disabled/count-met/upload-pending states, prompt empty/partial/complete/long-answer states, save/complete pending and error states, text scale, and reduced motion. Validation-error Widgetbook states remain intentionally tracked under DS-ONBOARDING-003 because page-local form state still needs provider-free adapters; deterministic captures already cover current validation UI."
+    },
+    {
+      "id": "DS-ONBOARDING-002",
+      "status": "closed",
+      "nextAction": "Closed by deterministic route captures for Instagram default/filled/skipped, photo disabled/count-met/upload-pending/upload-failure, prompt empty/partial/complete/long-answer, step-specific text-scale variants, and reduced-motion sample coverage; the production upload-failure path is also covered by a focused widget test. Add Instagram invalid-handle coverage only if validation is introduced; state-specific references remain under DS-ONBOARDING-004."
+    },
+    {
+      "id": "DS-ONBOARDING-003",
+      "status": "closed",
+      "nextAction": "Closed by route-shell plus step adapters: OnboardingFlowState owns entry mode/current step/back/progress/top-bar copy, while OnboardingNameDobState, OnboardingGenderInterestState, OnboardingInstagramState, OnboardingPhotosState, OnboardingProfilePromptsState, and OnboardingRunningPrefsState own step-local display state, validation/copy policy, mutation display state, and typed callbacks or submit intents. State-specific references remain tracked under DS-ONBOARDING-004."
+    },
+    {
+      "id": "DS-ONBOARDING-004",
+      "status": "blocked",
+      "nextAction": "Blocked/reference-only until a canonical interaction source exists: primary onboarding step references are exported and manifest-registered for welcome, name/DOB, gender/interest, Instagram filled, photos count-met, prompts partial, and running preferences. Remaining references and masks are interaction-specific keyboard, date picker, photo picker/upload, prompt picker/copy variants, mutation feedback, accessibility, and theme variants."
+    },
+    {
+      "id": "DS-ONBOARDING-005",
+      "status": "open",
+      "nextAction": "REG-FEATURE-CONTRACT-DRIFT-001: OnboardingInstagramBody and OnboardingStep.instagram are implemented, captured, and previewed, but standard onboarding exits after saveProfile, profile-completion entry begins at photos/prompts, run-preferences entry begins at runningPrefs, and saved drafts beyond genderInterest are collapsed back to genderInterest. Decide whether to retire the orphaned Instagram step or restore an explicit production transition and route test."
+    },
+    {
+      "id": "DS-ONBOARDING-006",
+      "status": "closed",
+      "nextAction": "Closed under REG-PENDING-SNAPSHOT-001. Save and completion mutations now freeze step-back navigation, gender and interest choices, prompt questions and answers, and every running-preference control. Controller-owned saves and completions deduplicate concurrent dispatches, input callbacks cannot reset an in-flight mutation, and focused state, controller, and widget tests prove the submitted snapshot remains coherent."
+    }
+  ]
+}

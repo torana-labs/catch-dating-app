@@ -1,0 +1,38 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "file": "lib/hosts/people/messages_screen.dart",
+      "symbol": "_HostMessagesScreenState",
+      "family": "root",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "file": "lib/hosts/people/sends/sends_screen.dart",
+      "symbol": "_HostSendsScreenState",
+      "family": "root",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostOrganizerMessagingScreen"
+      ],
+      "file": "lib/hosts/organizer/messaging_screen.dart",
+      "symbol": "_OrganizerMessagingScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "Host Inbox is Messages (with the open conversation) and Sends, each a CatchScreen at the inbox root; setup remains a pushed route."
+}

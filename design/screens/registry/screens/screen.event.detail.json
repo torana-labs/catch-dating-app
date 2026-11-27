@@ -1,0 +1,980 @@
+{
+  "id": "screen.event.detail",
+  "shell": {
+    "owner": "host",
+    "nestedScaffoldAllowed": false,
+    "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "media-hero",
+    "expression": "SliverAppBar",
+    "owner": "registered media-hero",
+    "reason": "The registered collapsing media hero owns route chrome."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "offline",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Event Detail",
+  "owner": "events",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "eventDetailScreen",
+      "path": "/organizers/:organizerId/events/:eventId",
+      "role": "primary"
+    },
+    {
+      "id": "calendarEventDetailScreen",
+      "path": "/calendar/organizers/:organizerId/events/:eventId",
+      "role": "alias"
+    },
+    {
+      "id": "savedEventDetailScreen",
+      "path": "/saved-events/organizers/:organizerId/events/:eventId",
+      "role": "alias"
+    },
+    {
+      "id": "dashboardEventDetailScreen",
+      "path": "/dashboard/organizers/:organizerId/events/:eventId",
+      "role": "alias"
+    },
+    {
+      "id": "hostAppEventDetailScreen",
+      "path": "/host/organizers/:organizerId/events/:eventId",
+      "role": "host"
+    }
+  ],
+  "source": {
+    "file": "lib/pages/event/event_detail_screen.dart",
+    "symbol": "EventDetailScreen"
+  },
+  "stateController": {
+    "primary": "eventDetailViewModelProvider",
+    "files": [
+      {
+        "file": "lib/pages/event/event_detail_view_model.dart",
+        "symbol": "eventDetailViewModel"
+      },
+      {
+        "file": "lib/pages/event/widgets/event_detail_body.dart",
+        "symbol": "EventDetailBody"
+      },
+      {
+        "file": "lib/pages/event/cross_paths_event_consent_state.dart",
+        "symbol": "CrossPathsEventConsentSectionState"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/pages/event/event_detail_controller.dart",
+        "symbol": "EventDetailController"
+      },
+      {
+        "file": "lib/contexts/bookings/actions/event_booking_controller.dart",
+        "symbol": "EventBookingController"
+      },
+      {
+        "file": "lib/contexts/events/data/event_calendar_links.dart",
+        "symbol": "EventCalendarController"
+      },
+      {
+        "file": "lib/pages/event/cross_paths_event_consent_controller.dart",
+        "symbol": "CrossPathsEventConsentController"
+      }
+    ],
+    "notes": "EventDetailScreen owns the aggregate view model, route-level provider reads, mutation listeners, navigation intents, host/companion/social adapters, and the fail-closed Cross Paths consent read/mutation. EventDetailBody and CrossPathsEventConsentSection receive explicit provider-free state and callbacks."
+  },
+  "designRefs": [
+    {
+      "id": "claude.catch-event-detail",
+      "kind": "claude",
+      "status": "available",
+      "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-event-detail/EventDetail.dc.html",
+      "notes": "Canonical Claude Design event detail composition template."
+    },
+    {
+      "id": "claude.components.events",
+      "kind": "claude",
+      "status": "available",
+      "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/components/events",
+      "notes": "Event primitive and compound TypeScript contracts used for section mapping."
+    },
+    {
+      "id": "repo.event-detail-captures",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/ui_captures/catalog/screen_capture_catalog.dart",
+      "notes": "Route capture fakes now cover member, ticket, spotlight, loading, missing, fatal error, guest, host app, offline-looking error, text-scale, reduced-motion, signed-up, booking/cancel mutation feedback, waitlist, waitlist offer, full, attended, past, and cancelled Event Detail variants."
+    },
+    {
+      "id": "repo.event-detail-reference-screens",
+      "kind": "repo",
+      "status": "available",
+      "path": "design/reference_screens/manifest.json",
+      "notes": "Event Detail member-default PNG reference plus masks is registered for advisory pixel comparison."
+    },
+    {
+      "id": "repo.event-detail-section-contract",
+      "kind": "repo",
+      "status": "available",
+      "path": "design/components/catch.components.json",
+      "notes": "`catch.event_detail_sections` groups Event Detail hero, ticket facts, overview primitives, host/social sections, the Cross Paths event-consent control, companion prompt, booking dock, and avatar stack without promoting event-only compounds to reusable primitives."
+    }
+  ],
+  "captures": [
+    {
+      "id": "event_detail_member",
+      "status": "captured",
+      "notes": "Default authenticated bookable member capture."
+    },
+    {
+      "id": "event_detail_member_ticket",
+      "status": "captured",
+      "notes": "Ticket presentation mode capture."
+    },
+    {
+      "id": "event_detail_member_spotlight",
+      "status": "captured",
+      "notes": "Dark spotlight presentation mode capture."
+    },
+    {
+      "id": "event_detail_loading",
+      "status": "captured",
+      "notes": "Async loading route capture."
+    },
+    {
+      "id": "event_detail_not_found",
+      "status": "captured",
+      "notes": "Async data null route capture for missing/deleted event."
+    },
+    {
+      "id": "event_detail_error",
+      "status": "captured",
+      "notes": "Fatal data-load error route capture with retry surface."
+    },
+    {
+      "id": "event_detail_guest",
+      "status": "captured",
+      "notes": "Unauthenticated guest route capture with locked social proof and sign-in dock."
+    },
+    {
+      "id": "event_detail_offline",
+      "status": "captured",
+      "notes": "Offline-looking data-load error route capture using the branded retry surface."
+    },
+    {
+      "id": "event_detail_text_scale_2",
+      "status": "captured",
+      "notes": "Tall text-scale 2.0 accessibility capture."
+    },
+    {
+      "id": "event_detail_reduced_motion",
+      "status": "captured",
+      "notes": "Reduced-motion route capture."
+    },
+    {
+      "id": "event_detail_booking_signed_up",
+      "status": "captured",
+      "notes": "Signed-up booking dock capture with companion entry."
+    },
+    {
+      "id": "event_detail_booking_pending",
+      "status": "captured",
+      "notes": "Booking mutation pending route capture with disabled loading dock."
+    },
+    {
+      "id": "event_detail_booking_success_snackbar",
+      "status": "captured",
+      "notes": "Booking mutation success snackbar capture; full celebration route remains covered by widget tests."
+    },
+    {
+      "id": "event_detail_booking_failure",
+      "status": "captured",
+      "notes": "Booking mutation failure route capture with branded dock error banner."
+    },
+    {
+      "id": "event_detail_cancel_pending",
+      "status": "captured",
+      "notes": "Cancel-booking mutation pending route capture with disabled loading dock."
+    },
+    {
+      "id": "event_detail_cancel_success_snackbar",
+      "status": "captured",
+      "notes": "Cancel-booking mutation success snackbar route capture."
+    },
+    {
+      "id": "event_detail_cancel_failure",
+      "status": "captured",
+      "notes": "Cancel-booking mutation failure route capture with branded dock error banner."
+    },
+    {
+      "id": "event_detail_booking_waitlist",
+      "status": "captured",
+      "notes": "Waitlisted booking dock capture."
+    },
+    {
+      "id": "event_detail_booking_waitlist_offer",
+      "status": "captured",
+      "notes": "Active waitlist-offer booking dock capture."
+    },
+    {
+      "id": "event_detail_booking_full",
+      "status": "captured",
+      "notes": "Full event waitlist booking dock capture."
+    },
+    {
+      "id": "event_detail_booking_attended",
+      "status": "captured",
+      "notes": "Attended event booking dock capture."
+    },
+    {
+      "id": "event_detail_booking_past",
+      "status": "captured",
+      "notes": "Past event disabled booking dock capture."
+    },
+    {
+      "id": "event_detail_booking_cancelled",
+      "status": "captured",
+      "notes": "Cancelled event disabled booking dock capture."
+    },
+    {
+      "id": "event_detail_host_app",
+      "status": "captured",
+      "notes": "Host app route capture with consumer booking dock suppressed."
+    }
+  ],
+  "states": [
+    {
+      "id": "loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "AsyncLoading from eventDetailViewModelProvider renders _EventDetailLoadingScreen, a content-shaped event-detail skeleton; credible initialEvent fallback data renders EventDetailBody instead.",
+      "tests": [
+        "test/events/event_detail_widgets_test.dart"
+      ],
+      "nextAction": "Compare the event-detail loading skeleton against Claude references once canonical PNG export exists.",
+      "captureIds": [
+        "event_detail_loading"
+      ],
+      "previewIds": [
+        "EventDetailScreen/Screen states"
+      ]
+    },
+    {
+      "id": "not_found",
+      "kind": "empty",
+      "status": "captured",
+      "source": "AsyncData(null) renders CatchErrorScaffold with Event not found copy.",
+      "tests": [
+        "test/events/event_detail_widgets_test.dart"
+      ],
+      "nextAction": "Decide whether not-found remains a branded error surface or needs a dedicated empty Event Detail state.",
+      "captureIds": [
+        "event_detail_not_found"
+      ],
+      "previewIds": [
+        "EventDetailScreen/Screen states"
+      ]
+    },
+    {
+      "id": "fatal_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "AsyncError renders CatchLocalizedErrorScaffold for AppErrorContext.event.",
+      "tests": [
+        "test/events/event_detail_widgets_test.dart"
+      ],
+      "nextAction": "Define whether offline-specific copy should diverge from the generic branded event error surface.",
+      "captureIds": [
+        "event_detail_error"
+      ],
+      "previewIds": [
+        "EventDetailScreen/Screen states"
+      ]
+    },
+    {
+      "id": "member_default",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Authenticated member with profile, reviews, deterministic host card, bookable CTA, and default presentation mode.",
+      "captureIds": [
+        "event_detail_member"
+      ],
+      "previewIds": [
+        "EventDetailBody/Prompt states",
+        "EventDetailScreen/Screen states"
+      ],
+      "tests": [
+        "test/events/event_detail_widgets_test.dart"
+      ],
+      "nextAction": "Move EventDetailBody visibility decisions into section view-state adapters before visual parity edits."
+    },
+    {
+      "id": "member_ticket",
+      "kind": "theme",
+      "status": "captured",
+      "source": "EventDetailPresentationMode.ticket.",
+      "captureIds": [
+        "event_detail_member_ticket"
+      ],
+      "previewIds": [
+        "EventDetailHeroTopBar/Catalog states",
+        "EventDetailTicketStubRow/Catalog states",
+        "EventDetailScreen/Screen states"
+      ],
+      "tests": [
+        "test/events/event_detail_widgets_test.dart"
+      ],
+      "nextAction": "Compare ticket mode hero and ticket stub against the Claude TicketStub contract."
+    },
+    {
+      "id": "member_spotlight_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "EventDetailPresentationMode.spotlightDark.",
+      "captureIds": [
+        "event_detail_member_spotlight"
+      ],
+      "previewIds": [
+        "EventDetailHeroTopBar/Catalog states",
+        "EventDetailScreen/Screen states"
+      ],
+      "tests": [
+        "test/events/event_detail_widgets_test.dart"
+      ],
+      "nextAction": "Compare the dark surface style against the Claude pigment hero and ticket body contract."
+    },
+    {
+      "id": "guest",
+      "kind": "permission",
+      "status": "captured",
+      "source": "Unauthenticated users see event body with guest booking CTA and locked who-is-going context.",
+      "previewIds": [
+        "EventDetailSocialSection/Social states",
+        "EventBookingDock/BookingDock states",
+        "EventDetailScreen/Screen states"
+      ],
+      "tests": [
+        "test/events/event_detail_widgets_test.dart"
+      ],
+      "nextAction": "Compare guest booking dock, locked social proof, and auth redirect copy against Claude references.",
+      "captureIds": [
+        "event_detail_guest"
+      ]
+    },
+    {
+      "id": "host_app",
+      "kind": "permission",
+      "status": "captured",
+      "source": "Host role suppresses consumer booking actions and treats hosted clubs as host context.",
+      "tests": [
+        "test/pages/event/event_detail_controller_test.dart",
+        "test/events/event_detail_widgets_test.dart"
+      ],
+      "nextAction": "Keep host app Event Detail in this read-only detail contract; host management actions belong to the future host event management contract.",
+      "captureIds": [
+        "event_detail_host_app"
+      ],
+      "previewIds": [
+        "EventDetailScreen/Screen states"
+      ]
+    },
+    {
+      "id": "booking_signed_up",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Signed-up participants see the cancel-booking dock and companion/invite entry points; booking and cancel success feedback use the shared Catch snackbar helper.",
+      "captureIds": [
+        "event_detail_booking_signed_up"
+      ],
+      "previewIds": [
+        "EventBookingDock/BookingDock states",
+        "EventDetailBody/Prompt states"
+      ],
+      "tests": [
+        "test/pages/event/event_detail_screen_state_test.dart",
+        "test/events/event_detail_widgets_test.dart"
+      ],
+      "nextAction": "Signed-up booking-dock mode derivation now maps through EventDetailBookingDockState; continue visual comparison only if the captured dock diverges from the booking dock reference."
+    },
+    {
+      "id": "booking_pending",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "EventDetailDock listens to EventBookingController mutations and maps pending flags into EventDetailBookingDockState; EventDetailBody routes booking/cancel success feedback through the shared Catch snackbar helper.",
+      "previewIds": [
+        "EventBookingDock/BookingDock states"
+      ],
+      "tests": [
+        "test/pages/event/event_detail_screen_state_test.dart",
+        "test/events/event_detail_widgets_test.dart"
+      ],
+      "captureIds": [
+        "event_detail_booking_pending",
+        "event_detail_cancel_pending"
+      ],
+      "nextAction": "Booking and cancel pending route captures now prove disabled loading dock affordances; continue waitlist-specific pending variants only if product needs separate visual proof."
+    },
+    {
+      "id": "booking_failed",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Booking/cancel mutation failures are surfaced by the EventDetailBookingDockMutationState and EventDetailDock tests; success feedback uses the shared Catch snackbar helper.",
+      "previewIds": [
+        "EventBookingDock/BookingDock states"
+      ],
+      "tests": [
+        "test/pages/event/event_detail_screen_state_test.dart",
+        "test/events/event_detail_widgets_test.dart"
+      ],
+      "captureIds": [
+        "event_detail_booking_failure",
+        "event_detail_cancel_failure",
+        "event_detail_booking_success_snackbar",
+        "event_detail_cancel_success_snackbar"
+      ],
+      "nextAction": "Booking/cancel failure dock banners and success snackbars now have route capture proof; full booking celebration remains covered by focused widget tests."
+    },
+    {
+      "id": "waitlist_sold_out_cancelled_past",
+      "kind": "populated",
+      "status": "captured",
+      "source": "EventDetailBookingDockState derives sold-out, waitlist, cancellation, and past-event action states from Event and EventParticipation before EventDetailDock renders the provider-free dock.",
+      "previewIds": [
+        "EventBookingDock/BookingDock states"
+      ],
+      "tests": [
+        "test/pages/event/event_detail_screen_state_test.dart",
+        "test/events/event_detail_widgets_test.dart"
+      ],
+      "nextAction": "Split waitlist, offer, full, attended, cancelled, and past states into separate BookingDock adapter states after the adapter exists.",
+      "captureIds": [
+        "event_detail_booking_waitlist",
+        "event_detail_booking_waitlist_offer",
+        "event_detail_booking_full",
+        "event_detail_booking_attended",
+        "event_detail_booking_past",
+        "event_detail_booking_cancelled"
+      ]
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Current fatal-error path can show backend/network failures, but there is no explicit offline composition state.",
+      "tests": [
+        "test/events/event_detail_widgets_test.dart"
+      ],
+      "nextAction": "Define explicit offline copy and retry behavior if product wants this to diverge from the generic event error surface.",
+      "captureIds": [
+        "event_detail_offline"
+      ],
+      "previewIds": [
+        "EventDetailScreen/Screen states"
+      ]
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Text-scale 2.0 is exercised through the full Event Detail composition on the tall review device.",
+      "tests": [
+        "test/events/event_detail_widgets_test.dart"
+      ],
+      "nextAction": "Compare tall-device text-scale capture after section adapters reduce layout drift.",
+      "captureIds": [
+        "event_detail_text_scale_2"
+      ],
+      "previewIds": [
+        "EventDetailScreen/Screen states"
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Hero and route transition motion is exercised with animations disabled across the full Event Detail composition.",
+      "tests": [
+        "test/events/event_detail_widgets_test.dart"
+      ],
+      "nextAction": "Compare reduced-motion capture for hero presentation modes and route transition.",
+      "captureIds": [
+        "event_detail_reduced_motion"
+      ],
+      "previewIds": [
+        "EventDetailScreen/Screen states"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "EventDetailScreen reads eventDetailViewModelProvider, owns the loaded Scaffold, mutation listeners, route callbacks, host/companion display-state derivation, and bottom navigation CTA; EventDetailBody owns the CustomScrollView, hero app bar, ticket band, local sections, host/companion/invite cards, and social section.",
+    "targetLayout": "EventDetailScreen maps provider state into EventDetailScreenState-style adapters and composes registered sections: hero, ticket facts, plan, click hints, itinerary, photo proof, host card, who-is-going, reviews, map, mechanics, good-to-know, companion/invite prompts, and booking dock.",
+    "sections": [
+      {
+        "id": "section.event.hero",
+        "name": "Event hero",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "EventHero"
+        ],
+        "flutter": {
+          "file": "lib/pages/event/widgets/event_detail_hero_top_bar.dart",
+          "symbol": "EventDetailHeroTopBar"
+        },
+        "currentOwner": "EventDetailBody",
+        "targetOwner": "registered Event Detail hero section with view data and user intents",
+        "dependencies": [
+          "catch.icon_button",
+          "catch.surface"
+        ],
+        "states": [
+          "default",
+          "saved",
+          "save_pending",
+          "calendar_available",
+          "ticket",
+          "spotlight_dark"
+        ],
+        "previewIds": [
+          "EventDetailHeroTopBar/Catalog states"
+        ],
+        "migration": "Register the hero section/component contract, move save/calendar visibility into an adapter view model, keep saved/calendar fallback feedback on the shared Catch snackbar helper, and add Widgetbook states for saved, pending, ticket, and dark variants."
+      },
+      {
+        "id": "section.event.ticket_stub",
+        "name": "Ticket fact band",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [
+          "TicketStub"
+        ],
+        "flutter": {
+          "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
+          "symbol": "EventDetailTicketStubRow"
+        },
+        "currentOwner": "EventDetailBody",
+        "targetOwner": "registered ticket-stub compound",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "band",
+          "card",
+          "two_cells",
+          "three_cells",
+          "long_location"
+        ],
+        "previewIds": [
+          "EventDetailTicketStubRow/Catalog states"
+        ],
+        "migration": "Convert the component to accept explicit cells, keep the Event adapter responsible for deriving when/where/pace copy, and add Widgetbook coverage."
+      },
+      {
+        "id": "section.event.plan",
+        "name": "The plan",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "Section"
+        ],
+        "flutter": {
+          "file": "lib/pages/event/widgets/event_detail_overview_section.dart",
+          "symbol": "EventDetailOverviewSection"
+        },
+        "currentOwner": "EventDetailOverviewSection",
+        "targetOwner": "registered event plan section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "custom_description",
+          "fallback_description",
+          "long_description"
+        ],
+        "previewIds": [
+          "EventDetailOverviewSection/Overview states"
+        ],
+        "migration": "Split plan copy into a small section adapter so the section renders text roles and lower-level layout only."
+      },
+      {
+        "id": "section.event.click_hints",
+        "name": "Why you might click",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [
+          "HintList"
+        ],
+        "flutter": {
+          "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
+          "symbol": "EventDetailHintList"
+        },
+        "currentOwner": "EventDetailOverviewSection",
+        "targetOwner": "registered hint-list compound plus event section wrapper",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "two_hints",
+          "long_hint",
+          "empty"
+        ],
+        "previewIds": [
+          "EventDetailHintList/Catalog states"
+        ],
+        "migration": "Move event-derived hint copy into adapter data and let HintList accept rows plus activity tone."
+      },
+      {
+        "id": "section.event.itinerary",
+        "name": "Itinerary",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [
+          "Itinerary"
+        ],
+        "flutter": {
+          "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
+          "symbol": "EventDetailItineraryList"
+        },
+        "currentOwner": "EventDetailOverviewSection",
+        "targetOwner": "registered itinerary compound",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "standard",
+          "single_step",
+          "long_detail"
+        ],
+        "previewIds": [
+          "EventDetailItineraryList/Catalog states"
+        ],
+        "migration": "Convert to explicit step input, then keep event-derived default itinerary generation outside the visual component."
+      },
+      {
+        "id": "section.event.photo_proof",
+        "name": "Photo proof strip",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [
+          "PhotoStrip"
+        ],
+        "flutter": {
+          "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
+          "symbol": "EventDetailPhotoGrid"
+        },
+        "currentOwner": "EventDetailOverviewSection",
+        "targetOwner": "registered photo-strip compound",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "three_photos",
+          "partial_photos",
+          "empty_hidden"
+        ],
+        "previewIds": [
+          "EventDetailPhotoGrid/Catalog states"
+        ],
+        "migration": "Accept explicit cells, caption, and data copy so the same strip can serve event, website, and social proof templates."
+      },
+      {
+        "id": "section.event.map",
+        "name": "Where",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [
+          "MapCard"
+        ],
+        "flutter": {
+          "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
+          "symbol": "EventDetailMapCard"
+        },
+        "currentOwner": "EventDetailOverviewSection",
+        "targetOwner": "registered map-card compound",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "pin_ready",
+          "pin_drops_morning_of",
+          "tap_enabled",
+          "tap_disabled"
+        ],
+        "previewIds": [
+          "EventDetailMapCard/Catalog states"
+        ],
+        "migration": "Split visual map card props from event location derivation and declare masking rules for pixel comparison."
+      },
+      {
+        "id": "section.event.mechanics",
+        "name": "How sign-ups work",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [
+          "MechanismList"
+        ],
+        "flutter": {
+          "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
+          "symbol": "EventDetailMechanismList"
+        },
+        "currentOwner": "EventDetailOverviewSection",
+        "targetOwner": "registered mechanism-list compound",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "open_signup",
+          "approval",
+          "waitlist",
+          "demand_pricing"
+        ],
+        "previewIds": [
+          "EventDetailMechanismList/Catalog states"
+        ],
+        "migration": "Move mechanism row construction out of the visual list and use explicit row data plus activity tone."
+      },
+      {
+        "id": "section.event.good_to_know",
+        "name": "Good to know",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "Section"
+        ],
+        "flutter": {
+          "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
+          "symbol": "EventDetailGoodToKnowList"
+        },
+        "currentOwner": "EventDetailOverviewSection",
+        "targetOwner": "registered good-to-know fact-list section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "requirements",
+          "expectations",
+          "booking_policy",
+          "no_requirements"
+        ],
+        "previewIds": [
+          "EventDetailOverviewSection/Overview states"
+        ],
+        "migration": "Implemented through EventDetailInformationState row data and the provider-free EventDetailGoodToKnowList."
+      },
+      {
+        "id": "section.event.hosts",
+        "name": "Your hosts",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "HostCard"
+        ],
+        "flutter": {
+          "file": "lib/pages/event/widgets/event_detail_body.dart",
+          "symbol": "EventDetailHostsSection"
+        },
+        "currentOwner": "EventDetailBody",
+        "targetOwner": "EventDetailHostsSection with CatchPersonRow.contact",
+        "dependencies": [
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "loaded",
+          "missing_club",
+          "message_enabled",
+          "message_disabled",
+          "verified",
+          "unverified"
+        ],
+        "previewIds": [
+          "CatchPersonLayout/Contact states"
+        ],
+        "migration": "Club lookup remains route-owned. The Hosted by Section contains a Field with PersonLayout identity, verified status and typed secondary actions."
+      },
+      {
+        "id": "section.event.who_is_going",
+        "name": "Who's going",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "AvatarStack"
+        ],
+        "flutter": {
+          "file": "lib/pages/event/widgets/event_detail_social_section.dart",
+          "symbol": "EventDetailSocialSection"
+        },
+        "currentOwner": "EventDetailSocialSection",
+        "targetOwner": "registered attendance/social-proof section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "guest_locked",
+          "member_visible",
+          "empty",
+          "long_names"
+        ],
+        "previewIds": [
+          "EventDetailSocialSection/Social states"
+        ],
+        "migration": "Split guest lock copy, avatar stack, and member context into explicit section states."
+      },
+      {
+        "id": "section.event.reviews",
+        "name": "Reviews",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "Section"
+        ],
+        "flutter": {
+          "file": "lib/pages/event/widgets/event_detail_social_section.dart",
+          "symbol": "EventDetailSocialSection"
+        },
+        "currentOwner": "EventDetailSocialSection",
+        "targetOwner": "registered reviews section adapter",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "hidden_guest",
+          "member_before_event",
+          "attended_can_review",
+          "host"
+        ],
+        "previewIds": [
+          "EventReviewsSection/Review states"
+        ],
+        "migration": "Make review access an explicit adapter field and avoid having the section recompute attendance rules."
+      },
+      {
+        "id": "section.event.cross_paths_consent",
+        "name": "Cross Paths event consent",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "Section"
+        ],
+        "flutter": {
+          "file": "lib/pages/event/cross_paths_event_consent_section.dart",
+          "symbol": "CrossPathsEventConsentSection"
+        },
+        "currentOwner": "EventDetailScreen + CrossPathsEventConsentSection",
+        "targetOwner": "route-owned consent state plus provider-free Event Detail section",
+        "dependencies": [
+          "catch.field",
+          "catch.section"
+        ],
+        "states": [
+          "hidden",
+          "loading",
+          "off",
+          "on",
+          "pending",
+          "unavailable",
+          "text_scale_2"
+        ],
+        "previewIds": [
+          "CrossPathsEventConsentSection/Cross Paths consent states"
+        ],
+        "migration": "Implemented behind a default-off flag. EventDetailScreen resolves effective local visibility, owns the caller-scoped provider and callable mutation, and passes explicit state/callbacks to the provider-free section."
+      },
+      {
+        "id": "section.event.companion_invite",
+        "name": "Companion and invite prompts",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "Section"
+        ],
+        "flutter": {
+          "file": "lib/pages/event/widgets/event_detail_body.dart",
+          "symbol": "EventCompanionCard"
+        },
+        "currentOwner": "EventDetailBody",
+        "targetOwner": "registered post-booking prompt section",
+        "dependencies": [
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "hidden",
+          "companion_available",
+          "invite_loop_available"
+        ],
+        "previewIds": [
+          "EventDetailBody/Prompt states"
+        ],
+        "migration": "Event-success plan lookup and companion availability are route-owned and mapped through EventDetailCompanionState; remaining work is formal prompt-section registration and invite-loop state hardening."
+      },
+      {
+        "id": "section.event.booking_dock",
+        "name": "Booking dock",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "BookingDock"
+        ],
+        "flutter": {
+          "file": "lib/pages/event/widgets/event_detail_dock.dart",
+          "symbol": "EventBookingDock"
+        },
+        "currentOwner": "EventDetailBody",
+        "targetOwner": "registered booking dock section",
+        "dependencies": [
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "guest",
+          "bookable",
+          "pending",
+          "booked",
+          "waitlist",
+          "full",
+          "cancelled",
+          "past",
+          "host_hidden"
+        ],
+        "previewIds": [
+          "EventBookingDock/BookingDock states"
+        ],
+        "migration": "EventDetailDock now maps provider and mutation output through provider-free EventDetailBookingDockState, then renders the result through EventBookingDock while keeping mutation execution at the route/widget edge."
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-EVENT-DETAIL-001",
+      "status": "closed",
+      "nextAction": "`catch.event_detail_sections` is now the canonical screen-contract registry entry for Event Detail hero, ticket facts, overview primitives, host/social sections, Cross Paths event consent, companion prompt, booking dock, and avatar stack; reusable primitives stay in their existing shared contracts."
+    },
+    {
+      "id": "DS-EVENT-DETAIL-002",
+      "status": "closed",
+      "nextAction": "Widgetbook entries now cover EventDetailHeroTopBar, TicketStub, Overview, HintList, Itinerary, PhotoStrip, MapCard, MechanismList, HostCard, WhoIsGoingSection/social proof, Reviews, Cross Paths event consent, companion/invite prompts, and provider-free EventBookingDock states."
+    },
+    {
+      "id": "DS-EVENT-DETAIL-003",
+      "status": "closed",
+      "nextAction": "Host lookup, companion plan lookup, Cross Paths consent, booking dock mode, body section visibility, invite-loop visibility, host-app bottom-nav visibility, and social/review access now map through provider-free EventDetailHostState, EventDetailCompanionState, CrossPathsEventConsentSectionState, EventDetailBookingDockState, EventDetailSectionVisibilityState, and EventDetailSocialState."
+    },
+    {
+      "id": "DS-EVENT-DETAIL-004",
+      "status": "closed",
+      "nextAction": "Route captures now cover guest, host app, offline-looking error, text-scale, reduced-motion, signed-up, booking/cancel pending, booking/cancel success snackbars, booking/cancel failures, waitlist, waitlist offer, full, attended, past, and cancelled Event Detail states."
+    }
+  ]
+}

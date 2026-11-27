@@ -1,0 +1,956 @@
+{
+  "id": "screen.host.chat",
+  "shell": {
+    "owner": "host",
+    "nestedScaffoldAllowed": false,
+    "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "identity",
+    "expression": "CatchLegacyTopBar.identity",
+    "owner": "CatchLegacyTopBar",
+    "reason": "The source owns identity-aware canonical top-bar chrome."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "offline",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Host Chat",
+  "owner": "hosts",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "hostChatScreen",
+      "path": "/host/inbox/:matchId",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/pages/chat/chat_screen.dart",
+    "symbol": "ChatScreen"
+  },
+  "stateController": {
+    "primary": "ChatRouteState + HostChatScreenState + ChatReadMarkerController + ChatScrollCoordinator + ChatThreadActionController + ChatRetryController + ChatScreen + ChatController",
+    "files": [
+      {
+        "file": "lib/pages/chat/chat_route_state.dart",
+        "symbol": "ChatRouteState"
+      },
+      {
+        "file": "lib/pages/chat/host_chat_screen_state.dart",
+        "symbol": "HostChatScreenState"
+      },
+      {
+        "file": "lib/pages/chat/chat_read_marker_controller.dart",
+        "symbol": "ChatReadMarkerController"
+      },
+      {
+        "file": "lib/pages/chat/chat_scroll_coordinator.dart",
+        "symbol": "ChatScrollCoordinator"
+      },
+      {
+        "file": "lib/pages/chat/chat_thread_action_controller.dart",
+        "symbol": "ChatThreadActionController"
+      },
+      {
+        "file": "lib/pages/chat/chat_retry_controller.dart",
+        "symbol": "ChatRetryController"
+      },
+      {
+        "file": "lib/pages/chat/chat_screen.dart",
+        "symbol": "ChatScreen"
+      },
+      {
+        "file": "lib/contexts/connections/data/match_repository.dart",
+        "symbol": "matchStream"
+      },
+      {
+        "file": "lib/contexts/messaging/data/conversation_repository.dart",
+        "symbol": "watchConversationMessages"
+      },
+      {
+        "file": "lib/contexts/events/data/event_repository.dart",
+        "symbol": "watchEvent"
+      },
+      {
+        "file": "lib/contexts/organizers/data/organizers_repository.dart",
+        "symbol": "watchOrganizer"
+      },
+      {
+        "file": "lib/contexts/profiles/data/public_profile_repository.dart",
+        "symbol": "watchPublicProfile"
+      },
+      {
+        "file": "lib/pages/chat/chat_controller.dart",
+        "symbol": "ChatController"
+      },
+      {
+        "file": "packages/catch_ui/lib/src/components/catch_legacy_top_bar.dart",
+        "symbol": "CatchLegacyTopBar.identity"
+      },
+      {
+        "file": "lib/pages/chat/widgets/chat_event_context_header.dart",
+        "symbol": "ChatEventContextHeader"
+      },
+      {
+        "file": "lib/pages/chat/widgets/chat_message_list.dart",
+        "symbol": "ChatMessageList"
+      },
+      {
+        "file": "lib/pages/chat/widgets/chat_input.dart",
+        "symbol": "ChatInput"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/pages/chat/chat_controller.dart",
+        "symbol": "ChatController"
+      },
+      {
+        "file": "lib/contexts/messaging/data/conversation_repository.dart",
+        "symbol": "ConversationRepository"
+      }
+    ],
+    "notes": "Host Chat uses the shared ChatScreen implementation from the host inbox route. ChatRouteState now performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState centralizes host inquiry identity, typed top-bar action availability, top-bar action intents, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy, ChatReadMarkerController executes ConversationRepository.markRead side effects, ChatScrollCoordinator owns initial/appended/send-success message list auto-scroll state, ChatThreadActionController executes profile/share/report/block typed action intents through injected UI and safety runners, ChatRetryController executes typed provider retry invalidation, and ChatThreadLookupState owns profile/event/host lookup keys; CatchLegacyTopBar.identity is router/provider-free; _ChatContent owns local text entry and UI primitives."
+  },
+  "designRefs": [
+    {
+      "id": "repo.chat-screen-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/pages/chat/chat_screen_test.dart",
+      "notes": "Chat screen tests cover routed profile fallback, ChatThreadLookupState lookup policy, event-grounded empty thread copy, read marker resets, ChatReadMarkerState policy, ChatReadMarkerController mark-read execution, ChatScrollCoordinator initial/appended/send-success-message state, ChatThreadActionController profile/share/report/block execution, ChatRetryController route/message/Suvbot retry execution through the screen, HostChatActionIntent top-bar policy, empty-share feedback, send success/failure, incoming-message read reset, message load error, and Suvbot separation."
+    },
+    {
+      "id": "repo.chat-top-bar-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/pages/chat/chat_screen_test.dart",
+      "notes": "Top bar tests cover chat title/action behavior shared by professional host conversations."
+    },
+    {
+      "id": "claude.host-chat",
+      "kind": "claude",
+      "status": "available",
+      "notes": "Host Chat populated thread reference is exported, manifest-registered, and compared against host_chat_inquiry. Host Chat populated-thread advisory baseline against host_chat_inquiry is within threshold: mismatch 12.71%, meanDelta 5.28, maxDelta 240, masked 228552. Dedicated professional host-chat variants remain open for keyboard, safety, offline, mutation, accessibility, and theme states.",
+      "path": "design/source_packs/host-v2/templates/catch-messaging/Messaging.dc.html"
+    }
+  ],
+  "captures": [
+    {
+      "id": "host_chat_inquiry",
+      "status": "captured",
+      "notes": "Deterministic Host Chat baseline capture renders a host inquiry conversation with attendee identity and event context."
+    },
+    {
+      "id": "host_chat_match_loading",
+      "status": "captured",
+      "notes": "Host Chat match-loading capture covers the route shell and disabled composer while matchStreamProvider is loading."
+    },
+    {
+      "id": "host_chat_match_error",
+      "status": "captured",
+      "notes": "Host Chat match-error capture covers generic unavailable access copy and disabled composer."
+    },
+    {
+      "id": "host_chat_not_found",
+      "status": "captured",
+      "notes": "Host Chat missing-match capture covers a deleted or inaccessible conversation id."
+    },
+    {
+      "id": "host_chat_messages_loading",
+      "status": "captured",
+      "notes": "Host Chat message-loading capture covers chat bubble skeleton rows."
+    },
+    {
+      "id": "host_chat_messages_error",
+      "status": "captured",
+      "notes": "Host Chat message-error capture covers retryable message load failure."
+    },
+    {
+      "id": "host_chat_offline",
+      "status": "captured",
+      "notes": "Host Chat offline capture covers message-provider offline failure."
+    },
+    {
+      "id": "host_chat_empty_thread",
+      "status": "captured",
+      "notes": "Host Chat empty-thread capture covers host inquiry with no messages."
+    },
+    {
+      "id": "host_chat_event_context_fallback",
+      "status": "captured",
+      "notes": "Host Chat event-context fallback capture covers missing event data."
+    },
+    {
+      "id": "host_chat_blocked",
+      "status": "captured",
+      "notes": "Host Chat blocked capture covers closed-composer behavior for blocked host inquiries."
+    },
+    {
+      "id": "host_chat_text_scale_2",
+      "status": "captured",
+      "notes": "Host Chat text-scale capture covers large-type layout."
+    },
+    {
+      "id": "host_chat_reduced_motion",
+      "status": "captured",
+      "notes": "Host Chat reduced-motion capture covers the route under disabled animation media settings."
+    },
+    {
+      "id": "host_chat_light_dark",
+      "status": "captured",
+      "notes": "Host Chat light/dark capture uses the standard paired-theme capture harness."
+    },
+    {
+      "id": "host_chat_composer_states",
+      "status": "captured",
+      "notes": "Host Chat composer capture covers ready, send-pending, image-pending, and disabled composer rows."
+    },
+    {
+      "id": "host_chat_keyboard_multiline",
+      "status": "captured",
+      "notes": "Host Chat keyboard capture covers safe-area resizing with seeded multiline professional reply text."
+    },
+    {
+      "id": "host_chat_image_day_separator",
+      "status": "captured",
+      "notes": "Host Chat populated-thread variant covers date separators, image attachments, grouped bubbles, and mixed sender alignment."
+    },
+    {
+      "id": "host_chat_report_failure_snackbar",
+      "status": "captured",
+      "notes": "Host Chat report-failure capture covers the shared snackbar styling for report error feedback; listener wiring remains covered by focused Host Chat tests."
+    },
+    {
+      "id": "host_chat_block_confirm_dialog",
+      "status": "captured",
+      "notes": "Host Chat block confirmation capture covers the professional safety dialog surface."
+    },
+    {
+      "id": "host_chat_safety_pending_menu",
+      "status": "captured",
+      "notes": "Host Chat safety pending-menu capture covers disabled Report and Block action rows."
+    }
+  ],
+  "states": [
+    {
+      "id": "uid_loading",
+      "kind": "loading",
+      "status": "implemented",
+      "source": "ChatScreen listens to uidProvider and defers read-marker/send behavior until a uid is available. ChatThreadLookupState derives lookup keys after uid/match resolution.",
+      "nextAction": "Add deterministic host chat uid-loading/signed-out capture and decide whether host shell should render explicit access copy.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ]
+    },
+    {
+      "id": "match_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "matchStreamProvider loading disables composer with Loading chat... while the host inquiry shell remains mounted.",
+      "nextAction": "Decide whether top-level match loading should short-circuit to a dedicated access skeleton before visual parity edits.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_match_loading"
+      ]
+    },
+    {
+      "id": "match_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "matchStreamProvider errors disable the composer with Chat unavailable copy.",
+      "nextAction": "Decide whether top-level match errors should use a screen-level branded error state before visual parity edits.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_match_error"
+      ]
+    },
+    {
+      "id": "match_not_found",
+      "kind": "empty",
+      "status": "captured",
+      "source": "A null match disables the composer with Chat unavailable copy while message state remains independently rendered.",
+      "nextAction": "Decide whether missing host conversations should short-circuit to a full-screen unavailable state.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_not_found"
+      ]
+    },
+    {
+      "id": "host_inquiry_identity",
+      "kind": "populated",
+      "status": "captured",
+      "source": "ChatRouteState resolves the host-inquiry club/profile provider wave, then HostChatScreenState derives host inquiry title/avatar identity from club host profiles, attendee public profile data, or Host conversation fallback.",
+      "nextAction": "Add long professional-name and missing attendee-profile visual variants before pixel comparison.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart"
+      ],
+      "captureIds": [
+        "host_chat_inquiry"
+      ]
+    },
+    {
+      "id": "host_profile_navigation_disabled",
+      "kind": "permission",
+      "status": "tested",
+      "source": "HostChatScreenState sets profileNavigationEnabled false for host inquiries so tapping the title does not push the public dating profile route.",
+      "nextAction": "Keep this covered while extracting typed route callbacks.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart"
+      ]
+    },
+    {
+      "id": "host_share_card_disabled",
+      "kind": "permission",
+      "status": "tested",
+      "source": "HostChatScreenState passes null onShareCard for host inquiries, removing the Share card action from professional host conversations.",
+      "nextAction": "Add generated share-card policy/reference only if host conversations retain share-card support later.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart"
+      ]
+    },
+    {
+      "id": "event_context_ready",
+      "kind": "populated",
+      "status": "tested",
+      "source": "ChatEventContextHeader renders latest shared event context when watchEventProvider resolves the match latestEventId.",
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart"
+      ],
+      "nextAction": "Add host inquiry capture with event-grounded context and professional copy.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ]
+    },
+    {
+      "id": "event_context_fallback",
+      "kind": "populated",
+      "status": "captured",
+      "source": "ChatEventContextHeader renders its neutral matched-through-Catch fallback when event context is null or unavailable.",
+      "nextAction": "Decide whether host inquiries need attendee-query-specific fallback copy.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_event_context_fallback"
+      ]
+    },
+    {
+      "id": "messages_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "ChatMessageList renders date and alternating message-bubble skeleton rows through CatchAsyncBoundary while watchConversationMessagesProvider is loading.",
+      "nextAction": "Compare the skeleton pattern against the host-chat design reference before visual edits.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_messages_loading"
+      ]
+    },
+    {
+      "id": "messages_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "ChatMessageList renders Messages unavailable / Unable to load messages with retry intent supplied through HostChatScreenState and invalidation dispatched by _ChatContent.",
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart"
+      ],
+      "nextAction": "Keep message retry typed while moving remaining retry dispatch side effects out of _ChatContent.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_messages_error"
+      ]
+    },
+    {
+      "id": "empty_thread",
+      "kind": "empty",
+      "status": "captured",
+      "source": "Empty threads render CatchEmptyState with Say hi copy grounded in the latest shared event and other participant name.",
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart"
+      ],
+      "nextAction": "Decide whether host inquiry empty copy should use attendee-query language instead of Say hi.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_empty_thread"
+      ]
+    },
+    {
+      "id": "populated_thread",
+      "kind": "populated",
+      "status": "captured",
+      "source": "ChatMessageList renders variable-height message bubbles, date separators, image messages, sender grouping, and current-user alignment.",
+      "nextAction": "Host Chat populated thread now has a manifest-registered baseline reference and advisory comparison within threshold: mismatch 12.71%, meanDelta 5.28, maxDelta 240. Dedicated capture variants now cover image/day separators, keyboard, mutation feedback, safety dialog/menu, text-scale, reduced-motion, and dark mode. Add provider-specific offline variants and dedicated reference masks before promotion.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_inquiry",
+        "host_chat_image_day_separator"
+      ]
+    },
+    {
+      "id": "auto_scroll_read_marker",
+      "kind": "populated",
+      "status": "tested",
+      "source": "ChatScreen delegates read-marker execution to ChatReadMarkerController for uid availability, incoming latest messages, and dispose. ChatScrollCoordinator owns initial, appended, and send-success message list auto-scroll state. ChatRetryController owns typed route/message/Suvbot retry invalidation. ChatReadMarkerState owns duplicate, forced, incoming-latest, and dispose read-marker decisions.",
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart"
+      ],
+      "nextAction": "Closed for current Host Chat architecture; reopen only if future product-specific scroll or retry policy needs a new adapter seam.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ]
+    },
+    {
+      "id": "composer_enabled",
+      "kind": "populated",
+      "status": "captured",
+      "source": "ChatInput is enabled for active non-blocked matches and sends trimmed text through ChatController.sendMessageMutation.",
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart"
+      ],
+      "nextAction": "Keep draft seeding available for deterministic route captures while moving send callback execution into the adapter/controller seam.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_composer_states",
+        "host_chat_keyboard_multiline"
+      ]
+    },
+    {
+      "id": "composer_disabled_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "HostChatScreenState maps match loading to Loading chat... and disables send/image actions.",
+      "nextAction": "Keep disabled copy centralized as provider-wave extraction continues.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_match_loading",
+        "host_chat_composer_states"
+      ]
+    },
+    {
+      "id": "blocked_chat",
+      "kind": "permission",
+      "status": "captured",
+      "source": "HostChatScreenState maps blocked matches to This chat is closed and disables send/image actions.",
+      "nextAction": "Add focused block-confirmation and blocked-host-chat behavior tests.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_blocked",
+        "host_chat_composer_states"
+      ]
+    },
+    {
+      "id": "send_message_pending",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "ChatController.sendMessageMutation pending flows through ChatRouteState and drives the ChatInput send loading indicator while disabling duplicate sends.",
+      "nextAction": "Move send callback execution and draft retention into a typed action adapter/controller seam after keyboard-state captures exist.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_composer_states"
+      ]
+    },
+    {
+      "id": "send_failure",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "Send failures keep composed text in the field and surface through Chat mutation listeners/snackbar.",
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart"
+      ],
+      "nextAction": "Add deterministic send-failure capture with mapped copy and retained draft text.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ]
+    },
+    {
+      "id": "send_image_pending",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "ChatController.sendImageMutation pending drives image-action loading and disables composer actions.",
+      "nextAction": "Decide whether image attachments belong in professional host conversations before final design parity.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_composer_states"
+      ]
+    },
+    {
+      "id": "top_bar_safety_actions",
+      "kind": "populated",
+      "status": "captured",
+      "source": "HostChatScreenState keeps Report and Block actions available for non-Suvbot host inquiries while profile navigation and Share card are disabled.",
+      "nextAction": "Keep typed action availability covered while moving remaining report/block side effects into an adapter/controller seam.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart"
+      ],
+      "captureIds": [
+        "host_chat_safety_pending_menu"
+      ]
+    },
+    {
+      "id": "report_user_mutation",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Report action is selected through typed ChatThreadAction.report, disables while ChatController.reportUserMutation is pending, runs the mutation through ChatController, shows Report submitted snackbar on success, and surfaces failures through the shared chat mutation listener. Focused widget coverage verifies success, pending disabled state, and failure feedback.",
+      "nextAction": "Move report side-effect execution from _ChatContent into an adapter/controller seam when Host Chat action handling is extracted.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_report_failure_snackbar",
+        "host_chat_safety_pending_menu"
+      ]
+    },
+    {
+      "id": "block_user_mutation",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Block action is selected through typed ChatThreadAction.block, disables while ChatController.blockUserMutation is pending, confirms with showBlockUserDialog, runs the mutation through ChatController, and pops the route on success. Focused widget coverage verifies confirmation, success, pending disabled state, and failure feedback.",
+      "nextAction": "Move block confirmation/pop side-effect execution from _ChatContent into an adapter/controller seam when Host Chat action handling is extracted.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_block_confirm_dialog",
+        "host_chat_safety_pending_menu"
+      ]
+    },
+    {
+      "id": "mutation_error_listener",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "The chat build subscribes to send, image, report, block, and Suvbot mutation failures through listenToCatchMutationErrors with chat error context. Focused Host Chat tests verify report/block failure feedback.",
+      "nextAction": "Add send/image-specific failure captures only if host conversations retain image attachment support.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_report_failure_snackbar"
+      ]
+    },
+    {
+      "id": "keyboard_composer",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Host Chat has a deterministic keyboard-open capture with seeded multiline professional reply text and safe-area resizing.",
+      "nextAction": "Compare keyboard-open behavior against dedicated host-chat reference masks before final visual parity.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_keyboard_multiline"
+      ]
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Message provider offline failures render through the shared ChatMessageList error state; match/event/profile/club failures still use generic fallback behavior.",
+      "nextAction": "Define offline-specific Host Chat copy for match, event, profile, and club failures before closing the offline state fully.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_offline"
+      ]
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Host Chat renders under MediaQuery text scale 2.0 in deterministic capture coverage.",
+      "nextAction": "Review menus/dialogs and keyboard-open composer under large text during pixel comparison.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_text_scale_2"
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Host Chat renders under reduced-motion capture settings.",
+      "nextAction": "Audit auto-scroll, route/menu/dialog transitions, composer loading, and future attachment animations under reduced motion.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_reduced_motion"
+      ]
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "Host Chat renders through the capture harness in both light and dark themes.",
+      "nextAction": "Compare both themes against dedicated host-chat references before visual edits.",
+      "previewIds": [
+        "ChatScreen/Host chat states"
+      ],
+      "captureIds": [
+        "host_chat_light_dark"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "ChatScreen delegates to _ChatContent, which now reads a single ChatRouteState provider seam for route provider waves and mutation-pending flags, then owns local text entry and UI primitives. ChatReadMarkerController executes read-marker side effects from ChatReadMarkerState decisions, ChatScrollCoordinator owns initial/appended/send-success message list auto-scroll, ChatThreadActionController executes profile/share/report/block typed action intents through injected UI and safety runners, and ChatRetryController executes route/message/Suvbot retry invalidation. HostChatScreenState owns host inquiry identity, typed top-bar action availability, route/message/Suvbot retry intents, report/block pending action disabling, top-bar action intent policy, safety target copy, message peer name, and composer disabled reason. ChatThreadLookupState owns profile/event/host lookup keys.",
+    "targetLayout": "Host Chat route/provider waves, lookup decisions, read markers, scroll behavior, top-bar action execution, and retry invalidation are adapter/controller-owned before composing provider-free top bar, event header, messages, composer, safety, and action surfaces. Continue only if future product-specific action policy needs another focused seam.",
+    "sections": [
+      {
+        "id": "section.host.chat_screen_adapter",
+        "name": "Host chat route state adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "ChatRouteState",
+          "HostChatScreenState"
+        ],
+        "flutter": {
+          "file": "lib/pages/chat/chat_route_state.dart",
+          "symbol": "ChatRouteState"
+        },
+        "currentOwner": "ChatRouteState + HostChatScreenState + _ChatContent",
+        "targetOwner": "ChatRouteState + HostChatScreenState provider/controller adapter",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "match_loading",
+          "match_error",
+          "missing_match",
+          "host_identity",
+          "messages",
+          "composer",
+          "safety"
+        ],
+        "migration": "ChatRouteState now owns the route provider watch wave and mutation-pending flags. HostChatScreenState owns identity, typed action availability, route/message/Suvbot retry intents, report/block pending action disabling, top-bar action intent policy, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns duplicate/forced/incoming-latest/dispose read-marker decisions, ChatReadMarkerController executes mark-read side effects, ChatScrollCoordinator owns initial/appended/send-success message list auto-scroll, ChatThreadActionController executes profile/share/report/block typed action intents through injected UI and safety runners, and ChatRetryController executes typed retry invalidation. ChatThreadLookupState owns other-participant, host-inquiry club, host profile, public-profile, event, and Suvbot lookup decisions. Reopen this section only for future product-specific action policies.",
+        "previewIds": [
+          "ChatScreen/Host chat states"
+        ]
+      },
+      {
+        "id": "section.host.catch_top_bar_identity",
+        "name": "Host chat top bar",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "HostConversationTopBar"
+        ],
+        "flutter": {
+          "file": "packages/catch_ui/lib/src/components/catch_legacy_top_bar.dart",
+          "symbol": "CatchLegacyTopBar.identity"
+        },
+        "currentOwner": "CatchLegacyTopBar.identity",
+        "targetOwner": "provider-free host chat top bar section",
+        "dependencies": [
+          "catch.top_bar",
+          "catch.icon_button"
+        ],
+        "states": [
+          "attendee_profile",
+          "host_conversation_fallback",
+          "profile_navigation_disabled",
+          "share_disabled",
+          "report_block_menu",
+          "long_name"
+        ],
+        "migration": "Keep shared top bar router/provider-free. HostChatScreenState drives name/avatar/action availability plus disabled pending actions, while the screen handles profile navigation and typed menu action dispatch.",
+        "previewIds": [
+          "ChatScreen/Host chat states"
+        ]
+      },
+      {
+        "id": "section.host.chat_event_context",
+        "name": "Host chat event context header",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "HostChatEventContextHeader"
+        ],
+        "flutter": {
+          "file": "lib/pages/chat/widgets/chat_event_context_header.dart",
+          "symbol": "ChatEventContextHeader"
+        },
+        "currentOwner": "ChatScreen",
+        "targetOwner": "provider-free event context section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "event_ready",
+          "event_loading_fallback",
+          "event_missing",
+          "long_event_title"
+        ],
+        "migration": "Move latest event selection and missing/deleted event copy into adapter state and add host-specific context captures.",
+        "previewIds": [
+          "ChatScreen/Host chat states"
+        ]
+      },
+      {
+        "id": "section.host.chat_messages",
+        "name": "Host chat message list",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "HostChatMessageList"
+        ],
+        "flutter": {
+          "file": "lib/pages/chat/widgets/chat_message_list.dart",
+          "symbol": "ChatMessageList"
+        },
+        "currentOwner": "ChatMessageList",
+        "targetOwner": "provider-free host chat message list section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "empty",
+          "populated",
+          "day_separator",
+          "image_message",
+          "long_message"
+        ],
+        "migration": "Keep variable-height list rendering but make empty/error copy and message fixtures host-aware before visual comparison.",
+        "previewIds": [
+          "ChatScreen/Host chat states"
+        ]
+      },
+      {
+        "id": "section.host.chat_message_bubble",
+        "name": "Host chat message bubble",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [
+          "HostChatBubble"
+        ],
+        "flutter": {
+          "file": "lib/pages/chat/widgets/message_bubble.dart",
+          "symbol": "MessageBubble"
+        },
+        "currentOwner": "MessageBubble",
+        "targetOwner": "shared chat bubble primitive with host-chat states",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "incoming",
+          "outgoing",
+          "group_start",
+          "group_middle",
+          "group_end",
+          "timestamp_pending",
+          "image"
+        ],
+        "migration": "Add host-chat bubble states to Widgetbook and keep variable-height rendering for long professional messages.",
+        "previewIds": [
+          "ChatScreen/Host chat states"
+        ]
+      },
+      {
+        "id": "section.host.chat_composer",
+        "name": "Host chat composer",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "HostChatComposer"
+        ],
+        "flutter": {
+          "file": "lib/pages/chat/widgets/chat_input.dart",
+          "symbol": "ChatInput"
+        },
+        "currentOwner": "ChatInput",
+        "targetOwner": "provider-free host chat composer section",
+        "dependencies": [
+          "catch.field",
+          "catch.icon_button"
+        ],
+        "states": [
+          "enabled",
+          "loading_disabled",
+          "blocked_disabled",
+          "send_pending",
+          "send_error",
+          "image_pending",
+          "keyboard_open",
+          "multiline"
+        ],
+        "migration": "Move composer disabled reason, pending state, send/image callbacks, and draft retention into HostChatScreenState/controller seams.",
+        "previewIds": [
+          "ChatScreen/Host chat states"
+        ]
+      },
+      {
+        "id": "section.host.chat_safety_actions",
+        "name": "Host chat safety actions",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "HostChatSafetyActions"
+        ],
+        "flutter": {
+          "file": "lib/pages/chat/chat_screen.dart",
+          "symbol": "ChatScreen"
+        },
+        "currentOwner": "_ChatContent",
+        "targetOwner": "ChatController plus provider-free safety action section/menu",
+        "dependencies": [
+          "catch.button",
+          "catch.icon_button"
+        ],
+        "states": [
+          "report_available",
+          "report_pending",
+          "report_error",
+          "block_confirm",
+          "block_pending",
+          "block_error",
+          "blocked"
+        ],
+        "migration": "Report/block availability and pending disabled state now flow through HostChatScreenState and typed ChatThreadAction values; focused tests verify success and failure feedback. Continue moving snackbar/pop effects into a host chat action adapter if they need persistent visual states.",
+        "previewIds": [
+          "ChatScreen/Host chat states"
+        ]
+      },
+      {
+        "id": "section.host.chat_mutation_listeners",
+        "name": "Host chat mutation listener boundary",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "HostChatMutationBoundary"
+        ],
+        "flutter": {
+          "file": "lib/pages/chat/chat_screen.dart",
+          "symbol": "ChatScreen"
+        },
+        "currentOwner": "_ChatMutationListeners",
+        "targetOwner": "shared mutation-feedback boundary with host chat fixtures",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "send_failure",
+          "image_failure",
+          "report_failure",
+          "block_failure"
+        ],
+        "migration": "Keep shared mutation listener boundary but add deterministic host chat previews/captures for each mutation failure path.",
+        "previewIds": [
+          "ChatScreen/Host chat states"
+        ]
+      },
+      {
+        "id": "section.host.chat_access_error",
+        "name": "Host chat access loading and error states",
+        "status": "planned",
+        "layer": "section",
+        "claudeComponents": [
+          "HostChatAccessState"
+        ],
+        "flutter": {
+          "file": "lib/pages/chat/chat_screen.dart",
+          "symbol": "ChatScreen"
+        },
+        "currentOwner": "_ChatContent",
+        "targetOwner": "provider-free host chat loading/error/access section variants",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "uid_loading",
+          "match_loading",
+          "match_error",
+          "missing_match",
+          "offline",
+          "unauthorized"
+        ],
+        "migration": "Name host chat route/access states and add captures for loading, missing, unauthorized, offline, and retry states.",
+        "previewIds": [
+          "ChatScreen/Host chat states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-HOST-CHAT-001",
+      "status": "blocked",
+      "nextAction": "Blocked. Host Chat captures now cover match loading/error/missing, message loading/error/offline, empty, populated, event fallback, blocked, composer pending/disabled, keyboard-open multiline safe-area, image/day-separator populated thread, report failure snackbar, block confirmation dialog, safety pending menu, text-scale, reduced-motion, and light/dark states. Provider-specific profile/club/event offline copy still needs product policy, and pixel-reference variants still need dedicated Host Chat masks."
+    },
+    {
+      "id": "DS-HOST-CHAT-002",
+      "status": "closed",
+      "nextAction": "Closed. ChatRouteState performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState owns host inquiry identity, typed top-bar action availability, route/message/Suvbot retry intents, report/block pending action disabling, top-bar action intent policy, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy for duplicate, forced, incoming-latest, and dispose marks; ChatReadMarkerController executes ConversationRepository.markRead side effects; ChatScrollCoordinator owns initial/appended/send-success message list auto-scroll state; ChatThreadActionController executes profile/share/report/block typed action intents through injected UI and safety runners; ChatRetryController executes typed retry invalidation; and ChatThreadLookupState owns other-participant, host-inquiry club, host profile, public-profile, event, and Suvbot lookup decisions before ChatRouteState performs the provider watches. CatchLegacyTopBar.identity is router/provider-free and supports disabled menu actions. Reopen only for future product-specific action policies."
+    },
+    {
+      "id": "DS-HOST-CHAT-003",
+      "status": "closed",
+      "nextAction": "Add Widgetbook states for Host Chat top bar, event context, message list, bubbles, composer, safety actions, mutation listeners, access/loading/error, accessibility, and theme variants."
+    },
+    {
+      "id": "DS-HOST-CHAT-004",
+      "status": "closed",
+      "nextAction": "Host-specific tests now cover ChatRouteState provider composition, HostChatScreenState identity fallbacks, top-bar typed actions, disabled pending top-bar actions, route/message/Suvbot retry intents, match-route retry invalidation, message retry invalidation, Suvbot retry invalidation, blocked host chat composer behavior, profile navigation/share-card disabled behavior, report/block success behavior, and report/block failure feedback through the shared chat mutation listener."
+    },
+    {
+      "id": "DS-HOST-CHAT-005",
+      "status": "blocked",
+      "nextAction": "Blocked. Baseline shared Messaging-thread Host Chat reference and masks are registered; dedicated Host Chat design variants are still needed for keyboard/safe-area, timestamps, profile photos, generated share-card rasterization if retained, dynamic message times, snackbars, dialogs, host-shell chrome, accessibility, and theme states."
+    },
+    {
+      "id": "DS-HOST-CHAT-006",
+      "status": "open",
+      "nextAction": "feature.member_chat now binds Host Chat as a second projection of the same ChatScreen implementation, compiling all 29 host states and nine host actions. Add six standalone captures and focused tests for the 19 registered test exceptions to retire its 25 host-surface evidence exceptions."
+    }
+  ]
+}

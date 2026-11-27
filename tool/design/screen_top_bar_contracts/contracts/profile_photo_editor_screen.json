@@ -1,0 +1,6 @@
+{
+  "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
+  "role": "compact",
+  "expression": "CatchLegacyTopBar.route",
+  "owner": "CatchLegacyTopBar"
+}

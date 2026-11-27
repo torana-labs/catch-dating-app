@@ -1,0 +1,450 @@
+{
+  "id": "screen.calendar.home",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchLegacyTopBar",
+    "owner": "CatchLegacyTopBar",
+    "reason": "The pushed calendar route owns canonical compact route chrome."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Calendar Home",
+  "owner": "calendar",
+  "priority": "P2",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "calendarScreen",
+      "path": "/calendar",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/events/presentation/calendar/calendar_screen.dart",
+    "symbol": "CalendarScreen"
+  },
+  "stateController": {
+    "primary": "CalendarScreen + uidProvider + watchSignedUpEventCardsProvider + watchSavedEventCardsProvider + CalendarHomeState + organizerNameLookupProvider",
+    "files": [
+      {
+        "file": "lib/events/presentation/calendar/calendar_screen.dart",
+        "symbol": "CalendarScreen"
+      },
+      {
+        "file": "lib/events/presentation/calendar/calendar_screen_state.dart",
+        "symbol": "CalendarHomeState"
+      },
+      {
+        "file": "lib/contexts/bookings/data/guest_event_cards_repository.dart",
+        "symbol": "watchSignedUpEventCards"
+      },
+      {
+        "file": "lib/contexts/bookings/data/guest_event_cards_repository.dart",
+        "symbol": "watchSavedEventCards"
+      },
+      {
+        "file": "lib/contexts/organizers/data/organizer_name_lookup.dart",
+        "symbol": "OrganizerNameLookupQuery"
+      }
+    ],
+    "mutationOwners": [],
+    "notes": "CalendarScreen owns route provider waves, the route Scaffold, retry invalidation, scroll-to-day behavior, and event-detail routing. CalendarHomeState owns event merge/sort, selected date, expanded/collapsed header mode, club-id lookup input, and provider-free agenda section state before calendar sections render."
+  },
+  "designRefs": [
+    {
+      "id": "repo.calendar-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/calendar/calendar_screen_test.dart",
+      "notes": "Calendar tests cover empty, saved/booked merge, stats, agenda ordering, date selection, month expansion, Today, and route navigation."
+    },
+    {
+      "id": "claude.calendar-home",
+      "kind": "claude",
+      "status": "blocked",
+      "notes": "Blocked on canonical Calendar Home screen source/export. The local Claude bundle includes CalendarPrimitive.html/DateRangePicker for analytics ranges, but no standalone Calendar Home screen template matching this route."
+    }
+  ],
+  "captures": [
+    {
+      "id": "calendar_planned_events",
+      "status": "captured",
+      "notes": "Current-user calendar fixture with booked and saved events."
+    },
+    {
+      "id": "calendar_uid_missing",
+      "status": "captured",
+      "notes": "Signed-out Calendar route fallback with empty signed-up and saved event streams."
+    },
+    {
+      "id": "calendar_loading",
+      "status": "captured",
+      "notes": "Route loading skeleton with Calendar top bar, pinned date header, stats strip, and agenda placeholders."
+    },
+    {
+      "id": "calendar_events_error",
+      "status": "captured",
+      "notes": "Signed-up/saved event provider error branch with event retry copy."
+    },
+    {
+      "id": "calendar_empty",
+      "status": "captured",
+      "notes": "Empty calendar branch for no signed-up or saved events."
+    },
+    {
+      "id": "calendar_club_names_loading",
+      "status": "captured",
+      "notes": "Agenda skeleton while club-name lookup resolves after events load."
+    },
+    {
+      "id": "calendar_club_names_error",
+      "status": "captured",
+      "notes": "Club-name lookup error branch inside the agenda section."
+    },
+    {
+      "id": "calendar_expanded_month",
+      "status": "captured",
+      "notes": "Real route seeded with the expanded month date header."
+    },
+    {
+      "id": "calendar_selected_day",
+      "status": "captured",
+      "notes": "Real route seeded with a selected event day for deterministic agenda focus."
+    },
+    {
+      "id": "calendar_text_scale_2",
+      "status": "captured",
+      "notes": "Text scale 2.0 route capture for header, stats, date controls, agenda rows, and state surfaces."
+    },
+    {
+      "id": "calendar_reduced_motion",
+      "status": "captured",
+      "notes": "Reduced-motion route capture for header, stats, and agenda review."
+    },
+    {
+      "id": "calendar_light_dark",
+      "status": "captured",
+      "notes": "Explicit planned-events baseline for paired light/dark output."
+    }
+  ],
+  "states": [
+    {
+      "id": "uid_missing",
+      "kind": "permission",
+      "status": "captured",
+      "source": "When uid is unavailable, CalendarScreen renders empty signed-up/saved event streams rather than querying user-specific providers.",
+      "previewIds": [
+        "CalendarScreen/Screen states"
+      ],
+      "captureIds": [
+        "calendar_uid_missing"
+      ],
+      "tests": [
+        "test/events/calendar_screen_test.dart"
+      ],
+      "nextAction": "calendar_uid_missing captures the signed-out empty-stream fallback; decide whether signed-out calendar should show branded access copy only if product policy changes."
+    },
+    {
+      "id": "events_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "signedUpEvents or savedEvents loading renders a Calendar-shaped skeleton under the Calendar top bar with pinned date-header, stats-strip, and agenda-row placeholders.",
+      "previewIds": [
+        "CalendarScreen/Screen states"
+      ],
+      "captureIds": [
+        "calendar_loading"
+      ],
+      "tests": [
+        "test/calendar/calendar_screen_test.dart"
+      ],
+      "nextAction": "Compare loading skeleton hierarchy against a future Calendar Home loading reference if design adds one."
+    },
+    {
+      "id": "events_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "signedUpEvents or savedEvents errors render CatchLocalizedErrorState with AppErrorContext.event and retry invalidation.",
+      "previewIds": [
+        "CalendarScreen/Screen states"
+      ],
+      "captureIds": [
+        "calendar_events_error"
+      ],
+      "tests": [
+        "test/calendar/calendar_screen_test.dart"
+      ],
+      "nextAction": "Compare provider-error copy against a future Calendar Home error reference if design adds one."
+    },
+    {
+      "id": "planned_events",
+      "kind": "populated",
+      "status": "captured",
+      "source": "calendar_planned_events renders booked and saved event rows with JOINED/SAVED treatment and stats.",
+      "previewIds": [
+        "CalendarScreen/Screen states"
+      ],
+      "captureIds": [
+        "calendar_planned_events",
+        "calendar_light_dark"
+      ],
+      "tests": [
+        "test/calendar/calendar_screen_test.dart"
+      ],
+      "nextAction": "Compare agenda hierarchy, stats, and calendar header against exported design references."
+    },
+    {
+      "id": "empty_calendar",
+      "kind": "empty",
+      "status": "captured",
+      "source": "No signed-up or saved events render the No planned events yet CatchEmptyState.",
+      "previewIds": [
+        "CalendarScreen/Screen states"
+      ],
+      "captureIds": [
+        "calendar_empty"
+      ],
+      "tests": [
+        "test/calendar/calendar_screen_test.dart"
+      ],
+      "nextAction": "Compare empty-calendar copy against a future Calendar Home empty reference if design adds one."
+    },
+    {
+      "id": "club_names_loading_error",
+      "kind": "loading",
+      "status": "captured",
+      "source": "When event rows exist, organizerNameLookupProvider controls a secondary loading/error state before the agenda list renders.",
+      "previewIds": [
+        "CalendarScreen/Screen states"
+      ],
+      "captureIds": [
+        "calendar_club_names_loading",
+        "calendar_club_names_error"
+      ],
+      "tests": [
+        "test/calendar/calendar_screen_state_test.dart",
+        "test/calendar/calendar_screen_test.dart"
+      ],
+      "nextAction": "Compare agenda secondary loading/error treatment against future references if design adds them."
+    },
+    {
+      "id": "expanded_month_header",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Drag and selection interactions toggle the week strip/month grid date header and preserve selected-date agenda scroll.",
+      "previewIds": [
+        "CalendarScreen/Screen states"
+      ],
+      "captureIds": [
+        "calendar_expanded_month",
+        "calendar_selected_day"
+      ],
+      "tests": [
+        "test/calendar/calendar_screen_test.dart"
+      ],
+      "nextAction": "Expanded month and selected-day route states are now seeded for deterministic captures."
+    },
+    {
+      "id": "event_detail_navigation",
+      "kind": "populated",
+      "status": "tested",
+      "source": "Selecting an agenda row pushes the calendar Event Detail alias route with event extra.",
+      "previewIds": [
+        "CalendarScreen/Screen states"
+      ],
+      "tests": [
+        "test/calendar/calendar_screen_test.dart"
+      ],
+      "nextAction": "Keep route test coverage while future passes extract provider-free agenda/state sections."
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Widgetbook CalendarScreen states include text-scale 2.0 review for header, stats, date controls, agenda rows, and state surfaces.",
+      "previewIds": [
+        "CalendarScreen/Screen states"
+      ],
+      "captureIds": [
+        "calendar_text_scale_2"
+      ],
+      "nextAction": "Compare text-scale layout against a future Calendar Home accessibility reference if design adds one."
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Widgetbook CalendarScreen states include reduced-motion review; selected-day scroll animation still uses CatchMotion.calendarScroll at runtime.",
+      "previewIds": [
+        "CalendarScreen/Screen states"
+      ],
+      "captureIds": [
+        "calendar_reduced_motion"
+      ],
+      "nextAction": "Reduced-motion route capture is now registered; selected-day captures use seeded initial state instead of animated scroll."
+    }
+  ],
+  "composition": {
+    "currentLayout": "CalendarScreen owns provider orchestration, route Scaffold, selected date/header input state, club-name lookup, retry invalidation, scroll behavior, and navigation callbacks, then resolves CalendarHomeState and CalendarAgendaSectionState for event summary, selected date, header mode, club-id lookup input, agenda row display, and empty/loading/error section state.",
+    "targetLayout": "Calendar Home should keep CalendarHomeState and CalendarAgendaSectionState as the provider-free adapters for event summary, selected date, header mode, club-id lookup input, agenda rows, empty/loading/error section state, and deterministic captures.",
+    "sections": [
+      {
+        "id": "section.calendar.home_adapter",
+        "name": "Calendar route state adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "CalendarHomeState"
+        ],
+        "flutter": {
+          "file": "lib/events/presentation/calendar/calendar_screen.dart",
+          "symbol": "CalendarScreen"
+        },
+        "currentOwner": "CalendarScreen + CalendarHomeState",
+        "targetOwner": "CalendarScreen + CalendarHomeState",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "uid_missing",
+          "events_loading",
+          "events_error",
+          "planned_events"
+        ],
+        "migration": "CalendarHomeState now owns event merge/sort, selected date, header mode, and club-id lookup input; route-owned provider waves, retry intents, scroll behavior, and navigation callbacks stay at the screen boundary."
+      },
+      {
+        "id": "section.calendar.date_header",
+        "name": "Calendar date header",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "CalendarDateHeader"
+        ],
+        "flutter": {
+          "file": "lib/events/presentation/calendar/calendar_screen.dart",
+          "symbol": "CalendarDateHeader"
+        },
+        "currentOwner": "CalendarScreen private header state",
+        "targetOwner": "provider-free calendar date header section",
+        "dependencies": [
+          "catch.button"
+        ],
+        "states": [
+          "expanded_month_header",
+          "planned_events",
+          "text_scale_2"
+        ],
+        "migration": "Keep week/month visual header local until Calendar/other date surfaces prove reusable date picker semantics."
+      },
+      {
+        "id": "section.calendar.stats_header",
+        "name": "Calendar stats header",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "CalendarStatsHeader"
+        ],
+        "flutter": {
+          "file": "lib/events/presentation/calendar/calendar_screen.dart",
+          "symbol": "CalendarStatsHeader"
+        },
+        "currentOwner": "CalendarScreen",
+        "targetOwner": "provider-free calendar stats section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "planned_events",
+          "empty_calendar"
+        ],
+        "migration": "Event count, distance, and next-event values now come from CalendarHomeState.summary."
+      },
+      {
+        "id": "section.calendar.agenda",
+        "name": "Calendar agenda list",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "CalendarAgenda"
+        ],
+        "flutter": {
+          "file": "lib/events/presentation/calendar/calendar_screen.dart",
+          "symbol": "CalendarScreen"
+        },
+        "currentOwner": "CalendarAgendaSliverSection + EventAgendaSliverList",
+        "targetOwner": "CalendarAgendaSliverSection + EventAgendaSliverList",
+        "dependencies": [
+          "catch.badge",
+          "catch.surface"
+        ],
+        "states": [
+          "planned_events",
+          "club_names_loading_error",
+          "event_detail_navigation"
+        ],
+        "migration": "CalendarAgendaSectionState supplies agenda rows, badge labels, tile statuses, club labels, today, and lookup phases while CalendarScreen supplies route callbacks."
+      },
+      {
+        "id": "section.calendar.empty_error",
+        "name": "Calendar empty and error states",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "CalendarStateSurfaces"
+        ],
+        "flutter": {
+          "file": "lib/events/presentation/calendar/calendar_screen.dart",
+          "symbol": "CalendarAgendaSliverSection"
+        },
+        "currentOwner": "CalendarAgendaSectionState + CalendarAgendaSliverSection",
+        "targetOwner": "CalendarAgendaSectionState + CalendarAgendaSliverSection",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "empty_calendar",
+          "events_loading",
+          "events_error",
+          "club_names_loading_error"
+        ],
+        "migration": "CalendarAgendaSectionState names empty, club-name loading, club-name error, and ready variants; remaining work is deterministic capture coverage before visual comparison."
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-CALENDAR-001",
+      "status": "closed",
+      "nextAction": "Closed by Calendar Widgetbook states covering collapsed/expanded header, stats, agenda rows, loading, empty, provider error, club-name loading/error, text scale, reduced motion, and dark theme variants under the canonical screen.calendar.home contract id."
+    },
+    {
+      "id": "DS-CALENDAR-002",
+      "status": "closed",
+      "nextAction": "Closed by deterministic Calendar captures for uid-missing fallback, loading, empty, provider error, club-name loading/error, expanded month, selected day, text scale, reduced motion, and paired light/dark output."
+    },
+    {
+      "id": "DS-CALENDAR-003",
+      "status": "closed",
+      "nextAction": "Closed by CalendarHomeState and CalendarAgendaSectionState owning event summary, selected date, header mode, club-id lookup input, agenda row display, and empty/loading/error section state while CalendarScreen retains provider waves, retry invalidation, scroll behavior, and route navigation."
+    },
+    {
+      "id": "DS-CALENDAR-004",
+      "status": "blocked",
+      "nextAction": "Canonical Calendar Home reference export is blocked until design provides a standalone Calendar Home screen source. Current Claude sources only provide CalendarPrimitive.html/DateRangePicker, which is a primitive for analytics ranges, not this route."
+    }
+  ]
+}

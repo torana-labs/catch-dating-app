@@ -1,0 +1,27 @@
+{
+  "routeId": "hostChatScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "host_chat_inquiry",
+    "host_chat_match_loading",
+    "host_chat_match_error",
+    "host_chat_not_found",
+    "host_chat_messages_loading",
+    "host_chat_messages_error",
+    "host_chat_offline",
+    "host_chat_empty_thread",
+    "host_chat_event_context_fallback",
+    "host_chat_blocked",
+    "host_chat_text_scale_2",
+    "host_chat_reduced_motion",
+    "host_chat_light_dark",
+    "host_chat_composer_states",
+    "host_chat_keyboard_multiline",
+    "host_chat_image_day_separator",
+    "host_chat_report_failure_snackbar",
+    "host_chat_block_confirm_dialog",
+    "host_chat_safety_pending_menu"
+  ],
+  "reason": "Host Chat now has deterministic captures for host inquiry baseline, match loading, match error, missing chat, message loading, message error, offline message load, empty thread, event fallback, blocked chat, text scale 2.0, reduced motion, paired light/dark output, composer ready/send-pending/image-pending/disabled states, keyboard-open multiline safe-area, image/day-separator populated thread, report failure snackbar, block confirmation dialog, and pending safety menu rows. Remaining work is provider-specific offline policy, dedicated references, and pixel comparison."
+}

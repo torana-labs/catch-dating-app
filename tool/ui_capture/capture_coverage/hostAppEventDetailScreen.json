@@ -1,0 +1,9 @@
+{
+  "routeId": "hostAppEventDetailScreen",
+  "status": "captured",
+  "priority": "P1",
+  "reason": "Host app Event Detail capture renders the host role state with consumer booking actions suppressed.",
+  "captureIds": [
+    "event_detail_host_app"
+  ]
+}

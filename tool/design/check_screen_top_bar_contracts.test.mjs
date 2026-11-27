@@ -4,6 +4,8 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {checkScreenTopBarContracts} from "./check_screen_top_bar_contracts.mjs";
+import {splitInlineEntries} from "../lib/split_registry.mjs";
+import {topBarRegistrySpec, topBarStems} from "./lib/screen_registries.mjs";
 
 test("accepts registered app-bar, root-screen, geometry, and hero contracts", () => {
   const root = fixtureRoot({
@@ -1384,6 +1386,8 @@ function fixtureRoot({
     "tool/design/screen_top_bar_contracts.json",
     JSON.stringify(manifest),
   );
+  // The registry is one file per entry; split the fixture the way the migration did.
+  splitInlineEntries(root, topBarRegistrySpec, {stemOf: topBarStems});
   return root;
 }
 

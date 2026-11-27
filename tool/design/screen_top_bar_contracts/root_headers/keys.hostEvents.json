@@ -1,0 +1,11 @@
+{
+  "branchKey": "keys.hostEvents",
+  "routeName": "Routes.hostEventsScreen.name",
+  "surfaces": [
+    {
+      "path": "lib/hosts/events/events_screen.dart",
+      "symbol": "_HostEventsTabScreenState",
+      "owner": "CatchTopBar"
+    }
+  ]
+}

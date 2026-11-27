@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "savedEventsScreen"
+      ],
+      "file": "lib/events/presentation/saved_events_screen.dart",
+      "symbol": "SavedEventsScreen",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Saved Events is a conventional pushed list route."
+}

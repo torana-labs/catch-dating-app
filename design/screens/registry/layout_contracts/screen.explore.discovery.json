@@ -1,0 +1,27 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "exploreScreen"
+      ],
+      "file": "lib/explore/presentation/explore_screen.dart",
+      "symbol": "_ExploreScreenState",
+      "family": "root",
+      "expression": "CatchRootScreenScaffold.withPrimaryRail",
+      "bodyGeometry": "full-bleed",
+      "topEdge": "header-owned"
+    },
+    {
+      "routes": [
+        "exploreMapScreen"
+      ],
+      "file": "lib/explore/presentation/explore_map_screen.dart",
+      "symbol": "_ExploreMapScreenState",
+      "family": "immersive",
+      "expression": "CatchScaffold.workspace",
+      "bodyGeometry": "full-bleed",
+      "topEdge": "body-owned"
+    }
+  ],
+  "reason": "Explore declares separate canonical list-root and immersive-map owners."
+}

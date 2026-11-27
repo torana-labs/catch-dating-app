@@ -1,0 +1,654 @@
+{
+  "id": "screen.host.inbox",
+  "shell": {
+    "owner": "host",
+    "nestedScaffoldAllowed": false,
+    "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "shell",
+    "expression": "shell-owned",
+    "owner": "AdaptiveTabScaffold",
+    "reason": "Messages, Sends and Compose each draw their own pane header inside the Host shell; on wide windows the open conversation sits beside the list."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "offline"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Host Inbox",
+  "owner": "hosts",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "hostInboxScreen",
+      "path": "/host/inbox",
+      "role": "primary"
+    },
+    {
+      "id": "hostOrganizerMessagingScreen",
+      "path": "/host/organizer/:organizerId/messaging",
+      "role": "host"
+    }
+  ],
+  "source": {
+    "file": "lib/hosts/people/messages_screen.dart",
+    "symbol": "HostMessagesScreen"
+  },
+  "stateController": {
+    "primary": "hostPeopleOrganizerProvider + hostMessagesControllerProvider + composeHostInboxPeople + resolveHostInboxScope + hostSendsControllerProvider + hostComposeControllerProvider + HostComposeCommands",
+    "files": [
+      {
+        "file": "lib/hosts/people/messages_screen.dart",
+        "symbol": "HostMessagesScreen"
+      },
+      {
+        "file": "lib/hosts/organizer/messaging_screen.dart",
+        "symbol": "OrganizerMessagingScreen"
+      },
+      {
+        "file": "lib/contexts/audience/data/crm/host_whatsapp_repository.dart",
+        "symbol": "hostMessagingSetup"
+      },
+      {
+        "file": "lib/hosts/people/messages_controller.dart",
+        "symbol": "hostMessagesController"
+      },
+      {
+        "file": "lib/hosts/people/conversation/conversation_people.dart",
+        "symbol": "composeHostInboxPeople"
+      },
+      {
+        "file": "lib/hosts/people/conversation/conversation_people.dart",
+        "symbol": "resolveHostInboxScope"
+      },
+      {
+        "file": "lib/hosts/people/sends/sends_screen.dart",
+        "symbol": "HostSendsScreen"
+      },
+      {
+        "file": "lib/hosts/people/sends/sends_controller.dart",
+        "symbol": "hostSendsController"
+      },
+      {
+        "file": "lib/hosts/people/compose_screen.dart",
+        "symbol": "HostComposeScreen"
+      },
+      {
+        "file": "lib/hosts/people/compose_controller.dart",
+        "symbol": "hostComposeController"
+      },
+      {
+        "file": "lib/routing/host_inbox_route.dart",
+        "symbol": "hostMessagesScreenForUri"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/hosts/people/compose_controller.dart",
+        "symbol": "HostComposeCommands"
+      },
+      {
+        "file": "lib/hosts/presentation/host_audience_controller.dart",
+        "symbol": "HostAudienceController"
+      },
+      {
+        "file": "lib/hosts/presentation/host_organizer_post_controller.dart",
+        "symbol": "HostOrganizerPostController"
+      }
+    ],
+    "notes": "The /host/inbox route resolves through hostMessagesScreenForUri to HostMessagesScreen (conversations, opened on a thread, a programme or every conversation), HostSendsScreen (workspace=campaigns) or HostComposeScreen (an eventId without a thread). Messages follows the organizer hostPeopleOrganizerProvider resolves; hostMessagesControllerProvider composes its list, scope, Booked and Prospective counts from the event's bookings, search and partial pages through composeHostInboxPeople. HostComposeCommands sends one announcement under one request id per draft. Sends composes history, the manual handoff queue, sender setup and the follower update quota; HostAudienceController owns campaign mutations and HostOrganizerPostController follower updates."
+  },
+  "designRefs": [
+    {
+      "id": "repo.host-inbox-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/hosts/people/conversation/messages_scope_test.dart",
+      "notes": "Messages tests cover the event scope split into Booked and Prospective, General inquiries holding only conversations about no event, the name search in every scope and partial WhatsApp pages; conversation_people_test covers scope resolution and programme withholding."
+    },
+    {
+      "id": "repo.chat-list-tile-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/core/catch_person_row_test.dart",
+      "notes": "Catch person row tests cover unread semantics, timestamp/preview row behavior, and row visual states shared by Host Inbox."
+    },
+    {
+      "id": "claude.host-inbox",
+      "kind": "claude",
+      "status": "available",
+      "notes": "Host Inbox reference board for the redesigned Messages list; the old HostInboxScreen comparison numbers no longer apply and the redesigned screen needs a fresh comparison.",
+      "path": "design/source_packs/host-v2/templates/hosts-inbox/Inbox.dc.html"
+    }
+  ],
+  "captures": [
+    {
+      "id": "host_inbox_uid_loading",
+      "status": "captured",
+      "notes": "Messages while the organizer is still resolving."
+    },
+    {
+      "id": "host_inbox_loading",
+      "status": "captured",
+      "notes": "Messages while the conversations are loading."
+    },
+    {
+      "id": "host_inbox_error",
+      "status": "captured",
+      "notes": "Messages when the conversations cannot be read, with Try again."
+    },
+    {
+      "id": "host_inbox_offline",
+      "status": "captured",
+      "notes": "Messages when the conversations cannot be read offline."
+    },
+    {
+      "id": "host_inbox_empty",
+      "status": "captured",
+      "notes": "Messages with no conversations yet."
+    },
+    {
+      "id": "host_inbox_queries",
+      "status": "captured",
+      "notes": "Messages narrowed to an event on the Booked view, inside the Host shell."
+    },
+    {
+      "id": "host_messaging_campaigns",
+      "status": "captured",
+      "notes": "Sends: history and the manual WhatsApp handoff waiting to be marked as sent."
+    },
+    {
+      "id": "host_inbox_prospective",
+      "status": "captured",
+      "notes": "Messages narrowed to an event on the Prospective view."
+    },
+    {
+      "id": "host_inbox_general",
+      "status": "captured",
+      "notes": "Messages narrowed to General inquiries."
+    },
+    {
+      "id": "host_inbox_roster_no_threads",
+      "status": "captured",
+      "notes": "An event scope whose bookings are known but nobody has written yet."
+    },
+    {
+      "id": "host_inbox_broadcast_composer",
+      "status": "captured",
+      "notes": "The event announcement compose screen, ready to send."
+    },
+    {
+      "id": "host_inbox_broadcast_pending",
+      "status": "captured",
+      "notes": "The event announcement compose screen while the send is in flight."
+    },
+    {
+      "id": "host_inbox_broadcast_error",
+      "status": "captured",
+      "notes": "The event announcement compose screen after a failed send."
+    },
+    {
+      "id": "host_inbox_text_scale_2",
+      "status": "captured",
+      "notes": "Messages at text scale 2."
+    },
+    {
+      "id": "host_inbox_reduced_motion",
+      "status": "captured",
+      "notes": "Messages with animations off."
+    },
+    {
+      "id": "host_inbox_light_dark",
+      "status": "captured",
+      "notes": "Messages in paired light and dark themes."
+    }
+  ],
+  "states": [
+    {
+      "id": "uid_loading_or_missing",
+      "kind": "loading",
+      "status": "captured",
+      "source": "HostMessagesScreen shows HostPeopleScopeBody while hostPeopleOrganizerProvider resolves, and sign in or retry when it cannot.",
+      "nextAction": "None.",
+      "captureIds": [
+        "host_inbox_uid_loading"
+      ],
+      "tests": [
+        "test/hosts/people/people_captures_test.dart"
+      ]
+    },
+    {
+      "id": "matches_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "HostMessagesBody shows the loading indicator while hostMessagesControllerProvider reads its sources.",
+      "nextAction": "None.",
+      "captureIds": [
+        "host_inbox_loading"
+      ],
+      "tests": [
+        "test/hosts/people/people_captures_test.dart"
+      ]
+    },
+    {
+      "id": "matches_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "HostMessagesBody shows CatchErrorState with Try again when a source fails.",
+      "nextAction": "None.",
+      "captureIds": [
+        "host_inbox_error"
+      ],
+      "tests": [
+        "test/hosts/people/conversation/messages_scope_test.dart"
+      ]
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "An offline failure is described by the shared error copy, with Try again.",
+      "nextAction": "None.",
+      "captureIds": [
+        "host_inbox_offline"
+      ]
+    },
+    {
+      "id": "empty_host_queries",
+      "kind": "empty",
+      "status": "captured",
+      "source": "HostMessagesBody draws the empty copy hostMessagesEmpty picks for the filter and scope.",
+      "nextAction": "None.",
+      "captureIds": [
+        "host_inbox_empty"
+      ]
+    },
+    {
+      "id": "populated_queries",
+      "kind": "populated",
+      "status": "captured",
+      "source": "An event scope lists its conversations with the Booked and Prospective views and their counts; a phone pushes the open conversation full screen and wider windows keep it beside the list.",
+      "nextAction": "None.",
+      "captureIds": [
+        "host_inbox_queries",
+        "host_inbox_text_scale_2",
+        "host_inbox_light_dark"
+      ],
+      "tests": [
+        "test/hosts/people/conversation/messages_scope_test.dart",
+        "test/hosts/people/conversation/conversation_screen_test.dart"
+      ]
+    },
+    {
+      "id": "prospective_queries",
+      "kind": "populated",
+      "status": "captured",
+      "source": "The Prospective view lists people known not booked for the event; a person whose booking cannot be told is marked unknown.",
+      "nextAction": "None.",
+      "captureIds": [
+        "host_inbox_prospective"
+      ],
+      "tests": [
+        "test/hosts/people/conversation/messages_scope_test.dart",
+        "test/hosts/people/conversation/conversation_people_test.dart"
+      ]
+    },
+    {
+      "id": "general_queries",
+      "kind": "populated",
+      "status": "captured",
+      "source": "General inquiries holds only conversations about no event.",
+      "nextAction": "None.",
+      "captureIds": [
+        "host_inbox_general"
+      ],
+      "tests": [
+        "test/hosts/people/conversation/messages_scope_test.dart",
+        "test/hosts/people/conversation/conversation_people_test.dart"
+      ]
+    },
+    {
+      "id": "program_queries",
+      "kind": "populated",
+      "status": "tested",
+      "source": "A programme scope reads only that programme's verified identity and withholds conversations it cannot attribute.",
+      "nextAction": "None.",
+      "tests": [
+        "test/hosts/people/conversation/conversation_people_test.dart"
+      ]
+    },
+    {
+      "id": "roster_without_threads",
+      "kind": "empty",
+      "status": "captured",
+      "source": "An event whose bookings are known but nobody has written about shows its counts and the empty copy.",
+      "nextAction": "None.",
+      "captureIds": [
+        "host_inbox_roster_no_threads"
+      ],
+      "tests": [
+        "test/hosts/people/conversation/messages_scope_test.dart"
+      ]
+    },
+    {
+      "id": "search_active",
+      "kind": "populated",
+      "status": "tested",
+      "source": "The name search narrows every scope.",
+      "nextAction": "None.",
+      "tests": [
+        "test/hosts/people/conversation/messages_scope_test.dart"
+      ]
+    },
+    {
+      "id": "broadcast_composer_lifecycle",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "HostComposeScreen sends one announcement through HostComposeCommands under one request id per draft: a failed send retries the same id, and a changed draft gets a new one.",
+      "nextAction": "None.",
+      "captureIds": [
+        "host_inbox_broadcast_composer",
+        "host_inbox_broadcast_pending",
+        "host_inbox_broadcast_error"
+      ],
+      "tests": [
+        "test/hosts/people/compose_request_id_test.dart",
+        "test/events/event_repository_test.dart"
+      ]
+    },
+    {
+      "id": "communication_intent_picker",
+      "kind": "populated",
+      "status": "tested",
+      "source": "Sends offers what to send: continue a conversation, a saved-audience campaign, an event announcement or a follower update, each with its own readiness.",
+      "nextAction": "None.",
+      "tests": [
+        "test/hosts/people/sends/sends_body_test.dart"
+      ],
+      "previewIds": [
+        "HostSendsChooseBody/What to send"
+      ]
+    },
+    {
+      "id": "manual_handoff_queue",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Sends lists the personal WhatsApp handoffs still to send by hand, with Check options and Load more.",
+      "nextAction": "None.",
+      "captureIds": [
+        "host_messaging_campaigns"
+      ],
+      "tests": [
+        "test/hosts/people/sends/sends_body_test.dart",
+        "test/hosts/host_crm_repository_test.dart"
+      ],
+      "previewIds": [
+        "HostSendsQueueSection/Needs your send"
+      ]
+    },
+    {
+      "id": "manual_handoff_opened_unconfirmed",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "HostManualSendSheet records the opened handoff and enables Mark as sent only after WhatsApp opened.",
+      "nextAction": "None.",
+      "tests": [
+        "test/hosts/people/sends/sends_body_test.dart"
+      ],
+      "previewIds": [
+        "HostManualSendSheet/Opened in WhatsApp"
+      ]
+    },
+    {
+      "id": "follower_update_composer",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "HostFollowerUpdateSheet shows the weekly quota, the 500-character counter and the WhatsApp switch, and keeps one request id until the copy changes.",
+      "nextAction": "None.",
+      "tests": [
+        "test/hosts/people/sends/follower_update_sheet_test.dart"
+      ],
+      "previewIds": [
+        "HostFollowerUpdateSheet/WhatsApp unavailable"
+      ]
+    },
+    {
+      "id": "campaign_compose_deep_link",
+      "kind": "populated",
+      "status": "tested",
+      "source": "workspace=campaigns with compose=1 and audienceId opens a campaign to that saved audience.",
+      "nextAction": "None.",
+      "tests": [
+        "test/routing/router_widgets_test.dart"
+      ]
+    },
+    {
+      "id": "customer_campaign_draft",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "HostCampaignScreen edits a campaign: name, message type, schedule, saved audience, template and its values, linked event, with validation and preview.",
+      "nextAction": "None.",
+      "tests": [
+        "test/hosts/people/sends/campaign_body_test.dart"
+      ],
+      "previewIds": [
+        "HostCampaignScreen/Setup loading"
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Messages with animations off.",
+      "nextAction": "None.",
+      "captureIds": [
+        "host_inbox_reduced_motion"
+      ]
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Messages at text scale 2.",
+      "nextAction": "None.",
+      "captureIds": [
+        "host_inbox_text_scale_2"
+      ]
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "Messages in paired light and dark themes.",
+      "nextAction": "None.",
+      "captureIds": [
+        "host_inbox_light_dark"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "The /host/inbox route resolves to the People tab's Messages: a search field, All, Unread and Tonight chips, the scope menu (events, programmes, General inquiries), Booked and Prospective in an event scope, the Automatic messages and Sends rows, then the conversations. A phone pushes the open conversation full screen; wider windows keep it beside the list. Sends and the announcement compose screen are their own screens on the same route.",
+    "targetLayout": "Same as the current layout.",
+    "sections": [
+      {
+        "id": "section.host.inbox_screen_adapter",
+        "name": "Messages screen",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [],
+        "flutter": {
+          "file": "lib/hosts/people/messages_screen.dart",
+          "symbol": "HostMessagesScreen"
+        },
+        "currentOwner": "HostMessagesScreen",
+        "targetOwner": "HostMessagesScreen",
+        "dependencies": [],
+        "states": [
+          "uid_loading_or_missing",
+          "populated_queries"
+        ],
+        "migration": "Done: HostInboxScreen retired."
+      },
+      {
+        "id": "section.host.inbox_row_list",
+        "name": "Messages list",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [],
+        "flutter": {
+          "file": "lib/hosts/people/messages_body.dart",
+          "symbol": "HostMessagesBody"
+        },
+        "currentOwner": "HostMessagesBody",
+        "targetOwner": "HostMessagesBody",
+        "dependencies": [],
+        "states": [
+          "matches_loading",
+          "matches_error",
+          "empty_host_queries",
+          "populated_queries",
+          "prospective_queries",
+          "general_queries",
+          "roster_without_threads",
+          "search_active"
+        ],
+        "migration": "Done."
+      },
+      {
+        "id": "section.host.inbox_row",
+        "name": "Conversation row",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [],
+        "flutter": {
+          "file": "lib/contexts/messaging/parts/messaging_thread_row.dart",
+          "symbol": "MessagingThreadRow"
+        },
+        "currentOwner": "MessagingThreadRow",
+        "targetOwner": "MessagingThreadRow",
+        "dependencies": [],
+        "states": [
+          "populated_queries"
+        ],
+        "migration": "Done."
+      },
+      {
+        "id": "section.host.inbox_broadcast_composer",
+        "name": "Event announcement",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [],
+        "flutter": {
+          "file": "lib/hosts/people/compose_screen.dart",
+          "symbol": "HostComposeScreen"
+        },
+        "currentOwner": "HostComposeScreen + HostComposeCommands",
+        "targetOwner": "HostComposeScreen + HostComposeCommands",
+        "dependencies": [],
+        "states": [
+          "broadcast_composer_lifecycle"
+        ],
+        "migration": "Done: HostBroadcastComposerSheet retired."
+      },
+      {
+        "id": "section.host.messaging_sends",
+        "name": "Sends",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [],
+        "flutter": {
+          "file": "lib/hosts/people/sends/sends_screen.dart",
+          "symbol": "HostSendsScreen"
+        },
+        "currentOwner": "HostSendsScreen",
+        "targetOwner": "HostSendsScreen",
+        "dependencies": [],
+        "states": [
+          "communication_intent_picker",
+          "manual_handoff_queue",
+          "manual_handoff_opened_unconfirmed",
+          "follower_update_composer",
+          "campaign_compose_deep_link"
+        ],
+        "migration": "Done: the Sends workspace retired.",
+        "previewIds": [
+          "HostSendsBody/History and handoffs"
+        ]
+      },
+      {
+        "id": "section.host.messaging_whatsapp_setup",
+        "name": "WhatsApp sender setup",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [],
+        "flutter": {
+          "file": "lib/hosts/organizer/messaging_screen.dart",
+          "symbol": "OrganizerMessagingScreen"
+        },
+        "currentOwner": "OrganizerMessagingScreen",
+        "targetOwner": "OrganizerMessagingScreen",
+        "dependencies": [],
+        "states": [
+          "communication_intent_picker"
+        ],
+        "migration": "On the organizer messaging route."
+      },
+      {
+        "id": "section.host.messaging_campaign_composer",
+        "name": "Campaign",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [],
+        "flutter": {
+          "file": "lib/hosts/people/sends/campaign_screen.dart",
+          "symbol": "HostCampaignScreen"
+        },
+        "currentOwner": "HostCampaignScreen",
+        "targetOwner": "HostCampaignScreen",
+        "dependencies": [],
+        "states": [
+          "customer_campaign_draft"
+        ],
+        "migration": "Done: HostCampaignEditor retired.",
+        "previewIds": [
+          "HostCampaignScreen/Setup loading"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-HOST-INBOX-001",
+      "status": "open",
+      "nextAction": "Compare the redesigned Messages list with the Host-v2 Inbox board; the old HostInboxScreen numbers no longer apply."
+    },
+    {
+      "id": "DS-HOST-INBOX-002",
+      "status": "closed",
+      "nextAction": "hostMessagesControllerProvider owns scope, Booked and Prospective classification, roster and conversation counts, search and partial pages; hostMessagesScreenForUri owns typed routing."
+    },
+    {
+      "id": "DS-HOST-INBOX-003",
+      "status": "closed",
+      "nextAction": "Widgetbook renders Sends and its sheets; Messages renders from the People capture fixtures."
+    },
+    {
+      "id": "DS-HOST-INBOX-004",
+      "status": "closed",
+      "nextAction": "Announcements send through HostComposeCommands with one request id per draft; the never-set production sending switch was retired with HostInboxScreen."
+    },
+    {
+      "id": "DS-HOST-INBOX-005",
+      "status": "open",
+      "nextAction": "Keep feature.host_inbox generated from the Messaging contract and add Messages search and selected-conversation captures."
+    }
+  ]
+}

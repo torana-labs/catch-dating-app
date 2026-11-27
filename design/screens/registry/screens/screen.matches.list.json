@@ -1,0 +1,580 @@
+{
+  "id": "screen.matches.list",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "shell",
+    "expression": "shell-owned",
+    "owner": "AdaptiveTabScaffold",
+    "reason": "The route body relies on shell chrome or a registered nested composition owner."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "offline"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Matches List",
+  "owner": "matches",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "matchesListScreen",
+      "path": "/chats",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
+    "symbol": "ChatsListScreen"
+  },
+  "stateController": {
+    "primary": "HostInboxScreenState + ChatsListDisplayState + chatsListViewModelProvider",
+    "files": [
+      {
+        "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
+        "symbol": "ChatsListScreen"
+      },
+      {
+        "file": "lib/pages/inbox/chats_list_screen_state.dart",
+        "symbol": "HostInboxScreenState"
+      },
+      {
+        "file": "lib/pages/inbox/chats_list_screen_state.dart",
+        "symbol": "ChatsListDisplayState"
+      },
+      {
+        "file": "lib/pages/inbox/chats_list_celebration_controller.dart",
+        "symbol": "ChatsListCelebrationController"
+      },
+      {
+        "file": "lib/pages/inbox/chats_search_header_controller.dart",
+        "symbol": "ChatsSearchHeaderController"
+      },
+      {
+        "file": "lib/pages/inbox/chats_list_view_model.dart",
+        "symbol": "ChatsListViewModel"
+      },
+      {
+        "file": "lib/pages/inbox/chats_list_view_model.dart",
+        "symbol": "ChatSearchQuery"
+      },
+      {
+        "file": "lib/contexts/connections/data/match_repository.dart",
+        "symbol": "watchMatchesForUser"
+      },
+      {
+        "file": "lib/contexts/connections/data/match_repository.dart",
+        "symbol": "collapseMatchesByOtherUser"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/contexts/connections/data/match_repository.dart",
+        "symbol": "MatchRepository"
+      }
+    ],
+    "notes": "The route uses ChatsListViewModel for match aggregation/search. HostInboxScreenState and ChatsListDisplayState now live in chats_list_screen_state.dart and own host filter projection, unread count, search affordance, loading/error/content/empty mapping, unread filtering, visible row derivation, and empty-state selection before ChatsList renders sections. ChatsListCelebrationController owns new-match celebration target selection and dialog execution. ChatsSearchHeaderController owns search-open close policy, while ChatsListScreen passes chatSearchQueryProvider value and callback into the header."
+  },
+  "designRefs": [
+    {
+      "id": "repo.matches-captures",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/ui_captures/catalog/screen_capture_catalog.dart",
+      "notes": "matches_list_context captures the consumer list with active conversations and new matches from synthetic personas."
+    },
+    {
+      "id": "claude.matches-list",
+      "kind": "claude",
+      "status": "available",
+      "notes": "Messaging inbox reference exported to design/reference_screens/screen.matches.list/inbox.png, registered, and within advisory threshold against matches_list_context. The current Messaging handoff has no separate Matches List search/filter/loading/empty reference panels.",
+      "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-messaging/Messaging.dc.html"
+    }
+  ],
+  "captures": [
+    {
+      "id": "matches_list_context",
+      "status": "captured",
+      "notes": "Deterministic route capture."
+    },
+    {
+      "id": "matches_list_loading",
+      "status": "captured",
+      "notes": "Consumer match list skeleton/loading state."
+    },
+    {
+      "id": "matches_list_error",
+      "status": "captured",
+      "notes": "Consumer match list generic error and retry state."
+    },
+    {
+      "id": "matches_list_offline",
+      "status": "captured",
+      "notes": "Consumer match list offline-mapped error state."
+    },
+    {
+      "id": "matches_list_no_matches_empty",
+      "status": "captured",
+      "notes": "Consumer match list empty state with no catches."
+    },
+    {
+      "id": "matches_list_search_open",
+      "status": "captured",
+      "notes": "Consumer match list pinned search field active with query text."
+    },
+    {
+      "id": "matches_list_search_empty",
+      "status": "captured",
+      "notes": "Consumer match list search-empty state."
+    },
+    {
+      "id": "matches_list_duplicate_collapsed",
+      "status": "captured",
+      "notes": "Consumer match list duplicate-person collapse fixture."
+    },
+    {
+      "id": "matches_list_match_celebration",
+      "status": "captured",
+      "notes": "Full-screen match celebration dialog with capture-safe no-op effects."
+    },
+    {
+      "id": "matches_list_text_scale_2",
+      "status": "captured",
+      "notes": "Consumer match list at text scale 2.0."
+    },
+    {
+      "id": "matches_list_reduced_motion",
+      "status": "captured",
+      "notes": "Consumer match list with reduced motion enabled."
+    }
+  ],
+  "states": [
+    {
+      "id": "uid_or_matches_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "chatsListViewModelProvider returns AsyncLoading until uid and matches are available; ChatsListDisplayState maps it to ChatsListLoading before ChatsList renders CatchSkeletonList.",
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatsListScreen/Consumer route states"
+      ],
+      "captureIds": [
+        "matches_list_loading"
+      ]
+    },
+    {
+      "id": "matches_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "ChatsListDisplayState maps match stream failures to ChatsListError before ChatsList renders CatchLocalizedSliverErrorState with AppErrorContext.chat and retry invalidation.",
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatsListScreen/Consumer route states"
+      ],
+      "captureIds": [
+        "matches_list_error"
+      ]
+    },
+    {
+      "id": "populated_threads",
+      "kind": "populated",
+      "status": "captured",
+      "source": "matches_list_context renders synthetic conversation previews and row-level new/unread treatment.",
+      "captureIds": [
+        "matches_list_context"
+      ],
+      "tests": [
+        "test/chats/chat_inbox_screen_test.dart",
+        "test/core/catch_person_row_test.dart"
+      ],
+      "nextAction": "Compare row hierarchy and timestamp/unread treatment against exported design references.",
+      "previewIds": [
+        "ChatsListScreen/Consumer route states"
+      ]
+    },
+    {
+      "id": "new_matches",
+      "kind": "populated",
+      "status": "captured",
+      "source": "ChatsListViewModel separates newMatches, while current ChatsListBody merges new and active rows into one list with row-level new treatment.",
+      "tests": [
+        "test/core/catch_person_row_test.dart"
+      ],
+      "nextAction": "Closed. No ChatNewMatchesRail symbol exists in the codebase; new matches intentionally render inside the shared ChatConversationsList with CatchPersonRow fresh treatment until product designs a separate rail.",
+      "previewIds": [
+        "ChatsListScreen/Consumer route states"
+      ],
+      "captureIds": [
+        "matches_list_context"
+      ]
+    },
+    {
+      "id": "search_open",
+      "kind": "populated",
+      "status": "captured",
+      "source": "ChatsSliverHeader expands the pinned CatchBrowseHeader search field and writes chatSearchQueryProvider.",
+      "tests": [
+        "test/chats/chat_inbox_screen_test.dart"
+      ],
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatsListScreen/Consumer route states"
+      ],
+      "captureIds": [
+        "matches_list_search_open"
+      ]
+    },
+    {
+      "id": "search_empty",
+      "kind": "empty",
+      "status": "captured",
+      "source": "ChatsListDisplayState maps a non-empty source with no visible query results to ChatsEmptyState.noSearchResults.",
+      "tests": [
+        "test/chats/chat_inbox_screen_test.dart"
+      ],
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatsListScreen/Consumer route states"
+      ],
+      "captureIds": [
+        "matches_list_search_empty"
+      ]
+    },
+    {
+      "id": "no_matches_empty",
+      "kind": "empty",
+      "status": "captured",
+      "source": "ChatsListDisplayState maps no visible matches to ChatsEmptyState default consumer copy.",
+      "tests": [
+        "test/chats/chat_inbox_screen_test.dart"
+      ],
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatsListScreen/Consumer route states"
+      ],
+      "captureIds": [
+        "matches_list_no_matches_empty"
+      ]
+    },
+    {
+      "id": "duplicate_collapsed",
+      "kind": "populated",
+      "status": "captured",
+      "source": "collapseMatchesByOtherUser keeps one latest row per person and merges unread/event context.",
+      "tests": [
+        "test/chats/chat_inbox_screen_test.dart",
+        "test/chats/match_repository_test.dart"
+      ],
+      "nextAction": "Keep aggregation in the view model and add fixture coverage for duplicate matches if row grouping changes.",
+      "previewIds": [
+        "ChatsListScreen/Consumer route states"
+      ],
+      "captureIds": [
+        "matches_list_duplicate_collapsed"
+      ]
+    },
+    {
+      "id": "unread_state",
+      "kind": "populated",
+      "status": "captured",
+      "source": "CatchPersonRow shows row-level unread treatment and hides unread count for own latest message.",
+      "tests": [
+        "test/chats/chat_inbox_screen_test.dart",
+        "test/core/catch_person_row_test.dart"
+      ],
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatsListScreen/Consumer route states"
+      ],
+      "captureIds": [
+        "matches_list_context"
+      ]
+    },
+    {
+      "id": "match_celebration",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "ChatsListCelebrationController selects newly-arrived consumer match ids and executes showMatchCelebration for consumer app role.",
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatsListScreen/Consumer route states"
+      ],
+      "captureIds": [
+        "matches_list_match_celebration"
+      ]
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Match stream errors currently route through the generic chat error mapping.",
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatsListScreen/Consumer route states"
+      ],
+      "captureIds": [
+        "matches_list_offline"
+      ]
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "matches_list_text_scale_2 captures the consumer Matches List route at TextScaler 2.0.",
+      "nextAction": "Text-scale route coverage is registered; compare only if future text-scale references are exported.",
+      "previewIds": [
+        "ChatsListScreen/Consumer route states"
+      ],
+      "captureIds": [
+        "matches_list_text_scale_2"
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "matches_list_reduced_motion captures the consumer Matches List route with MediaQuery.disableAnimations enabled.",
+      "nextAction": "Reduced-motion route coverage is registered; add focused motion proof only if search or celebration animation behavior changes.",
+      "previewIds": [
+        "ChatsListScreen/Consumer route states"
+      ],
+      "captureIds": [
+        "matches_list_reduced_motion"
+      ]
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "matches_list_context emits paired light/dark artifacts through the capture harness and anchors the populated reference comparison.",
+      "nextAction": "Populated light/dark baseline is registered; compare additional theme variants only if design exports them.",
+      "previewIds": [
+        "ChatsListScreen/Consumer route states"
+      ],
+      "captureIds": [
+        "matches_list_context"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "ChatsListScreen owns host filter state, reads ChatsListViewModel and chatSearchQueryProvider, builds HostInboxScreenState, then passes header data, search value/callback, and ChatsListDisplayState into sliver header plus ChatsList. ChatsList renders loading/error/empty/body branches from display state and delegates new-match celebration target selection/effect execution to ChatsListCelebrationController. ChatsSearchHeaderController owns search-open close policy.",
+    "targetLayout": "Matches List search/filter, row-list, empty/error, and celebration behavior is adapter/controller-owned for the current contract. Continue only reference/capture parity unless future product policy adds a new interaction seam.",
+    "sections": [
+      {
+        "id": "section.matches.list_chrome",
+        "name": "Chats list chrome and search",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ChatsHeader",
+          "SearchHeader",
+          "HostFilter"
+        ],
+        "flutter": {
+          "file": "lib/pages/inbox/widgets/chats_sliver_header.dart",
+          "symbol": "ChatsBrowseHeader"
+        },
+        "currentOwner": "ChatsListScreen",
+        "targetOwner": "provider-free chats list header section",
+        "dependencies": [
+          "catch.field",
+          "catch.chip.field",
+          "catch.top_bar"
+        ],
+        "states": [
+          "default",
+          "search_open",
+          "long_query",
+          "host_filter",
+          "text_scale_2"
+        ],
+        "migration": "HostInboxScreenState now owns search affordance, host filter projection, and unread count. ChatsListScreen passes the query value and callback into ChatsSliverHeader, and ChatsSearchHeaderController owns search-open close policy. Add header previews only if future design references require separate header variants.",
+        "previewIds": [
+          "ChatsListScreen/Consumer route states"
+        ]
+      },
+      {
+        "id": "section.matches.list_state_body",
+        "name": "Chats list async state body",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "ChatsListStates"
+        ],
+        "flutter": {
+          "file": "lib/pages/inbox/chats_list_screen_state.dart",
+          "symbol": "ChatsListDisplayState"
+        },
+        "currentOwner": "HostInboxScreenState + ChatsListDisplayState",
+        "targetOwner": "state adapter selecting loading/error/empty/body sections",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "empty",
+          "search_empty",
+          "host_unread_empty",
+          "populated"
+        ],
+        "migration": "ChatsListDisplayState now owns loading/error/content/empty mapping, unread filtering, visible row derivation, search-empty/no-unread/default empty selection, and display-error retry intents before ChatsList renders provider-free body sections. ChatsListCelebrationController owns new-match celebration target selection and effect execution.",
+        "previewIds": [
+          "ChatsListScreen/Consumer route states"
+        ]
+      },
+      {
+        "id": "section.matches.list_threads",
+        "name": "Conversation thread list",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ConversationList",
+          "ThreadSectionLabel"
+        ],
+        "flutter": {
+          "file": "lib/pages/inbox/widgets/chats_list_body.dart",
+          "symbol": "ChatsListBody"
+        },
+        "currentOwner": "ChatsList",
+        "targetOwner": "provider-free conversation list section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "consumer_threads",
+          "host_queries",
+          "new_matches",
+          "unread_threads"
+        ],
+        "migration": "Decide whether newMatches should become a separate rail/section or remain row-level emphasis in one list.",
+        "previewIds": [
+          "ChatsListScreen/Consumer route states"
+        ]
+      },
+      {
+        "id": "section.matches.list_thread_tile",
+        "name": "Conversation thread row",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [
+          "ConversationRow",
+          "UnreadBadge",
+          "NewMatchMarker"
+        ],
+        "flutter": {
+          "file": "packages/catch_ui/lib/src/components/catch_field.dart",
+          "symbol": "CatchField"
+        },
+        "currentOwner": "CatchField + CatchConversationLayout",
+        "targetOwner": "Section owns the pane perimeter; Field owns row interaction; ConversationLayout owns passive values.",
+        "dependencies": [
+          "catch.field",
+          "catch.section"
+        ],
+        "states": [
+          "new_match",
+          "unread",
+          "read",
+          "own_latest_message",
+          "host_square_avatar",
+          "long_name"
+        ],
+        "migration": "Promote after host inbox contract proves shared row needs; add Widgetbook states for unread/new/host variants.",
+        "previewIds": [
+          "ChatsListScreen/Consumer route states"
+        ]
+      },
+      {
+        "id": "section.matches.list_empty",
+        "name": "Chats empty state",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ChatsEmptyState",
+          "NoSearchResults",
+          "NoUnreadQueries"
+        ],
+        "flutter": {
+          "file": "lib/pages/inbox/widgets/chats_empty_state.dart",
+          "symbol": "ChatsEmptyState"
+        },
+        "currentOwner": "ChatsList",
+        "targetOwner": "provider-free chats empty section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "no_matches",
+          "no_search_results",
+          "no_unread_queries",
+          "host_empty"
+        ],
+        "migration": "Add previews and captures for each empty-state branch before visual parity edits.",
+        "previewIds": [
+          "ChatsListScreen/Consumer route states"
+        ]
+      },
+      {
+        "id": "section.matches.list_celebration",
+        "name": "New match celebration dialog",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [
+          "MatchCelebrationDialog"
+        ],
+        "flutter": {
+          "file": "lib/pages/inbox/match_celebration_dialog.dart",
+          "symbol": "MatchCelebrationDialog"
+        },
+        "currentOwner": "ChatsList",
+        "targetOwner": "registered match celebration compound if the visual language is reused",
+        "dependencies": [
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "new_match",
+          "multiple_new_matches",
+          "reduced_motion"
+        ],
+        "migration": "Move dialog trigger out of ChatsList body and into the route/controller side-effect layer.",
+        "previewIds": [
+          "ChatsListScreen/Consumer route states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-MATCHES-LIST-001",
+      "status": "closed",
+      "nextAction": "Closed by ChatsListScreen/Consumer route states and the separate HostInboxScreen/Event-scoped states Widgetbook coverage; the legacy shared Host list preview remains supporting evidence only."
+    },
+    {
+      "id": "DS-MATCHES-LIST-002",
+      "status": "closed",
+      "nextAction": "Closed. Deterministic list captures and the canonical Messaging inbox reference cover the populated list baseline, and a fresh advisory comparison against matches_list_context is within threshold at 6.84% mismatch / 8.21 meanDelta, maxDelta 227, masked 77996. HostInboxScreenState, ChatsListDisplayState, ChatsListCelebrationController, and ChatsSearchHeaderController own the code seams. Additional search/filter/loading/empty reference variants are reference-only unless design exports distinct panels or the interaction state becomes external."
+    },
+    {
+      "id": "DS-MATCHES-LIST-003",
+      "status": "closed",
+      "nextAction": "Closed. HostInboxScreenState and ChatsListDisplayState own host filter projection, unread count, search affordance, loading/error/content/empty mapping, unread filtering, visible row derivation, empty-state selection, and display-error retry intents. ChatsListCelebrationController owns new-match celebration target selection and dialog execution. ChatsSearchHeaderController owns search-open close policy, and ChatsListScreen passes chatSearchQueryProvider value/callback into the header. Reopen only if future product policy adds a new search, filter, or celebration interaction seam."
+    },
+    {
+      "id": "DS-MATCHES-LIST-004",
+      "status": "closed",
+      "nextAction": "Closed. No ChatNewMatchesRail symbol exists in lib, test, or Widgetbook; new matches render through ChatConversationsList with row-level fresh treatment. Reopen only if product designs a dedicated new-match rail/section."
+    }
+  ]
+}

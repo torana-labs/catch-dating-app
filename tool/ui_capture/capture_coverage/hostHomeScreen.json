@@ -1,0 +1,24 @@
+{
+  "routeId": "hostHomeScreen",
+  "status": "alias",
+  "priority": "P1",
+  "canonicalRouteId": "hostTodayScreen",
+  "captureIds": [
+    "host_home_dashboard",
+    "host_home_switcher_cohost",
+    "host_home_long_club_names",
+    "host_home_signed_out",
+    "host_home_clubs_loading",
+    "host_home_clubs_error",
+    "host_home_clubs_offline",
+    "host_home_empty_clubs",
+    "host_home_events_loading",
+    "host_home_events_error",
+    "host_home_events_offline",
+    "host_home_cohost_empty_events",
+    "host_home_text_scale_2",
+    "host_home_reduced_motion",
+    "host_home_light_dark"
+  ],
+  "reason": "The retired Host root redirects to Today. Its historical capture set remains useful regression coverage and the current dashboard capture also proves the canonical Today destination."
+}

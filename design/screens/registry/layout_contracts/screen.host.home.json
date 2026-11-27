@@ -1,0 +1,27 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostTodayScreen"
+      ],
+      "file": "lib/hosts/today/host_today_screen.dart",
+      "symbol": "_HostTodayScreenState",
+      "family": "root",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostEventsScreen"
+      ],
+      "file": "lib/hosts/events/events_screen.dart",
+      "symbol": "_HostEventsTabScreenState",
+      "family": "root",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "Host Today and Events use the same root composition in loading, error, empty, and populated states."
+}

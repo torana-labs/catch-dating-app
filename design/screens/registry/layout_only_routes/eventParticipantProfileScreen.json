@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "eventParticipantProfileScreen"
+      ],
+      "file": "lib/pages/chat/event_profile_screen.dart",
+      "symbol": "_EventProfileScreenState",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Participant-controlled event profile sharing and protected mini-profile viewing use canonical route chrome and full-width sections, with focused privacy and rendered accessibility coverage."
+}

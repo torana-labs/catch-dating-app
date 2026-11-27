@@ -1,0 +1,282 @@
+{
+  "id": "screen.start.welcome",
+  "shell": {
+    "owner": "standalone",
+    "nestedScaffoldAllowed": true,
+    "reason": "The route is presented outside the tab shell."
+  },
+  "topBar": {
+    "role": "none",
+    "expression": "none",
+    "owner": "standalone route",
+    "reason": "This standalone entry route intentionally has no app top bar."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Start Welcome",
+  "owner": "onboarding",
+  "priority": "P2",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "startScreen",
+      "path": "/start",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/pages/start/onboarding_welcome_body.dart",
+    "symbol": "OnboardingWelcomeBody"
+  },
+  "stateController": {
+    "primary": "OnboardingWelcomeBody + local welcome animation controllers + appAnalyticsProvider",
+    "files": [
+      {
+        "file": "lib/pages/start/onboarding_welcome_body.dart",
+        "symbol": "OnboardingWelcomeBody"
+      },
+      {
+        "file": "packages/platform/lib/analytics/app_analytics.dart",
+        "symbol": "AppAnalytics"
+      }
+    ],
+    "mutationOwners": [],
+    "notes": "OnboardingWelcomeBody owns the logged-out start route, local splash/reel animation controllers, reduced-motion landing behavior, analytics events, and CTA routing to auth or clubs. A future StartWelcomeScreenState should make motion mode, landed/direct state, and CTA intents explicit before strict visual comparison."
+  },
+  "designRefs": [
+    {
+      "id": "splash-welcome-handoff",
+      "kind": "external",
+      "status": "available",
+      "notes": "Landed direct Start Welcome reference is registered under design/reference_screens/screen.start.welcome; animated reel, reduced-motion, text-scale, and any alternate theme variants remain open.",
+      "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/splash-welcome-handoff/reference/Splash-prototype.html"
+    },
+    {
+      "id": "repo.start-welcome-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/onboarding/onboarding_widgets_test.dart",
+      "notes": "Welcome tests cover landed capture mode, animation skip, reduced-motion behavior, and CTA composition."
+    }
+  ],
+  "captures": [
+    {
+      "id": "start_welcome",
+      "status": "captured",
+      "notes": "Deterministic OnboardingWelcomeBody(playIntro: false) capture for the landed start state."
+    },
+    {
+      "id": "start_welcome_animated_reel",
+      "status": "captured",
+      "notes": "Deterministic capture-runner sample of the animated object reel before the landed CTA state."
+    },
+    {
+      "id": "start_welcome_reduced_motion",
+      "status": "captured",
+      "notes": "Reduced-motion capture proving OnboardingWelcomeBody lands immediately when animations are disabled."
+    },
+    {
+      "id": "start_welcome_text_scale_2",
+      "status": "captured",
+      "notes": "Text scale 2.0 capture for landed headline/body/CTA layout."
+    }
+  ],
+  "states": [
+    {
+      "id": "animated_reel",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Production OnboardingWelcomeBody starts the object reel and lands on the final welcome composition unless playIntro is false or reduced motion is active.",
+      "previewIds": [
+        "OnboardingWelcomeBody/Splash states"
+      ],
+      "captureIds": [
+        "start_welcome_animated_reel"
+      ],
+      "tests": [
+        "test/onboarding/onboarding_widgets_test.dart"
+      ],
+      "nextAction": "Export animated-reel reference samples before strict visual comparison if animation timing becomes a regression risk."
+    },
+    {
+      "id": "landed_direct",
+      "kind": "populated",
+      "status": "captured",
+      "source": "OnboardingWelcomeBody(playIntro: false) renders the final Catch welcome state immediately for deterministic captures.",
+      "previewIds": [
+        "OnboardingWelcomeBody/Splash states"
+      ],
+      "captureIds": [
+        "start_welcome",
+        "start_welcome_text_scale_2"
+      ],
+      "tests": [
+        "test/onboarding/onboarding_widgets_test.dart"
+      ],
+      "nextAction": "Landed state now has a manifest-registered design reference and deterministic start_welcome capture. Animated reel, reduced-motion, text-scale, CTA, and canonical fixed-dark captures are registered; export state-specific references only if strict visual comparison requires them."
+    },
+    {
+      "id": "cta_navigation",
+      "kind": "populated",
+      "status": "captured",
+      "source": "The primary CTA routes to auth with the current location as from=, while the secondary CTA routes to the clubs surface.",
+      "previewIds": [
+        "OnboardingWelcomeBody/Splash states"
+      ],
+      "captureIds": [
+        "start_welcome",
+        "start_welcome_reduced_motion",
+        "start_welcome_text_scale_2"
+      ],
+      "tests": [
+        "test/onboarding/onboarding_widgets_test.dart"
+      ],
+      "nextAction": "Keep route test coverage while future visual work compares CTA treatment against state-specific references."
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "OnboardingWelcomeBody lands immediately when MediaQuery.disableAnimations is true.",
+      "previewIds": [
+        "OnboardingWelcomeBody/Splash states"
+      ],
+      "captureIds": [
+        "start_welcome_reduced_motion"
+      ],
+      "tests": [
+        "test/onboarding/onboarding_widgets_test.dart"
+      ],
+      "nextAction": "Export a reduced-motion reference if design requires a state-specific comparison."
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Start Welcome text scale 2.0 capture covers title, body copy, and bottom CTAs.",
+      "previewIds": [
+        "OnboardingWelcomeBody/Splash states"
+      ],
+      "captureIds": [
+        "start_welcome_text_scale_2"
+      ],
+      "nextAction": "Export a text-scale reference if design requires a state-specific comparison."
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "The start route intentionally uses the sunset dark landing palette; the current capture covers that dark branded state.",
+      "previewIds": [
+        "OnboardingWelcomeBody/Splash states"
+      ],
+      "captureIds": [
+        "start_welcome",
+        "start_welcome_reduced_motion",
+        "start_welcome_text_scale_2"
+      ],
+      "nextAction": "No separate light-mode treatment is currently required; the fixed sunset dark palette is canonical for Start."
+    }
+  ],
+  "composition": {
+    "currentLayout": "OnboardingWelcomeBody is a route widget that owns local animation controllers, analytics events, CTA callbacks, responsive scene layout, and the visible splash/reel/landing composition.",
+    "targetLayout": "Start Welcome should expose a tiny route adapter for motion mode and CTA intents, then compose provider-free reel, copy, and CTA sections backed by shared tokens and button primitives.",
+    "sections": [
+      {
+        "id": "section.start.welcome_adapter",
+        "name": "Start welcome route adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "StartWelcomeScreenState"
+        ],
+        "flutter": {
+          "file": "lib/pages/start/onboarding_welcome_body.dart",
+          "symbol": "OnboardingWelcomeBody"
+        },
+        "currentOwner": "OnboardingWelcomeBody",
+        "targetOwner": "StartWelcomeScreenState route adapter",
+        "dependencies": [
+          "catch.button"
+        ],
+        "states": [
+          "animated_reel",
+          "landed_direct",
+          "reduced_motion",
+          "cta_navigation"
+        ],
+        "migration": "Keep animation lifecycle local for now, but extract motion mode, landed state, analytics labels, and CTA intents before strict visual comparison."
+      },
+      {
+        "id": "section.start.welcome_scene",
+        "name": "Start welcome scene",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "WelcomeSceneLayout"
+        ],
+        "flutter": {
+          "file": "lib/pages/start/onboarding_welcome_body.dart",
+          "symbol": "WelcomeSceneLayout"
+        },
+        "currentOwner": "OnboardingWelcomeBody",
+        "targetOwner": "provider-free welcome scene section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "animated_reel",
+          "landed_direct",
+          "text_scale_2",
+          "light_dark"
+        ],
+        "migration": "Keep the generated object reel local until Widgetbook/captures prove whether it should become a reusable branded motion section."
+      },
+      {
+        "id": "section.start.welcome_ctas",
+        "name": "Start welcome CTA stack",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "WelcomeActions"
+        ],
+        "flutter": {
+          "file": "lib/pages/start/onboarding_welcome_body.dart",
+          "symbol": "OnboardingWelcomeBody"
+        },
+        "currentOwner": "OnboardingWelcomeBody",
+        "targetOwner": "provider-free welcome CTA section",
+        "dependencies": [
+          "catch.button"
+        ],
+        "states": [
+          "landed_direct",
+          "cta_navigation",
+          "text_scale_2"
+        ],
+        "migration": "Move CTA display data and destinations into the route adapter while keeping the visible buttons on CatchButton primitives."
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-START-001",
+      "status": "blocked",
+      "nextAction": "Blocked/reference-only: landed direct Start Welcome reference and masks are registered. Export animated reel samples, reduced-motion, text-scale, or alternate theme references only if strict visual comparison requires state-specific references."
+    },
+    {
+      "id": "DS-START-002",
+      "status": "closed",
+      "nextAction": "Closed by Widgetbook states for animated reel, landed direct, reduced motion, text scale, CTA, and canonical fixed-dark theme treatment."
+    },
+    {
+      "id": "DS-START-003",
+      "status": "closed",
+      "nextAction": "Closed by deterministic Start Welcome captures for animated reel, landed direct, reduced motion, text scale, and the documented fixed sunset dark palette."
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "routeId": "hostApplicationsScreen",
+  "status": "alias",
+  "priority": "P1",
+  "canonicalRouteId": "hostAudienceScreen",
+  "reason": "The retired Applications directory redirects to Audience Responses while preserving organizer, form, and contact scope."
+}
