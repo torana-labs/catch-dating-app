@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
+import {readScreenRegistry} from "./lib/screen_registries.mjs";
 
 // Progress is derived at consumption; authored priority and next-action decisions
 // remain in the Markdown owner. Full registry/schema checks retain their owners.
@@ -60,7 +61,7 @@ check.`);
     return;
   }
   if (!["--check", "check", "--summary", "summary"].includes(command)) throw new Error(`Unknown command: ${command}`);
-  const screens = JSON.parse(fs.readFileSync(fromRepo("design/screens/catch.screens.json"), "utf8"));
+  const screens = readScreenRegistry();
   const todo = fs.readFileSync(fromRepo("docs/design_parity/comprehensive_todo.md"), "utf8");
   const summary = deriveSummary(screens);
   const errors = validateAuthoredIndex(todo, screens);

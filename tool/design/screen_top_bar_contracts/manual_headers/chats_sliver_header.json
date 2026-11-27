@@ -1,0 +1,7 @@
+{
+  "path": "lib/pages/inbox/widgets/chats_sliver_header.dart",
+  "symbol": "ChatsBrowseHeader",
+  "role": "screen",
+  "owner": "CatchLegacyTopBar.primaryRail",
+  "reason": "The Host inbox is an index route under People, no longer a tab root; it keeps its legacy primary-rail top bar until its wave rewrites it."
+}

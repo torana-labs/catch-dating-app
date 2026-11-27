@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "crossPathsInvitationScreen"
+      ],
+      "file": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "symbol": "CrossPathsInvitationScreen",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Cross Paths is a conventional pushed route with canonical route chrome."
+}

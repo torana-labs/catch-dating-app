@@ -1,0 +1,7 @@
+{
+  "routeId": "hostOperatorEventScreen",
+  "status": "alias",
+  "priority": "P1",
+  "canonicalRouteId": "hostWorkEventScreen",
+  "reason": "Legacy operator links redirect to the canonical event work route while preserving event scope and deep-link state."
+}

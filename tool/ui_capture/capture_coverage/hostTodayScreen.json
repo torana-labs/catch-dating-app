@@ -1,0 +1,13 @@
+{
+  "routeId": "hostTodayScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "host_home_dashboard",
+    "host_today_phone",
+    "host_today_medium",
+    "host_today_tablet",
+    "host_today_desktop"
+  ],
+  "reason": "The first-class Today branch has deterministic full-shell captures of tonight, what needs the host, the week and the last thirty days at phone, medium, tablet and desktop widths, in both themes."
+}

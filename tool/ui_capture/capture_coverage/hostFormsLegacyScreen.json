@@ -1,0 +1,7 @@
+{
+  "routeId": "hostFormsLegacyScreen",
+  "status": "alias",
+  "priority": "P1",
+  "canonicalRouteId": "hostAudienceScreen",
+  "reason": "Legacy Forms links redirect to Audience while preserving their deep-link state."
+}

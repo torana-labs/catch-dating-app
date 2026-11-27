@@ -5,6 +5,8 @@ import {fileURLToPath} from "node:url";
 import {isScreenSource, screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 import {repoRoot} from "../lib/repo_paths.mjs";
 import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
+import {readSplitRegistry, SplitRegistryError} from "../lib/split_registry.mjs";
+import {topBarRegistrySpec} from "./lib/screen_registries.mjs";
 
 const defaultManifestPath = "tool/design/screen_top_bar_contracts.json";
 const appBarPattern = /\bappBar\s*:\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)/gu;
@@ -115,7 +117,15 @@ export function checkScreenTopBarContracts({
     ]);
   }
 
-  const manifest = JSON.parse(fs.readFileSync(absoluteManifestPath, "utf8"));
+  // The index holds the manifest's own fields; root headers, contracts and
+  // manual headers are one file per entry beside it.
+  let manifest;
+  try {
+    manifest = readSplitRegistry(root, {...topBarRegistrySpec, index: manifestPath});
+  } catch (error) {
+    if (!(error instanceof SplitRegistryError)) throw error;
+    return summarize([], new Map(), [{code: "invalid-manifest", path: manifestPath, message: error.message}]);
+  }
   const contracts = manifest.contracts ?? [];
   const rootHeaders = manifest.rootHeaders ?? [];
   const rawChromeExceptions = manifest.rawChromeExceptions ?? [];

@@ -19,7 +19,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   # The golden comparator's own test builds PNGs (test/goldens).
-  image: ^4.12.0
+  image: ^4.13.1
 
 flutter:
   uses-material-design: true

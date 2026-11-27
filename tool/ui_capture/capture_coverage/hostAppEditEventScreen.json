@@ -1,0 +1,24 @@
+{
+  "routeId": "hostAppEditEventScreen",
+  "status": "captured",
+  "priority": "P2",
+  "captureIds": [
+    "edit_hosted_event",
+    "edit_hosted_event_route_loading",
+    "edit_hosted_event_route_error",
+    "edit_hosted_event_offline",
+    "edit_hosted_event_not_found",
+    "edit_hosted_event_unauthorized",
+    "edit_hosted_event_schedule_locked",
+    "edit_hosted_event_cancelled",
+    "edit_hosted_event_private_access_loading",
+    "edit_hosted_event_submit_pending",
+    "edit_hosted_event_submit_error",
+    "edit_hosted_event_text_scale_2",
+    "edit_hosted_event_reduced_motion",
+    "edit_hosted_event_light_dark",
+    "edit_hosted_event_validation_error",
+    "edit_hosted_event_location_selected"
+  ],
+  "reason": "Host app edit-event route now has deterministic captures for prefilled form, route loading/error/offline/not-found, unauthorized host, schedule-locked, cancelled-disabled, private-access loading, validation errors, selected location, submit pending/error, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are reference-specific states."
+}

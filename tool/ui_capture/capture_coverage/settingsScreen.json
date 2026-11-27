@@ -1,0 +1,33 @@
+{
+  "routeId": "settingsScreen",
+  "status": "captured",
+  "priority": "P3",
+  "captureIds": [
+    "settings_account",
+    "settings_profile_loading",
+    "settings_profile_error",
+    "settings_profile_offline",
+    "settings_profile_missing",
+    "settings_blocked_loading",
+    "settings_blocked_error",
+    "settings_blocked_offline",
+    "settings_blocked_list",
+    "settings_preference_pending",
+    "settings_preference_error",
+    "settings_preference_offline",
+    "settings_delete_pending",
+    "settings_delete_error",
+    "settings_delete_offline",
+    "settings_sign_out_pending",
+    "settings_sign_out_error",
+    "settings_sign_out_offline",
+    "settings_unblock_pending",
+    "settings_unblock_error",
+    "settings_unblock_offline",
+    "settings_external_link_pending",
+    "settings_external_link_failure",
+    "settings_text_scale_2",
+    "settings_reduced_motion"
+  ],
+  "reason": "Settings Account captures cover profile-backed account rows, profile loading/error/offline/missing, blocked-account empty/loading/error/offline/list footer states, preference/delete/sign-out/unblock mutation pending, error, and offline states, external-link pending/failure outcomes, text scale, reduced motion, and paired light/dark outputs."
+}

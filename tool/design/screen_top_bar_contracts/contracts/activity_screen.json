@@ -1,0 +1,8 @@
+{
+  "path": "lib/dashboard/presentation/activity_screen.dart",
+  "role": "compact",
+  "expression": "CatchLegacyTopBar.route",
+  "owner": "CatchLegacyTopBar",
+  "surface": "CatchRouteScaffold",
+  "leading": "back"
+}

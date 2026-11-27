@@ -1,0 +1,906 @@
+{
+  "id": "screen.explore.discovery",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "shell",
+    "expression": "shell-owned",
+    "owner": "AdaptiveTabScaffold",
+    "reason": "The route body relies on shell chrome or a registered nested composition owner."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "offline",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Explore Discovery",
+  "owner": "explore",
+  "priority": "P1",
+  "status": "ready",
+  "routes": [
+    {
+      "id": "exploreScreen",
+      "path": "/organizers",
+      "role": "primary"
+    },
+    {
+      "id": "exploreMapScreen",
+      "path": "/organizers/map",
+      "role": "alias"
+    }
+  ],
+  "source": {
+    "file": "lib/explore/presentation/explore_screen.dart",
+    "symbol": "ExploreScreen"
+  },
+  "stateController": {
+    "primary": "exploreOrganizersViewModelProvider",
+    "files": [
+      {
+        "file": "lib/explore/presentation/explore_view_model.dart",
+        "symbol": "exploreOrganizersViewModel"
+      },
+      {
+        "file": "lib/explore/presentation/explore_feed_providers.dart",
+        "symbol": "exploreFeedViewModel"
+      },
+      {
+        "file": "lib/explore/presentation/explore_cross_paths_provider.dart",
+        "symbol": "exploreCrossPathsSuggestions"
+      },
+      {
+        "file": "lib/explore/presentation/explore_view_model.dart",
+        "symbol": "SelectedExploreCity"
+      },
+      {
+        "file": "lib/explore/presentation/explore_view_model.dart",
+        "symbol": "ExploreSearchQuery"
+      },
+      {
+        "file": "lib/explore/presentation/explore_view_model.dart",
+        "symbol": "ExploreFilters"
+      },
+      {
+        "file": "lib/explore/presentation/explore_map_screen.dart",
+        "symbol": "exploreMapViewModelFromFeed"
+      },
+      {
+        "file": "lib/explore/presentation/explore_screen_state.dart",
+        "symbol": "ExploreDiscoveryScreenState"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/contexts/organizers/actions/organizer_follow_controller.dart",
+        "symbol": "OrganizerFollowController"
+      }
+    ],
+    "notes": "ExploreScreen reads separate club, event-feed, and optional consent-safe Cross Paths provider seams, then maps route provider waves through ExploreDiscoveryScreenState before composing browse chrome, filter state, mixed event/person/organizer feed composition, empty/error states, map-pill copy, and mutation listening. Cross Paths failure stays non-blocking and renders no people."
+  },
+  "designRefs": [
+    {
+      "id": "claude.catch-explore",
+      "kind": "claude",
+      "status": "available",
+      "path": "/Users/suvratgarg/Downloads/Catch Design System (1)/templates/catch-explore/Explore.dc.html",
+      "notes": "Representative generated-feed fixture; use the Explore v2 spec for product behavior and do not treat this frozen composition as the literal lane layout."
+    },
+    {
+      "id": "claude.components.explore",
+      "kind": "claude",
+      "status": "available",
+      "path": "/Users/suvratgarg/Downloads/Catch Design System (1)/components/explore",
+      "notes": "CoverStory and CountPill contracts plus a retired standalone CrossPathsCard proposal. Production Cross Paths now composes the canonical catch.person_polaroid with separate event context and actions."
+    },
+    {
+      "id": "claude.explore-spec-v2",
+      "kind": "claude",
+      "status": "available",
+      "path": "/Users/suvratgarg/Downloads/Catch Design System (1)/explorations/screen-specs/Explore Spec.html",
+      "notes": "Explore v2 product model and behavior spec dated 2026-07-08. The owner accepted the quality-pass defaults on 2026-07-19; the completed backlog receipt records the resolution."
+    },
+    {
+      "id": "repo.explore-capture-catalog",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/ui_captures/catalog/screen_capture_catalog.dart",
+      "notes": "Current member event discovery capture fixture for the Explore feed."
+    },
+    {
+      "id": "repo.explore-reference-screens",
+      "kind": "repo",
+      "status": "available",
+      "path": "design/reference_screens/manifest.json",
+      "notes": "Explore discovery-feed PNG reference plus masks is registered for advisory pixel comparison."
+    }
+  ],
+  "captures": [
+    {
+      "id": "member_event_discovery",
+      "status": "captured",
+      "capturedAt": "2026-07-18",
+      "notes": "Guest/member discovery feed fixture with deterministic clubs, events, city, and feed provider overrides."
+    },
+    {
+      "id": "explore_cover_contrast_floor",
+      "status": "captured",
+      "capturedAt": "2026-07-18",
+      "notes": "Worst-case pale activity glow fixture proving the cover-story contrast scrim in both themes."
+    },
+    {
+      "id": "explore_joined_clubs",
+      "status": "captured",
+      "notes": "Signed-in Explore fixture with joined-club membership data and the production mixed feed."
+    },
+    {
+      "id": "explore_cross_paths_person",
+      "status": "captured",
+      "capturedAt": "2026-08-05",
+      "notes": "Deterministic event-first Explore feed with one server-shaped, consent-safe person Polaroid inserted without replacing the associated event ticket."
+    },
+    {
+      "id": "explore_cross_paths_profile_preview",
+      "status": "captured",
+      "capturedAt": "2026-08-05",
+      "notes": "Sanitized Cross Paths profile preview with persistent associated-event context and a distinct event action."
+    },
+    {
+      "id": "explore_map",
+      "status": "captured",
+      "notes": "Explore map route fixture with network tiles disabled and deterministic event pins from the discovery feed."
+    },
+    {
+      "id": "explore_map_selected_pin",
+      "status": "captured",
+      "notes": "Explore map route with an initial selected pin seeded through provider-free map state."
+    },
+    {
+      "id": "explore_map_distance_ring",
+      "status": "captured",
+      "notes": "Explore map route with a seeded user location and active distance filter ring in the deterministic map placeholder."
+    },
+    {
+      "id": "explore_loading",
+      "status": "captured",
+      "notes": "Explore route loading chrome and skeleton body."
+    },
+    {
+      "id": "explore_club_source_error",
+      "status": "captured",
+      "notes": "Explore route source-club failure with screen-level retry."
+    },
+    {
+      "id": "explore_feed_error",
+      "status": "captured",
+      "notes": "Explore route feed-only failure with inline retry."
+    },
+    {
+      "id": "explore_empty_city",
+      "status": "captured",
+      "notes": "Explore route empty selected-city state."
+    },
+    {
+      "id": "explore_no_search_results",
+      "status": "captured",
+      "notes": "Explore route search-empty state with source clubs available."
+    },
+    {
+      "id": "explore_no_filter_results",
+      "status": "captured",
+      "notes": "Explore route filter-empty state with source clubs available and no matching visible results."
+    },
+    {
+      "id": "explore_offline",
+      "status": "captured",
+      "notes": "Explore route offline-mapped source-club/feed failure with branded retry copy."
+    },
+    {
+      "id": "explore_unclaimed_host_projection",
+      "status": "captured",
+      "notes": "Explore feed fixture for organizer records without claimed host user/name projection."
+    },
+    {
+      "id": "explore_search_query",
+      "status": "captured",
+      "notes": "Explore route active search query state."
+    },
+    {
+      "id": "explore_filters_active",
+      "status": "captured",
+      "notes": "Explore route active filter rail state."
+    },
+    {
+      "id": "explore_text_scale_2",
+      "status": "captured",
+      "notes": "Explore route full-screen text scale 2.0 review state."
+    },
+    {
+      "id": "explore_reduced_motion",
+      "status": "captured",
+      "notes": "Explore route reduced-motion review state."
+    },
+    {
+      "id": "explore_map_loading",
+      "status": "captured",
+      "notes": "Explore map route loading state with network tiles disabled."
+    },
+    {
+      "id": "explore_map_error",
+      "status": "captured",
+      "notes": "Explore map route feed-error state with network tiles disabled."
+    }
+  ],
+  "states": [
+    {
+      "id": "loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "AsyncLoading from exploreOrganizersViewModelProvider renders the Explore chrome plus skeleton cards.",
+      "previewIds": [
+        "ExploreScreen/Screen states"
+      ],
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Compare loading chrome and skeleton body against the Claude Explore template after design references are exported.",
+      "captureIds": [
+        "explore_loading"
+      ]
+    },
+    {
+      "id": "club_source_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "AsyncError from exploreOrganizersViewModelProvider renders CatchLocalizedSliverErrorState for AppErrorContext.club with retry invalidation.",
+      "previewIds": [
+        "ExploreScreen/Screen states"
+      ],
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Keep retry placement aligned with the sticky browse chrome while adapter extraction moves error selection out of the route widget.",
+      "captureIds": [
+        "explore_club_source_error"
+      ]
+    },
+    {
+      "id": "event_feed_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "AsyncError from exploreFeedViewModelProvider renders CatchLocalizedErrorState (inline/compact mode) inside the feed sliver.",
+      "previewIds": [
+        "ExploreFeedSliverBody/Feed states"
+      ],
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Decide whether feed-only failures should remain inline or promote to the screen-level error contract.",
+      "captureIds": [
+        "explore_feed_error"
+      ]
+    },
+    {
+      "id": "empty_city",
+      "kind": "empty",
+      "status": "captured",
+      "source": "CatchEmptyState renders with Explore empty-city copy when the selected city has no source clubs.",
+      "previewIds": [
+        "CatchEmptyState/Empty states",
+        "ExploreScreen/Screen states"
+      ],
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Compare empty-city spacing and CTA hierarchy against the Claude Explore template.",
+      "captureIds": [
+        "explore_empty_city"
+      ]
+    },
+    {
+      "id": "no_search_results",
+      "kind": "empty",
+      "status": "captured",
+      "source": "CatchEmptyState renders with Explore search/filter copy for narrowed query states.",
+      "previewIds": [
+        "CatchEmptyState/Empty states",
+        "ExploreFeedSliverBody/Feed states",
+        "ExploreScreen/Screen states"
+      ],
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Filter-empty and search-empty captures are registered; continue visual comparison against the Explore empty/error reference set.",
+      "captureIds": [
+        "explore_no_search_results",
+        "explore_no_filter_results"
+      ]
+    },
+    {
+      "id": "discovery_feed",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Explore feed with production cover-story header, time filter rail, mixed event/person/organizer cards, type browse grid, and floating map count pill. The member_event_discovery fixture mirrors the Claude Bandra/Khar pub-quiz reference scenario while Cross Paths remains an optional server-owned enrichment.",
+      "captureIds": [
+        "member_event_discovery",
+        "explore_cover_contrast_floor",
+        "explore_joined_clubs"
+      ],
+      "previewIds": [
+        "ExploreScreen/Screen states",
+        "ExploreFeedSliverBody/Feed states",
+        "ExploreEventTypeBrowseGrid/Activity states",
+        "CatchButton/Map launcher states"
+      ],
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Above-threshold advisory comparison improved from 61.62% mismatch / 90.26 meanDelta to 41.87% mismatch / 36.74 meanDelta. Continue resolving generated title, card rhythm, map interleave, status chrome, and bottom dock divergences."
+    },
+    {
+      "id": "cross_paths_suggestion",
+      "kind": "populated",
+      "status": "captured",
+      "source": "exploreCrossPathsSuggestionsProvider requests at most two server-ranked, consent-safe suggestions for currently visible first-party events. ExploreFeedSectionState inserts each CatchPolaroid after event content in the same date group without replacing its event ticket; provider errors and expired tokens fail closed to no people.",
+      "captureIds": [
+        "explore_cross_paths_person"
+      ],
+      "previewIds": [
+        "CrossPathsExploreCard/Cross Paths person card"
+      ],
+      "tests": [
+        "test/cross_paths/cross_paths_contract_test.dart",
+        "test/cross_paths/cross_paths_explore_card_test.dart",
+        "test/explore/explore_view_model_test.dart"
+      ],
+      "nextAction": "Invitation delivery is now separately contracted and remains available only after confirmed booking; launch only after legal copy, seeded supply, signing-key, TTL, and staged-cohort gates are complete."
+    },
+    {
+      "id": "cross_paths_profile_preview",
+      "kind": "populated",
+      "status": "captured",
+      "source": "CrossPathsProfilePreviewSheet reuses the sanitized existing profile surface, keeps the associated first-party event context visible, and derives join-first, invitation-ready, pending, accepted-plan, or terminal action state from a participant-scoped invitation stream.",
+      "captureIds": [
+        "explore_cross_paths_profile_preview"
+      ],
+      "previewIds": [
+        "CrossPathsProfilePreviewSheet/Cross Paths profile preview"
+      ],
+      "tests": [
+        "test/cross_paths/cross_paths_explore_card_test.dart"
+      ],
+      "nextAction": "Invitation callable, participant rules, expiry, and plan-chat lifecycle are implemented; keep staged rollout and privacy-policy approval as the enablement gates."
+    },
+    {
+      "id": "search_query",
+      "kind": "populated",
+      "status": "captured",
+      "source": "ExploreSearchQuery expands the browse header search affordance, updates local filtering, and debounces server search.",
+      "previewIds": [
+        "ExploreDiscoveryCoverHeader/Cover header states",
+        "ExploreScreen/Screen states",
+        "CatchEmptyState/Empty states"
+      ],
+      "tests": [
+        "test/explore/explore_view_model_test.dart",
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Move expanded search state into an explicit chrome adapter before section-level previews.",
+      "captureIds": [
+        "explore_search_query"
+      ]
+    },
+    {
+      "id": "filters_active",
+      "kind": "populated",
+      "status": "captured",
+      "source": "ExploreFilters owns time, distance, joined-only, activity, and area filters; ExploreFilterRail renders active filter count.",
+      "previewIds": [
+        "ExploreFilterRail/Filter states",
+        "ExploreEventTypeBrowseGrid/Activity states",
+        "ExploreScreen/Screen states"
+      ],
+      "tests": [
+        "test/explore/explore_view_model_test.dart",
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Active-filter, joined-club, and filter-empty captures are registered; continue filter rail/list parity drift checks.",
+      "captureIds": [
+        "explore_filters_active",
+        "explore_joined_clubs",
+        "explore_no_filter_results"
+      ]
+    },
+    {
+      "id": "anonymous_guest",
+      "kind": "permission",
+      "status": "captured",
+      "source": "The captured Explore fixture runs with uidProvider null and renders public discovery without membership affordance ownership.",
+      "previewIds": [
+        "ExploreScreen/Screen states"
+      ],
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Guest and signed-in joined-club captures are registered; keep membership affordance behavior stable while feed ownership is migrated.",
+      "captureIds": [
+        "member_event_discovery",
+        "explore_joined_clubs"
+      ]
+    },
+    {
+      "id": "unclaimed_host_projection",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Explore search and display paths use Organizer.displayHostName so null hostUserId/hostName organizer records remain renderable.",
+      "captureIds": [
+        "explore_unclaimed_host_projection"
+      ],
+      "previewIds": [
+        "ExploreFeedSliverBody/Feed states",
+        "ExploreScreen/Screen states"
+      ],
+      "tests": [
+        "test/organizers/organizers_repository_test.dart",
+        "test/explore/explore_view_model_test.dart"
+      ],
+      "nextAction": "Unclaimed organizer projection is captured; keep host-card parity null-tolerant before tightening organizer profile visuals."
+    },
+    {
+      "id": "map_route",
+      "kind": "populated",
+      "status": "captured",
+      "source": "ExploreMapScreen derives EventMapViewModel from exploreFeedViewModelProvider, selects pins into a bottom EventDateRailCard, opens Event Detail from the selected card with the map hero tag, and cycles distance filters.",
+      "captureIds": [
+        "explore_map",
+        "explore_map_selected_pin",
+        "explore_map_distance_ring"
+      ],
+      "previewIds": [
+        "ExploreMapScreen/Map route states"
+      ],
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Map ready, selected-card, distance-ring, and DS MapPin parity are registered; define dynamic-region masks before strict/advisory map pixel comparison."
+    },
+    {
+      "id": "pins_ready",
+      "kind": "populated",
+      "status": "captured",
+      "source": "ExploreMapScreen derives pins from ExploreFeedViewModel and renders deterministic event pins with network tiles disabled.",
+      "captureIds": [
+        "explore_map",
+        "explore_map_selected_pin"
+      ],
+      "previewIds": [
+        "ExploreMapScreen/Map route states"
+      ],
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Keep map pins fixture aligned with EventMapViewModel while extracting the map route adapter."
+    },
+    {
+      "id": "selected_pin",
+      "kind": "populated",
+      "status": "captured",
+      "source": "ExploreMapScreen can seed an initial selected event id for deterministic captures; production pin taps select the pin and render the bottom EventDateRailCard without navigating until the card is tapped.",
+      "captureIds": [
+        "explore_map_selected_pin"
+      ],
+      "previewIds": [
+        "ExploreMapScreen/Map route states"
+      ],
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Selected-card route behavior is covered by widget tests for preselect, pin tap, card navigation, background dismissal, dropped feed items, lost exact pins, and DS MapPin parity."
+    },
+    {
+      "id": "large_pan_scope",
+      "kind": "populated",
+      "status": "captured",
+      "source": "ExploreMapScreen supports broad pan/filter scope through the map route distance controls, and the deterministic placeholder now renders an active distance ring when user location is seeded.",
+      "captureIds": [
+        "explore_map_distance_ring"
+      ],
+      "previewIds": [
+        "ExploreMapScreen/Map route states"
+      ],
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Distance-ring capture is registered; add large-pan camera-region masks before strict map visual comparison."
+    },
+    {
+      "id": "no_exact_pins",
+      "kind": "empty",
+      "status": "implemented",
+      "source": "ExploreMapScreen delegates no-exact-pin feed data to EventMap's shared no-pins empty branch while keeping the route chrome and deterministic Widgetbook fixture.",
+      "previewIds": [
+        "ExploreMapScreen/Map route states"
+      ],
+      "nextAction": "Keep no-exact-pin route coverage aligned with EventMap; add a screenshot capture only if map empty-state parity needs pixel review."
+    },
+    {
+      "id": "zero_radius_results",
+      "kind": "empty",
+      "status": "implemented",
+      "source": "ExploreMapScreen preserves the same-market canvas and distance ring when an active radius returns zero events, then offers the next wider radius or Show all.",
+      "previewIds": [
+        "ExploreMapScreen/Map route states"
+      ],
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Keep zero-radius recovery aligned with the distance filter catalogue and retained-canvas policy."
+    },
+    {
+      "id": "map_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "AsyncLoading from exploreFeedViewModelProvider renders EventMap loading treatment inside ExploreMapScreen chrome.",
+      "captureIds": [
+        "explore_map_loading"
+      ],
+      "previewIds": [
+        "ExploreMapScreen/Map route states"
+      ],
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Mask map dynamic regions before promoting map loading pixel comparison beyond advisory."
+    },
+    {
+      "id": "map_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "AsyncError from exploreFeedViewModelProvider renders EventMap error and retry inside ExploreMapScreen chrome.",
+      "captureIds": [
+        "explore_map_error"
+      ],
+      "previewIds": [
+        "ExploreMapScreen/Map route states"
+      ],
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Keep map feed-error retry behavior covered while map route adapter state is extracted."
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Explore route offline-mapped source-club and feed failures render branded retry copy through the shared NetworkException mapping.",
+      "captureIds": [
+        "explore_offline"
+      ],
+      "previewIds": [
+        "CatchEmptyState/Empty states"
+      ],
+      "nextAction": "Offline copy is captured through the shared Explore error branch; keep this shared mapping unless product requests distinct club-source/feed offline copy."
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Explore has narrow-width widget tests for key cards, but no full-screen text-scale capture.",
+      "previewIds": [
+        "ExploreScreen/Screen states",
+        "CatchButton/Map launcher states"
+      ],
+      "nextAction": "Review text-scale capture against design references for browse header, filter rail, event rows, and map pill.",
+      "captureIds": [
+        "explore_text_scale_2"
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Explore uses route transitions, haptics, map interaction, and event detail transitions without a registered reduced-motion preview.",
+      "previewIds": [
+        "ExploreScreen/Screen states"
+      ],
+      "nextAction": "Review map opening, pin selection, and cover-story event opening once reduced-motion route transitions have explicit masks.",
+      "captureIds": [
+        "explore_reduced_motion"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "ExploreScreen composes Scaffold, SafeArea, browse chrome, filter rail, CustomScrollView slivers, membership mutation listener, mixed event/person/organizer feed, empty/error states, and floating map count pill; route provider-wave branch precedence, empty-state derivation, and map count label route through ExploreDiscoveryScreenState, which delegates body loading/error/content/empty branches to ExploreScreenBodyState and map label derivation to ExploreMapLauncherState. Browse/search-open chrome labels and search expansion policy route through ExploreChromeState, city-trigger chrome labels/icons route through ExploreCityButtonState, filter active-count/sheet-option copy routes through ExploreFilterRailState and ExploreFilterSheetState, cover-story copy routes through ExploreCoverStoryState, and mixed-feed card ordering plus event/external/person/organizer row labels route through ExploreFeedSectionState, ExploreEventRowState, ExploreExternalEventRowState, CrossPathsExploreCard, and ExploreOrganizerCardState. Cross Paths is optional fail-closed enrichment and never replaces its associated event ticket. ExploreMapScreen is a child route that reuses the event map view model; the retired map peek-rail summary/ticket adapters are no longer part of the active composition.",
+    "targetLayout": "ExploreScreen should map provider state into an ExploreDiscoveryScreenState and compose registered sections: browse chrome, scope/filter rail, cover story, day ticket feed, club interleaves, cross-paths card, event type browse grid, map launcher, empty/error states, and map route sheet/overlay.",
+    "sections": [
+      {
+        "id": "section.explore.chrome",
+        "name": "Browse chrome",
+        "status": "registered",
+        "layer": "section",
+        "claudeComponents": [
+          "OptionGroup"
+        ],
+        "flutter": {
+          "file": "lib/explore/presentation/widgets/explore_header.dart",
+          "symbol": "ExploreDiscoveryCoverHeader"
+        },
+        "currentOwner": "ExploreScreen, ExploreChromeState, ExploreCityButtonState, and ExploreMapLauncherState",
+        "targetOwner": "registered Explore browse chrome section",
+        "dependencies": [
+          "catch.field",
+          "catch.icon_button",
+          "catch.top_bar"
+        ],
+        "states": [
+          "default",
+          "search_open",
+          "search_active",
+          "city_picker"
+        ],
+        "previewIds": [
+          "ExploreDiscoveryCoverHeader/Cover header states"
+        ],
+        "migration": "ExploreDiscoveryScreenState now maps route provider-wave data before the route composes chrome and body slivers. ExploreChromeState owns browse header title/subtitle/search labels plus cover-versus-search-open policy for the discovery header. ExploreCityButtonState owns city trigger tooltip, semantic label, scope label, and focused/unfocused icon selection."
+      },
+      {
+        "id": "section.explore.filters",
+        "name": "Scope and filters",
+        "status": "registered",
+        "layer": "section",
+        "claudeComponents": [
+          "OptionGroup",
+          "CountPill"
+        ],
+        "flutter": {
+          "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
+          "symbol": "ExploreFilterRail"
+        },
+        "currentOwner": "ExploreScreen, ExploreFilterRailState, and ExploreFilterSheetState",
+        "targetOwner": "registered Explore filter rail and sheet section",
+        "dependencies": [
+          "catch.button",
+          "catch.chip",
+          "catch.surface"
+        ],
+        "states": [
+          "default_time_scope",
+          "active_filters",
+          "distance_sheet",
+          "joined_only"
+        ],
+        "previewIds": [
+          "ExploreFilterRail/Filter states"
+        ],
+        "migration": "ExploreFilterRailState now owns active-count and filter-button semantic labels. ExploreFilterSheetState now owns distance option labels, active count, and sorted area options. Remaining work: move activity filter option grouping into previewable view data if Widgetbook variants need it."
+      },
+      {
+        "id": "section.explore.feed",
+        "name": "Mixed discovery feed",
+        "status": "registered",
+        "layer": "section",
+        "claudeComponents": [
+          "CoverStory",
+          "DateTicket",
+          "OrganizerPoster"
+        ],
+        "flutter": {
+          "file": "lib/explore/presentation/widgets/explore_events_section.dart",
+          "symbol": "buildExploreEventsSlivers"
+        },
+        "currentOwner": "ExploreBody, ExploreEventsSection, ExploreFeedSectionState, ExploreCoverStoryState, ExploreEventRowState, ExploreExternalEventRowState, CrossPathsExploreCard, and ExploreOrganizerCardState",
+        "targetOwner": "registered mixed Explore feed section",
+        "dependencies": [
+          "catch.button",
+          "catch.cover_story",
+          "catch.event_card",
+          "catch.organizer_poster",
+          "catch.person_polaroid",
+          "catch.surface"
+        ],
+        "states": [
+          "cover_story",
+          "event_row",
+          "cross_paths_person",
+          "cross_paths_profile_preview",
+          "organizer_poster",
+          "club_row",
+          "search_filtered",
+          "empty"
+        ],
+        "previewIds": [
+          "ExploreFeedSliverBody/Feed states"
+        ],
+        "migration": "ExploreFeedSectionState owns mixed feed card selection, result-count copy, Cross Paths person insertion, organizer intermix ranking, and This Week promotion. ExploreCoverStoryState owns the ranked cover-story identity and availability-aware CTA copy with an injected clock for tests. Explore event tickets reuse the consent-safe veiled attendee stack, ExploreOrganizerCardState owns organizer context, and CrossPathsExploreCard composes catch.person_polaroid with separate associated-event context and actions from a server-owned sanitized suggestion. DateTicket/EventTicket roles map to catch.event_card; organizer spotlights map to catch.organizer_poster through OrganizerCard. The old standalone CrossPathsCard proposal remains retired."
+      },
+      {
+        "id": "section.explore.cover_story",
+        "name": "Cover story",
+        "status": "registered",
+        "layer": "compound",
+        "claudeComponents": [
+          "CoverStory"
+        ],
+        "flutter": {
+          "file": "lib/explore/presentation/widgets/featured_event_poster.dart",
+          "symbol": "FeaturedEventPoster"
+        },
+        "currentOwner": "ExploreDiscoveryCoverHeader and ExploreCoverStoryState",
+        "targetOwner": "registered Explore CoverStory compound",
+        "dependencies": [
+          "catch.cover_story",
+          "catch.button"
+        ],
+        "states": [
+          "headline_event",
+          "neutral_masthead",
+          "with_data",
+          "without_cta"
+        ],
+        "previewIds": [
+          "FeaturedEventPoster/Contract states"
+        ],
+        "migration": "ExploreCoverStoryState now owns activity-independent cover copy and test-time clock behavior. CoverStory is promoted through the catch.cover_story component contract, with route-owned CTA/search callbacks staying outside the reusable visual contract."
+      },
+      {
+        "id": "section.explore.map_launcher",
+        "name": "Map launcher",
+        "status": "registered",
+        "layer": "compound",
+        "claudeComponents": [
+          "CountPill"
+        ],
+        "flutter": {
+          "file": "lib/explore/presentation/explore_screen.dart",
+          "symbol": "ExploreScreen"
+        },
+        "currentOwner": "ExploreScreen",
+        "targetOwner": "registered floating map count pill",
+        "dependencies": [
+          "catch.button",
+          "catch.icon_button"
+        ],
+        "states": [
+          "empty_count",
+          "with_count",
+          "pressed",
+          "text_scale"
+        ],
+        "previewIds": [
+          "CatchButton/Map launcher states"
+        ],
+        "migration": "Map label/count derivation now lives in provider-free ExploreMapLauncherState. CountPill states are registered through catch.button and the Explore map launcher section binds the production map/list affordance states."
+      },
+      {
+        "id": "section.explore.map_route",
+        "name": "Explore map route",
+        "status": "registered",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "MapCard",
+          "DateTicket",
+          "CountPill"
+        ],
+        "flutter": {
+          "file": "lib/explore/presentation/explore_map_screen.dart",
+          "symbol": "ExploreMapScreen"
+        },
+        "currentOwner": "ExploreMapScreen and EventMap",
+        "targetOwner": "registered Explore map route adapter",
+        "dependencies": [
+          "catch.button",
+          "catch.event_card",
+          "catch.icon_button"
+        ],
+        "states": [
+          "loading",
+          "pins_ready",
+          "selected_pin",
+          "empty",
+          "error",
+          "distance_ring"
+        ],
+        "previewIds": [
+          "ExploreMapScreen/Map route states"
+        ],
+        "migration": "The dropped Explore map peek-rail lead and selected-pin ticket widgets were retired in the event/club/profile parity handoff. ExploreMapScreen now owns selected-pin route state and renders the selected event through the canonical EventDateRailCard overlay; EventPinsMap renders DS activity map pins for deterministic placeholders and byte-backed native markers. Widgetbook covers ready, selected-card, loading, empty, no-exact-pin, error, and distance-ring route states. Remaining work: map dynamic-region masking, keeping EventMap as the map primitive, and moving route chrome/provider-wave data into an adapter."
+      },
+      {
+        "id": "section.explore.empty_error",
+        "name": "Empty and error states",
+        "status": "registered",
+        "layer": "section",
+        "claudeComponents": [
+          "Section"
+        ],
+        "flutter": {
+          "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
+          "symbol": "CatchEmptyState"
+        },
+        "currentOwner": "ExploreScreen, ExploreScreenBodyState, ExploreDiscoveryEmptyState, ExploreEventsEmptyState, and ExploreEventsSection",
+        "targetOwner": "registered Explore empty/error state adapter",
+        "dependencies": [
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "empty_city",
+          "no_search_results",
+          "no_filter_results",
+          "club_source_error",
+          "event_feed_error"
+        ],
+        "previewIds": [
+          "CatchEmptyState/Empty states",
+          "ExploreFeedSliverBody/Feed states",
+          "ExploreScreen/Screen states"
+        ],
+        "migration": "ExploreDiscoveryScreenState now owns route-level empty-state selection before ExploreScreen composes visual branches. ExploreScreen uses provider-free ExploreScreenBodyState for route loading/error/content/empty branch precedence and ExploreDiscoveryEmptyState for source-club/search/filter empty copy and clear-action cardinality. ExploreEventsSection uses provider-free ExploreEventsEmptyState for feed-empty copy, clear-search/filter intent, and broaden-time-filter intent. Remaining work is only product policy: decide whether feed-only failures should stay inline or promote to the screen-level error contract."
+      },
+      {
+        "id": "section.explore.activity_grid",
+        "name": "Activity browse grid",
+        "status": "registered",
+        "layer": "compound",
+        "claudeComponents": [
+          "OptionGroup"
+        ],
+        "flutter": {
+          "file": "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
+          "symbol": "ExploreEventTypeBrowseGrid"
+        },
+        "currentOwner": "ExploreBody",
+        "targetOwner": "registered activity browse grid",
+        "dependencies": [
+          "catch.chip",
+          "catch.surface"
+        ],
+        "states": [
+          "counts_ready",
+          "active_activity",
+          "loading",
+          "narrow_width"
+        ],
+        "previewIds": [
+          "ExploreEventTypeBrowseGrid/Activity states"
+        ],
+        "migration": "Convert activity counts and active tag into provider-free grid data and add Widgetbook states for narrow widths."
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-EXPLORE-001",
+      "status": "closed",
+      "nextAction": "Closed by registering Explore browse chrome, filter rail, mixed feed, cover story, map launcher, map route, empty/error, and activity-grid sections in the screen registry, while mapping reusable compounds to formal component contracts: catch.cover_story, catch.button, catch.event_card, and catch.organizer_poster. DateTicket/EventTicket roles map to catch.event_card ticket states; organizer spotlight roles map to OrganizerCard and the catch.organizer_poster family."
+    },
+    {
+      "id": "DS-EXPLORE-002",
+      "status": "closed",
+      "nextAction": "Widgetbook entries cover browse chrome, filter rail/sheet content, CoverStory, mixed feed states, empty/error states, map count pill, activity grid, full Explore screen states, and the map route."
+    },
+    {
+      "id": "DS-EXPLORE-003",
+      "status": "closed",
+      "nextAction": "Closed by deterministic captures for signed-in joined-club feed, filter-empty results, explicit offline copy, unclaimed host projection, selected-pin map, and distance-ring map variants. Remaining map mask/reference work stays under the map comparison gaps, and provider-wave cleanup stays under DS-EXPLORE-004."
+    },
+    {
+      "id": "DS-EXPLORE-004",
+      "status": "closed",
+      "nextAction": "Closed by ExploreDiscoveryScreenState, which maps route provider-wave inputs into map launcher state, route body branch state, and empty-state copy/action before ExploreScreen renders visual slivers. Existing provider-free section states own feed-card planning, cover/search-open/event/external/person/organizer/map-sheet/filter/chrome labels, and map labels. Cross Paths now consumes a private server-ranked suggestion seam and composes the canonical person Polaroid without exposing attendee rosters."
+    },
+    {
+      "id": "DS-EXPLORE-005",
+      "status": "open",
+      "nextAction": "Close the feature-contract evidence exceptions by adding deterministic capture coverage for no-exact-pin and zero-radius map results, plus focused automated coverage for no-exact-pin, offline, text-scale-2, and reduced-motion route states."
+    }
+  ]
+}

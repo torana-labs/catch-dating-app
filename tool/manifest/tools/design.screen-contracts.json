@@ -3,7 +3,12 @@
   "category": "design",
   "path": "tool/design/check_screen_contracts.mjs",
   "impactPaths": [
+    "tool/lib/split_registry.mjs",
+    "tool/design/lib/screen_registries.mjs",
+    "tool/lib/split_registry.test.mjs",
+    "tool/design/lib/screen_registries.test.mjs",
     "design/screens/catch.screens.json",
+    "design/screens/registry/**",
     "design/screens/catch.screens.schema.json",
     "tool/ui_capture/check_route_inventory.mjs",
     "packages/platform/lib/routing/route_contract.dart",
@@ -27,6 +32,8 @@
   "description": "Validates screen composition contracts against routes, captures, components, source paths, and Dart symbols.",
   "checks": [
     "node --check tool/design/check_screen_contracts.mjs",
+    "node --test tool/lib/split_registry.test.mjs",
+    "node --test tool/design/lib/screen_registries.test.mjs",
     "node tool/design/check_screen_contracts.mjs --check"
   ],
   "role": "finder"

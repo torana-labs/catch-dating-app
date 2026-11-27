@@ -1,0 +1,35 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "eventDetailScreen",
+        "calendarEventDetailScreen",
+        "savedEventDetailScreen",
+        "dashboardEventDetailScreen",
+        "hostAppEventDetailScreen"
+      ],
+      "file": "lib/pages/event/event_detail_screen.dart",
+      "symbol": "_EventDetailScreenState",
+      "family": "media-hero",
+      "expression": "CatchScaffold.workspace",
+      "bodyGeometry": "mixed",
+      "topEdge": "body-owned"
+    },
+    {
+      "routes": [
+        "eventDetailScreen",
+        "calendarEventDetailScreen",
+        "savedEventDetailScreen",
+        "dashboardEventDetailScreen",
+        "hostAppEventDetailScreen"
+      ],
+      "file": "lib/pages/event/widgets/event_detail_loading_skeleton.dart",
+      "symbol": "EventDetailLoadingScreen",
+      "family": "media-hero",
+      "expression": "CatchScaffold.workspace",
+      "bodyGeometry": "full-bleed",
+      "topEdge": "body-owned"
+    }
+  ],
+  "reason": "Every Event Detail route and loading state uses the registered media-hero workspace owner."
+}

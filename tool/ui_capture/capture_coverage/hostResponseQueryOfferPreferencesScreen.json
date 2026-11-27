@@ -1,0 +1,6 @@
+{
+  "routeId": "hostResponseQueryOfferPreferencesScreen",
+  "status": "planned",
+  "priority": "P2",
+  "reason": "Named continuation reuses existing feature content. Add deterministic route capture for the new pane ancestry and compact navigation."
+}

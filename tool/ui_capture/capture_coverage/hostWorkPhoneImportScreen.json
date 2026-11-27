@@ -1,0 +1,6 @@
+{
+  "routeId": "hostWorkPhoneImportScreen",
+  "status": "planned",
+  "priority": "P1",
+  "reason": "Synthetic phone flow tests render ready, retry and completion in both themes at normal and 200% text. Shared route-capture catalog registration remains part of the canonical program capture pass after dependency application."
+}

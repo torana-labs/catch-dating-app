@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/hosts/events/rehearsal_practice_scores_screen.dart",
+      "symbol": "_HostRehearsalPracticeScoresScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "The practice console pushes the practice scores as a system pushed screen."
+}

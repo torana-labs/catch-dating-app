@@ -1,0 +1,10 @@
+{
+  "routeId": "hostWorkHotelScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "host_staff_hotel_desk_phone",
+    "host_staff_departures_phone"
+  ],
+  "reason": "The staff screen on the system is captured over the wedding-weekend fixture reads (night, phone)."
+}

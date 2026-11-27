@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "settingsScreen"
+      ],
+      "file": "lib/safety/presentation/settings_screen.dart",
+      "symbol": "_SettingsScreenState",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Account Settings is a conventional pushed settings route."
+}

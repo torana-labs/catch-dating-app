@@ -1,0 +1,219 @@
+{
+  "id": "screen.host.event.rehearsal",
+  "name": "Host Event Dress Rehearsal",
+  "owner": "event_rehearsal",
+  "priority": "P1",
+  "status": "ready",
+  "routes": [
+    {
+      "id": "hostEventRehearsalStartScreen",
+      "path": "/host/organizers/:organizerId/rehearsals/new",
+      "role": "host"
+    },
+    {
+      "id": "hostEventRehearsalScreen",
+      "path": "/host/organizers/:organizerId/rehearsals/:sessionId",
+      "role": "host"
+    }
+  ],
+  "source": {
+    "file": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
+    "symbol": "HostEventRehearsalStartScreen"
+  },
+  "shell": {
+    "owner": "host",
+    "nestedScaffoldAllowed": false,
+    "reason": "The Host adaptive shell owns root navigation while each rehearsal route uses the canonical route body and compact top bar."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchLegacyTopBar",
+    "owner": "HostEventRehearsalStartScreen, HostRehearsalScreen and HostRehearsalPracticeScreen",
+    "reason": "Setup and the live console are focused Host workspaces with explicit back navigation and persistent practice identity in page content."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "error",
+      "loading",
+      "mutation"
+    ],
+    "owner": "eventRehearsalProvider, EventRehearsalController mutations, and CatchAsyncBoundary"
+  },
+  "stateController": {
+    "primary": "eventRehearsalProvider + EventRehearsalController",
+    "files": [
+      {
+        "file": "lib/contexts/live/data/event_rehearsal_repository.dart",
+        "symbol": "eventRehearsal"
+      },
+      {
+        "file": "lib/hosts/events/rehearsal_practice_controller.dart",
+        "symbol": "hostRehearsalPracticeController"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/event_rehearsal/presentation/event_rehearsal_controller.dart",
+        "symbol": "EventRehearsalController"
+      }
+    ],
+    "notes": "The controller owns all isolated rehearsal callables and invalidation. Setup is editable only before start; the virtual clock, synthetic roster, guest-link rotation, scenario injection, internal faults, reset, fork, and reproduction export never write through production event repositories."
+  },
+  "designRefs": [
+    {
+      "id": "repo.event-rehearsal-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/event_rehearsal/host_event_rehearsal_screen_test.dart",
+      "notes": "Focused widget coverage keeps the safety boundary, start choices, guest-phone handoff, and live virtual controls visible."
+    }
+  ],
+  "captures": [],
+  "states": [
+    {
+      "id": "host_event_rehearsal_start",
+      "kind": "populated",
+      "status": "tested",
+      "source": "HostEventRehearsalStartScreen sample or source-event setup",
+      "tests": [
+        "test/event_rehearsal/host_event_rehearsal_screen_test.dart"
+      ],
+      "nextAction": "Keep sample and source-event creation choices synchronized with the callable schema."
+    },
+    {
+      "id": "host_event_rehearsal_loading",
+      "kind": "loading",
+      "status": "implemented",
+      "source": "CatchSkeletonRows through CatchAsyncBoundary",
+      "tests": [
+        "test/event_rehearsal/host_event_rehearsal_screen_test.dart"
+      ],
+      "nextAction": "Retain the route-owned skeleton while the first isolated projection loads."
+    },
+    {
+      "id": "host_event_rehearsal_error",
+      "kind": "error",
+      "status": "implemented",
+      "source": "CatchLocalizedErrorState with retry invalidation",
+      "tests": [
+        "test/event_rehearsal/host_event_rehearsal_screen_test.dart"
+      ],
+      "nextAction": "Keep expired, unauthorized, and backend failure recovery fail closed."
+    },
+    {
+      "id": "host_event_rehearsal_setup",
+      "kind": "populated",
+      "status": "tested",
+      "source": "EventRehearsalSetupSection while the session is draft or ready",
+      "tests": [
+        "test/event_rehearsal/event_rehearsal_domain_test.dart"
+      ],
+      "nextAction": "Preserve setup immutability after start."
+    },
+    {
+      "id": "host_event_rehearsal_running",
+      "kind": "populated",
+      "status": "tested",
+      "source": "HostRehearsalPracticeScreen on the rebuilt console, with the virtual clock, simulator, guest link and synthetic roster in Practice tools",
+      "tests": [
+        "test/event_rehearsal/host_event_rehearsal_screen_test.dart",
+        "test/event_rehearsal/event_rehearsal_domain_test.dart"
+      ],
+      "nextAction": "Retain deterministic seed, revision, and action history in every refresh."
+    },
+    {
+      "id": "host_event_rehearsal_paused",
+      "kind": "populated",
+      "status": "implemented",
+      "source": "EventRehearsalRunSection paused lifecycle controls",
+      "tests": [
+        "test/event_rehearsal/event_rehearsal_domain_test.dart"
+      ],
+      "nextAction": "Keep resume and previous-step recovery available without changing setup."
+    },
+    {
+      "id": "host_event_rehearsal_complete",
+      "kind": "populated",
+      "status": "implemented",
+      "source": "EventRehearsalRecapSection deterministic action history",
+      "tests": [
+        "test/event_rehearsal/event_rehearsal_domain_test.dart"
+      ],
+      "nextAction": "Keep reset, fork, and reproduction export usable after completion."
+    },
+    {
+      "id": "host_event_rehearsal_mutation",
+      "kind": "mutation",
+      "status": "implemented",
+      "source": "EventRehearsalController mutation families and listenToCatchMutationErrors",
+      "tests": [
+        "test/event_rehearsal/host_event_rehearsal_screen_test.dart"
+      ],
+      "nextAction": "Preserve bounded idempotency and stale-revision recovery for all controls."
+    }
+  ],
+  "composition": {
+    "currentLayout": "A focused start route creates a deterministic practice room from a safe sample or source-event snapshot. The rehearsal screen lists the plan's steps; its practice door opens the rebuilt live console, run console or crawl board on the rehearsal projection. Practice tools hold frozen setup, a rotatable guest phone link, virtual time controls, scenario and fault injection, the assistance queues, a synthetic roster and deterministic recap tools.",
+    "targetLayout": "Keep rehearsal as a first-class Host capability that mirrors event preparation, live operations, and recap while remaining structurally isolated from real guests, messages, payments, matches, and production event mutation paths.",
+    "sections": [
+      {
+        "id": "section.host.event.rehearsal.setup",
+        "name": "Practice room creation and frozen setup",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [],
+        "flutter": {
+          "file": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
+          "symbol": "HostEventRehearsalStartScreen"
+        },
+        "currentOwner": "event_rehearsal.presentation",
+        "targetOwner": "event_rehearsal.presentation",
+        "dependencies": [
+          "catch.top_bar",
+          "catch.surface",
+          "catch.field",
+          "catch.menu",
+          "catch.button"
+        ],
+        "states": [
+          "host_event_rehearsal_start",
+          "host_event_rehearsal_mutation"
+        ],
+        "migration": "Keep creation inside the rehearsal callable boundary and navigate only with the returned opaque session id."
+      },
+      {
+        "id": "section.host.event.rehearsal.console",
+        "name": "Practice on the rebuilt console, with practice tools and recap",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [],
+        "flutter": {
+          "file": "lib/hosts/events/rehearsal_practice_screen.dart",
+          "symbol": "HostRehearsalPracticeScreen"
+        },
+        "currentOwner": "event_rehearsal.presentation",
+        "targetOwner": "event_rehearsal.presentation",
+        "dependencies": [
+          "catch.top_bar",
+          "catch.surface",
+          "catch.field",
+          "catch.button",
+          "catch.skeleton",
+          "catch.error_state"
+        ],
+        "states": [
+          "host_event_rehearsal_loading",
+          "host_event_rehearsal_error",
+          "host_event_rehearsal_setup",
+          "host_event_rehearsal_running",
+          "host_event_rehearsal_paused",
+          "host_event_rehearsal_complete",
+          "host_event_rehearsal_mutation"
+        ],
+        "migration": "Keep projections pollable and deterministic until a dedicated rehearsal stream exists; do not reuse production event or participation repositories."
+      }
+    ]
+  },
+  "openGaps": []
+}

@@ -1,0 +1,71 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostOrganizerScreen"
+      ],
+      "file": "lib/routing/host_navigation_workspace.dart",
+      "symbol": "HostNavigationWorkspace",
+      "family": "root",
+      "expression": "CatchNavigationViewport",
+      "bodyGeometry": "full-bleed",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostOrganizerEventDefaultsScreen"
+      ],
+      "file": "lib/hosts/events/event_defaults_screen.dart",
+      "symbol": "_HostEventDefaultsScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostOrganizerTeamScreen"
+      ],
+      "file": "lib/hosts/organizer/team_screen.dart",
+      "symbol": "_TeamScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostOrganizerPaymentsScreen"
+      ],
+      "file": "lib/hosts/organizer/payments_screen.dart",
+      "symbol": "OrganizerPaymentsScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostOrganizerMembershipsScreen"
+      ],
+      "file": "lib/hosts/organizer/memberships_screen.dart",
+      "symbol": "OrganizerMembershipsScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostOrganizerLiveGuideScreen"
+      ],
+      "file": "lib/hosts/organizer/live_guide_screen.dart",
+      "symbol": "OrganizerLiveGuideScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "Organizer roots use the tabbed family; club spokes use the pushed-route family."
+}

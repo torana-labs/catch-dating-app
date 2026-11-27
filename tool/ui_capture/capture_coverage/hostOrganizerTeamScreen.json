@@ -1,0 +1,25 @@
+{
+  "routeId": "hostOrganizerTeamScreen",
+  "status": "captured",
+  "priority": "P1",
+  "reason": "The unified Host team workspace captures professional profile, selected-club team management, hosted-club navigation, profile create/save mutations, bottom sign-out failures, accessibility scale, and reduced motion on the canonical route.",
+  "captureIds": [
+    "host_team_active_profile",
+    "host_team_text_scale_2",
+    "host_team_reduced_motion",
+    "host_team_fallback_profile",
+    "host_team_clubs_loading",
+    "host_team_clubs_error",
+    "host_team_clubs_offline",
+    "host_team_inline_profile_edit",
+    "host_team_save_profile_pending",
+    "host_team_save_profile_error",
+    "host_team_save_profile_offline",
+    "host_team_sign_out_error",
+    "host_team_sign_out_offline",
+    "host_organizer_team_phone",
+    "host_clubs_team_pending",
+    "host_clubs_team_error",
+    "host_clubs_team_offline"
+  ]
+}

@@ -1,0 +1,569 @@
+{
+  "id": "screen.payments.history",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchLegacyTopBar",
+    "owner": "CatchRouteScaffold",
+    "reason": "The pushed route uses canonical compact back chrome and a scroll-derived divider."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "offline",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Payment History",
+  "owner": "payments",
+  "priority": "P3",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "paymentHistoryScreen",
+      "path": "/payment-history",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/payments/presentation/payment_history_screen.dart",
+    "symbol": "PaymentHistoryScreen"
+  },
+  "stateController": {
+    "primary": "PaymentHistoryScreen + uidProvider + paymentHistoryViewModelProvider",
+    "files": [
+      {
+        "file": "lib/payments/presentation/payment_history_screen.dart",
+        "symbol": "PaymentHistoryScreen"
+      },
+      {
+        "file": "lib/contexts/payments/data/payment_history_repository.dart",
+        "symbol": "watchPaymentsForUser"
+      },
+      {
+        "file": "lib/payments/presentation/payment_history_view_model.dart",
+        "symbol": "paymentHistoryViewModel"
+      },
+      {
+        "file": "lib/contexts/bookings/data/guest_event_cards_repository.dart",
+        "symbol": "watchOwnEventCardsForEvents"
+      },
+      {
+        "file": "lib/contexts/payments/domain/payment.dart",
+        "symbol": "Payment"
+      }
+    ],
+    "mutationOwners": [],
+    "notes": "PaymentHistoryScreen resolves current uid, delegates payment stream and batched event-title display rows to paymentHistoryViewModelProvider, renders empty/loading/error surfaces, and opens a provider-free PaymentReceiptSheet with status-specific recovery copy. Remaining adapter work is capture-facing access/error/offline display states and explicit support-action routing."
+  },
+  "designRefs": [
+    {
+      "id": "repo.payment-history-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/payments/payment_history_screen_test.dart",
+      "notes": "Payment History tests cover sign-up failure details, refunded recovery copy, status badges, detail bottom sheet, and help action for failed sign-up payments."
+    },
+    {
+      "id": "claude.payment-history",
+      "kind": "claude",
+      "status": "blocked",
+      "notes": "Blocked on canonical Payment History screen source/export. The local Claude bundle includes Booking payment/confirmation moments, but no standalone Payment History list or receipt-history screen template."
+    }
+  ],
+  "captures": [
+    {
+      "id": "payment_history_uid_loading",
+      "status": "captured",
+      "notes": "Payment History uid loading route capture."
+    },
+    {
+      "id": "payment_history_signed_out",
+      "status": "captured",
+      "notes": "Payment History signed out route capture."
+    },
+    {
+      "id": "payment_history_uid_error",
+      "status": "captured",
+      "notes": "Payment History uid error route capture."
+    },
+    {
+      "id": "payment_history_uid_offline",
+      "status": "captured",
+      "notes": "Payment History uid offline route capture using shared offline error copy."
+    },
+    {
+      "id": "payment_history_loading",
+      "status": "captured",
+      "notes": "Payment History loading route capture."
+    },
+    {
+      "id": "payment_history_error",
+      "status": "captured",
+      "notes": "Payment History error route capture."
+    },
+    {
+      "id": "payment_history_payments_offline",
+      "status": "captured",
+      "notes": "Payment History payment stream offline route capture using shared offline error copy."
+    },
+    {
+      "id": "payment_history_empty",
+      "status": "captured",
+      "notes": "Payment history baseline empty state."
+    },
+    {
+      "id": "payment_history_populated",
+      "status": "captured",
+      "notes": "Payment History populated route capture."
+    },
+    {
+      "id": "payment_history_receipt_sheet",
+      "status": "captured",
+      "notes": "Payment History receipt bottom-sheet capture."
+    },
+    {
+      "id": "payment_history_failed_signup_receipt_sheet",
+      "status": "captured",
+      "notes": "Payment History failed sign-up receipt sheet with help action capture."
+    },
+    {
+      "id": "payment_history_support_snackbar",
+      "status": "captured",
+      "notes": "Payment History failed sign-up support snackbar capture."
+    },
+    {
+      "id": "payment_history_missing_event_title",
+      "status": "captured",
+      "notes": "Payment History missing event title route capture."
+    },
+    {
+      "id": "payment_history_event_title_loading",
+      "status": "captured",
+      "notes": "Resolved payments with batched event-title enrichment still loading."
+    },
+    {
+      "id": "payment_history_event_title_error",
+      "status": "captured",
+      "notes": "Resolved payments with batched event-title enrichment failure and exact-query retry."
+    },
+    {
+      "id": "payment_history_text_scale_2",
+      "status": "captured",
+      "notes": "Payment History text scale 2 route capture."
+    },
+    {
+      "id": "payment_history_reduced_motion",
+      "status": "captured",
+      "notes": "Payment History reduced motion route capture."
+    }
+  ],
+  "states": [
+    {
+      "id": "uid_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "payment_history_uid_loading captures uidProvider loading under the Payment history top bar.",
+      "nextAction": "Compare loading shell against exported references once Payment History references exist.",
+      "previewIds": [
+        "PaymentHistoryScreen/Screen states"
+      ],
+      "captureIds": [
+        "payment_history_uid_loading"
+      ]
+    },
+    {
+      "id": "uid_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "payment_history_uid_error captures uidProvider errors through CatchLocalizedErrorState with AppErrorContext.payments.",
+      "nextAction": "Keep uid provider retry copy on the shared branded error surface.",
+      "previewIds": [
+        "PaymentHistoryScreen/Screen states"
+      ],
+      "captureIds": [
+        "payment_history_uid_error"
+      ]
+    },
+    {
+      "id": "signed_out",
+      "kind": "permission",
+      "status": "captured",
+      "source": "payment_history_signed_out captures the Sign in required CatchEmptyState.",
+      "nextAction": "Confirm shell redirect policy before deciding whether signed-out route access should remain visible.",
+      "previewIds": [
+        "PaymentHistoryScreen/Screen states"
+      ],
+      "captureIds": [
+        "payment_history_signed_out"
+      ]
+    },
+    {
+      "id": "payments_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "payment_history_loading captures watchPaymentsForUserProvider loading.",
+      "nextAction": "Compare payment-stream loading against exported references once available.",
+      "previewIds": [
+        "PaymentHistoryScreen/Screen states"
+      ],
+      "captureIds": [
+        "payment_history_loading"
+      ]
+    },
+    {
+      "id": "payments_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "payment_history_error captures payment stream errors through CatchLocalizedErrorState with retry invalidation.",
+      "nextAction": "Keep payment stream retry copy on the shared branded error surface.",
+      "previewIds": [
+        "PaymentHistoryScreen/Screen states"
+      ],
+      "captureIds": [
+        "payment_history_error"
+      ]
+    },
+    {
+      "id": "payment_history_empty",
+      "kind": "empty",
+      "status": "captured",
+      "source": "payment_history_empty renders the No payments yet baseline empty state.",
+      "captureIds": [
+        "payment_history_empty"
+      ],
+      "nextAction": "Compare empty-state layout against exported references.",
+      "previewIds": [
+        "PaymentHistoryScreen/Screen states"
+      ]
+    },
+    {
+      "id": "populated_payments",
+      "kind": "populated",
+      "status": "captured",
+      "source": "payment_history_populated captures event-title lookup, date, amount, and status badges for deterministic utility payment rows.",
+      "tests": [
+        "test/payments/payment_history_screen_test.dart"
+      ],
+      "nextAction": "Compare populated row spacing against exported Payment History references.",
+      "previewIds": [
+        "PaymentHistoryScreen/Screen states"
+      ],
+      "captureIds": [
+        "payment_history_populated"
+      ]
+    },
+    {
+      "id": "status_variants",
+      "kind": "populated",
+      "status": "tested",
+      "source": "Payment tests cover every status badge variant; payment_history_populated captures completed, pending, refunded, and refund-attention rows from shared fixtures.",
+      "tests": [
+        "test/payments/payment_history_screen_test.dart"
+      ],
+      "nextAction": "Add a dedicated receipt/status specimen capture if failed and booking-failure rows need all variants visible in one frame.",
+      "previewIds": [
+        "PaymentHistoryScreen/Screen states"
+      ]
+    },
+    {
+      "id": "detail_sheet",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Tapping a payment tile opens CatchSheet receipt details with payment/order/event ids and date rows.",
+      "captureIds": [
+        "payment_history_receipt_sheet",
+        "payment_history_failed_signup_receipt_sheet"
+      ],
+      "tests": [
+        "test/payments/payment_history_screen_test.dart"
+      ],
+      "nextAction": "Add masks for generated receipt ids when Payment History references are exported.",
+      "previewIds": [
+        "PaymentHistoryScreen/Screen states",
+        "PaymentReceiptSheet/Receipt states"
+      ]
+    },
+    {
+      "id": "failed_signup_help",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Sign-up failure payments honestly label the action How to get help with this booking; it closes the receipt and shows actionable guidance to include the visible payment and order IDs when contacting Catch support without claiming to open an unimplemented channel.",
+      "captureIds": [
+        "payment_history_failed_signup_receipt_sheet",
+        "payment_history_support_snackbar"
+      ],
+      "tests": [
+        "test/payments/payment_history_screen_test.dart"
+      ],
+      "nextAction": "Keep the guidance label and outcome aligned unless a configured support route, composer, email, phone, or case-creation channel is implemented.",
+      "previewIds": [
+        "PaymentHistoryScreen/Screen states",
+        "PaymentReceiptSheet/Receipt states"
+      ]
+    },
+    {
+      "id": "event_title_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "When payments are resolved but watchOwnEventCardsForEventsProvider is loading, PaymentHistoryViewModel preserves an explicit enrichment-loading status and PaymentHistoryList renders row-shaped skeletons instead of a false missing title.",
+      "captureIds": [
+        "payment_history_event_title_loading"
+      ],
+      "tests": [
+        "test/payments/payment_history_screen_test.dart"
+      ],
+      "nextAction": "Keep enrichment loading visually distinct from resolved missing event titles.",
+      "previewIds": [
+        "PaymentHistoryScreen/Screen states"
+      ]
+    },
+    {
+      "id": "event_title_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "Event-title lookup failure is preserved in PaymentHistoryViewModel and renders an event-specific CatchErrorState with exact-query retry.",
+      "captureIds": [
+        "payment_history_event_title_error"
+      ],
+      "tests": [
+        "test/payments/payment_history_screen_test.dart"
+      ],
+      "nextAction": "Keep the retry scoped to the batched payment event-id query and preserve the resolved payment set.",
+      "previewIds": [
+        "PaymentHistoryScreen/Screen states"
+      ]
+    },
+    {
+      "id": "event_title_missing",
+      "kind": "empty",
+      "status": "captured",
+      "source": "After event-title enrichment resolves, a genuinely absent event uses the honest Event unavailable row label while retaining receipt access.",
+      "tests": [
+        "test/payments/payment_history_screen_test.dart"
+      ],
+      "nextAction": "Compare the resolved-absence label against exported references once Payment History references exist.",
+      "previewIds": [
+        "PaymentHistoryScreen/Screen states"
+      ],
+      "captureIds": [
+        "payment_history_missing_event_title"
+      ]
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Payment History uses shared obviousOfflineException/appErrorDescriptor copy for uid, payment, and event-title retry surfaces; offline title enrichment no longer impersonates a missing event.",
+      "captureIds": [
+        "payment_history_uid_offline",
+        "payment_history_payments_offline"
+      ],
+      "nextAction": "Reopen only if product requires Payment-specific offline copy that diverges from the shared app error catalogue.",
+      "previewIds": [
+        "PaymentHistoryScreen/Screen states"
+      ]
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "payment_history_text_scale_2 captures rows, badges, and top bar at text scale 2.0.",
+      "nextAction": "Add a receipt-sheet text-scale capture when bottom-sheet visual parity starts.",
+      "previewIds": [
+        "PaymentHistoryScreen/Screen states"
+      ],
+      "captureIds": [
+        "payment_history_text_scale_2"
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "payment_history_reduced_motion captures the route with animations disabled for review.",
+      "nextAction": "Add reduced-motion proof for receipt sheet/support snackbar if those remain animated.",
+      "previewIds": [
+        "PaymentHistoryScreen/Screen states"
+      ],
+      "captureIds": [
+        "payment_history_reduced_motion"
+      ]
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "The capture runner emits paired light/dark outputs for the populated Payment History fixture.",
+      "nextAction": "Compare both themes after Payment History reference export.",
+      "previewIds": [
+        "PaymentHistoryScreen/Screen states"
+      ],
+      "captureIds": [
+        "payment_history_populated"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "PaymentHistoryScreen owns uid access and route shell state, delegates payment stream and batched event-title display rows to paymentHistoryViewModelProvider, composes empty/error/loading surfaces, and wires provider-free row and receipt sheet actions.",
+    "targetLayout": "Payment History should continue pushing capture-facing access, stream, event-title, status presentation, detail-row, support-action, and retry-intent state into typed display data before visual parity edits.",
+    "sections": [
+      {
+        "id": "section.payments_history.adapter",
+        "name": "Payment history route adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "PaymentHistoryViewModel"
+        ],
+        "flutter": {
+          "file": "lib/payments/presentation/payment_history_screen.dart",
+          "symbol": "PaymentHistoryScreen"
+        },
+        "currentOwner": "PaymentHistoryScreen + paymentHistoryViewModelProvider",
+        "targetOwner": "PaymentHistory view-model/state adapter",
+        "dependencies": [
+          "catch.top_bar"
+        ],
+        "states": [
+          "uid_loading",
+          "uid_error",
+          "payments_loading",
+          "payment_history_empty",
+          "populated_payments"
+        ],
+        "migration": "Keep payment rows and batched event-title lookup in the PaymentHistory view-model; continue moving retry intents, access/offline copy, and support-action routing into typed display state.",
+        "previewIds": [
+          "PaymentHistoryScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.payments_history.list",
+        "name": "Payment history list",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "PaymentHistoryList"
+        ],
+        "flutter": {
+          "file": "lib/payments/presentation/payment_history_screen.dart",
+          "symbol": "PaymentHistoryList"
+        },
+        "currentOwner": "PaymentHistoryList + paymentHistoryViewModelProvider",
+        "targetOwner": "provider-free payment history list",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "payments_loading",
+          "payments_error",
+          "payment_history_empty",
+          "populated_payments"
+        ],
+        "migration": "Keep list composition provider-free once an adapter supplies ordered payment rows and status display data.",
+        "previewIds": [
+          "PaymentHistoryScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.payments_history.tile",
+        "name": "Payment transaction row",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "PaymentTransactionRow"
+        ],
+        "flutter": {
+          "file": "lib/payments/presentation/payment_history_screen.dart",
+          "symbol": "PaymentHistoryTile"
+        },
+        "currentOwner": "_PaymentTile + PaymentHistoryRow",
+        "targetOwner": "provider-free payment transaction row",
+        "dependencies": [
+          "catch.badge",
+          "catch.surface"
+        ],
+        "states": [
+          "populated_payments",
+          "status_variants",
+          "event_title_loading_missing"
+        ],
+        "migration": "Keep the row provider-free with pre-resolved display data before visual edits.",
+        "previewIds": [
+          "PaymentHistoryScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.payments_history.detail_sheet",
+        "name": "Payment receipt detail sheet",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "PaymentReceiptSheet"
+        ],
+        "flutter": {
+          "file": "lib/payments/presentation/payment_history_screen.dart",
+          "symbol": "PaymentReceiptSheet"
+        },
+        "currentOwner": "PaymentReceiptSheet",
+        "targetOwner": "provider-free payment receipt detail sheet",
+        "dependencies": [
+          "catch.badge",
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "detail_sheet",
+          "failed_signup_help",
+          "text_scale_2"
+        ],
+        "migration": "Keep receipt rows, support action availability, and status copy provider-free while the route/view-model owns callback wiring.",
+        "previewIds": [
+          "PaymentHistoryScreen/Screen states",
+          "PaymentReceiptSheet/Receipt states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DP-PAYMENT-HISTORY-001",
+      "status": "closed",
+      "nextAction": "Widgetbook now covers empty, loading, error, signed-out, populated rows, status badges, refund failure, missing event title, explicit receipt sheet, help action, and addon-driven theme/accessibility review."
+    },
+    {
+      "id": "DP-PAYMENT-HISTORY-002",
+      "status": "blocked",
+      "nextAction": "Blocked/reference-only: Payment History route captures cover access, provider waves, empty, populated rows, receipt sheet, failed sign-up help sheet, support snackbar, missing event-title fallback, offline provider errors, text scale, reduced motion, and light/dark. Canonical reference export, receipt-id masks, and pixel comparison wait on a standalone Payment History design source; see DP-PAYMENT-HISTORY-004."
+    },
+    {
+      "id": "DP-PAYMENT-HISTORY-003",
+      "status": "closed",
+      "nextAction": "PaymentHistoryViewModel now reads event titles from watchOwnEventCardsForEventsProvider, feeds provider-free PaymentHistoryRow data into tiles, and tests resolved plus missing event-title fallback behavior."
+    },
+    {
+      "id": "DP-PAYMENT-HISTORY-004",
+      "status": "blocked",
+      "nextAction": "Canonical Payment History reference export is blocked until design provides a standalone payment-history screen source; current Claude sources only provide Booking payment and confirmation moments."
+    },
+    {
+      "id": "DP-PAYMENT-HISTORY-005",
+      "status": "closed",
+      "nextAction": "Closed. The receipt CTA now says How to get help with this booking, closes the sheet, and shows actionable guidance to include the visible payment and order IDs; the focused widget test proves the exact label and snackbar outcome without implying an unimplemented support handoff."
+    },
+    {
+      "id": "DP-PAYMENT-HISTORY-006",
+      "status": "closed",
+      "nextAction": "Closed. PaymentHistoryViewModel now distinguishes event-title loading, failure, resolved titles, and genuinely missing events; the UI shows skeletons, an event-specific retry state, or Event unavailable respectively, with focused widget proof."
+    }
+  ]
+}

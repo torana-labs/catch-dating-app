@@ -1,0 +1,7 @@
+{
+  "path": "lib/hosts/presentation/widgets/host_wizard_step_header.dart",
+  "symbol": "HostWizardStepHeader",
+  "role": "step-flow",
+  "owner": "CatchStepHeader",
+  "reason": "Club and Event creation share one localized step adapter; CatchStepHeader owns progress and navigation."
+}

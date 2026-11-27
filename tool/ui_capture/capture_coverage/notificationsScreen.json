@@ -1,0 +1,20 @@
+{
+  "routeId": "notificationsScreen",
+  "status": "captured",
+  "priority": "P3",
+  "captureIds": [
+    "notifications_activity",
+    "notifications_uid_loading",
+    "notifications_uid_error",
+    "notifications_signed_out",
+    "notifications_activity_loading",
+    "notifications_activity_error",
+    "notifications_empty",
+    "notifications_mark_all_read_pending",
+    "notifications_mark_all_read_error",
+    "notifications_deep_link_error",
+    "notifications_text_scale_2",
+    "notifications_reduced_motion"
+  ],
+  "reason": "Notifications captures now cover populated read/unread activity, uid loading/error, signed-out, activity loading, activity error, empty activity, mark-all-read pending/error, deep-link failure feedback, text scale 2.0, reduced motion, and paired light/dark output."
+}

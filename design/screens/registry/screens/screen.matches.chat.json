@@ -1,0 +1,853 @@
+{
+  "id": "screen.matches.chat",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "identity",
+    "expression": "CatchLegacyTopBar.identity",
+    "owner": "CatchLegacyTopBar",
+    "reason": "The source owns identity-aware canonical top-bar chrome."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "offline",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Match Chat",
+  "owner": "chats",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "chatScreen",
+      "path": "/chats/:matchId",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/pages/chat/chat_screen.dart",
+    "symbol": "ChatScreen"
+  },
+  "stateController": {
+    "primary": "ChatRouteState + HostChatScreenState + ChatReadMarkerController + ChatScrollCoordinator + ChatThreadActionController + ChatRetryController + ChatController",
+    "files": [
+      {
+        "file": "lib/pages/chat/chat_screen.dart",
+        "symbol": "ChatScreen"
+      },
+      {
+        "file": "lib/pages/chat/chat_route_state.dart",
+        "symbol": "ChatRouteState"
+      },
+      {
+        "file": "lib/pages/chat/host_chat_screen_state.dart",
+        "symbol": "HostChatScreenState"
+      },
+      {
+        "file": "lib/pages/chat/chat_thread_lookup_state.dart",
+        "symbol": "ChatThreadLookupState"
+      },
+      {
+        "file": "lib/pages/chat/chat_controller.dart",
+        "symbol": "ChatController"
+      },
+      {
+        "file": "lib/pages/chat/suvbot_controller.dart",
+        "symbol": "SuvbotController"
+      },
+      {
+        "file": "lib/contexts/messaging/data/conversation_repository.dart",
+        "symbol": "watchConversationMessages"
+      },
+      {
+        "file": "lib/pages/chat/chat_read_marker_state.dart",
+        "symbol": "ChatReadMarkerState"
+      },
+      {
+        "file": "lib/pages/chat/chat_read_marker_controller.dart",
+        "symbol": "ChatReadMarkerController"
+      },
+      {
+        "file": "lib/pages/chat/chat_scroll_coordinator.dart",
+        "symbol": "ChatScrollCoordinator"
+      },
+      {
+        "file": "lib/pages/chat/chat_thread_action_controller.dart",
+        "symbol": "ChatThreadActionController"
+      },
+      {
+        "file": "lib/pages/chat/chat_retry_controller.dart",
+        "symbol": "ChatRetryController"
+      },
+      {
+        "file": "lib/contexts/connections/data/match_repository.dart",
+        "symbol": "matchStream"
+      },
+      {
+        "file": "lib/contexts/messaging/data/suvbot_repository.dart",
+        "symbol": "suvbotActions"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/pages/chat/chat_controller.dart",
+        "symbol": "ChatController"
+      },
+      {
+        "file": "lib/pages/chat/suvbot_controller.dart",
+        "symbol": "SuvbotController"
+      },
+      {
+        "file": "lib/contexts/messaging/data/conversation_repository.dart",
+        "symbol": "ConversationRepository"
+      },
+      {
+        "file": "lib/contexts/messaging/data/suvbot_repository.dart",
+        "symbol": "SuvbotRepository"
+      }
+    ],
+    "notes": "Match Chat uses the shared ChatScreen. ChatRouteState performs uid, match, messages, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before rendering. HostChatScreenState, despite its legacy name, owns consumer match identity, action availability, route/message/Suvbot retry intents, disabled composer copy, safety target copy, and message peer name. ChatThreadLookupState owns other-participant/profile/event/Suvbot lookup keys. ChatReadMarkerController executes read-marker side effects from ChatReadMarkerState decisions, ChatScrollCoordinator owns initial/appended/send-success auto-scroll, ChatThreadActionController executes profile/share/report/block typed actions, and ChatRetryController executes typed provider invalidation. ChatScreen owns local text entry and UI primitives while ChatController/SuvbotController own writes, image upload cleanup, report/block, and demo actions."
+  },
+  "designRefs": [
+    {
+      "id": "repo.matches-captures",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/ui_captures/catalog/screen_capture_catalog.dart",
+      "notes": "match_chat_context captures a deterministic populated consumer match chat."
+    },
+    {
+      "id": "claude.match-chat",
+      "kind": "claude",
+      "status": "available",
+      "notes": "Messaging thread and new-match empty references are exported, registered, and within advisory threshold after fixture and reference-safe-area alignment. Keyboard, share-card, report/block dialog, and dynamic-time variants are not present in the current handoff.",
+      "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-messaging/Messaging.dc.html"
+    }
+  ],
+  "captures": [
+    {
+      "id": "match_chat_context",
+      "status": "captured",
+      "notes": "Deterministic route capture."
+    },
+    {
+      "id": "match_chat_messages_loading",
+      "status": "captured",
+      "notes": "Match chat loading state with top bar and composer chrome."
+    },
+    {
+      "id": "match_chat_messages_error",
+      "status": "captured",
+      "notes": "Match chat message-load error and retry state."
+    },
+    {
+      "id": "match_chat_offline",
+      "status": "captured",
+      "notes": "Match chat offline-mapped message error state."
+    },
+    {
+      "id": "match_chat_empty_thread",
+      "status": "captured",
+      "notes": "Match chat empty thread state."
+    },
+    {
+      "id": "match_chat_event_context_fallback",
+      "status": "captured",
+      "notes": "Match chat neutral event-context fallback state."
+    },
+    {
+      "id": "match_chat_unavailable",
+      "status": "captured",
+      "notes": "Match chat missing-match unavailable state."
+    },
+    {
+      "id": "match_chat_blocked",
+      "status": "captured",
+      "notes": "Match chat blocked conversation with disabled composer."
+    },
+    {
+      "id": "match_chat_image_thread",
+      "status": "captured",
+      "notes": "Match chat image-message thread state."
+    },
+    {
+      "id": "match_chat_suvbot_controls",
+      "status": "captured",
+      "notes": "Suvbot conversation controls replacing the normal composer."
+    },
+    {
+      "id": "match_chat_suvbot_action_error",
+      "status": "captured",
+      "notes": "Suvbot action load error state."
+    },
+    {
+      "id": "match_chat_share_card",
+      "status": "captured",
+      "notes": "Chat share-card sheet capture."
+    },
+    {
+      "id": "match_chat_composer_states",
+      "status": "captured",
+      "notes": "Chat composer ready, image-pending, and disabled states."
+    },
+    {
+      "id": "match_chat_keyboard_multiline",
+      "status": "captured",
+      "notes": "Match chat keyboard-open multiline safe-area state."
+    },
+    {
+      "id": "match_chat_send_failure_snackbar",
+      "status": "captured",
+      "notes": "Match chat send-failure snackbar state."
+    },
+    {
+      "id": "match_chat_report_failure_snackbar",
+      "status": "captured",
+      "notes": "Match chat report-failure snackbar state."
+    },
+    {
+      "id": "match_chat_block_confirm_dialog",
+      "status": "captured",
+      "notes": "Match chat block-confirmation dialog state."
+    },
+    {
+      "id": "match_chat_text_scale_2",
+      "status": "captured",
+      "notes": "Match chat at text scale 2.0."
+    },
+    {
+      "id": "match_chat_reduced_motion",
+      "status": "captured",
+      "notes": "Match chat with reduced motion enabled."
+    }
+  ],
+  "states": [
+    {
+      "id": "messages_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "ChatMessageList renders date and alternating message-bubble skeleton rows through CatchAsyncBoundary while watchConversationMessagesProvider loads.",
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_messages_loading"
+      ]
+    },
+    {
+      "id": "messages_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "ChatMessageList renders Messages unavailable error with retry callback.",
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart"
+      ],
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_messages_error"
+      ]
+    },
+    {
+      "id": "populated_thread",
+      "kind": "populated",
+      "status": "captured",
+      "source": "match_chat_context renders top bar, event context, grouped bubbles, composer, and share/report/block menu affordances.",
+      "captureIds": [
+        "match_chat_context"
+      ],
+      "tests": [
+        "test/pages/chat/widgets/message_bubble_test.dart",
+        "test/pages/chat/chat_screen_test.dart"
+      ],
+      "nextAction": "Compare populated thread hierarchy against exported chat references.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ]
+    },
+    {
+      "id": "empty_thread",
+      "kind": "empty",
+      "status": "captured",
+      "source": "Empty message stream renders Say hi copy grounded in profile and shared event context.",
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart"
+      ],
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_empty_thread"
+      ]
+    },
+    {
+      "id": "event_context_ready",
+      "kind": "populated",
+      "status": "captured",
+      "source": "ChatEventContextHeader renders activity-aware stamp and event date when event data is available.",
+      "tests": [
+        "test/pages/chat/widgets/chat_event_context_header_test.dart"
+      ],
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_context"
+      ]
+    },
+    {
+      "id": "event_context_fallback",
+      "kind": "loading",
+      "status": "captured",
+      "source": "ChatEventContextHeader renders neutral fallback while event context is missing/loading.",
+      "tests": [
+        "test/pages/chat/widgets/chat_event_context_header_test.dart"
+      ],
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_event_context_fallback"
+      ]
+    },
+    {
+      "id": "send_message_mutation",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "ChatScreen trims message text, runs ChatController.sendMessageMutation, clears only after success, and animates to bottom.",
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart"
+      ],
+      "nextAction": "Route test now proves pending send spinner, disabled composer controls, duplicate-send guard, success clearing, and retained draft on failure. Continue only capture/reference variants.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ]
+    },
+    {
+      "id": "send_failure",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Failed text send keeps composed text and surfaces shared snackbar feedback.",
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart"
+      ],
+      "nextAction": "Capture registered; keep composer text-retention proof when chat sending is refactored.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_send_failure_snackbar"
+      ]
+    },
+    {
+      "id": "send_image_mutation",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "ChatController.sendImage picks and uploads an image, then sends image message metadata.",
+      "tests": [
+        "test/pages/chat/chat_controller_test.dart"
+      ],
+      "nextAction": "Add composer image pending/cancel/success/failure UI states.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ]
+    },
+    {
+      "id": "image_send_failure_cleanup",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "ChatController.sendImage deletes the uploaded image when the message write fails.",
+      "tests": [
+        "test/pages/chat/chat_controller_test.dart"
+      ],
+      "nextAction": "Keep image cleanup proof when image upload UI is refactored.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ]
+    },
+    {
+      "id": "read_receipt_reset",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "ChatReadMarkerController executes read-marker side effects from ChatReadMarkerState decisions when uid becomes available, incoming messages arrive, or the screen disposes.",
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart",
+        "test/chats/match_repository_test.dart"
+      ],
+      "nextAction": "Closed by ChatReadMarkerState and ChatReadMarkerController coverage.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ]
+    },
+    {
+      "id": "chat_unavailable",
+      "kind": "permission",
+      "status": "captured",
+      "source": "Match loading/error/null disables composer with Loading chat or Chat unavailable copy.",
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_unavailable"
+      ]
+    },
+    {
+      "id": "blocked_chat",
+      "kind": "permission",
+      "status": "captured",
+      "source": "Blocked match disables composer with This chat is closed copy.",
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_blocked"
+      ]
+    },
+    {
+      "id": "top_bar_actions",
+      "kind": "populated",
+      "status": "captured",
+      "source": "CatchLegacyTopBar.identity opens profile from identity title and exposes share/report/block overflow actions without duplicating profile in menu.",
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart"
+      ],
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_context"
+      ]
+    },
+    {
+      "id": "share_card",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "ChatShareCard renders anonymized activity-aware share card and ignores image-only messages.",
+      "tests": [
+        "test/pages/chat/widgets/chat_share_card_test.dart"
+      ],
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_share_card"
+      ]
+    },
+    {
+      "id": "safety_report_block",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "ChatScreen routes report/block actions through typed safety effects, surfaces report failure feedback, and confirms block before executing.",
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart"
+      ],
+      "nextAction": "Captures registered for report failure and block confirmation; keep success/failure feedback proof when safety actions move again.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_report_failure_snackbar",
+        "match_chat_block_confirm_dialog"
+      ]
+    },
+    {
+      "id": "suvbot_controls",
+      "kind": "permission",
+      "status": "captured",
+      "source": "Suvbot conversations replace the normal composer with SuvbotDock controls.",
+      "tests": [
+        "test/pages/chat/chat_screen_test.dart"
+      ],
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_suvbot_controls"
+      ]
+    },
+    {
+      "id": "suvbot_action_mutation",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "SuvbotController delegates action/text requests to SuvbotRepository and SuvbotDock handles pending/error/retry states.",
+      "tests": [
+        "test/pages/chat/suvbot_controller_test.dart"
+      ],
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_suvbot_action_error"
+      ]
+    },
+    {
+      "id": "keyboard_composer",
+      "kind": "populated",
+      "status": "captured",
+      "source": "ChatInput uses compact pill CatchField with send action, multiline growth, keyboard-safe bottom dock, and image button.",
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_composer_states",
+        "match_chat_keyboard_multiline"
+      ]
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Conversation/match/event/profile errors currently route through generic chat or inline fallback states.",
+      "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_offline"
+      ]
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "match_chat_text_scale_2 captures the consumer Match Chat route at TextScaler 2.0.",
+      "nextAction": "Text-scale route coverage is registered; compare only if future text-scale references are exported.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_text_scale_2"
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "match_chat_reduced_motion captures the consumer Match Chat route with MediaQuery.disableAnimations enabled.",
+      "nextAction": "Reduced-motion route coverage is registered; add focused motion proof only if auto-scroll or sheet animation behavior changes.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_reduced_motion"
+      ]
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "match_chat_context emits paired light/dark artifacts through the capture harness for the populated thread baseline.",
+      "nextAction": "Populated light/dark baseline is registered; compare additional theme variants only if design exports them.",
+      "previewIds": [
+        "ChatScreen/Route states"
+      ],
+      "captureIds": [
+        "match_chat_context"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "ChatScreen uses ChatRouteState for uid/match/messages/event/profile/Suvbot provider waves, HostChatScreenState for identity/action/composer display policy, ChatThreadLookupState for lookup keys, ChatReadMarkerController for read effects, ChatScrollCoordinator for scroll behavior, ChatThreadActionController for profile/share/report/block actions, and ChatRetryController for typed retry invalidation before composing top bar, event context, message list, Suvbot/action/composer surfaces, and mutation listeners.",
+    "targetLayout": "Match Chat provider waves, lookup decisions, read markers, scroll behavior, top-bar action execution, retry invalidation, and disabled composer copy are adapter/controller-owned for the current shared ChatScreen contract. Continue only capture/reference parity unless consumer Match Chat splits from the shared adapter.",
+    "sections": [
+      {
+        "id": "section.matches.catch_top_bar_identity",
+        "name": "Chat top bar and actions",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "CatchLegacyTopBar.identity",
+          "ChatActionsMenu"
+        ],
+        "flutter": {
+          "file": "packages/catch_ui/lib/src/components/catch_legacy_top_bar.dart",
+          "symbol": "CatchLegacyTopBar.identity"
+        },
+        "currentOwner": "HostChatScreenState + ChatThreadActionController + ChatScreen UI primitives",
+        "targetOwner": "shared chat top bar state and action controller",
+        "dependencies": [
+          "catch.top_bar"
+        ],
+        "states": [
+          "profile_enabled",
+          "profile_disabled",
+          "share_enabled",
+          "report_block",
+          "suvbot"
+        ],
+        "migration": "HostChatScreenState owns top-bar identity, action availability, pending-disabled action policy, safety target copy, and profile navigation availability. ChatThreadActionController executes typed profile/share/report/block actions through injected UI and safety runners. Add previews only when future action-set references require them.",
+        "previewIds": [
+          "ChatScreen/Route states"
+        ]
+      },
+      {
+        "id": "section.matches.chat_event_context",
+        "name": "Chat event context header",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "EventContextPill",
+          "ActivityStamp"
+        ],
+        "flutter": {
+          "file": "lib/pages/chat/widgets/chat_event_context_header.dart",
+          "symbol": "ChatEventContextHeader"
+        },
+        "currentOwner": "ChatScreen",
+        "targetOwner": "provider-free event context section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "event_ready",
+          "event_loading_fallback",
+          "activity_variants",
+          "long_event_title"
+        ],
+        "migration": "Pass activity/display context from chat adapter and add activity-stamp previews.",
+        "previewIds": [
+          "ChatScreen/Route states"
+        ]
+      },
+      {
+        "id": "section.matches.chat_messages",
+        "name": "Chat message list",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "MessageList",
+          "DateSeparator",
+          "EmptyThread",
+          "MessageError"
+        ],
+        "flutter": {
+          "file": "lib/pages/chat/widgets/chat_message_list.dart",
+          "symbol": "ChatMessageList"
+        },
+        "currentOwner": "ChatScreen",
+        "targetOwner": "provider-free message list section with scroll/effect adapter",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "empty",
+          "populated",
+          "grouped_messages",
+          "date_separator"
+        ],
+        "migration": "Separate message display entries from AsyncValue handling and move scroll side effects into route effect code.",
+        "previewIds": [
+          "ChatScreen/Route states"
+        ]
+      },
+      {
+        "id": "section.matches.chat_message_bubble",
+        "name": "Message bubble",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [
+          "OutgoingBubble",
+          "IncomingBubble",
+          "ImageMessage"
+        ],
+        "flutter": {
+          "file": "lib/pages/chat/widgets/message_bubble.dart",
+          "symbol": "MessageBubble"
+        },
+        "currentOwner": "ChatMessageList",
+        "targetOwner": "registered message bubble compound",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "incoming",
+          "outgoing",
+          "group_first",
+          "group_middle",
+          "group_last",
+          "sending",
+          "image",
+          "long_text"
+        ],
+        "migration": "Promote after host chat confirms shared bubble treatment; add Widgetbook states for grouping and media variants.",
+        "previewIds": [
+          "ChatScreen/Route states"
+        ]
+      },
+      {
+        "id": "section.matches.chat_composer",
+        "name": "Chat composer",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ChatComposer",
+          "ImageAction",
+          "SendAction"
+        ],
+        "flutter": {
+          "file": "lib/pages/chat/widgets/chat_input.dart",
+          "symbol": "ChatInput"
+        },
+        "currentOwner": "ChatScreen",
+        "targetOwner": "provider-free chat composer section",
+        "dependencies": [
+          "catch.icon_button",
+          "catch.field"
+        ],
+        "states": [
+          "empty",
+          "typed",
+          "sending",
+          "sending_image",
+          "disabled",
+          "keyboard_open",
+          "multi_line"
+        ],
+        "migration": "Keep TextEditingController local but pass composer enabled/pending/error display state from adapter/controller.",
+        "previewIds": [
+          "ChatScreen/Route states"
+        ]
+      },
+      {
+        "id": "section.matches.chat_share_card",
+        "name": "Anonymized chat share card",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [
+          "ChatShareCard",
+          "ShareSheet"
+        ],
+        "flutter": {
+          "file": "lib/pages/chat/widgets/chat_share_card.dart",
+          "symbol": "ChatShareCard"
+        },
+        "currentOwner": "ChatScreen",
+        "targetOwner": "registered share-card compound",
+        "dependencies": [
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "ready",
+          "no_shareable_messages",
+          "sharing",
+          "share_failed",
+          "activity_variants"
+        ],
+        "migration": "Keep privacy/anonymization as a contract and add previews for sheet pending/failure and activity variants.",
+        "previewIds": [
+          "ChatScreen/Route states"
+        ]
+      },
+      {
+        "id": "section.matches.chat_suvbot_controls",
+        "name": "Suvbot action controls",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "SuvbotDock",
+          "DemoActionSheet"
+        ],
+        "flutter": {
+          "file": "lib/pages/chat/widgets/suvbot_dock.dart",
+          "symbol": "SuvbotDock"
+        },
+        "currentOwner": "ChatScreen",
+        "targetOwner": "dev/demo action section unless promoted to product surface",
+        "dependencies": [
+          "catch.button",
+          "catch.surface",
+          "catch.field"
+        ],
+        "states": [
+          "loaded",
+          "loading",
+          "error",
+          "pending",
+          "text_action",
+          "reset_sheet"
+        ],
+        "migration": "Keep Suvbot variant isolated from consumer chat visual parity unless product decides it is user-facing.",
+        "previewIds": [
+          "ChatScreen/Route states"
+        ]
+      },
+      {
+        "id": "section.matches.chat_mutation_listeners",
+        "name": "Chat mutation error listeners",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "MutationErrorSurface"
+        ],
+        "flutter": {
+          "file": "lib/pages/chat/chat_screen.dart",
+          "symbol": "ChatScreen"
+        },
+        "currentOwner": "ChatScreen",
+        "targetOwner": "route-level mutation listener wrapper",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "send_error",
+          "image_error",
+          "report_error",
+          "block_error",
+          "suvbot_error"
+        ],
+        "migration": "Keep mutation error listening at route boundary and add tests/captures for each visible failure state.",
+        "previewIds": [
+          "ChatScreen/Route states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-MATCHES-CHAT-001",
+      "status": "closed",
+      "nextAction": "Closed by ChatScreen/Route states first-pass Widgetbook coverage for message loading/error/offline, empty/populated/image threads, missing and blocked chat, host inquiry identity, Suvbot controls/error state, share card sheet, composer states, text scale, reduced motion, and addon-driven light/dark review."
+    },
+    {
+      "id": "DS-MATCHES-CHAT-002",
+      "status": "closed",
+      "nextAction": "Closed. Deterministic chat captures cover messages loading/error/offline, empty thread, event-context fallback, missing/blocked chat, image thread, Suvbot controls/error, share card, composer states, keyboard-open multiline, send/report failure snackbars, block confirmation, text scale, reduced motion, and paired light/dark populated thread. A fresh design-phone capture now compares within threshold against the registered Messaging thread reference after reference-safe-area and fixture alignment: mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692."
+    },
+    {
+      "id": "DS-MATCHES-CHAT-003",
+      "status": "closed",
+      "nextAction": "Closed by shared ChatScreen adapters. ChatRouteState performs provider-wave composition, HostChatScreenState owns consumer match identity, action availability, retry intents, and disabled composer copy, ChatThreadLookupState owns lookup keys, ChatReadMarkerController executes read-marker side effects, ChatScrollCoordinator owns auto-scroll, ChatThreadActionController executes profile/share/report/block typed actions, and ChatRetryController executes typed retry invalidation. Reopen only if consumer Match Chat splits from the shared chat adapter."
+    },
+    {
+      "id": "DS-MATCHES-CHAT-004",
+      "status": "closed",
+      "nextAction": "Closed. Populated Messaging thread and Messaging · New match (empty) references and masks are exported, registered, and within advisory threshold: populated thread mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692; new-match empty mismatch 5.01%, meanDelta 5.46, maxDelta 240, masked 46812. Keyboard-open, share-card, report/block dialog, and dynamic message-time references remain reference-only until canonical source panels exist."
+    }
+  ]
+}

@@ -4,8 +4,8 @@ import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 import {extractCallBlocks} from "../lib/dart_call_blocks.mjs";
 import {readCaptureCatalogSource} from "./lib/capture_catalog_sources.mjs";
 import {buildInventory} from "./check_route_inventory.mjs";
+import {readCaptureCoverage} from "../design/lib/screen_registries.mjs";
 
-const coveragePath = fromRepo("tool/ui_capture/capture_coverage.json");
 const marketingManifestPath = fromRepo("tool/marketing/capture_manifest.json");
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
@@ -26,7 +26,7 @@ if (command === "--help" || command === "-h" || command === "help") {
 
 function checkCoverage({summary = false} = {}) {
   const routeInventory = buildInventory();
-  const coverage = readJson(coveragePath);
+  const coverage = readCaptureCoverage();
   const catalog = parseCaptureCatalog(readCaptureCatalogSource());
   const marketingManifest = readJson(marketingManifestPath);
   const errors = validateCoverage({
@@ -57,7 +57,7 @@ function validateCoverage({
     return errors;
   }
   if (!Array.isArray(coverage.routes)) {
-    errors.push(`${relativeToRepo(coveragePath)} must contain routes.`);
+    errors.push("tool/ui_capture/capture_coverage/ must contain routes.");
     return errors;
   }
 

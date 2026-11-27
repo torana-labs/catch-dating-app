@@ -1,0 +1,27 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "file": "lib/hosts/create/edit_event_screen.dart",
+      "symbol": "EditEventRouteScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "file": "lib/hosts/create/edit_event_screen.dart",
+      "symbol": "_EditEventScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "Edit Event resolves the route on a system screen, then edits with the shared create editor."
+}

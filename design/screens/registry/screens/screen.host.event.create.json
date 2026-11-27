@@ -1,0 +1,430 @@
+{
+  "id": "screen.host.event.create",
+  "shell": {
+    "owner": "host",
+    "nestedScaffoldAllowed": false,
+    "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "shell",
+    "expression": "shell-owned",
+    "owner": "AdaptiveTabScaffold",
+    "reason": "The route body relies on shell chrome or a registered nested composition owner."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "offline",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Host Create Event",
+  "owner": "hosts",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "hostCreateEventScreen",
+      "path": "/host/organizers/:organizerId/create-event",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/hosts/create/create_route_screen.dart",
+    "symbol": "CreateRouteScreen"
+  },
+  "stateController": {
+    "primary": "createRouteStatus + CreateEventWizardStep + CreateEventWizardState + CreateEventDraftSnapshot + CreateEventDraftActionState + CreateEventDraftRestoreState + CreateEventScheduleState + CreateEventPhotoDraftState + CreateEventPolicyState + CreateEventScreen + CreateEventController + CreateEventDraftController",
+    "files": [
+      {
+        "file": "lib/hosts/create/create_route_screen.dart",
+        "symbol": "CreateRouteScreen"
+      },
+      {
+        "file": "lib/contexts/organizers/data/organizers_repository.dart",
+        "symbol": "fetchOrganizer"
+      },
+      {
+        "file": "lib/hosts/create/create_route_screen.dart",
+        "symbol": "createRouteStatus"
+      },
+      {
+        "file": "lib/hosts/presentation/event_management/create/create_event_policy_state.dart",
+        "symbol": "CreateEventPolicyState"
+      },
+      {
+        "file": "lib/hosts/presentation/event_management/create/create_event_controller.dart",
+        "symbol": "CreateEventController"
+      },
+      {
+        "file": "lib/hosts/presentation/event_management/create/create_event_draft_controller.dart",
+        "symbol": "CreateEventDraftController"
+      },
+      {
+        "file": "lib/events/presentation/location_picker_screen.dart",
+        "symbol": "LocationPickerScreen"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/hosts/presentation/event_management/create/create_event_controller.dart",
+        "symbol": "CreateEventController"
+      },
+      {
+        "file": "lib/hosts/presentation/event_management/create/create_event_draft_controller.dart",
+        "symbol": "CreateEventDraftController"
+      },
+      {
+        "file": "lib/contexts/events/data/event_repository.dart",
+        "symbol": "EventRepository"
+      },
+      {
+        "file": "lib/contexts/events/data/event_draft_repository.dart",
+        "symbol": "EventDraftRepository"
+      }
+    ],
+    "notes": "createRouteStatus resolves route branches/retry before CreateRouteScreen renders CreateEventScreen. CreateEventWizardStep owns canonical step order, titles, form-key specs, and schedule-validation metadata. CreateEventWizardValidationPlan owns current form-key selection and schedule validation policy. CreateEventWizardState owns current step display, header/footer labels, submit/save pending state, mutation error copy, success event/invite display state, and typed back/primary/save-draft intents. CreateEventSuccessNavigationEffect owns success destination, manage-event route parameters, and route extra payload. CreateEventDraftSnapshot, CreateEventDraftActionState, CreateEventDraftRestoreState, and CreateEventDraftSideEffectState own draft serialization, dirty/save policy, restore mapping, and load/delete intent policy. CreateEventScreen keeps local form controllers, PageController step changes, platform picker execution, controller mutation triggers, and Navigator/context side effects."
+  },
+  "designRefs": [
+    {
+      "id": "repo.host-create-event-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/hosts/create/create_route_screen_test.dart",
+      "notes": "Create event tests cover initial club-extra route hydration, missing-basics validation, full wizard submit, event policy validation, map picker, custom activity, Event Success guide, create failure banner, draft save/delete/restore, unsaved-changes Save draft feedback, and success navigation."
+    },
+    {
+      "id": "repo.host-create-event-state-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/hosts/host_create_event_state_test.dart",
+      "notes": "Plain state tests cover createRouteStatus initial/fetch branches and CreateEventWizardState step/footer/mutation/success display mapping."
+    },
+    {
+      "id": "repo.host-create-event-controller-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/hosts/host_create_event_controller_test.dart",
+      "notes": "Controller tests cover submit validation, repository writes, invite-only policy, event photos, upload cleanup, and signed-in upload requirements."
+    },
+    {
+      "id": "claude.host-create-event",
+      "kind": "claude",
+      "status": "needs_export",
+      "notes": "Host Create Event basics, location, schedule, policy, Event Success guide, and success/manage references are exported, masked, manifest-registered, and compared against deterministic captures. Draft, validation, and submit references still need export before the screen-level Claude reference is complete.",
+      "path": "design/source_packs/host-v2/templates/hosts-create-event/HostCreateEvent.dc.html"
+    },
+    {
+      "id": "generated.host-create-event-basics-reference",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/screen.host.event.create/basics_default.png",
+      "notes": "Host Create Event basics 390x812 Claude reference exported, masked, manifest-registered, and compared against host_create_basics: within advisory threshold; mismatch 13.13%, meanDelta 16.84, maxDelta 240."
+    },
+    {
+      "id": "generated.host-create-event-location-reference",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/screen.host.event.create/where_step_default.png",
+      "notes": "Host Create Event location step 390x812 Claude reference exported, masked, manifest-registered, and compared against host_create_location: within advisory threshold; mismatch 8.93%, meanDelta 11.32, maxDelta 233."
+    },
+    {
+      "id": "generated.host-create-event-schedule-reference",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/screen.host.event.create/when_step_default.png",
+      "notes": "Host Create Event schedule step 390x812 Claude reference exported, masked, manifest-registered, and compared against host_create_schedule: within advisory threshold; mismatch 4.02%, meanDelta 5.01, maxDelta 233."
+    },
+    {
+      "id": "generated.host-create-event-policy-reference",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/screen.host.event.create/policy_default.png",
+      "notes": "Host Create Event policy step 390x812 Claude reference exported, masked, manifest-registered, and compared against host_create_policy: within advisory threshold; mismatch 13.45%, meanDelta 16.56, maxDelta 240."
+    },
+    {
+      "id": "generated.host-create-event-guide-reference",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/screen.host.event.create/event_success_step.png",
+      "notes": "Host Create Event guide step 390x812 Claude reference exported, masked, manifest-registered, and compared against host_create_guide: within advisory threshold; mismatch 6.55%, meanDelta 7.15, maxDelta 226."
+    },
+    {
+      "id": "generated.host-create-event-success-reference",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/screen.host.event.create/success_manage.png",
+      "notes": "Host Create Event success/manage 390x812 Claude reference exported, masked, manifest-registered, and compared against host_create_success_manage. Paper celebration layout pass moved the advisory comparison within threshold at 11.40% mismatch / 13.70 meanDelta, maxDelta 240, masked 17160, improving from the original 32.49% / 55.05 and intermediate 27.13% / 42.68 baselines."
+    },
+    {
+      "id": "generated.host-create-event-reference-manifest",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/manifest.json",
+      "notes": "Reference-screen manifest wires 6 Host Create Event reference PNGs to deterministic capture ids for advisory pixel comparison; all 6 references are within advisory thresholds as of 2026-06-25."
+    }
+  ],
+  "captures": [
+    {
+      "id": "host_create_initial_club_extra",
+      "status": "captured",
+      "notes": "Deterministic route-mounted capture renders Host Create Event from a supplied Club extra while the fetch provider stays loading."
+    },
+    {
+      "id": "host_create_route_loading",
+      "status": "captured",
+      "notes": "Deterministic capture renders Host Create Event route club-loading state."
+    },
+    {
+      "id": "host_create_route_error",
+      "status": "captured",
+      "notes": "Deterministic capture renders Host Create Event route club-fetch error state."
+    },
+    {
+      "id": "host_create_route_offline",
+      "status": "captured",
+      "notes": "Deterministic capture renders Host Create Event route offline club-fetch error state."
+    },
+    {
+      "id": "host_create_not_found",
+      "status": "captured",
+      "notes": "Deterministic capture renders Host Create Event missing-club route state."
+    },
+    {
+      "id": "host_create_unauthorized",
+      "status": "captured",
+      "notes": "Deterministic capture renders Host Create Event host-access required route state for a non-host-team signed-in user."
+    },
+    {
+      "id": "host_create_map_picker_offline",
+      "status": "captured",
+      "notes": "Deterministic Host Create Event map-picker capture for offline Places search copy with map tiles disabled."
+    }
+  ],
+  "states": [
+    {
+      "id": "initial_club_extra",
+      "kind": "populated",
+      "status": "captured",
+      "source": "CreateRouteScreen immediately renders CreateEventScreen when navigation supplies a Club extra.",
+      "tests": [
+        "test/hosts/create/create_route_screen_test.dart"
+      ],
+      "nextAction": "Captured by host_create_initial_club_extra with fetchOrganizerProvider held loading; remaining work is source-route-specific assertions only if Host Home or Host Clubs route construction changes.",
+      "previewIds": [
+        "CreateRouteScreen/Route and wizard states"
+      ],
+      "captureIds": [
+        "host_create_initial_club_extra"
+      ]
+    },
+    {
+      "id": "club_fetch_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "Without an initial club extra, fetchOrganizerProvider loading renders SplashScreen.",
+      "nextAction": "Compare route loading capture against a canonical loading reference if design exports one.",
+      "previewIds": [
+        "CreateRouteScreen/Route and wizard states"
+      ],
+      "captureIds": [
+        "host_create_route_loading"
+      ]
+    },
+    {
+      "id": "club_fetch_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "fetchOrganizerProvider errors render CatchLocalizedErrorScaffold with AppErrorContext.club and retry invalidation.",
+      "nextAction": "Generic route error and offline route error are captured separately; compare both against state references once exported.",
+      "previewIds": [
+        "CreateRouteScreen/Route and wizard states"
+      ],
+      "captureIds": [
+        "host_create_route_error"
+      ]
+    },
+    {
+      "id": "club_not_found",
+      "kind": "empty",
+      "status": "captured",
+      "source": "A null fetched club renders Club not found copy in CatchErrorScaffold.",
+      "nextAction": "Compare missing-club capture against reference copy if design exports one.",
+      "previewIds": [
+        "CreateRouteScreen/Route and wizard states"
+      ],
+      "captureIds": [
+        "host_create_not_found"
+      ]
+    },
+    {
+      "id": "event_photos",
+      "kind": "populated",
+      "status": "captured",
+      "source": "CreateEventScreen supports an ordered Host cover-and-gallery collection with no product-level photo cap through CreateEventController.pickEventPhotos and the scalable OrderedPhotoPicker manager; the organizer logo remains separate and inherited.",
+      "nextAction": "Captures cover seeded picked-photo previews without platform picker calls and Widgetbook covers a 24-photo gallery. Remaining route variants are reorder/remove, picker cancel, and picker failure.",
+      "previewIds": [
+        "CreateRouteScreen/Route and wizard states"
+      ],
+      "captureIds": [
+        "host_media_gallery_manager"
+      ]
+    },
+    {
+      "id": "location_picker_offline_search",
+      "kind": "offline",
+      "status": "captured",
+      "source": "LocationPickerScreen maps Places autocomplete failures through appErrorDescriptor so network failures use shared offline copy.",
+      "tests": [
+        "test/events/location_picker_screen_test.dart"
+      ],
+      "nextAction": "Map-picker offline search is captured with map tiles disabled. Remaining picker variants are reference-specific exports/masks plus generic search/details failure states only if design requires distinct treatment.",
+      "captureIds": [
+        "host_create_map_picker_offline"
+      ]
+    },
+    {
+      "id": "draft_delete",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "Draft picker and submit cleanup delete drafts through CreateEventDraftController.deleteDraftMutation.",
+      "tests": [
+        "test/hosts/create/create_route_screen_test.dart"
+      ],
+      "nextAction": "The draft picker's delete confirmation capture retired with the legacy Create screens (#1599); capture the system Create draft delete if design requires it.",
+      "previewIds": [
+        "CreateRouteScreen/Route and wizard states"
+      ]
+    },
+    {
+      "id": "unauthorized_host",
+      "kind": "permission",
+      "status": "tested",
+      "source": "createRouteStatus watches uid state and returns forbidden when the signed-in user is missing or is not on the club host team, before CreateEventScreen is built.",
+      "tests": [
+        "test/hosts/host_create_event_state_test.dart",
+        "test/hosts/create/create_route_screen_test.dart"
+      ],
+      "nextAction": "Host-access route state is implemented, tested, and captured; add a dedicated design reference only if design exports an unauthorized-state variant.",
+      "previewIds": [
+        "CreateRouteScreen/Route and wizard states"
+      ],
+      "captureIds": [
+        "host_create_unauthorized"
+      ]
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Club fetch, map/place selection, draft operations, event creation, and photo upload can all fail offline through existing mapped errors.",
+      "nextAction": "Route club-fetch, draft-save, submit, and photo-upload offline failures now render through shared offline copy in deterministic captures. Map picker offline remains a deeper variant if design requires it.",
+      "previewIds": [
+        "CreateRouteScreen/Route and wizard states"
+      ],
+      "captureIds": [
+        "host_create_route_offline"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "One three-stage form serves new events, repeated templates, restored drafts, and imported events: Event basics; When & where; then Guests/Booking & live guide. Optional details are disclosed on demand. Review is explicit before creation. createRouteStatus resolves route club loading/error/not-found/ready branches before CreateRouteScreen renders CreateEventScreen. CreateEventWizardStep owns canonical step order, titles, form-key spec construction, and schedule-validation metadata. CreateEventWizardValidationPlan owns current form-key selection and schedule validation policy. CreateEventWizardState owns step header/footer/mutation/success display state plus typed back/primary/save-draft intents. CreateEventSuccessNavigationEffect owns success destination, manage-event route parameters, and route extra payload. CreateEventDraftSnapshot owns draft dirty-tracking signature and EventDraft serialization. CreateEventDraftActionState owns new-vs-existing draft dirty decisions, draft id selection, and save/update success copy. CreateEventDraftRestoreState owns EventDraft-to-form restore mapping, stale enum fallback, restored schedule text, location restore state, policy restore state, and restored Event Success defaults. CreateEventDraftSideEffectState owns draft-check, picker visibility, picker delete intent, and post-submit delete intent policy. CreateEventScreen keeps form-controller assignment, PageController movement, platform picker execution, controller mutation triggers, and Navigator/context side effects inline.",
+    "targetLayout": "Host Create Event should keep expanding route-level and wizard/controller state boundaries until validation, draft persistence, submit state, picker callbacks, Event Success defaults, and navigation intents are outside visual step sections.",
+    "sections": [
+      {
+        "id": "section.host.event_create_route_adapter",
+        "name": "Host create event route state adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "createRouteStatus"
+        ],
+        "flutter": {
+          "file": "lib/hosts/create/create_route_screen.dart",
+          "symbol": "createRouteStatus"
+        },
+        "currentOwner": "createRouteStatus + CreateRouteScreen",
+        "targetOwner": "createRouteStatus provider/controller adapter",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "initial_club",
+          "club_loading",
+          "club_error",
+          "club_not_found",
+          "unauthorized"
+        ],
+        "migration": "Initial extra, club loading, club error retry, club not-found, signed-in uid loading/error, forbidden host-team access, and ready branches now flow through createRouteStatus.",
+        "previewIds": [
+          "CreateRouteScreen/Route and wizard states"
+        ]
+      },
+      {
+        "id": "section.host.event_create_step_header",
+        "name": "Create event step header",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "HostWizardStepHeader"
+        ],
+        "flutter": {
+          "file": "lib/hosts/presentation/widgets/host_wizard_step_header.dart",
+          "symbol": "HostWizardStepHeader"
+        },
+        "currentOwner": "CreateEventScreen",
+        "targetOwner": "shared provider-free Host wizard step header",
+        "dependencies": [
+          "catch.top_bar"
+        ],
+        "states": [
+          "first_step",
+          "middle_step",
+          "last_step",
+          "long_club_name"
+        ],
+        "migration": "Feed title, club name, step count, and back intent from wizard state; add text-scale previews.",
+        "previewIds": [
+          "CreateRouteScreen/Route and wizard states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-HOST-EVENT-CREATE-001",
+      "status": "blocked",
+      "nextAction": "Blocked on missing exported draft/validation/submit references and masks. Map-picker offline search is captured; remaining deterministic capture variants are reference-specific and need exported Claude/Figma references plus masks for maps, dates/times, generated draft timestamps, photo previews, celebration effects, snackbars, and dynamic event ids."
+    },
+    {
+      "id": "DS-HOST-EVENT-CREATE-002",
+      "status": "closed",
+      "nextAction": "Closed. createRouteStatus owns route branches/retry; CreateEventWizardStep owns step order/titles/form-key specs/schedule-validation metadata; CreateEventWizardValidationPlan owns form-key selection and schedule validation policy; CreateEventWizardState owns wizard display/mutation/success state plus typed back/primary/save-draft intents; CreateEventSuccessNavigationEffect owns success destination and manage-event route payload; CreateEventDraftSnapshot, CreateEventDraftActionState, CreateEventDraftRestoreState, and CreateEventDraftSideEffectState own draft serialization, dirty/save policy, restore mapping, and load/delete intent policy. CreateEventScreen is left with allowed form-controller assignment, PageController movement, platform picker execution, controller mutation triggers, and Navigator/context side effects."
+    },
+    {
+      "id": "DS-HOST-EVENT-CREATE-003",
+      "status": "closed",
+      "nextAction": "Add Widgetbook use cases for each wizard step, draft picker, error banner, route wrapper, and success screen with meaningful fakes."
+    },
+    {
+      "id": "DS-HOST-EVENT-CREATE-004",
+      "status": "blocked",
+      "nextAction": "Blocked on missing exported draft/validation/submit references and masks. Existing basics, location, schedule, policy, Event Success guide, and success/manage references are registered and within advisory thresholds; remaining reference work needs exported source designs and masks before implementation can proceed."
+    },
+    {
+      "id": "DS-HOST-EVENT-CREATE-005",
+      "status": "closed",
+      "nextAction": "Closed. createRouteStatus now watches signed-in uid state and renders a host-access error before CreateEventScreen for signed-out or non-host-team users, with state and widget coverage."
+    },
+    {
+      "id": "DS-HOST-EVENT-CREATE-006",
+      "status": "open",
+      "nextAction": "feature.host_event_create compiles all 31 registered states and 33 meaningful actions. Add focused state tests for the nine registered test exceptions and one dedicated location-picker offline Widgetbook scenario to retire its ten evidence exceptions."
+    }
+  ]
+}

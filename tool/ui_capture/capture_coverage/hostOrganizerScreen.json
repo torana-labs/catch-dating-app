@@ -1,0 +1,13 @@
+{
+  "routeId": "hostOrganizerScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "host_clubs_management",
+    "host_organizer_media_summary",
+    "host_organizer_tab_phone",
+    "host_organizer_page_phone",
+    "host_organizer_settings_phone"
+  ],
+  "reason": "The first-class Host Organizer branch is captured through the real five-destination Host shell and compared against the pinned full-shell Organizer source reference; a deterministic focused capture proves the role-sized media summary with real local image bytes."
+}

@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/hosts/organizer/live_guide_screen.dart",
+      "symbol": "OrganizerLiveGuideScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "The Organiser tab pushes the live event guide defaults as a system pushed screen."
+}

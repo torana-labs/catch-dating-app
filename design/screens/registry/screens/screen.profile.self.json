@@ -1,0 +1,726 @@
+{
+  "id": "screen.profile.self",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "screen",
+    "expression": "CatchRootScreenScaffold.withPrimaryRail",
+    "owner": "CatchRootScreenScaffold.withPrimaryRail",
+    "reason": "The root owner owns the canonical profile title and peer-navigation chrome."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "offline"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Self Profile",
+  "owner": "user_profile",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "profileScreen",
+      "path": "/you",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/user_profile/presentation/profile_screen.dart",
+    "symbol": "ProfileScreen"
+  },
+  "stateController": {
+    "primary": "SelfProfileScreenState + watchUserProfileProvider + photoUploadControllerProvider + ProfileEditController",
+    "files": [
+      {
+        "file": "lib/user_profile/presentation/profile_screen.dart",
+        "symbol": "ProfileScreen"
+      },
+      {
+        "file": "lib/user_profile/presentation/self_profile_screen_state.dart",
+        "symbol": "SelfProfileScreenState"
+      },
+      {
+        "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+        "symbol": "SelfProfileEditTabState"
+      },
+      {
+        "file": "lib/user_profile/presentation/self_profile_inline_edit_patch_factory.dart",
+        "symbol": "SelfProfileInlineEditPatchFactory"
+      },
+      {
+        "file": "lib/user_profile/presentation/self_profile_photo_intent_factory.dart",
+        "symbol": "SelfProfilePhotoIntentFactory"
+      },
+      {
+        "file": "lib/contexts/profiles/data/user_profile_repository.dart",
+        "symbol": "watchUserProfile"
+      },
+      {
+        "file": "lib/image_uploads/shared/photo_upload_controller.dart",
+        "symbol": "PhotoUploadController"
+      },
+      {
+        "file": "lib/user_profile/presentation/profile_edit_controller.dart",
+        "symbol": "ProfileEditController"
+      },
+      {
+        "file": "lib/contexts/profiles/domain/public_profile.dart",
+        "symbol": "publicProfileFromUserProfile"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/user_profile/presentation/profile_edit_controller.dart",
+        "symbol": "ProfileEditController"
+      },
+      {
+        "file": "lib/image_uploads/shared/photo_upload_controller.dart",
+        "symbol": "PhotoUploadController"
+      },
+      {
+        "file": "lib/contexts/profiles/data/user_profile_repository.dart",
+        "symbol": "UserProfileRepository"
+      }
+    ],
+    "notes": "ProfileScreen owns tab, scroll, and preview bridge lifecycle while SelfProfileScreenState resolves current profile provider waves, upload/save mutation modes, preview projection, and retry intent. SelfProfileEditTabState derives photo-grid state, prompt slots, and immutable basics/about/running/lifestyle row descriptors. SelfProfilePhotoActionController resolves photo editor/delete/reorder intents and executes existing photo mutation wrappers. SelfProfileInlineEditPatchFactory owns inline edit patch creation while saves still route through ProfileEditController."
+  },
+  "designRefs": [
+    {
+      "id": "repo.profile-captures",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/ui_captures/catalog/screen_capture_catalog.dart",
+      "notes": "Self-profile captures now include flagship profile surface plus full-route loading/error/offline/unavailable, edit/preview, upload-pending, upload-failure snackbar, text-scale, reduced-motion, and paired light/dark variants."
+    },
+    {
+      "id": "claude.profile-self",
+      "kind": "claude",
+      "status": "available",
+      "notes": "Canonical Claude Design source for self-profile edit and preview references.",
+      "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-profile/Profile.dc.html"
+    },
+    {
+      "id": "repo.profile-self-reference-screens",
+      "kind": "repo",
+      "status": "available",
+      "path": "design/reference_screens/manifest.json",
+      "notes": "Self-profile edit and preview PNG references plus masks are registered for advisory pixel comparison."
+    }
+  ],
+  "captures": [
+    {
+      "id": "profile_self",
+      "status": "captured",
+      "notes": "Deterministic ProfileBody fixture tagged to profileScreen for flagship profile-surface review."
+    },
+    {
+      "id": "profile_self_loading",
+      "status": "captured",
+      "notes": "Deterministic ProfileScreen route capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "profile_self_error",
+      "status": "captured",
+      "notes": "Deterministic ProfileScreen route capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "profile_self_offline",
+      "status": "captured",
+      "notes": "Deterministic ProfileScreen route capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "profile_self_unavailable",
+      "status": "captured",
+      "notes": "Deterministic ProfileScreen route capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "profile_self_edit_tab",
+      "status": "captured",
+      "notes": "Deterministic ProfileScreen route capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "profile_self_preview_tab",
+      "status": "captured",
+      "notes": "Deterministic ProfileScreen route capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "profile_self_photo_upload_pending",
+      "status": "captured",
+      "notes": "Deterministic ProfileScreen route capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "profile_self_photo_upload_error",
+      "status": "captured",
+      "notes": "Deterministic ProfileScreen route capture drives the real PhotoUploadController upload failure path and surfaces the route snackbar."
+    },
+    {
+      "id": "profile_self_inline_save_pending",
+      "status": "captured",
+      "notes": "Deterministic ProfileTabBody capture opens the Education inline editor, holds the real ProfileEditController save pending, and captures the disabled chip plus loading Done button."
+    },
+    {
+      "id": "profile_self_inline_save_error",
+      "status": "captured",
+      "notes": "Deterministic ProfileTabBody capture opens a prompt inline editor, drives a failing ProfileEditController save, and captures the retained drawer error state."
+    },
+    {
+      "id": "profile_self_text_scale_2",
+      "status": "captured",
+      "notes": "Deterministic ProfileScreen route capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "profile_self_reduced_motion",
+      "status": "captured",
+      "notes": "Deterministic ProfileScreen route capture registered in screen_capture_catalog.dart."
+    },
+    {
+      "id": "profile_self_light_dark",
+      "status": "captured",
+      "notes": "Deterministic ProfileScreen route capture records the explicit paired light/dark audit baseline."
+    }
+  ],
+  "states": [
+    {
+      "id": "profile_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "watchUserProfileProvider loading preserves the NestedScrollView shell and renders ProfileTabSkeletonSliverBody or ProfileSurfaceSkeleton in the active tab body.",
+      "previewIds": [
+        "ProfileScreen/Self route states"
+      ],
+      "captureIds": [
+        "profile_self_loading"
+      ],
+      "nextAction": "Route loading is captured and provider loading is owned by SelfProfileScreenState; refresh only when the canonical self-profile reference changes."
+    },
+    {
+      "id": "profile_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "watchUserProfileProvider AsyncError renders CatchLocalizedErrorState with AppErrorContext.profile and retry invalidation.",
+      "previewIds": [
+        "ProfileScreen/Self route states"
+      ],
+      "captureIds": [
+        "profile_self_error"
+      ],
+      "nextAction": "Route error is captured; next compare retry placement with exported design references and keep retry ownership in the screen-state adapter."
+    },
+    {
+      "id": "profile_unavailable",
+      "kind": "empty",
+      "status": "captured",
+      "source": "AsyncData(null) renders ProfileScreen's typed unavailable tab-page branch with CatchEmptyState and onboarding/sign-in recovery copy.",
+      "previewIds": [
+        "ProfileScreen/Self route states"
+      ],
+      "captureIds": [
+        "profile_self_unavailable"
+      ],
+      "nextAction": "Unavailable profile is captured; next clarify onboarding/sign-in recovery copy against design references."
+    },
+    {
+      "id": "edit_tab_default",
+      "kind": "populated",
+      "status": "captured",
+      "source": "ProfileTabSliverBody renders core profile guidance, Photos, Prompts, About you, Lifestyle, and collapsed optional activity preferences from SelfProfileEditTabState descriptors.",
+      "tests": [
+        "test/profile/profile_widgets_test.dart"
+      ],
+      "previewIds": [
+        "ProfileScreen/Self route states"
+      ],
+      "captureIds": [
+        "profile_self_edit_tab"
+      ],
+      "nextAction": "Edit tab route is captured; preserve descriptor derivation in SelfProfileEditTabState and callback ownership in the existing edit/photo controllers during future parity work."
+    },
+    {
+      "id": "photo_grid",
+      "kind": "populated",
+      "status": "tested",
+      "source": "ProfilePhotosSection composes PhotoGrid inside CatchSection.fieldRows so the Photos title/count use the canonical full-width header rule and 12 px rule-to-grid gap; upload loading indices, delete, reorder, and slot-edit callbacks remain parent-owned.",
+      "tests": [
+        "test/profile/profile_widgets_test.dart",
+        "test/image_uploads/photo_grid_test.dart"
+      ],
+      "nextAction": "Add Widgetbook states for empty, minimum, full, loading, reorder, delete-disabled, and long prompt photo-grid states.",
+      "previewIds": [
+        "ProfileScreen/Self section states"
+      ]
+    },
+    {
+      "id": "photo_upload_mutation",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "PhotoUploadController serializes upload/delete/reorder/savePhoto writes and ProfileScreen surfaces uploadError through showCatchErrorSnackBar.",
+      "tests": [
+        "test/image_uploads/photo_upload_controller_test.dart"
+      ],
+      "previewIds": [
+        "ProfileScreen/Self route states"
+      ],
+      "captureIds": [
+        "profile_self_photo_upload_pending",
+        "profile_self_photo_upload_error"
+      ],
+      "nextAction": "Upload pending and upload-failure snackbar are captured; add delete pending and reorder pending route or section captures."
+    },
+    {
+      "id": "inline_text_edit",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "ProfileDirectTextEntryField keeps a native CatchField.input mounted, validates direct text edits, and saves them through ProfileEditController.saveFieldsMutation.",
+      "tests": [
+        "test/profile/profile_widgets_test.dart"
+      ],
+      "nextAction": "Promote inline editor previews for default, open, validation error, save pending, and save failure states.",
+      "previewIds": [
+        "ProfileScreen/Self section states"
+      ]
+    },
+    {
+      "id": "inline_prompt_edit",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "ProfileInlinePromptEntryEditor renders each prompt as a CatchSection.containedFieldRows question/answer pair. CatchField.choices stages the question behind Cancel/Done, while a separate multiline CatchField.input saves the answer on blur through serialized profile patches. The focused child field is the sole ordinary focus-chrome owner; the outer card remains neutral unless section focus or error is explicit.",
+      "tests": [
+        "test/profile/profile_widgets_test.dart"
+      ],
+      "nextAction": "Refresh deterministic profile prompt captures against the 2026-07-14 Field handoff; preserve the existing three-prompt and 300-character business limits.",
+      "previewIds": [
+        "ProfileScreen/Self section states"
+      ]
+    },
+    {
+      "id": "inline_choice_edit",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "ProfileInlineSingleChoiceEntryEditor, ProfileInlineMultiChoiceEntryEditor, height stepper, and pace range editor provide row-owned field editing.",
+      "tests": [
+        "test/profile/profile_widgets_test.dart"
+      ],
+      "nextAction": "Add Widgetbook states for single-choice, multi-choice, nullable, required, range, and height editors.",
+      "previewIds": [
+        "ProfileScreen/Self section states"
+      ]
+    },
+    {
+      "id": "inline_save_pending",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Inline editors hold the drawer open and expose pending Done behavior until ProfileEditController save completes.",
+      "tests": [
+        "test/profile/profile_widgets_test.dart"
+      ],
+      "nextAction": "profile_self_inline_save_pending captures a real single-choice inline save held pending through ProfileEditController. Add text, height, and pace range variants only if design review needs them.",
+      "previewIds": [
+        "ProfileScreen/Self section states"
+      ],
+      "captureIds": [
+        "profile_self_inline_save_pending"
+      ]
+    },
+    {
+      "id": "inline_save_error",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Inline save failures keep the editor open and render the shared inline error banner copy.",
+      "tests": [
+        "test/profile/profile_widgets_test.dart"
+      ],
+      "nextAction": "profile_self_inline_save_error captures a real prompt inline save failure through ProfileEditController. Add retry/edit recovery capture only if design review needs it.",
+      "previewIds": [
+        "ProfileScreen/Self section states"
+      ],
+      "captureIds": [
+        "profile_self_inline_save_error"
+      ]
+    },
+    {
+      "id": "preview_tab_default",
+      "kind": "populated",
+      "status": "captured",
+      "source": "ProfilePreviewBody maps the current UserProfile into PublicProfile and renders ProfileSurface/ProfileBody without reaction affordances.",
+      "captureIds": [
+        "profile_self",
+        "profile_self_preview_tab"
+      ],
+      "tests": [
+        "test/profile/profile_widgets_test.dart",
+        "test/swipes/profile_card_widget_test.dart",
+        "test/swipes/profile_view_mapper_test.dart"
+      ],
+      "previewIds": [
+        "ProfileScreen/Self section states"
+      ],
+      "nextAction": "Preview tab route is captured through initialTabIndex; next compare against exported preview references and mask dynamic profile imagery."
+    },
+    {
+      "id": "settings_action",
+      "kind": "populated",
+      "status": "captured",
+      "source": "ProfileSliverHeader exposes a Settings action that routes to settingsScreen.",
+      "previewIds": [
+        "ProfileScreen/Self section states"
+      ],
+      "captureIds": [
+        "profile_self_edit_tab",
+        "profile_self_text_scale_2"
+      ],
+      "tests": [
+        "test/profile/profile_widgets_test.dart"
+      ],
+      "nextAction": "Affordance placement is captured and profile_widgets_test proves tapping Settings routes to settingsScreen."
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Profile repository errors currently route through generic profile error mapping.",
+      "previewIds": [
+        "ProfileScreen/Self route states"
+      ],
+      "captureIds": [
+        "profile_self_offline"
+      ],
+      "nextAction": "Offline current-profile error is captured; next decide whether offline copy needs a distinct product state beyond mapped profile error copy."
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "ProfileSurface has text-scale coverage below 2.0; no full-route text-scale 2.0 profile capture exists.",
+      "previewIds": [
+        "ProfileScreen/Self route states",
+        "ProfileScreen/Self section states"
+      ],
+      "captureIds": [
+        "profile_self_text_scale_2"
+      ],
+      "nextAction": "Large-text edit route is captured; next add focused captures for open inline drawers and preview surface at text scale 2.0."
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Inline drawer, tab, and preview scroll bridge motion have not been captured under reduced-motion settings.",
+      "previewIds": [
+        "ProfileScreen/Self route states",
+        "ProfileScreen/Self section states"
+      ],
+      "captureIds": [
+        "profile_self_reduced_motion"
+      ],
+      "nextAction": "Reduced-motion edit route is captured; next add focused drawer/tab animation review if adapter work changes motion ownership."
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "Profile view goldens cover light and dark profile surface variants; profile_self_light_dark records the full route paired light/dark baseline.",
+      "tests": [
+        "test/goldens/profile_view_test.dart",
+        "test/swipes/profile_card_widget_test.dart"
+      ],
+      "previewIds": [
+        "ProfileScreen/Self route states",
+        "ProfileScreen/Self section states"
+      ],
+      "captureIds": [
+        "profile_self_light_dark",
+        "profile_self_edit_tab",
+        "profile_self_preview_tab"
+      ],
+      "nextAction": "Paired light/dark edit and preview captures are registered; next compare both against exported design references."
+    }
+  ],
+  "composition": {
+    "currentLayout": "ProfileScreen owns tab/scroll controllers and preview bridge physics, then renders typed SelfProfileScreenState branches for loading/error/unavailable/ready. SelfProfileEditTabState owns photo-grid and prompt-slot view data. SelfProfilePhotoActionController owns photo editor/delete/reorder intents. SelfProfileInlineEditPatchFactory owns inline edit patch creation, while ProfileTabBody still derives basics/about/running/lifestyle row widget descriptors inline.",
+    "targetLayout": "ProfileScreen should resolve current-profile, upload, save, and preview projection into SelfProfileScreenState and compose provider-free header, photo grid, info sections, inline editors, and preview sections from immutable view data plus typed callbacks.",
+    "sections": [
+      {
+        "id": "section.profile.self_screen_adapter",
+        "name": "Self profile route state adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "ProfileScreenState"
+        ],
+        "flutter": {
+          "file": "lib/user_profile/presentation/self_profile_screen_state.dart",
+          "symbol": "SelfProfileScreenState"
+        },
+        "currentOwner": "ProfileScreen",
+        "targetOwner": "SelfProfileScreenState provider/controller adapter",
+        "dependencies": [
+          "catch.top_bar",
+          "catch.chip.field"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "empty",
+          "edit",
+          "preview",
+          "upload_error"
+        ],
+        "migration": "SelfProfileScreenState owns provider wave handling, preview projection, upload/save mutation modes, and retry intent. SelfProfileEditTabState owns photo-grid state, prompt slots, and basics/about/running/lifestyle row descriptors. SelfProfilePhotoActionController owns photo editor/delete/reorder intents, and SelfProfileInlineEditPatchFactory owns inline edit patch creation.",
+        "previewIds": [
+          "ProfileScreen/Self route states"
+        ]
+      },
+      {
+        "id": "section.profile.self_header",
+        "name": "Self profile header and tab switcher",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ProfileHeader",
+          "ProfileTabSwitcher"
+        ],
+        "flutter": {
+          "file": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
+          "symbol": "ProfileTabBar"
+        },
+        "currentOwner": "ProfileScreen",
+        "targetOwner": "provider-free self-profile header section",
+        "dependencies": [
+          "catch.icon_button",
+          "catch.chip.field",
+          "catch.top_bar"
+        ],
+        "states": [
+          "edit_selected",
+          "preview_selected",
+          "settings_action",
+          "text_scale_2",
+          "light_dark"
+        ],
+        "migration": "Keep sliver ownership in the route but move tab labels/actions into a stable provider-free section contract with captures for text scale and theme variants.",
+        "previewIds": [
+          "ProfileScreen/Self section states"
+        ]
+      },
+      {
+        "id": "section.profile.self_edit_tab",
+        "name": "Self profile edit tab",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ProfileEditTab",
+          "SectionStack"
+        ],
+        "flutter": {
+          "file": "lib/user_profile/presentation/widgets/profile_tab_body.dart",
+          "symbol": "ProfileTabSliverBody"
+        },
+        "currentOwner": "ProfileScreen",
+        "targetOwner": "provider-free profile edit tab section",
+        "dependencies": [
+          "catch.field",
+          "catch.section"
+        ],
+        "states": [
+          "default",
+          "incomplete_profile",
+          "long_values",
+          "text_scale_2"
+        ],
+        "migration": "SelfProfileEditTabState derives photo-grid state, prompt slots, and immutable basics/about/running/lifestyle row descriptors. ProfileTabBody renders those descriptors through canonical CatchSection and CatchField composition while photo and inline-save behavior remain owned by their existing controllers.",
+        "previewIds": [
+          "ProfileScreen/Self section states"
+        ]
+      },
+      {
+        "id": "section.profile.self_photo_grid",
+        "name": "Self profile photo grid",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [
+          "ProfilePhotoGrid",
+          "PhotoSlotTile"
+        ],
+        "flutter": {
+          "file": "lib/image_uploads/shared/photo_grid.dart",
+          "symbol": "PhotoGrid"
+        },
+        "currentOwner": "ProfilePhotosSection",
+        "targetOwner": "registered provider-free profile photo grid compound",
+        "dependencies": [
+          "catch.icon_button",
+          "catch.surface"
+        ],
+        "states": [
+          "empty",
+          "minimum",
+          "full",
+          "loading",
+          "delete_disabled",
+          "reorder"
+        ],
+        "migration": "Promote after Widgetbook states cover upload/delete/reorder and the design system confirms this photo grid is shared outside self-profile.",
+        "previewIds": [
+          "ProfileScreen/Self section states"
+        ]
+      },
+      {
+        "id": "section.profile.self_info_sections",
+        "name": "Self profile info sections",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ProfileInfoSection",
+          "ProfileFieldRow"
+        ],
+        "flutter": {
+          "file": "lib/user_profile/presentation/widgets/profile_tab_body.dart",
+          "symbol": "ProfileFieldRow"
+        },
+        "currentOwner": "ProfileTabSliverBody",
+        "targetOwner": "provider-free profile info section list",
+        "dependencies": [
+          "catch.field",
+          "catch.section"
+        ],
+        "states": [
+          "prompts",
+          "about",
+          "running",
+          "lifestyle",
+          "grouped",
+          "ungrouped",
+          "empty_optional"
+        ],
+        "migration": "SelfProfileEditTabState supplies immutable rows and ProfileTabBody renders them through CatchSection/CatchField. Keep the primitive contracts stable across self-profile, host profile, and future settings reuse.",
+        "previewIds": [
+          "ProfileScreen/Self section states"
+        ]
+      },
+      {
+        "id": "section.profile.self_inline_editors",
+        "name": "Self profile inline editors",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [
+          "InlineFieldEditor",
+          "InlineChipEditor",
+          "InlineRangeEditor"
+        ],
+        "flutter": {
+          "file": "lib/user_profile/presentation/widgets/profile_tab_body.dart",
+          "symbol": "ProfileTabSliverBody"
+        },
+        "currentOwner": "ProfileTabSliverBody",
+        "targetOwner": "registered inline profile editor compound",
+        "dependencies": [
+          "catch.field",
+          "catch.range_slider",
+          "catch.section"
+        ],
+        "states": [
+          "closed",
+          "open",
+          "validation_error",
+          "save_pending",
+          "save_error",
+          "single_choice",
+          "multi_choice",
+          "range",
+          "height"
+        ],
+        "migration": "Keep editor save orchestration in ProfileEditController. CatchField owns choice summaries, clearability policy, wrapped controls, steppers, action orientation, and focus transfer; CatchSection owns prompt-card perimeter and dividers; CatchRangeInput remains the range control. Widgetbook covers the canonical field states and production profile compositions.",
+        "previewIds": [
+          "ProfileScreen/Self section states"
+        ]
+      },
+      {
+        "id": "section.profile.self_preview_tab",
+        "name": "Self profile preview tab",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ProfilePreview",
+          "ProfileSurface"
+        ],
+        "flutter": {
+          "file": "lib/user_profile/presentation/widgets/profile_preview_body.dart",
+          "symbol": "ProfilePreviewBody"
+        },
+        "currentOwner": "ProfileScreen",
+        "targetOwner": "provider-free profile preview section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "default",
+          "long_content",
+          "no_prompts",
+          "text_scale_2",
+          "light_dark"
+        ],
+        "migration": "Reuse ProfileSurface for the visual body, but move current-user to public-profile projection and scroll bridge wiring into the screen adapter.",
+        "previewIds": [
+          "ProfileScreen/Self section states"
+        ]
+      },
+      {
+        "id": "section.profile.self_unavailable",
+        "name": "Self profile unavailable state",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ProfileUnavailableState"
+        ],
+        "flutter": {
+          "file": "lib/user_profile/presentation/profile_screen.dart",
+          "symbol": "ProfileScreen"
+        },
+        "currentOwner": "ProfileScreen",
+        "targetOwner": "provider-free empty/access section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "missing_profile",
+          "signed_out_recovery"
+        ],
+        "migration": "Clarify whether missing current-user profile is empty, permission, or onboarding recovery and add capture coverage.",
+        "previewIds": [
+          "ProfileScreen/Self route states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-PROFILE-SELF-001",
+      "status": "closed",
+      "nextAction": "Widgetbook states and captures now cover header, edit tab, photo grid, info sections, inline editors, preview tab, loading, error, empty, upload pending/failure, text scale, reduced motion, and light/dark. Reopen only if a new self-profile section becomes contractual."
+    },
+    {
+      "id": "DS-PROFILE-SELF-002",
+      "status": "blocked",
+      "nextAction": "Blocked after the 2026-07-03 reference refresh and fixture alignment. Deterministic route captures now cover loading, error, offline, unavailable, edit tab, preview tab, upload pending, upload failure, inline save pending/error drawers, text scale, reduced motion, and paired light/dark, and Settings navigation proof is covered by profile_widgets_test. Fresh edit/preview handoff exports still model a compact two-tab header and older edit field/photo-grid layout while production ProfileScreen intentionally renders Edit, Preview, and Insights plus current photo/editor rows. The refreshed advisory compare remains above threshold: preview 26.84% mismatch / 46.15 meanDelta, edit 13.67% mismatch / 20.03 meanDelta. Resume when the canonical self-profile source reflects the current production IA or product chooses to remove the Insights/current edit-grid treatment."
+    },
+    {
+      "id": "DS-PROFILE-SELF-003",
+      "status": "closed",
+      "nextAction": "Closed by SelfProfileScreenState owning provider waves, preview projection, upload/save mutation modes, and retry intent; SelfProfileEditTabState owning photo-grid, prompt-slot, basics/about/running/lifestyle row descriptors; SelfProfilePhotoActionController owning photo editor/delete/reorder intents; and SelfProfileInlineEditPatchFactory owning inline edit patch creation."
+    },
+    {
+      "id": "DS-PROFILE-SELF-004",
+      "status": "closed",
+      "nextAction": "Closed by exported self-profile edit and preview references plus masks in design/reference_screens/screen.profile.self and manifest wiring for advisory pixel comparison."
+    }
+  ]
+}

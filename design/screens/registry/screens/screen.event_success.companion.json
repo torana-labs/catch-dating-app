@@ -1,0 +1,1110 @@
+{
+  "id": "screen.event_success.companion",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchLegacyTopBar",
+    "owner": "CatchLegacyTopBar",
+    "reason": "The source owns canonical compact route chrome."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "offline",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Event Success Companion",
+  "owner": "event_success",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "eventSuccessCompanionScreen",
+      "path": "/organizers/:organizerId/events/:eventId/companion",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/event_success/presentation/event_success_companion_screen.dart",
+    "symbol": "EventSuccessCompanionRouteScreen"
+  },
+  "stateController": {
+    "primary": "EventSuccessRuntime",
+    "files": [
+      {
+        "file": "lib/event_success/presentation/event_success_companion_screen.dart",
+        "symbol": "EventSuccessCompanionRouteScreen"
+      },
+      {
+        "file": "lib/event_success/presentation/event_success_companion_screen.dart",
+        "symbol": "EventSuccessCompanionScreen"
+      },
+      {
+        "file": "lib/contexts/live/domain/event_success_runtime.dart",
+        "symbol": "EventSuccessRuntime"
+      },
+      {
+        "file": "lib/event_success/event_success_companion_launcher.dart",
+        "symbol": "launchEventSuccessCompanionIfAvailable"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/contexts/live/actions/event_success_controller.dart",
+        "symbol": "EventSuccessController"
+      },
+      {
+        "file": "lib/contexts/bookings/actions/event_booking_controller.dart",
+        "symbol": "EventBookingController"
+      }
+    ],
+    "notes": "EventSuccessCompanionRouteScreen owns provider loading/error/access waves and delegates attendee moment selection to EventSuccessRuntime. EventSuccessCompanionScreen renders the selected moment but still hosts effects, local form state, and action wiring that should be moved behind provider-free section adapters before visual refactors."
+  },
+  "designRefs": [
+    {
+      "id": "claude.event-success-companion",
+      "kind": "claude",
+      "status": "available",
+      "notes": "Default live-guide Event Success Companion reference is registered under design/reference_screens/screen.event_success.companion; additional stage, reveal, afterglow, feedback, accessibility, and theme variants remain open.",
+      "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/event-companion/Event Companion.html"
+    },
+    {
+      "id": "repo.event-success-doc",
+      "kind": "repo",
+      "status": "available",
+      "path": "docs/event_success.md",
+      "notes": "Durable Event Success source of truth for runtime ownership, privacy guardrails, and attendee companion behavior."
+    },
+    {
+      "id": "repo.event-success-companion-capture",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/ui_captures/catalog/screen_capture_catalog.dart",
+      "notes": "event_success_companion capture covers a deterministic signed-up attendee companion fixture using the default live guide plan."
+    }
+  ],
+  "captures": [
+    {
+      "id": "event_success_companion_route_loading",
+      "status": "captured",
+      "notes": "Companion route event-provider loading state inside stable companion chrome."
+    },
+    {
+      "id": "event_success_companion_event_not_found",
+      "status": "captured",
+      "notes": "Companion route missing-event message state."
+    },
+    {
+      "id": "event_success_companion_sign_in_required",
+      "status": "captured",
+      "notes": "Companion route signed-out access message state."
+    },
+    {
+      "id": "event_success_companion_no_booking",
+      "status": "captured",
+      "notes": "Companion route signed-in non-attendee no-booking state."
+    },
+    {
+      "id": "event_success_companion_plan_missing",
+      "status": "captured",
+      "notes": "Companion route missing Event Success plan state."
+    },
+    {
+      "id": "event_success_companion_data_error",
+      "status": "captured",
+      "notes": "Companion route generic profile data-load error state."
+    },
+    {
+      "id": "event_success_companion_offline",
+      "status": "captured",
+      "notes": "Companion route offline-mapped plan load error state."
+    },
+    {
+      "id": "event_success_companion",
+      "status": "captured",
+      "notes": "Default signed-up attendee companion capture with deterministic event/user/plan data and no-op live effects controller."
+    },
+    {
+      "id": "event_success_companion_event_load_error",
+      "status": "captured",
+      "notes": "Companion route event-provider data-load error state."
+    },
+    {
+      "id": "event_success_companion_profile_loading",
+      "status": "captured",
+      "notes": "Companion route profile-provider loading state."
+    },
+    {
+      "id": "event_success_companion_participation_error",
+      "status": "captured",
+      "notes": "Companion route participation-provider data-load error state."
+    },
+    {
+      "id": "event_success_companion_plan_loading",
+      "status": "captured",
+      "notes": "Companion route Event Success plan loading state."
+    },
+    {
+      "id": "event_success_companion_plan_error",
+      "status": "captured",
+      "notes": "Companion route generic Event Success plan data-load error state."
+    },
+    {
+      "id": "event_success_companion_self_check_in",
+      "status": "captured",
+      "notes": "Direct companion self-check-in moment inside the normal check-in window."
+    },
+    {
+      "id": "event_success_companion_self_check_in_pending",
+      "status": "captured",
+      "notes": "Direct companion self-check-in moment with attendance mutation held pending."
+    },
+    {
+      "id": "event_success_companion_pre_arrival_planning",
+      "status": "captured",
+      "notes": "Direct companion pre-arrival planning moment for a booked racket attendee."
+    },
+    {
+      "id": "event_success_companion_first_hello_start",
+      "status": "captured",
+      "notes": "Direct companion First Hello start moment with mission-start actions."
+    },
+    {
+      "id": "event_success_companion_first_hello_start_pending",
+      "status": "captured",
+      "notes": "Direct companion First Hello start moment with mission-start mutation held pending."
+    },
+    {
+      "id": "event_success_companion_first_hello_assigned",
+      "status": "captured",
+      "notes": "Direct companion assigned First Hello mission moment."
+    },
+    {
+      "id": "event_success_companion_first_hello_complete_pending",
+      "status": "captured",
+      "notes": "Direct companion assigned First Hello mission with completion mutation held pending."
+    },
+    {
+      "id": "event_success_companion_compatibility_questionnaire",
+      "status": "captured",
+      "notes": "Direct companion unanswered compatibility questionnaire moment."
+    },
+    {
+      "id": "event_success_companion_compatibility_pending",
+      "status": "captured",
+      "notes": "Direct companion compatibility questionnaire with save mutation held pending."
+    },
+    {
+      "id": "event_success_companion_compatibility_saved",
+      "status": "captured",
+      "notes": "Direct companion compatibility-saved follow-up state."
+    },
+    {
+      "id": "event_success_companion_live_step_context",
+      "status": "captured",
+      "notes": "Direct companion host-led live step context moment."
+    },
+    {
+      "id": "event_success_companion_social_prompt",
+      "status": "captured",
+      "notes": "Direct companion social prompt moment."
+    },
+    {
+      "id": "event_success_companion_conversation_cues",
+      "status": "captured",
+      "notes": "Direct companion conversation cues moment."
+    },
+    {
+      "id": "event_success_companion_micro_pod_assignment",
+      "status": "captured",
+      "notes": "Direct companion micro-pod assignment moment with peer rows."
+    },
+    {
+      "id": "event_success_companion_micro_pod_loading_peers",
+      "status": "captured",
+      "notes": "Direct companion micro-pod assignment with peer rows loading."
+    },
+    {
+      "id": "event_success_companion_micro_pod_opted_out",
+      "status": "captured",
+      "notes": "Direct companion micro-pod opted-out recovery state."
+    },
+    {
+      "id": "event_success_companion_micro_pod_opt_out_pending",
+      "status": "captured",
+      "notes": "Direct companion micro-pod opt-out toggle with preference mutation held pending."
+    },
+    {
+      "id": "event_success_companion_table_group_rotations",
+      "status": "captured",
+      "notes": "Direct companion table group rotation assignment moment."
+    },
+    {
+      "id": "event_success_companion_rotation_schedule",
+      "status": "captured",
+      "notes": "Direct companion guided rotation schedule moment."
+    },
+    {
+      "id": "event_success_companion_rotation_loading_peers",
+      "status": "captured",
+      "notes": "Direct companion guided rotation schedule with peer rows loading."
+    },
+    {
+      "id": "event_success_companion_rotation_opted_out",
+      "status": "captured",
+      "notes": "Direct companion guided rotation opted-out recovery state."
+    },
+    {
+      "id": "event_success_companion_rotation_opt_out_pending",
+      "status": "captured",
+      "notes": "Direct companion guided rotation opt-out toggle with preference mutation held pending."
+    },
+    {
+      "id": "event_success_companion_live_reveal_countdown",
+      "status": "captured",
+      "notes": "Direct companion live reveal countdown moment."
+    },
+    {
+      "id": "event_success_companion_live_reveal_unlocked",
+      "status": "captured",
+      "notes": "Direct companion unlocked live reveal moment."
+    },
+    {
+      "id": "event_success_companion_wingman_request",
+      "status": "captured",
+      "notes": "Direct companion wingman request candidate-selection moment."
+    },
+    {
+      "id": "event_success_companion_wingman_pending",
+      "status": "captured",
+      "notes": "Direct companion wingman request with save mutation held pending."
+    },
+    {
+      "id": "event_success_companion_wingman_submitted",
+      "status": "captured",
+      "notes": "Direct companion wingman request submitted state."
+    },
+    {
+      "id": "event_success_companion_afterglow_feedback",
+      "status": "captured",
+      "notes": "Direct companion post-event afterglow feedback moment."
+    },
+    {
+      "id": "event_success_companion_feedback_pending",
+      "status": "captured",
+      "notes": "Direct companion post-event feedback form with submit mutation held pending."
+    },
+    {
+      "id": "event_success_companion_text_scale_2",
+      "status": "captured",
+      "notes": "Direct companion assignment moment captured at text scale 2.0."
+    },
+    {
+      "id": "event_success_companion_reduced_motion",
+      "status": "captured",
+      "notes": "Direct companion unlocked live reveal captured with reduced motion enabled."
+    },
+    {
+      "id": "event_success_companion_light_dark",
+      "status": "captured",
+      "notes": "Direct companion assignment moment registered for paired light/dark capture output."
+    }
+  ],
+  "states": [
+    {
+      "id": "route_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "EventSuccessCompanionRouteScreen renders EventSuccessCompanionLoadingPageBody inside stable companion chrome while event, profile, participation, plan, arrival mission, compatibility, preference, feedback, assignment, rotation, or wingman data resolves.",
+      "tests": [
+        "test/event_success/event_success_live_screens_test.dart"
+      ],
+      "nextAction": "Event, profile, and plan loading branches are captured and now use a companion-stage skeleton; add wave-2 assignment/wingman loading captures if those branches diverge visually.",
+      "previewIds": [
+        "EventSuccessCompanionRouteScreen/Route states"
+      ],
+      "captureIds": [
+        "event_success_companion_route_loading",
+        "event_success_companion_profile_loading",
+        "event_success_companion_plan_loading"
+      ]
+    },
+    {
+      "id": "event_not_found",
+      "kind": "empty",
+      "status": "captured",
+      "source": "Missing event data renders _CompanionMessage with Event not found copy inside stable companion chrome.",
+      "nextAction": "Route capture is registered; add explicit deleted-event behavior tests if product adds recovery actions.",
+      "previewIds": [
+        "EventSuccessCompanionRouteScreen/Route states"
+      ],
+      "captureIds": [
+        "event_success_companion_event_not_found"
+      ]
+    },
+    {
+      "id": "sign_in_required",
+      "kind": "permission",
+      "status": "captured",
+      "source": "Null uid renders Sign in required copy before loading attendee-specific companion data.",
+      "nextAction": "Route capture is registered; add auth-return behavior tests when the companion route gets a sign-in CTA.",
+      "previewIds": [
+        "EventSuccessCompanionRouteScreen/Route states"
+      ],
+      "captureIds": [
+        "event_success_companion_sign_in_required"
+      ]
+    },
+    {
+      "id": "no_booking",
+      "kind": "permission",
+      "status": "captured",
+      "source": "Missing user profile or event participation renders No booking found copy and blocks the companion surface.",
+      "nextAction": "Route capture is registered; confirm CTA destination if a booking recovery action is added later.",
+      "previewIds": [
+        "EventSuccessCompanionRouteScreen/Route states"
+      ],
+      "captureIds": [
+        "event_success_companion_no_booking"
+      ]
+    },
+    {
+      "id": "plan_missing",
+      "kind": "empty",
+      "status": "captured",
+      "source": "Null event success plan renders Companion not available until the host saves setup.",
+      "tests": [
+        "test/event_success/event_success_live_screens_test.dart"
+      ],
+      "nextAction": "Route capture is registered; keep the existing route test as behavior proof.",
+      "previewIds": [
+        "EventSuccessCompanionRouteScreen/Route states"
+      ],
+      "captureIds": [
+        "event_success_companion_plan_missing"
+      ]
+    },
+    {
+      "id": "data_load_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "Event, profile, participation, plan, arrival mission, compatibility, feedback, assignment, preference, wingman, and candidate errors render _CompanionError through CatchLocalizedErrorState (inline/compact mode) with retry invalidation.",
+      "nextAction": "Event, profile, participation, and plan failures are captured; add assignment, rotation, wingman, and candidate error captures if those branches diverge visually.",
+      "previewIds": [
+        "EventSuccessCompanionRouteScreen/Route states"
+      ],
+      "captureIds": [
+        "event_success_companion_event_load_error",
+        "event_success_companion_data_error",
+        "event_success_companion_participation_error",
+        "event_success_companion_plan_error"
+      ]
+    },
+    {
+      "id": "default_live_guide",
+      "kind": "populated",
+      "status": "captured",
+      "source": "event_success_companion capture renders the default live guide plan for a signed-up attendee with deterministic event/user data, now through the paper ticket shell for pre-arrival and self-check-in moments.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion"
+      ],
+      "tests": [
+        "test/event_success/event_success_live_screens_test.dart"
+      ],
+      "nextAction": "Default live guide now has a manifest-registered design reference and deterministic paper-shell capture. 2026-06-25 advisory comparison improved from 75.47% to 22.94% mismatch, but remains above threshold; add stage-by-stage companion references and masks for dynamic countdown, animation, profile, opener, reveal, afterglow, feedback, accessibility, and theme variants."
+    },
+    {
+      "id": "pre_arrival_planning",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Booked attendees before the event stay in pre-arrival mode and do not see checked-in prompts, reveal, or partner names.",
+      "tests": [
+        "test/event_success/event_success_live_screens_test.dart"
+      ],
+      "nextAction": "Pre-arrival planning capture is registered; export a stage-specific reference and mask dynamic countdown regions before pixel comparison.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion_pre_arrival_planning"
+      ]
+    },
+    {
+      "id": "self_check_in",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Self-check-in moment uses _SelfCheckInCard and EventBookingController.selfCheckInMutation when normal check-in is available.",
+      "nextAction": "Normal and pending self-check-in are captured; add QR scanner and failure variants if those states diverge visually.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion_self_check_in",
+        "event_success_companion_self_check_in_pending"
+      ]
+    },
+    {
+      "id": "first_hello_start",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "First Hello start state renders Start First Hello and Use normal check-in actions before a mission exists.",
+      "tests": [
+        "test/event_success/event_success_live_screens_test.dart"
+      ],
+      "nextAction": "First Hello start and start-pending captures are registered; add failure proof only if mutation error UI diverges beyond the shared listener.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion_first_hello_start",
+        "event_success_companion_first_hello_start_pending"
+      ]
+    },
+    {
+      "id": "first_hello_assigned",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Assigned First Hello mission renders target context, question, answer options, and Complete check-in action.",
+      "tests": [
+        "test/event_success/event_success_live_screens_test.dart"
+      ],
+      "nextAction": "Assigned First Hello and completion-pending captures are registered; add failure proof only if mutation error UI diverges beyond the shared listener.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion_first_hello_assigned",
+        "event_success_companion_first_hello_complete_pending"
+      ]
+    },
+    {
+      "id": "compatibility_questionnaire",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Compatibility questionnaire renders answer selection and persists match clue answers via EventSuccessController.compatibilityResponseMutation.",
+      "tests": [
+        "test/event_success/event_success_live_screens_test.dart"
+      ],
+      "nextAction": "Questionnaire, saved, and save-pending states are captured; add failed questionnaire variants if mutation error UI diverges beyond the shared listener.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion_compatibility_questionnaire",
+        "event_success_companion_compatibility_pending",
+        "event_success_companion_compatibility_saved"
+      ]
+    },
+    {
+      "id": "live_step_context",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Checked-in attendees without a more specific module see the current host-led live step context.",
+      "tests": [
+        "test/event_success/event_success_live_screens_test.dart"
+      ],
+      "nextAction": "Live step context capture is registered; add long-copy reference/mask variants before pixel comparison.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion_live_step_context"
+      ]
+    },
+    {
+      "id": "conversation_cues",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Runtime surfaces live conversation cues and post-event opener suggestions when configured modules are active; copied cue/opener feedback uses the shared Catch snackbar helper.",
+      "tests": [
+        "test/event_success/event_success_live_screens_test.dart"
+      ],
+      "nextAction": "Social prompt and conversation cues captures are registered; add copied-opener/action feedback variants when adapters land.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion_social_prompt",
+        "event_success_companion_conversation_cues"
+      ]
+    },
+    {
+      "id": "micro_pod_assignment",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Assigned micro-pod and group-rotation slots render group labels, peer rows, table/round details, and handoff CatchToggleInput opt-in controls.",
+      "tests": [
+        "test/event_success/event_success_live_screens_test.dart"
+      ],
+      "nextAction": "Micro-pod, peer-loading, and table-rotation captures are registered; add empty/no-assignment variants if product introduces them.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion_micro_pod_assignment",
+        "event_success_companion_micro_pod_loading_peers",
+        "event_success_companion_table_group_rotations"
+      ]
+    },
+    {
+      "id": "rotation_schedule",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Guided rotation assignment renders round schedule, partner profile rows, and a handoff CatchToggleInput Include me control.",
+      "tests": [
+        "test/event_success/event_success_live_screens_test.dart"
+      ],
+      "nextAction": "Rotation schedule and peer-loading captures are registered; add no-assignment variants if product introduces them.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion_rotation_schedule",
+        "event_success_companion_rotation_loading_peers"
+      ]
+    },
+    {
+      "id": "live_reveal_countdown",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Live reveal countdown hides partner identity until the host reveal unlocks the assignment.",
+      "tests": [
+        "test/event_success/event_success_live_screens_test.dart"
+      ],
+      "nextAction": "Live reveal countdown capture is registered; mask timer/dynamic animation regions before pixel comparison.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion_live_reveal_countdown"
+      ]
+    },
+    {
+      "id": "live_reveal_unlocked",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Revealed live assignment shows the unlocked partner and dispatches one stable reveal effect.",
+      "tests": [
+        "test/event_success/event_success_live_screens_test.dart"
+      ],
+      "nextAction": "Unlocked live reveal capture is registered; compare with reduced-motion capture before visual refactors.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion_live_reveal_unlocked"
+      ]
+    },
+    {
+      "id": "wingman_request",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Host-help request filters candidates by attendee interests and persists consented wingman request documents.",
+      "tests": [
+        "test/event_success/event_success_live_screens_test.dart"
+      ],
+      "nextAction": "Wingman request, saving, and submitted states are captured; add no-candidates and failed request variants if product copy diverges from the shared mutation listener.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion_wingman_request",
+        "event_success_companion_wingman_pending",
+        "event_success_companion_wingman_submitted"
+      ]
+    },
+    {
+      "id": "post_event_afterglow_feedback",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Attended ended events render private afterglow recap, post-event openers, and decomposed feedback form when modules are enabled.",
+      "tests": [
+        "test/event_success/event_success_live_screens_test.dart"
+      ],
+      "nextAction": "Afterglow feedback and submit-pending captures are registered; add safety concern and blank/new feedback variants when reference exports land.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion_afterglow_feedback",
+        "event_success_companion_feedback_pending"
+      ]
+    },
+    {
+      "id": "opt_out_assignments",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Micro-pod and guided-rotation opt-out states hide stale assignments and show Include me recovery actions.",
+      "tests": [
+        "test/event_success/event_success_live_screens_test.dart"
+      ],
+      "nextAction": "Micro-pod and guided-rotation opted-out plus preference-pending captures are registered; add failure include-me variants only if mutation error UI diverges beyond the shared listener.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion_micro_pod_opted_out",
+        "event_success_companion_micro_pod_opt_out_pending",
+        "event_success_companion_rotation_opt_out_pending",
+        "event_success_companion_rotation_opted_out"
+      ]
+    },
+    {
+      "id": "auto_launch",
+      "kind": "permission",
+      "status": "tested",
+      "source": "EventSuccessCompanionLaunchRegistry and launchEventSuccessCompanionIfAvailable avoid host launches, missing plans, ended events without attendee surfaces, and duplicate launches.",
+      "tests": [
+        "test/event_success/event_success_companion_launcher_test.dart"
+      ],
+      "nextAction": "Add route-level documentation and tests for foreground attendance transition launch telemetry."
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Companion provider failures use shared mapped offline copy through CatchLocalizedErrorState (inline/compact mode); event_success_companion_offline captures an offline-mapped plan load failure.",
+      "nextAction": "Define companion-specific offline copy only if product wants copy that diverges from the shared app error catalogue, and add assignment/wingman offline captures when runtime-stage fixtures expand.",
+      "previewIds": [
+        "EventSuccessCompanionRouteScreen/Route states"
+      ],
+      "captureIds": [
+        "event_success_companion_offline"
+      ]
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "No tall text-scale route capture exists for the attendee companion yet.",
+      "nextAction": "Text-scale 2.0 capture is registered on the assignment surface; add additional form/reveal/accessibility references if regressions appear.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion_text_scale_2"
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Companion stage transitions, animated motif, reveal cinematic, bouncy controls, and effects need explicit reduced-motion coverage.",
+      "nextAction": "Reduced-motion capture is registered on the unlocked reveal surface; keep effect suppression covered by focused tests and no-op effects overrides.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion_reduced_motion"
+      ]
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "The capture runner emits paired light/dark output for the companion assignment fixture.",
+      "nextAction": "Compare both themes after final companion runtime-stage references are exported.",
+      "previewIds": [
+        "EventSuccessCompanionScreen/Screen states"
+      ],
+      "captureIds": [
+        "event_success_companion_light_dark"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "EventSuccessCompanionRouteScreen resolves event, uid, profile, participation, plan, arrival mission, compatibility response, preference, feedback, assignments, peer profiles, and wingman state in provider waves. EventSuccessRuntime chooses one attendee moment, and EventSuccessCompanionScreen renders stage chrome plus moment cards/forms.",
+    "targetLayout": "The route should map provider waves into an EventSuccessCompanionScreenState and compose provider-free sections for stable chrome, stage hero, current moment, live cards, questionnaire, assignments, wingman, afterglow, and feedback. Runtime decisions stay in EventSuccessRuntime; mutations stay in EventSuccessController/EventBookingController.",
+    "sections": [
+      {
+        "id": "section.event_success.companion_chrome",
+        "name": "Companion route chrome",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "CompanionChrome",
+          "TopBar"
+        ],
+        "flutter": {
+          "file": "lib/event_success/presentation/event_success_companion_screen.dart",
+          "symbol": "CompanionScaffold"
+        },
+        "currentOwner": "EventSuccessCompanionRouteScreen",
+        "targetOwner": "registered companion chrome section shared by loading/error/content states",
+        "dependencies": [
+          "catch.icon_button",
+          "catch.top_bar"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "message",
+          "content"
+        ],
+        "migration": "Keep stable scaffold behavior, but expose loading/error/message/content as explicit route-state adapters with typed retry intents.",
+        "previewIds": [
+          "EventSuccessCompanionRouteScreen/Route states",
+          "EventSuccessCompanionScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.event_success.stage_scaffold",
+        "name": "Companion stage scaffold",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "CompanionStage",
+          "StageHero",
+          "PrivacyLine"
+        ],
+        "flutter": {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart",
+          "symbol": "CompanionStageScaffold"
+        },
+        "currentOwner": "EventSuccessCompanionScreen",
+        "targetOwner": "provider-free companion stage section fed by EventSuccessCompanionScreenState",
+        "dependencies": [
+          "catch.badge",
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "pre_arrival",
+          "live",
+          "reveal",
+          "afterglow",
+          "none",
+          "reduced_motion"
+        ],
+        "migration": "Move moment presentation data, effects, animation toggles, and action dock contents into an explicit stage view model.",
+        "previewIds": [
+          "EventSuccessCompanionScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.event_success.first_hello",
+        "name": "First Hello check-in card",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "FirstHelloCard",
+          "ArrivalMission"
+        ],
+        "flutter": {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_arrival_card.dart",
+          "symbol": "FirstHelloCheckInCard"
+        },
+        "currentOwner": "EventSuccessCompanionScreen",
+        "targetOwner": "provider-free First Hello section with start/complete/skip callbacks",
+        "dependencies": [
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "start_available",
+          "mission_assigned",
+          "answer_selected",
+          "pending",
+          "failed"
+        ],
+        "migration": "Pass mission display data and mutation states in from the route adapter; keep location writes in EventSuccessController.",
+        "previewIds": [
+          "EventSuccessCompanionScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.event_success.pre_arrival",
+        "name": "Pre-arrival planning card",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "PreArrivalPlan"
+        ],
+        "flutter": {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart",
+          "symbol": "PreCheckInPlanningCard"
+        },
+        "currentOwner": "EventSuccessCompanionScreen",
+        "targetOwner": "provider-free pre-arrival planning section",
+        "dependencies": [
+          "catch.badge",
+          "catch.surface"
+        ],
+        "states": [
+          "micro_pods",
+          "guided_rotations",
+          "live_reveal",
+          "social_missions",
+          "wingman_requests"
+        ],
+        "migration": "Move enabled-module summary into runtime-derived display data and add previews for each module combination.",
+        "previewIds": [
+          "EventSuccessCompanionScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.event_success.questionnaire",
+        "name": "Compatibility questionnaire",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "Questionnaire",
+          "MatchClues"
+        ],
+        "flutter": {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_questionnaire_section.dart",
+          "symbol": "CompatibilityQuestionnaireSection"
+        },
+        "currentOwner": "EventSuccessCompanionScreen",
+        "targetOwner": "provider-free questionnaire section with mutation state and validation display data",
+        "dependencies": [
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "unanswered",
+          "partial",
+          "saved",
+          "pending",
+          "failed"
+        ],
+        "migration": "Move selected answer state and save mutation state into a section controller/adapter so all questionnaire states can be previewed.",
+        "previewIds": [
+          "EventSuccessCompanionScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.event_success.live_cards",
+        "name": "Live context and conversation cards",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "LiveStepContext",
+          "ConversationCues",
+          "SocialPrompt"
+        ],
+        "flutter": {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart",
+          "symbol": "LiveStepContextCard"
+        },
+        "currentOwner": "EventSuccessCompanionScreen",
+        "targetOwner": "registered live-context section family fed by runtime moment data",
+        "dependencies": [
+          "catch.badge",
+          "catch.surface"
+        ],
+        "states": [
+          "live_step",
+          "social_prompt",
+          "conversation_cues",
+          "post_event_openers"
+        ],
+        "migration": "Split the prompt/cue/live-context cards into a common live-card model so state coverage does not depend on private branching.",
+        "previewIds": [
+          "EventSuccessCompanionScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.event_success.assignments",
+        "name": "Assignments and rotations",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "MicroPodCard",
+          "RotationSchedule",
+          "PeopleRows"
+        ],
+        "flutter": {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart",
+          "symbol": "MicroPodCard"
+        },
+        "currentOwner": "EventSuccessCompanionScreen",
+        "targetOwner": "provider-free assignment section with peer loading and opt-out display states",
+        "dependencies": [
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "micro_pod",
+          "group_slots",
+          "rotation_schedule",
+          "peers_loading",
+          "opted_out",
+          "empty_assignment"
+        ],
+        "migration": "Move peer-profile loading, opt-out state, and include-me callbacks into assignment section adapters.",
+        "previewIds": [
+          "EventSuccessCompanionScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.event_success.live_reveal",
+        "name": "Live reveal attendee card",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "LiveReveal",
+          "RevealCountdown"
+        ],
+        "flutter": {
+          "file": "lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart",
+          "symbol": "EventSuccessAttendeeRevealSurface"
+        },
+        "currentOwner": "EventSuccessCompanionScreen",
+        "targetOwner": "provider-free live reveal section with masked countdown and reduced-motion states",
+        "dependencies": [
+          "catch.badge",
+          "catch.surface"
+        ],
+        "states": [
+          "counting_down",
+          "revealed",
+          "opted_out",
+          "peers_loading",
+          "reduced_motion"
+        ],
+        "migration": "Mask dynamic countdown regions for captures and move reveal effect triggering into a state/effects adapter.",
+        "previewIds": [
+          "EventSuccessCompanionScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.event_success.wingman",
+        "name": "Wingman request section",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "WingmanRequest",
+          "CandidateList"
+        ],
+        "flutter": {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_wingman_section.dart",
+          "symbol": "WingmanRequestSection"
+        },
+        "currentOwner": "EventSuccessCompanionScreen",
+        "targetOwner": "provider-free wingman request section with consent and candidate state",
+        "dependencies": [
+          "catch.button",
+          "catch.surface",
+          "catch.field"
+        ],
+        "states": [
+          "no_candidates",
+          "filtered_candidates",
+          "existing_request",
+          "pending",
+          "failed"
+        ],
+        "migration": "Move candidate filtering, request mutation state, and consent copy into a section adapter with explicit privacy labels.",
+        "previewIds": [
+          "EventSuccessCompanionScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.event_success.afterglow",
+        "name": "Private afterglow recap",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "AfterglowRecap",
+          "PostEventOpeners"
+        ],
+        "flutter": {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_afterglow_card.dart",
+          "symbol": "PrivateAfterglowRecapCard"
+        },
+        "currentOwner": "EventSuccessCompanionScreen",
+        "targetOwner": "provider-free post-event recap section",
+        "dependencies": [
+          "catch.badge",
+          "catch.icon_button",
+          "catch.surface"
+        ],
+        "states": [
+          "openers_enabled",
+          "feedback_enabled",
+          "feedback_submitted",
+          "copy_opener"
+        ],
+        "migration": "Keep afterglow private-first and add capture masks for copied opener affordances and dynamic recap details.",
+        "previewIds": [
+          "EventSuccessCompanionScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.event_success.feedback",
+        "name": "Event Success feedback form",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "FeedbackForm",
+          "SafetyConcern"
+        ],
+        "flutter": {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback_form.dart",
+          "symbol": "EventSuccessFeedbackForm"
+        },
+        "currentOwner": "EventSuccessCompanionScreen",
+        "targetOwner": "provider-free feedback form section with validation and mutation states",
+        "dependencies": [
+          "catch.button",
+          "catch.icon_button",
+          "catch.surface",
+          "catch.field"
+        ],
+        "states": [
+          "blank",
+          "filled",
+          "safety_concern",
+          "existing_feedback",
+          "pending",
+          "failed"
+        ],
+        "migration": "Move form draft, rating selection, safety concern state, and submit mutation state into a previewable adapter.",
+        "previewIds": [
+          "EventSuccessCompanionScreen/Screen states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-EVENT-SUCCESS-COMPANION-001",
+      "status": "closed",
+      "nextAction": "Closed by EventSuccessCompanionRouteScreen/Route states and EventSuccessCompanionScreen/Screen states first-pass Widgetbook coverage for route chrome, stage scaffold, First Hello, pre-arrival, questionnaire, live cards, assignments, reveal, wingman, afterglow, feedback, text scale, reduced motion, and addon-driven theme review."
+    },
+    {
+      "id": "DS-EVENT-SUCCESS-COMPANION-002",
+      "status": "closed",
+      "nextAction": "Closed by companion route loading/error/access/offline, runtime moment, action pending, text-scale, reduced-motion, and paired light/dark captures. Mutation failure/snackbar variants should be added only if product copy diverges from the shared mutation listener behavior."
+    },
+    {
+      "id": "DS-EVENT-SUCCESS-COMPANION-003",
+      "status": "closed",
+      "nextAction": "Closed for provider-free companion section APIs and EventSuccessCompanionScreenState ownership. FirstHelloCheckInCard, SelfCheckInCard, PaperSelfCheckInBar, MicroPodCard, RotationScheduleCard, WingmanRequestSection, EventSuccessFeedbackForm, and CompatibilityQuestionnaireSection receive explicit action state and typed callbacks from EventSuccessCompanionScreen. The missing production route binding for the compatibility callback is tracked separately by DS-EVENT-SUCCESS-COMPANION-005."
+    },
+    {
+      "id": "DS-EVENT-SUCCESS-COMPANION-004",
+      "status": "blocked",
+      "nextAction": "Blocked on missing canonical design exports for stage, reveal, wingman, afterglow, feedback, offline/error, accessibility, and theme variants. The only local Event Success Companion reference is design/reference_screens/screen.event_success.companion/default_live_guide.png with masks.json."
+    },
+    {
+      "id": "DS-EVENT-SUCCESS-COMPANION-005",
+      "status": "open",
+      "nextAction": "Wire EventSuccessCompanionRouteScreen to EventSuccessController.saveCompatibilityResponse through compatibilityResponseMutation, add route-level persistence proof, then remove FEATURE-ACTION-WIRING-001 from feature.event_success. Separately add focused tests for the nine registered state-level test exceptions; auto_launch remains launcher-policy evidence without synthetic visual evidence."
+    }
+  ]
+}

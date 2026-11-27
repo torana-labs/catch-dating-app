@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/hosts/events/event_close_out_screen.dart",
+      "symbol": "_HostEventCloseOutScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "The event workspace pushes close out as a system pushed screen."
+}

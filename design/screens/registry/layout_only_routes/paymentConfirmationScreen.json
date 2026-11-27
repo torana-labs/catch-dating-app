@@ -1,0 +1,49 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "paymentConfirmationScreen"
+      ],
+      "file": "packages/catch_ui/lib/src/patterns/catch_error_scaffold.dart",
+      "symbol": "CatchErrorScaffold",
+      "family": "standalone",
+      "expression": "CatchScaffold.standalone",
+      "bodyGeometry": "intrinsic",
+      "topEdge": "body-owned"
+    },
+    {
+      "routes": [
+        "paymentConfirmationScreen"
+      ],
+      "file": "lib/payments/presentation/payment_confirmation_loading_screen.dart",
+      "symbol": "PaymentConfirmationLoadingScreen",
+      "family": "standalone",
+      "expression": "CatchScaffold.standalone",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "paymentConfirmationScreen"
+      ],
+      "file": "lib/payments/presentation/payment_confirmation_screen.dart",
+      "symbol": "PaymentPendingCheckoutBody",
+      "family": "standalone",
+      "expression": "CatchScaffold.standalone",
+      "bodyGeometry": "full-bleed",
+      "topEdge": "body-owned"
+    },
+    {
+      "routes": [
+        "paymentConfirmationScreen"
+      ],
+      "file": "lib/pages/celebration/celebration_screen.dart",
+      "symbol": "_CatchCelebrationScreenState",
+      "family": "standalone",
+      "expression": "CatchScaffold.standalone",
+      "bodyGeometry": "full-bleed",
+      "topEdge": "body-owned"
+    }
+  ],
+  "reason": "Payment confirmation is a route coordinator whose loading, localized error, pending checkout, and completed celebration terminals each have deterministic standalone ownership."
+}

@@ -1,0 +1,49 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "dashboardScreen"
+      ],
+      "file": "lib/dashboard/presentation/dashboard_home_screen.dart",
+      "symbol": "DashboardHomeScreen",
+      "family": "root",
+      "expression": "CatchRootScreenScaffold.standard",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "dashboardScreen"
+      ],
+      "file": "lib/dashboard/presentation/dashboard_loading_screen.dart",
+      "symbol": "DashboardLoadingScreen",
+      "family": "root",
+      "expression": "CatchRootScreenScaffold.standard",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "dashboardScreen"
+      ],
+      "file": "lib/dashboard/presentation/dashboard_error_screen.dart",
+      "symbol": "DashboardErrorScreen",
+      "family": "root",
+      "expression": "CatchRootScreenScaffold.standard",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "dashboardScreen"
+      ],
+      "file": "lib/dashboard/presentation/dashboard_empty_home_screen.dart",
+      "symbol": "DashboardEmptyHomeScreen",
+      "family": "root",
+      "expression": "CatchRootScreenScaffold.fullBleed",
+      "bodyGeometry": "full-bleed",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "Dashboard state variants share the root-screen family while declaring their body geometry."
+}

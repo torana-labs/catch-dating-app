@@ -1,0 +1,11 @@
+{
+  "branchKey": "keys.hostOrganizer",
+  "routeName": "Routes.hostOrganizerScreen.name",
+  "surfaces": [
+    {
+      "path": "lib/hosts/organizer/organizer_screen.dart",
+      "symbol": "OrganizerScreen",
+      "owner": "CatchTopBar"
+    }
+  ]
+}

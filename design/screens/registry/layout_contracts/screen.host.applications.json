@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostApplicationDetailScreen"
+      ],
+      "file": "lib/hosts/forms/response_screen.dart",
+      "symbol": "_HostResponseScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "Existing application links render the unified response detail; the application directory redirects into Audience Responses."
+}
