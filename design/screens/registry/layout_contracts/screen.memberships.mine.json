@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "myMembershipsScreen"
+      ],
+      "file": "lib/host_memberships/presentation/my_memberships_screen.dart",
+      "symbol": "MyMembershipsScreen",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "My memberships is a canonical pushed list route."
+}

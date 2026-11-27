@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostResponseOfferScreen"
+      ],
+      "file": "lib/hosts/forms/offer_screen.dart",
+      "symbol": "_HostOfferScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "Named Host workspace continuation reuses the existing content owner; route metadata supplies its ancestors and preserves push results."
+}

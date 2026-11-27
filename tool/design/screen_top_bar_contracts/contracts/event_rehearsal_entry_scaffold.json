@@ -1,0 +1,8 @@
+{
+  "path": "lib/event_rehearsal/presentation/widgets/event_rehearsal_entry_scaffold.dart",
+  "role": "compact",
+  "expression": "CatchLegacyTopBar.route",
+  "owner": "CatchLegacyTopBar",
+  "surface": "CatchRouteScaffold",
+  "leading": "back"
+}

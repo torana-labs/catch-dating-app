@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/hosts/create/create_route_path_screen.dart",
+      "symbol": "_CreateRoutePathScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "mixed",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "The route-path map editor is a system screen with a full-bleed map body and a bar dock."
+}

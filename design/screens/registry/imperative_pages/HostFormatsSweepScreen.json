@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/hosts/live/formats/formats_sweep_screen.dart",
+      "symbol": "_HostFormatsSweepScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "The run console and the crawl board push the return sweep as a system pushed screen."
+}

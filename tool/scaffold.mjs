@@ -192,7 +192,7 @@ function screenPlan(options) {
         ? [`apps/${app}/pubspec.yaml, under dependencies:\n${dependencies.join("\n")}\nthen flutter pub get`]
         : []),
       `packages/platform/lib/routing/route_contract.dart and the router that mounts it (${canonicalRouterFiles.join(" or ")}): add the route ${routeId}; node tool/ui_capture/check_route_inventory.mjs --list then shows it, derived from the router:\n  ${routeId}`,
-      `tool/ui_capture/capture_coverage.json, under routes, until the capture lands:\n  {"routeId": "${routeId}", "status": "planned", "priority": "P1", "reason": "Redesigned screen; its capture lands with it."}`,
+      `tool/ui_capture/capture_coverage/${routeId}.json, a new file until the capture lands:\n  {"routeId": "${routeId}", "status": "planned", "priority": "P1", "reason": "Redesigned screen; its capture lands with it."}`,
       "After editing the view model, run build_runner so its .g.dart matches.",
     ],
   };

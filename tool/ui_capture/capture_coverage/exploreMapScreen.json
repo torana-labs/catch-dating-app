@@ -1,0 +1,13 @@
+{
+  "routeId": "exploreMapScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "explore_map",
+    "explore_map_selected_pin",
+    "explore_map_distance_ring",
+    "explore_map_loading",
+    "explore_map_error"
+  ],
+  "reason": "Explore map route captures now cover pins-ready, selected-pin, distance-ring, loading, and feed-error states with network tiles disabled."
+}

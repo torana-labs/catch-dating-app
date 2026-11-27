@@ -1,0 +1,11 @@
+{
+  "branchKey": "keys.hostPeople",
+  "routeName": "Routes.hostAudienceScreen.name",
+  "surfaces": [
+    {
+      "path": "lib/hosts/people/people_screen.dart",
+      "symbol": "_HostPeopleScreenState",
+      "owner": "CatchTopBar"
+    }
+  ]
+}

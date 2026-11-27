@@ -1,0 +1,7 @@
+{
+  "path": "lib/onboarding/presentation/onboarding_screen.dart",
+  "symbol": "OnboardingTopBar",
+  "role": "step-flow",
+  "owner": "CatchStepHeader",
+  "reason": "Onboarding delegates progress and navigation chrome to the canonical step header."
+}

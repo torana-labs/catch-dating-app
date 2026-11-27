@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/hosts/live/live_tools_screen.dart",
+      "symbol": "HostLiveToolsScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "The live console and the run and crawl boards push night tools as a system pushed screen."
+}

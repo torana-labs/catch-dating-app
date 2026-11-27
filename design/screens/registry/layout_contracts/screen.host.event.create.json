@@ -1,0 +1,38 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "file": "lib/hosts/create/create_route_screen.dart",
+      "symbol": "CreateRouteScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "file": "lib/hosts/create/create_screen.dart",
+      "symbol": "_CreateScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "file": "lib/hosts/create/widgets/create_step_layout.dart",
+      "symbol": "CreateStepLayout",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "The create route resolves the organizer and host on a system screen, then opens the redesigned create flow."
+}

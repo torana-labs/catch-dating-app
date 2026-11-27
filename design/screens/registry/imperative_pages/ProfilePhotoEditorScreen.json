@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
+      "symbol": "_ProfilePhotoEditorScreenState",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "The profile-photo editor is an imperative pushed utility route with canonical compact chrome."
+}

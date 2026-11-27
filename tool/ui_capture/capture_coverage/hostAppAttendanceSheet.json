@@ -1,0 +1,7 @@
+{
+  "routeId": "hostAppAttendanceSheet",
+  "status": "alias",
+  "priority": "P2",
+  "canonicalRouteId": "hostAppEventManageScreen",
+  "reason": "Host app attendance route opens the canonical live attendance section of host event management."
+}

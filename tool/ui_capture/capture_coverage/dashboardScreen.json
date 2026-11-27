@@ -1,0 +1,24 @@
+{
+  "routeId": "dashboardScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "dashboard_home",
+    "dashboard_home_loading",
+    "dashboard_home_profile_error",
+    "dashboard_home_offline",
+    "dashboard_home_memberships_error",
+    "dashboard_home_booked_events_error",
+    "dashboard_home_empty_start",
+    "dashboard_home_recommendations_loading",
+    "dashboard_home_recommendations_error",
+    "dashboard_home_text_scale_2",
+    "dashboard_home_reduced_motion",
+    "dashboard_home_self_check_in",
+    "dashboard_home_after_event_focus",
+    "dashboard_home_self_check_in_pending",
+    "dashboard_home_self_check_in_error",
+    "guest_reminder"
+  ],
+  "reason": "Main review surface plus deterministic route variants for loading, data-load errors, empty start, self check-in open/pending/error, after-event focus, recommendations loading/error, text scale, and reduced motion."
+}

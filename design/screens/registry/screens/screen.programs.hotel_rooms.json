@@ -1,0 +1,195 @@
+{
+  "id": "screen.programs.hotel_rooms",
+  "name": "Program hotel rooms",
+  "owner": "programs",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "hostWorkHotelRoomsScreen",
+      "path": "/host/work/:programId/hotel/:hotelId/rooms",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/programs/presentation/program_hotel_rooms_screen.dart",
+    "symbol": "ProgramHotelRoomsScreen"
+  },
+  "shell": {
+    "owner": "host",
+    "nestedScaffoldAllowed": false,
+    "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchLegacyTopBar",
+    "owner": "CatchRouteScaffold",
+    "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation"
+    ],
+    "owner": "program providers, ProgramWorkRepository and CatchAsyncBoundary"
+  },
+  "stateController": {
+    "primary": "programHotelRoomsProvider",
+    "files": [
+      {
+        "file": "lib/programs/presentation/program_hotel_rooms_screen.dart",
+        "symbol": "ProgramHotelRoomsScreen"
+      },
+      {
+        "file": "lib/contexts/programmes/data/program_room_views_repository.dart",
+        "symbol": "programHotelRooms"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/contexts/programmes/data/program_work_repository.dart",
+        "symbol": "ProgramWorkRepository"
+      }
+    ],
+    "notes": "The room board is a hotel-scoped projection — stay rows, block capacity and unplaced guest names only."
+  },
+  "designRefs": [
+    {
+      "id": "repo.programs-architecture",
+      "kind": "repo",
+      "status": "available",
+      "path": "docs/plans/airport_arrivals_prd.md",
+      "notes": "Program workspace architecture, authority model, and arrivals vertical slices are specified in the airport arrivals PRD."
+    }
+  ],
+  "captures": [],
+  "states": [
+    {
+      "id": "rooms_loading",
+      "kind": "loading",
+      "status": "implemented",
+      "source": "Loading viewport while the room board resolves.",
+      "nextAction": "Review against program design references when they land.",
+      "previewIds": [
+        "ProgramHotelRoomsScreen/Screen states"
+      ]
+    },
+    {
+      "id": "rooms_error",
+      "kind": "error",
+      "status": "implemented",
+      "source": "Rooms failures render CatchLocalizedErrorState with retry.",
+      "nextAction": "Review against program design references when they land.",
+      "previewIds": [
+        "ProgramHotelRoomsScreen/Screen states"
+      ]
+    },
+    {
+      "id": "unplaced",
+      "kind": "populated",
+      "status": "implemented",
+      "source": "Routed guests with no live stay list the suggested block and open the assign sheet.",
+      "nextAction": "Review against program design references when they land.",
+      "previewIds": [
+        "ProgramHotelRoomsScreen/Screen states",
+        "ProgramUnplacedGuestRow/Row states"
+      ]
+    },
+    {
+      "id": "stays",
+      "kind": "populated",
+      "status": "implemented",
+      "source": "Stay rows show guest, room label, block and lifecycle status with desk marks.",
+      "nextAction": "Review against program design references when they land.",
+      "previewIds": [
+        "ProgramStayRow/Row states"
+      ]
+    },
+    {
+      "id": "blocks",
+      "kind": "populated",
+      "status": "implemented",
+      "source": "Room blocks show live capacity remaining out of the reserved total.",
+      "nextAction": "Review against program design references when they land.",
+      "previewIds": [
+        "ProgramRoomBlockRow/Row states"
+      ]
+    },
+    {
+      "id": "empty",
+      "kind": "empty",
+      "status": "implemented",
+      "source": "Inline empty states cover hotels with no blocks, stays, or unplaced guests.",
+      "nextAction": "Review against program design references when they land.",
+      "previewIds": [
+        "ProgramHotelRoomsScreen/Screen states"
+      ]
+    },
+    {
+      "id": "assign_manage",
+      "kind": "mutation",
+      "status": "implemented",
+      "source": "The stay sheet assigns blocks/rooms and advances lifecycle through upsertProgramStay.",
+      "nextAction": "Review against program design references when they land.",
+      "previewIds": [
+        "ProgramStaySheet/Sheet states"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "ProgramHotelRoomsScreen renders unplaced guests, live stays, and room-block capacity for one hotel.",
+    "targetLayout": "The room board keeps assignment hotel-scoped and adds no contact or cross-hotel fields.",
+    "sections": [
+      {
+        "id": "section.programs_hotel_rooms.adapter",
+        "name": "Hotel rooms route adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "ProgramHotelRoomsScreen"
+        ],
+        "flutter": {
+          "file": "lib/programs/presentation/program_hotel_rooms_screen.dart",
+          "symbol": "ProgramHotelRoomsScreen"
+        },
+        "currentOwner": "ProgramHotelRoomsScreen + programHotelRoomsProvider",
+        "targetOwner": "provider-free hotel rooms lanes",
+        "dependencies": [
+          "catch.top_bar",
+          "catch.section",
+          "catch.surface",
+          "catch.badge",
+          "catch.button",
+          "catch.sheet"
+        ],
+        "states": [
+          "rooms_loading",
+          "rooms_error",
+          "unplaced",
+          "stays",
+          "blocks",
+          "empty",
+          "assign_manage"
+        ],
+        "migration": "Keep the room board provider-free and scoped to the hotel.",
+        "previewIds": [
+          "ProgramHotelRoomsScreen/Screen states",
+          "ProgramUnplacedGuestRow/Row states",
+          "ProgramStayRow/Row states",
+          "ProgramRoomBlockRow/Row states",
+          "ProgramStaySheet/Sheet states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DP-PROGRAMS-HOTEL-ROOMS-001",
+      "status": "open",
+      "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+    }
+  ]
+}

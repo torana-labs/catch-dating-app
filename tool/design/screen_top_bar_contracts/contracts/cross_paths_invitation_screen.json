@@ -1,0 +1,7 @@
+{
+  "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+  "role": "compact",
+  "expression": "CatchLegacyTopBar.route",
+  "owner": "CatchLegacyTopBar",
+  "leading": "back"
+}

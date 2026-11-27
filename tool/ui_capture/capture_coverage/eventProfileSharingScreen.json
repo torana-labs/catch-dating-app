@@ -1,0 +1,6 @@
+{
+  "routeId": "eventProfileSharingScreen",
+  "status": "excluded",
+  "priority": "P3",
+  "reason": "Private event profile surface covered by typed route ownership, Widgetbook and focused light/dark/large-text rendered review tests."
+}

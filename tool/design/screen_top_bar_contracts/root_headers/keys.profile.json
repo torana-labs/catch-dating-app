@@ -1,0 +1,11 @@
+{
+  "branchKey": "keys.profile",
+  "routeName": "Routes.profileScreen.name",
+  "surfaces": [
+    {
+      "path": "lib/user_profile/presentation/profile_screen.dart",
+      "symbol": "_ProfileScreenState",
+      "owner": "CatchRootScreenHeader.title"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "publicProfileScreen"
+      ],
+      "file": "lib/public_profile/presentation/public_profile_screen.dart",
+      "symbol": "PublicProfileScreen",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "mixed",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Public Profile is a pushed route with canonical chrome and mixed profile sections."
+}

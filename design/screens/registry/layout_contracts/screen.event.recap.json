@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "eventRecapScreen"
+      ],
+      "file": "lib/swipes/presentation/event_recap_screen.dart",
+      "symbol": "_EventRecapScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "The after-event screen is a pushed route that draws its own moment top bar in CatchScreen."
+}

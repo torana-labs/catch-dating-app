@@ -1,0 +1,11 @@
+{
+  "branchKey": "keys.dashboard",
+  "routeName": "Routes.dashboardScreen.name",
+  "surfaces": [
+    {
+      "path": "lib/dashboard/presentation/dashboard_home_screen.dart",
+      "symbol": "DashboardHomeScreen",
+      "owner": "CatchLegacyTopBar.primaryRail"
+    }
+  ]
+}

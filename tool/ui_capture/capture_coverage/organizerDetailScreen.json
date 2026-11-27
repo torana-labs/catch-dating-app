@@ -1,0 +1,25 @@
+{
+  "routeId": "organizerDetailScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "club_detail_member",
+    "club_detail_visitor",
+    "club_detail_guest",
+    "club_detail_host_public",
+    "club_detail_loading",
+    "club_detail_initial_loading",
+    "club_detail_empty_schedule",
+    "club_detail_missing",
+    "club_detail_error",
+    "club_detail_join_pending",
+    "club_detail_mutation_error",
+    "club_detail_offline",
+    "club_detail_text_scale_2",
+    "club_detail_reduced_motion",
+    "guest_follow_host",
+    "guest_follow_host_followers_fragment",
+    "guest_follow_host_follow_fragment"
+  ],
+  "reason": "Club Detail captured across member, visitor, guest, host public, loading, initial fallback loading, empty schedule, missing, error, mutation, offline, text-scale, and reduced-motion states."
+}

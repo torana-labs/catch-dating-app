@@ -1,0 +1,7 @@
+{
+  "routeId": "calendarEventDetailScreen",
+  "status": "alias",
+  "priority": "P2",
+  "canonicalRouteId": "eventDetailScreen",
+  "reason": "Same event detail surface reached from the calendar entry path."
+}

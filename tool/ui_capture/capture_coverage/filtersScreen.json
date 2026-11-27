@@ -1,0 +1,19 @@
+{
+  "routeId": "filtersScreen",
+  "status": "captured",
+  "priority": "P2",
+  "captureIds": [
+    "filters_preferences",
+    "filters_loading",
+    "filters_profile_error",
+    "filters_missing_profile",
+    "filters_dirty_edit",
+    "filters_reset_restored",
+    "filters_save_pending",
+    "filters_save_error",
+    "filters_text_scale_2",
+    "filters_reduced_motion",
+    "filters_light_dark"
+  ],
+  "reason": "Filters captures now cover profile-backed defaults, loading, profile error, missing profile, dirty edits, reset-restored content, save pending/error, text scale 2.0, reduced motion, and paired light/dark output."
+}

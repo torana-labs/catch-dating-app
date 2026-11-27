@@ -1,0 +1,472 @@
+{
+  "id": "screen.reviews.history",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "compact",
+    "expression": "CatchLegacyTopBar",
+    "owner": "CatchRouteScaffold",
+    "reason": "The pushed route uses canonical compact back chrome and a scroll-derived divider."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Reviews History",
+  "owner": "reviews",
+  "priority": "P3",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "reviewsHistoryScreen",
+      "path": "/you/reviews",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/reviews/presentation/reviews_history_screen.dart",
+    "symbol": "ReviewsHistoryScreen"
+  },
+  "stateController": {
+    "primary": "ReviewsHistoryScreen + ReviewsHistoryState + uidProvider + watchUserProfileProvider + watchReviewsByUserProvider + watchOwnEventCardsForEventsProvider",
+    "files": [
+      {
+        "file": "lib/reviews/presentation/reviews_history_screen.dart",
+        "symbol": "ReviewsHistoryScreen"
+      },
+      {
+        "file": "lib/reviews/presentation/reviews_history_state.dart",
+        "symbol": "ReviewsHistoryState"
+      },
+      {
+        "file": "lib/contexts/reviews/data/reviews_repository.dart",
+        "symbol": "watchReviewsByUser"
+      },
+      {
+        "file": "lib/contexts/bookings/data/guest_event_cards_repository.dart",
+        "symbol": "watchOwnEventCardsForEvents"
+      },
+      {
+        "file": "lib/pages/reviews/write_review_sheet.dart",
+        "symbol": "showWriteReviewSheet"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/pages/reviews/write_review_sheet.dart",
+        "symbol": "showWriteReviewSheet"
+      },
+      {
+        "file": "lib/contexts/reviews/data/reviews_repository.dart",
+        "symbol": "ReviewsRepository"
+      }
+    ],
+    "notes": "ReviewsHistoryScreen now keeps provider reads at the route edge, then delegates access, provider waves, review/event context joining, retry targets, row display data, and edit availability to ReviewsHistoryState before composing provider-free list/body/row widgets."
+  },
+  "designRefs": [
+    {
+      "id": "repo.reviews-history-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/reviews/reviews_widgets_test.dart",
+      "notes": "Review widget tests cover review-history list rendering and opening the edit sheet."
+    },
+    {
+      "id": "claude.reviews-history",
+      "kind": "claude",
+      "status": "blocked",
+      "notes": "Blocked on canonical Reviews History screen source/export. The local Claude bundle includes ReviewRow and review sections inside club/website surfaces, but no standalone user Reviews History screen template."
+    }
+  ],
+  "captures": [
+    {
+      "id": "reviews_history_signed_out",
+      "status": "captured",
+      "notes": "Reviews History signed out route capture."
+    },
+    {
+      "id": "reviews_history_profile_loading",
+      "status": "captured",
+      "notes": "Reviews History profile loading route capture."
+    },
+    {
+      "id": "reviews_history_profile_error",
+      "status": "captured",
+      "notes": "Reviews History profile error route capture."
+    },
+    {
+      "id": "reviews_history_reviews_loading",
+      "status": "captured",
+      "notes": "Reviews History reviews loading route capture."
+    },
+    {
+      "id": "reviews_history_reviews_error",
+      "status": "captured",
+      "notes": "Reviews History reviews error route capture."
+    },
+    {
+      "id": "reviews_history_empty",
+      "status": "captured",
+      "notes": "Reviews History empty route capture."
+    },
+    {
+      "id": "reviews_history_list",
+      "status": "captured",
+      "notes": "Review history populated fixture with event context and current-user reviewer data."
+    },
+    {
+      "id": "reviews_history_missing_event_context",
+      "status": "captured",
+      "notes": "Reviews History missing event context route capture."
+    },
+    {
+      "id": "reviews_history_text_scale_2",
+      "status": "captured",
+      "notes": "Reviews History text scale 2 route capture."
+    },
+    {
+      "id": "reviews_history_reduced_motion",
+      "status": "captured",
+      "notes": "Reviews History reduced motion route capture."
+    }
+  ],
+  "states": [
+    {
+      "id": "uid_missing",
+      "kind": "permission",
+      "status": "captured",
+      "source": "reviews_history_signed_out captures the Sign in to see reviews empty state through ReviewsHistoryState.",
+      "nextAction": "Confirm shell redirect policy before deciding whether signed-out route access should remain visible.",
+      "previewIds": [
+        "ReviewsHistoryScreen/Screen states"
+      ],
+      "tests": [
+        "test/reviews/reviews_widgets_test.dart"
+      ],
+      "captureIds": [
+        "reviews_history_signed_out"
+      ]
+    },
+    {
+      "id": "profile_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "reviews_history_profile_loading captures watchUserProfileProvider loading with the Review history top bar.",
+      "nextAction": "Compare profile loading shell against exported references once available.",
+      "previewIds": [
+        "ReviewsHistoryScreen/Screen states"
+      ],
+      "captureIds": [
+        "reviews_history_profile_loading"
+      ]
+    },
+    {
+      "id": "profile_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "reviews_history_profile_error captures ReviewsHistoryState profile-load error copy and retry target.",
+      "nextAction": "Define offline-specific copy separately if product wants a distinct offline state.",
+      "previewIds": [
+        "ReviewsHistoryScreen/Screen states"
+      ],
+      "tests": [
+        "test/reviews/reviews_widgets_test.dart"
+      ],
+      "captureIds": [
+        "reviews_history_profile_error"
+      ]
+    },
+    {
+      "id": "reviews_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "reviews_history_reviews_loading captures review stream loading with the Review history top bar.",
+      "nextAction": "Compare review loading shell against exported references once available.",
+      "previewIds": [
+        "ReviewsHistoryScreen/Screen states"
+      ],
+      "tests": [
+        "test/reviews/reviews_widgets_test.dart"
+      ],
+      "captureIds": [
+        "reviews_history_reviews_loading"
+      ]
+    },
+    {
+      "id": "reviews_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "reviews_history_reviews_error captures ReviewsHistoryState review-stream error copy and retry target.",
+      "nextAction": "Define offline-specific copy separately if product wants a distinct offline state.",
+      "previewIds": [
+        "ReviewsHistoryScreen/Screen states"
+      ],
+      "tests": [
+        "test/reviews/reviews_widgets_test.dart"
+      ],
+      "captureIds": [
+        "reviews_history_reviews_error"
+      ]
+    },
+    {
+      "id": "empty_reviews",
+      "kind": "empty",
+      "status": "captured",
+      "source": "reviews_history_empty captures the No reviews yet empty state.",
+      "nextAction": "Compare empty review-history layout against exported references.",
+      "previewIds": [
+        "ReviewsHistoryScreen/Screen states"
+      ],
+      "tests": [
+        "test/reviews/reviews_widgets_test.dart"
+      ],
+      "captureIds": [
+        "reviews_history_empty"
+      ]
+    },
+    {
+      "id": "reviews_history_list",
+      "kind": "populated",
+      "status": "captured",
+      "source": "reviews_history_list renders own reviews with event-backed date/time context and ReviewCard content.",
+      "captureIds": [
+        "reviews_history_list"
+      ],
+      "tests": [
+        "test/reviews/reviews_widgets_test.dart"
+      ],
+      "nextAction": "Compare row spacing and review-card hierarchy against exported references.",
+      "previewIds": [
+        "ReviewsHistoryScreen/Screen states"
+      ]
+    },
+    {
+      "id": "event_context_missing",
+      "kind": "empty",
+      "status": "captured",
+      "source": "ReviewsHistoryState reads only watchOwnEventCardsForEventsProvider.asData and maps event enrichment loading, failure, and genuinely missing records to the same Event review or Legacy club review fallback labels.",
+      "nextAction": "Define an explicit enrichment loading/failure policy or a deliberately cached fallback with retry under DP-REVIEWS-HISTORY-005, then compare genuine missing-context copy against exported references.",
+      "previewIds": [
+        "ReviewsHistoryScreen/Screen states"
+      ],
+      "tests": [
+        "test/reviews/reviews_widgets_test.dart"
+      ],
+      "captureIds": [
+        "reviews_history_missing_event_context"
+      ]
+    },
+    {
+      "id": "edit_review_sheet",
+      "kind": "mutation",
+      "status": "tested",
+      "source": "Event-backed own reviews open the shared Edit review sheet through showWriteReviewSheet; submit/delete pending freezes rating, comment, both write actions, and sheet dismissal while WriteReviewController returns the active write future to duplicate callers.",
+      "tests": [
+        "test/reviews/reviews_widgets_test.dart",
+        "test/pages/reviews/write_review_controller_test.dart"
+      ],
+      "nextAction": "Keep the frozen review snapshot intact while adding a dedicated sheet capture and later visual comparison.",
+      "previewIds": [
+        "ReviewsHistoryScreen/Screen states",
+        "WriteReviewSheet/Sheet states"
+      ]
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "reviews_history_text_scale_2 captures top bar, context labels, review body, and edit affordance at text scale 2.0.",
+      "nextAction": "Add explicit edit-sheet text-scale capture when sheet parity starts.",
+      "previewIds": [
+        "ReviewsHistoryScreen/Screen states"
+      ],
+      "captureIds": [
+        "reviews_history_text_scale_2"
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "reviews_history_reduced_motion captures the route with animations disabled for review.",
+      "nextAction": "Add reduced-motion proof for opening/editing review sheets if those remain animated.",
+      "previewIds": [
+        "ReviewsHistoryScreen/Screen states"
+      ],
+      "captureIds": [
+        "reviews_history_reduced_motion"
+      ]
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "The capture runner emits paired light/dark outputs for the populated Reviews History fixture.",
+      "nextAction": "Compare both themes after Reviews History reference export.",
+      "previewIds": [
+        "ReviewsHistoryScreen/Screen states"
+      ],
+      "captureIds": [
+        "reviews_history_list"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "ReviewsHistoryScreen owns route-edge provider watches only, builds ReviewsHistoryState, then composes provider-free loading/empty/error/list/row widgets and delegates edit-sheet launch through typed row callbacks.",
+    "targetLayout": "Reviews History should continue using ReviewsHistoryState for access, provider waves, review rows, event context labels, edit availability, retry intents, and edit callbacks before visual parity edits.",
+    "sections": [
+      {
+        "id": "section.reviews_history.adapter",
+        "name": "Reviews history route adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "ReviewsHistoryState"
+        ],
+        "flutter": {
+          "file": "lib/reviews/presentation/reviews_history_state.dart",
+          "symbol": "ReviewsHistoryState"
+        },
+        "currentOwner": "ReviewsHistoryState + ReviewsHistoryScreen route edge",
+        "targetOwner": "ReviewsHistoryState adapter",
+        "dependencies": [
+          "catch.top_bar"
+        ],
+        "states": [
+          "uid_missing",
+          "profile_loading",
+          "reviews_loading",
+          "reviews_history_list"
+        ],
+        "migration": "ReviewsHistoryState now owns access, provider waves, review/event context joining, edit availability, retry targets, and row display data; keep route widgets focused on provider watching and sheet/navigation callbacks.",
+        "previewIds": [
+          "ReviewsHistoryScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.reviews_history.list",
+        "name": "Reviews history list",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ReviewsHistoryList"
+        ],
+        "flutter": {
+          "file": "lib/reviews/presentation/reviews_history_screen.dart",
+          "symbol": "ReviewsHistoryList"
+        },
+        "currentOwner": "provider-free ReviewsHistoryList",
+        "targetOwner": "provider-free reviews history list",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "reviews_loading",
+          "reviews_error",
+          "empty_reviews",
+          "reviews_history_list"
+        ],
+        "migration": "Review list now receives immutable ReviewsHistoryRow data and typed edit callbacks.",
+        "previewIds": [
+          "ReviewsHistoryScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.reviews_history.row",
+        "name": "Review history row",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ReviewHistoryRow"
+        ],
+        "flutter": {
+          "file": "lib/reviews/presentation/reviews_history_screen.dart",
+          "symbol": "ReviewHistoryRow"
+        },
+        "currentOwner": "provider-free ReviewHistoryRow + ReviewsHistoryRow",
+        "targetOwner": "provider-free review history row",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "reviews_history_list",
+          "event_context_missing",
+          "edit_review_sheet"
+        ],
+        "migration": "Context label and edit availability now come from row display data before visual edits.",
+        "previewIds": [
+          "ReviewsHistoryScreen/Screen states",
+          "WriteReviewSheet/Sheet states"
+        ]
+      },
+      {
+        "id": "section.reviews_history.empty",
+        "name": "Reviews history empty state",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "ReviewsHistoryEmpty"
+        ],
+        "flutter": {
+          "file": "lib/reviews/presentation/reviews_history_screen.dart",
+          "symbol": "ReviewsHistoryBody"
+        },
+        "currentOwner": "ReviewsHistoryEmptyState",
+        "targetOwner": "provider-free reviews history empty state",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "uid_missing",
+          "empty_reviews"
+        ],
+        "migration": "Keep feature-specific empty copy local while sharing CatchEmptyState primitives.",
+        "previewIds": [
+          "ReviewsHistoryScreen/Screen states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DP-REVIEWS-HISTORY-001",
+      "status": "closed",
+      "nextAction": "Widgetbook now covers list, empty, loading, profile error, reviews error, missing event context, edit-review sheet, and addon-driven theme/accessibility review."
+    },
+    {
+      "id": "DP-REVIEWS-HISTORY-002",
+      "status": "closed",
+      "nextAction": "Reviews History route captures now cover signed-out, profile loading/error, reviews loading/error, empty, populated rows, missing event-context fallback, text scale, reduced motion, and light/dark. Remaining visual work moves to reference export, edit-sheet/supporting sheet captures, and pixel comparison."
+    },
+    {
+      "id": "DP-REVIEWS-HISTORY-003",
+      "status": "closed",
+      "nextAction": "ReviewsHistoryState now owns access, provider waves, review rows, event context fallback labels, edit availability, and retry targets before visual parity edits."
+    },
+    {
+      "id": "DP-REVIEWS-HISTORY-004",
+      "status": "blocked",
+      "nextAction": "Canonical Reviews History reference export is blocked until design provides a standalone reviews-history screen source; current Claude sources only provide ReviewRow and review sections inside other surfaces."
+    },
+    {
+      "id": "DP-REVIEWS-HISTORY-005",
+      "status": "open",
+      "nextAction": "Event-context enrichment loading, failure, and genuinely missing records collapse into the same fallback row label because ReviewsHistoryState reads only provider asData. Define explicit enrichment recovery or document and test a deliberate cached fallback policy."
+    },
+    {
+      "id": "DP-REVIEWS-HISTORY-006",
+      "status": "closed",
+      "nextAction": "Closed by frozen rating/comment/write/dismiss controls during submit or delete, controller-level duplicate-write deduplication, and focused widget/controller proof."
+    }
+  ]
+}

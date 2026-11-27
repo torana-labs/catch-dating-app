@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostCreateOrganizerScreen"
+      ],
+      "file": "lib/hosts/onboarding/setup_details_screen.dart",
+      "symbol": "HostSetupDetailsScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "Club creation and loading share the explicit step-flow family."
+}

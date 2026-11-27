@@ -1,0 +1,38 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostEventRehearsalScreen"
+      ],
+      "file": "lib/hosts/events/rehearsal_screen.dart",
+      "symbol": "HostRehearsalScreen",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    },
+    {
+      "routes": [
+        "hostEventRehearsalStartScreen"
+      ],
+      "file": "lib/event_rehearsal/presentation/widgets/event_rehearsal_entry_scaffold.dart",
+      "symbol": "EventRehearsalEntryScaffold",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "mixed",
+      "topEdge": "route-chrome"
+    },
+    {
+      "routes": [
+        "hostEventRehearsalStartScreen"
+      ],
+      "file": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
+      "symbol": "EventRehearsalEntryStateScaffold",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Rehearsal setup and live rehearsal are canonical pushed routes with shared title treatment."
+}

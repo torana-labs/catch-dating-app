@@ -1,0 +1,1035 @@
+{
+  "id": "screen.host.clubs",
+  "shell": {
+    "owner": "host",
+    "nestedScaffoldAllowed": false,
+    "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "shell",
+    "expression": "shell-owned",
+    "owner": "AdaptiveTabScaffold",
+    "reason": "The route body relies on shell chrome or a registered nested composition owner."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "offline",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Host Clubs",
+  "owner": "hosts",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "hostOrganizerScreen",
+      "path": "/host/organizer",
+      "role": "primary"
+    },
+    {
+      "id": "hostOrganizersScreen",
+      "path": "/host/organizers",
+      "role": "alias"
+    },
+    {
+      "id": "hostOrganizerEventDefaultsScreen",
+      "path": "/host/organizers/event-defaults",
+      "role": "host"
+    },
+    {
+      "id": "hostOrganizerLiveGuideScreen",
+      "path": "/host/organizers/live-guide",
+      "role": "host"
+    },
+    {
+      "id": "hostOrganizerTeamScreen",
+      "path": "/host/organizers/team",
+      "role": "host"
+    },
+    {
+      "id": "hostOrganizerPaymentsScreen",
+      "path": "/host/organizers/payments",
+      "role": "host"
+    },
+    {
+      "id": "hostOrganizerMembershipsScreen",
+      "path": "/host/organizers/memberships",
+      "role": "host"
+    }
+  ],
+  "source": {
+    "file": "lib/hosts/organizer/organizer_screen.dart",
+    "symbol": "OrganizerScreen"
+  },
+  "stateController": {
+    "primary": "watchHostOrganizerScope + organizerTabControllerProvider + HostOrganizerEditController + HostTeamManagementController + hostFormPaymentControllerProvider + hostEventDefaultsControllerProvider + HostEventCommands + HostProfileController + hostInsightsControllerProvider",
+    "files": [
+      {
+        "file": "lib/hosts/organizer/organizer_screen.dart",
+        "symbol": "OrganizerScreen"
+      },
+      {
+        "file": "lib/hosts/organizer/organizer_controller.dart",
+        "symbol": "watchHostOrganizerScope"
+      },
+      {
+        "file": "lib/hosts/organizer/organizer_controller.dart",
+        "symbol": "organizerTabController"
+      },
+      {
+        "file": "lib/hosts/organizer/page_edit_screen.dart",
+        "symbol": "OrganizerPageEditScreen"
+      },
+      {
+        "file": "lib/hosts/organizer/settings_screen.dart",
+        "symbol": "OrganizerSettingsScreen"
+      },
+      {
+        "file": "lib/hosts/organizer/team_screen.dart",
+        "symbol": "OrganizerTeamScreen"
+      },
+      {
+        "file": "lib/hosts/organizer/payments_screen.dart",
+        "symbol": "OrganizerPaymentsScreen"
+      },
+      {
+        "file": "lib/hosts/organizer/memberships_screen.dart",
+        "symbol": "OrganizerMembershipsScreen"
+      },
+      {
+        "file": "lib/hosts/organizer/live_guide_screen.dart",
+        "symbol": "OrganizerLiveGuideScreen"
+      },
+      {
+        "file": "lib/hosts/organizer/event_policy_screen.dart",
+        "symbol": "OrganizerEventPolicyScreen"
+      },
+      {
+        "file": "lib/hosts/organizer/audience_screen.dart",
+        "symbol": "OrganizerAudienceScreen"
+      },
+      {
+        "file": "lib/hosts/events/event_defaults_screen.dart",
+        "symbol": "HostEventDefaultsScreen"
+      },
+      {
+        "file": "lib/hosts/events/event_defaults_details_screen.dart",
+        "symbol": "HostEventDefaultsDetailsScreen"
+      },
+      {
+        "file": "lib/hosts/events/event_defaults_controller.dart",
+        "symbol": "hostEventDefaultsController"
+      },
+      {
+        "file": "lib/hosts/insights/host_insights_screen.dart",
+        "symbol": "HostInsightsScreen"
+      },
+      {
+        "file": "lib/hosts/presentation/organizer_management/host_organizer_defaults_saver.dart",
+        "symbol": "HostOrganizerDefaultsSaver"
+      },
+      {
+        "file": "lib/routing/host_router.dart",
+        "symbol": "hostOrganizerScreenForUri"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/hosts/presentation/organizer_management/host_organizer_edit_controller.dart",
+        "symbol": "HostOrganizerEditController"
+      },
+      {
+        "file": "lib/hosts/presentation/organizer_management/host_team_management_controller.dart",
+        "symbol": "HostTeamManagementController"
+      },
+      {
+        "file": "lib/hosts/presentation/forms/host_form_payment_controller.dart",
+        "symbol": "HostFormPaymentController"
+      },
+      {
+        "file": "lib/hosts/events/event_commands_controller.dart",
+        "symbol": "HostEventCommands"
+      },
+      {
+        "file": "lib/hosts/presentation/host_profile_controller.dart",
+        "symbol": "HostProfileController"
+      }
+    ],
+    "notes": "The /host/organizer route resolves through hostOrganizerScreenForUri: the Organiser tab (OrganizerScreen) by default, the page editor for tab=page or tab=edit and for editField links, the event policy for the activity, admission, ages and cancellation fields, Settings, Insights, or the public page for tab=preview. Each screen reads the signed-in host and the selected organizer through watchHostOrganizerScope. Page and media edits run through HostOrganizerEditController, the host team through HostTeamManagementController, the Razorpay connection through HostFormPaymentController, event defaults through HostEventCommands with a journal for unconfirmed saves, and the host profile through HostProfileController."
+  },
+  "designRefs": [
+    {
+      "id": "repo.host-clubs-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/hosts/organizer/organizer_screen_test.dart",
+      "notes": "Organiser tab tests cover the page, the last thirty days, the organizer switcher and the rows into the page editor, Settings, team, payments, memberships, audience, live guide and tracking; page_edit, settings_screen, team_settings_memberships, payments_body and event_policy tests cover each screen."
+    },
+    {
+      "id": "repo.host-team-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/hosts/organizer/team_screen_test.dart",
+      "notes": "Team screen tests cover adding a host by phone, the confirmed remove and make-owner flows, cancel, and each change's notice."
+    },
+    {
+      "id": "claude.host-clubs",
+      "kind": "claude",
+      "status": "available",
+      "notes": "Host Organizer reference is repo-pinned and registered. The standalone-host workspace adds private-to-public publication coaching and cross-event CRM readiness. Its deterministic 2026-08-10 full-shell comparison is bounded at mismatch 20.09%, meanDelta 25.94, maxDelta 240, masked 260416 under HOST-STANDALONE-ORGANIZER-WORKSPACE-001 while the canonical threshold remains unchanged; analytics, payout, and editor variants remain blocked until exported references exist.",
+      "path": "design/source_packs/host-v2/templates/hosts-organizer/Organizer.dc.html"
+    },
+    {
+      "id": "claude.host-insights",
+      "kind": "claude",
+      "status": "blocked",
+      "notes": "The Host Insights source is pinned and a routed 390x812 production capture exists. Repo-owned PNG export and focused comparison remain open because the headless-Chrome exporter was denied by the 2026-07-10 Codex execution-credit limit; HOST-V2-INSIGHTS-REFERENCE-001 stays active.",
+      "path": "design/source_packs/host-v2/templates/hosts-insights/Insights.dc.html"
+    }
+  ],
+  "captures": [
+    {
+      "id": "host_clubs_management",
+      "status": "captured",
+      "notes": "The Organiser tab in the Host shell for the capture organizer."
+    },
+    {
+      "id": "host_clubs_loading",
+      "status": "captured",
+      "notes": "The Organiser tab while the organizers load."
+    },
+    {
+      "id": "host_clubs_error",
+      "status": "captured",
+      "notes": "The Organiser tab when the organizers cannot be read, with Try again."
+    },
+    {
+      "id": "host_clubs_offline",
+      "status": "captured",
+      "notes": "The Organiser tab offline, with Try again."
+    },
+    {
+      "id": "host_clubs_empty",
+      "status": "captured",
+      "notes": "The Organiser tab for a host with no organizer yet."
+    },
+    {
+      "id": "host_clubs_cohost_edit",
+      "status": "captured",
+      "notes": "The page editor for a manager who is not the owner: details read-only, logo and photos still editable."
+    },
+    {
+      "id": "host_clubs_insights_report",
+      "status": "captured",
+      "notes": "Insights for the organizer."
+    },
+    {
+      "id": "host_clubs_preview_tab",
+      "status": "captured",
+      "notes": "The public page as guests see it, opened by tab=preview."
+    },
+    {
+      "id": "host_clubs_text_scale_2",
+      "status": "captured",
+      "notes": "The Organiser tab at text scale 2."
+    },
+    {
+      "id": "host_clubs_reduced_motion",
+      "status": "captured",
+      "notes": "The Organiser tab with reduced motion."
+    },
+    {
+      "id": "host_clubs_light_dark",
+      "status": "captured",
+      "notes": "The Organiser tab in the light and dark themes."
+    },
+    {
+      "id": "host_clubs_signed_out",
+      "status": "captured",
+      "notes": "The Organiser tab while nobody is signed in."
+    },
+    {
+      "id": "host_clubs_insights_loading",
+      "status": "captured",
+      "notes": "Insights while the report loads."
+    },
+    {
+      "id": "host_clubs_insights_error",
+      "status": "captured",
+      "notes": "Insights when the report cannot be read."
+    },
+    {
+      "id": "host_clubs_insights_offline",
+      "status": "captured",
+      "notes": "Insights offline."
+    },
+    {
+      "id": "host_clubs_payout_loading",
+      "status": "captured",
+      "notes": "Payments while the Razorpay connection loads."
+    },
+    {
+      "id": "host_clubs_payout_ready",
+      "status": "captured",
+      "notes": "Payments with Razorpay connected and ready."
+    },
+    {
+      "id": "host_clubs_payout_restricted",
+      "status": "captured",
+      "notes": "Payments with a Razorpay connection that needs attention."
+    },
+    {
+      "id": "host_clubs_payout_error",
+      "status": "captured",
+      "notes": "Payments when the connection cannot be read."
+    },
+    {
+      "id": "host_clubs_payout_offline",
+      "status": "captured",
+      "notes": "Payments offline."
+    },
+    {
+      "id": "host_clubs_inline_edit_pending",
+      "status": "captured",
+      "notes": "The page editor while a save is on its way."
+    },
+    {
+      "id": "host_clubs_inline_edit_error",
+      "status": "captured",
+      "notes": "The page editor after a save failed."
+    },
+    {
+      "id": "host_clubs_inline_edit_offline",
+      "status": "captured",
+      "notes": "The page editor after a save failed offline."
+    },
+    {
+      "id": "host_clubs_payout_setup_pending",
+      "status": "captured",
+      "notes": "Payments while Razorpay is connecting."
+    },
+    {
+      "id": "host_clubs_payout_setup_error",
+      "status": "captured",
+      "notes": "Payments after connecting failed."
+    },
+    {
+      "id": "host_clubs_payout_setup_offline",
+      "status": "captured",
+      "notes": "Payments after connecting failed offline."
+    },
+    {
+      "id": "host_clubs_payout_refresh_pending",
+      "status": "captured",
+      "notes": "Payments while the connection refreshes."
+    },
+    {
+      "id": "host_clubs_payout_refresh_error",
+      "status": "captured",
+      "notes": "Payments after a refresh failed."
+    },
+    {
+      "id": "host_clubs_payout_refresh_offline",
+      "status": "captured",
+      "notes": "Payments after a refresh failed offline."
+    },
+    {
+      "id": "host_clubs_team_pending",
+      "status": "captured",
+      "notes": "The host team while a change is on its way."
+    },
+    {
+      "id": "host_clubs_team_error",
+      "status": "captured",
+      "notes": "The host team after a change failed."
+    },
+    {
+      "id": "host_clubs_team_offline",
+      "status": "captured",
+      "notes": "The host team after a change failed offline."
+    },
+    {
+      "id": "host_team_active_profile",
+      "status": "captured",
+      "notes": "Settings with the host professional profile."
+    },
+    {
+      "id": "host_team_fallback_profile",
+      "status": "captured",
+      "notes": "Settings for a host with no professional profile yet."
+    },
+    {
+      "id": "host_team_clubs_loading",
+      "status": "captured",
+      "notes": "Settings while the organizers load."
+    },
+    {
+      "id": "host_team_clubs_error",
+      "status": "captured",
+      "notes": "Settings when the organizers cannot be read."
+    },
+    {
+      "id": "host_team_clubs_offline",
+      "status": "captured",
+      "notes": "Settings offline."
+    },
+    {
+      "id": "host_team_inline_profile_edit",
+      "status": "captured",
+      "notes": "Settings, where the profile row opens the name, role and bio sheet."
+    },
+    {
+      "id": "host_team_save_profile_pending",
+      "status": "captured",
+      "notes": "Settings while a profile save is on its way."
+    },
+    {
+      "id": "host_team_save_profile_error",
+      "status": "captured",
+      "notes": "Settings after a profile save failed."
+    },
+    {
+      "id": "host_team_save_profile_offline",
+      "status": "captured",
+      "notes": "Settings after a profile save failed offline."
+    },
+    {
+      "id": "host_team_sign_out_error",
+      "status": "captured",
+      "notes": "Settings after signing out failed."
+    },
+    {
+      "id": "host_team_sign_out_offline",
+      "status": "captured",
+      "notes": "Settings after signing out failed offline."
+    }
+  ],
+  "states": [
+    {
+      "id": "host_clubs_management",
+      "kind": "populated",
+      "status": "captured",
+      "source": "The Organiser tab in the Host shell for the capture organizer.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_management"
+      ]
+    },
+    {
+      "id": "host_clubs_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "The Organiser tab while the organizers load.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_loading"
+      ]
+    },
+    {
+      "id": "host_clubs_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "The Organiser tab when the organizers cannot be read, with Try again.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_error"
+      ]
+    },
+    {
+      "id": "host_clubs_offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "The Organiser tab offline, with Try again.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_offline"
+      ]
+    },
+    {
+      "id": "host_clubs_empty",
+      "kind": "empty",
+      "status": "captured",
+      "source": "The Organiser tab for a host with no organizer yet.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_empty"
+      ]
+    },
+    {
+      "id": "host_clubs_cohost_edit",
+      "kind": "populated",
+      "status": "captured",
+      "source": "The page editor for a manager who is not the owner: details read-only, logo and photos still editable.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_cohost_edit"
+      ]
+    },
+    {
+      "id": "host_clubs_insights_report",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Insights for the organizer.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_insights_report"
+      ]
+    },
+    {
+      "id": "host_clubs_preview_tab",
+      "kind": "populated",
+      "status": "captured",
+      "source": "The public page as guests see it, opened by tab=preview.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_preview_tab"
+      ]
+    },
+    {
+      "id": "host_clubs_text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "The Organiser tab at text scale 2.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_text_scale_2"
+      ]
+    },
+    {
+      "id": "host_clubs_reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "The Organiser tab with reduced motion.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_reduced_motion"
+      ]
+    },
+    {
+      "id": "host_clubs_light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "The Organiser tab in the light and dark themes.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_light_dark"
+      ]
+    },
+    {
+      "id": "host_clubs_signed_out",
+      "kind": "permission",
+      "status": "captured",
+      "source": "The Organiser tab while nobody is signed in.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_signed_out"
+      ]
+    },
+    {
+      "id": "host_clubs_insights_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "Insights while the report loads.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_insights_loading"
+      ]
+    },
+    {
+      "id": "host_clubs_insights_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "Insights when the report cannot be read.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_insights_error"
+      ]
+    },
+    {
+      "id": "host_clubs_insights_offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Insights offline.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_insights_offline"
+      ]
+    },
+    {
+      "id": "host_clubs_payout_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "Payments while the Razorpay connection loads.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_payout_loading"
+      ]
+    },
+    {
+      "id": "host_clubs_payout_ready",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Payments with Razorpay connected and ready.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_payout_ready"
+      ]
+    },
+    {
+      "id": "host_clubs_payout_restricted",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Payments with a Razorpay connection that needs attention.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_payout_restricted"
+      ]
+    },
+    {
+      "id": "host_clubs_payout_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "Payments when the connection cannot be read.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_payout_error"
+      ]
+    },
+    {
+      "id": "host_clubs_payout_offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Payments offline.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_payout_offline"
+      ]
+    },
+    {
+      "id": "host_clubs_inline_edit_pending",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "The page editor while a save is on its way.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_inline_edit_pending"
+      ]
+    },
+    {
+      "id": "host_clubs_inline_edit_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "The page editor after a save failed.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_inline_edit_error"
+      ]
+    },
+    {
+      "id": "host_clubs_inline_edit_offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "The page editor after a save failed offline.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_inline_edit_offline"
+      ]
+    },
+    {
+      "id": "host_clubs_payout_setup_pending",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Payments while Razorpay is connecting.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_payout_setup_pending"
+      ]
+    },
+    {
+      "id": "host_clubs_payout_setup_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "Payments after connecting failed.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_payout_setup_error"
+      ]
+    },
+    {
+      "id": "host_clubs_payout_setup_offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Payments after connecting failed offline.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_payout_setup_offline"
+      ]
+    },
+    {
+      "id": "host_clubs_payout_refresh_pending",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Payments while the connection refreshes.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_payout_refresh_pending"
+      ]
+    },
+    {
+      "id": "host_clubs_payout_refresh_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "Payments after a refresh failed.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_payout_refresh_error"
+      ]
+    },
+    {
+      "id": "host_clubs_payout_refresh_offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Payments after a refresh failed offline.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_payout_refresh_offline"
+      ]
+    },
+    {
+      "id": "host_clubs_team_pending",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "The host team while a change is on its way.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_team_pending"
+      ]
+    },
+    {
+      "id": "host_clubs_team_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "The host team after a change failed.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_team_error"
+      ]
+    },
+    {
+      "id": "host_clubs_team_offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "The host team after a change failed offline.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_clubs_team_offline"
+      ]
+    },
+    {
+      "id": "host_team_active_profile",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Settings with the host professional profile.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_team_active_profile"
+      ]
+    },
+    {
+      "id": "host_team_fallback_profile",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Settings for a host with no professional profile yet.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_team_fallback_profile"
+      ]
+    },
+    {
+      "id": "host_team_clubs_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "Settings while the organizers load.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_team_clubs_loading"
+      ]
+    },
+    {
+      "id": "host_team_clubs_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "Settings when the organizers cannot be read.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_team_clubs_error"
+      ]
+    },
+    {
+      "id": "host_team_clubs_offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Settings offline.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_team_clubs_offline"
+      ]
+    },
+    {
+      "id": "host_team_inline_profile_edit",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Settings, where the profile row opens the name, role and bio sheet.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_team_inline_profile_edit"
+      ]
+    },
+    {
+      "id": "host_team_save_profile_pending",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "Settings while a profile save is on its way.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_team_save_profile_pending"
+      ]
+    },
+    {
+      "id": "host_team_save_profile_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "Settings after a profile save failed.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_team_save_profile_error"
+      ]
+    },
+    {
+      "id": "host_team_save_profile_offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Settings after a profile save failed offline.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_team_save_profile_offline"
+      ]
+    },
+    {
+      "id": "host_team_sign_out_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "Settings after signing out failed.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_team_sign_out_error"
+      ]
+    },
+    {
+      "id": "host_team_sign_out_offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Settings after signing out failed offline.",
+      "nextAction": "Keep the capture in step with the redesigned screen.",
+      "captureIds": [
+        "host_team_sign_out_offline"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "The Organiser tab shows the page, the last thirty days, running the organizer (audience, live guide, tracking, team, payments, memberships, event defaults, WhatsApp) and the host's own settings. Each row opens a redesigned screen: the page editor, Settings, the team, payments, memberships, the live guide, event defaults with their editor and the event policy, the audience and Insights.",
+    "targetLayout": "Same as the current layout.",
+    "sections": [
+      {
+        "id": "section.host.clubs_screen_adapter",
+        "name": "Organiser tab",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [],
+        "flutter": {
+          "file": "lib/hosts/organizer/organizer_screen.dart",
+          "symbol": "OrganizerScreen"
+        },
+        "currentOwner": "OrganizerScreen",
+        "targetOwner": "OrganizerScreen",
+        "dependencies": [
+          "catch.screen"
+        ],
+        "states": [
+          "signed_out",
+          "loading",
+          "error",
+          "empty",
+          "populated"
+        ],
+        "migration": "Redrawn on the system in #2587; the old organiser workspace library is deleted."
+      },
+      {
+        "id": "section.host.clubs_page_edit",
+        "name": "Your page",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [],
+        "flutter": {
+          "file": "lib/hosts/organizer/page_edit_screen.dart",
+          "symbol": "OrganizerPageEditScreen"
+        },
+        "currentOwner": "OrganizerPageEditScreen",
+        "targetOwner": "OrganizerPageEditScreen",
+        "dependencies": [
+          "catch.screen"
+        ],
+        "states": [
+          "owner",
+          "manager",
+          "saving",
+          "failed"
+        ],
+        "migration": "Carries every field, photo and listing control of the old editor."
+      },
+      {
+        "id": "section.host.clubs_settings",
+        "name": "Settings",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [],
+        "flutter": {
+          "file": "lib/hosts/organizer/settings_screen.dart",
+          "symbol": "OrganizerSettingsScreen"
+        },
+        "currentOwner": "OrganizerSettingsScreen",
+        "targetOwner": "OrganizerSettingsScreen",
+        "dependencies": [
+          "catch.screen"
+        ],
+        "states": [
+          "profile",
+          "no_profile",
+          "saving",
+          "failed"
+        ],
+        "migration": "Carries the host profile, account links, account deletion and sign out."
+      },
+      {
+        "id": "section.host.clubs_team",
+        "name": "Host team",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [],
+        "flutter": {
+          "file": "lib/hosts/organizer/team_screen.dart",
+          "symbol": "OrganizerTeamScreen"
+        },
+        "currentOwner": "OrganizerTeamScreen",
+        "targetOwner": "OrganizerTeamScreen",
+        "dependencies": [
+          "catch.screen"
+        ],
+        "states": [
+          "owner",
+          "manager",
+          "saving",
+          "failed"
+        ],
+        "migration": "Add, remove and transfer ownership."
+      },
+      {
+        "id": "section.host.clubs_payments",
+        "name": "Payments",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [],
+        "flutter": {
+          "file": "lib/hosts/organizer/payments_screen.dart",
+          "symbol": "OrganizerPaymentsScreen"
+        },
+        "currentOwner": "OrganizerPaymentsScreen",
+        "targetOwner": "OrganizerPaymentsScreen",
+        "dependencies": [
+          "catch.screen"
+        ],
+        "states": [
+          "loading",
+          "connected",
+          "needs_attention",
+          "not_connected",
+          "failed"
+        ],
+        "migration": "Razorpay connection and Catch bills."
+      },
+      {
+        "id": "section.host.clubs_event_defaults",
+        "name": "Event defaults",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [],
+        "flutter": {
+          "file": "lib/hosts/events/event_defaults_screen.dart",
+          "symbol": "HostEventDefaultsScreen"
+        },
+        "currentOwner": "HostEventDefaultsScreen",
+        "targetOwner": "HostEventDefaultsScreen",
+        "dependencies": [
+          "catch.screen"
+        ],
+        "states": [
+          "loading",
+          "ready",
+          "missing",
+          "error",
+          "unresolved_save"
+        ],
+        "migration": "Every new event starts with these; the text and number defaults open HostEventDefaultsDetailsScreen and the policy opens OrganizerEventPolicyScreen."
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-HOST-CLUBS-001",
+      "status": "closed",
+      "nextAction": "Closed: the old organiser workspace was redrawn on the system (#2587) and deleted."
+    },
+    {
+      "id": "DS-HOST-CLUBS-002",
+      "status": "closed",
+      "nextAction": "Closed: the old organiser workspace was redrawn on the system (#2587) and deleted."
+    },
+    {
+      "id": "DS-HOST-CLUBS-003",
+      "status": "closed",
+      "nextAction": "Closed: the old organiser workspace was redrawn on the system (#2587) and deleted."
+    },
+    {
+      "id": "DS-HOST-CLUBS-004",
+      "status": "open",
+      "nextAction": "HOST-STANDALONE-ORGANIZER-WORKSPACE-001 bounds the 2026-08-10 standalone workspace at 20.09% mismatch / 25.94 meanDelta while preserving the canonical threshold. Replace or reconcile the older organizer reference with a reviewed standalone-host composition before removing the ceiling; extra cohost, empty, loading/error/offline, analytics, payout, inline editor, team mutation, text-scale, reduced-motion, and light/dark comparisons still depend on future design exports."
+    },
+    {
+      "id": "DS-HOST-CLUBS-005",
+      "status": "open",
+      "nextAction": "Close feature.host_organizers evidence exceptions with focused tests for the registered route, settings, analytics, payout, profile, team, accessibility, and theme states; deterministic captures for the 14 preview-only states; and a dedicated Widgetbook scenario for host_team_offline."
+    }
+  ],
+  "captureIds": [
+    "host_team_text_scale_2",
+    "host_team_reduced_motion",
+    "host_team_active_profile",
+    "host_team_fallback_profile",
+    "host_team_clubs_loading",
+    "host_team_clubs_error",
+    "host_team_clubs_offline",
+    "host_team_inline_profile_edit",
+    "host_team_save_profile_pending",
+    "host_team_save_profile_error",
+    "host_team_save_profile_offline",
+    "host_team_sign_out_error",
+    "host_team_sign_out_offline"
+  ]
+}

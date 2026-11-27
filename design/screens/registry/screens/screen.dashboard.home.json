@@ -1,0 +1,693 @@
+{
+  "id": "screen.dashboard.home",
+  "shell": {
+    "owner": "consumer",
+    "nestedScaffoldAllowed": false,
+    "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "shell",
+    "expression": "shell-owned",
+    "owner": "AdaptiveTabScaffold",
+    "reason": "The route body relies on shell chrome or a registered nested composition owner."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "mutation",
+      "offline",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Dashboard Home",
+  "owner": "dashboard",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "dashboardScreen",
+      "path": "/",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/dashboard/presentation/dashboard_screen.dart",
+    "symbol": "DashboardScreen"
+  },
+  "stateController": {
+    "primary": "dashboardHomeScreenStateProvider",
+    "files": [
+      {
+        "file": "lib/dashboard/presentation/dashboard_full_view_model.dart",
+        "symbol": "dashboardHomeScreenState"
+      },
+      {
+        "file": "lib/dashboard/presentation/dashboard_full_view_model.dart",
+        "symbol": "dashboardFullViewModel"
+      },
+      {
+        "file": "lib/dashboard/presentation/dashboard_screen.dart",
+        "symbol": "DashboardScreen"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/dashboard/presentation/dashboard_event_focus_controller.dart",
+        "symbol": "DashboardEventFocusController"
+      },
+      {
+        "file": "lib/contexts/bookings/actions/event_booking_controller.dart",
+        "symbol": "EventBookingController"
+      }
+    ],
+    "notes": "dashboardHomeScreenStateProvider owns user, membership, booked-event, retry-target, header-copy, followed-club id, and empty/full branch selection. DashboardFullViewModel owns event focus, attended-events, weekly activity, and recommendation derivation; remaining section work is to move action callbacks and display-only club/notification data into provider-free section adapters before visual refactors."
+  },
+  "designRefs": [
+    {
+      "id": "claude.catch-dashboard",
+      "kind": "claude",
+      "status": "available",
+      "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-dashboard/Dashboard.dc.html",
+      "notes": "Canonical Claude Design Dashboard template used to export full and empty Dashboard Home reference PNGs."
+    },
+    {
+      "id": "generated.dashboard-home-full",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/screen.dashboard.home/full_dashboard.png",
+      "notes": "390x812 Dashboard full-state PNG reference exported from the Claude template."
+    },
+    {
+      "id": "generated.dashboard-home-empty",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/screen.dashboard.home/empty_start.png",
+      "notes": "390x812 Dashboard empty-start PNG reference exported from the Claude template."
+    },
+    {
+      "id": "generated.dashboard-home-reference-manifest",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/manifest.json",
+      "notes": "Reference-screen manifest wiring Dashboard reference PNGs to dashboard_home and dashboard_home_empty_start capture ids for advisory pixel comparison."
+    },
+    {
+      "id": "screen.dashboard.home",
+      "kind": "repo",
+      "status": "available",
+      "path": "design/screens/catch.screens.json",
+      "notes": "Screen composition registry entry with route, state, and section migration map."
+    },
+    {
+      "id": "repo.dashboard-captures",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/ui_captures/catalog/screen_capture_catalog.dart",
+      "notes": "Dashboard Home captures cover full, empty, loading, errors, offline, check-in, after-event, recommendation, text-scale, and reduced-motion states."
+    }
+  ],
+  "captures": [
+    {
+      "id": "dashboard_home",
+      "status": "captured",
+      "notes": "Signed-in dashboard capture with upcoming event, unread notification, joined club, activity card, and recommendation rail."
+    },
+    {
+      "id": "dashboard_home_loading",
+      "status": "captured",
+      "notes": "Dashboard booked-events loading route capture."
+    },
+    {
+      "id": "dashboard_home_profile_error",
+      "status": "captured",
+      "notes": "Dashboard profile-load error route capture."
+    },
+    {
+      "id": "dashboard_home_offline",
+      "status": "captured",
+      "notes": "Dashboard typed offline profile-load error route capture."
+    },
+    {
+      "id": "dashboard_home_memberships_error",
+      "status": "captured",
+      "notes": "Dashboard membership-load error route capture."
+    },
+    {
+      "id": "dashboard_home_booked_events_error",
+      "status": "captured",
+      "notes": "Dashboard booked-events error route capture."
+    },
+    {
+      "id": "dashboard_home_empty_start",
+      "status": "captured",
+      "notes": "Dashboard empty-start route capture with no memberships or booked events."
+    },
+    {
+      "id": "dashboard_home_recommendations_loading",
+      "status": "captured",
+      "notes": "Dashboard full-shell route capture with recommendations loading inline."
+    },
+    {
+      "id": "dashboard_home_recommendations_error",
+      "status": "captured",
+      "notes": "Dashboard full-shell route capture with recommendations error inline."
+    },
+    {
+      "id": "dashboard_home_text_scale_2",
+      "status": "captured",
+      "notes": "Dashboard route capture at text scale 2.0."
+    },
+    {
+      "id": "dashboard_home_reduced_motion",
+      "status": "captured",
+      "notes": "Dashboard route capture with animations disabled."
+    },
+    {
+      "id": "dashboard_home_self_check_in",
+      "status": "captured",
+      "notes": "Dashboard route capture with self check-in focus card open."
+    },
+    {
+      "id": "dashboard_home_after_event_focus",
+      "status": "captured",
+      "notes": "Dashboard route capture with after-event catching and review focus card."
+    },
+    {
+      "id": "dashboard_home_self_check_in_pending",
+      "status": "captured",
+      "notes": "Dashboard route capture with self check-in mutation pending."
+    },
+    {
+      "id": "dashboard_home_self_check_in_error",
+      "status": "captured",
+      "notes": "Dashboard route capture with self check-in mutation failure banner."
+    }
+  ],
+  "states": [
+    {
+      "id": "loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "dashboardHomeScreenStateProvider normalizes watchUserProfileProvider, watchActiveOrganizerMembershipsForUserProvider, and watchSignedUpEventCardsProvider loading waves into DashboardHomeScreenStatus.loading, rendered by DashboardScreen as a header, focus-card, stride-card, quick-action, and recommendation skeleton shell.",
+      "tests": [
+        "test/dashboard/dashboard_full_view_model_test.dart",
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "No separate profile or membership loading captures are needed unless future adapter work makes those branches visually distinct again.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ],
+      "captureIds": [
+        "dashboard_home_loading"
+      ]
+    },
+    {
+      "id": "profile_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "watchUserProfileProvider AsyncError renders _DashboardErrorScreen with Dashboard unavailable copy and invalidates the profile provider on retry.",
+      "nextAction": "Add a focused widget test for the profile-load error branch and reconcile offline-specific copy once network behavior is defined.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ],
+      "captureIds": [
+        "dashboard_home_profile_error"
+      ]
+    },
+    {
+      "id": "memberships_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "watchActiveOrganizerMembershipsForUserProvider errors render _DashboardErrorScreen with Unable to load your clubs copy and retry invalidation.",
+      "nextAction": "Add a focused widget test for the membership-load error branch and reconcile offline-specific copy once network behavior is defined.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ],
+      "captureIds": [
+        "dashboard_home_memberships_error"
+      ]
+    },
+    {
+      "id": "booked_events_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "watchSignedUpEventCardsProvider errors render _DashboardErrorScreen with Unable to load your booked events copy and retry invalidation.",
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Reconcile offline-specific copy once network/offline behavior is defined.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ],
+      "captureIds": [
+        "dashboard_home_booked_events_error"
+      ]
+    },
+    {
+      "id": "empty_start",
+      "kind": "empty",
+      "status": "captured",
+      "source": "Signed-in user with no booked events and no arrival action renders the full-bleed DashboardEmptySliverBody hero, the first-event CTA, and the shared How Catch works journey steps.",
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Empty hero-shell pass improved the advisory comparison from 58.50% mismatch / 76.91 meanDelta to 54.05% mismatch / 59.13 meanDelta. Resolve remaining deterministic text rendering, bottom dock/app-shell, and journey-step copy-rhythm divergence before declaring visual parity.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ],
+      "captureIds": [
+        "dashboard_home_empty_start"
+      ]
+    },
+    {
+      "id": "full_dashboard",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Signed-in user with booked events renders DashboardFullSliverBody with event focus, activity, quick actions, joined clubs, and recommendations.",
+      "captureIds": [
+        "dashboard_home"
+      ],
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Run advisory reference comparison against generated.dashboard-home-full after rendering dashboard_home with the design-phone capture device, then record section-level divergence before visual refactors.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ]
+    },
+    {
+      "id": "event_focus_upcoming",
+      "kind": "populated",
+      "status": "captured",
+      "source": "DashboardFullViewModel surfaces upcoming booked events into EventFocusList cards with directions, calendar, and event-detail actions.",
+      "captureIds": [
+        "dashboard_home"
+      ],
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Compare event focus cards against exported Dashboard references before layout parity work.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ]
+    },
+    {
+      "id": "self_check_in_mutation",
+      "kind": "mutation",
+      "status": "captured",
+      "source": "DashboardFullSliverBody maps EventBookingController.selfCheckInMutation into EventFocusCheckInState for EventFocusList pending/error UI; dashboardNowProvider lets captures pin check-in timing deterministically, and failures render through the shared Catch inline error banner with AppErrorContext.dashboard.",
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Compare self-check-in open/pending/error captures against exported Dashboard references before visual polish.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ],
+      "captureIds": [
+        "dashboard_home_self_check_in",
+        "dashboard_home_self_check_in_pending",
+        "dashboard_home_self_check_in_error"
+      ]
+    },
+    {
+      "id": "after_event_swipe_review",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Attended events with an open swipe window and missing review render Start catching and Write review actions in EventFocusList.",
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Compare the after-event focus card against exported Dashboard references and decide whether it shares section contracts with future Catches screens.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ],
+      "captureIds": [
+        "dashboard_home_after_event_focus"
+      ]
+    },
+    {
+      "id": "notifications_unread",
+      "kind": "populated",
+      "status": "captured",
+      "source": "watchActivityNotificationsProvider unread notifications render the dashboard notification action badge and route to notifications.",
+      "captureIds": [
+        "dashboard_home"
+      ],
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Add Widgetbook state for zero, one, many, and capped 99+ notification badge counts.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ]
+    },
+    {
+      "id": "joined_clubs_rail",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Active club memberships feed OrganizerAvatarRail through DashboardFullSliverBody, which resolves club display data and renders joined clubs when available.",
+      "captureIds": [
+        "dashboard_home"
+      ],
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Move club display data resolution behind a batched dashboard seam before adding more joined-club states.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ]
+    },
+    {
+      "id": "weekly_activity_permission",
+      "kind": "permission",
+      "status": "captured",
+      "source": "WeeklyActivitySnapshot.permissionRequired renders DashboardStrideSection and StrideCard with the Connect Apple Health CTA; the composing Dashboard body supplies typed retry/connect/install callbacks plus display-only busy state.",
+      "captureIds": [
+        "dashboard_home"
+      ],
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Add Widgetbook states for connected, unsupported, permission-required, connecting, install Health Connect, loading, and error variants.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ]
+    },
+    {
+      "id": "recommendations_ready",
+      "kind": "populated",
+      "status": "captured",
+      "source": "dashboardRecommendedEventsProvider candidates are ranked into DashboardEventRecommendation rows and rendered by ExploreRecommendationsSection.",
+      "captureIds": [
+        "dashboard_home"
+      ],
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Add section previews for recommendation count, long club/location copy, price/free states, and empty hidden state.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ]
+    },
+    {
+      "id": "recommendations_loading",
+      "kind": "loading",
+      "status": "captured",
+      "source": "DashboardFullSliverBody renders a section state card while recommendations are loading.",
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Keep recommendation loading fixture shared with Widgetbook while adapter extraction proceeds.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ],
+      "captureIds": [
+        "dashboard_home_recommendations_loading"
+      ]
+    },
+    {
+      "id": "recommendations_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "Recommendation load failures render CatchLocalizedErrorState (inline/compact mode) with AppErrorContext.dashboard and retry invalidation.",
+      "tests": [
+        "test/dashboard/dashboard_screen_test.dart"
+      ],
+      "nextAction": "Decide whether recommendation-only failures stay inline once design references are exported.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ],
+      "captureIds": [
+        "dashboard_home_recommendations_error"
+      ]
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "Typed AppException failures in Dashboard route load branches now render through CatchLocalizedErrorScaffold with AppErrorContext.dashboard, so NetworkException produces shared Connection issue copy and retry behavior.",
+      "nextAction": "Add remaining offline variants for booked events, attended events, activity, and recommendations if product wants branch-specific copy beyond the shared Catch error descriptor.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ],
+      "captureIds": [
+        "dashboard_home_offline"
+      ]
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "dashboard_home_text_scale_2 captures the Dashboard route at text scale 2.0 across header, event focus, activity, quick actions, clubs, and recommendations.",
+      "nextAction": "Keep text-scale capture in the Dashboard review batch; the baseline Claude references are 1.0 text scale until large-text design references are exported.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ],
+      "captureIds": [
+        "dashboard_home_text_scale_2"
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "dashboard_home_reduced_motion captures the Dashboard route with animation-sensitive sections under reduced-motion review.",
+      "nextAction": "Keep reduced-motion capture in the Dashboard visual-diff batch after canonical references exist.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ],
+      "captureIds": [
+        "dashboard_home_reduced_motion"
+      ]
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "Dashboard captures provide the current light/dark review baseline for the full Dashboard Home composition.",
+      "nextAction": "Keep paired light/dark route captures for theme review; the first exported Claude references are light-mode full and empty states.",
+      "previewIds": [
+        "DashboardScreen/Screen states"
+      ],
+      "captureIds": [
+        "dashboard_home"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "DashboardScreen watches dashboardHomeScreenStateProvider, switches over loading/error/empty/full states, and composes DashboardSliverHeader, DashboardEmptySliverBody, DashboardFullSliverBody, and notification action slots. DashboardHomeScreenState owns route provider waves, retry targets, header copy, club-post notification ids, and empty/full selection.",
+    "targetLayout": "DashboardScreen should remain a thin route composer. Remaining migration work is below the full body: event focus and club-post updates should receive provider-free display data and typed callbacks from section adapters.",
+    "sections": [
+      {
+        "id": "section.dashboard.header",
+        "name": "Dashboard header",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "DashboardHeader"
+        ],
+        "flutter": {
+          "file": "lib/dashboard/presentation/dashboard_home_screen.dart",
+          "symbol": "DashboardHomeScreen"
+        },
+        "currentOwner": "DashboardScreen and DashboardFull",
+        "targetOwner": "registered Dashboard Home header section with view data and action slots",
+        "dependencies": [
+          "catch.top_bar"
+        ],
+        "states": [
+          "empty_start",
+          "full_dashboard",
+          "notifications_unread",
+          "text_scale_2"
+        ],
+        "migration": "Header greeting/day/city derivation now lives in DashboardHomeScreenState with dashboardNowProvider. Keep the section provider-free and compare header spacing/type against exported design references before visual edits.",
+        "previewIds": [
+          "DashboardScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.dashboard.notification_action",
+        "name": "Dashboard notification action",
+        "status": "implemented_local",
+        "layer": "compound",
+        "claudeComponents": [
+          "NotificationAction"
+        ],
+        "flutter": {
+          "file": "lib/dashboard/presentation/dashboard_screen.dart",
+          "symbol": "NotificationsAction"
+        },
+        "currentOwner": "DashboardScreen",
+        "targetOwner": "NotificationsAction semantic adapter over CatchIconAction.counted",
+        "dependencies": [
+          "catch.badge",
+          "catch.icon_button",
+          "catch.top_bar"
+        ],
+        "states": [
+          "zero_unread",
+          "unread",
+          "capped_count"
+        ],
+        "migration": "NotificationsAction retains notification loading, analytics, and routing semantics while delegating icon chrome, typed count formatting, zero hiding, and the 40px app-bar target to CatchIconAction.counted.",
+        "previewIds": [
+          "DashboardScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.dashboard.empty_body",
+        "name": "Dashboard empty body",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "EmptyDashboardHero",
+          "JourneySteps"
+        ],
+        "flutter": {
+          "file": "lib/dashboard/presentation/widgets/dashboard_empty_sliver_body.dart",
+          "symbol": "DashboardEmptySliverBody"
+        },
+        "currentOwner": "DashboardScreen",
+        "targetOwner": "registered Dashboard Home empty section",
+        "dependencies": [
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "empty_start",
+          "guest_or_null_user",
+          "text_scale_2"
+        ],
+        "migration": "Keep first-event education local until reuse appears; pass CTA intent in rather than reading Routes directly from the nested hero card.",
+        "previewIds": [
+          "DashboardScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.dashboard.full_body",
+        "name": "Dashboard full body adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "DashboardContent"
+        ],
+        "flutter": {
+          "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
+          "symbol": "DashboardFullSliverBody"
+        },
+        "currentOwner": "DashboardScreen",
+        "targetOwner": "DashboardHomeScreenState to section composition adapter",
+        "dependencies": [
+          "section.dashboard.event_focus",
+          "section.dashboard.club_posts"
+        ],
+        "states": [
+          "full_dashboard",
+          "section_loading",
+          "section_error"
+        ],
+        "migration": "Route-level empty/full selection now lives in DashboardHomeScreenState. Remaining work is to split full-body section data and callbacks so DashboardFullSliverBody no longer watches club lookup providers for club-post notifications.",
+        "previewIds": [
+          "DashboardScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.dashboard.event_focus",
+        "name": "Event focus list",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "EventFocusList",
+          "EventFocusCard"
+        ],
+        "flutter": {
+          "file": "lib/dashboard/presentation/widgets/event_focus_list.dart",
+          "symbol": "EventFocusList"
+        },
+        "currentOwner": "DashboardFullSliverBody supplies typed EventFocusActions and maps self-check-in mutation state into EventFocusCheckInState; EventFocusList renders the provider-free visual section.",
+        "targetOwner": "provider-free Dashboard Event Focus section with typed route/controller intents",
+        "dependencies": [
+          "catch.surface",
+          "catch.button",
+          "catch.badge"
+        ],
+        "states": [
+          "upcoming",
+          "self_check_in",
+          "after_event_swipe",
+          "pending_review",
+          "multiple_cards",
+          "reduced_motion"
+        ],
+        "migration": "Calendar, directions, check-in, swipe, review, and detail navigation intents flow through typed EventFocusActions supplied by DashboardFullSliverBody. Home renders all open windows in expiry order with live countdowns, followed by the upcoming and review lifecycle cards.",
+        "previewIds": [
+          "EventFocusList/List states",
+          "DashboardScreen/Screen states"
+        ]
+      },
+      {
+        "id": "section.dashboard.club_posts",
+        "name": "Club post updates",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "NotificationCard",
+          "OrganizerAvatar"
+        ],
+        "flutter": {
+          "file": "lib/dashboard/presentation/widgets/organizer_posts_home_section.dart",
+          "symbol": "OrganizerPostsHomeSection"
+        },
+        "currentOwner": "DashboardFullSliverBody passes club-post notifications while OrganizerPostsHomeSection resolves club display data.",
+        "targetOwner": "provider-free club-post update section fed by DashboardHomeScreenState",
+        "dependencies": [
+          "catch.person_avatar",
+          "catch.section",
+          "catch.surface"
+        ],
+        "states": [
+          "empty_hidden",
+          "updates_ready",
+          "club_lookup_loading",
+          "club_lookup_partial"
+        ],
+        "migration": "Move club display lookup out of OrganizerPostsHomeSection so the visual section receives provider-free card data and typed open-post callbacks.",
+        "previewIds": [
+          "DashboardScreen/Screen states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-DASHBOARD-001",
+      "status": "closed",
+      "nextAction": "Closed by DashboardScreen/Screen states first-pass Widgetbook use case covering route loading/error, empty, full, notification, activity, recommendation, text-scale, reduced-motion, and addon-driven theme review states."
+    },
+    {
+      "id": "DS-DASHBOARD-002",
+      "status": "closed",
+      "nextAction": "Closed by DashboardHomeScreenState adapter: profile, membership, and booked-event loading waves now share the same canonical loading shell, covered by dashboard_home_loading and adapter tests."
+    },
+    {
+      "id": "DS-DASHBOARD-003",
+      "status": "closed",
+      "nextAction": "Closed by dashboardHomeScreenStateProvider and DashboardScreen switch-based composition; remaining composition work is section-local below DashboardFullSliverBody."
+    },
+    {
+      "id": "DS-DASHBOARD-004",
+      "status": "closed",
+      "nextAction": "Closed by Dashboard Home reference export: full_dashboard.png and empty_start.png live under design/reference_screens/screen.dashboard.home, the manifest maps them to dashboard_home/dashboard_home_empty_start captures, and tool/design/check_reference_screens.mjs provides advisory pixel comparison. Current empty-start comparison after the hero-shell pass is 54.05% mismatch / 59.13 meanDelta, down from the first 58.50% / 76.92 baseline; full_dashboard remains at 28.50% / 36.79 until the populated-state pass."
+    },
+    {
+      "id": "DS-DASHBOARD-005",
+      "status": "open",
+      "nextAction": "Add focused state-level tests for profile_error, memberships_error, offline, text_scale_2, reduced_motion, and light_dark; feature.dashboard_home carries these six explicit evidence exceptions while compiling all 19 registered states and 12 Dashboard-owned actions."
+    }
+  ]
+}

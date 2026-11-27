@@ -1,0 +1,6 @@
+{
+  "routeId": "hostOrganizerLiveGuideScreen",
+  "status": "planned",
+  "priority": "P2",
+  "reason": "The Live event guide spoke has loaded Widgetbook coverage; add routed narrow owner and co-host captures in the next Host Clubs capture refresh."
+}

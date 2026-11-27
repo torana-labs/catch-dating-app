@@ -1,0 +1,8 @@
+{
+  "path": "lib/host_memberships/presentation/my_memberships_screen.dart",
+  "role": "compact",
+  "expression": "CatchLegacyTopBar.route",
+  "owner": "CatchLegacyTopBar",
+  "surface": "CatchRouteScaffold",
+  "leading": "back"
+}

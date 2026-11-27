@@ -1,0 +1,27 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "hostWorkPhoneImportScreen"
+      ],
+      "file": "lib/hosts/audience/phone_import/presentation/phone_import_screen.dart",
+      "symbol": "_PhoneImportScreenState",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    },
+    {
+      "routes": [
+        "hostWorkPhoneImportScreen"
+      ],
+      "file": "lib/hosts/audience/phone_import/presentation/phone_import_review_screen.dart",
+      "symbol": "PhoneImportReviewScreen",
+      "family": "pushed-route",
+      "expression": "CatchRouteScaffold",
+      "bodyGeometry": "standard",
+      "topEdge": "route-chrome"
+    }
+  ],
+  "reason": "Manifest file and selected phone imports share the canonical pushed-route shell; the phone access/loading owner and review view render separate route states."
+}

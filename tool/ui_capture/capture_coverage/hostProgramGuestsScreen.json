@@ -1,0 +1,10 @@
+{
+  "routeId": "hostProgramGuestsScreen",
+  "status": "captured",
+  "priority": "P1",
+  "reason": "P5.7a planner screens on the system render from deterministic planner fixtures.",
+  "captureIds": [
+    "host_programme_guests_phone",
+    "host_programme_guests_desktop"
+  ]
+}

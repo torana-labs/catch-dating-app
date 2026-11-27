@@ -1,0 +1,8 @@
+{
+  "path": "lib/hosts/events/presentation/moments/organizer_moment_edit_screen.dart",
+  "role": "compact",
+  "expression": "CatchLegacyTopBar.route",
+  "owner": "CatchLegacyTopBar",
+  "surface": "CatchRouteScaffold",
+  "leading": "back"
+}

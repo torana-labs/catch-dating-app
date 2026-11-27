@@ -1,0 +1,13 @@
+{
+  "owners": [
+    {
+      "file": "lib/hosts/events/rehearsal_practice_screen.dart",
+      "symbol": "_HostRehearsalPracticeScreenState",
+      "family": "pushed-route",
+      "expression": "CatchScreen",
+      "bodyGeometry": "standard",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "The rehearsal's practice door pushes the rebuilt console on the rehearsal's made-up guests."
+}

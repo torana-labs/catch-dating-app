@@ -1,0 +1,6 @@
+{
+  "routeId": "hostOrganizerEventDefaultsScreen",
+  "status": "planned",
+  "priority": "P2",
+  "reason": "The Event defaults spoke has loaded Widgetbook coverage; add routed narrow owner and co-host captures in the next Host Clubs capture refresh."
+}

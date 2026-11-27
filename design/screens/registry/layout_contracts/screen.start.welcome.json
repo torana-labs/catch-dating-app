@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "startScreen"
+      ],
+      "file": "lib/pages/start/start_welcome_route_screen.dart",
+      "symbol": "StartWelcomeRouteScreen",
+      "family": "standalone",
+      "expression": "CatchScaffold.standalone",
+      "bodyGeometry": "intrinsic",
+      "topEdge": "body-owned"
+    }
+  ],
+  "reason": "A deterministic route adapter gives the intentionally embeddable OnboardingWelcomeBody an explicit standalone surface owner."
+}

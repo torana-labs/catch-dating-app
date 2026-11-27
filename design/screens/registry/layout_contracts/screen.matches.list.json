@@ -1,0 +1,16 @@
+{
+  "owners": [
+    {
+      "routes": [
+        "matchesListScreen"
+      ],
+      "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
+      "symbol": "_ChatsListScreenState",
+      "family": "root",
+      "expression": "CatchRootScreenScaffold.fullBleed",
+      "bodyGeometry": "full-bleed",
+      "topEdge": "safe-area"
+    }
+  ],
+  "reason": "Consumer Chats is a root list using the universal 20-point horizontal gutter."
+}

@@ -1,0 +1,27 @@
+{
+  "routeId": "authScreen",
+  "status": "captured",
+  "priority": "P2",
+  "captureIds": [
+    "host_onboarding_sign_in",
+    "host_onboarding_code",
+    "auth_phone_entry",
+    "auth_phone_valid",
+    "auth_otp_entry",
+    "auth_otp_partial",
+    "auth_resend_ready",
+    "auth_phone_validation_error",
+    "auth_country_picker_open",
+    "auth_country_code_australia",
+    "auth_send_code_pending",
+    "auth_send_code_error",
+    "auth_verify_code_pending",
+    "auth_verify_code_error",
+    "auth_resend_pending",
+    "auth_resend_error",
+    "auth_phone_text_scale_2",
+    "auth_otp_text_scale_2",
+    "auth_otp_reduced_motion"
+  ],
+  "reason": "Auth captures cover empty and valid phone entry, empty and partial OTP entry, resend-ready, phone validation error, country picker open, non-default country code, send/verify/resend pending and error states, phone and OTP text scale 2.0, and OTP reduced motion."
+}

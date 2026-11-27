@@ -1,0 +1,23 @@
+{
+  "routeId": "profileScreen",
+  "status": "captured",
+  "priority": "P1",
+  "captureIds": [
+    "profile_self",
+    "profile_self_loading",
+    "profile_self_error",
+    "profile_self_offline",
+    "profile_self_unavailable",
+    "profile_self_edit_tab",
+    "profile_self_preview_tab",
+    "profile_self_insights_tab",
+    "profile_self_photo_upload_pending",
+    "profile_self_photo_upload_error",
+    "profile_self_inline_save_pending",
+    "profile_self_inline_save_error",
+    "profile_self_text_scale_2",
+    "profile_self_reduced_motion",
+    "profile_self_light_dark"
+  ],
+  "reason": "Self-profile captures now cover flagship profile surface plus deterministic full-route loading, error, offline, unavailable, Edit, Preview, and Insights tabs, upload-pending, upload-failure snackbar, inline save pending/error drawers, text scale, reduced motion, and paired light/dark variants."
+}

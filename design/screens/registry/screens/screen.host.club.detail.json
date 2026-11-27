@@ -1,0 +1,798 @@
+{
+  "id": "screen.host.club.detail",
+  "shell": {
+    "owner": "host",
+    "nestedScaffoldAllowed": false,
+    "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+  },
+  "topBar": {
+    "role": "media-hero",
+    "expression": "SliverAppBar",
+    "owner": "registered media-hero",
+    "reason": "The registered collapsing media hero owns route chrome."
+  },
+  "statePolicy": {
+    "requiredStates": [
+      "data",
+      "empty",
+      "error",
+      "loading",
+      "offline",
+      "permission"
+    ],
+    "owner": "registered screen state controller and Catch state surfaces"
+  },
+  "name": "Host Club Detail",
+  "owner": "hosts",
+  "priority": "P1",
+  "status": "in_progress",
+  "routes": [
+    {
+      "id": "hostOrganizerDetailScreen",
+      "path": "/host/organizers/:organizerId",
+      "role": "primary"
+    }
+  ],
+  "source": {
+    "file": "lib/pages/organizer/organizer_detail_screen.dart",
+    "symbol": "OrganizerDetailScreen"
+  },
+  "stateController": {
+    "primary": "HostOrganizerDetailScreenState.fromState + organizerDetailViewModelProvider",
+    "files": [
+      {
+        "file": "lib/pages/organizer/organizer_detail_screen_state.dart",
+        "symbol": "HostOrganizerDetailScreenState"
+      },
+      {
+        "file": "lib/pages/organizer/organizer_detail_screen.dart",
+        "symbol": "OrganizerDetailScreen"
+      },
+      {
+        "file": "lib/pages/organizer/organizer_detail_view_model.dart",
+        "symbol": "organizerDetailViewModel"
+      },
+      {
+        "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
+        "symbol": "OrganizerDetailBody"
+      },
+      {
+        "file": "lib/pages/organizer/widgets/organizer_hero_top_bar.dart",
+        "symbol": "OrganizerHeroTopBar"
+      },
+      {
+        "file": "lib/pages/organizer/widgets/organizer_schedule_section.dart",
+        "symbol": "OrganizerScheduleSection"
+      },
+      {
+        "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
+        "symbol": "CatchMetricSection"
+      },
+      {
+        "file": "lib/pages/reviews/reviews_section.dart",
+        "symbol": "OrganizerReviewsSection"
+      }
+    ],
+    "mutationOwners": [
+      {
+        "file": "lib/contexts/organizers/actions/organizer_follow_controller.dart",
+        "symbol": "OrganizerFollowController"
+      },
+      {
+        "file": "lib/pages/organizer/organizer_host_contact_controller.dart",
+        "symbol": "OrganizerHostContactController"
+      }
+    ],
+    "notes": "hostOrganizerDetailScreen uses the shared OrganizerDetailScreen through the host shell, then resolves provider output through HostOrganizerDetailScreenState. The adapter owns loading/error/not-found branch selection, initialOrganizer fallback, host public-preview mode, signed-in host ownership, explicit consumer dock suppression, and load-error retry intent typing. Route callbacks, contact/share side effects, and the product decision on embedded host controls are now explicit in the contract."
+  },
+  "designRefs": [
+    {
+      "id": "repo.club-detail-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/explore/explore_widgets_test.dart",
+      "notes": "Club detail widget tests cover the host view as a public club profile, membership dock suppression, public-host identity copy, and hosted schedule badge behavior."
+    },
+    {
+      "id": "repo.club-detail-view-model-tests",
+      "kind": "repo",
+      "status": "available",
+      "path": "test/organizers/organizers_controllers_test.dart",
+      "notes": "View-model tests cover host role derivation from host app role, signed-in uid, and club host ownership."
+    },
+    {
+      "id": "claude.host-club-detail",
+      "kind": "claude",
+      "status": "available",
+      "notes": "Canonical Host Club Detail owner/public-view reference exported, masked, manifest-registered, and wired to the host_club_detail_public capture for advisory comparison. 2026-06-25 public-view passes align the photo fixture, one-line title scale, next-event address, next-run banner, 4-up stats, body section order, activity chips, capture font loading, asset prewarm, floating hero chrome, stat value fit, regular-weight About copy, and split generic-tag wraps. The advisory compare improved from 28.94% mismatch / 44.44 meanDelta to 17.87% / 19.52; hero-edge mask calibration moved the registered comparison within threshold at 15.82% / 15.22. Host controls remain out of this public-preview route unless a future design variant adds them.",
+      "path": "design/source_packs/host-v2/templates/catch-club-detail/ClubDetailV2.dc.html"
+    },
+    {
+      "id": "generated.host-club-detail-reference",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/screen.host.club.detail/host_public_view.png",
+      "notes": "390x812 Host Club Detail host_public_view PNG reference exported from the Claude Club Detail template."
+    },
+    {
+      "id": "generated.host-club-detail-reference-manifest",
+      "kind": "generated",
+      "status": "available",
+      "path": "design/reference_screens/manifest.json",
+      "notes": "Reference-screen manifest wiring Host Club Detail host_public_view to host_club_detail_public for advisory pixel comparison; latest Host Club Detail public-view pass is within threshold at 15.82% mismatch / 15.22 meanDelta after hero-edge mask calibration."
+    }
+  ],
+  "captures": [
+    {
+      "id": "host_club_detail_public",
+      "status": "captured",
+      "notes": "Deterministic Host Club Detail capture renders the hosted public-preview route with reference photo fixture, next-run banner, schedule, reviews, contact, share, and dock suppression; latest advisory comparison is within threshold at 15.82% mismatch / 15.22 meanDelta."
+    },
+    {
+      "id": "host_club_detail_initial_loading",
+      "status": "captured",
+      "notes": "Initial-club fallback capture renders real public preview content while the live club detail view model remains loading."
+    },
+    {
+      "id": "host_club_detail_loading",
+      "status": "captured",
+      "notes": "No-initial-club loading capture renders the club-profile-shaped loading skeleton."
+    },
+    {
+      "id": "host_club_detail_error",
+      "status": "captured",
+      "notes": "Generic load-error capture renders the shared club error state and retry affordance."
+    },
+    {
+      "id": "host_club_detail_offline",
+      "status": "captured",
+      "notes": "Offline/error capture keeps the host route on the same adapter branch with offline-specific proof."
+    },
+    {
+      "id": "host_club_detail_not_found",
+      "status": "captured",
+      "notes": "Not-found capture renders the missing/deleted club empty state."
+    },
+    {
+      "id": "host_club_detail_signed_out",
+      "status": "captured",
+      "notes": "Signed-out host-shell capture documents public preview behavior without a host uid."
+    },
+    {
+      "id": "host_club_detail_non_host_preview",
+      "status": "captured",
+      "notes": "Non-host-team capture documents the current public-preview fallback when the signed-in host user is not on the club team."
+    },
+    {
+      "id": "host_club_detail_empty_schedule",
+      "status": "captured",
+      "notes": "Empty schedule capture documents the public-profile schedule empty state inside the host route."
+    },
+    {
+      "id": "host_club_detail_text_scale_2",
+      "status": "captured",
+      "notes": "Text scale 2.0 capture covers hero, stats, host, schedule, review, contact, and dock-suppression layout resilience."
+    },
+    {
+      "id": "host_club_detail_reduced_motion",
+      "status": "captured",
+      "notes": "Reduced-motion capture documents the route with animations disabled."
+    },
+    {
+      "id": "host_club_detail_light_dark",
+      "status": "captured",
+      "notes": "Paired light/dark capture documents theme parity for the host public-preview route."
+    }
+  ],
+  "states": [
+    {
+      "id": "loading_without_initial_club",
+      "kind": "loading",
+      "status": "captured",
+      "source": "HostOrganizerDetailScreenState maps organizerDetailViewModelProvider loading with no route extra to OrganizerDetailLoadingBody with hero, stats, host, about, tag, and upcoming-section skeletons.",
+      "tests": [
+        "test/organizers/organizers_controllers_test.dart",
+        "test/organizers/organizers_flow_test.dart"
+      ],
+      "nextAction": "Use the deterministic capture as the baseline for future skeleton visual parity edits.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_loading"
+      ]
+    },
+    {
+      "id": "loading_with_initial_club",
+      "kind": "loading",
+      "status": "captured",
+      "source": "HostOrganizerDetailScreenState maps loading plus initialOrganizer to public-preview content so host navigation keeps credible club content while live data loads.",
+      "tests": [
+        "test/organizers/organizers_controllers_test.dart",
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Decide whether this fallback needs a visible refreshing indicator before pixel comparison.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_initial_loading"
+      ]
+    },
+    {
+      "id": "load_error",
+      "kind": "error",
+      "status": "captured",
+      "source": "HostOrganizerDetailScreenState maps load failures to HostOrganizerDetailError with HostOrganizerDetailRetryIntent.reloadDetail before OrganizerDetailScreen renders CatchLocalizedErrorState with AppErrorContext.club and executes the typed retry target.",
+      "tests": [
+        "test/organizers/organizers_controllers_test.dart",
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Keep generic and offline error copy aligned with the shared CatchErrorState policy.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_error"
+      ]
+    },
+    {
+      "id": "club_not_found",
+      "kind": "empty",
+      "status": "captured",
+      "source": "HostOrganizerDetailScreenState maps AsyncData(null) to Club not found copy with groups icon.",
+      "tests": [
+        "test/organizers/organizers_controllers_test.dart",
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Decide whether missing/deleted host clubs should use host-specific access copy.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_not_found"
+      ]
+    },
+    {
+      "id": "host_public_view",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Host app role plus hosted club renders the shared public club profile shell, public host identity copy, share affordance, no host tools panel, and no consumer membership dock.",
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Host Club Detail owner/public view now has a manifest-registered design reference and deterministic capture using the Claude-aligned fixture. The 2026-06-25 passes improved advisory comparison to 17.87% mismatch / 19.52 meanDelta, then the hero-edge mask calibration moved the registered comparison within threshold at 15.82% mismatch / 15.22 meanDelta. Continue only state-specific hosted schedule/share/contact/review references if design requires them.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_public"
+      ]
+    },
+    {
+      "id": "host_schedule_hosted",
+      "kind": "populated",
+      "status": "captured",
+      "source": "OrganizerDetailBody passes isHost into OrganizerScheduleSection so host route events use HOSTED badge and host event tile status while empty schedules keep public profile copy.",
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Add additional schedule-row captures only if long titles, live/past states, or event tap routing become visually distinct.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_public"
+      ]
+    },
+    {
+      "id": "host_schedule_empty",
+      "kind": "empty",
+      "status": "captured",
+      "source": "OrganizerScheduleSection keeps public empty-schedule copy on the host public-profile route while host-owned rows still use hosted schedule treatment.",
+      "nextAction": "Keep operational Add event actions in Host Home/Host Clubs unless the Host Club Detail design contract intentionally moves them here.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_empty_schedule"
+      ]
+    },
+    {
+      "id": "event_navigation_host_route",
+      "kind": "populated",
+      "status": "tested",
+      "source": "OrganizerDetailScreen passes a route-level onEventSelected callback into OrganizerDetailBody. In host app role, schedule taps route to hostAppEventDetailScreen with the organizerId/eventId params preserved.",
+      "tests": [
+        "test/organizers/organizers_flow_test.dart"
+      ],
+      "nextAction": "Keep this as the route-owned schedule action seam unless Host Club Detail receives a dedicated host controls design.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ]
+    },
+    {
+      "id": "membership_dock_suppressed",
+      "kind": "permission",
+      "status": "captured",
+      "source": "HostOrganizerDetailScreenState passes showMembershipDock=false for host public-preview content, keeping the consumer OrganizerMembershipDock out of the host shell.",
+      "tests": [
+        "test/organizers/organizers_controllers_test.dart",
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "Keep provider-backed OrganizerMembershipDock consumer-only unless a host/member dock contract is explicitly designed.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_public",
+        "host_club_detail_non_host_preview",
+        "host_club_detail_signed_out"
+      ]
+    },
+    {
+      "id": "host_not_on_team",
+      "kind": "permission",
+      "status": "captured",
+      "source": "A signed-in host app user who is not hosted on the club currently renders the shared public preview with host app chrome and no membership dock.",
+      "nextAction": "Decide whether hostOrganizerDetailScreen should keep public preview behavior, show unauthorized copy, or redirect for non-host-team users.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_non_host_preview"
+      ]
+    },
+    {
+      "id": "host_signed_out",
+      "kind": "permission",
+      "status": "captured",
+      "source": "A signed-out host app user currently renders through the shared public preview branch with host chrome and no consumer membership dock.",
+      "nextAction": "Define whether the host shell should replace this with a signed-out/access state.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_signed_out"
+      ]
+    },
+    {
+      "id": "host_controls_missing",
+      "kind": "populated",
+      "status": "captured",
+      "source": "The current Host Club Detail contract is public-preview-only: HostOrganizerManagementPanel, Add event, Edit club, payouts, and team controls stay in Host Home and Host Clubs.",
+      "nextAction": "Add a new host-control variant only if the design contract moves operations onto this route.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_public"
+      ]
+    },
+    {
+      "id": "reviews_authenticated",
+      "kind": "populated",
+      "status": "captured",
+      "source": "Authenticated host route renders OrganizerReviewsSection with current uid, using the shared review section contract.",
+      "nextAction": "Add separate review captures only if empty reviews, owner responses, or long copy diverge from the public preview fixture.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_public",
+        "host_club_detail_text_scale_2"
+      ]
+    },
+    {
+      "id": "contact_links",
+      "kind": "populated",
+      "status": "captured",
+      "source": "OrganizerDetailBody now renders contact rows from typed OrganizerContactAction values; OrganizerDetailScreen owns the ExternalLinkController side effect for Instagram, phone, and email.",
+      "nextAction": "Use this typed contact seam for any future contact-row visual parity variants.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_public"
+      ]
+    },
+    {
+      "id": "share_action",
+      "kind": "populated",
+      "status": "captured",
+      "source": "OrganizerHeroTopBar keeps the icon-only share affordance in host public view.",
+      "tests": [
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "nextAction": "OrganizerDetailScreen now supplies the share callback and owns the ExternalShareController side effect; mask platform-specific share icon differences during pixel comparison.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_public"
+      ]
+    },
+    {
+      "id": "offline",
+      "kind": "offline",
+      "status": "captured",
+      "source": "HostOrganizerDetailScreenState maps offline-like load failures through the shared club error branch while retaining host route chrome.",
+      "nextAction": "Define whether offline copy needs a host-specific variant or should stay on shared CatchErrorState mapping.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_offline"
+      ]
+    },
+    {
+      "id": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Host Club Detail capture applies MediaQuery textScaler 2.0 across hero, stats, host rows, schedule rows, reviews, contact rows, and dock-suppression layout.",
+      "nextAction": "Use this capture to fix any visual parity issues found during pixel comparison.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_text_scale_2"
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "source": "Host Club Detail capture applies MediaQuery.disableAnimations for reduced-motion review.",
+      "nextAction": "Use this capture to verify sliver/hero behavior remains stable during future animation changes.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_reduced_motion"
+      ]
+    },
+    {
+      "id": "light_dark",
+      "kind": "theme",
+      "status": "captured",
+      "source": "Host Club Detail paired theme capture renders light and dark variants from the same fixture state.",
+      "nextAction": "Use this capture for token parity once matching Claude references are exported.",
+      "previewIds": [
+        "OrganizerDetailScreen/Public preview states"
+      ],
+      "captureIds": [
+        "host_club_detail_light_dark"
+      ]
+    }
+  ],
+  "composition": {
+    "currentLayout": "hostOrganizerDetailScreen routes into the shared OrganizerDetailScreen. OrganizerDetailScreen maps the club detail view model, auth/profile/membership streams, and route fallback data into HostOrganizerDetailScreenState before composing loading, error, not-found, or shared public club body content. Host app mode is currently a public-preview surface: the consumer dock is suppressed, member-to-host messaging is disabled, schedule taps route to host event detail through a screen-owned callback, and operational host controls remain in Host Home and Host Clubs.",
+    "targetLayout": "Host Club Detail should continue as a state-owned composition surface: HostOrganizerDetailScreenState handles route/provider/access branches, shared provider-free club sections render the public profile, and typed callbacks own retry, share, contact, host profile/message, schedule navigation, and any future host controls.",
+    "sections": [
+      {
+        "id": "section.host.club_detail_screen_adapter",
+        "name": "Host club detail route state adapter",
+        "status": "implemented_local",
+        "layer": "screen-adapter",
+        "claudeComponents": [
+          "HostOrganizerDetailScreenState"
+        ],
+        "flutter": {
+          "file": "lib/pages/organizer/organizer_detail_screen_state.dart",
+          "symbol": "HostOrganizerDetailScreenState"
+        },
+        "currentOwner": "HostOrganizerDetailScreenState",
+        "targetOwner": "HostOrganizerDetailScreenState provider/controller adapter",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "loading",
+          "initial_club",
+          "error",
+          "not_found",
+          "host_public",
+          "unauthorized",
+          "signed_out"
+        ],
+        "migration": "HostOrganizerDetailScreenState owns async branch selection, initial-club fallback, signed-in host ownership, public-preview mode, dock suppression, and load-error retry intent typing. OrganizerDetailScreen now wires typed callbacks for event routing, host profile/message, contact launches, share actions, and retry execution.",
+        "previewIds": [
+          "OrganizerDetailScreen/Public preview states"
+        ]
+      },
+      {
+        "id": "section.host.club_detail_body",
+        "name": "Host public club profile body",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "OrganizerDetailBody"
+        ],
+        "flutter": {
+          "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
+          "symbol": "OrganizerDetailBody"
+        },
+        "currentOwner": "OrganizerDetailScreen",
+        "targetOwner": "shared provider-free public club profile section",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "host_public_view",
+          "with_contact",
+          "with_photos",
+          "with_reviews",
+          "empty_schedule"
+        ],
+        "migration": "Keep shared with screen.club.detail. Display derivation remains in the route adapter, while the body receives callbacks for share, contact, host profile/message, and schedule actions instead of reaching into providers or GoRouter.",
+        "previewIds": [
+          "OrganizerDetailScreen/Public preview states"
+        ]
+      },
+      {
+        "id": "section.host.club_detail_hero",
+        "name": "Host club detail hero",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "OrganizerHeroTopBar"
+        ],
+        "flutter": {
+          "file": "lib/pages/organizer/widgets/organizer_hero_top_bar.dart",
+          "symbol": "OrganizerHeroTopBar"
+        },
+        "currentOwner": "OrganizerDetailBody",
+        "targetOwner": "shared club hero section",
+        "dependencies": [
+          "catch.top_bar",
+          "catch.surface"
+        ],
+        "states": [
+          "cover_image",
+          "no_cover",
+          "share_action",
+          "collapsed_title",
+          "long_name"
+        ],
+        "migration": "Decide whether the unused isHost input should become visible host-preview language or be removed from the hero contract.",
+        "previewIds": [
+          "OrganizerDetailScreen/Public preview states"
+        ]
+      },
+      {
+        "id": "section.host.club_detail_stats",
+        "name": "Host club stats strip",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "CatchMetricSection"
+        ],
+        "flutter": {
+          "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
+          "symbol": "CatchMetricSection"
+        },
+        "currentOwner": "OrganizerDetailBody",
+        "targetOwner": "shared club stats section if host references match consumer detail",
+        "dependencies": [
+          "catch.badge"
+        ],
+        "states": [
+          "member_count",
+          "review_count",
+          "upcoming_count",
+          "zero_counts"
+        ],
+        "migration": "Reuse with consumer Club Detail for now; promote only after Host Club Detail references confirm the same stat semantics.",
+        "previewIds": [
+          "OrganizerDetailScreen/Public preview states"
+        ]
+      },
+      {
+        "id": "section.host.club_detail_hosts",
+        "name": "Host club public host identity section",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "OrganizerHostSection",
+          "OrganizerHostRow"
+        ],
+        "flutter": {
+          "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
+          "symbol": "OrganizerHostSection"
+        },
+        "currentOwner": "OrganizerDetailBody",
+        "targetOwner": "provider-free public host identity section",
+        "dependencies": [
+          "catch.icon_button",
+          "catch.surface"
+        ],
+        "states": [
+          "owner",
+          "cohost",
+          "multiple_hosts",
+          "message_disabled_host_app",
+          "long_name"
+        ],
+        "migration": "Host app disables member-to-host messaging. Profile navigation and host-message side effects now enter through typed callbacks from OrganizerDetailScreen instead of the host row reading routing/controller providers.",
+        "previewIds": [
+          "OrganizerDetailScreen/Public preview states"
+        ]
+      },
+      {
+        "id": "section.host.club_detail_overview",
+        "name": "Host club overview, tags, photos, and contact",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "OrganizerOverview",
+          "OrganizerTagList",
+          "OrganizerPhotoRail",
+          "OrganizerContactSection"
+        ],
+        "flutter": {
+          "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
+          "symbol": "OrganizerContactSection"
+        },
+        "currentOwner": "OrganizerDetailBody",
+        "targetOwner": "provider-free club overview section group",
+        "dependencies": [
+          "catch.chip",
+          "catch.surface"
+        ],
+        "states": [
+          "with_tags",
+          "without_tags",
+          "with_photos",
+          "without_photos",
+          "with_contact",
+          "without_contact"
+        ],
+        "migration": "Contact rows now emit typed OrganizerContactAction values to a screen-owned link callback. Network photo handling remains in CatchNetworkImage until a broader club-photo primitive pass is needed.",
+        "previewIds": [
+          "OrganizerDetailScreen/Public preview states"
+        ]
+      },
+      {
+        "id": "section.host.club_detail_schedule",
+        "name": "Host club detail schedule",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "OrganizerScheduleSection",
+          "HostScheduleRows"
+        ],
+        "flutter": {
+          "file": "lib/pages/organizer/widgets/organizer_schedule_section.dart",
+          "symbol": "OrganizerScheduleSection"
+        },
+        "currentOwner": "OrganizerDetailBody",
+        "targetOwner": "shared schedule section with explicit host/member mode",
+        "dependencies": [
+          "catch.badge",
+          "catch.surface"
+        ],
+        "states": [
+          "hosted_rows",
+          "empty_host_schedule",
+          "long_title",
+          "route_to_host_event_detail"
+        ],
+        "migration": "Keep host/member mode explicit; HostOrganizerDetailScreenState carries the public-preview branch and OrganizerDetailScreen now supplies the host/consumer schedule route callback.",
+        "previewIds": [
+          "OrganizerDetailScreen/Public preview states"
+        ]
+      },
+      {
+        "id": "section.host.club_detail_reviews",
+        "name": "Host club detail reviews",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "OrganizerReviewsSection"
+        ],
+        "flutter": {
+          "file": "lib/pages/reviews/reviews_section.dart",
+          "symbol": "OrganizerReviewsSection"
+        },
+        "currentOwner": "OrganizerDetailBody",
+        "targetOwner": "shared review section with host response states if needed",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "reviews",
+          "empty_reviews",
+          "current_user_review",
+          "long_copy"
+        ],
+        "migration": "Confirm whether host route needs review management or owner-response actions before changing the shared section contract.",
+        "previewIds": [
+          "OrganizerDetailScreen/Public preview states"
+        ]
+      },
+      {
+        "id": "section.host.club_detail_actions",
+        "name": "Host club detail action boundary",
+        "status": "planned",
+        "layer": "section",
+        "claudeComponents": [
+          "HostOrganizerDetailActions"
+        ],
+        "flutter": {
+          "file": "lib/pages/organizer/organizer_detail_screen.dart",
+          "symbol": "OrganizerDetailScreen"
+        },
+        "currentOwner": "OrganizerDetailScreen",
+        "targetOwner": "provider-free host action section if design keeps actions on this route",
+        "dependencies": [
+          "catch.button",
+          "catch.surface"
+        ],
+        "states": [
+          "public_preview_only",
+          "edit_club",
+          "add_event",
+          "manage_team",
+          "payouts"
+        ],
+        "migration": "Current contract keeps Edit club, Add event, team, and payout actions in Host Clubs and Host Home. Add this section only if future design references intentionally move operations onto Host Club Detail.",
+        "previewIds": [
+          "OrganizerDetailScreen/Public preview states"
+        ]
+      },
+      {
+        "id": "section.host.club_detail_access_loading_error",
+        "name": "Host club detail access loading and error states",
+        "status": "implemented_local",
+        "layer": "section",
+        "claudeComponents": [
+          "HostOrganizerDetailAccessState",
+          "HostOrganizerDetailErrorState"
+        ],
+        "flutter": {
+          "file": "lib/pages/organizer/organizer_detail_screen.dart",
+          "symbol": "OrganizerDetailScreen"
+        },
+        "currentOwner": "HostOrganizerDetailScreenState",
+        "targetOwner": "provider-free host route state sections",
+        "dependencies": [
+          "catch.surface"
+        ],
+        "states": [
+          "loading",
+          "loading_with_initial_club",
+          "error",
+          "not_found",
+          "offline",
+          "unauthorized"
+        ],
+        "migration": "Adapter-backed captures now cover loading, loading with initial club, generic error, offline, not-found, signed-out, and non-host-team preview. Keep retry/access policy decisions in the adapter and export matching references before pixel comparison.",
+        "previewIds": [
+          "OrganizerDetailScreen/Public preview states"
+        ]
+      }
+    ]
+  },
+  "openGaps": [
+    {
+      "id": "DS-HOST-CLUB-DETAIL-001",
+      "status": "closed",
+      "nextAction": "Closed for the current public-preview contract. Flutter captures cover public preview, initial fallback loading, full loading, generic error, offline, not-found, non-host-team preview, signed-out preview, empty schedule, text-scale, reduced-motion, and light/dark; the registered public-view reference comparison is within threshold. Reopen only if design adds distinct hosted schedule/share/contact/review or host-control variants."
+    },
+    {
+      "id": "DS-HOST-CLUB-DETAIL-002",
+      "status": "closed",
+      "nextAction": "HostOrganizerDetailScreenState owns branch selection, initial data fallback, host ownership/public-preview mode, dock suppression, and load-error retry intent typing. HostOrganizerDetailError carries HostOrganizerDetailRetryIntent.reloadDetail, and OrganizerDetailScreen executes that typed retry through _retryHostOrganizerDetail before invalidating organizerDetailViewModelProvider. Schedule routing, host profile/message actions, contact launches, and share side effects are also wired through typed callbacks."
+    },
+    {
+      "id": "DS-HOST-CLUB-DETAIL-003",
+      "status": "closed",
+      "nextAction": "Closed for the current contract: Host Club Detail remains public-preview-only, while Edit club, Add event, payouts, and host-team controls remain in Host Home and Host Clubs. Reopen only if the design contract adds a dedicated host-controls variant."
+    },
+    {
+      "id": "DS-HOST-CLUB-DETAIL-004",
+      "status": "closed",
+      "nextAction": "Host Club Detail owner/public-view reference and masks are exported and registered; Flutter state captures now exist for the main route variants. Public-view visual parity improved from 28.94% / 44.44 to 17.87% / 19.52 on 2026-06-25, then the hero-edge mask calibration moved the registered comparison within threshold at 15.82% mismatch / 15.22 meanDelta, maxDelta 240, masked 180280. Add host-control references only if the design contract moves operations onto this route."
+    }
+  ]
+}

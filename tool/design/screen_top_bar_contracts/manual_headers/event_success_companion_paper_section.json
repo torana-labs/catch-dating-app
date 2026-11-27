@@ -1,0 +1,7 @@
+{
+  "path": "lib/event_success/presentation/companion_parts/event_success_companion_paper_section.dart",
+  "symbol": "CompanionPaperTicketHeader",
+  "role": "content",
+  "owner": "CatchTextStyles.titleL",
+  "reason": "Paper-ticket copy is theatrical event content inside the companion route."
+}

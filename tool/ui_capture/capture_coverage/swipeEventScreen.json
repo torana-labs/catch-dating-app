@@ -1,0 +1,7 @@
+{
+  "routeId": "swipeEventScreen",
+  "status": "alias",
+  "priority": "P1",
+  "canonicalRouteId": "eventRecapScreen",
+  "reason": "The retired swipe deck's address now redirects to the event's after-event screen; the deck and its captures were removed."
+}
