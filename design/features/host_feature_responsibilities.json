@@ -883,12 +883,6 @@
           "role": "Actions: save_event_defaults."
         },
         {
-          "id": "team_section",
-          "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "symbol": "HostTeamManagementSection",
-          "role": "Structural owner."
-        },
-        {
           "id": "team_controller",
           "file": "lib/hosts/presentation/organizer_management/host_team_management_controller.dart",
           "symbol": "HostTeamManagementController",
@@ -952,7 +946,7 @@
         "test/hosts/host_organizer_defaults_saver_test.dart",
         "test/hosts/host_organizer_identity_switcher_test.dart",
         "test/hosts/host_team_management_controller_test.dart",
-        "test/hosts/host_team_management_section_test.dart",
+        "test/hosts/organizer/team_screen_test.dart",
         "test/payments/host_payment_account_test.dart",
         "test/hosts/insights/host_insights_body_test.dart",
         "test/hosts/insights/host_event_report_body_test.dart",

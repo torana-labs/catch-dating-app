@@ -814,9 +814,9 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   arbitrary widget slots or swap their roles. A fixed ordering has no dropdown
   affordance. Active filters have one shared summary and Clear action. At narrow
   widths or large text the controls wrap in reading order within the same rules.
-  All four Audience tabs use this recipe. They share `HostAudienceHeader` and
-  `HostAudienceTabRail` for title, primary creation action, overflow, search, and
-  peer navigation.
+  Every People view uses this recipe under the People screen's own top bar,
+  which carries the title, primary creation action, overflow, search, and peer
+  navigation.
   Their section-based page owner supplies top spacing once; quick-filter rails
   use section content gutters without adding another page-padding wrapper.
   Organizer-wide Automations belongs in the common overflow, not the Groups

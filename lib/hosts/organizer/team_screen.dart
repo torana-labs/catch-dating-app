@@ -16,7 +16,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The organizer's team: who is on it, adding a host by phone, and for the
 /// owner, handing over or removing someone, through the existing team
-/// commands. The organizer listener brings each change back.
+/// commands. Each change is confirmed with a notice, and the organizer
+/// listener brings it back.
 class OrganizerTeamScreen extends ConsumerStatefulWidget {
   const OrganizerTeamScreen({super.key, required this.organizerId});
 
@@ -169,6 +170,16 @@ class _TeamScreenState extends ConsumerState<OrganizerTeamScreen> {
     );
     if (confirmed != true || !mounted) return;
     final controller = hostTeamManagementControllerProvider.notifier;
+    final done = switch (choice) {
+      _HostChoice.transfer =>
+        l10n.hostsHostTeamManagementSectionSuccessmessageOwnershipTransferredToDisplayname(
+          displayName: host.displayName,
+        ),
+      _HostChoice.remove =>
+        l10n.hostsHostTeamManagementSectionSuccessmessageDisplaynameRemoved(
+          displayName: host.displayName,
+        ),
+    };
     try {
       switch (choice) {
         case _HostChoice.transfer:
@@ -188,6 +199,8 @@ class _TeamScreenState extends ConsumerState<OrganizerTeamScreen> {
       }
     } on Object {
       // The mutation listener shows the error.
+      return;
     }
+    if (mounted) showCatchNotice(context, done);
   }
 }

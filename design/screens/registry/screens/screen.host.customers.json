@@ -494,8 +494,7 @@
       "source": "HostCustomerDetailScreen _openWhatsapp + _HostWhatsappHandoffSheet + ExternalLinks.openWhatsappHandoff",
       "tests": [
         "test/hosts/organizer/organizer_screen_test.dart",
-        "test/core/external_links_test.dart",
-        "test/communications/communication_route_test.dart"
+        "test/core/external_links_test.dart"
       ],
       "nextAction": "Add a deterministic Widgetbook variant for the editable handoff sheet; never present external app launch as message delivery."
     },

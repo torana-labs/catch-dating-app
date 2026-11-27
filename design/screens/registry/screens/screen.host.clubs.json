@@ -176,8 +176,8 @@
       "id": "repo.host-team-tests",
       "kind": "repo",
       "status": "available",
-      "path": "test/hosts/host_team_management_section_test.dart",
-      "notes": "Host team management tests cover add/remove/transfer affordances and mutation feedback for the embedded Host Clubs team section."
+      "path": "test/hosts/organizer/team_screen_test.dart",
+      "notes": "Team screen tests cover adding a host by phone, the confirmed remove and make-owner flows, cancel, and each change's notice."
     },
     {
       "id": "claude.host-clubs",
