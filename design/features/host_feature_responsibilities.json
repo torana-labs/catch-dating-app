@@ -364,8 +364,7 @@
             ],
             "answer": "Forms owns templates, drafts, the builder, publication, preview and sharing. Responses owns submitted-answer browsing and detail; application review is part of the same Audience intake boundary. Published form versions and response provenance preserve which questions someone answered. Analytics, exports and configured automation actions belong to the form workflow. A response, a contact conversion, and an application decision are separate records or actions. Ordinary form consent authorizes use of submitted answers for that form; it does not by itself grant marketing permission or event admission.",
             "sourcePaths": [
-              "lib/hosts/presentation/forms",
-              "lib/hosts/presentation/applications",
+              "lib/hosts/forms",
               "functions/src/organizers/organizerForms.ts",
               "contracts/shared/organizer_form_common.schema.json",
               "contracts/shared/organizer_form_response_common.schema.json"
@@ -454,8 +453,7 @@
       ],
       "currentRoots": [
         "lib/hosts/presentation/customers",
-        "lib/hosts/presentation/forms",
-        "lib/hosts/presentation/applications"
+        "lib/hosts/forms"
       ],
       "additionalCodeOwners": [
         {
@@ -520,31 +518,31 @@
         },
         {
           "id": "forms_directory",
-          "file": "lib/hosts/presentation/forms/host_forms_directory_controller.dart",
+          "file": "lib/hosts/forms/host_forms_directory_controller.dart",
           "symbol": "HostFormsDirectoryController",
           "role": "Organizer form inventory state."
         },
         {
           "id": "form_editor",
-          "file": "lib/hosts/presentation/forms/host_forms_controller.dart",
+          "file": "lib/hosts/forms/host_forms_controller.dart",
           "symbol": "HostFormEditorController",
           "role": "Draft/editor state and publication actions."
         },
         {
           "id": "form_responses",
-          "file": "lib/hosts/presentation/forms/host_form_operations_controller.dart",
+          "file": "lib/hosts/forms/host_form_operations_controller.dart",
           "symbol": "HostFormResponsesController",
           "role": "Response list and review-facing projection."
         },
         {
           "id": "form_automations",
-          "file": "lib/hosts/presentation/forms/host_form_operations_controller.dart",
+          "file": "lib/hosts/forms/host_form_operations_controller.dart",
           "symbol": "HostFormAutomationsController",
           "role": "Automation configuration and run recovery."
         },
         {
           "id": "applications",
-          "file": "lib/hosts/presentation/applications/host_applications_controller.dart",
+          "file": "lib/hosts/forms/host_applications_controller.dart",
           "symbol": "HostApplicationsController",
           "role": "Application review and community membership decisions."
         }
@@ -623,7 +621,7 @@
         "test/hosts/people/duplicates/duplicates_body_test.dart",
         "test/hosts/people/duplicates/duplicates_flow_test.dart",
         "test/hosts/forms/forms_body_test.dart",
-        "test/hosts/forms/host_form_builder_screen_test.dart"
+        "test/hosts/forms/form_payments_test.dart"
       ]
     },
     {

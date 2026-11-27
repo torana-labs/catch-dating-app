@@ -7,6 +7,7 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defau
 import 'package:catch_dating_app/contexts/payments/data/host_organizer_bills_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_billing_status.dart';
+import 'package:catch_dating_app/hosts/forms/host_form_payment_controller.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_controller.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_state.dart';
@@ -14,7 +15,6 @@ import 'package:catch_dating_app/hosts/organizer/page_edit_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/payments_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/settings_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/team_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_controller.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/brand.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';

@@ -150,7 +150,7 @@
         "symbol": "HostTeamManagementController"
       },
       {
-        "file": "lib/hosts/presentation/forms/host_form_payment_controller.dart",
+        "file": "lib/hosts/forms/host_form_payment_controller.dart",
         "symbol": "HostFormPaymentController"
       },
       {

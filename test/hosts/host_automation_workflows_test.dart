@@ -10,7 +10,7 @@ import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_autom
 import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_summary_reads.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automation.dart';
 import 'package:catch_dating_app/hosts/forms/form_automation_editor.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_form_operations_controller.dart';
 import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/firebase/scoped_read_models.dart';

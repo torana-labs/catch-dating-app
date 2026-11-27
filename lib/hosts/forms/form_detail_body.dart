@@ -7,9 +7,10 @@ import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
-/// One form in board order: its status, name and questions, the three
-/// funnel stats, the answers waiting for the host, what happens when the
-/// host lets someone in, and Share and Edit questions.
+/// One form in board order: its status, name, version and questions, the
+/// three funnel stats, the answers waiting for the host (or the latest
+/// answer on a form nobody reviews), Results and Payments, what happens
+/// when the host lets someone in, and Share and Edit questions.
 class HostFormDetailBody extends StatelessWidget {
   const HostFormDetailBody({
     super.key,
@@ -22,6 +23,8 @@ class HostFormDetailBody extends StatelessWidget {
     required this.onShare,
     required this.onEditQuestions,
     required this.onPublish,
+    this.onResults,
+    this.onPayments,
   });
 
   final HostFormState state;
@@ -37,6 +40,12 @@ class HostFormDetailBody extends StatelessWidget {
 
   /// Publishes a draft; the form page offers it in place of Share.
   final VoidCallback onPublish;
+
+  /// Opens each question's answers counted; null hides it.
+  final VoidCallback? onResults;
+
+  /// Opens the form's fee payments; null hides it.
+  final VoidCallback? onPayments;
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +110,13 @@ class HostFormDetailBody extends StatelessWidget {
               tone: CatchTextTone.secondary,
               maxLines: 2,
             ),
+            if (state.versionLine case final line?)
+              CatchText(
+                line,
+                key: const ValueKey<String>('host-form-version'),
+                variant: CatchTextVariant.bodySmall,
+                tone: CatchTextTone.secondary,
+              ),
           ],
         ),
         if (analytics != null)
@@ -171,6 +187,41 @@ class HostFormDetailBody extends StatelessWidget {
               ),
           ],
         ),
+        if (state.latest case final latest?)
+          CatchSection(
+            key: const ValueKey<String>('host-form-latest'),
+            title: l10n.hostAudienceLatestResponse,
+            children: [
+              HostFormResponseRow(
+                entry: latest,
+                now: now,
+                onTap: () => onOpenResponse(latest),
+              ),
+            ],
+          ),
+        if (onResults != null || onPayments != null)
+          CatchSection(
+            children: [
+              if (onResults != null)
+                CatchIndexRow(
+                  key: const ValueKey<String>('host-form-results'),
+                  title: l10n.hostFormsAnalyticsAction,
+                  icon: CatchIcons.insights,
+                  onTap: onResults,
+                  density: CatchIndexRowSize.compact,
+                  chevron: true,
+                ),
+              if (onPayments != null)
+                CatchIndexRow(
+                  key: const ValueKey<String>('host-form-payments'),
+                  title: l10n.hostFormPaymentsTitle,
+                  icon: CatchIcons.receipt,
+                  onTap: onPayments,
+                  density: CatchIndexRowSize.compact,
+                  chevron: true,
+                ),
+            ],
+          ),
         CatchSection(
           title: l10n.hostFormsThenTitle,
           action: CatchSectionAction(

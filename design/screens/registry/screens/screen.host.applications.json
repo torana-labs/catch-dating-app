@@ -41,7 +41,7 @@
     "primary": "hostResponseReviewDetailProvider + hostApplicationsControllerProvider",
     "files": [
       {
-        "file": "lib/hosts/presentation/forms/host_response_review_detail.dart",
+        "file": "lib/hosts/forms/host_response_review_detail.dart",
         "symbol": "hostResponseReviewDetail"
       },
       {
@@ -51,7 +51,7 @@
     ],
     "mutationOwners": [
       {
-        "file": "lib/hosts/presentation/applications/host_applications_controller.dart",
+        "file": "lib/hosts/forms/host_applications_controller.dart",
         "symbol": "HostApplicationsController"
       }
     ],

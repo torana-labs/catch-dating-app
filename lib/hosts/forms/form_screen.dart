@@ -1,12 +1,14 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
+import 'package:catch_dating_app/contexts/forms/parts/host_form_labels.dart';
 import 'package:catch_dating_app/hosts/forms/form_detail_body.dart';
 import 'package:catch_dating_app/hosts/forms/form_state.dart';
 import 'package:catch_dating_app/hosts/forms/forms_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_applications_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_forms_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
@@ -22,7 +24,9 @@ import 'package:go_router/go_router.dart';
 /// for the host and what happens when the host lets someone in.
 ///
 /// Reads the form editor (summary and questions) bound to the signed-in
-/// manager, the published version's analytics and the unreviewed answers.
+/// manager, the published version's analytics, the unreviewed answers and,
+/// on a form nobody reviews, the newest answer. Results opens each
+/// question's answers counted and Payments the form's fee payments.
 /// Let in commits the existing application review command; Publish the
 /// editor's publish command; Settings opens the form's settings view.
 class HostFormScreen extends ConsumerStatefulWidget {
@@ -79,6 +83,12 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         : catchAsyncStateFromAsyncValue(
             ref.watch(hostFormResponsesControllerProvider(_waiting(uid))),
           );
+    final reviewed = form?.purpose == HostFormPurpose.application;
+    final latest = uid == null || form == null || reviewed || versionId == null
+        ? null
+        : catchAsyncStateFromAsyncValue(
+            ref.watch(hostFormResponsesControllerProvider(_latest(uid))),
+          ).value?.inboxEntries.firstOrNull;
     final lettingIn = <String>{};
     var letInFailed = false;
     for (final entry
@@ -112,6 +122,16 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
             lettingIn: lettingIn,
             letInFailed: letInFailed,
             busy: editor.operationInProgress,
+            versionLine: versionId == null
+                ? null
+                : l10n.hostAudienceFormVersionContext(
+                    purpose: hostFormKindLabel(
+                      l10n,
+                      editor.editor.form.purpose,
+                    ),
+                    version: editor.editor.form.publishedVersion,
+                  ),
+            latest: latest,
           );
     final body = editorValue.hasError && editor == null
         ? CatchLocalizedErrorState(
@@ -137,6 +157,14 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
             ),
             onEditQuestions: () => _openForm(view: 'questions'),
             onPublish: _publish,
+            onResults: versionId == null
+                ? null
+                : () => context.pushNamed(
+                    Routes.hostFormAnalyticsScreen.name,
+                    pathParameters: {'formId': widget.formId},
+                    queryParameters: {'organizerId': widget.organizerId},
+                  ),
+            onPayments: form == null ? null : () => _openForm(view: 'payments'),
           );
     return CatchRoot(
       child: CatchScreen(
@@ -162,6 +190,17 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         formId: widget.formId,
         includeApplications: true,
         reviewStatus: HostApplicationReviewStatus.submitted,
+      );
+
+  /// The newest submitted answer, for a form nobody reviews.
+  HostFormResponseListRequest _latest(String uid) =>
+      HostFormResponseListRequest(
+        organizerId: widget.organizerId,
+        accountUid: uid,
+        formId: widget.formId,
+        includeApplications: true,
+        statuses: const {HostFormResponseStatus.submitted},
+        limit: 1,
       );
 
   void _openForm({required String view}) => context.pushNamed(

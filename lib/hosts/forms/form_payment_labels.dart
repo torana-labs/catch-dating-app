@@ -1,7 +1,8 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment_record.dart';
 import 'package:catch_l10n/l10n.dart';
 
-String hostFormPaymentStatusLabel(
+/// A fee payment's status in the host's words.
+String hostFormPaymentStatusText(
   AppLocalizations l10n,
   HostFormPaymentStatus status,
 ) => switch (status) {
@@ -18,7 +19,8 @@ String hostFormPaymentStatusLabel(
   HostFormPaymentStatus.reviewRequired => l10n.hostFormPaymentsReviewRequired,
 };
 
-String hostFormPaymentFilterLabel(
+/// A payments filter's label.
+String hostFormPaymentFilterText(
   AppLocalizations l10n,
   HostFormPaymentFilter filter,
 ) => switch (filter) {
@@ -29,7 +31,8 @@ String hostFormPaymentFilterLabel(
   HostFormPaymentFilter.attention => l10n.hostFormPaymentsAttention,
 };
 
-String hostFormPaymentStatusHelp(
+/// What a payment's status means for the host and what to do next.
+String hostFormPaymentStatusHelpText(
   AppLocalizations l10n,
   HostFormPaymentStatus status,
 ) => switch (status) {
@@ -46,5 +49,6 @@ String hostFormPaymentStatusHelp(
   HostFormPaymentStatus.reviewRequired => l10n.hostFormPaymentsReviewHelp,
 };
 
-String hostFormPaymentAmount(int paise) =>
+/// An amount in paise as rupees with two decimals: ₹499.00.
+String hostFormPaymentAmountText(int paise) =>
     '₹${paise ~/ 100}.${(paise % 100).toString().padLeft(2, '0')}';

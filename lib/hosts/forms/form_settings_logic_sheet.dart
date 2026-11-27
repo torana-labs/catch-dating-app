@@ -2,8 +2,8 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definitio
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_logic.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_question.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_section.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
+import 'package:catch_dating_app/hosts/forms/host_form_copy.dart';
+import 'package:catch_dating_app/hosts/forms/host_forms_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';

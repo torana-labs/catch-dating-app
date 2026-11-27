@@ -1,7 +1,0 @@
-{
-  "path": "lib/hosts/presentation/forms/host_form_workspace_header.dart",
-  "symbol": "HostFormWorkspaceHeader",
-  "role": "content",
-  "owner": "CatchTextStyles.titleL",
-  "reason": "Form identity and its workspace tabs are content beneath the canonical compact Form route bar; route navigation remains in CatchLegacyTopBar."
-}
