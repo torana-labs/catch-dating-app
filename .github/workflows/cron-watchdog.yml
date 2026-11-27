@@ -79,8 +79,11 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           persist-credentials: false
+          # cron_watchdog.mjs imports main_red_alert.mjs, which imports
+          # tool/lib/github_issues.mjs through golden_policy.mjs.
           sparse-checkout: |
             tool/ci
+            tool/lib
             .github/actions/load-toolchain
       - id: toolchain
         uses: ./.github/actions/load-toolchain

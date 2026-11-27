@@ -2245,3 +2245,57 @@ test("Flutter CI checks committed generated outputs on Linux, report-only until 
     /if: \$\{\{ failure\(\) && steps\.codegen-current\.outcome == 'failure' \}\}/u);
   assert.match(job, /name: generated-flutter-drift-linux-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/u);
 });
+
+// A sparse checkout must hold every local module the scripts it runs import:
+// on 26 Nov 2026 golden_policy.mjs started importing tool/lib/github_issues.mjs,
+// and the Scheduled run watchdog, which reaches it through main_red_alert.mjs
+// but checked out only tool/ci, failed on every run until this test existed.
+function localImportClosure(entry) {
+  const seen = new Set();
+  const visit = (file) => {
+    if (seen.has(file)) return;
+    seen.add(file);
+    const source = fs.readFileSync(path.join(repositoryRoot, file), "utf8");
+    // Static imports only: a lazy `await import()` loads in a mode the job
+    // may never use (proof_reuse_shadow.mjs --compare skips its nx imports).
+    for (const match of source.matchAll(/(?:^\s*import\s+(?:[^"';]*?\s+from\s+)?|^\s*export\s+[^"';]*?\s+from\s+)["'](\.{1,2}\/[^"']+)["']/gmu)) {
+      const target = path.posix.normalize(path.posix.join(path.posix.dirname(file), match[1]));
+      // Text that only looks like an import (a fixture string) names no file.
+      if (fs.existsSync(path.join(repositoryRoot, target))) visit(target);
+    }
+  };
+  visit(entry);
+  return [...seen];
+}
+
+const repositoryRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
+
+test("every sparse checkout holds the local modules its job's node scripts import", () => {
+  const problems = [];
+  const workflowsDir = path.join(repositoryRoot, ".github/workflows");
+  for (const name of fs.readdirSync(workflowsDir).filter((file) => /\.ya?ml$/u.test(file)).sort()) {
+    const parsed = parseYaml(fs.readFileSync(path.join(workflowsDir, name), "utf8"));
+    for (const [jobId, job] of Object.entries(parsed?.jobs ?? {})) {
+      const steps = job?.steps ?? [];
+      // Only jobs whose one checkout is a sparse one into the workspace root:
+      // a job with a full checkout too, or a sparse one into a sub-path, runs
+      // its scripts from files this cannot see.
+      const checkouts = steps.filter((step) => String(step.uses ?? "").startsWith("actions/checkout@"));
+      const checkout = checkouts[0];
+      if (checkouts.length !== 1 || typeof checkout.with?.["sparse-checkout"] !== "string" || checkout.with?.path) continue;
+      if (steps.some((step) => /git sparse-checkout disable/u.test(String(step.run ?? "")))) continue;
+      const patterns = checkout.with["sparse-checkout"].split("\n").map((line) => line.trim().replace(/^\//u, "").replace(/\/$/u, ""))
+        .filter(Boolean);
+      const covered = (file) => patterns.some((pattern) => file === pattern || file.startsWith(`${pattern}/`));
+      for (const step of steps) {
+        for (const match of String(step.run ?? "").matchAll(/\bnode\s+(tool\/[\w./-]+\.mjs)/gu)) {
+          if (!fs.existsSync(path.join(repositoryRoot, match[1]))) continue;
+          for (const file of localImportClosure(match[1])) {
+            if (!covered(file)) problems.push(`${name} ${jobId}: ${match[1]} imports ${file}, outside its sparse checkout`);
+          }
+        }
+      }
+    }
+  }
+  assert.deepEqual(problems, []);
+});
