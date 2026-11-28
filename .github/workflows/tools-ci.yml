@@ -365,6 +365,16 @@ jobs:
           flutter pub get
           dart pub get -C tool/widget_dedupe
 
+      # The first `dart analyze` and `flutter test` in a bucket pay about 30-40 s
+      # of analyzer, analyzer-plugin and test-runner startup. Paying it here, as
+      # setup, keeps that cost out of whichever tool happens to run first, so the
+      # measured per-tool timings that balance the buckets stay per tool.
+      - name: Warm up Dart analyzer and test runner
+        if: ${{ contains(fromJSON(steps.bucket.outputs.setup), 'flutter-pub') }}
+        run: |
+          dart analyze tool/ci/fixtures/dart_warmup_test.dart
+          flutter test --no-pub tool/ci/fixtures/dart_warmup_test.dart
+
       - run: npm ci
         if: ${{ contains(fromJSON(steps.bucket.outputs.setup), 'root-npm') }}
 

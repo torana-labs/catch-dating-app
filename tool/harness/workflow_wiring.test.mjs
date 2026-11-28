@@ -1009,6 +1009,7 @@ test("full tool buckets install only the setup their computed tools need", () =>
     ["uses: ./.github/actions/setup-flutter", "flutter"],
     ["name: Install scanner dependencies", "ripgrep"],
     ["name: Resolve Flutter and standalone Dart tool dependencies", "flutter-pub"],
+    ["name: Warm up Dart analyzer and test runner", "flutter-pub"],
     ["- run: npm ci", "root-npm"],
     ["- run: npm --prefix functions ci", "functions-npm"],
     ["name: Install marketing design browser", "playwright"],
@@ -1019,6 +1020,16 @@ test("full tool buckets install only the setup their computed tools need", () =>
     assert.ok(step.includes(`if: \${{ contains(fromJSON(steps.bucket.outputs.setup), '${requirement}') }}`), marker);
   }
   assert.match(buckets, /- uses: \.\/\.github\/actions\/generate-contracts-cached\n/u);
+  // Dart buckets pay the analyzer and test-runner startup once, as setup, after
+  // pub get, instead of inside whichever tool runs first.
+  const pubGet = buckets.indexOf("name: Resolve Flutter and standalone Dart tool dependencies");
+  const warmUp = buckets.indexOf("name: Warm up Dart analyzer and test runner");
+  assert.ok(warmUp > pubGet, "the Dart warm-up runs after pub get");
+  const warmStep = buckets.slice(warmUp, buckets.indexOf("\n\n", warmUp));
+  assert.match(warmStep, /dart analyze tool\/ci\/fixtures\/dart_warmup_test\.dart\n/u);
+  assert.match(warmStep, /flutter test --no-pub tool\/ci\/fixtures\/dart_warmup_test\.dart\n?/u);
+  assert.match(repositorySnapshot.readText("tool/ci/fixtures/dart_warmup_test.dart", {required: true}),
+    /package:flutter_test\/flutter_test\.dart/u, "the warm-up file runs under flutter test");
 });
 
 test("fast structural ratchets block dependency-heavy full tool buckets", () => {

@@ -692,7 +692,12 @@ tools' CI requirements need (Flutter, `pub get`, ripgrep, root and Functions npm
 the browser), by the same projection the affected job uses, and the balancing
 counts that setup (`SETUP_SECONDS`), so tools with the same needs gather. A tool
 that declares no `ciRequirements` needs the full setup, so declaring them lets
-more buckets skip it. Checkouts keep full history: ratchets compare with
+more buckets skip it. A bucket with `pub get` then runs "Warm up Dart analyzer
+and test runner" (`dart analyze` and `flutter test` of
+`tool/ci/fixtures/dart_warmup_test.dart`), so the one-off analyzer, analyzer-plugin and
+test-runner startup is paid as setup rather than inside whichever Dart tool
+runs first; otherwise the timing file would charge it to a different tool after
+every regenerate. Checkouts keep full history: ratchets compare with
 `origin/main`.
 
 - See the split: `node tool/ci/tool_buckets.mjs plan`.

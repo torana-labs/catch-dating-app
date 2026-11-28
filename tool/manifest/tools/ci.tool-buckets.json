@@ -15,7 +15,8 @@
   },
   "impactPaths": [
     "tool/ci/tool_buckets.test.mjs",
-    "tool/ci/tool_bucket_timings.json"
+    "tool/ci/tool_bucket_timings.json",
+    "tool/ci/fixtures/dart_warmup_test.dart"
   ],
   "checks": [
     "node --check tool/ci/tool_buckets.mjs",
