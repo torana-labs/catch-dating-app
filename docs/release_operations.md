@@ -705,6 +705,18 @@ more buckets skip it. Checkouts keep full history: ratchets compare with
   partway; add `--fallback tool/ci/tool_bucket_timings.json` to keep the
   current seconds for tools the new logs do not cover.
   Logs from several runs are averaged per tool.
+- Some tools run in Tools only in some runs: a full dispatch or the nightly
+  selects the marketing lane, and Tools hands it the website build, Storybook
+  build and Storybook accessibility check ("provided by the required same-run
+  React marketing lane"). Such a line gives that tool no sample, and a tool
+  handed over in any log takes its longest run from the logs where Tools ran
+  it, because tools-only PR and queue runs execute it in Tools. Include at least
+  one such run (a tools-only PR's full matrix) when regenerating;
+  `source.handedOverWithoutMeasuredRun` lists any tool still unmeasured.
+- The first `dart analyze` and `flutter test` in a job pay a one-off analyzer
+  and test-runner startup (about 26 s and 9 s). Regenerate takes it off the
+  first such tool in each log and `SETUP_SECONDS` charges it to every bucket
+  with `pub get`, so the cost stays with the bucket.
 
 Bucket names carry no meaning: no ruleset, Required CI need or test pins a
 tool to a named bucket, so a regenerated split changes only which job runs it.

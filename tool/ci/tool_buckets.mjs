@@ -15,7 +15,11 @@
 // `regenerate` reads saved logs (files named <run-id>-<job>.log group by run) of full-matrix bucket jobs (the "Check tool
 // categories" step, timestamped GitHub log lines) and writes each tool's
 // seconds: the time from its "==> <tool-id>:" lines to the next such line,
-// summed per tool and averaged over the runs that ran it. With --fallback, a
+// summed per tool and averaged over the runs that ran it. A tool a log hands to
+// another lane gets no sample from that log, and any tool handed over somewhere
+// takes its longest measured run instead of the average. The first `dart
+// analyze` and `flutter test` in a log lose their one-off startup, which
+// SETUP_SECONDS charges to the bucket instead. With --fallback, a
 // tool the logs do not cover (a log GitHub truncated, a tool that did not run)
 // keeps its seconds from that earlier timing file.
 import fs from "node:fs";
@@ -74,8 +78,17 @@ export function sharedCommandGroups(tools) {
 // the checkout are common to every bucket. The cached contracts step installs
 // the Functions dependencies itself when they are missing, so functions-npm
 // costs little extra.
+//
+// The first `dart analyze` and the first `flutter test` in a job also pay a
+// one-off analyzer, analyzer-plugin and test-runner startup (measured 28 Nov
+// 2026: about 26 s and 9 s over their warm times). That cost belongs to the
+// bucket, not to whichever tool runs first, so regenerate takes it off the
+// first such tool in each log and flutter-pub counts it here.
+export const DART_ANALYZE_WARMUP_SECONDS = 26;
+export const FLUTTER_TEST_WARMUP_SECONDS = 9;
 export const SETUP_SECONDS = Object.freeze({
-  flutter: 30, "flutter-pub": 4, "root-npm": 31, "functions-npm": 5, playwright: 9, ripgrep: 1, node: 0,
+  flutter: 30, "flutter-pub": 4 + DART_ANALYZE_WARMUP_SECONDS + FLUTTER_TEST_WARMUP_SECONDS,
+  "root-npm": 31, "functions-npm": 5, playwright: 9, ripgrep: 1, node: 0,
 });
 
 function setupSeconds(setup) {
@@ -156,55 +169,113 @@ export function readTimings(file = TIMINGS_PATH) {
 const timestamped = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z)\s?(.*)$/u;
 
 /**
- * One job log's per-tool seconds: each "==> <tool-id>: <command>" line runs
- * until the next "==> " line, or until "Tool checks passed." / the last line.
+ * One bucket job log, parsed: each "==> <tool-id>: <command>" line runs until
+ * the next "==> " line, or until "Tool checks passed." / the last line.
  * "==> shared prerequisite: <command>" counts toward the tool whose check
  * triggered it, the line before it.
+ *
+ * A tool whose work the runner hands to another lane ("provided by the
+ * required same-run React marketing lane", "nightly-only visual report") did
+ * not run in this log, so it gets no sample here, never about 0 s; it is listed
+ * in handedOver instead. The first `dart analyze` and first `flutter test`
+ * tool lose the one-off startup that SETUP_SECONDS charges to the bucket,
+ * unless the job already ran that command before its first tool (a setup
+ * step), in which case the tools ran warm.
  */
-export function toolSecondsFromLog(text) {
+export function parseBucketLog(text) {
   const marks = [];
+  const handedOver = new Set();
+  const warmBeforeTools = {analyze: false, test: false};
   let lastTime = null;
   for (const raw of text.split("\n")) {
     const match = timestamped.exec(raw.trimEnd());
     if (!match) continue;
     const [, time, line] = match;
     lastTime = Date.parse(time);
-    const tool = /^==> ([a-z0-9][a-z0-9-]*:[a-z0-9][a-z0-9-]*): /u.exec(line);
-    if (tool) marks.push({tool: tool[1], at: lastTime});
-    else if (/^==> /u.test(line)) marks.push({tool: null, at: lastTime});
-    else if (line.startsWith("Tool checks passed.")) marks.push({end: true, at: lastTime});
+    if (!line.startsWith("==> ") && !marks.some((mark) => mark.tool)) {
+      if (/\bdart analyze\b/u.test(line)) warmBeforeTools.analyze = true;
+      if (/\bflutter test\b/u.test(line)) warmBeforeTools.test = true;
+    }
+    const tool = /^==> ([a-z0-9][a-z0-9-]*:[a-z0-9][a-z0-9-]*): (.*)$/u.exec(line);
+    if (tool && handedOverLine.test(tool[2])) {
+      handedOver.add(tool[1]);
+      marks.push({tool: null, skip: true, at: lastTime});
+    } else if (tool) {
+      marks.push({tool: tool[1], command: tool[2], at: lastTime});
+    } else if (/^==> /u.test(line)) {
+      marks.push({tool: null, at: lastTime});
+    } else if (line.startsWith("Tool checks passed.")) {
+      marks.push({end: true, at: lastTime});
+    }
   }
   const seconds = {};
   let owner = null;
   for (let index = 0; index < marks.length; index += 1) {
     const mark = marks[index];
     if (mark.end) break;
-    owner = mark.tool ?? owner;
+    owner = mark.skip ? null : mark.tool ?? owner;
     const next = marks[index + 1]?.at ?? lastTime;
     if (owner) seconds[owner] = (seconds[owner] ?? 0) + (next - mark.at) / 1000;
   }
-  return seconds;
+  for (const [pattern, warmup, warm] of [
+    [/^dart analyze\b/u, DART_ANALYZE_WARMUP_SECONDS, warmBeforeTools.analyze],
+    [/^flutter test\b/u, FLUTTER_TEST_WARMUP_SECONDS, warmBeforeTools.test],
+  ]) {
+    if (warm) continue;
+    const first = marks.find((mark) => mark.tool && pattern.test(mark.command))?.tool;
+    if (first && seconds[first] != null) seconds[first] = Math.max(0, seconds[first] - warmup);
+  }
+  for (const tool of handedOver) delete seconds[tool];
+  return {seconds, handedOver};
 }
 
-/** Averages per-run tool seconds (each run = all its bucket logs) into a timing file. */
+const toolIdPattern = /^[a-z0-9][a-z0-9-]*:[a-z0-9][a-z0-9-]*$/u;
+const handedOverLine = /^(provided by the required same-run React marketing lane\.|nightly-only visual report\b)/u;
+
+/** One job log's per-tool seconds (see parseBucketLog); handed-over tools are absent. */
+export function toolSecondsFromLog(text) {
+  return parseBucketLog(text).seconds;
+}
+
+/**
+ * Builds the timing file from per-run results, where a run is either
+ * {seconds, handedOver} or a plain tool -> seconds object. A tool is averaged
+ * over the runs that ran it. A tool some run handed to another lane runs in
+ * Tools only in some contexts (a tools-only PR or queue entry, not a full
+ * dispatch), so it takes its longest measured time instead: the bucket must
+ * hold it whenever Tools does run it.
+ */
 export function buildTimings(runs, {runIds = [], fallback = null} = {}) {
-  const totals = new Map();
+  const samples = new Map();
+  const handedOverAnywhere = new Set();
   for (const run of runs) {
-    for (const [tool, value] of Object.entries(run)) {
-      const entry = totals.get(tool) ?? {sum: 0, count: 0};
-      entry.sum += value;
-      entry.count += 1;
-      totals.set(tool, entry);
+    const seconds = run.seconds && typeof run.seconds === "object" ? run.seconds : run;
+    for (const tool of run.handedOver ?? []) handedOverAnywhere.add(tool);
+    for (const [tool, value] of Object.entries(seconds)) {
+      if (!samples.has(tool)) samples.set(tool, []);
+      samples.get(tool).push(value);
     }
   }
-  const measured = new Map([...totals].map(([tool, {sum, count}]) => [tool, Math.round((sum / count) * 10) / 10]));
-  const kept = Object.entries(fallback?.seconds ?? {}).filter(([tool]) => !measured.has(tool));
+  const round = (value) => Math.round(value * 10) / 10;
+  const measured = new Map([...samples].map(([tool, values]) => [tool, round(handedOverAnywhere.has(tool)
+    ? Math.max(...values)
+    : values.reduce((sum, value) => sum + value, 0) / values.length)]));
+  // Only tool ids carry over: a stale non-tool key in an older file is dropped.
+  const kept = Object.entries(fallback?.seconds ?? {})
+    .filter(([tool]) => toolIdPattern.test(tool) && !measured.has(tool));
   const seconds = Object.fromEntries([...measured, ...kept].sort(([a], [b]) => a.localeCompare(b)));
   const values = Object.values(seconds).sort((a, b) => a - b);
   const median = values.length ? values[Math.floor(values.length / 2)] : 1;
+  const maxed = [...handedOverAnywhere].filter((tool) => samples.has(tool)).sort();
+  const unmeasured = [...handedOverAnywhere].filter((tool) => !samples.has(tool)).sort();
   return {
     description: "Measured seconds per tool in the full Tools matrix; tool/ci/tool_buckets.mjs balances the buckets from it. Regenerate with `node tool/ci/tool_buckets.mjs regenerate`.",
-    source: {runs: runIds, ...(kept.length > 0 ? {keptFromFallback: kept.map(([tool]) => tool)} : {})},
+    source: {
+      runs: runIds,
+      ...(maxed.length > 0 ? {longestRunForHandedOverTools: maxed} : {}),
+      ...(unmeasured.length > 0 ? {handedOverWithoutMeasuredRun: unmeasured} : {}),
+      ...(kept.length > 0 ? {keptFromFallback: kept.map(([tool]) => tool)} : {}),
+    },
     defaultSeconds: Math.max(1, median),
     seconds,
   };
@@ -233,8 +304,11 @@ function main(argv) {
     const byRun = new Map();
     for (const file of logs) {
       const run = /^(\d+)-/u.exec(path.basename(file))?.[1] ?? file;
-      const seconds = toolSecondsFromLog(fs.readFileSync(file, "utf8"));
-      byRun.set(run, {...(byRun.get(run) ?? {}), ...seconds});
+      const parsed = parseBucketLog(fs.readFileSync(file, "utf8"));
+      const merged = byRun.get(run) ?? {seconds: {}, handedOver: new Set()};
+      Object.assign(merged.seconds, parsed.seconds);
+      for (const tool of parsed.handedOver) merged.handedOver.add(tool);
+      byRun.set(run, merged);
     }
     const runIds = (argValue(args, "--runs") ?? [...byRun.keys()].join(",")).split(",").filter(Boolean);
     const out = argValue(args, "--out") ?? TIMINGS_PATH;
