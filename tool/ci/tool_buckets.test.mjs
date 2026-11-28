@@ -8,7 +8,10 @@ import {
   assignBuckets,
   BUCKET_COUNT,
   buildTimings,
+  DART_ANALYZE_WARMUP_SECONDS,
+  FLUTTER_TEST_WARMUP_SECONDS,
   fullMatrixTools,
+  parseBucketLog,
   readTimings,
   SETUP_SECONDS,
   sharedCommandGroups,
@@ -113,6 +116,53 @@ test("regenerate keeps a fallback value only for tools the logs do not cover", (
   const built = buildTimings([{"a:one": 10, "b:two": 2}], {runIds: ["5"], fallback});
   assert.deepEqual(built.seconds, {"a:one": 10, "b:two": 2, "c:three": 7});
   assert.deepEqual(built.source.keptFromFallback, ["c:three"]);
+  const stale = buildTimings([{"a:one": 1}], {fallback: {defaultSeconds: 1, seconds: {"analyze .": 9, "c:three": 7}}});
+  assert.deepEqual(Object.keys(stale.seconds), ["a:one", "c:three"], "a non-tool key is not carried over");
+});
+
+test("a tool handed to another lane gets no sample, never about zero seconds", () => {
+  const handedOverLog = [
+    "2026-11-24T08:00:00.0000000Z ==> a:one: node a.mjs",
+    "2026-11-24T08:00:10.0000000Z ==> m:a11y: provided by the required same-run React marketing lane.",
+    "2026-11-24T08:00:10.1000000Z ==> w:visuals: nightly-only visual report (see #2426).",
+    "2026-11-24T08:00:10.2000000Z ==> b:two: node b.mjs",
+    "2026-11-24T08:00:13.2000000Z Tool checks passed.",
+  ].join("\n");
+  const parsed = parseBucketLog(handedOverLog);
+  assert.deepEqual(parsed.seconds, {"a:one": 10, "b:two": 3});
+  assert.deepEqual([...parsed.handedOver].sort(), ["m:a11y", "w:visuals"]);
+  const ranLog = [
+    "2026-11-24T09:00:00.0000000Z ==> m:a11y: npm --workspace catch-marketing run test:storybook:a11y",
+    "2026-11-24T09:02:22.0000000Z ==> a:one: node a.mjs",
+    "2026-11-24T09:02:30.0000000Z Tool checks passed.",
+  ].join("\n");
+  const slowerRun = {seconds: {"m:a11y": 120, "a:one": 12}, handedOver: new Set()};
+  const built = buildTimings([parsed, parseBucketLog(ranLog), slowerRun], {runIds: ["1", "2", "3"]});
+  // Known from the runs where Tools ran it: its longest run, not ~0 or an average with the handed-over run.
+  assert.equal(built.seconds["m:a11y"], 142);
+  assert.equal(built.seconds["a:one"], 10);
+  assert.deepEqual(built.source.longestRunForHandedOverTools, ["m:a11y"]);
+  assert.deepEqual(built.source.handedOverWithoutMeasuredRun, ["w:visuals"]);
+  assert.ok(!("w:visuals" in built.seconds), "a tool never measured is not invented");
+  // Without any run that executed it, a fallback value stays as it was.
+  assert.equal(buildTimings([parsed], {fallback: {defaultSeconds: 1, seconds: {"w:visuals": 400}}}).seconds["w:visuals"], 400);
+});
+
+test("the first dart analyze and flutter test lose the warm-up the bucket setup pays", () => {
+  const log = () => [
+    "2026-11-24T08:00:00.0000000Z ==> d:one: dart analyze tool/x.dart",
+    "2026-11-24T08:01:00.0000000Z ==> d:two: dart analyze tool/y.dart",
+    "2026-11-24T08:01:30.0000000Z ==> f:one: flutter test test/a_test.dart",
+    "2026-11-24T08:02:00.0000000Z ==> f:two: flutter test test/b_test.dart",
+    "2026-11-24T08:02:20.0000000Z Tool checks passed.",
+  ].join("\n");
+  assert.deepEqual(toolSecondsFromLog(log()), {
+    "d:one": 60 - DART_ANALYZE_WARMUP_SECONDS, "d:two": 30, "f:one": 30 - FLUTTER_TEST_WARMUP_SECONDS, "f:two": 20,
+  });
+  // A job that ran dart analyze and flutter test before its first tool paid the startup there.
+  const warmed = ["2026-11-24T07:59:00.0000000Z dart analyze tool/ci/x.dart", "2026-11-24T07:59:20.0000000Z flutter test tool/ci/x_test.dart", log()].join("\n");
+  assert.deepEqual(toolSecondsFromLog(warmed), {"d:one": 60, "d:two": 30, "f:one": 30, "f:two": 20});
+  assert.equal(SETUP_SECONDS["flutter-pub"] >= DART_ANALYZE_WARMUP_SECONDS + FLUTTER_TEST_WARMUP_SECONDS, true);
 });
 
 test("ids, setup and regenerate work from the command line", () => {
